@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jboss-web
+    PUBLIC "-//JBoss//DTD Web Application 2.3//EN"
+    "http://www.jboss.org/j2ee/dtds/jboss-web_3_0.dtd">
+
+    <!--
+        This file is only necessary because we are running the web
+        server and the application (ejb) server in the same JVM.
+        A stand alone client, like a POJO, or a configuration in clusters
+        or with tomcat runing in an independer process wouldn't need it.
+        Beacuse running both servers in the same JVM is the logical thing
+        to do when using just one phisical machine, this file is 
+        necessary
+    -->
+<jboss-web>
+   <security-domain>java:/jaas/betty</security-domain>
+</jboss-web>

@@ -1,0 +1,209 @@
+/*
+The contents of this file are subject to the Jbilling Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+*/
+
+package com.sapienter.jbilling.client.system;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.apache.struts.Globals;
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionError;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
+import org.apache.struts.action.ActionMessages;
+import org.apache.struts.validator.Resources;
+
+import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.interfaces.BillingProcessSession;
+import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
+import com.sapienter.jbilling.interfaces.UserSession;
+import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.user.UserDTOEx;
+
+public class AgeingMaintainAction extends Action {
+
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        
+        Logger log = Logger.getLogger(AgeingMaintainAction.class);
+        ActionMessages messages = new ActionMessages();
+        ActionErrors errors = new ActionErrors();
+        
+        try {
+            JNDILookup EJBFactory = JNDILookup.getFactory(false);
+            BillingProcessSessionHome processHome =
+                    (BillingProcessSessionHome) EJBFactory.lookUpHome(
+                    BillingProcessSessionHome.class,
+                    BillingProcessSessionHome.JNDI_NAME);
+            UserSessionHome userHome =
+                    (UserSessionHome) EJBFactory.lookUpHome(
+                    UserSessionHome.class,
+                    UserSessionHome.JNDI_NAME);
+        
+            BillingProcessSession processSession = processHome.create();
+            UserSession userSession = userHome.create();
+            
+            String action = request.getParameter("action");
+            HttpSession session = request.getSession(false);
+            Integer entityId = (Integer) session.getAttribute(
+                    Constants.SESSION_ENTITY_ID_KEY);
+            Integer languageId = (Integer) session.getAttribute(
+                    Constants.SESSION_LANGUAGE);
+            Integer executorLanguageId = languageId;
+            AgeingArrayForm myForm = (AgeingArrayForm) form;
+            if (action.equals("setup")) {
+                myForm.setLines(processSession.getAgeingSteps(
+                        entityId, executorLanguageId, languageId));
+                // the grace period & url are preferences
+                Integer[] preferenceIds = new Integer[2];
+                preferenceIds[0] = Constants.PREFERENCE_GRACE_PERIOD;
+                preferenceIds[1] = Constants.PREFERENCE_URL_CALLBACK;
+                HashMap result = ((UserSession) userSession).
+                        getEntityParameters(entityId, preferenceIds);
+            
+                String gracePeriod = (String) result.get(
+                       Constants.PREFERENCE_GRACE_PERIOD); 
+                myForm.setGracePeriod(gracePeriod);
+                String url = (String) result.get(
+                        Constants.PREFERENCE_URL_CALLBACK);
+                myForm.setUrlCallback(url);
+                // default the language to the user's language
+                myForm.setLanguageId(languageId);
+            } else if (action.equals("edit")) {
+                languageId = myForm.getLanguageId();
+                if (request.getParameter("reload") != null) {
+                    // it is just a change of language
+                    myForm.setLines(processSession.getAgeingSteps(
+                            entityId, executorLanguageId, languageId));
+                } else {
+                    
+                    if (myForm.getGracePeriod() == null || 
+                            myForm.getGracePeriod().length() == 0) {
+                        String field = Resources.getMessage(request, 
+                                "system.ageing.gracePeriod"); 
+                        errors.add(ActionErrors.GLOBAL_ERROR,
+                                new ActionError("errors.required", field));
+                    } else {
+                        try {
+                            Integer.valueOf(myForm.getGracePeriod().trim());
+                        } catch(NumberFormatException e) {
+                            String field = Resources.getMessage(request, 
+                                    "system.ageing.gracePeriod"); 
+                            errors.add(ActionErrors.GLOBAL_ERROR,
+                                    new ActionError("errors.integer", field));
+                            
+                        }
+                    }
+                    
+                    // I need to know which one is the last selected step first
+                    int lastSelected = 0;
+                    for (int f = 0; f < myForm.getLines().length; f++) {
+                        AgeingDTOEx line = myForm.getLines()[f];
+                        if (line.getInUse().booleanValue()) {
+                            lastSelected = f;
+                        }
+                    }
+                                
+                    for (int f = 0; f < myForm.getLines().length; f++) {
+                        AgeingDTOEx line = myForm.getLines()[f];
+                        if (line.getStatusId().equals(UserDTOEx.STATUS_ACTIVE)) {
+                            line.setInUse(new Boolean(true));
+                        }
+                        if (line.getInUse().booleanValue()) {
+                            if (!line.getStatusId().equals(UserDTOEx.STATUS_DELETED) && 
+                                    (line.getWelcomeMessage() == null || 
+                                    line.getWelcomeMessage().length() == 0)) {
+                                String field = Resources.getMessage(request, 
+                                        "system.ageing.welcomeMessage"); 
+                                errors.add(ActionErrors.GLOBAL_ERROR,
+                                        new ActionError("errors.required.line", field,
+                                                line.getStatusId()));
+                            }
+                            // active and deleted don't check days
+                            if (line.getStatusId().equals(UserDTOEx.STATUS_ACTIVE) ||
+                                    line.getStatusId().equals(UserDTOEx.STATUS_DELETED)) {
+                                // nothing ... :)
+                            } else if ((line.getDays() == null || 
+                                    line.getDays().intValue() <= 0) && f != lastSelected) {
+                                String field = Resources.getMessage(request, 
+                                        "system.ageing.days"); 
+                                errors.add(ActionErrors.GLOBAL_ERROR,
+                                        new ActionError("errors.required.line", field,
+                                            line.getStatusId()));
+                            } else if (f == lastSelected && 
+                                    (line.getDays() == null || 
+                                            line.getDays().intValue() != 0)) {
+                                errors.add(ActionErrors.GLOBAL_ERROR,
+                                        new ActionError("system.ageing.error.lastDay"));              
+                            }
+                        }                                
+                    }
+                    
+                    if (errors.isEmpty()) {
+                    	log.debug("Sending update of ageing for enitity " + 
+                    			entityId);
+                        processSession.setAgeingSteps(entityId, languageId, 
+                                myForm.getLines());
+                        // update the grace period in another call
+                        userSession.setEntityParameter(entityId, 
+                                Constants.PREFERENCE_GRACE_PERIOD, null,
+                                Integer.valueOf(myForm.getGracePeriod()),
+                                null);
+
+                        if (myForm.getUrlCallback() == null || 
+                                myForm.getUrlCallback().trim().length() == 0) {
+                            myForm.setUrlCallback(null);
+                        }
+                        userSession.setEntityParameter(entityId, 
+                                Constants.PREFERENCE_URL_CALLBACK, 
+                                myForm.getUrlCallback(), null, null);
+
+                        messages.add(ActionMessages.GLOBAL_MESSAGE, 
+                                new ActionMessage("system.ageing.updated"));
+                    } else {
+                        // Save the error messages we need
+                        request.setAttribute(Globals.ERROR_KEY, errors);
+                    }
+                }
+            }
+            
+            saveMessages(request, messages);
+            return mapping.findForward("edit");
+        } catch (Exception e) {
+            log.error("Exception ", e);
+        }
+        
+        return mapping.findForward("error");
+    }
+
+}

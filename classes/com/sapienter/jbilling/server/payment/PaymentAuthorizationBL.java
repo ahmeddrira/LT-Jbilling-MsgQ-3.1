@@ -1,0 +1,111 @@
+/*
+The contents of this file are subject to the Jbilling Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+*/
+
+package com.sapienter.jbilling.server.payment;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.naming.NamingException;
+
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
+import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocalHome;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.util.EventLogger;
+
+public class PaymentAuthorizationBL {
+    private JNDILookup EJBFactory = null;
+    private PaymentAuthorizationEntityLocalHome paymentAuthorizationHome = null;
+    private PaymentAuthorizationEntityLocal paymentAuthorization = null;
+    private Logger log = null;
+    private EventLogger eLogger = null;
+
+    public PaymentAuthorizationBL(Integer paymentAuthorizationId) 
+            throws NamingException, FinderException {
+        init();
+        set(paymentAuthorizationId);
+    }
+    
+    public PaymentAuthorizationBL(PaymentAuthorizationEntityLocal entity) 
+            throws NamingException {
+        init();
+        paymentAuthorization = entity;
+    }
+
+    public PaymentAuthorizationBL() throws NamingException {
+        init();
+    }
+
+    private void init() throws NamingException {
+        log = Logger.getLogger(PaymentAuthorizationBL.class);     
+        eLogger = EventLogger.getInstance();        
+        EJBFactory = JNDILookup.getFactory(false);
+        paymentAuthorizationHome = (PaymentAuthorizationEntityLocalHome) 
+                EJBFactory.lookUpLocalHome(
+                PaymentAuthorizationEntityLocalHome.class,
+                PaymentAuthorizationEntityLocalHome.JNDI_NAME);
+
+    }
+
+    public PaymentAuthorizationEntityLocal getEntity() {
+        return paymentAuthorization;
+    }
+    
+    public void set(Integer id) throws FinderException {
+        paymentAuthorization = paymentAuthorizationHome.findByPrimaryKey(id);
+    }
+    
+    public void create(PaymentAuthorizationDTO dto) 
+            throws CreateException {
+        // create the record, there's no need for an event to be logged 
+        // since the timestamp and the user are already in the paymentAuthorization row
+        paymentAuthorization = paymentAuthorizationHome.create(
+                dto.getProcessor(), dto.getCode1());
+            
+        paymentAuthorization.setApprovalCode(dto.getApprovalCode());
+        paymentAuthorization.setAVS(dto.getAVS());
+        paymentAuthorization.setCardCode(dto.getCardCode());
+        paymentAuthorization.setCode2(dto.getCode2());
+        paymentAuthorization.setCode3(dto.getCode3());
+        paymentAuthorization.setMD5(dto.getMD5());
+        paymentAuthorization.setTransactionId(dto.getTransactionId());
+    }
+    
+    public PaymentAuthorizationDTO getDTO() 
+            throws FinderException {
+        PaymentAuthorizationDTO dto = new PaymentAuthorizationDTO();
+        dto.setApprovalCode(paymentAuthorization.getApprovalCode());
+        dto.setAVS(paymentAuthorization.getAVS());
+        dto.setCardCode(paymentAuthorization.getCardCode());
+        dto.setCode1(paymentAuthorization.getCode1());
+        dto.setCode2(paymentAuthorization.getCode2());
+        dto.setCode3(paymentAuthorization.getCode3());
+        dto.setMD5(paymentAuthorization.getMD5());
+        dto.setId(paymentAuthorization.getId());
+        dto.setProcessor(paymentAuthorization.getProcessor());        
+        dto.setTransactionId(paymentAuthorization.getTransactionId());
+        dto.setCreateDate(paymentAuthorization.getCreateDate());
+        return dto;
+    }
+        
+
+}

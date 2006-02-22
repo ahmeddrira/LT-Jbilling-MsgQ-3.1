@@ -1,0 +1,15 @@
+
+<!-- this is a merge file, to be used to compose jboss.xml -->
+	
+		<!-- the real that betty is defining in the login-config.xml
+		<security-domain>java:/jaas/betty</security-domain>
+		Uncomment this to make the SERVER side (all ejbs) to look up in the login-config.xml
+		for the betty policy.
+		 -->	
+		
+		<!-- the principal to be used for calls before the user is logged in 
+		<unauthenticated-principal>10</unauthenticated-principal>
+		This was an attempt to get calls to the server side without an authenticated user
+		(for css and the login itself). It didn't work.
+		-->
+	

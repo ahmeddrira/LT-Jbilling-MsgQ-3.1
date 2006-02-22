@@ -1,0 +1,298 @@
+/*
+The contents of this file are subject to the Jbilling Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+*/
+
+package com.sapienter.jbilling.server.report;
+
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.entity.ReportFieldDTO;
+
+
+
+public class Field extends ReportFieldDTO {
+    
+    /*
+     * Supported data types
+     */
+    public static final String TYPE_STRING="string";
+    public static final String TYPE_INTEGER="integer";
+    public static final String TYPE_DATE="date";
+    public static final String TYPE_FLOAT="float";
+    /*
+     * Functions
+     */
+    public static final String FUNCTION_SUM="sum"; 
+    public static final String FUNCTION_AVG="avg";
+    public static final String FUNCTION_MIN="min";
+    public static final String FUNCTION_MAX="max";
+    /*
+     * Operators
+     */
+    public static final String OPERATOR_EQUAL="=";
+    public static final String OPERATOR_DIFFERENT="!=";
+    public static final String OPERATOR_GREATER=">";
+    public static final String OPERATOR_SMALLER="<";
+    public static final String OPERATOR_GR_EQ=">=";
+    public static final String OPERATOR_SM_EQ="<=";
+    
+    /*
+     * These are the minimum parameters. If not further setters are
+     * called, the column will be just included in the select.
+     */
+    public Field(String table, String column, 
+            String dataType) {
+        
+        setTable(table);
+        setColumn(column);
+        setDataType(dataType);
+        
+
+        Integer flag = new Integer(0);
+        setIsShown(new Integer(1));
+        // start the object defaulting to all false for the user fields
+        setFunctionable(flag);
+        setIsGrouped(flag);
+        setSelectable(flag);
+        setOrdenable(flag);
+        setOperatorable(flag);
+        setWherable(flag);
+    }
+    
+    public  String getOperatorKey() {
+        Logger log = Logger.getLogger(Field.class);
+        if (getOperator().equals(OPERATOR_DIFFERENT)) {
+            return "reports.operator.prompt.notequal";
+        } else if (getOperator().equals(OPERATOR_EQUAL)) {
+            return "reports.operator.prompt.equal";
+        } else if (getOperator().equals(OPERATOR_GR_EQ)) {
+            return "reports.operator.prompt.eq_gr";
+        } else if (getOperator().equals(OPERATOR_GREATER)) {
+            return "reports.operator.prompt.greater";
+        } else if (getOperator().equals(OPERATOR_SM_EQ)) {
+            return "reports.operator.prompt.eq_sm";
+        } else if (getOperator().equals(OPERATOR_SMALLER)) {
+            return "reports.operator.prompt.smaller";
+        } else {
+            log.fatal("unable to map " + getOperator());
+            return null;
+        }
+    }
+    
+    public String getTitleKey() {
+        Logger log = Logger.getLogger(Field.class);
+        if (super.getTitleKey() == null) {
+            log.debug("Creating the titleKey for " + getColumn());
+            return "report.prompt." + getTable() + "." + getColumn();
+        } else {
+            return super.getTitleKey();
+        }
+    }
+    
+    public void setFunctionVal(String fun) throws SessionInternalError {
+        if (validateFunction(fun)) {
+            super.setFunction(fun);
+        } else {
+            throw new SessionInternalError("Function not supported:" +
+                    fun);
+        }
+    }
+    
+    public void setWherable(Integer w) {
+        if (w.intValue() == 1 && getOperator() == null) {
+            setOperator(OPERATOR_EQUAL);
+        }
+        super.setWherable(w);
+    }
+    
+    public boolean isAgregated() {
+        if (getFunction() != null || getIsGrouped().intValue() == 1) {
+            return true;
+        }
+        return false;
+    }
+    
+    /*
+     * Validation funcitons
+     */
+    public int validate(Locale locale) {
+        Logger log = Logger.getLogger(Field.class);
+        int retValue = ReportDTOEx.OK;
+        
+        if (getTable() == null) {
+            log.debug("Validation:" + "table" + " can't be null");
+            retValue = ReportDTOEx.ERROR_ISNULL;
+        }
+        if (getColumn() == null) {
+            log.debug("Validation:" + "column" + " can't be null");
+            retValue = ReportDTOEx.ERROR_ISNULL;
+        }
+        if (getIsShown() == null) {
+            log.debug("Validation:" + "isShown" + " can't be null");
+            retValue = ReportDTOEx.ERROR_ISNULL;
+        }
+        if (getDataType() == null) {
+            log.debug("Validation:" + "data type" + " can't be null");
+            retValue = ReportDTOEx.ERROR_ISNULL;
+        }
+        if (getFunction() != null && 
+                validateFunction(getFunction()) == false) {
+            retValue = ReportDTOEx.ERROR_FUNCTION;
+        }
+        if (validateDataType(getDataType()) == false) {
+            retValue = ReportDTOEx.ERROR_DATATYPE;
+        }
+
+        if (getWhereValue() != null) {
+            // then we need an operator
+            // it has to be consistent with the data type
+            if (getOperator() == null) {
+                log.debug("Operator is required when where value is specified.");
+                retValue = ReportDTOEx.ERROR_NO_OPERATOR;
+            } 
+            
+            int ret = validateWhere(getWhereValue(), locale);
+            if (ret != ReportDTOEx.OK) {
+                retValue = ret;
+            }
+        }
+        
+        if (getOperator() != null) {
+            if (validateOperator(getOperator()) == false) {
+                retValue = ReportDTOEx.ERROR_OPERATOR;
+            }
+        }
+        
+        if (getFunction()!= null && getIsGrouped().intValue() == 1){
+            log.debug("A field can't have a function and be grouped by at " +                    "the same time");
+            retValue = ReportDTOEx.ERROR_FUNCTION;
+        }
+        
+        if (getWherable().intValue() == 1 && super.getTitleKey() == null) {
+            log.debug("Can't be whereable and not have a title key");
+            retValue = ReportDTOEx.ERROR_WHERE;
+        }
+        
+        return retValue;
+    }
+
+
+    private boolean validateFunction(String fun) {
+        Logger log = Logger.getLogger(Field.class);
+        if (fun.equals(FUNCTION_AVG) || fun.equals(FUNCTION_MAX) || 
+                fun.equals(FUNCTION_MIN) || fun.equals(FUNCTION_SUM)) {
+            if (getDataType().equals(TYPE_STRING)) {
+                log.debug("type string is not functionable");
+                return false;
+            } else if (getDataType().equals(TYPE_DATE) &&
+                    (fun.equals(FUNCTION_AVG) || fun.equals(FUNCTION_SUM))) {
+                log.debug("type date can't use avg or sum");
+                return false;
+            }
+            return true;            
+        } else {
+            log.debug("Function " + fun + " not supported");
+            return false;
+        }
+    }
+    
+    private boolean validateDataType(String type) {
+        Logger log = Logger.getLogger(Field.class);
+        if (type.equals(TYPE_INTEGER) || type.equals(TYPE_STRING) || 
+                type.equals(TYPE_FLOAT) || type.equals(TYPE_DATE)) {
+            return true;            
+        } else {
+            log.debug("Datatype " + type + " not supported");
+            return false;
+        }
+    }
+    
+    private int validateWhere(String where, Locale locale) {
+        Logger log = Logger.getLogger(Field.class);
+        int retValue = ReportDTOEx.OK;
+        
+        if (where.length() == 0 || where.equals("?")) {
+            // it's empty, a dynamic value or a null value
+            return retValue;
+        } 
+        
+        if (where.equalsIgnoreCase("null")) {
+            // the operator can be only equal or not equal
+            if (!getOperator().equals(Field.OPERATOR_EQUAL) &&
+                    !getOperator().equals(Field.OPERATOR_DIFFERENT)) {
+                retValue = ReportDTOEx.ERROR_NULL_OPERATOR;
+            } 
+            return retValue; // further checking would fail
+        }
+        if (retValue == ReportDTOEx.OK && getDataType().equals(TYPE_INTEGER)) {
+            try {
+                // see if it is a multiple value entry
+                if (where.indexOf(',') >= 0) {
+                    StringTokenizer values = new StringTokenizer(where, ",");
+                    while(values.hasMoreElements()) {
+                        Integer.valueOf(values.nextToken());
+                    }
+                    if (!getOperator().equals(Field.OPERATOR_EQUAL) &&
+                            !getOperator().equals(Field.OPERATOR_DIFFERENT)) {
+                        retValue = ReportDTOEx.ERROR_IN_OP_EQUAL;
+                    }
+                } else {
+                    Integer.valueOf(where);
+                }
+            } catch (Exception e) {
+                log.debug("Where value " + where + " should be an integer");
+                retValue = ReportDTOEx.ERROR_WHERE_NOINTEGER;
+            }
+        }
+        if (retValue == ReportDTOEx.OK && getDataType().equals(TYPE_FLOAT)) {
+            try {
+                NumberFormat nf = NumberFormat.getInstance(locale);
+                nf.parse(where).floatValue();
+            } catch (ParseException e) {
+                retValue = ReportDTOEx.ERROR_WHERE_NOFLOAT;
+            }
+        }
+        if (retValue == ReportDTOEx.OK && getDataType().equals(TYPE_DATE)) {
+            if (Util.parseDate(where) == null) {
+                retValue = ReportDTOEx.ERROR_WHERE_NODATE;
+            }
+        }
+
+        return retValue;
+    }
+
+    private boolean validateOperator(String op) {
+        Logger log = Logger.getLogger(Field.class);
+        if (op.equals(OPERATOR_DIFFERENT) || op.equals(OPERATOR_EQUAL) || 
+                op.equals(OPERATOR_GR_EQ) || op.equals(OPERATOR_GREATER) || 
+                op.equals(OPERATOR_SM_EQ) ||op.equals(OPERATOR_SMALLER)) {
+            return true;
+        } 
+
+        log.debug("Operator " + op + " it's not supported");
+        return false;
+    }
+}

@@ -1,0 +1,1156 @@
+/*
+The contents of this file are subject to the Jbilling Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+*/
+
+/*
+ * Created on Jan 27, 2005
+ * One session bean to expose as a single web service, thus, one wsdl
+ */
+package com.sapienter.jbilling.server.util;
+
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import javax.naming.NamingException;
+
+import org.apache.commons.validator.ValidatorException;
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.GatewayBL;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
+import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
+import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
+import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.CreateResponseWS;
+import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.UserSessionBean;
+import com.sapienter.jbilling.server.user.UserWS;
+
+/**
+ * @author Emil
+ *
+ * @ejb:bean name="WebServicesSession"
+ *           display-name="A stateless bean for web services"
+ *           type="Stateless"
+ *           transaction-type="Container"
+ *           view-type="local"
+ *           jndi-name="com/sapienter/jbilling/server/util/WebServicesSession"
+ * 
+ * @jboss-net.web-service urn="billing" 
+ *                        expose-all="true"
+ * @jboss.security-proxy name="com.sapienter.jbilling.server.util.WSMethodSecurityProxy"
+ */
+public class WebServicesSessionBean implements SessionBean {
+    private Logger log = null;
+    private SessionContext context = null;
+
+    /*
+     * INVOICES
+     */
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public InvoiceWS getInvoiceWS(Integer invoiceId)
+            throws SessionInternalError {
+        try {
+            if (invoiceId == null) {
+                return null;
+            }
+            InvoiceBL bl = new InvoiceBL(invoiceId);
+            if (bl.getEntity().getDeleted().equals(new Integer(1)) || 
+                    bl.getEntity().getIsReview().equals(new Integer(1))) {
+                return null;
+            }
+
+            return bl.getWS();
+        } catch (Exception e) {
+            log.error("WS - getInvoiceWS", e);
+            throw new SessionInternalError("Error getting invoice");
+        }
+    }
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public InvoiceWS getLatestInvoice(Integer userId)
+            throws SessionInternalError {
+        InvoiceWS retValue = null;
+        try {
+            if (userId == null) {
+                return null;
+            }
+            InvoiceBL bl = new InvoiceBL();
+            UserBL user = new UserBL(userId);
+            Integer invoiceId = bl.getLastByUser(user.getEntity().getUserName(), 
+                    user.getEntity().getEntity().getId());
+            if (invoiceId != null) {
+                bl.set(bl.getLastByUser(user.getEntity().getUserName(), 
+                        user.getEntity().getEntity().getId()));
+                retValue = bl.getWS();
+            }
+            return retValue;
+        } catch (Exception e) {
+            log.error("Exception in web service: getting latest invoice" +
+                    " for user " + userId, e);
+            throw new SessionInternalError("Error getting latest invoice");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     */
+    public Integer[] getLastInvoices(Integer userId, Integer number)
+            throws SessionInternalError {
+        try {
+            if (userId == null || number == null) {
+                return null;
+            }
+            
+            InvoiceBL bl = new InvoiceBL();
+            return bl.getManyWS(userId, number);
+        } catch (Exception e) {
+            log.error("Exception in web service: getting last invoices" +
+                    " for user " + userId, e);
+            throw new SessionInternalError("Error getting last invoices");
+        }
+    }
+
+     /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     */
+    public Integer[] getInvoicesByDate(String since, String until)
+            throws SessionInternalError {
+        try {
+            Date dSince = com.sapienter.jbilling.common.Util.parseDate(since);
+            Date dUntil = com.sapienter.jbilling.common.Util.parseDate(until);
+            if (since == null || until == null) {
+                return null;
+            }
+            
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId = bl.getEntity().getEntity().getId(); 
+
+            InvoiceBL invoiceBl = new InvoiceBL();
+            return invoiceBl.getInvoicesByCreateDate(entityId, dSince, dUntil);
+        } catch (Exception e) {
+            log.error("Exception in web service: getting invoices by date" +
+                    since + until, e);
+            throw new SessionInternalError("Error getting last invoices");
+        }
+    }
+   
+    /*
+     * USERS
+     */
+    /**
+     * Creates a new user. The user to be created has to be of the roles customer
+     * or partner.
+     * The username has to be unique, otherwise the creating won't go through. If 
+     * that is the case, the return value will be null.
+     * @ejb:interface-method view-type="local"
+     * @param newUser 
+     * The user object with all the information of the new user. If contact or 
+     * credit card information are present, they will be included in the creation
+     * although they are not mandatory.
+     * @return The id of the new user, or null if non was created
+     */
+    public Integer createUser(UserWS newUser) 
+            throws SessionInternalError {
+
+        validateUser(newUser);
+
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId = bl.getEntity().getEntity().getId(); 
+            log.info("WS - Creating user " + newUser);
+            
+            // some entities want to validate the cc with the payment processor
+            if (newUser.getCreditCard() != null) {
+                CreditCardBL ccBl = new CreditCardBL();
+                if (!ccBl.validatePreAuthorization(entityId, 
+                        newUser.getCreditCard())) {
+                    throw new SessionInternalError("Credit card decline in " +
+                            "payment processor pre-authorization");
+                }
+            }
+            if (!bl.exists(newUser.getUserName(), entityId)) {
+                
+                ContactBL cBl = new ContactBL();
+                UserDTOEx dto = new UserDTOEx(newUser, entityId);
+                Integer userId = bl.create(dto);
+                if (newUser.getContact() != null) {
+                    cBl.createPrimaryForUser(new ContactDTOEx(
+                            newUser.getContact()), userId);
+                }
+                
+                if (newUser.getCreditCard() != null) {
+                    CreditCardBL ccBL = new CreditCardBL();
+                    ccBL.create(newUser.getCreditCard());
+                    bl.getEntity().getCreditCard().add(ccBL.getEntity());
+                }
+                return userId;
+            } 
+            return null;
+        // need to catch every single one to be able to throw inside
+        } catch (NamingException e) {
+            log.error("WS user creation error", e);
+            throw new SessionInternalError("Error creating user");
+        } catch (FinderException e) {
+            log.error("WS user creation error", e);
+            throw new SessionInternalError("Error creating user");
+        } catch (PluggableTaskException e) {
+            log.error("WS user creation error", e);
+            throw new SessionInternalError("Error creating user");
+        } catch (CreateException e) {
+            log.error("WS user creation error", e);
+            throw new SessionInternalError("Error creating user");
+        } catch (RemoveException e) {
+            log.error("WS user creation error", e);
+            throw new SessionInternalError("Error creating user");
+        }
+    }
+
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void deleteUser(Integer userId) 
+            throws SessionInternalError {
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            bl.set(userId);
+            bl.delete(executorId);
+        } catch(Exception e) {
+            log.error("WS - deleteUser", e);
+            throw new SessionInternalError("Error deleting user");
+        }
+    }
+
+     /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void updateUserContact(Integer userId, Integer typeId, 
+            ContactWS contact)
+            throws SessionInternalError {
+        
+        try {
+            UserBL bl = new UserBL();
+            
+            // get the entity
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer executorId =   bl.getEntity().getUserId(); 
+            log.info("WS - Updating contact for user " + userId);
+            
+            // update the contact
+            ContactBL cBl = new ContactBL();
+            cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
+            
+        } catch (Exception e) {
+            log.error("WS - updateUserContact", e);
+            throw new SessionInternalError("Error updating contact");
+        }
+    }
+   
+    /**
+     * @ejb:interface-method view-type="local"
+     * @param user 
+     */
+    public void updateUser(UserWS user) 
+            throws SessionInternalError {
+        
+        validateUser(user);
+        
+        try {
+            UserBL bl = new UserBL();
+            
+            // get the entity
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer executorId =   bl.getEntity().getUserId(); 
+            log.info("WS - Updating user " + user);
+            
+            // convert to a DTO
+            UserDTOEx dto = new UserDTOEx(user, entityId);
+            
+            // update the user info
+            bl.set(user.getUserId());
+            bl.update(executorId, dto);
+            
+            // now update the contact info
+            ContactBL cBl = new ContactBL();
+            cBl.updatePrimaryForUser(new ContactDTOEx(user.getContact()),
+                    user.getUserId());
+            
+            // and the credit card
+            UserSessionBean sess = new UserSessionBean();
+            sess.updateCreditCard(executorId, user.getUserId(), 
+                    user.getCreditCard());
+            
+        } catch (Exception e) {
+            log.error("WS - updateUser", e);
+            throw new SessionInternalError("Error updating user");
+        }
+    }
+
+    /**
+     * Retrieves a user with its contact and credit card information. 
+     * @ejb:interface-method view-type="local"
+     * @param userId
+     * The id of the user to be returned
+     */
+    public UserWS getUserWS(Integer userId) 
+            throws SessionInternalError {
+        UserWS dto = null;
+        // calling from dot.net seems to not have a context set. So then when calling
+        // getCallerPrincipal the client gets a 'No security context set' exception
+        // log.debug("principal = " + context.getCallerPrincipal().getName());
+        try {
+            UserBL bl = new UserBL(userId);
+            dto = bl.getUserWS();
+        } catch (Exception e) {
+            log.error("WS - getUserWS", e);
+            throw new SessionInternalError("Error getting user");
+       }
+        
+        return dto;
+    }
+    
+    /**
+     * Retrieves aall the contacts of a user 
+     * @ejb:interface-method view-type="local"
+     * @param userId
+     * The id of the user to be returned
+     */
+    public ContactWS[] getUserContactsWS(Integer userId) 
+            throws SessionInternalError {
+        ContactWS[] dtos = null;
+        try {
+            ContactBL contact = new ContactBL();
+            Vector result = contact.getAll(userId);
+            dtos = new ContactWS[result.size()];
+            for (int f = 0; f < result.size(); f++) {
+                dtos[f] = new ContactWS((ContactDTOEx) result.get(f));
+            }
+        } catch (Exception e) {
+            log.error("WS - getUserWS", e);
+            throw new SessionInternalError("Error getting user");
+       }
+        
+        return dtos;
+    }
+
+    /**
+     * Retrieves the user id for the given username 
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer getUserId(String username) 
+            throws SessionInternalError {
+        // find which entity are we talking here
+        String root = context.getCallerPrincipal().getName();
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            Integer entityId = bl.getEntity().getEntity().getId();
+            bl.set(username, entityId);
+            return bl.getEntity().getUserId();
+        } catch (Exception e) {
+            log.error("WS - getUserId", e);
+            throw new SessionInternalError("Error getting user id");
+        }
+        
+    }
+
+    /**
+     * Retrieves an array of users in the required status 
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer[] getUsersInStatus(Integer statusId) 
+            throws SessionInternalError {
+        // find which entity are we talking here
+        String root = context.getCallerPrincipal().getName();
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            Integer entityId = bl.getEntity().getEntity().getId();
+            return getUsersByStatus(statusId, entityId, true);
+        } catch (Exception e) {
+            log.error("WS - getUsersInStatus", e);
+            throw new SessionInternalError("Error getting users in status");
+        }
+    }
+
+    /**
+     * Retrieves an array of users in the required status 
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer[] getUsersNotInStatus(Integer statusId) 
+            throws SessionInternalError {
+        // find which entity are we talking here
+        String root = context.getCallerPrincipal().getName();
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            Integer entityId = bl.getEntity().getEntity().getId();
+            return getUsersByStatus(statusId, entityId, false);
+        } catch (Exception e) {
+            log.error("WS - getUsersNotInStatus", e);
+            throw new SessionInternalError("Error getting users not in status");
+        }
+    }
+
+    /**
+     * Retrieves an array of users in the required status 
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer[] getUsersByCustomField(Integer typeId, String value) 
+            throws SessionInternalError {
+        // find which entity are we talking here
+        String root = context.getCallerPrincipal().getName();
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            Integer entityId = bl.getEntity().getEntity().getId();
+            Collection values = bl.getHome().findByCustomField(entityId, 
+                    typeId, value);
+            Integer[] ret = new Integer[values.size()];
+            int f = 0;
+            for (Iterator it = values.iterator(); it.hasNext(); f++) {
+                UserEntityLocal user = (UserEntityLocal) it.next();
+                ret[f] = user.getUserId();
+            }
+
+            return ret;
+        } catch (Exception e) {
+            log.error("WS - getUsersByCustomField", e);
+            throw new SessionInternalError("Error getting users by custom field");
+        }
+    }
+
+    /**
+     * Retrieves an array of users in the required status 
+     */
+    public Integer[] getUsersByStatus(Integer statusId, Integer entityId, 
+            boolean in) 
+            throws SessionInternalError {
+        try {
+            log.debug("getting list of users. status:" + statusId +
+                    " entity:" + entityId + " in:" + in);
+            UserBL bl = new UserBL();
+            Collection users;
+            if (in) {
+                users = bl.getHome().findInStatus(entityId, statusId);
+            } else {
+                users = bl.getHome().findNotInStatus(entityId, statusId);
+            }
+            log.debug("got collection. Now converting");
+            Integer[] ret = new Integer[users.size()];
+            int f = 0;
+            for (Iterator it = users.iterator(); it.hasNext(); f++) {
+                UserEntityLocal user = (UserEntityLocal) it.next();
+                ret[f] = user.getUserId();
+            }
+            log.debug("done");
+            return ret;
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    /**
+     * Creates a user, then an order for it, an invoice out the order
+     * and tries the invoice to be paid by an online payment
+     * This is ... the mega call !!! 
+     * @ejb:interface-method view-type="local"
+     */
+    public CreateResponseWS create(UserWS user, OrderWS order) 
+            throws SessionInternalError {
+        CreateResponseWS retValue = new CreateResponseWS();
+        
+        String root = context.getCallerPrincipal().getName();
+        Integer entityId = null;
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            entityId = bl.getEntity().getEntity().getId();
+        } catch (Exception e) {
+            throw new SessionInternalError("Error identifiying the caller");
+        }
+            
+        // the user first
+        retValue.setUserId(createUser(user));
+        
+        if (retValue.getUserId() == null) {
+            return retValue;
+        }
+        
+        // the order
+        order.setUserId(retValue.getUserId());
+        retValue.setOrderId(createOrder(order));
+        
+        // the invoce
+        try {
+            BillingProcessBL process = new BillingProcessBL();
+            InvoiceEntityLocal invoice = process.generateInvoice(
+                    retValue.getOrderId(), null);
+            retValue.setInvoiceId(invoice.getId());
+            
+            // the payment, if we have a credit card
+            if (user.getCreditCard() != null) {
+                PaymentSessionBean payment = new PaymentSessionBean();
+                PaymentDTOEx paymentDto = new PaymentDTOEx();
+                paymentDto.setIsRefund(new Integer(0));
+                paymentDto.setAmount(invoice.getTotal());
+                paymentDto.setCreditCard(user.getCreditCard());
+                paymentDto.setCurrencyId(invoice.getCurrencyId());
+                paymentDto.setUserId(retValue.getUserId());
+                paymentDto.setMethodId(
+                        com.sapienter.jbilling.common.Util.getPaymentMethod(
+                                user.getCreditCard().getNumber()));
+                
+                // make the call
+                retValue.setPaymentResult(payment.processAndUpdateInvoice(
+                        paymentDto, invoice));
+                
+                retValue.setPaymentId(paymentDto.getId());
+            }
+
+        } catch (Exception e) {
+            log.error("WS - create:", e);
+            throw new SessionInternalError("Error while generating a new invoice");
+        }
+        
+        return retValue;
+    }
+
+    /*
+     * ORDERS
+     */
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer createOrder(OrderWS order) 
+            throws SessionInternalError {
+        validateOrder(order);
+        try {
+            // get the info from the caller
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            Integer entityId = bl.getEntity().getEntity().getId();
+            
+            // we'll need the langauge later
+            bl.set(order.getUserId());
+            
+            // see if the related items should provide info
+            processItemLine(order, bl.getEntity().getLanguageIdField(),
+                    entityId);
+            
+            // make a dto out of the ws
+            NewOrderDTO dto = new NewOrderDTO(order);
+            
+            // call the creation
+            OrderBL orderBL = new OrderBL();
+            return orderBL.create(entityId, executorId, dto);
+            
+        } catch(Exception e) {
+            log.debug("Exception:", e);
+            throw new SessionInternalError("error creating purchase order");
+        }
+    }
+    
+    private void processItemLine(OrderWS order, Integer languageId,
+            Integer entityId) 
+        throws SessionInternalError {
+        for (int f = 0 ; f < order.getOrderLines().length; f++) {
+            OrderLineWS line = order.getOrderLines()[f];
+            if (line.getUseItem().booleanValue()) {
+                // get the related item
+                ItemSessionBean itemSession = new ItemSessionBean();
+                
+                ItemDTOEx item = itemSession.get(line.getItemId(), 
+                        languageId, order.getUserId(), order.getCurrencyId(),
+                        entityId);
+                line.setPrice(item.getPrice());
+                if (line.getDescription() == null || 
+                        line.getDescription().length() == 0) {
+                    line.setDescription(item.getDescription());
+                }
+                line.setAmount(new Float(line.getPrice().floatValue() * 
+                        line.getQuantity().intValue()));
+            }
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void updateOrder(OrderWS order)
+            throws SessionInternalError {
+        validateOrder(order);
+        try {
+            // get the info from the caller
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            
+            // see if the related items should provide info
+            processItemLine(order, bl.getEntity().getLanguageIdField(),
+                    bl.getEntity().getEntity().getId());
+
+            // make a dto out of the ws
+            NewOrderDTO dto = new NewOrderDTO(order);
+            
+            // call the update
+            OrderBL orderBL = new OrderBL(dto.getId());
+            orderBL.update(executorId, dto);
+            
+            
+        } catch(Exception e) {
+            log.error("WS - updateOrder", e);
+            throw new SessionInternalError("Error updating order");
+        }
+    } 
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public OrderWS getOrder(Integer orderId) 
+            throws SessionInternalError {
+        try {
+            // get the info from the caller
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            // now get the order
+            OrderBL bl = new OrderBL(orderId);
+            if (bl.getEntity().getDeleted().equals(new Integer(1))) {
+                throw new FinderException("order " + orderId + " is marked" +
+                        " as deleted");
+            }
+            return bl.getWS(languageId);
+        } catch (Exception e) {
+            log.error("WS - getOrder", e);
+            throw new SessionInternalError("Error getting order");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer[] getOrderByPeriod(Integer userId, Integer periodId) 
+            throws SessionInternalError {
+        if (userId == null || periodId == null) {
+            return null;
+        }
+        try {
+            // get the info from the caller
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            // now get the order
+            OrderBL bl = new OrderBL();
+            return bl.getByUserAndPeriod(userId, periodId);
+        } catch (Exception e) {
+            log.error("WS - getOrderByPeriod", e);
+            throw new SessionInternalError("Error getting orders for a user " +
+                    "by period");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public OrderLineWS getOrderLine(Integer orderLineId) 
+            throws SessionInternalError {
+        try {
+            log.debug("WS - getOrderLine " + orderLineId);
+            // now get the order
+            OrderBL bl = new OrderBL();
+            OrderLineWS retValue = null;
+            
+            try {
+                retValue = bl.getOrderLineWS(orderLineId);
+            } catch (FinderException e) {
+                // ok, so a null goes back
+            }
+            
+            return retValue; 
+        } catch (Exception e) {
+            log.error("WS - getOrderLine", e);
+            throw new SessionInternalError("Error getting order line");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     */
+    public void updateOrderLine(OrderLineWS line) 
+            throws SessionInternalError {
+        try {
+            log.debug("WS - updateOrderLine " + line);
+            // now get the order
+            OrderBL bl = new OrderBL();
+            bl.updateOrderLine(line);
+        } catch (Exception e) {
+            log.error("WS - updateOrderLine", e);
+            throw new SessionInternalError("Error updating order line");
+        }
+    }
+
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public OrderWS getLatestOrder(Integer userId) 
+            throws SessionInternalError {
+        if (userId == null) {
+            throw new SessionInternalError("User id can not be null");
+        }
+        try {
+            OrderWS retValue = null;
+            // get the info from the caller
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            // now get the order
+            OrderBL bl = new OrderBL();
+            Integer orderId = bl.getLatest(userId);
+            if (orderId != null) {
+                bl.set(orderId);
+                retValue = bl.getWS(languageId);
+            }
+            return retValue;
+        } catch (Exception e) {
+            log.error("WS - getLatestOrder", e);
+            throw new SessionInternalError("Error getting latest order");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     */
+    public Integer[] getLastOrders(Integer userId, Integer number)
+            throws SessionInternalError {
+        if (userId == null || number == null) {
+            return null;
+        }
+        try {
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            OrderBL order = new OrderBL();
+            return order.getManyWS(userId, number, languageId);
+        } catch (Exception e) {
+            log.error("WS - getLastOrders", e);
+            throw new SessionInternalError("Error getting last orders");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void deleteOrder(Integer id) 
+            throws SessionInternalError {
+        try {
+            // now get the order
+            OrderBL bl = new OrderBL(id);
+            bl.delete();
+        } catch (Exception e) {
+            log.error("WS - deleteOrder", e);
+            throw new SessionInternalError("Error deleting order");
+        }
+
+    }
+    
+    /*
+     * PAYMENT
+     */
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     */
+    public Integer applyPayment(PaymentWS payment, Integer invoiceId) 
+            throws SessionInternalError {
+        validatePayment(payment);
+        try {
+            payment.setIsRefund(new Integer(0));
+            PaymentSessionBean session = new PaymentSessionBean();
+            return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
+        } catch (Exception e) {
+            log.error("WS - applyPayment", e);
+            throw new SessionInternalError("Error applying payment");
+        }
+    }  
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public PaymentWS getPayment(Integer paymentId) 
+            throws SessionInternalError {
+        try {
+            // get the info from the caller
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            PaymentBL bl = new PaymentBL(paymentId);
+            return new PaymentWS(bl.getDTOEx(languageId));
+        } catch (Exception e) {
+            log.error("WS - getPayment", e);
+            throw new SessionInternalError("Error getting payment");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public PaymentWS getLatestPayment(Integer userId) 
+            throws SessionInternalError {
+        try {
+            PaymentWS retValue = null;
+            // get the info from the caller
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            PaymentBL bl = new PaymentBL();
+            Integer paymentId = bl.getLatest(userId);
+            if (paymentId != null) {
+                bl.set(paymentId);
+                retValue = new PaymentWS(bl.getDTOEx(languageId));
+            }
+            return retValue;
+        } catch (Exception e) {
+            log.error("WS - getLatestPayment", e);
+            throw new SessionInternalError("Error getting latest payment");
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     */
+    public Integer[] getLastPayments(Integer userId, Integer number)
+            throws SessionInternalError {
+        if (userId == null || number == null) {
+            return null;
+        }
+        log.debug("WS - getLastPayments " + userId + " " + number);
+        try {
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+            
+            PaymentBL payment = new PaymentBL();
+            return payment.getManyWS(userId, number, languageId);
+        } catch (Exception e) {
+            log.error("WS - getLastPayments", e);
+            throw new SessionInternalError("Error getting last payments");
+        }
+    }
+
+    /*
+     * ITEM
+     */
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer createItem(ItemDTOEx dto) 
+            throws SessionInternalError {
+        if (!ItemBL.validate(dto)) {
+            throw new SessionInternalError("invalid argument");
+        }
+        try {
+            // get the info from the caller
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer languageId = bl.getEntity().getLanguageIdField();
+            Integer entityId = bl.getEntity().getEntity().getId();
+            dto.setEntityId(entityId);
+            
+            // call the creation
+            ItemBL itemBL = new ItemBL();
+            return itemBL.create(dto, languageId);
+            
+        } catch(Exception e) {
+            log.error("WS - createItem", e);
+            throw new SessionInternalError("Error creating item");
+        }
+
+    }
+    
+    private Integer zero2null(Integer var) {
+        if (var != null && var.intValue() == 0) {
+            return null;
+        } else {
+            return var;
+        }
+    }
+    
+    private Date zero2null(Date var) {
+        if (var != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(var);
+            if (cal.get(Calendar.YEAR) == 1) {
+                return null;
+            }
+        }
+        
+        return var;
+        
+    }
+    
+    private void validateUser(UserWS newUser) 
+            throws SessionInternalError{
+        // do the validation
+        if (newUser == null) {
+            throw new SessionInternalError("Null parameter");
+        }
+        // C# sends a 0 when it is null ...
+        newUser.setCurrencyId(zero2null(newUser.getCurrencyId()));
+        newUser.setPartnerId(zero2null(newUser.getPartnerId()));
+        newUser.setMainRoleId(zero2null(newUser.getMainRoleId()));
+        newUser.setLanguageId(zero2null(newUser.getLanguageId()));
+        newUser.setStatusId(zero2null(newUser.getStatusId()));
+        // clean up the cc number from spaces and '-'
+        if (newUser.getCreditCard() != null && 
+                newUser.getCreditCard().getNumber() != null) {
+            newUser.getCreditCard().setNumber(CreditCardBL.cleanUpNumber(
+                    newUser.getCreditCard().getNumber()));
+        }
+
+        try {
+            GatewayBL valid = new GatewayBL();
+            // the user
+            if (!valid.validate("UserWS", newUser)) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // the contact
+            if (!valid.validate("ContactDTO", newUser.getContact())) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // the credit card (optional)
+            if (newUser.getCreditCard() != null && !valid.validate("CreditCardDTO", 
+                    newUser.getCreditCard())) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // additional validation
+            if  (newUser.getMainRoleId().equals(Constants.TYPE_CUSTOMER) ||
+                    newUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
+            } else {
+                throw new SessionInternalError("Valid user roles are customer (5) " +
+                        "and partner (4)");
+            }
+            if (newUser.getCurrencyId() != null && 
+                    newUser.getCurrencyId().intValue() <= 0) {
+                throw new SessionInternalError("Invalid currency code");
+            }
+            if (newUser.getStatusId().intValue() <= 0) {
+                throw new SessionInternalError("Invalid status code");
+            }
+        } catch (ValidatorException e) {
+            log.error("validating ws", e);
+            throw new SessionInternalError("Invalid parameter");
+        }
+    }
+    
+    private void validateOrder(OrderWS order) 
+            throws SessionInternalError {
+        if (order == null) {
+            throw new SessionInternalError("Null parameter");
+        }
+        order.setUserId(zero2null(order.getUserId()));
+        order.setPeriod(zero2null(order.getPeriod()));
+        order.setBillingTypeId(zero2null(order.getBillingTypeId()));
+        order.setStatusId(zero2null(order.getStatusId()));
+        order.setCurrencyId(zero2null(order.getCurrencyId()));
+        order.setNotificationStep(zero2null(order.getNotificationStep()));
+        order.setDueDateUnitId(zero2null(order.getDueDateUnitId()));
+        order.setDueDateValue(zero2null(order.getDueDateValue()));
+        order.setDfFm(zero2null(order.getDfFm()));
+        order.setAnticipatePeriods(zero2null(order.getAnticipatePeriods()));
+        order.setActiveSince(zero2null(order.getActiveSince()));
+        order.setActiveUntil(zero2null(order.getActiveUntil()));
+        order.setNextBillableDay(null);
+        order.setLastNotified(null);
+        try {
+            GatewayBL valid = new GatewayBL();
+            // the order
+            if (!valid.validate("OrderWS", order)) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // the lines
+            for (int f = 0 ; f < order.getOrderLines().length; f++) {
+                OrderLineWS line = order.getOrderLines()[f];
+                if (!valid.validate("OrderLineWS", line)) {
+                    throw new SessionInternalError(valid.getText());
+                }
+                if (line.getUseItem() == null) {
+                    line.setUseItem(new Boolean(false));
+                }
+                line.setItemId(zero2null(line.getItemId()));
+                String error = "";
+                // if use the item, I need the item id
+                if (line.getUseItem().booleanValue()) {
+                    if (line.getItemId() == null || 
+                            line.getItemId().intValue() == 0) {
+                        error += "OrderLineWS: if useItem == true the itemId " +
+                                "is required - ";
+                    }
+                    if (line.getQuantity() == null || 
+                            line.getQuantity().intValue() == 0) {
+                        error += "OrderLineWS: if useItem == true the quantity " +
+                                "is required - ";
+                    }
+                } else {
+                    // I need the amount and description
+                    if (line.getAmount() == null) {
+                        error += "OrderLineWS: if useItem == false the item amount " +
+                                "is required - ";
+                    }
+                    if (line.getDescription() == null || 
+                            line.getDescription().length() == 0) {
+                        error += "OrderLineWS: if useItem == false the description " +
+                                "is required - ";
+                    }
+                }
+                if (error.length() > 0) {
+                    throw new SessionInternalError(error);
+                }
+            }
+        } catch (ValidatorException e) {
+            log.error("validating ws", e);
+            throw new SessionInternalError("Invalid parameter");
+        }
+    }
+
+    private void validatePayment(PaymentWS payment) 
+            throws SessionInternalError {
+        if (payment == null) {
+            throw new SessionInternalError("Null parameter");
+        }
+        payment.setUserId(zero2null(payment.getUserId()));
+        payment.setMethodId(zero2null(payment.getMethodId()));
+        payment.setCurrencyId(zero2null(payment.getCurrencyId()));
+        payment.setPaymentId(zero2null(payment.getPaymentId()));
+        
+        try {
+            GatewayBL valid = new GatewayBL();
+            // the payment
+            if (!valid.validate("PaymentWS", payment)) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // may be there is a cc
+            if (payment.getCreditCard() != null && !valid.validate(
+                    "CreditCardDTO", payment.getCreditCard())) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // may be there is a cheque
+            if (payment.getCheque() != null && !valid.validate(
+                    "PaymentInfoChequeDTO", payment.getCheque())) {
+                throw new SessionInternalError(valid.getText());
+            }
+            // may be there is a ach
+            if (payment.getAch() != null && !valid.validate(
+                    "AchDTO", payment.getAch())) {
+                throw new SessionInternalError(valid.getText());
+            }
+        } catch (ValidatorException e) {
+            log.error("validating ws", e);
+            throw new SessionInternalError("Invalid parameter");
+        }
+    }
+
+    // EJB methods
+
+    public void ejbCreate() throws CreateException {
+    }
+
+    /* (non-Javadoc)
+     * @see javax.ejb.SessionBean#ejbActivate()
+     */
+    public void ejbActivate() throws EJBException, RemoteException {
+    }
+
+    /* (non-Javadoc)
+     * @see javax.ejb.SessionBean#ejbPassivate()
+     */
+    public void ejbPassivate() throws EJBException, RemoteException {
+    }
+
+    /* (non-Javadoc)
+     * @see javax.ejb.SessionBean#ejbRemove()
+     */
+    public void ejbRemove() throws EJBException, RemoteException {
+    }
+
+    /* (non-Javadoc)
+     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
+     */
+    public void setSessionContext(SessionContext arg0) throws EJBException,
+            RemoteException {
+        log = Logger.getLogger(WebServicesSessionBean.class);
+        context = arg0;
+    }
+
+}

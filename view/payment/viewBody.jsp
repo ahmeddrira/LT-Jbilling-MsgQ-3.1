@@ -1,0 +1,379 @@
+<%--
+The contents of this file are subject to the Jbilling Public License
+ (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+--%>
+
+<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants"%>
+
+<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
+<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
+<%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c_rt" %>
+
+
+<%-- If this is a refund, the dto is in the session with a different key.
+     This is necessary because SESSION_PAYMENT_DTO will hold the payment linked
+     to this refund --%>
+<sess:existsAttribute name="jsp_is_refund" value="false">
+	<bean:define id="dto" name='<%=Constants.SESSION_PAYMENT_DTO%>'
+		         scope="session"/>
+</sess:existsAttribute>
+<sess:existsAttribute name="jsp_is_refund" >
+	<bean:define id="dto" name='<%=Constants.SESSION_PAYMENT_DTO_REFUND%>'
+		         scope="session"/>
+</sess:existsAttribute>
+
+<%
+    // eventually, this was the cleanest way to do this ... :(
+	Integer methodId = ((com.sapienter.jbilling.server.payment.PaymentDTOEx) pageContext.getAttribute("dto")).getMethodId();
+	
+	if (methodId.equals(Constants.PAYMENT_METHOD_CHEQUE)) {
+		session.setAttribute("jsp_payment_method", "cheque");
+	} else if (methodId.equals(Constants.PAYMENT_METHOD_ACH)) {
+		session.setAttribute("jsp_payment_method", "ach");
+	} else if (methodId.equals(Constants.PAYMENT_METHOD_PAYPAL)) {
+		session.setAttribute("jsp_payment_method", "paypal");
+	} else { // all the rest are credit cards (visa, mc, amex, ... )
+		session.setAttribute("jsp_payment_method", "cc");
+	}
+		
+%>
+
+<%-- now go through each linked invoice and display a link to it --%>
+
+<logic:present name="jsp_linked_invoices">
+<logic:notPresent parameter="review">
+<p class="title"><bean:message key="payment.prompt.invoices"/></p>
+</logic:notPresent>
+<logic:present parameter="review">
+<p class="title"><bean:message key="payment.review.invoice"/></p>
+</logic:present>
+
+<table class="list">
+		<%-- print the headers of the columns --%>
+		<tr class="listH">
+			<td><bean:message key="invoice.id.prompt"/></td>
+			<td><bean:message key="invoice.createDateTime.prompt"/></td>
+			<td><bean:message key="invoice.total.prompt"/></td>
+			<td><bean:message key="invoice.balance.prompt"/></td>
+		</tr>
+		<%-- now each invoice row --%>
+		<logic:iterate name="jsp_linked_invoices"
+						   scope="session"
+						   id="invoice"
+						   indexId="index">
+			<c:choose>
+				<c:when test="${flag == 1}">
+					<tr class="listB">
+					<c:remove var="flag"/>
+				</c:when>
+				<c:otherwise>
+					<tr class="listA">
+					<c:set var="flag" value="1"/>
+				</c:otherwise>
+		    </c:choose>
+				<td class="list" align="right">
+					<html:link action="invoiceMaintain" paramId="id" 
+							   paramName="invoice"
+							   paramProperty="id">
+						<bean:write name="invoice" property="id"/>
+					</html:link>
+				</td>
+				<td class="list">
+					<bean:write name="invoice" property="createDateTime"
+						        formatKey="format.timestamp"/>
+				</td>
+				<td class="list" align="right">
+					<bean:write name="invoice" property="total"
+						        formatKey="format.money"/>
+				</td>
+				<td class="list" align="right">
+					<bean:write name="invoice" property="balance"
+						        formatKey="format.money"/>
+				</td>
+			</tr>	
+		</logic:iterate>
+</table>
+</logic:present>
+
+<logic:notPresent name="jsp_linked_invoices">
+	<p class="title"><bean:message key="payment.prompt.noInvoices"/></p>
+</logic:notPresent>
+
+<table class="info">
+	<tr>
+		<logic:present parameter="refund">
+		<th class="info" colspan="2"><bean:message key="refund.info.title"/></th>
+		</logic:present>
+		<logic:notPresent parameter="refund">
+		<th class="info" colspan="2"><bean:message key="payment.info.title"/></th>
+		</logic:notPresent>
+	</tr>
+	<tr class="infoA">
+		<td class="infoprompt"><bean:message key="payment.id"/></td>
+		<td class="infodata">	
+            <bean:write name="dto" 
+                        property="id"
+                        scope="page"/>
+        </td>
+	</tr>
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="payment.amount"/></td>
+		<td class="infodata">	
+			 <bean:define id="index" name="dto"
+				  property="currencyId"/>
+			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
+				   property='<%= "symbols[" + index + "].symbol" %>'
+				   scope="application"
+				   filter="false"/>
+
+            <bean:write name="dto" 
+                        property="amount"
+                        scope="page"
+                        formatKey="format.money"/>
+        </td>
+	</tr>
+	<tr class="infoA">
+		<td class="infoprompt"><bean:message key="payment.date"/></td>
+		<td class="infodata">	
+            <bean:write name="dto" 
+                        property="paymentDate"
+                        scope="page"
+                        formatKey="format.date"/>
+        </td>
+	</tr>
+	<sess:existsAttribute name="jsp_is_refund" value="false">
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="payment.balance"/></td>
+		<td class="infodata">	
+			 <bean:define id="index" name="dto"
+				  property="currencyId"/>
+			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
+				   property='<%= "symbols[" + index + "].symbol" %>'
+				   scope="application"
+				   filter="false"/>
+
+            <bean:write name="dto" 
+                        property="balance"
+                        scope="page"
+                        formatKey="format.money"/>
+        </td>
+	</tr>
+	</sess:existsAttribute>
+	
+    <sess:equalsAttribute name="jsp_payment_method" match="cheque">                
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="payment.cheque.bank"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="cheque.bank"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="payment.cheque.number"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="cheque.number"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="payment.cheque.date"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="cheque.date"
+							scope="page"
+							formatKey="format.date"/>
+			</td>
+		</tr>
+	</sess:equalsAttribute>
+
+    <sess:equalsAttribute name="jsp_payment_method" match="ach">                
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="ach.aba.prompt"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="ach.abaRouting"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="ach.account_number.prompt"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="ach.bankAccount"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="ach.bank_name.prompt"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="ach.bankName"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="ach.account_name.prompt"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="ach.accountName"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="ach.account_type.prompt"/></td>
+			<td class="infodata">	
+				<logic:equal name="dto" 
+							property="ach.accountType"
+							scope="page"
+							value="1">
+					<bean:message key="ach.account_type.chq.prompt"/>
+			    </logic:equal>
+			    <logic:equal name="dto" 
+							property="ach.accountType"
+							scope="page"
+							value="2">
+					<bean:message key="ach.account_type.sav.prompt"/>
+			    </logic:equal>
+			</td>
+		</tr>
+		<logic:present name="dto" property="resultStr">
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="payment.result"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="resultStr"
+							scope="page"/>
+			</td>
+		</tr>
+		</logic:present>
+		
+	</sess:equalsAttribute>
+	
+	<sess:equalsAttribute name="jsp_payment_method" match="paypal">
+		<tr class="infoA">
+			<td class="infoprompt" colspan="2">
+				<bean:message key="payment.paypal.name"/>
+			</td>
+		</tr>
+	</sess:equalsAttribute>
+
+ 	<sess:equalsAttribute name="jsp_payment_method" match="cc">                
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="payment.cc.name"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="creditCard.name"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="payment.cc.type"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="creditCard.type"
+							scope="page"/>
+			</td>
+		</tr>
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="payment.cc.number"/></td>
+			<td class="infodata">	
+				<jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'>
+					<bean:write name="dto" 
+							property="creditCard.number"
+							scope="page"/>
+				</jbilling:permission>
+	 	        <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>' 
+                                  negative="true">
+                    ****************
+				</jbilling:permission>
+			</td>
+		</tr>
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="payment.cc.date"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="creditCard.expiry"
+							scope="page"
+							formatKey="format.date"/>
+			</td>
+		</tr>
+		<logic:present name="dto" property="resultStr">
+		<tr class="infoA">
+			<td class="infoprompt"><bean:message key="payment.result"/></td>
+			<td class="infodata">	
+				<bean:write name="dto" 
+							property="resultStr"
+							scope="page"/>
+			</td>
+		</tr>
+		</logic:present>
+		
+		<%-- the authorization has to be made available to the page that will show it --%>
+		<logic:present name="dto" property="authorization">
+			<bean:define id="authorizationDto"  name="dto" property="authorization" toScope="request"/>
+		</logic:present>
+	</sess:equalsAttribute>
+	
+	<%-- customers don't see a link to self-send an email --%>
+	<logic:notEqual name='<%=Constants.SESSION_USER_DTO%>'
+					property="mainRoleId"
+					scope="session"
+					value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
+	<logic:present name="dto" property="id">
+	<%-- refunds are not emailed --%>
+	<sess:existsAttribute name="jsp_is_refund" value="false">
+		<tr>
+			<td class="infocommands" colspan="2">
+				<html:link page="/paymentMaintain.do?action=notify"
+						   paramId="id"
+						   paramName="dto"
+						   paramProperty="id"
+						   paramScope="page">
+					<bean:message key="payment.notify.link"/>
+				</html:link>
+			</td>
+		</tr>
+	</sess:existsAttribute>
+	</logic:present>
+	</logic:notEqual>
+	
+</table>
+<%-- The send and cancel options are available only if this is a review --%>
+<logic:present parameter="review">                
+    <p align="center">
+       <bean:define id="payout" value="no"/>
+       <logic:present parameter="payout">
+       	    <bean:define id="payout" value="yes"/>
+       </logic:present>
+       <html:link page="/paymentMaintain.do?action=send&mode=payment" 
+       	          paramId="payout" paramName="payout">
+   		    <bean:message key="all.prompt.submit"/>
+       </html:link><br/>
+       <html:link page="/paymentMaintain.do?action=cancel&mode=payment"
+                  paramId="payout" paramName="payout">
+		    <bean:message key="all.prompt.cancel"/>
+       </html:link>
+    </p>    
+</logic:present>

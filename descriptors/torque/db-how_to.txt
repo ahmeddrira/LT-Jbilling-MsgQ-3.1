@@ -1,0 +1,74 @@
+
+Generating the schema:
+----------------------------------
+
+- Pick to which database you want to create:
+    copy build.properties.mysql/postgresql to  {torque.dir}/build.properties
+    
+- Generate the sql script with all the create table statemets. Don't worry about
+the old tables being there, the script will include all the drops.
+   Go to the {torque.dir} and run : 
+			ant -f build-torque.xml sql
+			
+    That will generate the file in one of torque's directories. It won't have to be 
+    accessed directly, but it's handy to see the statement that was executed when
+    an error happens, and to try running it directly on DBVis.
+    
+    To run the script run :
+            and -f build-torque.xml insert-sql
+            
+Data types issues
+-----------------
+The mapping of the data types torque - mysql/postgres are in the 
+directories ; {torque.dir}\templates\sql\base\
+
+MySQL:
+The LONGVARCHAR generates a MEDIUMTEXT, but that won't lake a length.
+Therefore, edition of the generated file  {torque.dir}\src\sql\betty-schema.sql and
+delete the (XXX) from the MEDIUMTEXT.
+
+PostgreSQL:
+The LONGVARCHAR generates a bytea type that has to be changed for varchar2
+            
+Common errors :(
+-----------------
+
+  To run the 'create-db' target. It is useless.
+  To create/recreate the betty database
+  
+  
+PostgreSQL getting started:
+----------------------------------------
+- There is a user  postgres in the unix box. Login with it
+- To startup/shutdown : pg_ctl start/stop            
+The following shouldn't be necessary since the creation of the tables first drops the tables:
+- To drop a database : dropdb betty
+- To create it : createdb betty
+- All the dictionary access is directly by commands of psql, so:
+   - to see all the users : \du
+   - all tables and it owners \d
+   - ... etc ...
+   
+- Installing PostgreSQL from scratch:
+  - first, follow the installation instruction from the manual
+  - Out of the box, you can't connect to the database for scurity reasons, to fix this:
+     - Enable TCP/IP connections:
+     	- Add tcpip_socket  to /usr/local/pgsql/data/postgresql.conf (actually, quite
+     	an interesting file to tune the engine ;) ).
+     	- Add the host you want to connect from to the /usr/local/pgsql/data/pg_hba.conf
+     	EX: host    all         all         192.168.1.100     255.255.255.255   trust
+     	Again, very interesting file that acts as a database firewall.
+  - create the database
+  		createdb betty
+  - create the betty_user
+  		psql -d betty
+  		CREATE USER betty_user
+        grant all privileges on database betty to betty_user;
+  - download the latest JDBC driver
+  - run a good find to lcate all the copies of the old driver and delete them.
+  Having old versions of the JDBC driver is a source of endless headaches !!.
+  - run betty's 'ant db'
+  
+- To enable/disble logging
+  There are a wide viarety of options for logging, it can be setup at runtime and in the
+  postgresql.conf file. Probably the most useful are LOG_STATEMENT and LOG_DURATION

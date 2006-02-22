@@ -1,0 +1,630 @@
+/*
+The contents of this file are subject to the Jbilling Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+*/
+
+/*
+ * Created on Nov 26, 2004
+ *
+ */
+package com.sapienter.jbilling.server.list;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.naming.NamingException;
+
+import org.apache.log4j.Logger;
+
+import sun.jdbc.rowset.CachedRowSet;
+
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.interfaces.EntityEntityLocal;
+import com.sapienter.jbilling.interfaces.ListEntityLocal;
+import com.sapienter.jbilling.interfaces.ListEntityLocalHome;
+import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
+import com.sapienter.jbilling.server.customer.CustomerSQL;
+import com.sapienter.jbilling.server.invoice.InvoiceSQL;
+import com.sapienter.jbilling.server.order.OrderSQL;
+import com.sapienter.jbilling.server.payment.PaymentSQL;
+import com.sapienter.jbilling.server.user.EntityBL;
+import com.sapienter.jbilling.server.util.Constants;
+
+/**
+ * @author Emil
+ *
+ */
+public class ListBL {
+    private JNDILookup EJBFactory = null;
+    private ListEntityLocalHome listHome = null;
+    private ListEntityLocal list = null;
+    private Logger log = null;
+    private Hashtable parameters = null;
+
+    public ListBL(Integer listId) 
+            throws NamingException, FinderException {
+        init();
+        set(listId);
+    }
+
+    public ListBL() throws NamingException {
+        init();
+    }
+
+    public ListBL(ListEntityLocal list) throws NamingException {
+        init();
+        set(list);
+    }
+
+    private void init() throws NamingException {
+        log = Logger.getLogger(ListBL.class);     
+        EJBFactory = JNDILookup.getFactory(false);
+        listHome = (ListEntityLocalHome) 
+                EJBFactory.lookUpLocalHome(
+                ListEntityLocalHome.class,
+                ListEntityLocalHome.JNDI_NAME);
+    }
+
+    public ListEntityLocal getEntity() {
+        return list;
+    }
+    
+    public ListEntityLocalHome getHome() {
+        return listHome;
+    }
+
+    public void set(Integer id) throws FinderException {
+        list = listHome.findByPrimaryKey(id);
+    }
+    
+    public void set(ListEntityLocal list) {
+        this.list = list;
+    }
+    
+    public void set(String legacyName) throws FinderException {
+        list = listHome.findByName(legacyName);
+    }
+    
+    public void updateStatistics() 
+            throws SessionInternalError {
+        // for the statistics, the only relevant parameters is the entityId
+        // still they have to be there for thw sql to run
+        parameters = new Hashtable();
+        parameters.put("userType", new Integer(2)); // run them all as root
+        parameters.put("userId", new Integer(3)); // just a root user
+        parameters.put("languageId", new Integer(1)); // english will do
+
+        // go through all the lists
+        try {
+            // make the counting
+            Connection conn = EJBFactory.lookUpDataSource().
+                    getConnection();
+
+            for (Iterator listsIt = listHome.findAll().iterator(); 
+                    listsIt.hasNext();) {
+                list = (ListEntityLocal) listsIt.next();
+                // now for each entity
+                EntityBL entityBl = new EntityBL();
+                for (Iterator entityIt = entityBl.getHome().findEntities().
+                        iterator(); entityIt.hasNext();) {
+                    EntityEntityLocal anEntity = (EntityEntityLocal) 
+                            entityIt.next();
+
+                    parameters.put("entityId", anEntity.getId());
+                    PreparedStatement stmt = conn.prepareStatement(
+                            getCountSQL());
+                    setSQLParameters(stmt, null);
+                    ResultSet res = stmt.executeQuery();
+                    res.next();
+                    Integer count = new Integer(res.getInt(1));
+                    
+                    // update/create the entity record for this list
+                    ListEntityBL listEntityBl = new ListEntityBL();
+                    try {
+                        listEntityBl.set(list.getId(), anEntity.getId());
+                        listEntityBl.update(count);
+                    } catch (FinderException e3) {
+                        // this entity has no records for this list
+                        // create one
+                        listEntityBl.create(list, anEntity.getId(), count);
+                    }
+                    
+                    // now update each of the fields
+                    int column = 2; // skip the count
+                    for (Iterator fieldIt = list.getListFields().iterator();
+                            fieldIt.hasNext();) {
+                        ListFieldEntityLocal field = (ListFieldEntityLocal) 
+                                fieldIt.next();
+                        if (field.getOrdenable().intValue() == 1) {
+                            Integer min = null, max = null;
+                            String minStr = null, maxStr = null;
+                            Date minDate = null, maxDate = null;
+                            
+                            if (field.getDataType().equals("integer")) {
+                                min = new Integer(res.getInt(column++));
+                                max = new Integer(res.getInt(column++));
+                            } else if (field.getDataType().equals("string")) {
+                                minStr = res.getString(column++);
+                                maxStr = res.getString(column++);
+                            } else if (field.getDataType().equals("date")) {
+                                minDate = res.getDate(column++);
+                                maxDate = res.getDate(column++);
+                            }
+                            ListFieldEntityBL fieldEntityBl = 
+                                    new ListFieldEntityBL();
+                            fieldEntityBl.createUpdate(field, 
+                                    listEntityBl.getEntity(), min, max, minStr, 
+                                    maxStr, minDate, maxDate);
+                        }
+                    }
+                    
+                    res.close();
+                    stmt.close();
+                }
+            }
+            
+            conn.close();
+        }
+        catch (FinderException e) {
+            // seems that there are no lists .. ?
+        }
+        catch (NamingException e2) {
+            throw new SessionInternalError(e2);
+        }
+        catch (CreateException e2) {
+            throw new SessionInternalError(e2);
+        }
+        catch (SQLException e3) {
+            throw new SessionInternalError(e3);
+        }
+    }
+    
+    /**
+     * I need this kind of hack to reuse the exiting SQL code written for
+     * 21 lists. Otherwise I'd have to move it all to the DB.
+     * @param listId
+     * @return
+     */
+    private String getSQL() {
+        String retValue = null;
+        
+        // these are very common parameters
+        Integer entityId =  (Integer) parameters.get("entityId");
+        Integer userType = (Integer) parameters.get("userType");
+        Integer userId = (Integer) parameters.get("userId");
+        Integer languageId = (Integer) parameters.get("languageId");
+
+        switch (list.getId().intValue()) {
+        case 1: // CUSTOMERS - standards
+            if(userType.equals(Constants.TYPE_INTERNAL) || 
+                    userType.equals(Constants.TYPE_ROOT) || 
+                    userType.equals(Constants.TYPE_CLERK)) {
+                retValue = CustomerSQL.listCustomers;
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                // partners only see their own
+                retValue = CustomerSQL.listPartner;
+            }
+            break;
+        case 2: // INVOICES - standard
+            if(userType.equals(Constants.TYPE_ROOT) || 
+                    userType.equals(Constants.TYPE_CLERK)) {
+                retValue = InvoiceSQL.rootClerkList;
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                retValue = InvoiceSQL.partnerList;
+            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+                retValue = InvoiceSQL.customerList;
+            }
+            break;
+        case 3: // ORDERS - standard
+            if(userType.equals(Constants.TYPE_ROOT) ||
+                    userType.equals(Constants.TYPE_CLERK)) {
+                retValue = OrderSQL.listInternal;
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                retValue = OrderSQL.listPartner;
+            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+                retValue = OrderSQL.listCustomer;
+            }
+            break;
+        case 4: // PAYMENTS  - standard
+            if(userType.equals(Constants.TYPE_ROOT) ||
+                    userType.equals(Constants.TYPE_CLERK)) {
+                retValue = PaymentSQL.rootClerkList;
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                retValue = PaymentSQL.partnerList;
+            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+                retValue = PaymentSQL.customerList;
+            }
+            break;
+        }
+        
+        return retValue;
+    }
+    
+    private int setSQLParameters(PreparedStatement stmt, Integer from) 
+            throws SQLException {
+        int index = 1;
+        
+        // these are very common parameters
+        Integer entityId =  (Integer) parameters.get("entityId");
+        Integer userType = (Integer) parameters.get("userType");
+        Integer userId = (Integer) parameters.get("userId");
+        Integer languageId = (Integer) parameters.get("languageId");
+
+        switch (list.getId().intValue()) {
+        case 1: // CUSTOMERS - standards
+            stmt.setInt(index++, entityId.intValue());
+            if(userType.equals(Constants.TYPE_PARTNER)) {
+                stmt.setInt(index++, userId.intValue());
+            }
+            break;
+        case 2: // INVOICES - standard
+            if(userType.equals(Constants.TYPE_ROOT) || 
+                    userType.equals(Constants.TYPE_CLERK)) {
+                stmt.setInt(index++, entityId.intValue());
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                stmt.setInt(index++,entityId.intValue());
+                stmt.setInt(index++, userId.intValue());
+            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+                stmt.setInt(index++, userId.intValue());
+            }
+
+            break;
+        case 3:// ORDER - standard
+            if(userType.equals(Constants.TYPE_ROOT) ||
+                    userType.equals(Constants.TYPE_CLERK)) {
+                stmt.setInt(index++,entityId.intValue());
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                stmt.setInt(index++, entityId.intValue());
+                stmt.setInt(index++, userId.intValue());
+            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+                stmt.setInt(index++, userId.intValue());
+            }
+            break;
+        case 4: // PAYMENTS - standard
+            if(userType.equals(Constants.TYPE_ROOT) ||
+                    userType.equals(Constants.TYPE_CLERK)) {
+                stmt.setInt(index++, 0); // it is for payments, not refunds
+                stmt.setInt(index++, entityId.intValue());
+                stmt.setInt(index++, languageId.intValue());
+            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+                stmt.setInt(index++, 0); // it is for payments, not refunds
+                stmt.setInt(index++,entityId.intValue());
+                stmt.setInt(index++, userId.intValue());
+                stmt.setInt(index++, languageId.intValue());
+            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+                stmt.setInt(index++, 0); // it is for payments, not refunds
+                stmt.setInt(index++, userId.intValue());
+                stmt.setInt(index++, languageId.intValue());
+            }
+            break;
+        }
+        
+        if (from != null) {
+            stmt.setInt(index++, from.intValue()); 
+        }
+        
+        return index;
+    }
+    
+    private String createHeader() {
+        StringBuffer header = new StringBuffer();
+        header.append("select count(*) ");
+        
+        // now go through each field
+        for (Iterator it = list.getListFields().iterator(); it.hasNext();) {
+            ListFieldEntityLocal field = (ListFieldEntityLocal) it.next();
+            if (field.getOrdenable().intValue() == 1) {
+                header.append(", min(" + field.getColumnName() + ")");
+                header.append(", max(" + field.getColumnName() + ")");
+            }
+        }
+        header.append(' ');
+        
+        return header.toString();
+    }
+    
+    private String getCountSQL() {
+        // first, get the normal SQL
+        String sql = getSQL();
+        // remove the select
+        sql = sql.substring(sql.indexOf("from"));
+        // add the count select
+        sql = createHeader() + sql;
+        
+        return sql;
+    }
+    
+    public CachedRowSet getPage(Integer start, Integer end, int size, 
+            Integer listId, Integer entityId, boolean direction, 
+            Integer fieldId, Hashtable parameters) 
+            throws SQLException, NamingException, FinderException,
+                SessionInternalError {
+        this.parameters = parameters;
+        // start by getting a connection to the db
+        Connection conn = EJBFactory.lookUpDataSource().getConnection();
+        PreparedStatement stmt = null;
+        int parameterIndex = -1;
+
+        set(listId);
+        /*
+         * Find the right range to do the query, by counting with
+         * estimates based on the stats
+         */
+        StringBuffer sql = new StringBuffer();
+        sql.append("select count(*) ");
+        
+        // append the original sql
+        String orgSql = getSQL();
+        sql.append(orgSql.substring(orgSql.indexOf("from")));
+        
+        // and the from limit is it is there
+        ListFieldBL field = new ListFieldBL(fieldId);
+        if (start != null) {
+            sql.append(" and " + field.getEntity().getColumnName());
+            if (direction) {
+                sql.append(" > ");
+            } else {
+                sql.append(" < ");
+            }
+            sql.append("? ");
+        }
+        
+        // calculate the cof based on the statistics
+        boolean hasStats = true;
+        long cof = 0;
+        long limit = 0;
+        long min = 0;
+        long max = 0;
+        if (end == null) { // we'll try to guess it from the stats
+            try {
+                ListEntityBL listEntityBl = new ListEntityBL();
+                listEntityBl.set(listId, entityId);
+                if (listEntityBl.getEntity().getTotalRecords().longValue() 
+                        == 0) {
+                    // if counted 0, it is like not having any statistics
+                    throw new FinderException("0 count");
+                }
+                
+                ListFieldEntityBL fieldEntity = new ListFieldEntityBL();
+                fieldEntity.set(fieldId, listEntityBl.getEntity().getId());
+                
+                if (field.getEntity().getDataType().equals("integer")) {
+                    min = fieldEntity.getEntity().getMin().longValue();
+                    max = fieldEntity.getEntity().getMax().longValue();
+                    cof = (max + 1 - min)
+                            / listEntityBl.getEntity().getTotalRecords()
+                                    .longValue();
+                    cof *= size;
+                    if (cof <= 0) {
+                        log.error("cof is " + cof);
+                        throw new FinderException("cof is 0");
+                    }
+                    if (start != null ) {
+                        limit = start.longValue();
+                    } else {
+                        if (direction) {
+                            limit = min;
+                        } else {
+                            limit = max;
+                        }
+                    }
+                } else if (field.getEntity().getDataType().equals("string")) {
+                
+                } else if (field.getEntity().getDataType().equals("date")) {
+                    
+                }
+                
+            } catch (FinderException e) {
+                hasStats = false;
+            }
+        }
+        
+        // if there is an end value
+        if (hasStats || end != null) {
+            sql.append(" and " + field.getEntity().getColumnName());
+            if (direction) {
+                sql.append(" <= ");
+            } else {
+                sql.append(" >= ");
+            }
+            sql.append("? ");
+        }
+
+        // start the attempts to find the minimum span
+        // only if no concrete end has been provided and stats are available
+        boolean lastPage = false;
+        if (end == null && hasStats) {
+            // the basic query is ready
+            stmt = conn.prepareStatement(sql.toString());
+            // get the basic values replaced
+            parameterIndex = setSQLParameters(stmt, start);
+            int attempts = 0;
+            long count = 0;
+            while (count < size && !lastPage) {
+                if (field.getEntity().getDataType().equals("integer")) {
+                    if ((direction && limit > max) || (!direction && limit < min)) {
+                        // this is probably the last page. Remove the limit to
+                        // avoid skipping any new rows
+                        sql.delete(sql.lastIndexOf("and"), sql.length());
+                        stmt = conn.prepareStatement(sql.toString());
+                        parameterIndex = setSQLParameters(stmt, start);
+                        lastPage = true;
+                    } else {
+                        if (direction) {
+                            limit += cof;
+                        } else {
+                            limit -= cof;
+                        }
+                        stmt.setLong(parameterIndex, limit);
+                    }
+                } else {
+                    throw new SessionInternalError("Unsupported field data type " + 
+                            field.getEntity().getDataType());
+                }
+                ResultSet res = stmt.executeQuery();
+                res.next();
+                count = res.getLong(1);
+                attempts++;
+                cof *= 2;
+            }
+            
+            log.debug("Done pageing. list " + listId + " entity " + entityId +
+                    " attempts " + attempts + " cof " + cof + " needed " + size +
+                    " got " + count);
+        }        
+        // done, cook the final sql
+        // replace the count by the original select
+        sql.replace(0, sql.indexOf("from"), orgSql.substring(0, 
+                orgSql.indexOf("from")));
+        // add the order by
+        sql.append(" order by " + field.getEntity().getColumnName());
+        if (!direction) {
+            sql.append(" desc");
+        }
+        
+        // run it
+        CachedRowSet results = new CachedRowSet();
+        stmt = conn.prepareStatement(sql.toString());
+        stmt.setMaxRows(size);
+        parameterIndex = setSQLParameters(stmt, start);
+        
+        if (end != null) {
+            stmt.setLong(parameterIndex, end.intValue());
+        } else {
+            if (hasStats && !lastPage) {
+                if (field.getEntity().getDataType().equals("integer")) {
+                    stmt.setLong(parameterIndex, limit);
+                }
+            }
+        }
+        
+        //log.debug("query = " + sql);
+        ResultSet res = stmt.executeQuery();
+        results.populate(res);
+        
+        // close the connection
+        res.close();
+        stmt.close();
+        conn.close();
+        
+        return results;
+    }
+    
+    public CachedRowSet search(String start, String end, Integer fieldId, 
+            Integer listId, Integer entityId, Hashtable parameters) 
+            throws FinderException, SQLException, NamingException {
+        this.parameters = parameters;
+        StringBuffer sql = new StringBuffer();
+        set(listId);
+        // start by getting a connection to the db
+        Connection conn = EJBFactory.lookUpDataSource().getConnection();
+        // get the original SQL
+        sql.append(getSQL());
+        // add the where from the parameters
+        ListFieldBL field = new ListFieldBL(fieldId);
+        sql.append(" and " + field.getEntity().getColumnName());
+        if (field.getEntity().getDataType().equals("integer")) {
+            // it is just an equal
+            sql.append(" = ?");
+        } else if (field.getEntity().getDataType().equals("string")) {
+            // it is a like
+            sql.append(" like ?");
+        } else if (field.getEntity().getDataType().equals("date")) {
+            // it is a date range
+            if (start != null) {
+                sql.append(" >= ?");
+                if (end != null) {
+                    sql.append(" and " + field.getEntity().getColumnName());
+                }
+            }
+            if (end != null) {
+                sql.append(" < ?");
+            }
+        }
+
+        // and a courtesy order
+        sql.append(" order by ");
+        sql.append(field.getEntity().getColumnName());
+        
+        PreparedStatement stmt = conn.prepareStatement(sql.toString());
+        int varIndex = setSQLParameters(stmt, null);
+        
+        // set the values of the where
+        if (field.getEntity().getDataType().equals("integer")) {
+            // it is just an equal
+            stmt.setInt(varIndex++, Integer.valueOf(start).intValue());
+        } else if (field.getEntity().getDataType().equals("string")) {
+            stmt.setString(varIndex++, '%' + start + '%');
+        } else if (field.getEntity().getDataType().equals("date")) {
+            // it is a date range
+            if (start != null) {
+                stmt.setString(varIndex++, start);
+            }
+            if (end != null) {
+                // we need to move it one day ahead to make it inclusive
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(Util.parseDate(end));
+                cal.add(Calendar.DATE, 1);
+                
+                stmt.setDate(varIndex++, new java.sql.Date(cal.getTime().
+                        getTime()));
+            }
+        }
+        
+        // execute
+        stmt.setMaxRows(500); // at no time we want more than 500 rows returned
+        ResultSet res = stmt.executeQuery();
+        CachedRowSet result = new CachedRowSet();
+        result.populate(res);
+        
+        // close the connection
+        res.close();
+        stmt.close();
+        conn.close();
+        
+        return result;
+    }
+    
+    /*
+    private Object convertData(String data, String type) 
+            throws SessionInternalError {
+        if (type.equals("integer")) {
+            return Integer.valueOf(data);
+        } else if (type.equals("string")) {
+            return data;
+        } else if (type.equals("date")) {
+            // the client will have to pass the milliseconds
+            long mils = Integer.valueOf(data).longValue();
+            return new Date(mils);
+        } else {
+            throw new SessionInternalError("Invalid data type " + type);
+        }
+    }
+    */
+    
+}

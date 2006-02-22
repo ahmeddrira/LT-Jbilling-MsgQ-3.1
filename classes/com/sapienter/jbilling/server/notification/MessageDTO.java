@@ -1,0 +1,168 @@
+/*
+The contents of this file are subject to the Jbilling Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.jbilling.com/JPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is jbilling.
+
+The Initial Developer of the Original Code is Emiliano Conde.
+Portions created by Sapienter Billing Software Corp. are Copyright 
+(C) Sapienter Billing Software Corp. All Rights Reserved.
+
+Contributor(s): ______________________________________.
+*/
+
+package com.sapienter.jbilling.server.notification;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Vector;
+
+import com.sapienter.jbilling.common.Constants;
+
+public class MessageDTO implements Serializable {
+    // message type definitions (synch with DB)
+    public static final Integer TYPE_INVOICE_EMAIL = new Integer(1);
+    public static final Integer TYPE_AGEING = new Integer(2); // take from 2 to 9
+    public static final Integer TYPE_CLERK_PAYOUT = new Integer(10);
+    public static final Integer TYPE_PAYOUT = new Integer(11);
+    public static final Integer TYPE_INVOICE_PAPER = new Integer(12);
+    public static final Integer TYPE_ORDER_NOTIF = new Integer(13); // take from 13 to 15
+    public static final Integer TYPE_PAYMENT = new Integer(16); // 16 & 17
+    public static final Integer TYPE_INVOICE_REMINDER = new Integer(18);
+    public static final Integer TYPE_CREDIT_CARD = new Integer(19);
+    
+    // max length of a line (as defined in DB schema
+    public static final Integer LINE_MAX = new Integer(1000);
+    // most messages are emails. If they have an attachment the file name is here
+    private String attachmentFile = null;
+    
+    private Integer typeId;
+    private Integer languageId;
+    private Boolean useFlag;
+    private Integer deliveryMethodId;
+    /*
+     * The parameters to be used to get the replacements in the text
+     */
+    private HashMap parameters = null;
+    // this is the message itself, after being loaded from the DB
+    private Vector content = null;
+    
+    public MessageDTO() {
+        parameters = new HashMap();
+        content = new Vector();
+        deliveryMethodId = Constants.D_METHOD_EMAIL;
+    }
+    /**
+     * @return
+     */
+    public MessageSection[] getContent() {
+        return (MessageSection[]) content.toArray(new MessageSection[0]);
+    }
+    
+    public void setContent(MessageSection[] lines) {
+        for (int f = 0; f < lines.length; f++) {
+            addSection(lines[f]);
+        }
+    }
+
+    /**
+     * @return
+     */
+    public HashMap getParameters() {
+        return parameters;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    /**
+     * @param string
+     */
+    public void addSection(MessageSection line) {
+        content.add(line);
+    }
+
+    /**
+     * @param hashtable
+     */
+    public void addParameter(String name, String value) {
+    	parameters.put(name, value);
+    }
+
+    /**
+     * @param integer
+     */
+    public void setTypeId(Integer integer) {
+        typeId = integer;
+    }
+
+    public boolean validate() {
+        if (typeId == null || parameters == null || content == null ||
+                content.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    /**
+     * @return
+     */
+    public Integer getLanguageId() {
+        return languageId;
+    }
+
+    /**
+     * @param languageId
+     */
+    public void setLanguageId(Integer languageId) {
+        this.languageId = languageId;
+    }
+
+    /**
+     * @return
+     */
+    public Integer getDeliveryMethodId() {
+        return deliveryMethodId;
+    }
+
+    /**
+     * @param deliveryMethodId
+     */
+    public void setDeliveryMethodId(Integer deliveryMethodId) {
+        this.deliveryMethodId = deliveryMethodId;
+    }
+
+    public Boolean getUseFlag() {
+        return useFlag;
+    }
+    public void setUseFlag(Boolean useFlag) {
+        this.useFlag = useFlag;
+    }
+    
+    public String toString(){
+        String ret = "language = " + languageId + " type = " + typeId + " use = " +
+                useFlag + " content = ";
+        for (int f = 0; f < content.size(); f++) {
+            ret += "[" + content.get(f) + "]";
+        }
+        
+        return ret;
+    }
+    public String getAttachmentFile() {
+        return attachmentFile;
+    }
+    public void setAttachmentFile(String attachmentFile) {
+        this.attachmentFile = attachmentFile;
+    }
+}

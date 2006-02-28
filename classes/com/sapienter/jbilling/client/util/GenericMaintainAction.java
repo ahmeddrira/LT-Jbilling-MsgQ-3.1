@@ -1391,7 +1391,7 @@ public class GenericMaintainAction {
             myForm.set("chbx_own_invoice", new Boolean(dto.getOwnInvoice() == null ?
                     false : dto.getOwnInvoice().intValue() == 1));
             myForm.set("chbx_notes", new Boolean(dto.getNotesInInvoice() == null ?
-                    false : dto.getOwnInvoice().intValue() == 1));
+                    false : dto.getNotesInInvoice().intValue() == 1));
             myForm.set("notes", dto.getNotes());
             myForm.set("anticipate_periods", dto.getAnticipatePeriods() == null ?
                     null : dto.getAnticipatePeriods().toString());

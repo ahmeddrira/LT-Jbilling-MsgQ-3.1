@@ -88,9 +88,9 @@ public final class UserLoginAction extends Action {
         Locale locale = null;
         boolean internalLogin = false;
         UserLoginForm info = (UserLoginForm) form;
-        String username = info.getUserName();
-        String password = info.getPassword();
-        String entityId = info.getEntityId();
+        String username = info.getUserName().trim();
+        String password = info.getPassword().trim();
+        String entityId = info.getEntityId().trim();
 
         // create the bean that is going to be passed to the session
         // bean for authentication

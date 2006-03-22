@@ -151,6 +151,11 @@ public class MaintainAction extends Action {
                 		Constants.LIST_TYPE_CUSTOMER_SIMPLE);
             } else if (action.equals("update")) {
                 DynaValidatorForm userForm = (DynaValidatorForm) form;
+
+				// get the info in its current status
+                UserDTOEx orgUser = (UserDTOEx) session.getAttribute(
+                        Constants.SESSION_CUSTOMER_DTO);
+				log.debug("Updating user: ");
                 // verify that the password and the verification password 
                 // are the same, but only if the verify password has been
                 // entered, otherwise will consider that the password is not
@@ -190,14 +195,18 @@ public class MaintainAction extends Action {
                 }
 
 				// the login name has to be unique across entities
-                UserDTO testUser = userSession.getUserDTO(
-                        (String) userForm.get("username"), 
-                        (Integer) userForm.get("entity"));
+                // test only if it has changed
+                if (orgUser != null && !orgUser.getUserName().equals((String) 
+                        userForm.get("username"))) {
+                    UserDTO testUser = userSession.getUserDTO(
+                            (String) userForm.get("username"), 
+                            (Integer) userForm.get("entity"));
 
-                if (testUser != null) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("user.create.error.taken", 
-                                (String) userForm.get("username")));
+                    if (testUser != null) {
+                        errors.add(ActionErrors.GLOBAL_ERROR,
+                                new ActionError("user.create.error.taken", 
+                                    (String) userForm.get("username")));
+                    }
                 }
 				
                 

@@ -48,6 +48,7 @@ import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.user.CustomerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.entity.UserDTO;
 
 public class MaintainAction extends Action {
 
@@ -187,6 +188,18 @@ public class MaintainAction extends Action {
                                 new ActionError("user.create.error.badPartner"));
                     }
                 }
+
+				// the login name has to be unique across entities
+                UserDTO testUser = userSession.getUserDTO(
+                        (String) userForm.get("username"), 
+                        (Integer) userForm.get("entity"));
+
+                if (testUser != null) {
+                    errors.add(ActionErrors.GLOBAL_ERROR,
+                            new ActionError("user.create.error.taken", 
+                                (String) userForm.get("username")));
+                }
+				
                 
                 if (errors.isEmpty()) {              
                     // create a dto with the info from the form

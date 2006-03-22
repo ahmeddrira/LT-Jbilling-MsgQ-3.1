@@ -4528,6 +4528,7 @@ INSERT INTO permission_role_map (permission_id, role_id) VALUES (1, 2);
 INSERT INTO permission_role_map (permission_id, role_id) VALUES (2, 2);
 INSERT INTO permission_role_map (permission_id, role_id) VALUES (3, 2);
 INSERT INTO permission_role_map (permission_id, role_id) VALUES (4, 2);
+INSERT INTO permission_role_map (permission_id, role_id) VALUES (15, 2);
 INSERT INTO permission_role_map (permission_id, role_id) VALUES (80, 2);
 INSERT INTO permission_role_map (permission_id, role_id) VALUES (83, 2);
 INSERT INTO permission_role_map (permission_id, role_id) VALUES (85, 2);

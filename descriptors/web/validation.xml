@@ -954,6 +954,14 @@
 <field property="partnerId" depends="integer">
 <arg0 key="user.prompt.partner" />
 </field>
+<field property="password" depends="required,minlength">
+<var>
+<var-name>minlength</var-name>
+<var-value>6</var-value>
+</var>
+<arg0 key="prompt.password" />
+<arg1 name="minlength" key="${var:minlength}" resource="false" />
+</field>
 </form>
 <form name="signup">
 <field property="address1" depends="required">
@@ -1134,3 +1142,4 @@
 
 </formset>
 </form-validation>
+

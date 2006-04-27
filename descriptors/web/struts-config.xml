@@ -70,7 +70,7 @@
 <form-property name="bank_name" type="java.lang.String" />
 <form-property name="account_name" type="java.lang.String" />
 <form-property name="account_type" type="java.lang.Integer" />
-</form-bean>
+<form-property name="id" type="java.lang.Integer" /></form-bean>
 <form-bean name="reportForm" type="com.sapienter.jbilling.client.report.Form" />
 <form-bean name="userCreate" type="com.sapienter.jbilling.client.util.DynaForm">
 <form-property name="username" type="java.lang.String" />
@@ -436,7 +436,7 @@
 <forward name="payment_payout" redirect="false" path="/payment/payout.jsp" />
 <forward name="payment_reviewPayout" path="/payment/reviewPayout.jsp" redirect="false" />
 <forward name="payout_view" path="/user/payoutView.jsp?result=yes" redirect="false" />
-<forward name="last_invoice" path="/paymentMaintain.do?action=setup&amp;mode=payment&amp;direct=yes&amp;create=yes" redirect="false" />
+<forward name="payment_update" path="/payment/update.jsp?create=on" redirect="false" /><forward name="last_invoice" path="/paymentMaintain.do?action=setup&amp;mode=payment&amp;direct=yes&amp;create=yes" redirect="false" />
 <forward name="no_invoice" path="/initial.jsp" redirect="false" />
 </action>
 <action path="/reportTrigger" type="com.sapienter.jbilling.client.report.TriggerAction" name="UserLoginForm" validate="false" scope="request">

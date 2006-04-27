@@ -88,7 +88,7 @@
     </definition>
     <definition name="payment.enter.info.cheque.body" path="/layouts/bodySplitFive.jsp"><put name="one" value="/payment/createBodyTop.jsp" /><put name="two" value="/other/genericList.jsp" /><put name="three" value="/user/displaySelected.jsp" /><put name="four" value="/invoice/displaySelected.jsp" /><put name="five" value="/payment/editBody.jsp" />
     </definition>
-    <definition name="payment.enter.review" extends="main"><put name="body" value="payment.enter.review.body" /><put name="featureTitle" value="bar.payment.review" />
+    <definition name="payment.enter.review" extends="main"><put name="body" value="payment.enter.review.body" /><put name="featureTitle" value="bar.payment.review" /><put name="leftMenuBar" value="/payment/viewLeftBar.jsp" />
     </definition>
     <definition name="payment.enter.review.body" path="/layouts/bodySplitFour.jsp"><put name="one" value="/payment/viewHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/payment/viewBody.jsp" /><put name="four" value="/payment/viewAuthorization.jsp" />
     </definition>
@@ -96,7 +96,7 @@
     </definition>
     <definition name="payment.enter.fromOrder.body" path="/layouts/bodySplitFour.jsp"><put name="one" value="/payment/createFromOrderTop.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/invoice/displaySelected.jsp" /><put name="four" value="/payment/editBody.jsp?direct=yes" />
     </definition>
-    <definition name="payment.list" extends="main"><put name="featureTitle" value="bar.payment.list" /><put name="body" value="payment.list.body" />
+    <definition name="payment.update" extends="main"><put name="body" value="payment.update.body" /><put name="featureTitle" value="bar.payment.update" /></definition><definition name="payment.update.body" path="/layouts/bodySplitThree.jsp"><put name="one" value="/payment/updateHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/payment/editBody.jsp" /></definition><definition name="payment.list" extends="main"><put name="featureTitle" value="bar.payment.list" /><put name="body" value="payment.list.body" />
     </definition>
     <definition name="payment.list.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/payment/listTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />
     </definition>

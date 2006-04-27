@@ -609,6 +609,7 @@ CREATE TABLE payment (
     result_id integer,
     amount double precision NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
+    update_datetime timestamp without time zone,
     payment_date date,
     method_id integer NOT NULL,
     credit_card_id integer,
@@ -2962,6 +2963,7 @@ INSERT INTO event_log_module (id) VALUES (6);
 INSERT INTO event_log_module (id) VALUES (7);
 INSERT INTO event_log_module (id) VALUES (8);
 INSERT INTO event_log_module (id) VALUES (9);
+INSERT INTO event_log_module (id) VALUES (10);
 
 
 --

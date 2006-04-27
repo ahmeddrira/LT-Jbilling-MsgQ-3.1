@@ -64,8 +64,10 @@ Contributor(s): ______________________________________.
 </logic:present>
 <logic:notPresent parameter="refund">                
 	<%
+	  session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
 	  session.removeAttribute(Constants.SESSION_INVOICE_DTO);
 	  session.removeAttribute(Constants.SESSION_LIST_KEY + Constants.LIST_TYPE_INVOICE);  
+      session.removeAttribute("jsp_linked_invoices");
 	%>
 </logic:notPresent>
 

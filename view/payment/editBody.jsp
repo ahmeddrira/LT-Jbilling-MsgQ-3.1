@@ -182,11 +182,13 @@ Contributor(s): ______________________________________.
 	 		  <td><html:text property="ccExpiry_year" size="4" maxlength="4"/></td>
 	 		  <td><bean:message key="all.prompt.ccDateFormat"/></td>
 	 	  </tr>
-		  <logic:notEqual name='<%=Constants.SESSION_USER_DTO%>'
+	 	  
+		 <logic:notEqual name='<%=Constants.SESSION_USER_DTO%>'
 								 property="mainRoleId"
 								 scope="session"
 								 value='<%=Constants.TYPE_CUSTOMER.toString()%>'>	 	  
 	 	 <logic:notPresent parameter="direct">
+	 	 <logic:notPresent name='<%=Constants.SESSION_PAYMENT_DTO%>' property="id">
 			<tr class="form">
 				<td>
 					 <jbilling:help page="payments" anchor="realTime">
@@ -196,6 +198,7 @@ Contributor(s): ______________________________________.
 			   <td class="form_prompt"><bean:message key="payment.cc.processNow"/></td>
 			   <td colspan="4"><html:checkbox property="chbx_processNow"/></td>
 		   </tr>
+		 </logic:notPresent>
 	     </logic:notPresent>
 	     <logic:present parameter="direct">
 	     	<html:hidden property="chbx_processNow" value="true"/>

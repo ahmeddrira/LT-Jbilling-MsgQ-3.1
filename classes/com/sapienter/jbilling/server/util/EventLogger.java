@@ -66,6 +66,7 @@ public class EventLogger {
     public static final Integer MODULE_ORDER_MAINTENANCE = new Integer(7);
     public static final Integer MODULE_CREDIT_CARD_MAINTENANCE = new Integer(8);
     public static final Integer MODULE_INVOICE_MAINTENANCE = new Integer(9);
+    public static final Integer MODULE_PAYMENT_MAINTENANCE = new Integer(10);
 
     
     // levels of logging    

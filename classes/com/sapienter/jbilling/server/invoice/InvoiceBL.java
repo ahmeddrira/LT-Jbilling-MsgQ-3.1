@@ -60,6 +60,7 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
@@ -68,7 +69,6 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
@@ -705,7 +705,8 @@ public class InvoiceBL extends ResultList
         return new InvoiceWS(dto);
     }
     
-    public InvoiceDTOEx getDTOEx(Integer languageId, boolean forDisplay) {
+    public InvoiceDTOEx getDTOEx(Integer languageId, boolean forDisplay) 
+            throws NamingException{
         Integer delegatedInvoice = null;
         if (invoice.getDelegatedInvoice() != null) {
             delegatedInvoice = invoice.getDelegatedInvoice().getId();
@@ -723,8 +724,8 @@ public class InvoiceBL extends ResultList
         // now add the payments
         Collection payments = invoice.getPayments();
         for (Iterator it = payments.iterator(); it.hasNext();) {
-            PaymentEntityLocal payment = (PaymentEntityLocal) it.next();
-            invoiceDTO.addPayment(DTOFactory.getPaymentDTO(payment));      
+            PaymentBL payment = new PaymentBL((PaymentEntityLocal) it.next());
+            invoiceDTO.addPayment(payment.getDTO());      
         }
         // add also the invoice lines
         boolean hasSubaccounts = false;

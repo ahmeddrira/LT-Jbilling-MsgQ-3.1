@@ -87,10 +87,12 @@ public class PaymentDTOEx extends PaymentDTO {
      * @param methodId
      */
     public PaymentDTOEx(Integer id, Float amount, Date createDateTime,
+            Date updateDateTime,
             Date paymentDate, Integer attempt, Integer deleted,
             Integer methodId, Integer resultId, Integer isRefund,
             Integer currencyId, Float balance) {
-        super(id, amount, balance, createDateTime, paymentDate, attempt, 
+        super(id, amount, balance, createDateTime, updateDateTime,
+                paymentDate, attempt, 
                 deleted, methodId, resultId, isRefund, currencyId);
         invoiceIds = new Vector();
     }

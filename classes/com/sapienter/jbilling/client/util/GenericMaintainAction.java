@@ -319,6 +319,8 @@ public class GenericMaintainAction {
                     "promotion.prompt.until"));
         } else if (mode.equals("payment")) {
             paymentDto = new PaymentDTOEx();
+            // the id, only for payment edits
+            paymentDto.setId((Integer) myForm.get("id"));
             // set the amount
             paymentDto.setAmount(string2float((String) myForm.get("amount")));
             // set the date
@@ -401,6 +403,7 @@ public class GenericMaintainAction {
             // specify if this is a normal payment or a refund
             paymentDto.setIsRefund(session.getAttribute("jsp_is_refund") == 
                     null ? new Integer(0) : new Integer(1));
+            log.debug("refund = " + paymentDto.getIsRefund());
             // set the selected payment for refunds
             if (paymentDto.getIsRefund().intValue() == 1) {
                 PaymentDTOEx refundPayment = (PaymentDTOEx) session.getAttribute(
@@ -1286,6 +1289,11 @@ public class GenericMaintainAction {
         } else if (mode.equals("payment")) {
             CreditCardDTO ccDto = null;
             AchDTO achDto = null;
+            PaymentInfoChequeDTO chequeDto = null;
+            
+            boolean isEdit = request.getParameter("submode") == null ?
+                    false : request.getParameter("submode").equals("edit");
+            
             // if an invoice was selected, pre-populate the amount field
             InvoiceDTO invoiceDto = (InvoiceDTO) session.getAttribute(
                     Constants.SESSION_INVOICE_DTO);
@@ -1304,11 +1312,14 @@ public class GenericMaintainAction {
                 session.setAttribute("jsp_linked_invoices", invoices);
             } else if (paymentDto != null) {
                 // this works for both refunds and payouts
-                log.debug("setting refund with payment:" + paymentDto.getId());
+                log.debug("setting form with payment:" + paymentDto.getId());
+                myForm.set("id", paymentDto.getId());
                 myForm.set("amount", float2string(paymentDto.getAmount()));
+                setFormDate("date", paymentDto.getPaymentDate());
                 myForm.set("currencyId", paymentDto.getCurrencyId());
                 ccDto = paymentDto.getCreditCard();
                 achDto = paymentDto.getAch();
+                chequeDto = paymentDto.getCheque();
             } else { // this is not an invoice selected, it's the first call
                 log.debug("setting payment without invoice");
                 // the date might come handy
@@ -1319,8 +1330,11 @@ public class GenericMaintainAction {
             }
             boolean isRefund = session.getAttribute(
                         "jsp_is_refund") != null; 
-            
-            if (!isRefund && ((String) myForm.get("ccNumber")).length() == 0) {
+
+            // populate the credit card fields with the cc in file
+            // if this is a payment creation only
+            if (!isRefund && !isEdit && 
+                    ((String) myForm.get("ccNumber")).length() == 0) {
                 // normal payment, get the selected user cc
                 // if the user has a credit card, put it (this is a waste for
                 // cheques, but it really doesn't hurt)
@@ -1334,7 +1348,6 @@ public class GenericMaintainAction {
                 }
                 ccDto = user.getCreditCard();
                 achDto = user.getAch();
-                
             } 
         
             
@@ -1356,7 +1369,13 @@ public class GenericMaintainAction {
                 myForm.set("account_name", achDto.getAccountName());
                 myForm.set("account_type", achDto.getAccountType());
             }
-            
+
+            if (chequeDto != null) {
+                myForm.set("bank", chequeDto.getBank());
+                myForm.set("chequeNumber", chequeDto.getNumber());
+                setFormDate("chequeDate", chequeDto.getDate());
+            }
+
             // if this payment is direct from an order, continue with the
             // page without invoice list
             if (request.getParameter("direct") != null) {
@@ -1373,6 +1392,11 @@ public class GenericMaintainAction {
             // if this is a payout, it has its own page
             if (request.getParameter("payout") != null) {
                 retValue = "payout";
+            } 
+            
+            // payment edition has a different layout
+            if (isEdit) {
+                retValue = "update";
             }
 
         } else if (mode.equals("order")) {

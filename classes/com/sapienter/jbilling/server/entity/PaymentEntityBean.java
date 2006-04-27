@@ -150,6 +150,9 @@ public abstract class PaymentEntityBean implements EntityBean {
      * @jboss.method-attributes read-only="true"
      */
     public abstract Float getAmount();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
     public abstract void setAmount(Float amount);
 
     /**
@@ -172,6 +175,17 @@ public abstract class PaymentEntityBean implements EntityBean {
      */
     public abstract Date getCreateDateTime();
     public abstract void setCreateDateTime(Date date);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="update_datetime"
+     */
+    public abstract Date getUpdateDateTime();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setUpdateDateTime(Date date);
 
     /**
      * @ejb:interface-method view-type="local"

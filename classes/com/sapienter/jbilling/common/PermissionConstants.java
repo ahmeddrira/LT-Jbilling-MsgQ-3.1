@@ -55,6 +55,8 @@ public interface PermissionConstants {
     public static final Integer P_ORDER_LEFT_OPTIONS = new Integer(108);
     // if a user can delete invoices
     public static final Integer P_INVOICE_DELETE = new Integer(113);
+    //  if a user can modify payments (delete/edit)
+    public static final Integer P_PAYMENT_MODIFY = new Integer(114);
     
     
     // roles

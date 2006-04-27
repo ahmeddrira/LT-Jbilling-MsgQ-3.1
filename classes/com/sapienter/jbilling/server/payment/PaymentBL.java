@@ -21,6 +21,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.payment;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -194,6 +195,49 @@ public class PaymentBL extends ResultList
     }
     
     /**
+     * Updates a payment record, including related cheque or credit card
+     * records. Only valid for entered payments not linked to an invoice.
+     * @param dto The DTO with all the information of the new payment record.
+     */
+    public void update(Integer executorId, PaymentDTOEx dto) 
+            throws FinderException, NamingException, SessionInternalError {
+        // the payment should've been already set when constructing this
+        // object
+        if (payment == null) {
+            throw new FinderException("Payment to update not set");
+        }
+        
+        // we better log this, so this change can be traced
+        eLogger.audit(executorId, Constants.TABLE_PAYMENT, 
+                payment.getId(),
+                EventLogger.MODULE_PAYMENT_MAINTENANCE, 
+                EventLogger.ROW_UPDATED, null,  
+                payment.getAmount().toString(), null);
+        
+        // start with the payment's own fields
+        payment.setUpdateDateTime(Calendar.getInstance().getTime());
+        payment.setAmount(dto.getAmount());
+        // since the payment can't be linked to an invoice, the balance
+        // has to be equal to the total of the payment
+        payment.setBalance(dto.getAmount());
+        payment.setPaymentDate(dto.getPaymentDate());
+        
+        // now the records related to the method
+        if (dto.getCheque() != null) {
+            PaymentInfoChequeEntityLocal cheque = payment.getChequeInfo();
+            cheque.setBank(dto.getCheque().getBank());
+            cheque.setNumber(dto.getCheque().getNumber());
+            cheque.setDate(dto.getCheque().getDate());
+        } else if (dto.getCreditCard() != null) {
+            CreditCardBL cc = new CreditCardBL(payment.getCreditCardInfo());
+            cc.update(executorId, dto.getCreditCard());
+        } else if (dto.getAch() != null) {
+            AchBL achBl = new AchBL(payment.getAchInfo());
+            achBl.update(executorId, dto.getAch());
+        }
+    }
+    
+    /**
      * Goes through the payment pluggable tasks, and calls them with the
      * payment information to get the payment processed.
      * If a call fails because of the availability of the processor, it
@@ -267,7 +311,8 @@ public class PaymentBL extends ResultList
     public PaymentDTO getDTO() {
         return new PaymentDTO(payment.getId(), payment.getAmount(), 
 		        payment.getBalance(),
-                payment.getCreateDateTime(), payment.getPaymentDate(),
+                payment.getCreateDateTime(), 
+                payment.getUpdateDateTime(),payment.getPaymentDate(),
                 payment.getAttempt(), payment.getDeleted(), 
                 payment.getMethodId(), payment.getResultId(), 
                 payment.getIsRefund(), payment.getCurrencyId());

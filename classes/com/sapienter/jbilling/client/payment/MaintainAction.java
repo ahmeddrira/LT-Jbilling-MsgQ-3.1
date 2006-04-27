@@ -21,6 +21,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.payment;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -151,7 +152,24 @@ public class MaintainAction extends Action {
                         
                 } else {
                     if (!isPayout) {
-                        myRemoteSession.applyPayment(paymentDto, invoiceId);
+                        log.debug("sending payment. Id = " + paymentDto.getId() +
+                                " refund " + paymentDto.getIsRefund());
+                        if (paymentDto.getId() != null && 
+                                paymentDto.getIsRefund().intValue() == 0) {
+                            // it is an update
+                            myRemoteSession.update((Integer) session.getAttribute(
+                                    Constants.SESSION_LOGGED_USER_ID), paymentDto);
+                        } else {
+                            // it is a new payment
+                            myRemoteSession.applyPayment(paymentDto, invoiceId);
+                            // I need to update the DTO, so the left bar can
+                            // make the right decitions
+                            if (invoiceId != null) {
+                                Vector invoices = new Vector();
+                                invoices.add(invoiceId);
+                                paymentDto.setInvoiceIds(invoices);
+                            } 
+                        }
                     } else {
                         myRemoteSession.processPayout(paymentDto, 
                                 payout.getStartingDate(), 

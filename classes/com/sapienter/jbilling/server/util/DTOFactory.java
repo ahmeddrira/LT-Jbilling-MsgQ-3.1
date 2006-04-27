@@ -52,7 +52,6 @@ import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocalHome;
 import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderStatusEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderStatusEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportFieldEntityLocal;
@@ -63,10 +62,8 @@ import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.entity.OrderLineDTO;
 import com.sapienter.jbilling.server.entity.OrderProcessDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.entity.ReportUserDTO;
 import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -508,16 +505,6 @@ public class DTOFactory {
         return dtos;
     }
     
-    public static PaymentDTO getPaymentDTO(PaymentEntityLocal payment) {
-        return new PaymentDTO(payment.getId(), payment.getAmount(), 
-                payment.getBalance(),
-                payment.getCreateDateTime(), payment.getPaymentDate(),
-                payment.getAttempt(),
-                payment.getDeleted(), payment.getMethodId(),
-                payment.getResultId(), payment.getIsRefund(),
-                payment.getCurrencyId());
-    }
-
     public static ReportDTOEx getReportDTOEx(Integer reportId, 
             Integer entityId) 
             throws NamingException, FinderException, SessionInternalError {

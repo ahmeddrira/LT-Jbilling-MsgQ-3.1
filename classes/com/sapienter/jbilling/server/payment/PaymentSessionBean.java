@@ -524,6 +524,35 @@ public class PaymentSessionBean implements SessionBean {
             throw new SessionInternalError(e);
         }
     }
+    
+    /** 
+     * Clients with the right priviliges can update payments with result
+     * 'entered' that are not linked to an invoice
+     *  
+     * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
+     */
+    public void update(Integer executorId, PaymentDTOEx dto) 
+            throws SessionInternalError, FinderException {
+        if (dto.getId() == null) {
+            throw new SessionInternalError("ID missing in payment to update");
+        }
+        
+        log.debug("updateting payment " + dto.getId());
+        try {
+            PaymentBL bl = new PaymentBL(dto.getId());
+            if (bl.getEntity().getResultId().equals(Constants.RESULT_ENTERED)) {
+                
+            } else {
+                throw new SessionInternalError("Payment update only available" +
+                        " for entered payments");
+            }
+            
+            bl.update(executorId, dto);
+        } catch (NamingException e) {
+            throw new SessionInternalError(e);
+        }
+    }
 
     // EJB Callbacks -------------------------------------------------
 

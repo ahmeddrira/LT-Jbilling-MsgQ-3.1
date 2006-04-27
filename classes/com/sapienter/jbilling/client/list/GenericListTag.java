@@ -145,7 +145,8 @@ public class GenericListTag extends ListTagBase {
                 listColumns.add("promotion.prompt.once");                               
                 listColumns.add("item.prompt.description");
             } else if (type.equals(Constants.LIST_TYPE_PAYMENT) ||
-                    type.equals(Constants.LIST_TYPE_PAYMENT_USER)) {
+                    type.equals(Constants.LIST_TYPE_PAYMENT_USER) ||
+                    type.equals(Constants.LIST_TYPE_REFUND)) {
                 listColumns.add("payment.id");
                 listColumns.add("user.prompt.username");
                 listColumns.add("contact.list.organization");
@@ -154,14 +155,6 @@ public class GenericListTag extends ListTagBase {
                 listColumns.add("payment.date");
                 listColumns.add("payment.method");
                 listColumns.add("payment.result");
-            } else if (type.equals(Constants.LIST_TYPE_REFUND)) {
-                listColumns.add("payment.id");
-                listColumns.add("user.prompt.username");
-                listColumns.add("contact.list.organization");
-                listColumns.add("blank");
-                listColumns.add("payment.amount");
-                listColumns.add("payment.date");
-                listColumns.add("payment.method");
             } else if (type.equals(Constants.LIST_TYPE_CUSTOMER) ||
                     type.equals(Constants.LIST_TYPE_CUSTOMER_SIMPLE) ||
                     type.equals(Constants.LIST_TYPE_PARTNERS_CUSTOMER) ||

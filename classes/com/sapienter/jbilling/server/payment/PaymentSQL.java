@@ -23,21 +23,6 @@ package com.sapienter.jbilling.server.payment;
 import com.sapienter.jbilling.common.Constants;
 
 public interface PaymentSQL {
-    // Internal gets all the payments ever
-    static final String internalList = 
-        "select p.id, p.id, u.user_name, c.symbol, p.amount, p.create_datetime, i.content " +
-        "  from payment p, base_user u, international_description i, " +
-        "       payment_method pm, jbilling_table bt, currency c " +
-        " where p.user_id = u.id " +
-        "   and p.is_refund = ?" +
-        "   and p.method_id = pm.id " +
-        "   and p.currency_id = c.id " +
-        "   and i.table_id = bt.id " +
-        "   and bt.name = 'payment_method' " +
-        "   and i.foreign_id = pm.id " +
-        "   and i.language_id = ? " +
-        "   and i.psudo_column = 'description' " +
-        "   and p.deleted = 0 ";
         
     // Root-Clerk gets all the entity's payments
     static final String rootClerkList = 
@@ -123,9 +108,12 @@ public interface PaymentSQL {
     // The refundable payments are those only of a customer (like customerList)
     // but that have been not refunded previously
     static final String refundableList = 
-        "select p.id, p.id, u.user_name, c.symbol, p.amount, p.create_datetime, i.content " +
+        "select p.id, p.id, u.user_name, c.symbol, p.amount, " +
+        "       p.create_datetime, i.content, i2.content " +
         "  from payment p, base_user u, international_description i, " +
-        "       payment_method pm, jbilling_table bt, currency c " +
+        "       payment_method pm, jbilling_table bt, currency c," +
+        "       international_description i2, jbilling_table bt2, " +
+        "       payment_result pr " +
         " where p.user_id = u.id " +
         "   and p.is_refund = ?" +
         "   and p.method_id = pm.id " +
@@ -136,6 +124,12 @@ public interface PaymentSQL {
         "   and i.foreign_id = pm.id " +
         "   and i.language_id = ? " +
         "   and i.psudo_column = 'description' " +
+        "   and i2.table_id = bt2.id" +
+        "   and i2.language_id = i.language_id " +
+        "   and i2.psudo_column = 'description' " +
+        "   and bt2.name= 'payment_result'" +
+        "   and pr.id = p.result_id" +
+        "   and pr.id = i2.foreign_id" +
         "   and p.deleted = 0 " +    
         "   and p.id not in ( " +
         "        select payment_id " +

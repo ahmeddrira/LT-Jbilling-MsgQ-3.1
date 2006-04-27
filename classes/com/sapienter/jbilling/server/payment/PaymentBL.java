@@ -410,11 +410,7 @@ public class PaymentBL extends ResultList
                 
         // the first variable specifies if this is a normal payment or 
         // a refund list
-        if(userRole.equals(Constants.TYPE_INTERNAL)) {
-            prepareStatement(PaymentSQL.internalList);
-            cachedResults.setInt(1, isRefund ? 1 : 0);
-            cachedResults.setInt(2,languageId.intValue());
-        } else if(userRole.equals(Constants.TYPE_ROOT) ||
+        if(userRole.equals(Constants.TYPE_ROOT) ||
                 userRole.equals(Constants.TYPE_CLERK)) {
             prepareStatement(PaymentSQL.rootClerkList);
             cachedResults.setInt(1, isRefund ? 1 : 0);

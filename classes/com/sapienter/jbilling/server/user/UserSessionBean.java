@@ -52,6 +52,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
 import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
@@ -1110,6 +1111,21 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             throw new SessionInternalError(e);
         }
     } 
+    
+    /**
+     * @throws FinderException throws when no user with the specified username
+     * @throws NamingException 
+     * @throws NumberFormatException 
+     * @throws CreateException 
+     * @throws NotificationNotFoundException 
+     * @throws SessionInternalError 
+     * @ejb:interface-method view-type="remote"
+     */
+    public void sendLostPassword(String entityId, String username) throws NumberFormatException, NamingException,  SessionInternalError, NotificationNotFoundException, CreateException, FinderException {
+    	UserBL user = new UserBL(username, Integer.valueOf(entityId));
+
+		user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField());	
+    }
 
 
     // -------------------------------------------------------------------------

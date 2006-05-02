@@ -365,6 +365,8 @@
 <form-property name="referral_fee" type="java.lang.String[]" />
 <form-property name="create" type="java.lang.String" />
 </form-bean>
+    
+
 </form-beans>
   
   <!-- ========== Global Forward Definitions ==============================  -->
@@ -581,6 +583,8 @@
 <forward name="ranges_partner" path="/user/partnerEdit.jsp" redirect="false" />
 </action>
 <action path="/signupEntity" type="com.sapienter.jbilling.client.signup.NewEntityAction" name="newEntity" scope="session" input="/signup/newEntity.jsp" validate="false"><forward name="edit" path="/signup/newEntity.jsp" redirect="false" /><forward name="done" path="/user/login.jsp" redirect="false" /></action>
+    <action path="/forgetPassword" type="com.sapienter.jbilling.client.user.ForgetPasswordAction" name="UserLoginForm" input="/user/forgetPassword.jsp" scope="session"><forward name="success" path="/user/login.jsp" redirect="false" /></action>
+
 </action-mappings>
 
 

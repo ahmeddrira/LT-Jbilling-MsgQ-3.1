@@ -37,6 +37,7 @@ public class MessageDTO implements Serializable {
     public static final Integer TYPE_PAYMENT = new Integer(16); // 16 & 17
     public static final Integer TYPE_INVOICE_REMINDER = new Integer(18);
     public static final Integer TYPE_CREDIT_CARD = new Integer(19);
+    public static final Integer TYPE_FORGETPASSWORD_EMAIL = new Integer(20);
     
     // max length of a line (as defined in DB schema
     public static final Integer LINE_MAX = new Integer(1000);

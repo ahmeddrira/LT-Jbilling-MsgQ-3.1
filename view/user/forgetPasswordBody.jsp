@@ -25,14 +25,14 @@ Contributor(s): ______________________________________.
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
-<p class="title"><bean:message key="login.title"/></p>
+<p class="title"><bean:message key="forgetPassword.title"/></p>
 <html:errors/>
 <html:messages message="true" id="myMessage">
 	<p><bean:write name="myMessage"/></p>
 </html:messages>
 
 
-<html:form action="/verifyPassword" focus="userName">
+<html:form action="/forgetPassword" focus="userName">
 <table class="form">
 
   <tr class="form">
@@ -42,14 +42,8 @@ Contributor(s): ______________________________________.
     <td>
       <html:text property="userName" size="20" maxlength="20"/>
     </td>
-  </tr>
-
-  <tr class="form">
-    <td class="form_prompt">
-      <bean:message key="prompt.password"/>
-    </td>
     <td>
-      <html:password property="password" size="20" maxlength="20"/>
+      <html:hidden property="password" value="filler"/>
     </td>
   </tr>
 
@@ -75,10 +69,6 @@ Contributor(s): ______________________________________.
   	<html:hidden property="entityId" value='<%=request.getParameter("entityId") %>' />
   <% } %>
   
-  <logic:present parameter="internalKey">
-  	<html:hidden property="internalKey" value='<%=request.getParameter("internalKey") %>' />
-  </logic:present>  
-
   <tr>
     <td colspan="2" class="form_button">
       <html:submit styleClass="form_button" property="submit" value="Submit"/>
@@ -88,16 +78,3 @@ Contributor(s): ______________________________________.
 </table>
 
 </html:form>
-
-
-<a href="<c:url value="/user/forgetPassword.jsp"/>"><bean:message key="prompt.forgetpassword" /></a>
-
-
-<%-- Experiment for Container base authentication 
-<form method="POST" action="j_security_check">
-	<input type="text" name="j_username">
-	<input type="password" name="j_password">
-	<input type="submit"/>
-</form>
---%>
-

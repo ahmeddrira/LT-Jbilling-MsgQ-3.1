@@ -262,7 +262,7 @@ public class BasicEmailNotificationTask extends PluggableTask
             // send an emial to the entity to let it know about the failure
         	try {
                 String params[] = new String[6]; // five parameters for this message;
-                params[0] = e4.getMessage();
+                params[0] = (e4.getMessage() == null ? "No detailed exception message"  : e4.getMessage());
                 params[1] = "";
                 for (int f =0 ; f < msg.getAllRecipients().length; f++) {
                     params[1] = params[1] + " " + 

@@ -47,6 +47,8 @@ import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocal;
 import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
 import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
+import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
+import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.interfaces.PermissionEntityLocal;
 import com.sapienter.jbilling.interfaces.PermissionUserEntityLocal;
@@ -59,6 +61,9 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.PermissionDTO;
 import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -386,6 +391,28 @@ public class UserBL  extends ResultList
          UserEntityLocal user = UserHome.findByPrimaryKey(userId);
          return user;
          
+     }
+     
+     /**
+      * sent the lost password to the user
+      * @param entityId
+      * @param userId
+      * @param languageId
+      * @throws NamingException
+      * @throws SessionInternalError
+      * @throws FinderException
+      * @throws NotificationNotFoundException when no message row or message row is not activated for the specified entity
+      * @throws CreateException
+      */
+     public void sendLostPassword(Integer entityId, Integer userId, Integer languageId) throws NamingException, SessionInternalError, FinderException, NotificationNotFoundException, CreateException {
+    	 NotificationBL notif = new NotificationBL();
+    	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
+    	 NotificationSessionLocalHome notificationHome =
+    		 (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
+    				 NotificationSessionLocalHome.class,
+    				 NotificationSessionLocalHome.JNDI_NAME);
+    	NotificationSessionLocal notificationSess = notificationHome.create();
+    	notificationSess.notify(userId, message);
      }
      
      public UserEntityLocal getEntity() {

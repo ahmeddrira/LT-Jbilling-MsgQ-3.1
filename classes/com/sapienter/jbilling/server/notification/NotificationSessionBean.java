@@ -105,7 +105,7 @@ public class NotificationSessionBean implements SessionBean {
         
         return retValue;
     }
-
+    
     /**
      * Sends an email with the invoice to a customer.
      * This is used to manually send an email invoice from the GUI

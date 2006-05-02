@@ -23,6 +23,14 @@
   			<param-name>signup_prefix</param-name>
   			<param-value>/signup</param-value>
   		</init-param>
+  		<init-param>
+  			<param-name>forgetPassword_page</param-name>
+  			<param-value>/user/forgetPassword.jsp</param-value>
+  		</init-param>
+  		<init-param>
+  			<param-name>forgetPassword_action</param-name>
+  			<param-value>/forgetPassword.do</param-value>
+  		</init-param>
   </filter>
   <filter>
   		<filter-name>Menu Selection</filter-name>

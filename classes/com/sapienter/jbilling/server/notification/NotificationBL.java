@@ -361,6 +361,24 @@ public class NotificationBL extends ResultList
         
         return message;
     }
+    
+    public MessageDTO getForgetPasswordEmailMessage(Integer entityId,
+    		Integer userId,
+    		Integer languageId) throws SessionInternalError, 
+    			FinderException, NotificationNotFoundException, NamingException {
+    	MessageDTO message = initializeMessage(entityId, userId);
+    	
+    	message.setTypeId(MessageDTO.TYPE_FORGETPASSWORD_EMAIL);
+    	
+    	try {
+    		setContent(message, MessageDTO.TYPE_FORGETPASSWORD_EMAIL,
+    				entityId, languageId);
+    	} catch (NamingException e) {
+    		throw new SessionInternalError(e);
+    	}
+    	
+    	return message;
+    }
 
     public MessageDTO getInvoiceEmailMessage(Integer entityId, Integer languageId, 
             InvoiceEntityLocal invoice) 

@@ -15,6 +15,16 @@
 	  <put name="footer" value="/common/footer.jsp" />
       <put name="body" value="/user/loginBody.jsp" />
   </definition>
+  
+  <!-- =======================================================  -->
+  <!-- Forget Password                                               -->
+  <!-- =======================================================  -->
+  
+  <definition name="forgetPassword" path="/layouts/centerLayout.jsp">
+      <put name="title" value="Billing User Forget Password" />
+	  <put name="footer" value="/common/footer.jsp" />
+      <put name="body" value="/user/forgetPasswordBody.jsp" />
+  </definition>
 
   <!-- =======================================================  -->
   <!-- Main screen                                              

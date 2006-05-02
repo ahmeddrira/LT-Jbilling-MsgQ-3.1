@@ -2932,7 +2932,7 @@ INSERT INTO international_description (table_id, foreign_id, psudo_column, langu
 INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (52, 19, 'description', 1, 'Update Credit Card');
 INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (20, 4, 'description', 1, 'Suspended (auto)');
 INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (18, 3, 'description', 1, 'Penalty');
-
+INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (52, 20, 'description', 1, 'Lost password');
 
 --
 -- Data for TOC entry 273 (OID 4131154)
@@ -3069,7 +3069,7 @@ INSERT INTO notification_message_type (id, sections) VALUES (16, 2);
 INSERT INTO notification_message_type (id, sections) VALUES (17, 2);
 INSERT INTO notification_message_type (id, sections) VALUES (18, 2);
 INSERT INTO notification_message_type (id, sections) VALUES (19, 2);
-
+INSERT INTO notification_message_type (id, sections) VALUES (20, 2);
 
 --
 -- Data for TOC entry 281 (OID 4131171)

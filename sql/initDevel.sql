@@ -7,13 +7,13 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: jbilling; Type: DATABASE; Schema: -; Owner: postgres
+-- Name: jbilling; Type: DATABASE; Schema: -; Owner: jbilling_user
 --
 
 CREATE DATABASE jbilling WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII';
 
 
-ALTER DATABASE jbilling OWNER TO postgres;
+ALTER DATABASE jbilling OWNER TO jbilling_user;
 
 \connect jbilling
 
@@ -990,7 +990,8 @@ CREATE TABLE payment (
     currency_id integer NOT NULL,
     payout_id integer,
     ach_id integer,
-    balance double precision
+    balance double precision,
+    update_datetime timestamp without time zone
 );
 
 
@@ -1440,7 +1441,8 @@ INSERT INTO ageing_entity_step (id, entity_id, status_id, days) VALUES (1, 1, 1,
 --
 
 INSERT INTO base_user (id, entity_id, "password", deleted, language_id, status_id, currency_id, create_datetime, last_status_change, last_login, user_name) VALUES (2, 1, 'asdfasdf', 0, 1, 1, 1, '2006-04-12 13:55:15.287', NULL, '2006-04-13 10:13:19.449', 'gandalf');
-INSERT INTO base_user (id, entity_id, "password", deleted, language_id, status_id, currency_id, create_datetime, last_status_change, last_login, user_name) VALUES (1, 1, 'asdfasdf', 0, 1, 1, 1, '2006-04-12 00:00:00', NULL, '2006-04-13 13:30:06.707', 'admin');
+INSERT INTO base_user (id, entity_id, "password", deleted, language_id, status_id, currency_id, create_datetime, last_status_change, last_login, user_name) VALUES (1, 1, 'asdfasdf', 0, 1, 1, 1, '2006-04-12 00:00:00', NULL, '2006-05-08 13:22:38.015', 'admin');
+INSERT INTO base_user (id, entity_id, "password", deleted, language_id, status_id, currency_id, create_datetime, last_status_change, last_login, user_name) VALUES (12, 1, 'asdfasdf', 0, 1, 1, 1, '2006-05-08 13:21:45.279', NULL, '2006-05-08 13:21:59.70', 'nob');
 
 
 --
@@ -1481,6 +1483,7 @@ INSERT INTO billing_process_configuration (id, entity_id, next_run_date, generat
 INSERT INTO contact (id, organization_name, street_addres1, street_addres2, city, state_province, postal_code, country_code, last_name, first_name, person_initial, person_title, phone_country_code, phone_area_code, phone_phone_number, fax_country_code, fax_area_code, fax_phone_number, email, create_datetime, deleted, notification_include, user_id) VALUES (1, 'Prancing Pony', '1234 Great East Road', '', 'Bree', 'Middle Earth', '54321', 'CA', NULL, NULL, NULL, NULL, NULL, 123, '123-12312', NULL, NULL, NULL, 'admin@pp.me', '2006-04-12 00:00:00', 0, 1, NULL);
 INSERT INTO contact (id, organization_name, street_addres1, street_addres2, city, state_province, postal_code, country_code, last_name, first_name, person_initial, person_title, phone_country_code, phone_area_code, phone_phone_number, fax_country_code, fax_area_code, fax_phone_number, email, create_datetime, deleted, notification_include, user_id) VALUES (2, 'Prancing Pony', '1234 Great East Road', '', 'Bree', 'Middle Earth', '54321', 'CA', 'Butterbur', 'Barliman', NULL, NULL, NULL, 123, '123-12312', NULL, NULL, NULL, 'admin@pp.me', '2006-04-12 00:00:00', 0, 1, 1);
 INSERT INTO contact (id, organization_name, street_addres1, street_addres2, city, state_province, postal_code, country_code, last_name, first_name, person_initial, person_title, phone_country_code, phone_area_code, phone_phone_number, fax_country_code, fax_area_code, fax_phone_number, email, create_datetime, deleted, notification_include, user_id) VALUES (3, NULL, NULL, NULL, NULL, NULL, NULL, 'CA', 'Wizard', 'Gandalf', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'gandalf@noemail.no', '2006-04-12 13:55:15.557', 0, 1, 2);
+INSERT INTO contact (id, organization_name, street_addres1, street_addres2, city, state_province, postal_code, country_code, last_name, first_name, person_initial, person_title, phone_country_code, phone_area_code, phone_phone_number, fax_country_code, fax_area_code, fax_phone_number, email, create_datetime, deleted, notification_include, user_id) VALUES (13, NULL, NULL, NULL, NULL, NULL, NULL, 'CA', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'barman@noemail.ne', '2006-05-08 13:21:45.75', 0, 1, 12);
 
 
 --
@@ -1502,6 +1505,7 @@ INSERT INTO contact (id, organization_name, street_addres1, street_addres2, city
 INSERT INTO contact_map (id, contact_id, type_id, table_id, foreign_id) VALUES (6780, 1, 1, 5, 1);
 INSERT INTO contact_map (id, contact_id, type_id, table_id, foreign_id) VALUES (6781, 2, 2, 10, 1);
 INSERT INTO contact_map (id, contact_id, type_id, table_id, foreign_id) VALUES (6782, 3, 2, 10, 2);
+INSERT INTO contact_map (id, contact_id, type_id, table_id, foreign_id) VALUES (6792, 13, 2, 10, 12);
 
 
 --
@@ -1880,6 +1884,7 @@ INSERT INTO event_log_module (id) VALUES (6);
 INSERT INTO event_log_module (id) VALUES (7);
 INSERT INTO event_log_module (id) VALUES (8);
 INSERT INTO event_log_module (id) VALUES (9);
+INSERT INTO event_log_module (id) VALUES (10);
 
 
 --
@@ -2615,6 +2620,7 @@ INSERT INTO international_description (table_id, foreign_id, psudo_column, langu
 INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (41, 3, 'description', 2, 'Procesador no disponible');
 INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (41, 4, 'description', 2, 'Ingresado');
 INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (14, 11, 'description', 1, 'Coffee - one per day - Monthly');
+INSERT INTO international_description (table_id, foreign_id, psudo_column, language_id, content) VALUES (52, 20, 'description', 1, 'Lost password');
 
 
 --
@@ -2765,10 +2771,7 @@ INSERT INTO jbilling_table (id, name, next_id) VALUES (53, 'notification_message
 INSERT INTO jbilling_table (id, name, next_id) VALUES (54, 'notification_message_section', 17);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (55, 'notification_message_line', 17);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (0, 'report', 20);
-INSERT INTO jbilling_table (id, name, next_id) VALUES (10, 'base_user', 12);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (12, 'customer', 11);
-INSERT INTO jbilling_table (id, name, next_id) VALUES (29, 'contact_map', 6792);
-INSERT INTO jbilling_table (id, name, next_id) VALUES (27, 'contact', 13);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (13, 'item_type', 11);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (17, 'order_period', 13);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (51, 'preference', 25);
@@ -2778,13 +2781,16 @@ INSERT INTO jbilling_table (id, name, next_id) VALUES (21, 'purchase_order', 21)
 INSERT INTO jbilling_table (id, name, next_id) VALUES (22, 'order_line', 21);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (39, 'invoice', 21);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (49, 'order_process', 21);
-INSERT INTO jbilling_table (id, name, next_id) VALUES (42, 'payment', 21);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (44, 'credit_card', 21);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (48, 'event_log', 11);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (56, 'notification_message_archive', 11);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (57, 'notification_message_archive_line', 11);
-INSERT INTO jbilling_table (id, name, next_id) VALUES (43, 'payment_info_cheque', 11);
 INSERT INTO jbilling_table (id, name, next_id) VALUES (40, 'invoice_line', 31);
+INSERT INTO jbilling_table (id, name, next_id) VALUES (10, 'base_user', 22);
+INSERT INTO jbilling_table (id, name, next_id) VALUES (29, 'contact_map', 6802);
+INSERT INTO jbilling_table (id, name, next_id) VALUES (27, 'contact', 23);
+INSERT INTO jbilling_table (id, name, next_id) VALUES (42, 'payment', 31);
+INSERT INTO jbilling_table (id, name, next_id) VALUES (43, 'payment_info_cheque', 21);
 
 
 --
@@ -3531,6 +3537,7 @@ INSERT INTO notification_message_type (id, sections) VALUES (16, 2);
 INSERT INTO notification_message_type (id, sections) VALUES (17, 2);
 INSERT INTO notification_message_type (id, sections) VALUES (18, 2);
 INSERT INTO notification_message_type (id, sections) VALUES (19, 2);
+INSERT INTO notification_message_type (id, sections) VALUES (20, 2);
 
 
 --
@@ -3622,11 +3629,12 @@ INSERT INTO order_status (id) VALUES (4);
 -- Data for Name: payment; Type: TABLE DATA; Schema: public; Owner: jbilling_user
 --
 
-INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance) VALUES (1, 2, 1, 4, 10, '2006-04-12 15:35:15.855', '2006-04-12', 2, 1, 0, 0, NULL, 1, NULL, NULL, 0);
-INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance) VALUES (2, 2, 1, 2, 20, '2006-04-12 15:35:59.338', '2006-04-12', 2, 2, 0, 0, NULL, 1, NULL, NULL, 20);
-INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance) VALUES (11, 2, 1, 4, 15, '2006-04-13 13:42:43.145', '2006-04-13', 2, 11, 0, 0, NULL, 1, NULL, NULL, 0);
-INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance) VALUES (12, 2, 1, 4, 35, '2006-04-13 13:45:53.429', '2006-04-13', 1, NULL, 0, 0, NULL, 1, NULL, NULL, 0);
-INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance) VALUES (13, 2, 1, 4, 25, '2006-04-13 13:47:08.747', '2006-04-13', 2, 12, 0, 0, NULL, 1, NULL, NULL, 0);
+INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance, update_datetime) VALUES (1, 2, 1, 4, 10, '2006-04-12 15:35:15.855', '2006-04-12', 2, 1, 0, 0, NULL, 1, NULL, NULL, 0, NULL);
+INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance, update_datetime) VALUES (2, 2, 1, 2, 20, '2006-04-12 15:35:59.338', '2006-04-12', 2, 2, 0, 0, NULL, 1, NULL, NULL, 20, NULL);
+INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance, update_datetime) VALUES (11, 2, 1, 4, 15, '2006-04-13 13:42:43.145', '2006-04-13', 2, 11, 0, 0, NULL, 1, NULL, NULL, 0, NULL);
+INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance, update_datetime) VALUES (12, 2, 1, 4, 35, '2006-04-13 13:45:53.429', '2006-04-13', 1, NULL, 0, 0, NULL, 1, NULL, NULL, 0, NULL);
+INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance, update_datetime) VALUES (13, 2, 1, 4, 25, '2006-04-13 13:47:08.747', '2006-04-13', 2, 12, 0, 0, NULL, 1, NULL, NULL, 0, NULL);
+INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, payment_id, currency_id, payout_id, ach_id, balance, update_datetime) VALUES (21, 2, 1, 4, 10, '2006-05-08 13:25:23.984', '2006-05-08', 1, NULL, 0, 1, NULL, 1, NULL, NULL, 0, NULL);
 
 
 --
@@ -3640,6 +3648,7 @@ INSERT INTO payment (id, user_id, attempt, result_id, amount, create_datetime, p
 --
 
 INSERT INTO payment_info_cheque (id, payment_id, bank, cheque_number, cheque_date) VALUES (1, 12, 'Gold Miners Ltd.', '12345', '2006-10-10');
+INSERT INTO payment_info_cheque (id, payment_id, bank, cheque_number, cheque_date) VALUES (11, 21, 'Gold Miners Ltd.', '12345', '2006-10-10');
 
 
 --
@@ -5542,6 +5551,7 @@ INSERT INTO "role" (id) VALUES (5);
 
 INSERT INTO user_role_map (user_id, role_id) VALUES (1, 2);
 INSERT INTO user_role_map (user_id, role_id) VALUES (2, 5);
+INSERT INTO user_role_map (user_id, role_id) VALUES (12, 3);
 
 
 --

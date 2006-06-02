@@ -156,6 +156,8 @@ public class MaintainAction extends Action {
                 UserDTOEx orgUser = (UserDTOEx) session.getAttribute(
                         Constants.SESSION_CUSTOMER_DTO);
 				log.debug("Updating user: ");
+                // general validation first
+                errors = userForm.validate(mapping, request);
                 // verify that the password and the verification password 
                 // are the same, but only if the verify password has been
                 // entered, otherwise will consider that the password is not

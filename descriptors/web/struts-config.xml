@@ -462,7 +462,7 @@
 <forward name="edit" path="/user/editContact.jsp" redirect="false" />
 <forward name="done" path="/user/edit.jsp" redirect="false" />
 </action>
-<action path="/userMaintain" type="com.sapienter.jbilling.client.user.MaintainAction" name="userEdit" scope="session" validate="true" input="/user/edit.jsp">
+<action path="/userMaintain" type="com.sapienter.jbilling.client.user.MaintainAction" name="userEdit" scope="session" validate="false" input="/user/edit.jsp">
 <forward name="view" path="/user/view.jsp" redirect="false" />
 <forward name="order" path="/order/edit.jsp" redirect="false" />
 </action>

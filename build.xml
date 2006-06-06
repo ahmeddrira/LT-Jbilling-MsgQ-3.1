@@ -229,8 +229,6 @@
             <src path="${build.generate.dir}"/>
             <src path="${source.classes.dir}"/>
         </javac>
-
-        <!-- don't forget precompilation of jsp for early checks -->
     </target>
 
    <!-- =================================================================== -->
@@ -291,6 +289,7 @@
               <include name="${source.common.package.dir}/**"/>
               <include name="${source.client.package.dir}/**"/>
               <include name="${source.server.package.dir}/**"/>
+          	  <include name="org/apache.jsp/**"/>
               <exclude name="${source.server.package.dir}/**/*BL.class"/> 
               <exclude name="${source.server.package.dir}/**/*Bean.class"/> 
               <exclude name="${source.server.package.dir}/**/*SQL.class"/> 
@@ -375,13 +374,8 @@
 
    <!-- Wipes out the whole thing -->
     <target name="purge">
-        <delete>
-        	<fileset dir="${build.dir}">
-        		<include name="**/*.java"/>
-        		<include name="**/*.class"/>
-        		<include name="**/*.xml"/>
-        		<include name="**/*.properties"/>
-      		</fileset>
+        <delete includeemptydirs="true">
+        	<fileset dir="${build.dir}" includes="**/*"/>
       	</delete>
     </target>
 
@@ -573,7 +567,7 @@ CREATE TABLE report_entity_map
 
 
    	<!-- Creates the full downloadable package -->
-	<target name="packageImage">
+	<target name="packageImage" depends="jspc">
 		<!-- make sure it'll get the latest binaries -->
 		<copy todir="${image.source.dir}/jbilling/server/jbilling/deploy">
             <fileset dir="${build.deploy.dir}"/>
@@ -582,7 +576,6 @@ CREATE TABLE report_entity_map
 		<delete dir="${image.source.dir}/jbilling/server/jbilling/tmp"/>
         <delete>
             <fileset dir="${image.source.dir}/jbilling/server">
-                <include name="**/*_jsp.class"/>
                 <include name="**/*_jsp.java"/>
                 <include name="**/server.log.*"/>
             </fileset>
@@ -601,6 +594,13 @@ CREATE TABLE report_entity_map
 		<mkdir dir="${image.source.dir}/jbilling/resources/logos"/>
 		<copy file="${source.view.dir}/graphics/jbilling-paper.jpg" 
 			tofile="${image.source.dir}/jbilling/resources/logos/entity-1.jpg"/>
+		<!-- Make the classes created out of the jsp pages available -->
+		<mkdir dir="${image.source.dir}/jbilling/server/jbilling/work/jboss.web/localhost/billing"/>
+		<copy todir="${image.source.dir}/jbilling/server/jbilling/work/jboss.web/localhost/billing">
+		    <fileset dir="${source.dir}\build\jsp-classes">
+		    	<include name="**/*.class"/>
+		    </fileset>
+		</copy>
 
 		<mkdir dir="${image.target.dir}"/>
 		<zip filesonly="false" update="false"
@@ -641,6 +641,69 @@ CREATE TABLE report_entity_map
 	            </fileset>
 		</ftp>
 	</target>
+	
+	<!-- JSPC target to precompile JSP's 
+	     This is only used to generate the binary image for a release,
+	     to avoid having the Java SDK as a requirement. -->
+	<target name="jspc">  
+
+		<taskdef classname="org.apache.jasper.JspC" name="jasper2"> 
+		
+			<classpath id="jspc.classpath">
+				<!-- Classpath for extra jars -->
+				<fileset dir="${jboss.web.dir}">
+					<include name="jsp-api.jar" /> 
+					<include name="commons-el.jar" /> 
+					<include name="jasper-compiler.jar" /> 
+		    		<include name="jasper-runtime.jar" /> 
+					<include name="servlet-api.jar" />
+					<include name="commons-logging.jar"/> 
+				</fileset>
+			
+				<!-- Directory for taglibs -->
+				<dirset dir="${source.dir}\build\classes">
+				</dirset>
+					
+				<fileset dir="${libs.client.lib.dir}"> 
+					<include name="struts.jar"/>
+				    <include name="taglibs-session.jar"/> 		
+					<include name="standard.jar"/>
+				    <include name="jstl.jar"/>
+			    </fileset>
+						      	
+				<fileset dir="${jboss.server.dir}/lib"> 
+					<include name="rowset.jar"/> 
+				</fileset>
+			</classpath>
+	    
+		</taskdef> 
+	
+		<!-- Copy the view to the build directory -->
+		<copy todir="${build.dir}\">
+			<fileset dir="${source.dir}\view">
+				<include name="**/*.jsp"/>
+			</fileset>
+		</copy>
+		
+		<!-- Create the directory to hold compiled jsp-->
+		
+		<mkdir dir="${source.dir}\build\jsp-classes"/> 
+		
+	 	<!-- Compile the jsp to .java files -->
+	 	<jasper2 
+	    	validateXml="false" 
+	      	uriroot = "${source.dir}\build\"
+	     	outputDir = "${source.dir}\build\jsp-classes\"/>
+			
+		  
+		<!-- Compile the intermediate jsp's-->
+		<javac srcdir="${source.dir}\build\jsp-classes\"  destdir="${source.dir}\build\jsp-classes\" > 
+			<classpath refid="jspc.classpath" /> 
+			<classpath refid="compile.classpath" />
+		</javac> 
+		
+	</target>
+
 </project>
   <!--
   <property name="showme" refid="test.classpath"/>

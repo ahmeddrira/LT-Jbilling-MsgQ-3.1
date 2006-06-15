@@ -1759,6 +1759,7 @@ public class GenericMaintainAction {
     
     private String delete() throws SessionInternalError, RemoteException {
         String retValue = null;
+       
         
         if (mode.equals("type")) {    
             ((ItemSession) remoteSession).deleteType(executorId, 
@@ -1783,6 +1784,11 @@ public class GenericMaintainAction {
             ((UserSession) remoteSession).removeACH(
             		(Integer) session.getAttribute(Constants.SESSION_USER_ID),
 					executorId);
+        } else if (mode.equals("payment")) {
+            PaymentDTOEx paymentDto = (PaymentDTOEx) session
+                    .getAttribute(Constants.SESSION_PAYMENT_DTO);
+            Integer id = paymentDto.getId();
+            ((PaymentSession) (remoteSession)).deletePayment(id);
         }
                 
         session.removeAttribute(formName); 

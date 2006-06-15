@@ -378,6 +378,7 @@
 <forward name="paymentList" path="/payment/list.jsp" redirect="false" />
 <forward name="paymentCreate" redirect="false" path="/paymentMaintain.do?action=setup&amp;mode=payment" />
 <forward name="paymentView" path="/paymentMaintain.do?action=view&amp;mode=payment" redirect="false" />
+<forward name="payment_deleted" path="/payment/list.jsp" redirect="false"  />
 <forward name="userEdit" path="/user/edit.jsp" redirect="false" />
 <forward name="userMaintain" path="/user/maintain.jsp" redirect="false" />
 <forward name="userView" redirect="false" path="/userMaintain.do?action=setup" />

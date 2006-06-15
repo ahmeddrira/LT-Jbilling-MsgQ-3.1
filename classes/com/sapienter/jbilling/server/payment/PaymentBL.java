@@ -143,6 +143,8 @@ public class PaymentBL extends ResultList
         payment = paymentHome.findByPrimaryKey(id);
     }
     
+    
+    
     public void create(PaymentDTOEx dto) 
             throws CreateException, NamingException, FinderException {
         // create the record, there's no need for an event to be logged 
@@ -437,10 +439,29 @@ public class PaymentBL extends ResultList
         return cachedResults;
     }
 
+    
+    /**
+     * Does the actual work of deleteing the payment
+     * @throws SessionInternalError
+     */
+    
+    public void delete() throws SessionInternalError {
+    	
+    	try {
+            log.debug("Deleting payment " + payment.getId());
+            payment.setUpdateDateTime(Calendar.getInstance().getTime());
+            payment.setDeleted(new Integer(1));
+        } catch (Exception e) {
+            log.warn("Problem deleteing payment.", e);
+            throw new SessionInternalError("Problem deleteing payment.");
+        }
+     }
+    
     /*
      * This is the list of payment that are refundable. It shows when
      * entering a refund.
      */
+    
     public CachedRowSet getRefundableList(Integer languageId, 
             Integer userId) 
             throws SQLException, Exception {

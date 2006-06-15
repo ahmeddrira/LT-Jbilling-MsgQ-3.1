@@ -36,12 +36,19 @@ Contributor(s): ______________________________________.
 <table>
 <%-- these modify links are only for those with the permission --%>
 <jbilling:permission permission='<%=Constants.P_PAYMENT_MODIFY%>'>
-   <%-- we can only edit ENTERED payments --%>
+   <%-- we can only edit or delete payments NOT linked to any invoice--%>
+   <logic:empty name='<%=Constants.SESSION_PAYMENT_DTO%>' property="invoiceIds" 
+                scope="session">
+	    <tr>
+		  <td class="leftMenuOption">
+			  <html:link styleClass="leftMenu" page="/payment/review.jsp?confirm=do&noTitle=yes">
+				  <bean:message key="payment.delete.link"/>
+			  </html:link>
+ 		  </td>
+	    </tr>
+   <%-- only ENTERED payments can be edited --%>
    <logic:equal name='<%=Constants.SESSION_PAYMENT_DTO%>' property="resultId" 
                 value='<%=Constants.RESULT_ENTERED.toString()%>'
-                scope="session">
-   <%-- we can only edit payments NOT linked to any invoice--%>
-   <logic:empty name='<%=Constants.SESSION_PAYMENT_DTO%>' property="invoiceIds" 
                 scope="session">
 	  	<tr>
 		  <td class="leftMenuOption">
@@ -50,8 +57,8 @@ Contributor(s): ______________________________________.
 			  </html:link>
 			  </td>
 	    </tr>
-    </logic:empty>
     </logic:equal>
+    </logic:empty>
 </jbilling:permission>
 </table>
 

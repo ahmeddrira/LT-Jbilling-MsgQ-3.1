@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
@@ -215,6 +216,10 @@ public abstract class PaymentEntityBean implements EntityBean {
      * @jboss.method-attributes read-only="true"
      */
     public abstract Integer getDeleted();
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
     public abstract void setDeleted(Integer del);
 
     /**
@@ -224,6 +229,10 @@ public abstract class PaymentEntityBean implements EntityBean {
      * @jboss.method-attributes read-only="true"
      */
     public abstract Integer getMethodId();
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
     public abstract void setMethodId(Integer method);
 
     /**

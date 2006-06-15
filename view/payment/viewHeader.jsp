@@ -43,3 +43,23 @@ Contributor(s): ______________________________________.
 <html:messages message="true" id="myMessage">
 	<p><bean:write name="myMessage"/></p>
 </html:messages>
+
+
+<%-- Confirm that the payment needs to be deleted --%>
+<logic:present parameter="confirm">
+	<logic:equal parameter="confirm" value="do">
+		  <p>
+		      <bean:message key="payment.delete.confirm"/> <br/>
+              <html:link page="/paymentMaintain.do?action=delete&mode=payment">
+              	   <bean:message key="all.prompt.yes"/>
+              </html:link><br/>
+              <html:link page="/payment/list.jsp?confirm=no">
+              	   <bean:message key="all.prompt.no"/>
+              </html:link><br/>
+   	    </p>
+	</logic:equal>
+	<logic:equal parameter="confirm" value="no">
+          <p><bean:message key="payment.delete.notDone"/></p>
+	</logic:equal>	
+</logic:present>
+

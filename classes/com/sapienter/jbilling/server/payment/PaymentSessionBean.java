@@ -68,7 +68,6 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
 public class PaymentSessionBean implements SessionBean {
 
     private Logger log = null;
-    private SessionContext context = null;
 
     /**
     * Create the Session Bean
@@ -146,6 +145,25 @@ public class PaymentSessionBean implements SessionBean {
         } 
         
         return retValue;
+    }
+    
+    /**
+     * This method soft deletes a payment
+     * 
+     * @param integer
+     * @throws SessionInternalError
+     * @ejb:interface-method view-type="remote"
+     */
+    public void deletePayment(Integer paymentId) throws SessionInternalError {
+
+        try {
+            PaymentBL bl = new PaymentBL(paymentId);
+            bl.delete();
+
+        } catch (Exception e) {
+            log.warn("Problem deleteing payment.", e);
+            throw new SessionInternalError("Problem deleteing payment");
+        }
     }
     
     
@@ -580,7 +598,6 @@ public class PaymentSessionBean implements SessionBean {
     public void setSessionContext(SessionContext aContext)
             throws EJBException, RemoteException {
         log = Logger.getLogger(PaymentSessionBean.class);
-        context = aContext;
     }
 
 }

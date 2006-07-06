@@ -90,7 +90,7 @@ public abstract class ReportEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
-     * @jboss:column-name name="tables"
+     * @jboss:column-name name="tables_list"
      * @jboss.method-attributes read-only="true"
      */
     public abstract String getTables();

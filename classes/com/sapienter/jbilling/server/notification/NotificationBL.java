@@ -755,10 +755,13 @@ public class NotificationBL extends ResultList
             String username, String password) 
     		throws FileNotFoundException, SessionInternalError {
     	try {
+            Logger log = Logger.getLogger(NotificationBL.class);
     		// This is needed for JasperRerpots to work, for some twisted XWindows issue
     		System.setProperty("java.awt.headless", "true");
-			File compiledDesign = new File(com.sapienter.jbilling.common.Util.getSysProp("base_dir") + 
-                    "designs/" + design + ".jasper");
+            String designFile = com.sapienter.jbilling.common.Util.getSysProp("base_dir") + 
+                    "designs/" + design + ".jasper";
+			File compiledDesign = new File(designFile);
+			log.debug("Generating paper invoice with design file : " + designFile);
 			FileInputStream stream = new FileInputStream(compiledDesign);
             Locale locale = (new UserBL(invoice.getUserId())).getLocale();
 			
@@ -785,7 +788,7 @@ public class NotificationBL extends ResultList
 					invoice.getCreateDateTime(), invoice.getUserId()));
 			parameters.put("invoiceDueDate", Util.formatDate(
 					invoice.getDueDate(), invoice.getUserId()));
-			Logger.getLogger(NotificationBL.class).debug("m1 = " + message1 + " m2 = " + message2);
+			log.debug("m1 = " + message1 + " m2 = " + message2);
 			System.out.println("m1 = " + message1 + " m2 = " + message2);
 			if (message1 == null || message1.length() == 0) {
 				message1 = " ";
@@ -888,6 +891,8 @@ public class NotificationBL extends ResultList
                     invoice.getUserId(), invoice.getCurrencyId(), false));
             parameters.put("balance", Util.formatMoney(invoice.getBalance(), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));
+
+            log.debug("Parameter tax = " + parameters.get("tax"));
 
             
 			JRBeanCollectionDataSource data = new JRBeanCollectionDataSource(

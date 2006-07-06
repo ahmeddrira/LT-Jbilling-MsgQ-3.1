@@ -184,8 +184,6 @@
          </valueobject>
          <jboss version="${jboss.version}"
             xmlencoding="UTF-8"
-            typemapping="${jboss.DBmapping}"
-            datasource="${jboss.datasource}"
             destdir="${build.dir}/META-INF"
             validateXml="false"
          />
@@ -421,7 +419,7 @@
 
   <target name="test-process-only">
     <javac debug="on" destdir="${build.test.dir}"
-           srcdir="${source.test.dir}/com.sapienter.jbilling/server/process">
+           srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
         <classpath refid="test.classpath"/>
     </javac>
       <junit printsummary="off"
@@ -472,10 +470,81 @@
       </junit>
   </target>
   
-  <target name="db" depends="init" if="db-type">
+  <target name="db" depends="init">
+     <!-- copy the schema files into torque dirs -->
+     <copy todir="${torque.home.dir}/src/schema">
+        <fileset dir="${source.torque.descriptor.dir}" includes="jbilling*"/>
+     </copy>
+
 	 <ant dir="${torque.home.dir}" 
 	 	  antfile="build-torque.xml"
-	 	  target="insert-sql" />
+	 	  target="sql" >
+        <property name="torque.database" value="mysql"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-mysql.sql"/>
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="sql" >
+        <property name="torque.database" value="db2"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-db2.sql"/>
+
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="sql" >
+        <property name="torque.database" value="hypersonic"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-hypersonic.sql"/>
+
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="sql" >
+        <property name="torque.database" value="mssql"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-mssql.sql"/>
+
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="sql" >
+        <property name="torque.database" value="oracle"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-oracle.sql"/>
+
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="sql" >
+        <property name="torque.database" value="postgresql"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-postgresql.sql"/>
+
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="sql" >
+        <property name="torque.database" value="sybase"/>
+     </ant>
+     <copy file="${torque.home.dir}/src/sql/jbilling-schema.sql"
+           tofile="${image.source.dir}/jbilling/resources/db-samples/jbilling-schema-sybase.sql"/>
+
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="datasql" />
+     <copy file="${torque.home.dir}/src/jbilling-data.sql"
+           todir="${image.source.dir}/jbilling/resources/db-samples"/>
+
+  </target>
+
+  <target name="db-old" depends="init" if="db-type">
+	 <ant dir="${torque.home.dir}" 
+	 	  antfile="build-torque.xml"
+	 	  target="insert-sql" >
+        <property>torque.database=mysql</property>
+     </ant>
      
      <javac debug="on" destdir="${build.test.dir}"
             srcdir="${source.test.dir}/com.sapienter.jbilling/server"
@@ -567,7 +636,7 @@ CREATE TABLE report_entity_map
 
 
    	<!-- Creates the full downloadable package -->
-	<target name="packageImage" depends="jspc">
+	<target name="packageImage" depends="db,jspc">
 		<!-- make sure it'll get the latest binaries -->
 		<copy todir="${image.source.dir}/jbilling/server/jbilling/deploy">
             <fileset dir="${build.deploy.dir}"/>

@@ -1,22 +1,15 @@
 
-Generating the schema:
-----------------------------------
+Generating the schema and data sql files:
+-----------------------------------------
+1) Download/unzip torque generator. Make sure is GENERATOR and not runtime.
+2) Edit the torque file build.properties with this line:
+        torque.project = jbilling
+3) Edit the jbilling file build.properties to match the place you've unzipped torque:
+        torque.home.dir=${tools.dir}/torque-gen-3.2
+   Make sure you also have properly configured the image properties. Here is where the resulting sql files will end up
+        image.source.dir=c:/bop/image/source
+4) Run 'ant db' . If the last part fails, make sure you have plenty of RAM for you JVM, about 300M
 
-- Pick to which database you want to create:
-    copy build.properties.mysql/postgresql to  {torque.dir}/build.properties
-    
-- Generate the sql script with all the create table statemets. Don't worry about
-the old tables being there, the script will include all the drops.
-   Go to the {torque.dir} and run : 
-			ant -f build-torque.xml sql
-			
-    That will generate the file in one of torque's directories. It won't have to be 
-    accessed directly, but it's handy to see the statement that was executed when
-    an error happens, and to try running it directly on DBVis.
-    
-    To run the script run :
-            and -f build-torque.xml insert-sql
-            
 Data types issues
 -----------------
 The mapping of the data types torque - mysql/postgres are in the 
@@ -34,8 +27,13 @@ Common errors :(
 -----------------
 
   To run the 'create-db' target. It is useless.
-  To create/recreate the betty database
   
+Hypersonic getting started:
+---------------------------
+ - The database is just 4 files in jbilling\server\jbilling\data\hypersonic
+ - Deleteing this files is like dropping the database ;)
+ - To startup the server: java -cp hsqldb.jar org.hsqldb.Server -port 1701 -database.0 localDB
+ - To run a query: java -cp hsqldb.jar org.hsqldb.util.SqlTool --autoCommit  localDB ../../../resources/db-samples/jbilling-schema-hypersonic.sql
   
 PostgreSQL getting started:
 ----------------------------------------

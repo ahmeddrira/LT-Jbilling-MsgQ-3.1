@@ -871,9 +871,9 @@ public class BillingProcessTest extends TestCase {
     public void testQuicky() {
         try {
             cal.clear();
-            cal.set(2005, GregorianCalendar.SEPTEMBER, 5); 
-//            remoteBillingProcess.trigger(cal.getTime());
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            cal.set(2006, GregorianCalendar.JULY, 6); 
+            remoteBillingProcess.trigger(cal.getTime());
+            //remoteBillingProcess.reviewUsersStatus(cal.getTime());
         } catch (Exception e) {
             fail(e.getMessage());
         }

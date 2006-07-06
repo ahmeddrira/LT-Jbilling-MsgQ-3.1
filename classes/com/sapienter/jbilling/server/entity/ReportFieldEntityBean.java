@@ -137,7 +137,7 @@ public abstract class ReportFieldEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
-     * @jboss:column-name name="position"
+     * @jboss:column-name name="position_number"
      * @jboss.method-attributes read-only="true"
      */
     public abstract Integer getPosition();
@@ -183,7 +183,7 @@ public abstract class ReportFieldEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
-     * @jboss:column-name name="function"
+     * @jboss:column-name name="function_name"
      * @jboss.method-attributes read-only="true"
      */
     public abstract String getFunction();
@@ -222,7 +222,7 @@ public abstract class ReportFieldEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
-     * @jboss:column-name name="operator"
+     * @jboss:column-name name="operator_value"
      * @jboss.method-attributes read-only="true"
      */
     public abstract String getOperator();

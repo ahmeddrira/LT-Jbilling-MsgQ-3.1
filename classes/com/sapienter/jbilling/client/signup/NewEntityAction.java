@@ -150,7 +150,7 @@ public class NewEntityAction extends Action {
                         (String) session.getAttribute("signup_language"), null);
 
                 // refresh the jbilling table 
-                RefreshBettyTable toCall = new RefreshBettyTable("jbilling.properties");
+                RefreshBettyTable toCall = new RefreshBettyTable(null);
                 toCall.refresh();
                 
                 // store message

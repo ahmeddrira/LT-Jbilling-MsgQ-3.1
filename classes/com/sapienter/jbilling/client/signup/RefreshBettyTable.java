@@ -36,7 +36,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import javax.naming.NamingException;
+
 import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.JNDILookup;
 
 /**
  * @author Emil
@@ -54,17 +58,33 @@ public class RefreshBettyTable {
         }
     }
     
+    /*
+     * The name of the file has to start with '/'. 
+     * Example: "/jbilling.properties"
+     * Otherwise it won't find it in the classpath 
+     */
     public RefreshBettyTable(String propertiesFile) 
             throws FileNotFoundException, IOException, 
-            ClassNotFoundException, SQLException {
-        Properties globalProperties = new Properties();
-        globalProperties.load(RefreshBettyTable.class.getResourceAsStream("/jbilling.properties"));
+            ClassNotFoundException, SQLException, NamingException {
+        if (propertiesFile != null) {
+            Properties globalProperties = new Properties();
+            globalProperties.load(RefreshBettyTable.class.getResourceAsStream(
+                    propertiesFile));
+            
+            Class.forName(globalProperties.getProperty("driver_class"));
+            conn = DriverManager.getConnection(
+                    globalProperties.getProperty("connection_url"),
+                    globalProperties.getProperty("connection_username"),
+                    globalProperties.getProperty("connection_password"));
+        } else {
+            JNDILookup jndi = JNDILookup.getFactory();
+            // the connection will be closed by the RowSet as soon as it
+            // finished executing the command
+            conn = jndi.lookUpDataSource().getConnection();
+        }
         
-        Class.forName(globalProperties.getProperty("driver_class"));
-        conn = DriverManager.getConnection(
-                globalProperties.getProperty("connection_url"),
-                globalProperties.getProperty("connection_username"),
-                globalProperties.getProperty("connection_password"));
+        Logger.getLogger(this.toString()).debug("Refreshing tables with " +
+                "connection = " + conn);
     }
     
     public void refresh() {

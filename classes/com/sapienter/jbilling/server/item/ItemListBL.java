@@ -29,6 +29,8 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
@@ -48,7 +50,7 @@ import com.sapienter.jbilling.server.list.ResultList;
  * @author Emil
  */
 public final class ItemListBL extends ResultList 
-        implements ItemSQL, Serializable {
+        implements ItemSQL, Serializable { 
 
 	public CachedRowSet getList(Integer entityID) 
             throws SQLException, Exception{
@@ -94,11 +96,15 @@ public final class ItemListBL extends ResultList
         return cachedResults;
     }
 
+    /*
+     * This is the list of items shown when an order is being created
+     */
     public ListDTO getOrderList(Integer entityID, Integer languageId, 
             Integer userId) 
             throws FinderException, NamingException, SessionInternalError {
         ListDTO result = new ListDTO();
 
+        log.debug("Runing item list for a new order");
         JNDILookup EJBFactory = JNDILookup.getFactory(false);
         EntityEntityLocalHome entityHome =
                 (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
@@ -134,6 +140,17 @@ public final class ItemListBL extends ResultList
             }
             result.getLines().add(columns);
         }
+        
+        // sort the result by the second column - item description
+        // These lines look kinda tricky. This is an 'anonymous class'
+        // I prefer this than creating a new comparator class that will
+        // be used only once
+       Collections.sort(result.getLines(), new Comparator() {
+           public int compare(Object o1, Object o2) {
+               return ((String)(((Object []) o1)[1])).compareTo(
+                       (String)(((Object []) o2)[1]));
+           }
+       });
         
         return result;
     }

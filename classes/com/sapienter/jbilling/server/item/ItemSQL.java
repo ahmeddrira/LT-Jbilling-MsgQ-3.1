@@ -29,18 +29,6 @@ package com.sapienter.jbilling.server.item;
  * @author Emil
  */
 public interface ItemSQL {
-    // used to list items when ordering
-    static final String listOrder = 
-        "select a.id, b.content, a.price " +
-        "  from item a, international_description b, jbilling_table c " +
-        " where a.entity_id = ? " +
-        "   and a.deleted = 0 " +
-        "   and b.table_id = c.id " +
-        "   and c.name = 'item' " +
-        "   and b.foreign_id = a.id " +
-        "   and b.language_id = ? " +
-        "   and b.psudo_column = 'description' " +
-        " order by a.internal_number";
     
     // the general list of items, shows always the description of
     // the entity. This then prevents items not showing up because

@@ -117,8 +117,6 @@
               todir="${deploy.local.dir}/jboss-net.sar/jboss-net.war/WEB-INF"/>
         <copy file="${source.descriptor.dir}/jboss-net/web.xml"
               todir="${deploy.local.dir}/jboss-net.sar/jboss-net.war/WEB-INF"/>
-     	<copy file="${source.jboss.descriptor.dir}/postgres-ds.xml"
-     		  tofile="${jboss.server.dir}/deploy/postgres-ds.xml"/>
     	<copy file="${source.view.dir}/other/index.html"
     	     		  tofile="${jboss.web.dir}/ROOT.war"/>
 
@@ -556,9 +554,6 @@
         </delete>
 		<!-- ship with some additional files for the installer and
 		     the paper invoice -->
-		<mkdir dir="${image.source.dir}/jbilling/resources/installer"/>
-		<copy file="${source.sql.dir}/init.sql" 
-			todir="${image.source.dir}/jbilling/resources/installer"/>
 		<mkdir dir="${image.source.dir}/jbilling/resources/designs"/>
     	<copy todir="${image.source.dir}/jbilling/resources/designs">
     		<fileset dir="${build.designs.dir}">
@@ -591,11 +586,10 @@
 		<zip filesonly="false" update="false"
             destfile="${image.target.dir}/${image.src.name}">
            <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml"/>
+                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log"/>
             <!-- the following three files are taken from the binary
                  view. My own are configured for my box -->
            <zipfileset dir="${image.source.dir}/jbilling/server/jbilling/conf" includes="log4j.xml" prefix="jbilling/src/descriptors/jboss"/>
-           <zipfileset dir="${image.source.dir}/jbilling/server/jbilling/deploy" includes="postgres-ds.xml" prefix="jbilling/src/descriptors/jboss"/>
            <zipfileset dir="${image.source.dir}/jbilling/server/jbilling/deploy/jbossweb-tomcat50.sar" includes="server.xml" prefix="jbilling/src/descriptors/jboss"/>
            <zipfileset dir="${basedir}" includes="build.xml" prefix="jbilling/src"/>
            <zipfileset dir="${basedir}" includes="build.properties.sample" 
@@ -606,12 +600,13 @@
         </zip>
 	</target>
 	
-	<target name="uploadRelease" depends="packageSource, packageImage">
+	<target name="uploadRelease">
 		<ftp password="admin@jbilling.com" remotedir="incoming" depends="yes"
 			 server="upload.sourceforge.net" userid="anonymous">
 	            <fileset dir="${image.target.dir}">
 	                <include name="${image.src.name}"/>
 	                <include name="${image.name}"/>
+	                <include name="jbilling_installation_instructions.pdf"/>
 	            </fileset>
 		</ftp>
 	</target>

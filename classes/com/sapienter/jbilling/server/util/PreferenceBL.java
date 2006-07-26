@@ -71,6 +71,15 @@ public class PreferenceBL {
                 PreferenceTypeEntityLocalHome.JNDI_NAME);
     }
     
+    /**
+     * If the entity does not have explicitly set the property
+     * it will throw a FinderException, but will still find the
+     * defaut.
+     * So you need to catch the finder and then use the default
+     * @param entityId
+     * @param typeId
+     * @throws FinderException
+     */
     public void set(Integer entityId, Integer typeId) 
             throws FinderException {
         log.debug("Now looking for preference " + typeId + " ent " +

@@ -69,6 +69,7 @@ import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.PreferenceBL;
 
 
 /**
@@ -514,6 +515,7 @@ public class UserBL  extends ResultList
         final int OPTION_PAYMENT_CC = 25;
         final int OPTION_PAYMENT_ACH = 75;
         final int OPTION_PAYMENT_PAYPAL = 90;
+        final int OPTION_CUSTOMER_CONTACT_EDIT = 13;
         
         switch (menuOptionId.intValue()) {
         case OPTION_SUB_ACCOUNTS:
@@ -568,7 +570,21 @@ public class UserBL  extends ResultList
                 log.error("Exception ", e);
             }
             break;
-           
+        case OPTION_CUSTOMER_CONTACT_EDIT:
+            PreferenceBL preference = null;
+            try {
+                preference = new PreferenceBL();
+                preference.set(user.getEntity().getId(), 
+                        Constants.PREFERENCE_CUSTOMER_CONTACT_EDIT);
+                retValue = (preference.getInt() == 1);
+            } catch (FinderException e) {
+                // It doesn't matter, I will take the default
+            } catch (Exception e) {
+                log.error("Exception ", e);
+            } 
+            
+            retValue = (preference.getInt() == 1);
+            break;
         }
         
         return retValue;

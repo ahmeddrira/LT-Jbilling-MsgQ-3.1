@@ -57,7 +57,7 @@ public class AccountAction extends Action {
         // it will go to the default 'account' page
         // this could be editContact or passwordChange
         // this is chaining actions, from this one it goes to the maintain action
-        return mapping.findForward("editContact");        
+        return mapping.findForward("passwordChange");        
 
     }
 }

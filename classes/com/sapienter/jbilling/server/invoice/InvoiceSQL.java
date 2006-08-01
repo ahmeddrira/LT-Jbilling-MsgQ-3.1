@@ -96,7 +96,7 @@ public interface InvoiceSQL {
         "   and i.currency_id = c.id " +
         "   and i.deleted = 0 " +
         "   and co.user_id = bu.id " +
-        " order by 1 desc";
+        " order by 5, 1";
 
     // Last invoice id for a user
     static final String lastIdbyUser =

@@ -63,13 +63,11 @@ public class PaperInvoiceNotificationTask
 		        		"invoiceDto");
 		try {
 	        contact = new ContactBL();
-			// get the customer's address
-	        contact.set(user.getUserId());
+	        contact.setInvoice(invoice.getId());
 	        to = contact.getDTO();
 			entityId = user.getEntity().getId();
 			contact.setEntity(entityId);
 	        from = contact.getDTO();
-
         } catch (Exception e) {
             throw new TaskException(e);
         }

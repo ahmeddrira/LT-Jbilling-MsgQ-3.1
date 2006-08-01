@@ -43,6 +43,7 @@ import com.sapienter.jbilling.interfaces.ContactMapEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ContactTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactTypeEntityLocalHome;
 import com.sapienter.jbilling.server.entity.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class ContactBL {
@@ -96,7 +97,29 @@ public class ContactBL {
         this.entityId = entityId;
     	contact = contactHome.findEntityContact(entityId);
     }
-    
+
+    public void setInvoice(Integer invoiceId) throws FinderException {
+        try {
+            contact = contactHome.findInvoiceContact(invoiceId);
+            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            // this is needed to fetch the entity's custom fields
+            entityId = invoice.getEntity().getUser().getEntity().getId();
+        } catch (FinderException e) {
+            // the invoice doesn't have a explicit contact.
+            // Use the user's primary
+            try {
+                InvoiceBL invoice = new InvoiceBL(invoiceId);
+                set(invoice.getEntity().getUser().getUserId());
+            } catch (NamingException e1) {
+                log.error("Exception finding contact for invoice " + 
+                        invoiceId, e1);
+            } 
+        } catch (NamingException e1) {
+            log.error("Exception finding entity for invoice " + 
+                    invoiceId, e1);
+        } 
+    }
+
     public Integer getPrimaryType(Integer entityId) 
             throws FinderException {
         return contactTypeHome.findPrimary(entityId).getId();
@@ -262,7 +285,8 @@ public class ContactBL {
      * @param dto
      */
     public boolean append(ContactDTOEx dto, Integer userId) 
-            throws NamingException, FinderException, CreateException {
+            throws NamingException, FinderException, CreateException, 
+                SessionInternalError {
         UserBL user = new UserBL(userId);
         Vector types = new Vector(user.getEntity().getEntity().
                 getContactTypes());
@@ -283,7 +307,34 @@ public class ContactBL {
     }
     
     public Integer createForUser(ContactDTOEx dto, Integer userId, 
-            Integer typeId) 
+            Integer typeId) throws SessionInternalError {
+        try {
+            return create(dto, Constants.TABLE_BASE_USER, userId, typeId);
+        } catch (Exception e) {
+            log.debug("Error creating contact for " +
+                    "user " + userId);
+            throw new SessionInternalError(e);
+        }
+    }
+    
+    public Integer createForInvoice(ContactDTOEx dto, Integer invoiceId) 
+            throws NamingException, FinderException, CreateException {
+        return create(dto, Constants.TABLE_INVOICE, invoiceId, new Integer(1));
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @param table
+     * @param foreignId
+     * @param typeId Use 1 if it is not for a user (like and entity or invoice)
+     * @return
+     * @throws NamingException
+     * @throws FinderException
+     * @throws CreateException
+     */
+    public Integer create(ContactDTOEx dto, String table,  
+            Integer foreignId, Integer typeId) 
             throws NamingException, FinderException, CreateException {
         // first thing is to create the map to the user
         ContactMapEntityLocalHome contactMapHome = (ContactMapEntityLocalHome)
@@ -291,7 +342,7 @@ public class ContactBL {
                 ContactMapEntityLocalHome.class,
                 ContactMapEntityLocalHome.JNDI_NAME);
         ContactMapEntityLocal map = contactMapHome.create(typeId, 
-                Constants.TABLE_BASE_USER, userId);
+                table, foreignId);
         
         // now the contact itself
         contact = contactHome.create(map);

@@ -254,6 +254,10 @@ public class InvoiceBL extends ResultList
         
         invoice.setNumber(numberStr);
 
+        // set the invoice's contact info with the current user's primary
+        ContactBL contact = new ContactBL();
+        contact.set(userId);
+        contact.createForInvoice(contact.getDTO(), invoice.getId());
     }
     
     public void createLines(NewInvoiceDTO newInvoice) 

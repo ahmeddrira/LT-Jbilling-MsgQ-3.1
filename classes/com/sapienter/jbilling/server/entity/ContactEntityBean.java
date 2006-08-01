@@ -77,6 +77,13 @@ import com.sapienter.jbilling.server.util.Constants;
  *                       AND c.contactMap.tableId = d.id
  *                       AND d.name = 'entity'"
  *
+ * @ejb:finder signature="ContactEntityLocal findInvoiceContact(java.lang.Integer invoiceId) "
+ *             query="SELECT OBJECT(c)
+ *                      FROM contact c, jbilling_table d
+ *                     WHERE c.contactMap.foreignId = ?1
+ *                       AND c.contactMap.tableId = d.id
+ *                       AND d.name = 'invoice'"
+ *
  * @ejb.value-object name = "Contact"
  *
  * @ejb:pk class="java.lang.Integer"

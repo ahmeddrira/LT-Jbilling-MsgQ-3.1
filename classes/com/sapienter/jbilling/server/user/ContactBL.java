@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -45,6 +46,7 @@ import com.sapienter.jbilling.interfaces.ContactTypeEntityLocalHome;
 import com.sapienter.jbilling.server.entity.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.EventLogger;
 
 public class ContactBL {
     // contact types in synch with the table contact_type
@@ -98,12 +100,15 @@ public class ContactBL {
     	contact = contactHome.findEntityContact(entityId);
     }
 
-    public void setInvoice(Integer invoiceId) throws FinderException {
+    
+    public boolean setInvoice(Integer invoiceId) throws FinderException {
+        boolean retValue = false;
         try {
             contact = contactHome.findInvoiceContact(invoiceId);
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             // this is needed to fetch the entity's custom fields
             entityId = invoice.getEntity().getUser().getEntity().getId();
+            retValue = true;
         } catch (FinderException e) {
             // the invoice doesn't have a explicit contact.
             // Use the user's primary
@@ -118,6 +123,8 @@ public class ContactBL {
             log.error("Exception finding entity for invoice " + 
                     invoiceId, e1);
         } 
+        
+        return retValue;
     }
 
     public Integer getPrimaryType(Integer entityId) 
@@ -464,5 +471,28 @@ public class ContactBL {
             }
         }
 
+    }
+    
+    public void delete() 
+            throws RemoveException {
+        
+        if (contact == null) return;
+        
+        log.debug("Deleting contact " + contact.getId());
+        // delete the map first
+        contact.getContactMap().remove();
+        
+        // now the fields
+        Iterator it = contact.getFields().iterator();
+        while(it.hasNext()) {
+            ContactFieldEntityLocal field = (ContactFieldEntityLocal) it.next();
+            field.remove();
+            // the collection has to be refreshed, or the container will throw
+            it = contact.getFields().iterator();
+        }
+        
+        // last the contact
+        contact.remove();
+        contact = null;
     }
 }

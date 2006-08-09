@@ -421,18 +421,9 @@ public class NotificationBL extends ResultList
                 // no problem, I'll get the defaults
             }
             if (pref.getInt() == 1) {
-                // the language doesn't matter when getting a paper invoice
-                MessageDTO paperMsg = getInvoicePaperMessage(
-                        entityId, null, invoice.getUser().
-                            getLanguageIdField(), invoice);
-                PaperInvoiceNotificationTask task = 
-                        new PaperInvoiceNotificationTask();
-                PluggableTaskBL taskBL = new PluggableTaskBL();
-                taskBL.set(entityId, Constants.PLUGGABLE_TASK_T_PAPER_INVOICE);
-                task.initializeParamters(taskBL.getEntity());
-                 
-                message.setAttachmentFile(task.getPDFFile(invoice.getUser(), 
-                        paperMsg));
+                message.setAttachmentFile(generatePaperInvoiceAsFile(
+                        invoice));
+                log.debug("Setted attachement " + message.getAttachmentFile());
             }
         } catch (Exception e) {
             log.error(e);
@@ -892,7 +883,10 @@ public class NotificationBL extends ResultList
             parameters.put("balance", Util.formatMoney(invoice.getBalance(), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));
 
-            log.debug("Parameter tax = " + parameters.get("tax"));
+            log.debug("Parameter tax = " + parameters.get("tax") +
+                    " totalWithTax = " + parameters.get("totalWithTax") +
+                    " totalWithoutTax = " + parameters.get("totalWithoutTax") +
+                    " balance = " + parameters.get("balance"));
 
             
 			JRBeanCollectionDataSource data = new JRBeanCollectionDataSource(
@@ -1063,5 +1057,29 @@ public class NotificationBL extends ResultList
             throw new SessionInternalError(e);
         }
         return retValue;
+    }
+    
+    public String generatePaperInvoiceAsFile(InvoiceEntityLocal invoice) 
+            throws SessionInternalError{
+
+		try {
+            Integer entityId = invoice.getUser().getEntity().getId();
+
+            // the language doesn't matter when getting a paper invoice
+            MessageDTO paperMsg = getInvoicePaperMessage(
+                    entityId, null, invoice.getUser().
+                        getLanguageIdField(), invoice);
+            PaperInvoiceNotificationTask task = 
+                    new PaperInvoiceNotificationTask();
+            PluggableTaskBL taskBL = new PluggableTaskBL();
+            taskBL.set(entityId, Constants.PLUGGABLE_TASK_T_PAPER_INVOICE);
+            task.initializeParamters(taskBL.getEntity());
+             
+            String filename = task.getPDFFile(invoice.getUser(), paperMsg);
+            
+	        return filename; 			
+		} catch (Exception e) {
+			throw new SessionInternalError(e);
+		}    	
     }
 }

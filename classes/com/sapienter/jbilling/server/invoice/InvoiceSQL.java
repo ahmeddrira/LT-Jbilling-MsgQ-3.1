@@ -89,7 +89,8 @@ public interface InvoiceSQL {
 
     // Invoices generated in a billing process
     static final String processList = 
-        "select i.id, i.public_number, i.id, bu.user_name, co.organization_name, i.due_date, c.symbol, i.total, i.to_process " +
+        "select i.id, i.public_number, i.id, bu.user_name, co.organization_name, " +
+        "       i.due_date, c.symbol, i.total, i.to_process " +
         "  from invoice i, base_user bu, currency c, contact co " +
         " where i.billing_process_id = ? " +
         "   and bu.id = i.user_id " +
@@ -97,6 +98,31 @@ public interface InvoiceSQL {
         "   and i.deleted = 0 " +
         "   and co.user_id = bu.id " +
         " order by 5, 1";
+
+    // Invoices generated in a range
+    static final String rangeList = 
+        "select i.id " +
+        "  from invoice i, base_user bu, currency c, contact co " +
+        " where i.id between ? and ? " +
+        "   and bu.id = i.user_id " +
+        "   and bu.entity_id = ? " +        
+        "   and i.is_review = 0 " +
+        "   and i.currency_id = c.id " +
+        "   and i.deleted = 0 " +
+        "   and co.user_id = bu.id " +
+        " order by i.id";
+    
+    // Invoices generated for a customer
+    static final String custList = 
+        "select i.id " +
+        "  from invoice i, base_user bu, currency c, contact co " +
+        " where i.user_id = ? " +
+        "   and bu.id = i.user_id " +
+        "   and i.is_review = 0 " +
+        "   and i.currency_id = c.id " +
+        "   and i.deleted = 0 " +
+        "   and co.user_id = bu.id " +
+        " order by i.id";
 
     // Last invoice id for a user
     static final String lastIdbyUser =
@@ -169,7 +195,18 @@ public interface InvoiceSQL {
     "   and i.is_review = 0 " +
     "   and i.deleted = 0 " +
     "   and i.create_timestamp >= ? " +
-    "   and i.create_timestamp < ? ";
+    "   and i.create_timestamp < ? " +
+    " order by i.id";
+
+    static final String getIDfromNumber = 
+        "select min(i.id) " +
+        "  from invoice i, base_user b " +
+        " where b.entity_id = ? " +
+        "   and i.user_id = b.id " +
+        "   and i.is_review = 0 " +
+        "   and i.deleted = 0 " +
+        "   and i.public_number = ? ";
+
 }
 
 

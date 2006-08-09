@@ -224,6 +224,20 @@
     </definition>
     <definition name="invoice.view" extends="main"><put name="featureTitle" value="bar.invoice.view" /><put name="body" value="/invoice/viewBody.jsp" /><put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
     </definition>
+
+
+    <definition name="invoice.download" extends="main">
+    	<put name="featureTitle" value="bar.invoice.download" />
+    	<put name="body" value="/invoice/downloadForm.jsp" />
+    	<put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
+    </definition>
+    <definition name="invoice.download.file" extends="main">
+    	<put name="featureTitle" value="bar.invoice.download" />
+    	<put name="body" value="/invoice/downloadFile.jsp" />
+    	<put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
+    </definition>
+
+    
     <definition name="process.list" extends="main"><put name="featureTitle" value="bar.process.list" /><put name="body" value="process.list.body" />
     </definition>
     <definition name="process.list.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/process/listTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />

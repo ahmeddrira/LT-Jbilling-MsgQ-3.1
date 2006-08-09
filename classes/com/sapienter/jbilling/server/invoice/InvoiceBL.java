@@ -339,6 +339,17 @@ public class InvoiceBL extends ResultList
             orderProcess.remove();
             it = invoice.getOrders().iterator();
         }
+        
+        // get rid of the contact associated with this invoice
+        
+        try {
+            ContactBL contact = new ContactBL();
+            if (contact.setInvoice(invoice.getId())) {
+                contact.delete();
+            }
+        } catch (Exception e1) {
+            log.error("Exception deleting the contact of an invoice", e1);
+        } 
 
         // log that this was deleted, otherwise there will be no trace
         try {
@@ -460,21 +471,36 @@ public class InvoiceBL extends ResultList
         conn.close();
         return cachedResults;
     }
+
+	public CachedRowSet getInvoicesByUserId(Integer userId)
+			throws SQLException, Exception {
+
+		prepareStatement(InvoiceSQL.custList);
+		cachedResults.setInt(1, userId.intValue());
+
+		execute();
+		conn.close();
+		return cachedResults;
+	}
+
+	public CachedRowSet getInvoicesByIdRange(Integer from, Integer to, Integer entityId)
+			throws SQLException, Exception {
+
+		prepareStatement(InvoiceSQL.rangeList);
+		cachedResults.setInt(1, from.intValue());
+		cachedResults.setInt(2, to.intValue());
+		cachedResults.setInt(3, entityId.intValue());
+		
+		execute();
+		conn.close();
+		return cachedResults;
+	}
     
-    public Integer[] getInvoicesByCreateDate(Integer entityId, Date since,
+    public Integer[] getInvoicesByCreateDateArray(Integer entityId, Date since,
             Date until) 
             throws SQLException, Exception {
             
-        prepareStatement(InvoiceSQL.getByDate); 
-        cachedResults.setInt(1, entityId.intValue());
-        cachedResults.setDate(2, new java.sql.Date(since.getTime()));
-        // add a day to include the until date
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(until);
-        cal.add(GregorianCalendar.DAY_OF_MONTH, 1);
-        cachedResults.setDate(3, new java.sql.Date(cal.getTime().getTime()));
-        
-        execute();
+        cachedResults = getInvoicesByCreateDate(entityId, since, until);
 
         // get ids for return
         Vector ids = new Vector();
@@ -490,7 +516,45 @@ public class InvoiceBL extends ResultList
         conn.close();
         return retValue;
     }
+
+    public CachedRowSet getInvoicesByCreateDate(Integer entityId, Date since,
+            Date until) 
+            throws SQLException, Exception {
+            
+        prepareStatement(InvoiceSQL.getByDate); 
+        cachedResults.setInt(1, entityId.intValue());
+        cachedResults.setDate(2, new java.sql.Date(since.getTime()));
+        // add a day to include the until date
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(until);
+        cal.add(GregorianCalendar.DAY_OF_MONTH, 1);
+        cachedResults.setDate(3, new java.sql.Date(cal.getTime().getTime()));
+        
+        execute();
+
+        conn.close();
+        return cachedResults;
+    }
     
+    public Integer convertNumberToID(Integer entityId, String number)
+            throws SQLException, Exception {
+            
+        prepareStatement(InvoiceSQL.getIDfromNumber); 
+        cachedResults.setInt(1, entityId.intValue());
+        cachedResults.setString(2, number);
+        
+        execute();
+
+        conn.close();
+        if (cachedResults.wasNull()) {
+            return null;
+        } else {
+            cachedResults.next();
+            return new Integer(cachedResults.getInt(1));
+        }
+    }
+    
+
    public Integer getLastByUser(String username, Integer entityId) 
         throws SQLException, NamingException {
 

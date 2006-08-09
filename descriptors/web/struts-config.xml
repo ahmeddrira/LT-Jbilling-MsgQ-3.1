@@ -40,6 +40,13 @@
 
   <!-- My architecture test form bean -->
   
+<form-bean name="downloadInvoices" type="org.apache.struts.validator.DynaValidatorForm">
+	<form-property name="operationType" type="java.lang.Integer" />
+	<form-property name="customer" type="java.lang.String" />
+	<form-property name="rangeStart" type="java.lang.String" />
+	<form-property name="rangeEnd" type="java.lang.String" />
+	<form-property name="process" type="java.lang.String" />
+<form-property name="date_from_year" type="java.lang.String" /><form-property name="date_from_month" type="java.lang.String" /><form-property name="date_from_day" type="java.lang.String" /><form-property name="date_to_year" type="java.lang.String" /><form-property name="date_to_month" type="java.lang.String" /><form-property name="date_to_day" type="java.lang.String" /><form-property name="number_from" type="java.lang.String" /><form-property name="number_to" type="java.lang.String" /></form-bean>
 
   <form-bean name="UserLoginForm" type="com.sapienter.jbilling.client.user.UserLoginForm" />
 <form-bean name="OrderAddItemForm" type="com.sapienter.jbilling.client.order.OrderAddItemForm" />
@@ -366,7 +373,6 @@
 <form-property name="create" type="java.lang.String" />
 </form-bean>
     
-
 </form-beans>
   
   <!-- ========== Global Forward Definitions ==============================  -->
@@ -378,7 +384,7 @@
 <forward name="paymentList" path="/payment/list.jsp" redirect="false" />
 <forward name="paymentCreate" redirect="false" path="/paymentMaintain.do?action=setup&amp;mode=payment" />
 <forward name="paymentView" path="/paymentMaintain.do?action=view&amp;mode=payment" redirect="false" />
-<forward name="payment_deleted" path="/payment/list.jsp" redirect="false"  />
+<forward name="payment_deleted" path="/payment/list.jsp" redirect="false" />
 <forward name="userEdit" path="/user/edit.jsp" redirect="false" />
 <forward name="userMaintain" path="/user/maintain.jsp" redirect="false" />
 <forward name="userView" redirect="false" path="/userMaintain.do?action=setup" />
@@ -585,6 +591,12 @@
 </action>
 <action path="/signupEntity" type="com.sapienter.jbilling.client.signup.NewEntityAction" name="newEntity" scope="session" input="/signup/newEntity.jsp" validate="false"><forward name="edit" path="/signup/newEntity.jsp" redirect="false" /><forward name="done" path="/user/login.jsp" redirect="false" /></action>
     <action path="/forgetPassword" type="com.sapienter.jbilling.client.user.ForgetPasswordAction" name="UserLoginForm" input="/user/forgetPassword.jsp" scope="session"><forward name="success" path="/user/login.jsp" redirect="false" /></action>
+
+
+<action path="/download" type="com.sapienter.jbilling.client.invoice.DownloadAction" name="downloadInvoices" scope="request" input="/invoice/batchDownload.jsp" validate="true">
+	<forward name="form" path="/invoice/batchDownload.jsp" />	
+	<forward name="done" path="/invoice/fileDownload.jsp" />
+</action>
 
 </action-mappings>
 

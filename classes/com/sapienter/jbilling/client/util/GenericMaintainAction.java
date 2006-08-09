@@ -106,7 +106,18 @@ public class GenericMaintainAction {
     private Integer languageId = null;
     private Integer entityId = null;
     private Integer executorId = null;
-    
+
+    public GenericMaintainAction(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request) { 
+        this.mapping = mapping;
+        this.request = request;
+        log = Logger.getLogger(GenericMaintainAction.class);
+        errors = new ActionErrors();
+        messages = new ActionMessages();
+        session = request.getSession(false);
+        
+        myForm = (DynaValidatorForm) form;
+    }  
     
     public GenericMaintainAction(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response,
@@ -1816,7 +1827,7 @@ public class GenericMaintainAction {
         return retValue;
     }
     
-    private Date parseDate(String prefix, String prompt) {
+    public Date parseDate(String prefix, String prompt) {
         Date date = null;
         String year = (String) myForm.get(prefix + "_year");
         String month = (String) myForm.get(prefix + "_month");
@@ -1992,5 +2003,9 @@ public class GenericMaintainAction {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    public ActionErrors getErrors() {
+        return errors;
     }
 }

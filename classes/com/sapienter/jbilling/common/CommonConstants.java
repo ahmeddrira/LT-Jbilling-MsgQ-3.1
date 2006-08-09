@@ -131,4 +131,12 @@ public interface CommonConstants {
     public static final Integer AUTO_PAYMENT_TYPE_CC = new Integer(1);
     public static final Integer AUTO_PAYMENT_TYPE_ACH =  new Integer(2);
     public static final Integer AUTO_PAYMENT_TYPE_CHEQUE = new Integer(3);
+    
+    // types of PDF batch generation
+    public static final Integer OPERATION_TYPE_CUSTOMER = new Integer(1);
+    public static final Integer OPERATION_TYPE_RANGE = new Integer(2);
+    public static final Integer OPERATION_TYPE_PROCESS = new Integer(3);
+    public static final Integer OPERATION_TYPE_DATE = new Integer(4);
+    public static final Integer OPERATION_TYPE_NUMBER = new Integer(5);
+    
 }

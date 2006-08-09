@@ -180,7 +180,7 @@ public class WebServicesSessionBean implements SessionBean {
             Integer entityId = bl.getEntity().getEntity().getId(); 
 
             InvoiceBL invoiceBl = new InvoiceBL();
-            return invoiceBl.getInvoicesByCreateDate(entityId, dSince, dUntil);
+            return invoiceBl.getInvoicesByCreateDateArray(entityId, dSince, dUntil);
         } catch (Exception e) {
             log.error("Exception in web service: getting invoices by date" +
                     since + until, e);

@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
+import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -287,5 +288,84 @@ public class InvoiceSessionBean implements SessionBean {
         log = Logger.getLogger(InvoiceSessionBean.class);
         context = aContext;
     }
+    
+	/**
+     * The real path is known only to the web server
+     * It should have the token _FILE_NAME_ to be replaced by the generated file
+	 * @ejb:interface-method view-type="remote"
+	 */
+	public String generatePDFFile(java.util.Map map, String realPath) throws SessionInternalError {
+		Integer operationType = (Integer) map.get("operationType");
 
-}
+		try {
+			InvoiceBL invoiceBL = new InvoiceBL();
+			sun.jdbc.rowset.CachedRowSet cachedRowSet = null;
+			Integer entityId = (Integer) map.get("entityId");
+
+			if (operationType
+					.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_CUSTOMER)) {
+				Integer customer = (Integer) map.get("customer");
+				
+				//security check is done here for speed
+				UserBL customerUserBL = null;
+				try {
+					customerUserBL = new UserBL(customer);
+				} catch(FinderException e) {		
+				}
+				if ((customerUserBL != null) && customerUserBL.getEntity().getEntity().getId().equals(entityId)) {
+					cachedRowSet = invoiceBL.getInvoicesByUserId(customer);
+				}				
+			} else if (operationType
+					.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_RANGE)) {
+				//security check is done in SQL
+				cachedRowSet = invoiceBL.getInvoicesByIdRange(
+						(Integer) map.get("from"), 
+						(Integer) map.get("to"),
+						entityId);
+			} else if (operationType
+					.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_PROCESS)) {
+				Integer process = (Integer) map.get("process");
+				
+				//security check is done here for speed
+				BillingProcessBL billingProcessBL = null;
+				try {
+					billingProcessBL = new BillingProcessBL(process);
+				} catch(FinderException e) {		
+				}				
+				if ((billingProcessBL!= null) && billingProcessBL.getEntity().getEntityId().equals(entityId)) {
+					cachedRowSet = invoiceBL.getInvoicesByProcessId(process);	
+				}				
+			} else if (operationType
+                    .equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_DATE)) {
+                Date from = (Date) map.get("date_from");
+                Date to = (Date) map.get("date_to");
+                
+                cachedRowSet = invoiceBL.getInvoicesByCreateDate(entityId, from, to);
+            } else if (operationType
+                    .equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_NUMBER)) {
+                String from = (String) map.get("number_from");
+                String to = (String) map.get("number_to");
+                Integer from_id = invoiceBL.convertNumberToID(entityId, from);
+                Integer to_id = invoiceBL.convertNumberToID(entityId, to);
+                
+                if (from_id != null && to_id != null && 
+                        from_id.compareTo(to_id) <= 0) {
+                    cachedRowSet = invoiceBL.getInvoicesByIdRange(
+                            from_id, to_id, entityId);
+                }
+            }
+			
+			if (cachedRowSet == null) {
+				return null;
+			} else {
+				PaperInvoiceBatchBL paperInvoiceBatchBL = new PaperInvoiceBatchBL();
+				return paperInvoiceBatchBL.generateFile(cachedRowSet, entityId, realPath);
+			}
+
+		} catch (Exception e) {
+			throw new SessionInternalError(e);
+		}
+	}
+	
+
+}    

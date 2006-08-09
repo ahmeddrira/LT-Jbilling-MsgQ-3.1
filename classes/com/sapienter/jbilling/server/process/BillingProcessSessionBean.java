@@ -327,7 +327,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     PaperInvoiceBatchEntityLocal batch = process.getEntity().getBatch(); 
                     if (totalInvoices > 0 && batch != null) {
                         PaperInvoiceBatchBL batchBl = new PaperInvoiceBatchBL(batch);
-                        batchBl.compileInvoiceFiles(entityId);
+                        batchBl.compileInvoiceFilesForProcess(entityId);
                         
                         // send the file as an attachment 
                         batchBl.sendEmail();

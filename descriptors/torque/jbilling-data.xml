@@ -293,6 +293,7 @@
     <InternationalDescription TableId="52" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="Payment (successful)"/>
     <InternationalDescription TableId="63" ForeignId="7" PsudoColumn="display" LanguageId="1" Content="Create New User"/>
     <InternationalDescription TableId="63" ForeignId="76" PsudoColumn="display" LanguageId="1" Content="Numbering"/>
+    <InternationalDescription TableId="63" ForeignId="92" PsudoColumn="display" LanguageId="1" Content="Download"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="description" LanguageId="1" Content="Menu Reports invoice details option"/>
     <InternationalDescription TableId="59" ForeignId="111" PsudoColumn="title" LanguageId="1" Content="Menu Reports Invoice Details"/>
     <InternationalDescription TableId="59" ForeignId="112" PsudoColumn="description" LanguageId="1" Content="Menu Reports users option"/>
@@ -1585,6 +1586,7 @@
     <MenuOption Id="89" Link="HELP|page=payments|anchor=refunds" Level="2" ParentId="31"/>
     <MenuOption Id="90" Link="/payment/customerSelect.jsp?create=yes&amp;paypal=yes" Level="2" ParentId="2"/>
     <MenuOption Id="91" Link="/orderPeriod.do?action=setup" Level="2" ParentId="1"/>
+    <MenuOption Id="92" Link="/invoice/batchDownload.jsp" Level="2" ParentId="35"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>
     <NotificationMessageType Id="3" Sections="2"/>
@@ -1764,6 +1766,7 @@
     <Permission Id="132" TypeId="1" ForeignId="90"/>
     <Permission Id="133" TypeId="1" ForeignId="91"/>
     <Permission Id="134" TypeId="3"/>
+    <Permission Id="135" TypeId="1" ForeignId="92"/>
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2096,6 +2099,8 @@
     <PermissionRoleMap PermissionId="133" RoleId="2"/>
     <PermissionRoleMap PermissionId="134" RoleId="2"/>
     <PermissionRoleMap PermissionId="134" RoleId="3"/>
+    <PermissionRoleMap PermissionId="135" RoleId="3"/>
+    <PermissionRoleMap PermissionId="135" RoleId="2"/>
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>

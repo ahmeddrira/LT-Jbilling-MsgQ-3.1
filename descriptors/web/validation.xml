@@ -1131,12 +1131,115 @@
 <field property="last_name" depends="required">
 <arg0 key="contact.prompt.lastName" />
 </field>
+</form>
 
-
-
-
-
-
+<form name="downloadInvoices">
+	<field property="customer" depends="integer">
+    	<arg0 key="invoice.download.prompt.customer" />
+	</field>
+	<field property="rangeStart" depends="integer">
+    	<arg0 key="invoice.download.label.startid" />
+	</field>
+	<field property="rangeEnd" depends="integer">
+    	<arg0 key="invoice.download.label.endid" />
+	</field>
+	<field property="process" depends="integer">
+    	<arg0 key="invoice.download.prompt.process" />
+	</field>
+    <field property="date_from_month" depends="integer,range">
+        <arg0 key="all.prompt.month" />
+        <arg1 name="range" key="${var:min}" resource="false" />
+        <arg2 name="range" key="${var:max}" resource="false" />
+        <var>
+            <var-name>min</var-name>
+            <var-value>1</var-value>
+        </var>
+        <var>
+            <var-name>max</var-name>
+            <var-value>12</var-value>
+        </var>
+    </field>
+    <field property="date_from_year" depends="integer,range">
+        <var>
+            <var-name>min</var-name>
+            <var-value>1900</var-value>
+        </var>
+        <var>
+            <var-name>max</var-name>
+            <var-value>2100</var-value>
+        </var>
+        <arg0 key="all.prompt.year" />
+            <arg1 name="range" key="${var:min}" resource="false" />
+            <arg2 name="range" key="${var:max}" resource="false" />
+    </field>
+    <field property="date_from_day" depends="integer,range">
+        <var>
+            <var-name>min</var-name>
+            <var-value>1</var-value>
+        </var>
+        <var>
+            <var-name>max</var-name>
+            <var-value>31</var-value>
+        </var>
+        <arg0 key="all.prompt.day" />
+            <arg1 name="range" key="${var:min}" resource="false" />
+            <arg2 name="range" key="${var:max}" resource="false" />
+    </field>
+    <field property="date_to_month" depends="integer,range">
+        <arg0 key="all.prompt.month" />
+        <arg1 name="range" key="${var:min}" resource="false" />
+        <arg2 name="range" key="${var:max}" resource="false" />
+        <var>
+            <var-name>min</var-name>
+            <var-value>1</var-value>
+        </var>
+        <var>
+            <var-name>max</var-name>
+            <var-value>12</var-value>
+        </var>
+    </field>
+    <field property="date_to_year" depends="integer,range">
+        <var>
+            <var-name>min</var-name>
+            <var-value>1900</var-value>
+        </var>
+        <var>
+            <var-name>max</var-name>
+            <var-value>2100</var-value>
+        </var>
+        <arg0 key="all.prompt.year" />
+            <arg1 name="range" key="${var:min}" resource="false" />
+            <arg2 name="range" key="${var:max}" resource="false" />
+    </field>
+    <field property="date_to_day" depends="integer,range">
+        <var>
+            <var-name>min</var-name>
+            <var-value>1</var-value>
+        </var>
+        <var>
+            <var-name>max</var-name>
+            <var-value>31</var-value>
+        </var>
+        <arg0 key="all.prompt.day" />
+            <arg1 name="range" key="${var:min}" resource="false" />
+            <arg2 name="range" key="${var:max}" resource="false" />
+    </field>
+    <field property="number_from" depends="maxlength">
+        <var>
+            <var-name>maxlength</var-name>
+            <var-value>30</var-value>
+        </var>
+        <arg0 key="invoice.download.prompt.number" />
+        <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
+    </field>
+    <field property="number_to" depends="maxlength">
+        <var>
+            <var-name>maxlength</var-name>
+            <var-value>30</var-value>
+        </var>
+        <arg0 key="invoice.download.prompt.number" />
+        <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
+    </field>
 
 </form>
 

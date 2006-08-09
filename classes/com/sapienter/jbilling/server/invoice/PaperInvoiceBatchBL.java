@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.invoice;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -39,6 +40,8 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import sun.jdbc.rowset.CachedRowSet;
+
 import com.etymon.pjx.PdfFormatException;
 import com.etymon.pjx.PdfInputFile;
 import com.etymon.pjx.PdfManager;
@@ -46,6 +49,7 @@ import com.etymon.pjx.PdfReader;
 import com.etymon.pjx.PdfWriter;
 import com.etymon.pjx.util.PdfAppender;
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
@@ -130,35 +134,62 @@ public class PaperInvoiceBatchBL {
      * into a big one, deleting the originals.
      * This then will facilitate the printing of a batch.
      */
-    public void compileInvoiceFiles(Integer entityId) 
+    public void compileInvoiceFilesForProcess(Integer entityId) 
     		throws PdfFormatException, IOException {
-    	List list = new ArrayList();
     	String filePrefix = Util.getSysProp("base_dir") + "invoices/" + 
             entityId + "-";
     	// now go through each of the invoices
         // first - sort them
         Vector invoices = new Vector(batch.getInvoices());
         Collections.sort(invoices, new InvoiceEntityComparator());
+        Integer[] invoicesIds = new Integer[invoices.size()];
+
 
     	for (int f = 0; f < invoices.size(); f++) {
     		InvoiceEntityLocal invoice = (InvoiceEntityLocal) invoices.get(f);
-    		list.add( new PdfManager(new PdfReader(new PdfInputFile(new File(
-    				filePrefix + invoice.getId() + "-invoice.pdf")))));
+            invoicesIds[f] = invoice.getId();
     	}
-    	PdfWriter writer = new PdfWriter(new File(filePrefix + batch.getId() +
-    			"-batch.pdf"));
-		PdfAppender appender = new PdfAppender(list, writer);
-		appender.append();
-		writer.close();
-
-		// delete the individual invoices
-    	for (Iterator it = batch.getInvoices().iterator(); it.hasNext();) {
-    		InvoiceEntityLocal invoice = (InvoiceEntityLocal) it.next();
-    		File file = new File(filePrefix + invoice.getId() + 
-    				"-invoice.pdf");
-    		file.delete();
-    	}
+        
+        compileInvoiceFiles(filePrefix, batch.getId().toString(), entityId, 
+                invoicesIds);
     }
+
+    /**
+     * Takes a list of invoices and replaces the individual PDF files for one
+     * single PDF in the destination directory.
+     * @param destination
+     * @param prefix
+     * @param entityId
+     * @param invoices
+     * @throws PdfFormatException
+     * @throws IOException
+     */
+    public void compileInvoiceFiles(String destination, String prefix,
+            Integer entityId, Integer[] invoices)
+            throws PdfFormatException, IOException {
+        List list = new ArrayList();
+        String filePrefix = Util.getSysProp("base_dir") + "invoices/"
+                + entityId + "-";
+        // now go through each of the invoices
+        for (int f = 0; f < invoices.length ; f++) {
+            list.add(new PdfManager(new PdfReader(new PdfInputFile(new File(
+                    filePrefix + invoices[f] + "-invoice.pdf")))));
+        }
+        String fileName = destination + prefix + "-batch.pdf";
+        PdfWriter writer = new PdfWriter(new File(fileName));
+        PdfAppender appender = new PdfAppender(list, writer);
+        appender.append();
+        writer.close();
+
+        // delete the individual invoices
+        for (int f = 0; f < invoices.length ; f++) {
+            File file = new File(filePrefix + invoices[f] + "-invoice.pdf");
+            file.delete();
+        }
+        
+        log.debug("PDF batch file is ready " + fileName);
+    }
+
     
     public void sendEmail() 
     		throws FinderException, NamingException {
@@ -184,4 +215,41 @@ public class PaperInvoiceBatchBL {
                     "for entity " + entityId, e);
         } 
     }
+    
+    public String generateFile(CachedRowSet cachedRowSet, Integer entityId, 
+            String realPath) throws SQLException,
+            SessionInternalError, NamingException, PdfFormatException,
+            IOException, FinderException {
+        NotificationBL notif = new NotificationBL();
+        Vector invoices = new Vector();
+
+        int generated = 0;
+        while (cachedRowSet.next()) {
+            Integer invoiceId = new Integer(cachedRowSet.getInt(1));
+            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            log.debug("Generating paper invoice " + invoiceId);
+            notif.generatePaperInvoiceAsFile(invoice.getEntity());
+            invoices.add(invoiceId);
+            
+            // no more than 1000 invoices at a time, please
+            generated++;
+            if (generated >= 1000) break;
+        }
+
+        if (generated > 0) {
+            // merge all these files into a single one
+            String hash = String.valueOf(System.currentTimeMillis());
+            Integer[] invoicesIds = new Integer[invoices.size()];
+            invoices.toArray(invoicesIds);
+            compileInvoiceFiles(realPath.substring(0, 
+                    realPath.indexOf("_FILE_NAME_")) + "/", 
+                    entityId + "-" + hash, entityId, invoicesIds);
+    
+            return entityId + "-" + hash + "-batch.pdf";
+        } else {
+            // there was no rows in that query ...
+            return null;
+        }
+    }
+    
 }

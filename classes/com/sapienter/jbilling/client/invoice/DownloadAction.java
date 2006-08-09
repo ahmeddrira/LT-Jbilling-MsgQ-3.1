@@ -188,6 +188,11 @@ public final class DownloadAction extends Action {
                 dateFrom = helper.parseDate("date_from", process);
                 dateTo = helper.parseDate("date_to", process);
                 errors = helper.getErrors();
+
+                if (dateFrom == null || dateTo == null) {
+                    errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
+                            "invoice.download.err.date.required"));
+                }
                 
                 if (errors.isEmpty() && dateFrom.after(dateTo)) {
                     errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(

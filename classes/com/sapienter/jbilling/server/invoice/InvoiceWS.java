@@ -31,7 +31,7 @@ import java.util.Date;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.entity.OrderDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
+import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 
 /**
  * @author Emil
@@ -55,8 +55,9 @@ public class InvoiceWS extends InvoiceDTO implements Serializable {
         
         int f;
         for (f = 0; f < dto.getPaymentMap().size(); f++) {
-            PaymentDTO payment = (PaymentDTO) dto.getPaymentMap().get(f);
-            payments[f] = payment.getId();
+            PaymentInvoiceMapDTOEx map = 
+                    (PaymentInvoiceMapDTOEx) dto.getPaymentMap().get(f);
+            payments[f] = map.getPaymentId();
         }
         for (f = 0; f < dto.getOrders().size(); f++) {
             OrderDTO order = (OrderDTO) dto.getOrders().get(f);

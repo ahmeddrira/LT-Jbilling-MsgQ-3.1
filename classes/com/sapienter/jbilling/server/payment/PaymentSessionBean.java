@@ -42,6 +42,7 @@ import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PartnerEntityLocal;
+import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -216,18 +217,19 @@ public class PaymentSessionBean implements SessionBean {
                 // so the amount will be ignored
                 dto.setBalance(dto.getAmount());
                 
-                if (dto.getIsRefund().intValue() == 0) {
-                    // now update the line invoice-payment
-                    invoice.getPayments().add(bl.getEntity());
-                }
-
                 // after the process, update the payment record
                 bl.getEntity().setResultId(result);
+
                 // Note: I could use the return of the last call to fetch another
                 // dto with a different cc number to retry the payment
                     
                 // get all the invoice's fields updated with this payment
-                applyPayment(dto, invoice, result.equals(Constants.RESULT_OK));
+                float paid = applyPayment(dto, invoice, result.equals(
+                        Constants.RESULT_OK));
+                if (dto.getIsRefund().intValue() == 0) {
+                    // now update the link between invoice and payment
+                    bl.createMap(invoice, new Float(paid));
+                }
             }
             return result;
         } catch (Exception e) {
@@ -274,7 +276,39 @@ public class PaymentSessionBean implements SessionBean {
             throw new SessionInternalError(e);
         }
     }
+    /**
+     * This is called from the client to apply an existing payment to 
+     * an invoice. 
+     * 
+     * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
+     */
+    public void applyPayment(Integer paymentId, Integer invoiceId) {
+        log.debug("Applying payment " + paymentId + " to invoice " 
+                + invoiceId);
+        if (paymentId == null || invoiceId == null) {
+            log.warn("Got null parameters to apply a payment");
+            return;
+        }
 
+        try {
+            PaymentBL payment = new PaymentBL(paymentId);
+            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            
+            float paid = applyPayment(payment.getDTO(), invoice.getEntity(),
+                    true);
+            
+            // link it with the invoice
+            payment.createMap(invoice.getEntity(), new Float(paid));
+        } catch (FinderException e) {
+            log.error("Got missing ids to apply a payment " +
+                    paymentId + " - " + invoiceId, e);
+            throw new SessionInternalError("Missing ids");
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        } 
+                
+    }
     /**
      * Applys a payment to an invoice, updating the invoices fields with
      * this payment.
@@ -283,11 +317,11 @@ public class PaymentSessionBean implements SessionBean {
      * @param success
      * @throws SessionInternalError
      */
-    public void applyPayment(PaymentDTOEx payment, InvoiceEntityLocal invoice,
+    public float applyPayment(PaymentDTO payment, InvoiceEntityLocal invoice,
             boolean success) 
             throws SessionInternalError, NamingException, FinderException,
                 CreateException, RemoveException, SQLException {
-        
+        float totalPaid = 0;
         log = Logger.getLogger(PaymentSessionBean.class); // leave it or break web services
         if (invoice != null) {
 
@@ -319,6 +353,8 @@ public class PaymentSessionBean implements SessionBean {
                         if (newPaymentBalance < 0) {
                                 newPaymentBalance = 0;
                         }
+                        totalPaid = payment.getBalance().floatValue() -
+                                newPaymentBalance;
                         paymentBL.getEntity().setBalance(new Float(
                                 newPaymentBalance));
                         payment.setBalance(new Float(newPaymentBalance));
@@ -373,7 +409,7 @@ public class PaymentSessionBean implements SessionBean {
                 } 
             }
         }
-        
+        return totalPaid;
     }
 
     /**
@@ -409,10 +445,10 @@ public class PaymentSessionBean implements SessionBean {
                     // set the attmpts from the invoice
                     payment.setAttempt(new Integer(invoiceBl.getEntity().
                             getPaymentAttemptsField().intValue() + 1));
-                    // link it with the invoice
-                    paymentBl.getEntity().getInvoices().add(invoiceBl.getEntity());
                     // apply the payment to the invoice
-                    applyPayment(payment, invoiceBl.getEntity(), true);
+                    float paid = applyPayment(payment, invoiceBl.getEntity(), true);
+                    // link it with the invoice
+                    paymentBl.createMap(invoiceBl.getEntity(), new Float(paid));
                 }
             } else {
                 if (payment.getPayment() != null && !payment.getPayment().
@@ -570,6 +606,17 @@ public class PaymentSessionBean implements SessionBean {
         } catch (NamingException e) {
             throw new SessionInternalError(e);
         }
+    }
+    
+    /** 
+     * Removes a payment-invoice link
+     *  
+     * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
+     */
+    public void removeInvoiceLink(Integer mapId) {
+        PaymentBL payment = new PaymentBL();
+        payment.removeInvoiceLink(mapId);
     }
 
     // EJB Callbacks -------------------------------------------------

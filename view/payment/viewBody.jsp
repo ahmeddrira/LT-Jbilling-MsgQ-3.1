@@ -58,66 +58,6 @@ Contributor(s): ______________________________________.
 		
 %>
 
-<%-- now go through each linked invoice and display a link to it --%>
-
-<logic:present name="jsp_linked_invoices">
-<logic:notPresent parameter="review">
-<p class="title"><bean:message key="payment.prompt.invoices"/></p>
-</logic:notPresent>
-<logic:present parameter="review">
-<p class="title"><bean:message key="payment.review.invoice"/></p>
-</logic:present>
-
-<table class="list">
-		<%-- print the headers of the columns --%>
-		<tr class="listH">
-			<td><bean:message key="invoice.id.prompt"/></td>
-			<td><bean:message key="invoice.createDateTime.prompt"/></td>
-			<td><bean:message key="invoice.total.prompt"/></td>
-			<td><bean:message key="invoice.balance.prompt"/></td>
-		</tr>
-		<%-- now each invoice row --%>
-		<logic:iterate name="jsp_linked_invoices"
-						   scope="session"
-						   id="invoice"
-						   indexId="index">
-			<c:choose>
-				<c:when test="${flag == 1}">
-					<tr class="listB">
-					<c:remove var="flag"/>
-				</c:when>
-				<c:otherwise>
-					<tr class="listA">
-					<c:set var="flag" value="1"/>
-				</c:otherwise>
-		    </c:choose>
-				<td class="list" align="right">
-					<html:link action="invoiceMaintain" paramId="id" 
-							   paramName="invoice"
-							   paramProperty="id">
-						<bean:write name="invoice" property="id"/>
-					</html:link>
-				</td>
-				<td class="list">
-					<bean:write name="invoice" property="createDateTime"
-						        formatKey="format.timestamp"/>
-				</td>
-				<td class="list" align="right">
-					<bean:write name="invoice" property="total"
-						        formatKey="format.money"/>
-				</td>
-				<td class="list" align="right">
-					<bean:write name="invoice" property="balance"
-						        formatKey="format.money"/>
-				</td>
-			</tr>	
-		</logic:iterate>
-</table>
-</logic:present>
-
-<logic:notPresent name="jsp_linked_invoices">
-	<p class="title"><bean:message key="payment.prompt.noInvoices"/></p>
-</logic:notPresent>
 
 <table class="info">
 	<tr>

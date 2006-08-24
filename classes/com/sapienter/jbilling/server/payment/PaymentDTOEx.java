@@ -39,6 +39,7 @@ public class PaymentDTOEx extends PaymentDTO {
     private CreditCardDTO creditCard = null;
     private String method = null;
     private Vector invoiceIds = null;
+    private Vector paymentMaps = null;
     private PaymentDTOEx payment = null; // for refunds
     private String resultStr = null;
     private Integer payoutId = null;
@@ -53,6 +54,7 @@ public class PaymentDTOEx extends PaymentDTO {
         method = dto.getMethod();
         ach = dto.getAch();
         invoiceIds = new Vector();
+        paymentMaps = new Vector();
         
         if (dto.getInvoiceIds() != null) {
             for (int f = 0; f < dto.getInvoiceIds().length; f++) {
@@ -76,6 +78,7 @@ public class PaymentDTOEx extends PaymentDTO {
     public PaymentDTOEx() {
         super();
         invoiceIds = new Vector();
+        paymentMaps = new Vector();
     }
 
     /**
@@ -95,6 +98,7 @@ public class PaymentDTOEx extends PaymentDTO {
                 paymentDate, attempt, 
                 deleted, methodId, resultId, isRefund, currencyId);
         invoiceIds = new Vector();
+        paymentMaps = new Vector();
     }
 
     /**
@@ -102,6 +106,8 @@ public class PaymentDTOEx extends PaymentDTO {
      */
     public PaymentDTOEx(PaymentDTO otherValue) {
         super(otherValue);
+        invoiceIds = new Vector();
+        paymentMaps = new Vector();
     }
 
     public boolean validate() {
@@ -116,7 +122,16 @@ public class PaymentDTOEx extends PaymentDTO {
     }
     
     public String toString() {
-        return super.toString() + " credit card:" + creditCard + " cheque:" + cheque;
+        
+        StringBuffer maps = new StringBuffer();
+        if (paymentMaps != null) {
+            for (int f = 0; f < paymentMaps.size(); f++) {
+                maps.append(paymentMaps.get(f).toString());
+                maps.append(" - ");
+            }
+        }
+        return super.toString() + " credit card:" + creditCard + 
+            " cheque:" + cheque + " payment maps:" + maps.toString();
     } 
     /**
      * @return
@@ -260,4 +275,14 @@ public class PaymentDTOEx extends PaymentDTO {
 	public void setAch(AchDTO ach) {
 		this.ach = ach;
 	}
+    public Vector getPaymentMaps() {
+        Logger.getLogger(PaymentDTOEx.class).debug("Returning " + 
+                paymentMaps.size() + " elements in the map");
+        return paymentMaps;
+    }
+    
+    public void addPaymentMap(PaymentInvoiceMapDTOEx map) {
+        Logger.getLogger(PaymentDTOEx.class).debug("Adding map to the vector ");
+        paymentMaps.add(map);
+    }
 }

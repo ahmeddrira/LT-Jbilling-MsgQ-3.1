@@ -49,13 +49,13 @@ public class InvoiceWS extends InvoiceDTO implements Serializable {
         super(dto);
         delegatedInvoiceId = dto.getDelegatedInvoiceId();
         userId = dto.getUserId();
-        payments = new Integer[dto.getPayments().size()];
+        payments = new Integer[dto.getPaymentMap().size()];
         invoiceLines = new InvoiceLineDTO[dto.getInvoiceLines().size()];
         orders = new Integer[dto.getOrders().size()];
         
         int f;
-        for (f = 0; f < dto.getPayments().size(); f++) {
-            PaymentDTO payment = (PaymentDTO) dto.getPayments().get(f);
+        for (f = 0; f < dto.getPaymentMap().size(); f++) {
+            PaymentDTO payment = (PaymentDTO) dto.getPaymentMap().get(f);
             payments[f] = payment.getId();
         }
         for (f = 0; f < dto.getOrders().size(); f++) {

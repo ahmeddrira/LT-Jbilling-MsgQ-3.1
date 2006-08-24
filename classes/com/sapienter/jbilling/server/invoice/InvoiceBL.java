@@ -52,7 +52,7 @@ import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
+import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -61,6 +61,8 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
@@ -341,7 +343,6 @@ public class InvoiceBL extends ResultList
         }
         
         // get rid of the contact associated with this invoice
-        
         try {
             ContactBL contact = new ContactBL();
             if (contact.setInvoice(invoice.getId())) {
@@ -351,15 +352,21 @@ public class InvoiceBL extends ResultList
             log.error("Exception deleting the contact of an invoice", e1);
         } 
 
-        // log that this was deleted, otherwise there will be no trace
-        try {
-            eLogger.info(invoice.getUser().getEntity().getId(),
-                    invoice.getId(),
-                    EventLogger.MODULE_INVOICE_MAINTENANCE, 
-                    EventLogger.ROW_DELETED, Constants.TABLE_INVOICE);
-        } catch (CreateException e) {
-            log.error("Could not create an event log", e);
+        // remove the payment link/s
+        PaymentBL payment = new PaymentBL();
+        it = invoice.getPaymentMap().iterator();
+        while (it.hasNext()) {
+            PaymentInvoiceMapEntityLocal map = (PaymentInvoiceMapEntityLocal)
+                    it.next();
+            payment.removeInvoiceLink(map.getId());
         }
+
+        // log that this was deleted, otherwise there will be no trace
+        eLogger.info(invoice.getUser().getEntity().getId(),
+                invoice.getId(),
+                EventLogger.MODULE_INVOICE_MAINTENANCE, 
+                EventLogger.ROW_DELETED, Constants.TABLE_INVOICE);
+
         // now delete the invoice itself
         invoice.remove();
     }
@@ -404,14 +411,9 @@ public class InvoiceBL extends ResultList
     
     public float getTotalPaid() {
         float retValue = 0;
-        for (Iterator it = invoice.getPayments().iterator(); it.hasNext();) {
-            PaymentEntityLocal payment = (PaymentEntityLocal) it.next();
-            if (payment.getDeleted().intValue() == 1 || 
-                    payment.getResultId().equals(Constants.RESULT_UNAVAILABLE) ||
-                    payment.getResultId().equals(Constants.RESULT_FAIL)) {
-                continue;
-            }
-            retValue += payment.getAmount().floatValue();
+        for (Iterator it = invoice.getPaymentMap().iterator(); it.hasNext();) {
+            PaymentInvoiceMapEntityLocal paymentMap = (PaymentInvoiceMapEntityLocal) it.next();
+            retValue += paymentMap.getAmount().floatValue();
         }
         return retValue;
     }
@@ -789,11 +791,18 @@ public class InvoiceBL extends ResultList
         invoiceDTO.setTotal(new Float(Util.round(invoice.getTotal().
                 floatValue(), 2)));
 
-        // now add the payments
-        Collection payments = invoice.getPayments();
+        // now add the payment maps
+        PaymentBL paymentBL = new PaymentBL();
+        Collection payments = invoice.getPaymentMap();
         for (Iterator it = payments.iterator(); it.hasNext();) {
-            PaymentBL payment = new PaymentBL((PaymentEntityLocal) it.next());
-            invoiceDTO.addPayment(payment.getDTO());      
+            PaymentInvoiceMapEntityLocal map = (PaymentInvoiceMapEntityLocal) 
+                    it.next();
+            try {
+                PaymentInvoiceMapDTOEx dto = paymentBL.getMapDTO(map.getId());
+                invoiceDTO.addPayment(dto);
+            } catch (FinderException e) {
+                log.error("No map", e);
+            }      
         }
         // add also the invoice lines
         boolean hasSubaccounts = false;

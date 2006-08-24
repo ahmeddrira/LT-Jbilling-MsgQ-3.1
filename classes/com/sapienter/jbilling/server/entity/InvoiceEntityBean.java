@@ -442,13 +442,9 @@ public abstract class InvoiceEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      * @ejb.relation name="payments-invoices"
      *               role-name="invoice-gets_paid_by-payment"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="payment_id"            
-     * @jboss.relation-table table-name="payment_invoice_map"
-     *                       create-table="false"
      */
-    public abstract Collection getPayments();
-    public abstract void setPayments(Collection payments);
+    public abstract Collection getPaymentMap();
+    public abstract void setPaymentMap(Collection payments);
 
     /**
      * @ejb:interface-method view-type="local"

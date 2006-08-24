@@ -28,6 +28,7 @@ Contributor(s): ______________________________________.
 <logic:notPresent parameter="review">                
    <p class="title"><bean:message key="payment.view.title"/></p>
    <p class="instr">
+	    <bean:message key="payment.view.instr" /> <br/>
    	    <bean:message key="all.prompt.help" />
 	    <jbilling:help page="payments" anchor="details">
 			<bean:message key="all.prompt.here" />

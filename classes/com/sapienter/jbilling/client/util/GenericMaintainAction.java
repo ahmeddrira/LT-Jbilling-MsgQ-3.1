@@ -80,6 +80,7 @@ import com.sapienter.jbilling.server.notification.MessageSection;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
@@ -1317,10 +1318,6 @@ public class GenericMaintainAction {
                 //paypal can't take i18n amounts
                 session.setAttribute("jsp_paypay_amount", invoiceDto.getBalance());
                 myForm.set("currencyId", invoiceDto.getCurrencyId());
-                // this actually makes the invoice available to the jsp page
-                InvoiceDTO invoices[] = new InvoiceDTO[1];
-                invoices[0] = invoiceDto;
-                session.setAttribute("jsp_linked_invoices", invoices);
             } else if (paymentDto != null) {
                 // this works for both refunds and payouts
                 log.debug("setting form with payment:" + paymentDto.getId());

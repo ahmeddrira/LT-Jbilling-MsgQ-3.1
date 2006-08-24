@@ -31,7 +31,6 @@ Contributor(s): ______________________________________.
 <%-- this menu is only dispalyed when a payment is present, and it is
      not the review screen --%>
 <logic:present name='<%=Constants.SESSION_PAYMENT_DTO%>' scope="session">
-<logic:notPresent parameter="review">
 
 <table>
 <%-- these modify links are only for those with the permission --%>
@@ -41,7 +40,7 @@ Contributor(s): ______________________________________.
                 scope="session">
 	    <tr>
 		  <td class="leftMenuOption">
-			  <html:link styleClass="leftMenu" page="/payment/review.jsp?confirm=do&noTitle=yes">
+			  <html:link styleClass="leftMenu" page="/payment/view.jsp?confirm=do&noTitle=yes">
 				  <bean:message key="payment.delete.link"/>
 			  </html:link>
  		  </td>
@@ -59,9 +58,18 @@ Contributor(s): ______________________________________.
 	    </tr>
     </logic:equal>
     </logic:empty>
+   <logic:greaterEqual name='<%=Constants.SESSION_PAYMENT_DTO%>' property="balance" value="0.01"
+                scope="session">
+	  	<tr>
+		  <td class="leftMenuOption">
+			  <html:link styleClass="leftMenu" page="/payment/apply.jsp?reset=yes">
+				  <bean:message key="payment.apply.link"/>
+			  </html:link>
+			  </td>
+	    </tr>
+   </logic:greaterEqual>    
 </jbilling:permission>
 </table>
 
-</logic:notPresent>
 </logic:present>
 

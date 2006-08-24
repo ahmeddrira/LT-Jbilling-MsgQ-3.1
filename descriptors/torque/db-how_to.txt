@@ -32,8 +32,8 @@ Hypersonic getting started:
 ---------------------------
  - The database is just 4 files in jbilling\server\jbilling\data\hypersonic
  - Deleteing this files is like dropping the database ;)
- - To startup the server: java -cp hsqldb.jar org.hsqldb.Server -port 1701 -database.0 localDB
- - To run a query: java -cp hsqldb.jar org.hsqldb.util.SqlTool --autoCommit  localDB ../../../resources/db-samples/jbilling-schema-hypersonic.sql
+ - To startup the server (run from jbilling\server\jbilling\data\hypersonic): java -cp ../../lib/hsqldb.jar org.hsqldb.Server -port 1701 -database.0 localDB
+ - To run a query: java -cp ../../lib/hsqldb.jar org.hsqldb.util.SqlTool --autoCommit  localDB ../../../resources/db-samples/jbilling-schema-hypersonic.sql
   
 PostgreSQL getting started:
 ----------------------------------------

@@ -384,6 +384,7 @@
 <forward name="paymentList" path="/payment/list.jsp" redirect="false" />
 <forward name="paymentCreate" redirect="false" path="/paymentMaintain.do?action=setup&amp;mode=payment" />
 <forward name="paymentView" path="/paymentMaintain.do?action=view&amp;mode=payment" redirect="false" />
+<forward name="paymentApply" path="/payment/apply.jsp" redirect="false" />
 <forward name="payment_deleted" path="/payment/list.jsp" redirect="false" />
 <forward name="userEdit" path="/user/edit.jsp" redirect="false" />
 <forward name="userMaintain" path="/user/maintain.jsp" redirect="false" />
@@ -437,7 +438,7 @@
 </action>
 <action path="/paymentMaintain" type="com.sapienter.jbilling.client.payment.MaintainAction" name="payment" scope="session" input="/payment/enterInfoCheque.jsp" validate="false">
 <forward name="payment_review" path="/payment/review.jsp?review=yes" redirect="false" />
-<forward name="payment_view" path="/payment/review.jsp?view=yes" redirect="false" />
+<forward name="payment_view" path="/payment/view.jsp?view=yes" redirect="false" />
 <forward name="payment_create" path="/payment/create.jsp?create=yes" redirect="false" />
 <forward name="payment_edit" path="/payment/create.jsp?create=yes" redirect="false" />
 <forward name="payment_list" path="/payment/list.jsp" redirect="false" />
@@ -445,7 +446,9 @@
 <forward name="payment_payout" redirect="false" path="/payment/payout.jsp" />
 <forward name="payment_reviewPayout" path="/payment/reviewPayout.jsp" redirect="false" />
 <forward name="payout_view" path="/user/payoutView.jsp?result=yes" redirect="false" />
-<forward name="payment_update" path="/payment/update.jsp?create=on" redirect="false" /><forward name="last_invoice" path="/paymentMaintain.do?action=setup&amp;mode=payment&amp;direct=yes&amp;create=yes" redirect="false" />
+<forward name="payment_update" path="/payment/update.jsp?create=on" redirect="false" />
+<forward name="last_invoice" path="/paymentMaintain.do?action=setup&amp;mode=payment&amp;direct=yes&amp;create=yes" redirect="false" />
+<forward name="payment_setupView" path="/paymentMaintain.do?action=view" redirect="false" />
 <forward name="no_invoice" path="/initial.jsp" redirect="false" />
 </action>
 <action path="/reportTrigger" type="com.sapienter.jbilling.client.report.TriggerAction" name="UserLoginForm" validate="false" scope="request">

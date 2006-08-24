@@ -71,6 +71,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_PAYMENT_INFO_CHEQUE = "payment_info_cheque";
     public static final String TABLE_PAYMENT_RESULT = "payment_result";
     public static final String TABLE_PAYMENT_METHOD = "payment_method";
+    public static final String TABLE_PAYMENT_INVOICE_MAP = "payment_invoice";
     public static final String TABLE_EVENT_LOG_MODULE = "event_log_module";
     public static final String TABLE_EVENT_LOG_MESSAGE = "event_log_message";
     public static final String TABLE_ORDER_PROCESS = "order_process";

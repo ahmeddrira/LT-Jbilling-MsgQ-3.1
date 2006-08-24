@@ -28,7 +28,7 @@ package com.sapienter.jbilling.server.invoice;
 import java.util.Vector;
 
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
+import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 
 /**
  * @author Emil
@@ -36,7 +36,7 @@ import com.sapienter.jbilling.server.entity.PaymentDTO;
 public class InvoiceDTOEx extends InvoiceDTO {
 
     private Integer delegatedInvoiceId = null;
-    private Vector payments = null;
+    private Vector paymentMap = null;
     private Integer userId = null;
     private Vector invoiceLines = null;
     private Vector orders = null; //array of orderDto (not Ex)
@@ -60,7 +60,7 @@ public class InvoiceDTOEx extends InvoiceDTO {
     public InvoiceDTOEx(InvoiceDTO dto, Integer delegatedInvoiceId) {
         super(dto);
         this.delegatedInvoiceId = delegatedInvoiceId;
-        payments = new Vector();
+        paymentMap = new Vector();
         invoiceLines = new Vector();
         orders = new Vector();
     }
@@ -86,12 +86,12 @@ public class InvoiceDTOEx extends InvoiceDTO {
         delegatedInvoiceId = integer;
     }
 
-    public void addPayment(PaymentDTO payment) {
-        payments.add(payment);
+    public void addPayment(PaymentInvoiceMapDTOEx payment) {
+        paymentMap.add(payment);
     }
     
-    public Vector getPayments() {
-        return payments;
+    public Vector getPaymentMap() {
+        return paymentMap;
     }
     /**
      * @return

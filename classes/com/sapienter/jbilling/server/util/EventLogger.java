@@ -28,6 +28,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.EventLogEntityLocalHome;
 
 public class EventLogger {
@@ -102,32 +103,36 @@ public class EventLogger {
     }
     
     public void log(Integer level, Integer entity, Integer rowId, Integer module, 
-            Integer message, String table) throws CreateException {
-        eventLogHome.create(entity, rowId, level, module, message, table);            
+            Integer message, String table)  {
+        try {
+            eventLogHome.create(entity, rowId, level, module, message, table);
+        } catch (CreateException e) {
+            throw new SessionInternalError(e);
+        }            
     }
     
     public void debug(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)  throws CreateException {
+            Integer message, String table)   {
         log(LEVEL_DEBUG, entity, rowId, module, message, table);
     }
     
     public void info(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)  throws CreateException {
+            Integer message, String table) {
         log(LEVEL_INFO, entity, rowId, module, message, table);
     }
     
     public void warning(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)  throws CreateException {
+            Integer message, String table)   {
         log(LEVEL_WARNING, entity, rowId, module, message, table);
     }
     
     public void error(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)  throws CreateException {
+            Integer message, String table)   {
         log(LEVEL_ERROR, entity, rowId, module, message, table);
     }
     
     public void fatal(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)  throws CreateException {
+            Integer message, String table)   {
         log(LEVEL_FATAL, entity, rowId, module, message, table);
     } 
     

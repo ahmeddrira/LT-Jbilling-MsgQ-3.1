@@ -24,13 +24,34 @@ Contributor(s): ______________________________________.
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
-<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
 
-<sess:existsAttribute name="jsp_is_refund" value="false">
-   <tiles:insert definition="payment.enter.review" flush="true" />
-</sess:existsAttribute>
-<sess:existsAttribute name="jsp_is_refund" >
-   <tiles:insert definition="refund.review" flush="true" />
-</sess:existsAttribute>
 
+<%-- now let know the invoice list the forward values --%>
+<bean:define id="forward_from" 
+	         value="paymentApply"
+	         toScope="session"/>
+
+<bean:define id="forward_to" 
+	         value="paymentApply"
+             toScope="session"/>
+             
+<%-- clean-up any previous invoice selection --%>             
+<logic:present parameter="reset">
+	<sess:removeAttribute name="invoiceDto"/>
+	<sess:removeAttribute name="listinvoice"/>
+</logic:present>
+
+<p class="title">
+     <bean:message key="payment.apply.title"/>
+</p>
+
+<p class="instr"><bean:message key="payment.apply.instr"/></p>
+
+<html:errors/>
+<html:messages message="true" id="myMessage">
+	<p><bean:write name="myMessage"/></p>
+</html:messages>
+
+
+<jbilling:genericList setup="true" type='<%=Constants.LIST_TYPE_INVOICE%>'/>

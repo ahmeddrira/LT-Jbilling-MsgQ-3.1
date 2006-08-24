@@ -245,10 +245,7 @@ public class BasicOrderFilterTask
         } catch (NamingException e) {
             log.fatal("Problems with the event logger", e);
             throw new TaskException(e);
-        } catch (CreateException e) {
-            log.fatal("Problems with the event logger", e);
-            throw new TaskException(e);
-        }
+        } 
         
         log.debug("Order " + order.getId() + " filter:" + retValue); 
         

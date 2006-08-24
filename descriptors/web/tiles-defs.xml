@@ -98,9 +98,17 @@
     </definition>
     <definition name="payment.enter.info.cheque.body" path="/layouts/bodySplitFive.jsp"><put name="one" value="/payment/createBodyTop.jsp" /><put name="two" value="/other/genericList.jsp" /><put name="three" value="/user/displaySelected.jsp" /><put name="four" value="/invoice/displaySelected.jsp" /><put name="five" value="/payment/editBody.jsp" />
     </definition>
-    <definition name="payment.enter.review" extends="main"><put name="body" value="payment.enter.review.body" /><put name="featureTitle" value="bar.payment.review" /><put name="leftMenuBar" value="/payment/viewLeftBar.jsp" />
+    <definition name="payment.apply" extends="main"><put name="body" value="payment.apply.body" /><put name="featureTitle" value="bar.payment.apply" />
     </definition>
-    <definition name="payment.enter.review.body" path="/layouts/bodySplitFour.jsp"><put name="one" value="/payment/viewHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/payment/viewBody.jsp" /><put name="four" value="/payment/viewAuthorization.jsp" />
+    <definition name="payment.apply.body" path="/layouts/bodySplitFour.jsp"><put name="one" value="/payment/applyTop.jsp" /><put name="two" value="/other/genericList.jsp" /><put name="three" value="/invoice/displaySelected.jsp" /><put name="four" value="/payment/applyBody.jsp" />
+    </definition>
+    <definition name="payment.enter.view" extends="main"><put name="body" value="payment.enter.view.body" /><put name="featureTitle" value="bar.payment.view" /><put name="leftMenuBar" value="/payment/viewLeftBar.jsp" />
+    </definition>
+    <definition name="payment.enter.view.body" path="/layouts/bodySplitFive.jsp"><put name="one" value="/payment/viewHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/payment/listMap.jsp"/><put name="four" value="/payment/viewBody.jsp" /><put name="five" value="/payment/viewAuthorization.jsp" />
+    </definition>
+    <definition name="payment.review" extends="main"><put name="body" value="payment.review.body" /><put name="featureTitle" value="bar.payment.review" />
+    </definition>
+    <definition name="payment.review.body" path="/layouts/bodySplitFour.jsp"><put name="one" value="/payment/viewHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/invoice/displaySelected.jsp"/><put name="four" value="/payment/viewBody.jsp" />
     </definition>
     <definition name="payment.enter.fromOrder" extends="main"><put name="featureTitle" value="bar.payment.order" /><put name="body" value="payment.enter.fromOrder.body" />
     </definition>

@@ -907,9 +907,12 @@
             <reference foreign="id" local="payment_id"/>
         </foreign-key>
     </table>
-    <table name="payment_invoice_map">
+    <table name="payment_invoice">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="payment_id" type="INTEGER"/>
         <column name="invoice_id" type="INTEGER"/>
+        <column name="amount" type="DOUBLE"/>
+        <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <index name="ix_uq_payment_invoice_map_pa_in">
         	<index-column name="payment_id"/>
         	<index-column name="invoice_id"/>

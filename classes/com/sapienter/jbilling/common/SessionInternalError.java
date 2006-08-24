@@ -25,7 +25,7 @@ import java.io.StringWriter;
 
 import org.apache.log4j.Logger;
 
-public class SessionInternalError extends Exception {
+public class SessionInternalError extends RuntimeException {
     public SessionInternalError() {
     }
 

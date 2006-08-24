@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
@@ -274,15 +273,11 @@ public abstract class PaymentEntityBean implements EntityBean {
     // CMR fields -------------------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="payments-invoices"
+     * @ejb.relation name="invoices-payments"
      *               role-name="payment-pays-invoice"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="invoice_id"            
-     * @jboss.relation-table table-name="payment_invoice_map"
-     *                       create-table="false"
      */
-    public abstract Collection getInvoices();
-    public abstract void setInvoices(Collection invoices);
+    public abstract Collection getInvoicesMap();
+    public abstract void setInvoicesMap(Collection invoices);
 
     /**
      * @ejb:interface-method view-type="local"

@@ -219,7 +219,7 @@ Contributor(s): ______________________________________.
 	<logic:iterate name='<%=Constants.SESSION_INVOICE_DTO%>' 
 					   scope="session"
 					   id="payment"
-					   property="payments">
+					   property="paymentMap">
 
 		<tr class="infoB">
 			<td class="infoprompt"></td>
@@ -229,13 +229,13 @@ Contributor(s): ______________________________________.
 				<td class="infodata">
 				<html:link page="/paymentMaintain.do?action=view" paramId="id" 
 					       paramName="payment"
-					       paramProperty="id">
-					<bean:write name="payment" property="id"/>
+					       paramProperty="paymentId">
+					<bean:write name="payment" property="paymentId"/>
 				</html:link>
 				</td>
 				<td class="infodata">
 				<bean:write name="payment" 
-                        property="paymentDate"
+                        property="createDateTime"
                         scope="page"
                         formatKey="format.date"/>
                 </td>

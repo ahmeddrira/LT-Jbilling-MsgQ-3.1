@@ -49,6 +49,7 @@ import com.sapienter.jbilling.interfaces.NotificationSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.PartnerPayoutDTOEx;
@@ -161,7 +162,8 @@ public class MaintainAction extends Action {
                                     Constants.SESSION_LOGGED_USER_ID), paymentDto);
                         } else {
                             // it is a new payment
-                            myRemoteSession.applyPayment(paymentDto, invoiceId);
+                            paymentDto.setId(myRemoteSession.applyPayment(
+                                    paymentDto, invoiceId));
                             // I need to update the DTO, so the left bar can
                             // make the right decitions
                             if (invoiceId != null) {
@@ -182,6 +184,12 @@ public class MaintainAction extends Action {
                 messages.add(ActionMessages.GLOBAL_MESSAGE, 
                         new ActionMessage(key));
                 if (!isPayout) {
+                    // the dto has to be refreshed, otherwise the 
+                    // map to the invoice won't be there
+                    session.setAttribute(Constants.SESSION_PAYMENT_DTO, 
+                            myRemoteSession.getPayment(paymentDto.getId(), 
+                                    (Integer) session.getAttribute(
+                                            Constants.SESSION_LANGUAGE)));
                     forward = "payment_view";
                 } else {
                     forward = "payout_view";
@@ -245,6 +253,7 @@ public class MaintainAction extends Action {
                         Constants.SESSION_LANGUAGE);
                 PaymentDTOEx dto = ((PaymentSession) myRemoteSession).getPayment(
                         paymentId, languageId);
+                log.debug("my dto is " + dto);
                 if (dto.getIsRefund().intValue() == 1) {
                     session.setAttribute(Constants.SESSION_PAYMENT_DTO_REFUND, 
                             dto);
@@ -262,31 +271,6 @@ public class MaintainAction extends Action {
             
                 // now include the invoice and customer dto of this payment
                 try {
-                    // payments get the linked invoices
-                    if (dto.getIsRefund().intValue() == 0 ) {
-                        InvoiceSessionHome invoiceHome =
-                                (InvoiceSessionHome) EJBFactory.lookUpHome(
-                                InvoiceSessionHome.class,
-                                InvoiceSessionHome.JNDI_NAME);
-        
-                        InvoiceSession invoiceSession = invoiceHome.create();
-                        // we'll display only the first invoice now, since from the
-                        // gui only one invoice per payment is now being supported.
-                        if (dto.getInvoiceIds().size() > 0) {
-                            InvoiceDTO invoices[] = new InvoiceDTO[
-                                    dto.getInvoiceIds().size()];
-                            for (int f = 0; f < invoices.length; f++) {
-                                invoices[f] = invoiceSession.getInvoice((Integer)
-                                        dto.getInvoiceIds().get(f));
-                            }
-                            session.setAttribute("jsp_linked_invoices", invoices);
-                        } else {
-                            // otherwise one from a prvious selection will show up
-                            session.removeAttribute("jsp_linked_invoices");
-                        }
-                    } else { // refunds get another payment
-                    }
-                                    
                     // now the user
                     session.setAttribute(Constants.SESSION_USER_ID, 
                             dto.getUserId());
@@ -325,6 +309,32 @@ public class MaintainAction extends Action {
                 messages.add(ActionMessages.GLOBAL_MESSAGE, 
                         new ActionMessage(field));
                 forward = "payment_view";
+            } else if (action.equals("unlink")) {
+                Integer mapId = Integer.valueOf(request.getParameter("mapId"));
+                myRemoteSession.removeInvoiceLink(mapId);
+                messages.add(ActionMessages.GLOBAL_MESSAGE, 
+                        new ActionMessage("payment.link.removalDone"));
+                // make sure the payment now shows up updated
+                session.setAttribute(Constants.SESSION_LIST_ID_SELECTED,
+                        ((PaymentDTO) session.getAttribute(
+                            Constants.SESSION_PAYMENT_DTO)).getId());
+                session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
+                forward = "payment_setupView";
+            } else if (action.equals("apply")) {
+                // call the server to apply tha payment
+                myRemoteSession.applyPayment(((PaymentDTO) session.getAttribute(
+                        Constants.SESSION_PAYMENT_DTO)).getId(), 
+                        ((InvoiceDTO) session.getAttribute(
+                                Constants.SESSION_INVOICE_DTO)).getId());
+                // show a 'done' message
+                messages.add(ActionMessages.GLOBAL_MESSAGE, 
+                        new ActionMessage("payment.link.applyDone"));
+                // redirect to payment view, with the refreshed payment record
+                session.setAttribute(Constants.SESSION_LIST_ID_SELECTED,
+                        ((PaymentDTO) session.getAttribute(
+                            Constants.SESSION_PAYMENT_DTO)).getId());
+                session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
+                forward = "payment_setupView";
             } else {
                 GenericMaintainAction gma = new GenericMaintainAction(mapping,
                         form, request, response, servlet, myRemoteSession, 

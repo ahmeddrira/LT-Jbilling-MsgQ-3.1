@@ -49,6 +49,8 @@ import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentInfoChequeEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentInfoChequeEntityLocalHome;
+import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
+import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentResultEntityLocal;
@@ -79,6 +81,7 @@ public class PaymentBL extends ResultList
     private CreditCardEntityLocalHome ccHome = null;
     private PaymentMethodEntityLocalHome methodHome = null;
     private PaymentResultEntityLocalHome resultHome = null;
+    private PaymentInvoiceMapEntityLocalHome mapHome = null;
     private PaymentEntityLocal payment = null;
     private Logger log = null;
     private EventLogger eLogger = null;
@@ -89,43 +92,52 @@ public class PaymentBL extends ResultList
         set(paymentId);
     }
 
-    public PaymentBL() throws NamingException {
+    public PaymentBL() {
         init();
     }
     
-    public PaymentBL(PaymentEntityLocal payment) throws NamingException {
+    public PaymentBL(PaymentEntityLocal payment) {
         init();
         this.payment = payment;
     }
 
-    private void init() throws NamingException {
-        log = Logger.getLogger(PaymentBL.class);     
-        eLogger = EventLogger.getInstance();        
-        EJBFactory = JNDILookup.getFactory(false);
-        paymentHome = (PaymentEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaymentEntityLocalHome.class,
-                PaymentEntityLocalHome.JNDI_NAME);
-    
-        chequeHome = (PaymentInfoChequeEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaymentInfoChequeEntityLocalHome.class,
-                PaymentInfoChequeEntityLocalHome.JNDI_NAME);
+    private void init() {
+        try {
+            log = Logger.getLogger(PaymentBL.class);     
+            eLogger = EventLogger.getInstance();        
+            EJBFactory = JNDILookup.getFactory(false);
+            paymentHome = (PaymentEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PaymentEntityLocalHome.class,
+                    PaymentEntityLocalHome.JNDI_NAME);
+   
+            chequeHome = (PaymentInfoChequeEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PaymentInfoChequeEntityLocalHome.class,
+                    PaymentInfoChequeEntityLocalHome.JNDI_NAME);
  
-        ccHome = (CreditCardEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                CreditCardEntityLocalHome.class,
-                CreditCardEntityLocalHome.JNDI_NAME);
+            ccHome = (CreditCardEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    CreditCardEntityLocalHome.class,
+                    CreditCardEntityLocalHome.JNDI_NAME);
 
-        methodHome = (PaymentMethodEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaymentMethodEntityLocalHome.class,
-                PaymentMethodEntityLocalHome.JNDI_NAME);
+            methodHome = (PaymentMethodEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PaymentMethodEntityLocalHome.class,
+                    PaymentMethodEntityLocalHome.JNDI_NAME);
 
-        resultHome = (PaymentResultEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaymentResultEntityLocalHome.class,
-                PaymentResultEntityLocalHome.JNDI_NAME);
+            resultHome = (PaymentResultEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PaymentResultEntityLocalHome.class,
+                    PaymentResultEntityLocalHome.JNDI_NAME);
+
+            mapHome = (PaymentInvoiceMapEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PaymentInvoiceMapEntityLocalHome.class,
+                    PaymentInvoiceMapEntityLocalHome.JNDI_NAME);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
 
     public PaymentEntityLocal getEntity() {
@@ -194,6 +206,18 @@ public class PaymentBL extends ResultList
         }
         
         dto.setId(payment.getId());
+    }
+    
+    void createMap(InvoiceEntityLocal invoice, Float amount) 
+            throws CreateException {
+        Float realAmount;
+        if (payment.getResultId().equals(Constants.RESULT_FAIL) ||
+                payment.getResultId().equals(Constants.RESULT_UNAVAILABLE)) {
+            realAmount = new Float(0);
+        } else {
+            realAmount = amount;
+        }
+        mapHome.create(invoice, payment, realAmount);
     }
     
     /**
@@ -322,22 +346,16 @@ public class PaymentBL extends ResultList
     
     public PaymentDTOEx getDTOEx(Integer language) 
             throws FinderException, NamingException {
-        PaymentDTOEx dto = new PaymentDTOEx();
-        dto.setAmount(payment.getAmount());
-        dto.setAttempt(payment.getAttempt());
-        dto.setCreateDateTime(payment.getCreateDateTime());
-        dto.setDeleted(payment.getDeleted());
-        dto.setId(payment.getId());
-        dto.setMethodId(payment.getMethodId());
-        dto.setPaymentDate(payment.getPaymentDate());
-        dto.setResultId(payment.getResultId());
+        PaymentDTOEx dto = new PaymentDTOEx(getDTO());
         dto.setUserId(payment.getUser().getUserId());
-        dto.setCurrencyId(payment.getCurrencyId());
-	    dto.setBalance(payment.getBalance());
         // now add all the invoices that were paid by this payment
-        Iterator it = payment.getInvoices().iterator();
+        Iterator it = payment.getInvoicesMap().iterator();
         while (it.hasNext()) {
-            dto.getInvoiceIds().add(((InvoiceEntityLocal) it.next()).getId());
+            PaymentInvoiceMapEntityLocal map = 
+                    (PaymentInvoiceMapEntityLocal) it.next();
+            dto.getInvoiceIds().add(map.getInvoice().getId());
+            
+            dto.addPaymentMap(getMapDTO(map.getId()));
         } 
         
         // cheque info if applies
@@ -619,8 +637,9 @@ public class PaymentBL extends ResultList
             
             // not pretty, but the methods are there
             PaymentSessionBean psb = new PaymentSessionBean();
-            psb.applyPayment(dto, invoice, true);
-            invoice.getPayments().add(payment);
+            // make the link between the payment and the invoice
+            Float paidAmount = new Float(psb.applyPayment(dto, invoice, true));
+            createMap(invoice, paidAmount);
 
             // notify the customer
             dto.setUserId(invoice.getUser().getUserId()); // needed for the notification
@@ -660,5 +679,54 @@ public class PaymentBL extends ResultList
                     "beacuse the entity lacks the notification. " +
                     "entity = " + entityId);
         }
+    }
+    
+    /*
+     * The payment doesn't have to be set. 
+     * It adjusts the balances of both the payment and the invoice and
+     * deletes the map row.
+     */
+    public void removeInvoiceLink(Integer mapId) {
+        try {
+            // find the map
+            PaymentInvoiceMapEntityLocal map = mapHome.findByPrimaryKey(mapId);
+            // start returning the money to the payment's balance
+            float amount = map.getAmount().floatValue();
+            payment = map.getPayment();
+            payment.setBalance(new Float(payment.getBalance().floatValue() +
+                    amount));
+            // the balace of the invoice also increases
+            InvoiceEntityLocal invoice = map.getInvoice();
+            invoice.setBalance(new Float(invoice.getBalance().floatValue() +
+                    amount));
+            // this invoice probably has to be paid now
+            if (invoice.getBalance().floatValue() >= 0.01) {
+                invoice.setToProcess(new Integer(1));
+            }
+            
+            // get rid of the map all together
+            map.remove();
+            
+            // log that this was deleted, otherwise there will be no trace
+            eLogger.info(invoice.getUser().getEntity().getId(), mapId,
+                    EventLogger.MODULE_PAYMENT_MAINTENANCE, 
+                    EventLogger.ROW_DELETED, Constants.TABLE_PAYMENT_INVOICE_MAP);
+
+        } catch (Exception e) {
+            log.error("Exception removing payment-invoice link", e);
+            throw new SessionInternalError(e);
+        } 
+    }
+
+    public PaymentInvoiceMapDTOEx getMapDTO(Integer mapId) 
+            throws FinderException {
+        //      find the map
+        PaymentInvoiceMapEntityLocal map = mapHome.findByPrimaryKey(mapId);
+        PaymentInvoiceMapDTOEx dto = new PaymentInvoiceMapDTOEx(map.getId(),
+                map.getAmount(), map.getCreateDateTime());
+        dto.setPaymentId(map.getPayment().getId());
+        dto.setInvoiceId(map.getInvoice().getId());
+        dto.setCurrencyId(map.getPayment().getCurrencyId());
+        return dto;
     }
 }

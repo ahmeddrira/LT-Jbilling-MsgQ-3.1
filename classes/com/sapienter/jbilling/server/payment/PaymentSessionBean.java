@@ -20,6 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.payment;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -321,7 +322,7 @@ public class PaymentSessionBean implements SessionBean {
             boolean success) 
             throws SessionInternalError, NamingException, FinderException,
                 CreateException, RemoveException, SQLException {
-        float totalPaid = 0;
+        BigDecimal totalPaid = new BigDecimal(0);
         log = Logger.getLogger(PaymentSessionBean.class); // leave it or break web services
         if (invoice != null) {
 
@@ -338,41 +339,47 @@ public class PaymentSessionBean implements SessionBean {
                 if (balance != null) {
 					boolean balanceSign = (balance.floatValue() < 0) ? 
 							false : true;
-                    float newBalance;
+                    BigDecimal newBalance = null;
                     if (payment.getIsRefund().intValue() == 0) {
-                        newBalance = balance.floatValue() - 
-                                payment.getBalance().floatValue();
+                        newBalance = new BigDecimal(balance.toString());
+                        newBalance = newBalance.subtract(new BigDecimal( 
+                                payment.getBalance().toString()));
                         // I need the payment record to update its balance
                         if (payment.getId() == null) {
                             throw new SessionInternalError("The ID of the " +
                                     "payment to has to be present in the DTO");
                         }
                         PaymentBL paymentBL = new PaymentBL(payment.getId());
-                        float newPaymentBalance = payment.getBalance().floatValue() -
-                                balance.floatValue();
-                        if (newPaymentBalance < 0) {
-                                newPaymentBalance = 0;
+                        BigDecimal newPaymentBalance = new BigDecimal(
+                                payment.getBalance().toString());
+                        newPaymentBalance = newPaymentBalance.subtract(
+                                new BigDecimal(balance.toString()));
+                        if (newPaymentBalance.compareTo(new BigDecimal("0")) < 0) {
+                                newPaymentBalance = new BigDecimal("0");
                         }
-                        totalPaid = payment.getBalance().floatValue() -
-                                newPaymentBalance;
+                        totalPaid = new BigDecimal(payment.getBalance().toString());
+                        totalPaid = totalPaid.subtract(newPaymentBalance);
                         paymentBL.getEntity().setBalance(new Float(
-                                newPaymentBalance));
-                        payment.setBalance(new Float(newPaymentBalance));
+                                newPaymentBalance.floatValue()));
+                        payment.setBalance(new Float(newPaymentBalance.floatValue()));
                     } else { // refunds add to the invoice
-                        newBalance = balance.floatValue() + 
-                                payment.getAmount().floatValue();
+                        newBalance = new BigDecimal(balance.toString());
+                        newBalance = newBalance.add(new BigDecimal(
+                                payment.getAmount().floatValue()));
                     }
                         
 					// only level the balance if the original balance wasn't negative
-                    if (newBalance < 0.01 && balanceSign) {
+                    if (newBalance.compareTo(new BigDecimal("0.01")) < 0 && 
+                            balanceSign) {
                         // the payment balance was greater than the invoice's
-                        newBalance = 0;
+                        newBalance = new BigDecimal("0");
                     }
                     
-                    invoice.setBalance(new Float(newBalance));
+                    invoice.setBalance(new Float(newBalance.floatValue()));
+                    log.debug("Set invoice balance to: " + invoice.getBalance());
                     
                     // update the to_process flag if the balance is 0
-                    if (newBalance == 0) {
+                    if (newBalance.compareTo(new BigDecimal("0")) == 0) {
                         invoice.setToProcess(new Integer(0));
                     } else { // a refund might make this invoice payabale again
                         invoice.setToProcess(new Integer(1));
@@ -409,7 +416,7 @@ public class PaymentSessionBean implements SessionBean {
                 } 
             }
         }
-        return totalPaid;
+        return totalPaid.floatValue();
     }
 
     /**

@@ -20,13 +20,13 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
 import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderLineDTOEx;
-import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * Basic tasks that takes the quantity and multiplies it by the price to 
@@ -42,7 +42,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
      */
     public void doProcessing(NewOrderDTO order) 
         throws TaskException {
-        float orderTotal = 0L;
+        BigDecimal orderTotal = new BigDecimal(0);
         
         Logger log = Logger.getLogger(BasicLineTotalTask.class);
         
@@ -55,15 +55,18 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
 
             if (line.getItem() != null && 
                     line.getItem().getPercentage() == null) { 
-                line.setAmount(new Float(line.getQuantity().floatValue()
-                        * line.getPrice().floatValue()));
-                orderTotal += line.getAmount().floatValue();
+                BigDecimal amount = new BigDecimal(
+                        line.getQuantity().toString());
+                amount = amount.multiply(new BigDecimal(
+                        line.getPrice().toString()));
+                line.setAmount(new Float(amount.floatValue()));
+                orderTotal = orderTotal.add(amount);
                 log.debug("adding normal line. Total =" + orderTotal);
             }
         }
         
         // now the percetage items
-        Float subTotal = new Float(orderTotal);
+        BigDecimal subTotal = orderTotal;
         for (Enumeration items = order.getOrderLinesMap().keys();
                 items.hasMoreElements();) {
             Integer itemId = (Integer) items.nextElement();
@@ -71,15 +74,18 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                     get(itemId);
 
             if (line.getItem() != null && 
-                    line.getItem().getPercentage() != null) { 
-                line.setAmount(new Float(subTotal.floatValue() / 100
-                        * line.getPrice().floatValue()));
-                orderTotal += line.getAmount().floatValue();
+                    line.getItem().getPercentage() != null) {
+                BigDecimal amount = subTotal.divide(new BigDecimal("100"), 
+                        BigDecimal.ROUND_HALF_EVEN);
+                amount = amount.multiply(new BigDecimal(
+                        line.getPrice().toString()));
+                line.setAmount(new Float(amount.floatValue()));
+                orderTotal = orderTotal.add(amount);
                 log.debug("adding percentage line. Total =" + orderTotal);
             }
         }
 
-        order.setOrderTotal(new Float(orderTotal));
+        order.setOrderTotal(new Float(orderTotal.floatValue()));
     }
 
 }

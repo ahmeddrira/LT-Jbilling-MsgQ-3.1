@@ -857,6 +857,8 @@ public class NotificationBL extends ResultList
             int taxItemIndex = 0;
             for (int f = 0; f < lines.size(); f++) {
                 InvoiceLineDTOEx line = (InvoiceLineDTOEx) lines.get(f);
+                //log.debug("Processing line " + line);
+                // process the tax, if this line is one
                 if (line.getTypeId() != null && // for headers/footers 
                         line.getTypeId().equals(Constants.INVOICE_LINE_TYPE_TAX)) {
                     // update the total tax variable
@@ -868,6 +870,9 @@ public class NotificationBL extends ResultList
                     // taxes are not displayed as invoice lines
                     lines.remove(f);
                     f = 0; // has to start all over again
+                } else if (line.getIsPercentage().intValue() == 1) {
+                    // if the line is a percentage, remove the price
+                    line.setPrice(null);
                 }
             }
             // remove the last line, that is the total footer

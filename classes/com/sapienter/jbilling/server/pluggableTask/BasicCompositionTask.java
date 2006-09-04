@@ -33,8 +33,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -131,7 +129,7 @@ public class BasicCompositionTask extends PluggableTask
                                 orderLine.getAmount(), 
                                 orderLine.getPrice(), orderLine.getQuantity(),
                                 type, new Integer(0), orderLine.getItemId(),
-                                order.getUser().getUserId());
+                                order.getUser().getUserId(), null);
                         
                     } else if (orderLine.getType().getId().equals(
                             Constants.ORDER_LINE_TYPE_TAX)){
@@ -154,7 +152,7 @@ public class BasicCompositionTask extends PluggableTask
                                 orderLine.getPrice(), 
                                 null, Constants.INVOICE_LINE_TYPE_TAX, 
                                 new Integer(0), orderLine.getItemId(),
-                                order.getUser().getUserId());
+                                order.getUser().getUserId(), null);
                     } else if (orderLine.getType().getId().equals(
                             Constants.ORDER_LINE_TYPE_PENALTY)){
                         invoiceLine = new InvoiceLineDTOEx(null, 
@@ -163,7 +161,7 @@ public class BasicCompositionTask extends PluggableTask
                                 null, null,
                                 Constants.INVOICE_LINE_TYPE_PENALTY, 
                                 new Integer(0), orderLine.getItemId(),
-                                order.getUser().getUserId());
+                                order.getUser().getUserId(), null);
                     }
                     
                     // for the invoice to make sense when it is displayed,
@@ -213,7 +211,7 @@ public class BasicCompositionTask extends PluggableTask
             InvoiceLineDTOEx invoiceLine = new InvoiceLineDTOEx(null, 
                     delLine.toString(), invoice.getBalance(), null, null, 
                     Constants.INVOICE_LINE_TYPE_DUE_INVOICE, new Integer(0),
-                    null, null);
+                    null, null, new Integer(0));
             invoiceDTO.addResultLine(invoiceLine);
         }
     }
@@ -226,7 +224,6 @@ public class BasicCompositionTask extends PluggableTask
         retValue.append(desc);
         
         if (!order.getPeriod().getId().equals(Constants.ORDER_PERIOD_ONCE)) {
-            Integer orderUnitId = order.getPeriod().getUnitId();
             Integer orderValueId = order.getPeriod().getValue();
             // calculate the dates from/to
             Calendar cal = Calendar.getInstance();

@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * Basic tasks that takes the quantity and multiplies it by the price to 
@@ -42,11 +43,19 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
      */
     public void doProcessing(NewOrderDTO order) 
         throws TaskException {
-        BigDecimal orderTotal = new BigDecimal(0);
+        // calculations are done with 10 decimals. 
+        // The final total is the rounded to 2 decimals.
+        BigDecimal orderTotal = new BigDecimal("0.0000000000");
+        BigDecimal taxPerTotal = new BigDecimal("0.0000000000");
+        BigDecimal taxNonPerTotal = new BigDecimal("0.0000000000");
+        BigDecimal nonTaxPerTotal = new BigDecimal("0.0000000000");
+        BigDecimal nonTaxNonPerTotal = new BigDecimal("0.0000000000");
         
         Logger log = Logger.getLogger(BasicLineTotalTask.class);
         
-        // go over those that are not percentage
+        
+        // step one, go over the non-percentage items,
+        // collecting both tax and non-tax values
         for (Enumeration items = order.getOrderLinesMap().keys();
                 items.hasMoreElements();) {
             Integer itemId = (Integer) items.nextElement();
@@ -60,13 +69,17 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 amount = amount.multiply(new BigDecimal(
                         line.getPrice().toString()));
                 line.setAmount(new Float(amount.floatValue()));
-                orderTotal = orderTotal.add(amount);
-                log.debug("adding normal line. Total =" + orderTotal);
+                if (line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+                    taxNonPerTotal = taxNonPerTotal.add(amount);
+                } else {
+                    nonTaxNonPerTotal = nonTaxNonPerTotal.add(amount);
+                }
+                log.debug("adding normal line. Totals =" + taxNonPerTotal + 
+                        " - " + nonTaxNonPerTotal);
             }
         }
         
-        // now the percetage items
-        BigDecimal subTotal = orderTotal;
+        // step two non tax percetage items
         for (Enumeration items = order.getOrderLinesMap().keys();
                 items.hasMoreElements();) {
             Integer itemId = (Integer) items.nextElement();
@@ -74,17 +87,44 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                     get(itemId);
 
             if (line.getItem() != null && 
-                    line.getItem().getPercentage() != null) {
-                BigDecimal amount = subTotal.divide(new BigDecimal("100"), 
+                    line.getItem().getPercentage() != null &&
+                    !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+                BigDecimal amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), 
                         BigDecimal.ROUND_HALF_EVEN);
                 amount = amount.multiply(new BigDecimal(
                         line.getPrice().toString()));
+                amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
                 line.setAmount(new Float(amount.floatValue()));
-                orderTotal = orderTotal.add(amount);
-                log.debug("adding percentage line. Total =" + orderTotal);
+                nonTaxPerTotal = nonTaxPerTotal.add(amount);
+                log.debug("adding no tax percentage line. Total =" + nonTaxPerTotal);
+            }
+        }
+        
+        // step three: tax percetage items
+        BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
+        for (Enumeration items = order.getOrderLinesMap().keys();
+                items.hasMoreElements();) {
+            Integer itemId = (Integer) items.nextElement();
+            OrderLineDTOEx line = (OrderLineDTOEx) order.getOrderLinesMap().
+                    get(itemId);
+
+            if (line.getItem() != null && 
+                    line.getItem().getPercentage() != null &&
+                    line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+                BigDecimal amount = allNonTaxes.divide(new BigDecimal("100"), 
+                        BigDecimal.ROUND_HALF_EVEN);
+                amount = amount.multiply(new BigDecimal(
+                        line.getPrice().toString()));
+                amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                line.setAmount(new Float(amount.floatValue()));
+                taxPerTotal = taxPerTotal.add(amount);
+                log.debug("adding tax percentage line. Total =" + taxPerTotal);
             }
         }
 
+        orderTotal = taxNonPerTotal.add(taxPerTotal).add(nonTaxPerTotal)
+                .add(nonTaxNonPerTotal);
+        orderTotal = orderTotal.setScale(2, BigDecimal.ROUND_HALF_EVEN);
         order.setOrderTotal(new Float(orderTotal.floatValue()));
     }
 

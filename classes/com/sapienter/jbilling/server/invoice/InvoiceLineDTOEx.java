@@ -42,7 +42,8 @@ public class InvoiceLineDTOEx extends InvoiceLineDTO implements Serializable {
      */
     public InvoiceLineDTOEx() {
         super();
-        // TODO Auto-generated constructor stub
+        // default to non-percentage
+        setIsPercentage(new Integer(0));
     }
 
     /**
@@ -57,9 +58,9 @@ public class InvoiceLineDTOEx extends InvoiceLineDTO implements Serializable {
      */
     public InvoiceLineDTOEx(Integer id, String description, Float amount,
             Float price, Integer quantity, Integer typeId, Integer deleted,
-            Integer itemId, Integer sourceUserId) {
+            Integer itemId, Integer sourceUserId, Integer isPercentage) {
         super(id, description, amount, price, quantity, deleted, itemId, 
-                sourceUserId);
+                sourceUserId, isPercentage);
         setTypeId(typeId);
     }
 

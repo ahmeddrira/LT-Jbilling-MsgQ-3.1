@@ -66,7 +66,8 @@ public abstract class InvoiceLineEntityBean implements EntityBean {
      * @ejb:create-method view-type="local"
      */
     public Integer ejbCreate(String description, Float amount, Integer quantity, 
-            Float price, Integer typeId, Integer itemId, Integer sourceUserId)
+            Float price, Integer typeId, Integer itemId, Integer sourceUserId,
+            Integer isPercentage)
             throws CreateException {
 
         Integer newId;
@@ -101,12 +102,14 @@ public abstract class InvoiceLineEntityBean implements EntityBean {
         setPrice(price);
         setItemId(itemId);
         setSourceUserId(sourceUserId);
+        setIsPercentage(isPercentage);
         
         return newId;
     }
 
     public void ejbPostCreate(String description, Float amount, Integer quantity, 
-            Float price, Integer typeId, Integer itemId, Integer sourceUserId) {
+            Float price, Integer typeId, Integer itemId, Integer sourceUserId,
+            Integer isPercentage) {
         try {
             InvoiceLineTypeEntityLocalHome typeHome =
                     (InvoiceLineTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
@@ -191,6 +194,15 @@ public abstract class InvoiceLineEntityBean implements EntityBean {
      */
     public abstract Integer getSourceUserId();
     public abstract void setSourceUserId(Integer userId);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="is_percentage"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getIsPercentage();
+    public abstract void setIsPercentage(Integer flag);
 
     // CMR fields -----------------------------------------------------------  
     /**

@@ -55,13 +55,13 @@ import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.payment.PaymentBL;
-import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
@@ -279,6 +279,20 @@ public class InvoiceBL extends ResultList
         while (dueInvoiceLines.hasNext()) {
             InvoiceLineDTOEx lineToAdd =
                 (InvoiceLineDTOEx) dueInvoiceLines.next();
+            // define if the line is a percentage or not
+            lineToAdd.setIsPercentage(new Integer(0));
+            if (lineToAdd.getItemId() != null) {
+                try {
+                    ItemBL item = new ItemBL(lineToAdd.getItemId());
+                    if (item.getEntity().getPercentage() != null) {
+                        lineToAdd.setIsPercentage(new Integer(1));
+                    }
+                } catch (FinderException e) {
+                    log.error("Could not find item to create invoice line " + 
+                            lineToAdd.getItemId());
+                }
+            } 
+            // create the database row
             InvoiceLineEntityLocal newLine =
                 invoiceLineHome.create(
                     lineToAdd.getDescription(),
@@ -287,7 +301,9 @@ public class InvoiceBL extends ResultList
                     lineToAdd.getPrice(),
                     lineToAdd.getTypeId(),
                     lineToAdd.getItemId(),
-                    lineToAdd.getSourceUserId());
+                    lineToAdd.getSourceUserId(),
+                    lineToAdd.getIsPercentage());
+            
             // update the invoice-lines relationship
             invoiceLines.add(newLine);
         }
@@ -989,6 +1005,7 @@ public class InvoiceBL extends ResultList
         dto.setItemId(line.getItemId());
         dto.setOrderPosition(line.getType().getOrderPosition());
         dto.setSourceUserId(line.getSourceUserId());
+        dto.setIsPercentage(line.getIsPercentage());
         
         return dto;
     }

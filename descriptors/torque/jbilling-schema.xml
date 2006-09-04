@@ -477,6 +477,7 @@
         <column name="item_id" type="INTEGER"/>
         <column name="description" size="1000" type="VARCHAR"/>
         <column name="source_user_id" type="INTEGER"/>
+        <column default="0" name="is_percentage" required="true" type="SMALLINT"/>
         <index name="ix_invoice_line_invoice_id">
         	<index-column name="invoice_id"/>
         </index>

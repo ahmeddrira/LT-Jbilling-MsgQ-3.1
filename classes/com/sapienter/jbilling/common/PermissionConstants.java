@@ -57,7 +57,8 @@ public interface PermissionConstants {
     public static final Integer P_INVOICE_DELETE = new Integer(113);
     //  if a user can modify payments (delete/edit)
     public static final Integer P_PAYMENT_MODIFY = new Integer(114);
-    
+    //  if a user can modify pluggable tasks info
+    public static final Integer P_TASK_MODIFY = new Integer(137);
     
     // roles
     // to be on synch with the role table

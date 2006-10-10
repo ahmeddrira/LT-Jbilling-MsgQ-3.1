@@ -193,6 +193,7 @@ public final class Constants implements PermissionConstants, CommonConstants {
     public static final String PAGE_CONTACT_TYPES = "contact_types";
     public static final String PAGE_DELIVERY_METHOD = "delivery_methods";
     public static final String PAGE_ORDER_LINE_TYPES = "order_line_types";
+    public static final String PAGE_TASK_CLASSES = "task_classes";
 
     /*
      * Forwards as parameters

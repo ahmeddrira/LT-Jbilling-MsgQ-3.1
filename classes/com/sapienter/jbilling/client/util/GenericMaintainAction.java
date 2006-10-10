@@ -1087,7 +1087,7 @@ public class GenericMaintainAction {
                 retValue = "edit";
             } else if (mode.equals("parameter")) { /// for pluggable task parameters
                 ((PluggableTaskSession) remoteSession).updateParameters(
-                        taskDto);
+                        executorId, taskDto);
                 messageKey = "task.parameter.update.done";
                 retValue = "edit";
             } else if (mode.equals("invoiceNumbering")) {

@@ -23,12 +23,17 @@ package com.sapienter.jbilling.server.entity;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
+import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.PluggableTaskTypeEntityLocal;
+import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
+import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
+import com.sapienter.jbilling.server.util.Constants;
 
 
 /**
@@ -54,6 +59,12 @@ import com.sapienter.jbilling.interfaces.PluggableTaskTypeEntityLocal;
  *                       AND b.type.category.id = ?2"
  *             result-type-mapping="Local"
  *
+ * @ejb:finder signature="Collection findAllByEntity(java.lang.Integer entityId)"
+ *             query="SELECT OBJECT(b) 
+ *                      FROM pluggable_task b 
+ *                     WHERE b.entityId = ?1"
+ *             result-type-mapping="Local"
+ *
  * @ejb:finder signature="PluggableTaskEntityLocal findByEntityType(java.lang.Integer entityId, java.lang.Integer typeId)"
  *             query="SELECT OBJECT(b) 
  *                      FROM pluggable_task b 
@@ -73,7 +84,6 @@ import com.sapienter.jbilling.interfaces.PluggableTaskTypeEntityLocal;
  * @ejb.value-object name="PluggableTask"
  * 
  * @jboss:table-name "pluggable_task"
- * @jboss.read-only read-only="true"
  * 
  * @jboss:create-table create="false"
  * @jboss:remove-table remove="false"
@@ -81,7 +91,42 @@ import com.sapienter.jbilling.interfaces.PluggableTaskTypeEntityLocal;
 
 public abstract class PluggableTaskEntityBean implements EntityBean {
 
+    /**
+     * @ejb:create-method view-type="local"
+     */
+    public Integer ejbCreate(Integer entityId, 
+            PluggableTaskTypeEntityLocal type, Integer processingOrder) 
+            throws CreateException {
+        Integer newId;
 
+        try {
+            JNDILookup EJBFactory = JNDILookup.getFactory(false);
+            SequenceSessionLocalHome generatorHome =
+                (SequenceSessionLocalHome) EJBFactory.lookUpLocalHome(
+                    SequenceSessionLocalHome.class,
+                    SequenceSessionLocalHome.JNDI_NAME);
+
+            SequenceSessionLocal generator = generatorHome.create();
+            newId = new Integer(generator.getNextSequenceNumber(
+                    Constants.TABLE_PLUGGABLE_TASK));
+
+        } catch (Exception e) {
+            throw new CreateException(
+                "Problems generating the primary key "
+                    + "for the pluggable task table");
+        }
+
+        setId(newId);
+        setEntityId(entityId);
+        setProcessingOrder(processingOrder);
+        
+        return newId;
+    }
+    
+    public void ejbPostCreate(Integer entityId, 
+            PluggableTaskTypeEntityLocal type, Integer processingOrder) {
+        setType(type);
+    }
     //  CMP field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
@@ -106,9 +151,11 @@ public abstract class PluggableTaskEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local
      * @ejb:persistent-field
      * @jboss:column-name name="processing_order"
-     * @jboss.method-attributes read-only="true"
      */
     public abstract Integer getProcessingOrder();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
     public abstract void setProcessingOrder(Integer pOrder);
 
     // CMR fields --------------------------------------------------
@@ -124,6 +171,9 @@ public abstract class PluggableTaskEntityBean implements EntityBean {
      *                 fk-column="type_id"            
      */
     public abstract PluggableTaskTypeEntityLocal getType();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
     public abstract void setType(PluggableTaskTypeEntityLocal pType);
 
     /**
@@ -131,12 +181,11 @@ public abstract class PluggableTaskEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      * @ejb.relation name="pluggable_task-parameters"
      *               role-name="task-has-parameters"
-     *               target-ejb="PluggableTaskParameterEntity"
-     *               target-role-name="parameter-belongs_to-task"
-     * @jboss.target-relation related-pk-field="id"  
-     *                 fk-column="task_id"            
      */
     public abstract Collection getParameters();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
     public abstract void setParameters(Collection parameters);
 
     //  EJB callbacks -----------------------------------------------------------

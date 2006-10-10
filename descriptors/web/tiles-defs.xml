@@ -337,4 +337,7 @@
     <definition name="list" extends="main"><put name="featureTitle" value="bar.list" /><put name="body" value="list.body" />
     </definition>
     <definition name="list.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/other/blank.jsp" /><put name="bottom" value="/other/genericList.jsp" />
-    </definition></tiles-definitions>
+    </definition>
+    <definition name="system.task.edit" extends="main"><put name="featureTitle" value="bar.system.task" /><put name="body" value="/system/taskEdit.jsp" />
+    </definition>
+</tiles-definitions>

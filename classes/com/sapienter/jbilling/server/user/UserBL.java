@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.AchEntityLocal;
@@ -88,8 +89,7 @@ public class UserBL  extends ResultList
     private Integer mainRole = null;
     private CustomerEntityLocalHome customerHome = null;
     
-    public UserBL(Integer userId) 
-            throws NamingException, FinderException {
+    public UserBL(Integer userId) throws FinderException {
         init();
 
         set(userId);
@@ -134,16 +134,20 @@ public class UserBL  extends ResultList
         return userHome;
     }
     
-    private void init() throws NamingException {
-        log = Logger.getLogger(UserBL.class);     
-        eLogger = EventLogger.getInstance();        
-        EJBFactory = JNDILookup.getFactory(false);
-        userHome = (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                UserEntityLocalHome.class,
-                UserEntityLocalHome.JNDI_NAME);
-        customerHome = (CustomerEntityLocalHome) EJBFactory.lookUpLocalHome(
-                CustomerEntityLocalHome.class,
-                CustomerEntityLocalHome.JNDI_NAME);
+    private void init() {
+        try {
+            log = Logger.getLogger(UserBL.class);     
+            eLogger = EventLogger.getInstance();        
+            EJBFactory = JNDILookup.getFactory(false);
+            userHome = (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
+                    UserEntityLocalHome.class,
+                    UserEntityLocalHome.JNDI_NAME);
+            customerHome = (CustomerEntityLocalHome) EJBFactory.lookUpLocalHome(
+                    CustomerEntityLocalHome.class,
+                    CustomerEntityLocalHome.JNDI_NAME);
+        } catch (NamingException e) {
+            throw new SessionInternalError("init UserBL", this.getClass(), e);
+        }
     }
     
     /**
@@ -516,6 +520,7 @@ public class UserBL  extends ResultList
         final int OPTION_PAYMENT_ACH = 75;
         final int OPTION_PAYMENT_PAYPAL = 90;
         final int OPTION_CUSTOMER_CONTACT_EDIT = 13;
+        final int OPTION_PLUG_IN_EDIT = 93;
         
         switch (menuOptionId.intValue()) {
         case OPTION_SUB_ACCOUNTS:
@@ -584,6 +589,11 @@ public class UserBL  extends ResultList
             } 
             
             retValue = (preference.getInt() == 1);
+            break;
+        case OPTION_PLUG_IN_EDIT:
+            UserDTOEx dto = new UserDTOEx();
+            dto.setPermissions(getPermissions());
+            retValue = dto.isGranted(PermissionConstants.P_TASK_MODIFY);
             break;
         }
         

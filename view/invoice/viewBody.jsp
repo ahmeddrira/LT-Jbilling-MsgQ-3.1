@@ -390,6 +390,8 @@ Contributor(s): ______________________________________.
 		
 			<td class="list"><bean:write name="line" property="description"/></td>
 			<td class="list" align="right"><bean:write name="line" property="quantity"/></td>
+			
+			<logic:equal name="line" property="isPercentage" value="0">
 			<td class="list">
 				<logic:present name="line" property="amount">
 				<bean:write name='<%=Constants.SESSION_INVOICE_DTO%>' 
@@ -399,6 +401,13 @@ Contributor(s): ______________________________________.
 				</logic:present>
 			</td>
 			<td class="list" align="right"><bean:write name="line" property="price" formatKey="format.money"/></td>
+			</logic:equal>
+			<%-- Percentage lines do not show up the price --%>
+			<logic:equal name="line" property="isPercentage" value="1">
+			<td class="list">%</td>
+			<td class="list"></td>
+			</logic:equal>
+			
 			<td class="list" align="right"><bean:write name="line" property="amount" formatKey="format.money"/></td>									
 		</tr>
 	</logic:iterate>

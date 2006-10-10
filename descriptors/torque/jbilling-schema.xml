@@ -979,7 +979,7 @@
     <table name="pluggable_task">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="entity_id" required="true" type="INTEGER"/>
-        <column name="type_id" required="true" type="INTEGER"/>
+        <column name="type_id" type="INTEGER"/>
         <column name="processing_order" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task_type">
             <reference foreign="id" local="type_id"/>
@@ -990,7 +990,7 @@
     </table>
     <table name="pluggable_task_parameter">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="task_id" required="true" type="INTEGER"/>
+        <column name="task_id" type="INTEGER"/>
         <column name="name" required="true" size="50" type="VARCHAR"/>
         <column name="int_value" type="INTEGER"/>
         <column name="str_value" size="200" type="VARCHAR"/>

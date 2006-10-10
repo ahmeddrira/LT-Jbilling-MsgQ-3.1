@@ -21,6 +21,8 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -31,6 +33,7 @@ import javax.ejb.SessionContext;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 
 /**
  *
@@ -45,6 +48,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
  *           view-type="remote"
  *           jndi-name="com/sapienter/jbilling/server/pluggableTask/PluggableTaskSession"
  * 
+ * @jboss.security-proxy name="com.sapienter.jbilling.server.pluggableTask.TaskMethodSecurity"
  **/
 public class PluggableTaskSessionBean implements SessionBean {
 
@@ -79,9 +83,81 @@ public class PluggableTaskSessionBean implements SessionBean {
 
     /**
      * @ejb:interface-method view-type="remote"
+     */
+    public PluggableTaskDTOEx[] getAllDTOs(Integer entityId) 
+            throws SessionInternalError {
+        try {
+            PluggableTaskBL bl = new PluggableTaskBL();
+            Collection tasks = bl.getHome().findAllByEntity(entityId);
+            PluggableTaskDTOEx[] retValue = 
+                new PluggableTaskDTOEx[tasks.size()];
+            int f = 0;
+            for (Iterator it = tasks.iterator(); it.hasNext(); f++) {
+                bl.set((PluggableTaskEntityLocal) it.next());
+                retValue[f] = bl.getDTO();
+            }
+             return retValue;
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void create(Integer executorId, PluggableTaskDTOEx dto) {
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.create(dto);
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void createParameter(Integer executorId, Integer taskId, PluggableTaskParameterDTOEx dto) {
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.createParameter(taskId, dto);
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void update(Integer executorId, PluggableTaskDTOEx dto) {
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.update(executorId, dto);
+    }
+    
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void updateAll(Integer executorId, PluggableTaskDTOEx dto[]) {
+        PluggableTaskBL bl = new PluggableTaskBL();
+        for (int f = 0; f < dto.length; f++) {
+            bl.update(executorId, dto[f]);
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void delete(Integer executorId, Integer id) 
+            throws FinderException {
+        PluggableTaskBL bl = new PluggableTaskBL(id);
+        bl.delete(executorId);
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void deleteParameter(Integer executorId, Integer id) {
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.deleteParameter(executorId, id);
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
      * @ejb.transaction type="Required"
      */
-    public void updateParameters(PluggableTaskDTOEx dto) 
+    public void updateParameters(Integer executorId, PluggableTaskDTOEx dto) 
             throws SessionInternalError {
         try {
             PluggableTaskBL bl = new PluggableTaskBL();

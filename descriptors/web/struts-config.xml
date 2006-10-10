@@ -373,6 +373,10 @@
 <form-property name="create" type="java.lang.String" />
 </form-bean>
     
+<form-bean name="task" type="org.apache.struts.validator.DynaValidatorForm">
+    <form-property name="tasks" type="com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx[]" />
+</form-bean>
+
 </form-beans>
   
   <!-- ========== Global Forward Definitions ==============================  -->
@@ -600,6 +604,13 @@
 	<forward name="form" path="/invoice/batchDownload.jsp" />	
 	<forward name="done" path="/invoice/fileDownload.jsp" />
 </action>
+
+<action path="/task" type="com.sapienter.jbilling.client.system.TaskAction" name="task" validate="false" scope="session">
+        <forward name="edit" path="/system/task.jsp" redirect="false" />
+        <forward name="deleted" path="/task.do?action=setup" redirect="false" />
+        <forward name="added" path="/task.do?action=setup" redirect="false" />
+</action>
+
 
 </action-mappings>
 

@@ -286,8 +286,10 @@
     <EventLogModule Id="8"/>
     <EventLogModule Id="9"/>
     <EventLogModule Id="10"/>
+    <EventLogModule Id="11"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Manual invoice deletion"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Invoice maintenance"/>
+    <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Pluggable tasks maintenance"/>
     <InternationalDescription TableId="47" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="A purchase order as been manually applied to an invoice."/>
     <InternationalDescription TableId="52" ForeignId="17" PsudoColumn="description" LanguageId="1" Content="Payment (failed)"/>
     <InternationalDescription TableId="52" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="Payment (successful)"/>
@@ -1006,6 +1008,7 @@
     <InternationalDescription TableId="20" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Suspended (auto)"/>
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Penalty"/>
     <InternationalDescription TableId="52" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Lost password"/>
+    <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="1" Content="Plug-ins"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>
@@ -1587,6 +1590,7 @@
     <MenuOption Id="90" Link="/payment/customerSelect.jsp?create=yes&amp;paypal=yes" Level="2" ParentId="2"/>
     <MenuOption Id="91" Link="/orderPeriod.do?action=setup" Level="2" ParentId="1"/>
     <MenuOption Id="92" Link="/invoice/batchDownload.jsp" Level="2" ParentId="35"/>
+    <MenuOption Id="93" Link="/task.do?action=setup" Level="2" ParentId="4"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>
     <NotificationMessageType Id="3" Sections="2"/>
@@ -1767,6 +1771,8 @@
     <Permission Id="133" TypeId="1" ForeignId="91"/>
     <Permission Id="134" TypeId="3"/>
     <Permission Id="135" TypeId="1" ForeignId="92"/>
+    <Permission Id="136" TypeId="1" ForeignId="93"/>
+    <Permission Id="137" TypeId="9"/>
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2101,6 +2107,8 @@
     <PermissionRoleMap PermissionId="134" RoleId="3"/>
     <PermissionRoleMap PermissionId="135" RoleId="3"/>
     <PermissionRoleMap PermissionId="135" RoleId="2"/>
+    <PermissionRoleMap PermissionId="136" RoleId="2"/>
+    <PermissionRoleMap PermissionId="137" RoleId="2"/>
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>
@@ -2109,6 +2117,7 @@
     <PermissionType Id="6" Description="Orders"/>
     <PermissionType Id="7" Description="Inovices"/>
     <PermissionType Id="8" Description="Web Services"/>
+    <PermissionType Id="9" Description="Server Access"/>
     <PluggableTaskType Id="1" CategoryId="1" ClassName="com.sapienter.jbilling.server.pluggableTask.BasicLineTotalTask" MinParameters="0"/>
     <PluggableTaskType Id="13" CategoryId="4" ClassName="com.sapienter.jbilling.server.pluggableTask.CalculateDueDateDfFm" MinParameters="0"/>
     <PluggableTaskType Id="3" CategoryId="4" ClassName="com.sapienter.jbilling.server.pluggableTask.CalculateDueDate" MinParameters="0"/>

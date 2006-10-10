@@ -192,6 +192,12 @@ public class GetSelectableOptions {
                     "   and b.language_id = ? " +
                     "   and b.psudo_column = 'description' " +
                     "order by 1";
+            } else if (type.equals("taskClasses")) {
+                sql = 
+                    "select id, class_name " +
+                    "  from pluggable_task_type " +
+                    "order by 1";
+                argLanguage = false;
             } else {
                 throw new SessionInternalError("type " + type + " is not supported");
             }

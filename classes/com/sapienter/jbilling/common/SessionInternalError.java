@@ -33,6 +33,17 @@ public class SessionInternalError extends RuntimeException {
         super(s);
     }
     
+    public SessionInternalError(String s, Class className, Exception e) {
+        super(s);
+        Logger log = Logger.getLogger(className);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        pw.close();
+
+        log.fatal(s + e.getMessage() + "\n" + sw.toString());
+        
+    }
     
     /**
      * Method SessionInternalError.

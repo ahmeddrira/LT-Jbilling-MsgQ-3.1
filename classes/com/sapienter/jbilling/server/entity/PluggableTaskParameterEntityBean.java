@@ -27,10 +27,17 @@ package com.sapienter.jbilling.server.entity;
 
 import java.rmi.RemoteException;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
+
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
+import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
+import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
+import com.sapienter.jbilling.server.util.Constants;
 
 
 /**
@@ -56,6 +63,46 @@ import javax.ejb.RemoveException;
  * @jboss:remove-table remove="false"
  */
 public abstract class PluggableTaskParameterEntityBean implements EntityBean {
+
+    /**
+     * @ejb:create-method view-type="local"
+     */
+    public Integer ejbCreate(PluggableTaskEntityLocal task, String name, Integer intValue,
+            String strValue, Float floatValue) 
+            throws CreateException {
+        Integer newId;
+
+        try {
+            JNDILookup EJBFactory = JNDILookup.getFactory(false);
+            SequenceSessionLocalHome generatorHome =
+                (SequenceSessionLocalHome) EJBFactory.lookUpLocalHome(
+                    SequenceSessionLocalHome.class,
+                    SequenceSessionLocalHome.JNDI_NAME);
+
+            SequenceSessionLocal generator = generatorHome.create();
+            newId = new Integer(generator.getNextSequenceNumber(
+                    Constants.TABLE_PLUGGABLE_TASK_PARAMETER));
+
+        } catch (Exception e) {
+            throw new CreateException(
+                "Problems generating the primary key "
+                    + "for the pluggable task table");
+        }
+
+        setId(newId);
+        setName(name);
+        setFloatValue(floatValue);
+        setStrValue(strValue);
+        setIntValue(intValue);
+        
+        return newId;
+    }
+    
+    public void ejbPostCreate(PluggableTaskEntityLocal task, String name, Integer intValue,
+            String strValue, Float floatValue) {
+        setTask(task);
+    }
+ 
     //  CMP field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
@@ -114,6 +161,18 @@ public abstract class PluggableTaskParameterEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public abstract void setFloatValue(Float flo);
+
+    // CMR
+    /**
+     * 
+     * @ejb:interface-method view-type="local"
+     * @ejb.relation name="pluggable_task-parameters"
+     *               role-name="parameter-belongs_to-task"
+     * @jboss.relation related-pk-field="id"  
+     *                 fk-column="task_id"            
+     */
+    public abstract PluggableTaskEntityLocal getTask();
+    public abstract void setTask(PluggableTaskEntityLocal task);
 
 
 	// EJB Callbacks -------------------------------------------------------------

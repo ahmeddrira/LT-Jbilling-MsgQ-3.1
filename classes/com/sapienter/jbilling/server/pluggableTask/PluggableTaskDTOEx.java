@@ -38,6 +38,7 @@ public class PluggableTaskDTOEx extends PluggableTaskDTO {
     public static final Integer TYPE_EMAIL = new Integer(9);
 
     private Vector parameters = null;
+    private Integer typeId = null;
     /**
      * 
      */
@@ -79,4 +80,16 @@ public class PluggableTaskDTOEx extends PluggableTaskDTO {
         this.parameters = parameters;
     }
 
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
+    }
+
+    public String toString() {
+        return "Type = " + typeId + " parameters (total) = " +
+            parameters.size() + " " + super.toString();
+    }
 }

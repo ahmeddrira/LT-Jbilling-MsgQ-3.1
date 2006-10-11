@@ -1,8 +1,3 @@
-# properties for the installer
-driver_class=org.postgresql.Driver
-connection_url=jdbc:postgresql://localhost:5432/jbilling
-connection_username=jbilling_user
-connection_password=jbilling
 # directory where many temporary files
 # will be created. Also other files, like logos, will be put here
 base_dir=c:/jbilling/resources/
@@ -27,3 +22,14 @@ login_lock=c:/temp/jbilling.lock
 url=http://www.yourcompany.com
 # redirect all unsecure requests (http port 80) to SSL (https port 443)
 force_https=false
+# Process time configuration
+# These two properties set the frequency of the jbilling batch process
+# The fist property indicates at what time of the day the trigger has to 
+# happen for the very first time. After this first run you will need X minutes 
+# (specified by 'process.frequency') to run the trigger again.
+# The first property is optional. If it is not present, then the next trigger will happen at 
+# startup + minutes indicated in 'process.frequency'.
+#   time: YYYYMMDD-HHmm (a full date followed by HH is the hours in 24hs format and mm the minutes).
+# process.time=
+#   frequency: the number of minutes between runs
+process.frequency=720

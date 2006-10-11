@@ -93,6 +93,13 @@
   </servlet>
 
 
+  <!-- Trigger startup Servlet -->
+  <servlet>
+  	<servlet-name>trigger</servlet-name>
+  	<servlet-class>com.sapienter.jbilling.client.process.TriggerHelperServlet</servlet-class>
+  	<load-on-startup>10</load-on-startup>
+  </servlet>
+
   <!-- Action Servlet Mapping -->
   <servlet-mapping>
     <servlet-name>action</servlet-name>
@@ -109,8 +116,7 @@
   <servlet-mapping>
   	<servlet-name>callback</servlet-name>
   	<url-pattern>/callback</url-pattern>
-  </servlet-mapping>
-  
+  </servlet-mapping>  
 
   <session-config>
   	<session-timeout>20</session-timeout>

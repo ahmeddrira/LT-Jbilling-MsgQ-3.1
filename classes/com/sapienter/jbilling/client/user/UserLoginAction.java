@@ -180,28 +180,6 @@ public final class UserLoginAction extends Action {
         // need the whole thing :( for the permissions
         session.setAttribute(Constants.SESSION_USER_DTO, user); 
         
-        // This should be in some other place that is called only when the
-        // application is initially loaded
-        ServletContext context = getServlet().getServletContext();
-        if (context.getAttribute(Constants.APP_CURRENCY_SYMBOLS) == null) {
-            log.debug("Loadding application currency symbols");
-            try {
-                EJBFactory = JNDILookup.getFactory(false);            
-                ListSessionHome listHome =
-                        (ListSessionHome) EJBFactory.lookUpHome(
-                        ListSessionHome.class,
-                        ListSessionHome.JNDI_NAME);
-    
-                ListSession myRemoteSession = listHome.create();
-                context.setAttribute(Constants.APP_CURRENCY_SYMBOLS, 
-                        new CurrencyArrayWrap(
-                                myRemoteSession.getCurrencySymbolsMap()));
-            } catch (Exception e) {
-                throw new ServletException(e);
-            }
-            
-        }
-       
         log.debug("user " + user.getUserName() + " logged. entity = " + user.getEntityId());
         // Forward control to the specified success URI
         return (mapping.findForward("success"));

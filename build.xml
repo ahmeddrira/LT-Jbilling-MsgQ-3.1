@@ -541,11 +541,11 @@
    	<!-- Creates the full downloadable package -->
 	<target name="packageImage" depends="db,jspc">
 		<!-- make sure it'll get the latest binaries -->
-		<copy todir="${image.source.dir}/jbilling/server/jbilling/deploy">
+		<copy todir="${image.source.dir}/jbilling/server/default/deploy">
             <fileset dir="${build.deploy.dir}"/>
         </copy>
 		<!-- if the app server was up, it generated temp files -->
-		<delete dir="${image.source.dir}/jbilling/server/jbilling/tmp"/>
+		<delete dir="${image.source.dir}/jbilling/server/default/tmp"/>
         <delete>
             <fileset dir="${image.source.dir}/jbilling/server">
                 <include name="**/*_jsp.java"/>
@@ -564,8 +564,8 @@
 		<copy file="${source.view.dir}/graphics/jbilling-paper.jpg" 
 			tofile="${image.source.dir}/jbilling/resources/logos/entity-1.jpg"/>
 		<!-- Make the classes created out of the jsp pages available -->
-		<mkdir dir="${image.source.dir}/jbilling/server/jbilling/work/jboss.web/localhost/billing"/>
-		<copy todir="${image.source.dir}/jbilling/server/jbilling/work/jboss.web/localhost/billing">
+		<mkdir dir="${image.source.dir}/jbilling/server/default/work/jboss.web/localhost/billing"/>
+		<copy todir="${image.source.dir}/jbilling/server/default/work/jboss.web/localhost/billing">
 		    <fileset dir="${source.dir}\build\jsp-classes">
 		    	<include name="**/*.class"/>
 		    </fileset>
@@ -586,11 +586,11 @@
 		<zip filesonly="false" update="false"
             destfile="${image.target.dir}/${image.src.name}">
            <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log"/>
+                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties"/>
             <!-- the following three files are taken from the binary
                  view. My own are configured for my box -->
-           <zipfileset dir="${image.source.dir}/jbilling/server/jbilling/conf" includes="log4j.xml" prefix="jbilling/src/descriptors/jboss"/>
-           <zipfileset dir="${image.source.dir}/jbilling/server/jbilling/deploy/jbossweb-tomcat50.sar" includes="server.xml" prefix="jbilling/src/descriptors/jboss"/>
+           <zipfileset dir="${image.source.dir}/jbilling/server/default/conf" includes="log4j.xml" prefix="jbilling/src/descriptors/jboss"/>
+           <zipfileset dir="${image.source.dir}/jbilling/server/default/deploy/jbossweb-tomcat50.sar" includes="server.xml" prefix="jbilling/src/descriptors/jboss"/>
            <zipfileset dir="${basedir}" includes="build.xml" prefix="jbilling/src"/>
            <zipfileset dir="${basedir}" includes="build.properties.sample" 
                 fullpath="jbilling/src/build.properties"/>

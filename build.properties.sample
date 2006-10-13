@@ -26,8 +26,6 @@ jboss.server.dir=${jboss.home.dir}/server/jbilling
 jboss.version=3.2
 jboss.web.dir=${jboss.server.dir}/deploy/jbossweb-tomcat50.sar
 jboss.conf.dir=${jboss.server.dir}/conf
-jboss.DBmapping=PostgreSQL
-jboss.datasource=java:/ApplicationDS
 libs.dir=${basedir}/libs
 libs.client.dir=${libs.dir}/client
 #this directory will have all the jars for the war file

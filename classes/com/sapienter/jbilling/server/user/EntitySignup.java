@@ -564,7 +564,7 @@ public final class EntitySignup {
         String preferenceData[][] = {
             {"1", "5", String.valueOf(newEntityId), "0", null, null }, // no automatic processing by default
             {"2", "5", String.valueOf(newEntityId), null, "/billing/css/jbilling.css", null },
-            {"3", "5", String.valueOf(newEntityId), null, "/billing/graphics/jbilling.gif", null },
+            {"3", "5", String.valueOf(newEntityId), null, "/billing/graphics/jbilling.jpg", null },
             {"4", "5", String.valueOf(newEntityId), "5", null, null }, // grace period
             {"5", "5", String.valueOf(newEntityId), null, null, "10" },
             {"6", "5", String.valueOf(newEntityId), null, null, "0" },

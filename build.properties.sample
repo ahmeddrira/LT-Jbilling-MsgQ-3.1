@@ -22,7 +22,7 @@ source.interfaces.package.dir=com/sapienter/jbilling/interfaces
 #
 jboss.home.dir=${tools.dir}
 jboss.client.dir=${jboss.home.dir}/client
-jboss.server.dir=${jboss.home.dir}/server/jbilling
+jboss.server.dir=${jboss.home.dir}/server/default
 jboss.version=3.2
 jboss.web.dir=${jboss.server.dir}/deploy/jbossweb-tomcat50.sar
 jboss.conf.dir=${jboss.server.dir}/conf

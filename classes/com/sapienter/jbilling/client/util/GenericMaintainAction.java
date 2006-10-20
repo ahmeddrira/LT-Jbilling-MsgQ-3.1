@@ -531,8 +531,9 @@ public class GenericMaintainAction {
                 Date start = summary.getActiveSince() != null ?
                         summary.getActiveSince() : 
                         Calendar.getInstance().getTime();
+                start = Util.truncateDate(start);
                 // it has to be grater than the starting date
-                if (!summary.getActiveUntil().after(Util.truncateDate(start))) {
+                if (!summary.getActiveUntil().after(start)) {
                     errors.add(ActionErrors.GLOBAL_ERROR,
                             new ActionError("order.error.dates", 
                             "order.prompt.activeUntil"));
@@ -563,8 +564,7 @@ public class GenericMaintainAction {
                             log.debug("Fraction of a period:" + toTest.getTime() +
                                     " until: " + summary.getActiveUntil());
                             errors.add(ActionErrors.GLOBAL_ERROR,
-                                    new ActionError("order.error.period", 
-                                    "order.prompt.activeUntil"));
+                                    new ActionError("order.error.period"));
                             return "edit";
                         }
                     } catch (Exception e) {

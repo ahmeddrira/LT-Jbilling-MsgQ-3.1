@@ -139,6 +139,19 @@ public class OrderBL extends ResultList
     public OrderEntityLocalHome getHome() {
         return orderHome;
     }
+    
+    public OrderPeriodDTOEx getPeriod(Integer language, Integer id) 
+            throws FinderException {
+        OrderPeriodEntityLocal period = orderPeriodHome.findByPrimaryKey(id);
+        OrderPeriodDTOEx dto = new OrderPeriodDTOEx();
+        dto.setDescription(period.getDescription(language));
+        dto.setEntityId(period.getEntityId());
+        dto.setId(period.getId());
+        dto.setUnitId(period.getUnitId());
+        dto.setValue(period.getValue());
+        
+        return dto;
+    }
 
     public void set(Integer id) throws FinderException {
         order = orderHome.findByPrimaryKey(id);

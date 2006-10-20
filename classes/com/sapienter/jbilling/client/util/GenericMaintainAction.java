@@ -60,6 +60,8 @@ import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NotificationSession;
+import com.sapienter.jbilling.interfaces.OrderSession;
+import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
@@ -79,14 +81,15 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
+import com.sapienter.jbilling.server.order.OrderPeriodDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.OptionDTO;
 
 public class GenericMaintainAction {
@@ -523,17 +526,51 @@ public class GenericMaintainAction {
                 return "edit";
             }
             
-            // if there is a date of expiration, it has to be grater than
-            // the starting date
+            // validate the dates if there is a date of expiration
             if (summary.getActiveUntil() != null) {
                 Date start = summary.getActiveSince() != null ?
                         summary.getActiveSince() : 
                         Calendar.getInstance().getTime();
+                // it has to be grater than the starting date
                 if (!summary.getActiveUntil().after(Util.truncateDate(start))) {
                     errors.add(ActionErrors.GLOBAL_ERROR,
                             new ActionError("order.error.dates", 
                             "order.prompt.activeUntil"));
                     return "edit";
+                }
+                // only if it is a recurring order
+                if (!summary.getPeriod().equals(new Integer(1))) {
+                    // the whole period has to be a multiple of the period unit
+                    // This is true, until there is support for prorating.
+                    JNDILookup EJBFactory = null;
+                    OrderSessionHome orderHome;
+                    try {
+                        EJBFactory = JNDILookup.getFactory(false);
+                        orderHome = (OrderSessionHome) EJBFactory.lookUpHome(
+                                OrderSessionHome.class,
+                                OrderSessionHome.JNDI_NAME);
+            
+                        OrderSession orderSession = orderHome.create();
+                        OrderPeriodDTOEx period = orderSession.getPeriod(
+                                languageId, summary.getPeriod());
+                        GregorianCalendar toTest = new GregorianCalendar();
+                        toTest.setTime(start);
+                        while (toTest.getTime().before(summary.getActiveUntil())) {
+                            toTest.add(MapPeriodToCalendar.map(period.getUnitId()),
+                                    period.getValue().intValue());
+                        }
+                        if (!toTest.getTime().equals(summary.getActiveUntil())) {
+                            log.debug("Fraction of a period:" + toTest.getTime() +
+                                    " until: " + summary.getActiveUntil());
+                            errors.add(ActionErrors.GLOBAL_ERROR,
+                                    new ActionError("order.error.period", 
+                                    "order.prompt.activeUntil"));
+                            return "edit";
+                        }
+                    } catch (Exception e) {
+                        throw new SessionInternalError("Validating date periods", 
+                                GenericMaintainAction.class, e);
+                    }
                 }
             }
                     

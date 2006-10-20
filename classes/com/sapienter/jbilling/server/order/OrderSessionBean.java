@@ -184,6 +184,20 @@ public class OrderSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
+    public OrderPeriodDTOEx getPeriod(Integer languageId, Integer id) 
+            throws SessionInternalError {
+        try {
+            // now get the order
+            OrderBL bl = new OrderBL();
+            return bl.getPeriod(languageId, id);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
     public void setPeriods(Integer languageId, OrderPeriodDTOEx[] periods) 
             throws SessionInternalError {
         try {

@@ -78,18 +78,15 @@ public class GetSelectableOptions {
                 argLanguage = false;
             } else if (type.equals("userStatus")) {
                 sql =  
-                "select a.status_id, b.content " +
-                "  from ageing_entity_step a, international_description b, jbilling_table c " +
-                " where b.table_id = c.id " +
-                "   and c.name = 'user_status' " +
-                "   and b.foreign_id = a.status_id " +
-                "   and b.language_id = ? " +
-                "   and a.entity_id = ? " +
-                "   and a.status_id != " + UserDTOEx.STATUS_DELETED +
-                "   and b.psudo_column = 'description' " +
+                "select b.foreign_id, b.content " +
+                "  from international_description b, jbilling_table c " +  
+                " where b.table_id = c.id  " +
+                "   and c.name = 'user_status' " + 
+                "   and b.language_id = ?  " +
+                "   and b.foreign_id != " + UserDTOEx.STATUS_DELETED + 
+                "   and b.psudo_column = 'description' " + 
                 "order by 1";
                 
-                argEntity = true;
             } else if (type.equals("itemType")) {
                 // the language of the item types is always the entity's
                 // no point of having item types in muliple languages

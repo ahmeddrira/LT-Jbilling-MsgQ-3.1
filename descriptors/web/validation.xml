@@ -954,7 +954,7 @@
 <field property="partnerId" depends="integer">
 <arg0 key="user.prompt.partner" />
 </field>
-<field property="password" depends="required,minlength">
+<field property="password" depends="minlength">
 <var>
 <var-name>minlength</var-name>
 <var-value>6</var-value>

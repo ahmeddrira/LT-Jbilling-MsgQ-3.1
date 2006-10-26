@@ -187,7 +187,7 @@ public class MaintainAction extends Action {
                 
                 String partnerId = (String) userForm.get("partnerId");
                 // validate the partnerId if present
-                if (partnerId != null && partnerId.length() > 0) {
+                if (errors.isEmpty() && partnerId != null && partnerId.length() > 0) {
                     try {
                         userSession.getPartnerDTO(Integer.valueOf(partnerId));
                     } catch (FinderException e) {

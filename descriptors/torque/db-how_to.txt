@@ -70,3 +70,18 @@ The following shouldn't be necessary since the creation of the tables first drop
 - To enable/disble logging
   There are a wide viarety of options for logging, it can be setup at runtime and in the
   postgresql.conf file. Probably the most useful are LOG_STATEMENT and LOG_DURATION
+
+Oracle:
+-------
+datasource for oracel express in the same box is:
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>ApplicationDS</jndi-name>
+    <connection-url>jdbc:oracle:thin:@localhost:1521:xe</connection-url>
+    <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+    <user-name>betty_user</user-name>
+    <password>asdfasdf</password>
+    <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleExceptionSorter</exception-sorter-class-name>
+  </local-tx-datasource>
+
+</datasources>

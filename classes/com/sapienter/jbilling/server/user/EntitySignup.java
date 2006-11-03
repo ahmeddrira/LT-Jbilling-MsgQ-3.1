@@ -21,6 +21,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.user;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,7 +38,6 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public final class EntitySignup {
 
-    private String entityName = null;
     private Connection conn = null;
     private UserDTOEx user;
     private ContactDTO contact;
@@ -156,11 +156,21 @@ public final class EntitySignup {
                         // this is the id, which is automatically generated
                         field = String.valueOf(rowIdx);
                         idxDifference = 1; // this is a normal table
+                        stmt.setString(columnIdx + 1, field);
+                    } else if (table.columns[columnIdx].equalsIgnoreCase("create_datetime") ||
+                            table.columns[columnIdx].equalsIgnoreCase("next_run_date")) {
+                        // date columns have to be treated as date types
+                        // otherwise, we rely on the JDBC driver to make the conversion
+                        java.sql.Date dateField = new Date(Util.parseDate(
+                                table.data[rowCount][columnIdx - idxDifference]).getTime());
+                    
+                        stmt.setDate(columnIdx + 1, dateField);
                     } else {
                         // this is just a normal column
                         field = table.data[rowCount][columnIdx - idxDifference];
+                        stmt.setString(columnIdx + 1, field);
                     }
-                    stmt.setString(columnIdx + 1, field);
+                    
 
                 }
 

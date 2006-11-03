@@ -4,9 +4,9 @@
     BaseUser|
     BillingProcess|
     BillingProcessConfiguration|
-    BillingProcessRun|
-    BillingProcessRunTotal|
-    BillingProcessRunTotalPm|
+    ProcessRun|
+    ProcessRunTotal|
+    ProcessRunTotalPm|
     Contact|
     ContactField|
     ContactFieldType|
@@ -43,8 +43,8 @@
     ListFieldEntity|
     MenuOption|
     NotificationMessage|
-    NotificationMessageArchive|
-    NotificationMessageArchiveLine|
+    NotificationMessageArch|
+    NotificationMessageArchLine|
     NotificationMessageLine|
     NotificationMessageSection|
     NotificationMessageType|
@@ -160,8 +160,8 @@
     AutoPaymentApplication CDATA #REQUIRED
 >
 
-<!ELEMENT BillingProcessRun EMPTY>
-<!ATTLIST BillingProcessRun
+<!ELEMENT ProcessRun EMPTY>
+<!ATTLIST ProcessRun
     Id CDATA #REQUIRED
     ProcessId CDATA #IMPLIED
     RunDate CDATA #REQUIRED
@@ -170,8 +170,8 @@
     InvoicesGenerated CDATA #IMPLIED
 >
 
-<!ELEMENT BillingProcessRunTotal EMPTY>
-<!ATTLIST BillingProcessRunTotal
+<!ELEMENT ProcessRunTotal EMPTY>
+<!ATTLIST ProcessRunTotal
     Id CDATA #REQUIRED
     ProcessRunId CDATA #IMPLIED
     CurrencyId CDATA #REQUIRED
@@ -180,8 +180,8 @@
     TotalNotPaid CDATA #IMPLIED
 >
 
-<!ELEMENT BillingProcessRunTotalPm EMPTY>
-<!ATTLIST BillingProcessRunTotalPm
+<!ELEMENT ProcessRunTotalPm EMPTY>
+<!ATTLIST ProcessRunTotalPm
     Id CDATA #REQUIRED
     ProcessRunTotalId CDATA #IMPLIED
     PaymentMethodId CDATA #IMPLIED
@@ -335,7 +335,7 @@
     TableId CDATA #IMPLIED
     ForeignId CDATA #REQUIRED
     CreateDatetime CDATA #REQUIRED
-    Level CDATA #REQUIRED
+    LevelField CDATA #REQUIRED
     ModuleId CDATA #REQUIRED
     MessageId CDATA #REQUIRED
     OldNum CDATA #IMPLIED
@@ -520,7 +520,7 @@
 <!ATTLIST MenuOption
     Id CDATA #REQUIRED
     Link CDATA #REQUIRED
-    Level CDATA #REQUIRED
+    LevelField CDATA #REQUIRED
     ParentId CDATA #IMPLIED
 >
 
@@ -533,8 +533,8 @@
     UseFlag CDATA #REQUIRED
 >
 
-<!ELEMENT NotificationMessageArchive EMPTY>
-<!ATTLIST NotificationMessageArchive
+<!ELEMENT NotificationMessageArch EMPTY>
+<!ATTLIST NotificationMessageArch
     Id CDATA #REQUIRED
     TypeId CDATA #IMPLIED
     CreateDatetime CDATA #REQUIRED
@@ -542,8 +542,8 @@
     ResultMessage CDATA #IMPLIED
 >
 
-<!ELEMENT NotificationMessageArchiveLine EMPTY>
-<!ATTLIST NotificationMessageArchiveLine
+<!ELEMENT NotificationMessageArchLine EMPTY>
+<!ATTLIST NotificationMessageArchLine
     Id CDATA #REQUIRED
     MessageArchiveId CDATA #IMPLIED
     Section CDATA #REQUIRED

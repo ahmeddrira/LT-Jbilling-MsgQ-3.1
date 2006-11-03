@@ -39,7 +39,7 @@ import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * @ejb:bean name="BillingProcessRunEntity" 
- *          display-name="Object representation of the table BILLING_PROCESS_RUN" 
+ *          display-name="Object representation of the table PROCESS_RUN" 
  *          view-type="local" 
  *          type="CMP" 
  *          local-jndi-name="com/sapienter/jbilling/server/entity/BillingProcessRunEntityLocal"
@@ -47,14 +47,14 @@ import com.sapienter.jbilling.server.util.Constants;
  *          reentrant="false"
  *          cmp-version="2.x"
  *          primkey-field="id"
- *          schema="billing_process_run"
+ *          schema="process_run"
  *
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
  * 
  * @ejb.value-object name="BillingProcessRun"
  * 
- * @jboss:table-name "billing_process_run"
+ * @jboss:table-name "process_run"
  * 
  * @jboss:create-table create="false"
  * @jboss:remove-table remove="false"
@@ -83,7 +83,7 @@ public abstract class BillingProcessRunEntityBean implements EntityBean {
         } catch (Exception e) {
             throw new CreateException(
                     "Problems generating the primary key "
-                    + "for the billing_process_run table");
+                    + "for the process_run table");
         }
 
         setId(newId);

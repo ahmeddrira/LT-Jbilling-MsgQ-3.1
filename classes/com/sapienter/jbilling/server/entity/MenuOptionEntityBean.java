@@ -112,7 +112,7 @@ public abstract class MenuOptionEntityBean implements EntityBean {
     /**
       * @ejb:interface-method view-type="local"
       * @ejb:persistent-field
-      * @jboss:column-name name="level"
+      * @jboss:column-name name="level_field"
      * @jboss.method-attributes read-only="true"
       */
      public abstract Integer getLevel();

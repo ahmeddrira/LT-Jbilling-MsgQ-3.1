@@ -21,13 +21,16 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.list;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,7 +113,7 @@ public class InsertDataRowTag extends BodyTagSupport {
                 String field = null;
                 String dateFormat = null;
                 String timeStampFormat = null;
-                //log.debug("column " + f + " datatype:" + dataType);
+//                log.debug("column " + f + " datatype:" + dataType); 
 
                 switch (dataType) {
                 case Types.DATE:
@@ -133,7 +136,19 @@ public class InsertDataRowTag extends BodyTagSupport {
                 case Types.TIMESTAMP:
                     Date ts;
                     if (method == ListTagBase.METHOD_JDBC) {
-                        ts = results.getDate(f);
+                        Object timeObj = results.getObject(f);
+                        if (timeObj instanceof java.util.Date) {
+                            ts = results.getDate(f);
+                        } else if (timeObj.getClass().getName().equals("oracle.sql.TIMESTAMP")){
+                            // Oracle does its own thing. Not good :(
+                            // we do not want to have any dependencies with Oracle. Thus, use reflexion
+                            Method toCall = timeObj.getClass().getMethod("timestampValue", null);
+                            ts = new Date(((Timestamp) toCall.invoke(timeObj, null)).getTime());
+                        } else {
+                            log.error("Time stamp of type " + 
+                                    timeObj.getClass().getName() + " not supported");
+                            ts = new Date(Calendar.getInstance().getTime().getTime());
+                        }
                     } else { 
                         ts = (Date) dtoLine[f-1];
                     }
@@ -203,7 +218,7 @@ public class InsertDataRowTag extends BodyTagSupport {
             log.error("IOException at InsertDataRowTag tag", e);
             SessionInternalError err = new SessionInternalError(e);
             throw new JspException("Web error:" + e.getMessage());
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             log.error("Null pointer!", e);
             SessionInternalError err = new SessionInternalError(e);
             throw new JspException("Web error:" + e.getMessage());

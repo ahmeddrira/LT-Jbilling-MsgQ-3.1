@@ -41,9 +41,9 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_ORDER_PERIOD = "order_period";
     public static final String TABLE_ORDER_LINE_TYPE = "order_line_type";
     public static final String TABLE_BILLING_PROCESS = "billing_process";
-    public static final String TABLE_BILLING_PROCESS_RUN = "billing_process_run";
-    public static final String TABLE_BILLING_PROCESS_RUN_TOTAL = "billing_process_run_total";
-    public static final String TABLE_BILLING_PROCESS_RUN_TOTAL_PM = "billing_process_run_total_pm";
+    public static final String TABLE_BILLING_PROCESS_RUN = "process_run";
+    public static final String TABLE_BILLING_PROCESS_RUN_TOTAL = "process_run_total";
+    public static final String TABLE_BILLING_PROCESS_RUN_TOTAL_PM = "process_run_total_pm";
     public static final String TABLE_BILLING_PROCESS_CONFIGURATION = "billing_process_configuration";
     public static final String TABLE_INVOICE = "invoice";
     public static final String TABLE_INVOICE_LINE= "invoice_line";
@@ -81,8 +81,8 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_NOTIFICATION_MESSAGE_SECTION = "notification_message_section";
     public static final String TABLE_NOTIFICATION_MESSAGE_TYPE = "notification_message_type";
     public static final String TABLE_NOTIFICATION_MESSAGE_LINE = "notification_message_line";
-    public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE = "notification_message_archive";
-    public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE_LINE = "notification_message_archive_line";
+    public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE = "notification_message_arch";
+    public static final String TABLE_NOTIFICATION_MESSAGE_ARCHIVE_LINE = "notification_message_arch_line";
     public static final String TABLE_REPORT = "report";
     public static final String TABLE_REPORT_USER = "report_user";
     public static final String TABLE_REPORT_ENTITY_MAP = "report_entity_map";

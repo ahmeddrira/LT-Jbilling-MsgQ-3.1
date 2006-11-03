@@ -105,7 +105,7 @@
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
     </table>
-    <table name="billing_process_run">
+    <table name="process_run">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="process_id" type="INTEGER"/>
         <column name="run_date" required="true" type="DATE"/>
@@ -119,7 +119,7 @@
             <reference foreign="id" local="process_id"/>
         </foreign-key>
     </table>
-    <table name="billing_process_run_total">
+    <table name="process_run_total">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="process_run_id" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>
@@ -132,11 +132,11 @@
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
         </foreign-key>
-        <foreign-key foreignTable="billing_process_run">
+        <foreign-key foreignTable="process_run">
             <reference foreign="id" local="process_run_id"/>
         </foreign-key>
     </table>
-    <table name="billing_process_run_total_pm">
+    <table name="process_run_total_pm">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="process_run_total_id" type="INTEGER"/>
         <column name="payment_method_id" type="INTEGER"/>
@@ -353,7 +353,7 @@
         <column name="table_id" type="INTEGER"/>
         <column name="foreign_id" required="true" type="INTEGER"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
-        <column name="level" required="true" type="INTEGER"/>
+        <column name="level_field" required="true" type="INTEGER"/>
         <column name="module_id" required="true" type="INTEGER"/>
         <column name="message_id" required="true" type="INTEGER"/>
         <column name="old_num" type="INTEGER"/>
@@ -387,13 +387,13 @@
         <column name="psudo_column" primaryKey="true" required="true"
             size="20" type="VARCHAR"/>
         <column name="language_id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="content" required="true" size="5000" type="VARCHAR"/>
+        <column name="content" required="true" size="4000" type="VARCHAR"/>
         <index name="international_description_i_2">
         	<index-column name="table_id"/>
         	<index-column name="foreign_id"/>
         	<index-column name="language_id"/>
         </index>
-        <index name="international_description_i_lan">
+        <index name="int_description_i_lan">
         	<index-column name="language_id"/>
         </index>
         <foreign-key foreignTable="language">
@@ -632,7 +632,7 @@
     <table name="menu_option">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="link" required="true" size="100" type="VARCHAR"/>
-        <column name="level" required="true" type="INTEGER"/>
+        <column name="level_field" required="true" type="INTEGER"/>
         <column name="parent_id" type="INTEGER"/>
         <foreign-key foreignTable="menu_option">
             <reference foreign="id" local="parent_id"/>
@@ -654,7 +654,7 @@
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
     </table>
-    <table name="notification_message_archive">
+    <table name="notification_message_arch">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
@@ -664,12 +664,12 @@
             <reference foreign="id" local="user_id"/>
         </foreign-key>
     </table>
-    <table name="notification_message_archive_line">
+    <table name="notification_message_arch_line">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="message_archive_id" type="INTEGER"/>
         <column name="section" required="true" type="INTEGER"/>
         <column name="content" required="true" size="1000" type="VARCHAR"/>
-        <foreign-key foreignTable="notification_message_archive">
+        <foreign-key foreignTable="notification_message_arch" name="notif_mess_arch_line_FK_1">
             <reference foreign="id" local="message_archive_id"/>
         </foreign-key>
     </table>
@@ -914,7 +914,7 @@
         <column name="invoice_id" type="INTEGER"/>
         <column name="amount" type="DOUBLE"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
-        <index name="ix_uq_payment_invoice_map_pa_in">
+        <index name="ix_uq_payment_inv_map_pa_in">
         	<index-column name="payment_id"/>
         	<index-column name="invoice_id"/>
         </index>

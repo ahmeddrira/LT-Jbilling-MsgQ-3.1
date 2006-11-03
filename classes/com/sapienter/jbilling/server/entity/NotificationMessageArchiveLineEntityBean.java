@@ -37,7 +37,7 @@ import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * @ejb:bean name="NotificationMessageArchiveLineEntity" 
- *          display-name="Object representation of the table NOTIFICATION_MESSAGE_ARCHIVE_LINE"
+ *          display-name="Object representation of the table NOTIFICATION_MESSAGE_ARCH_LINE"
  *          view-type="local" 
  *          type="CMP" 
  *          local-jndi-name="com/sapienter/jbilling/server/entity/NotificationMessageArchiveLineEntityLocal"
@@ -45,12 +45,12 @@ import com.sapienter.jbilling.server.util.Constants;
  *          reentrant="false"
  *          cmp-version="2.x"
  *          primkey-field="id"
- *          schema="notification_message_archive_line"
+ *          schema="notification_message_arch_line"
  *
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
  *
- * @jboss:table-name "notification_message_archive_line"
+ * @jboss:table-name "notification_message_arch_line"
  * @jboss:create-table create="false"
  * @jboss:remove-table remove="false"
  */

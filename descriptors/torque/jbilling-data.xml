@@ -259,7 +259,6 @@
     <CurrencyExchange Id="7" EntityId="0" CurrencyId="8" Rate="7.47" CreateDatetime="2004-07-06 00:00:00"/>
     <CurrencyExchange Id="10" EntityId="0" CurrencyId="9" Rate="1.68" CreateDatetime="2004-10-12 00:00:00"/>
     <CurrencyExchange Id="11" EntityId="0" CurrencyId="10" Rate="3.8" CreateDatetime="2004-10-12 00:00:00"/>
-    <CurrencyExchange Id="24" EntityId="303" CurrencyId="9" Rate="1.75" CreateDatetime="2005-02-04 12:05:29.945"/>
     <EventLogMessage Id="1"/>
     <EventLogMessage Id="2"/>
     <EventLogMessage Id="3"/>
@@ -1066,13 +1065,13 @@
     <JbillingTable Id="75" Name="ach" NextId="1"/>
     <JbillingTable Id="43" Name="payment_info_cheque" NextId="1"/>
     <JbillingTable Id="70" Name="partner_payout" NextId="1"/>
-    <JbillingTable Id="38" Name="billing_process_run_total_pm" NextId="1"/>
+    <JbillingTable Id="38" Name="process_run_total_pm" NextId="1"/>
     <JbillingTable Id="71" Name="report_user" NextId="1"/>
     <JbillingTable Id="1" Name="report_field" NextId="1604"/>
     <JbillingTable Id="66" Name="payment_authorization" NextId="1"/>
     <JbillingTable Id="32" Name="billing_process" NextId="1"/>
-    <JbillingTable Id="33" Name="billing_process_run" NextId="1"/>
-    <JbillingTable Id="37" Name="billing_process_run_total" NextId="1"/>
+    <JbillingTable Id="33" Name="process_run" NextId="1"/>
+    <JbillingTable Id="37" Name="process_run_total" NextId="1"/>
     <JbillingTable Id="31" Name="paper_invoice_batch" NextId="1"/>
     <JbillingTable Id="51" Name="preference" NextId="1"/>
     <JbillingTable Id="53" Name="notification_message" NextId="1"/>
@@ -1088,14 +1087,15 @@
     <JbillingTable Id="40" Name="invoice_line" NextId="1"/>
     <JbillingTable Id="49" Name="order_process" NextId="1"/>
     <JbillingTable Id="42" Name="payment" NextId="1"/>
-    <JbillingTable Id="56" Name="notification_message_archive" NextId="1"/>
-    <JbillingTable Id="57" Name="notification_message_archive_line" NextId="1"/>
+    <JbillingTable Id="56" Name="notification_message_arch" NextId="1"/>
+    <JbillingTable Id="57" Name="notification_message_arch_line" NextId="1"/>
     <JbillingTable Id="10" Name="base_user" NextId="1"/>
     <JbillingTable Id="12" Name="customer" NextId="1"/>
     <JbillingTable Id="27" Name="contact" NextId="1"/>
     <JbillingTable Id="76" Name="contact_field" NextId="1"/>
     <JbillingTable Id="44" Name="credit_card" NextId="1"/>
     <JbillingTable Id="3" Name="language" NextId="2"/>
+    <JbillingTable Id="80" Name="payment_invoice" NextId="1"/>
     <JbillingTableColumn TableId="0" Id="0" Name="id"/>
     <JbillingTableColumn TableId="0" Id="1" Name="titleKey"/>
     <JbillingTableColumn TableId="0" Id="2" Name="instructionsKey"/>
@@ -1484,7 +1484,7 @@
     <ListField Id="7" ListId="2" TitleKey="invoice.number" ColumnName="i.public_number" Ordenable="0" Searchable="1" DataType="string"/>
     <ListField Id="8" ListId="2" TitleKey="user.prompt.username" ColumnName="bu.user_name" Ordenable="0" Searchable="1" DataType="string"/>
     <ListField Id="9" ListId="2" TitleKey="invoice.id.prompt" ColumnName="i.id" Ordenable="1" Searchable="1" DataType="integer"/>
-    <ListField Id="12" ListId="2" TitleKey="" ColumnName="c.symbol" Ordenable="0" Searchable="0" DataType="string"/>
+    <ListField Id="12" ListId="2" TitleKey=" " ColumnName="c.symbol" Ordenable="0" Searchable="0" DataType="string"/>
     <ListField Id="13" ListId="2" TitleKey="invoice.total" ColumnName="i.total" Ordenable="0" Searchable="0" DataType="float"/>
     <ListField Id="14" ListId="2" TitleKey="invoice.balance" ColumnName="i.balance" Ordenable="0" Searchable="0" DataType="float"/>
     <ListField Id="15" ListId="2" TitleKey="invoice.is_payable" ColumnName="i.to_process" Ordenable="0" Searchable="0" DataType="integer"/>
@@ -1498,99 +1498,99 @@
     <ListField Id="23" ListId="4" TitleKey="payment.date" ColumnName="p.create_datetime" Ordenable="0" Searchable="1" DataType="date"/>
     <ListField Id="10" ListId="2" TitleKey="invoice.create_date" ColumnName="i.create_datetime" Ordenable="0" Searchable="1" DataType="date"/>
     <ListField Id="11" ListId="2" TitleKey="contact.list.organization" ColumnName="co.organization_name" Ordenable="0" Searchable="1" DataType="string"/>
-    <MenuOption Id="1" Link="/order/list.jsp" Level="1"/>
-    <MenuOption Id="2" Link="/payment/list.jsp" Level="1"/>
-    <MenuOption Id="3" Link="/report/list.jsp" Level="1"/>
-    <MenuOption Id="4" Link="/userAccount.do" Level="1"/>
-    <MenuOption Id="77" Link="/achMaintain.do?action=setup&amp;mode=ach" Level="2" ParentId="11"/>
-    <MenuOption Id="59" Link="/user/listPartner.jsp" Level="2" ParentId="5"/>
-    <MenuOption Id="78" Link="/user/listSubAccounts.jsp?own=yes" Level="1"/>
-    <MenuOption Id="8" Link="/userAccount.do" Level="2" ParentId="4"/>
-    <MenuOption Id="9" Link="/user/edit.jsp" Level="3" ParentId="8"/>
-    <MenuOption Id="10" Link="/user/editContact.jsp" Level="3" ParentId="8"/>
-    <MenuOption Id="11" Link="/userAccount.do" Level="1"/>
-    <MenuOption Id="12" Link="/user/edit.jsp" Level="2" ParentId="11"/>
-    <MenuOption Id="13" Link="/user/editContact.jsp" Level="2" ParentId="11"/>
-    <MenuOption Id="14" Link="/logout.do" Level="1"/>
-    <MenuOption Id="15" Link="/item/list.jsp" Level="1"/>
-    <MenuOption Id="16" Link="/item/listType.jsp" Level="2" ParentId="15"/>
-    <MenuOption Id="17" Link="/item/create.jsp?create=yes" Level="2" ParentId="15"/>
-    <MenuOption Id="18" Link="/item/list.jsp" Level="2" ParentId="15"/>
-    <MenuOption Id="19" Link="/item/createType.jsp?create=yes" Level="3" ParentId="16"/>
-    <MenuOption Id="20" Link="/item/listType.jsp" Level="3" ParentId="16"/>
-    <MenuOption Id="21" Link="/item/promotionList.jsp" Level="1"/>
-    <MenuOption Id="22" Link="/item/promotionCreate.jsp?create=yes" Level="2" ParentId="21"/>
-    <MenuOption Id="23" Link="/item/promotionList.jsp" Level="2" ParentId="21"/>
-    <MenuOption Id="24" Link="/payment/customerSelect.jsp?create=yes&amp;cheque=yes" Level="2" ParentId="2"/>
-    <MenuOption Id="25" Link="/payment/customerSelect.jsp?create=yes&amp;cc=yes" Level="2" ParentId="2"/>
-    <MenuOption Id="26" Link="/payment/list.jsp" Level="2" ParentId="2"/>
-    <MenuOption Id="27" Link="/order/newOrder.jsp" Level="2" ParentId="1"/>
-    <MenuOption Id="28" Link="/order/list.jsp" Level="2" ParentId="1"/>
-    <MenuOption Id="29" Link="/creditCardMaintain.do?action=setup&amp;mode=creditCard" Level="3" ParentId="8"/>
-    <MenuOption Id="30" Link="/creditCardMaintain.do?action=setup&amp;mode=creditCard" Level="2" ParentId="11"/>
-    <MenuOption Id="31" Link="/payment/listRefund.jsp" Level="1"/>
-    <MenuOption Id="32" Link="/payment/customerSelect.jsp?create=yes&amp;cheque=yes&amp;refund=yes" Level="2" ParentId="31"/>
-    <MenuOption Id="33" Link="/payment/customerSelect.jsp?create=yes&amp;cc=yes&amp;refund=yes" Level="2" ParentId="31"/>
-    <MenuOption Id="34" Link="/payment/listRefund.jsp" Level="2" ParentId="31"/>
-    <MenuOption Id="35" Link="/invoice/list.jsp" Level="1"/>
-    <MenuOption Id="36" Link="/invoice/list.jsp" Level="2" ParentId="35"/>
-    <MenuOption Id="37" Link="/processMaintain.do?action=view&amp;latest=yes" Level="1"/>
-    <MenuOption Id="38" Link="/process/list.jsp" Level="2" ParentId="37"/>
-    <MenuOption Id="39" Link="/processConfigurationMaintain.do?action=setup&amp;mode=configuration" Level="2" ParentId="37"/>
-    <MenuOption Id="40" Link="/processMaintain.do?action=view&amp;latest=yes" Level="2" ParentId="37"/>
-    <MenuOption Id="41" Link="/processMaintain.do?action=review" Level="2" ParentId="37"/>
-    <MenuOption Id="42" Link="/notification/listTypes.jsp" Level="1"/>
-    <MenuOption Id="43" Link="/notification/listTypes.jsp" Level="2" ParentId="42"/>
-    <MenuOption Id="44" Link="/parameterMaintain.do?action=setup&amp;mode=parameter&amp;type=notification" Level="2" ParentId="42"/>
-    <MenuOption Id="45" Link="/notification/emails.jsp" Level="2" ParentId="42"/>
-    <MenuOption Id="46" Link="/user/list.jsp" Level="1"/>
-    <MenuOption Id="47" Link="/reportList.do?type=1" Level="2" ParentId="1"/>
-    <MenuOption Id="48" Link="/reportList.do?type=2" Level="2" ParentId="35"/>
-    <MenuOption Id="49" Link="/reportList.do?type=3" Level="2" ParentId="2"/>
-    <MenuOption Id="50" Link="/reportList.do?type=4" Level="2" ParentId="31"/>
-    <MenuOption Id="51" Link="/reportList.do?type=5" Level="2" ParentId="46"/>
-    <MenuOption Id="52" Link="/user/list.jsp" Level="2" ParentId="46"/>
-    <MenuOption Id="53" Link="/report/list.jsp" Level="2" ParentId="3"/>
-    <MenuOption Id="54" Link="/user/create.jsp?create=yes&amp;customer=yes&amp;frompartner=yes" Level="2" ParentId="46"/>
-    <MenuOption Id="55" Link="/brandingMaintain.do?action=setup&amp;mode=branding" Level="2" ParentId="4"/>
-    <MenuOption Id="56" Link="/currencyMaintain.do?action=setup" Level="2" ParentId="4"/>
-    <MenuOption Id="57" Link="/ageingMaintain.do?action=setup" Level="2" ParentId="4"/>
-    <MenuOption Id="58" Link="/user/create.jsp?create=yes" Level="3" ParentId="6"/>
-    <MenuOption Id="79" Link="HELP|page=items|anchor=" Level="2" ParentId="15"/>
-    <MenuOption Id="60" Link="/user/list.jsp" Level="2" ParentId="5"/>
-    <MenuOption Id="61" Link="/user/create.jsp?create=yes&amp;partner=yes" Level="3" ParentId="59"/>
-    <MenuOption Id="62" Link="/user/listPartner.jsp" Level="3" ParentId="59"/>
-    <MenuOption Id="63" Link="/partnerDefaults.do?action=setup&amp;mode=partnerDefault" Level="3" ParentId="59"/>
-    <MenuOption Id="64" Link="/reportList.do?type=6" Level="3" ParentId="59"/>
-    <MenuOption Id="65" Link="/reportList.do?type=5" Level="3" ParentId="60"/>
-    <MenuOption Id="66" Link="/user/list.jsp" Level="3" ParentId="60"/>
-    <MenuOption Id="67" Link="/user/create.jsp?create=yes&amp;customer=yes" Level="3" ParentId="60"/>
-    <MenuOption Id="68" Link="/partnerMaintain.do?action=view&amp;self=yes" Level="1"/>
-    <MenuOption Id="69" Link="/partnerMaintain.do?action=view&amp;self=yes" Level="2" ParentId="68"/>
-    <MenuOption Id="70" Link="/user/payoutList.jsp" Level="2" ParentId="68"/>
-    <MenuOption Id="71" Link="/reportList.do?type=7" Level="1"/>
-    <MenuOption Id="72" Link="/reportTrigger.do?mode=partner&amp;id=15" Level="3" ParentId="59"/>
-    <MenuOption Id="73" Link="/reportList.do?type=7" Level="2" ParentId="71"/>
-    <MenuOption Id="74" Link="/notificationPreference.do?action=setup&amp;mode=notificationPreference" Level="2" ParentId="42"/>
-    <MenuOption Id="75" Link="/payment/customerSelect.jsp?create=yes&amp;ach=yes" Level="2" ParentId="2"/>
-    <MenuOption Id="76" Link="/numberingMaintain.do?action=setup&amp;mode=invoiceNumbering" Level="2" ParentId="35"/>
-    <MenuOption Id="5" Link="/user/maintain.jsp" Level="1"/>
-    <MenuOption Id="6" Link="/user/maintain.jsp" Level="2" ParentId="5"/>
-    <MenuOption Id="7" Link="/user/create.jsp?create=yes" Level="3" ParentId="6"/>
-    <MenuOption Id="80" Link="HELP|page=reports|anchor=" Level="2" ParentId="3"/>
-    <MenuOption Id="82" Link="HELP|page=users|anchor=" Level="2" ParentId="5"/>
-    <MenuOption Id="83" Link="HELP|page=orders|anchor=" Level="2" ParentId="1"/>
-    <MenuOption Id="81" Link="HELP|page=process|anchor=" Level="2" ParentId="37"/>
-    <MenuOption Id="84" Link="HELP|page=notifications|anchor=" Level="2" ParentId="42"/>
-    <MenuOption Id="85" Link="HELP|page=system|anchor=" Level="2" ParentId="4"/>
-    <MenuOption Id="86" Link="HELP|page=payments|anchor=" Level="2" ParentId="2"/>
-    <MenuOption Id="87" Link="HELP|page=invoices|anchor=" Level="2" ParentId="35"/>
-    <MenuOption Id="88" Link="HELP|page=promotions|anchor=" Level="2" ParentId="21"/>
-    <MenuOption Id="89" Link="HELP|page=payments|anchor=refunds" Level="2" ParentId="31"/>
-    <MenuOption Id="90" Link="/payment/customerSelect.jsp?create=yes&amp;paypal=yes" Level="2" ParentId="2"/>
-    <MenuOption Id="91" Link="/orderPeriod.do?action=setup" Level="2" ParentId="1"/>
-    <MenuOption Id="92" Link="/invoice/batchDownload.jsp" Level="2" ParentId="35"/>
-    <MenuOption Id="93" Link="/task.do?action=setup" Level="2" ParentId="4"/>
+    <MenuOption Id="1" Link="/order/list.jsp" LevelField="1"/>
+    <MenuOption Id="2" Link="/payment/list.jsp" LevelField="1"/>
+    <MenuOption Id="3" Link="/report/list.jsp" LevelField="1"/>
+    <MenuOption Id="4" Link="/userAccount.do" LevelField="1"/>
+    <MenuOption Id="77" Link="/achMaintain.do?action=setup&amp;mode=ach" LevelField="2" ParentId="11"/>
+    <MenuOption Id="59" Link="/user/listPartner.jsp" LevelField="2" ParentId="5"/>
+    <MenuOption Id="78" Link="/user/listSubAccounts.jsp?own=yes" LevelField="1"/>
+    <MenuOption Id="8" Link="/userAccount.do" LevelField="2" ParentId="4"/>
+    <MenuOption Id="9" Link="/user/edit.jsp" LevelField="3" ParentId="8"/>
+    <MenuOption Id="10" Link="/user/editContact.jsp" LevelField="3" ParentId="8"/>
+    <MenuOption Id="11" Link="/userAccount.do" LevelField="1"/>
+    <MenuOption Id="12" Link="/user/edit.jsp" LevelField="2" ParentId="11"/>
+    <MenuOption Id="13" Link="/user/editContact.jsp" LevelField="2" ParentId="11"/>
+    <MenuOption Id="14" Link="/logout.do" LevelField="1"/>
+    <MenuOption Id="15" Link="/item/list.jsp" LevelField="1"/>
+    <MenuOption Id="16" Link="/item/listType.jsp" LevelField="2" ParentId="15"/>
+    <MenuOption Id="17" Link="/item/create.jsp?create=yes" LevelField="2" ParentId="15"/>
+    <MenuOption Id="18" Link="/item/list.jsp" LevelField="2" ParentId="15"/>
+    <MenuOption Id="19" Link="/item/createType.jsp?create=yes" LevelField="3" ParentId="16"/>
+    <MenuOption Id="20" Link="/item/listType.jsp" LevelField="3" ParentId="16"/>
+    <MenuOption Id="21" Link="/item/promotionList.jsp" LevelField="1"/>
+    <MenuOption Id="22" Link="/item/promotionCreate.jsp?create=yes" LevelField="2" ParentId="21"/>
+    <MenuOption Id="23" Link="/item/promotionList.jsp" LevelField="2" ParentId="21"/>
+    <MenuOption Id="24" Link="/payment/customerSelect.jsp?create=yes&amp;cheque=yes" LevelField="2" ParentId="2"/>
+    <MenuOption Id="25" Link="/payment/customerSelect.jsp?create=yes&amp;cc=yes" LevelField="2" ParentId="2"/>
+    <MenuOption Id="26" Link="/payment/list.jsp" LevelField="2" ParentId="2"/>
+    <MenuOption Id="27" Link="/order/newOrder.jsp" LevelField="2" ParentId="1"/>
+    <MenuOption Id="28" Link="/order/list.jsp" LevelField="2" ParentId="1"/>
+    <MenuOption Id="29" Link="/creditCardMaintain.do?action=setup&amp;mode=creditCard" LevelField="3" ParentId="8"/>
+    <MenuOption Id="30" Link="/creditCardMaintain.do?action=setup&amp;mode=creditCard" LevelField="2" ParentId="11"/>
+    <MenuOption Id="31" Link="/payment/listRefund.jsp" LevelField="1"/>
+    <MenuOption Id="32" Link="/payment/customerSelect.jsp?create=yes&amp;cheque=yes&amp;refund=yes" LevelField="2" ParentId="31"/>
+    <MenuOption Id="33" Link="/payment/customerSelect.jsp?create=yes&amp;cc=yes&amp;refund=yes" LevelField="2" ParentId="31"/>
+    <MenuOption Id="34" Link="/payment/listRefund.jsp" LevelField="2" ParentId="31"/>
+    <MenuOption Id="35" Link="/invoice/list.jsp" LevelField="1"/>
+    <MenuOption Id="36" Link="/invoice/list.jsp" LevelField="2" ParentId="35"/>
+    <MenuOption Id="37" Link="/processMaintain.do?action=view&amp;latest=yes" LevelField="1"/>
+    <MenuOption Id="38" Link="/process/list.jsp" LevelField="2" ParentId="37"/>
+    <MenuOption Id="39" Link="/processConfigurationMaintain.do?action=setup&amp;mode=configuration" LevelField="2" ParentId="37"/>
+    <MenuOption Id="40" Link="/processMaintain.do?action=view&amp;latest=yes" LevelField="2" ParentId="37"/>
+    <MenuOption Id="41" Link="/processMaintain.do?action=review" LevelField="2" ParentId="37"/>
+    <MenuOption Id="42" Link="/notification/listTypes.jsp" LevelField="1"/>
+    <MenuOption Id="43" Link="/notification/listTypes.jsp" LevelField="2" ParentId="42"/>
+    <MenuOption Id="44" Link="/parameterMaintain.do?action=setup&amp;mode=parameter&amp;type=notification" LevelField="2" ParentId="42"/>
+    <MenuOption Id="45" Link="/notification/emails.jsp" LevelField="2" ParentId="42"/>
+    <MenuOption Id="46" Link="/user/list.jsp" LevelField="1"/>
+    <MenuOption Id="47" Link="/reportList.do?type=1" LevelField="2" ParentId="1"/>
+    <MenuOption Id="48" Link="/reportList.do?type=2" LevelField="2" ParentId="35"/>
+    <MenuOption Id="49" Link="/reportList.do?type=3" LevelField="2" ParentId="2"/>
+    <MenuOption Id="50" Link="/reportList.do?type=4" LevelField="2" ParentId="31"/>
+    <MenuOption Id="51" Link="/reportList.do?type=5" LevelField="2" ParentId="46"/>
+    <MenuOption Id="52" Link="/user/list.jsp" LevelField="2" ParentId="46"/>
+    <MenuOption Id="53" Link="/report/list.jsp" LevelField="2" ParentId="3"/>
+    <MenuOption Id="54" Link="/user/create.jsp?create=yes&amp;customer=yes&amp;frompartner=yes" LevelField="2" ParentId="46"/>
+    <MenuOption Id="55" Link="/brandingMaintain.do?action=setup&amp;mode=branding" LevelField="2" ParentId="4"/>
+    <MenuOption Id="56" Link="/currencyMaintain.do?action=setup" LevelField="2" ParentId="4"/>
+    <MenuOption Id="57" Link="/ageingMaintain.do?action=setup" LevelField="2" ParentId="4"/>
+    <MenuOption Id="58" Link="/user/create.jsp?create=yes" LevelField="3" ParentId="6"/>
+    <MenuOption Id="79" Link="HELP|page=items|anchor=" LevelField="2" ParentId="15"/>
+    <MenuOption Id="60" Link="/user/list.jsp" LevelField="2" ParentId="5"/>
+    <MenuOption Id="61" Link="/user/create.jsp?create=yes&amp;partner=yes" LevelField="3" ParentId="59"/>
+    <MenuOption Id="62" Link="/user/listPartner.jsp" LevelField="3" ParentId="59"/>
+    <MenuOption Id="63" Link="/partnerDefaults.do?action=setup&amp;mode=partnerDefault" LevelField="3" ParentId="59"/>
+    <MenuOption Id="64" Link="/reportList.do?type=6" LevelField="3" ParentId="59"/>
+    <MenuOption Id="65" Link="/reportList.do?type=5" LevelField="3" ParentId="60"/>
+    <MenuOption Id="66" Link="/user/list.jsp" LevelField="3" ParentId="60"/>
+    <MenuOption Id="67" Link="/user/create.jsp?create=yes&amp;customer=yes" LevelField="3" ParentId="60"/>
+    <MenuOption Id="68" Link="/partnerMaintain.do?action=view&amp;self=yes" LevelField="1"/>
+    <MenuOption Id="69" Link="/partnerMaintain.do?action=view&amp;self=yes" LevelField="2" ParentId="68"/>
+    <MenuOption Id="70" Link="/user/payoutList.jsp" LevelField="2" ParentId="68"/>
+    <MenuOption Id="71" Link="/reportList.do?type=7" LevelField="1"/>
+    <MenuOption Id="72" Link="/reportTrigger.do?mode=partner&amp;id=15" LevelField="3" ParentId="59"/>
+    <MenuOption Id="73" Link="/reportList.do?type=7" LevelField="2" ParentId="71"/>
+    <MenuOption Id="74" Link="/notificationPreference.do?action=setup&amp;mode=notificationPreference" LevelField="2" ParentId="42"/>
+    <MenuOption Id="75" Link="/payment/customerSelect.jsp?create=yes&amp;ach=yes" LevelField="2" ParentId="2"/>
+    <MenuOption Id="76" Link="/numberingMaintain.do?action=setup&amp;mode=invoiceNumbering" LevelField="2" ParentId="35"/>
+    <MenuOption Id="5" Link="/user/maintain.jsp" LevelField="1"/>
+    <MenuOption Id="6" Link="/user/maintain.jsp" LevelField="2" ParentId="5"/>
+    <MenuOption Id="7" Link="/user/create.jsp?create=yes" LevelField="3" ParentId="6"/>
+    <MenuOption Id="80" Link="HELP|page=reports|anchor=" LevelField="2" ParentId="3"/>
+    <MenuOption Id="82" Link="HELP|page=users|anchor=" LevelField="2" ParentId="5"/>
+    <MenuOption Id="83" Link="HELP|page=orders|anchor=" LevelField="2" ParentId="1"/>
+    <MenuOption Id="81" Link="HELP|page=process|anchor=" LevelField="2" ParentId="37"/>
+    <MenuOption Id="84" Link="HELP|page=notifications|anchor=" LevelField="2" ParentId="42"/>
+    <MenuOption Id="85" Link="HELP|page=system|anchor=" LevelField="2" ParentId="4"/>
+    <MenuOption Id="86" Link="HELP|page=payments|anchor=" LevelField="2" ParentId="2"/>
+    <MenuOption Id="87" Link="HELP|page=invoices|anchor=" LevelField="2" ParentId="35"/>
+    <MenuOption Id="88" Link="HELP|page=promotions|anchor=" LevelField="2" ParentId="21"/>
+    <MenuOption Id="89" Link="HELP|page=payments|anchor=refunds" LevelField="2" ParentId="31"/>
+    <MenuOption Id="90" Link="/payment/customerSelect.jsp?create=yes&amp;paypal=yes" LevelField="2" ParentId="2"/>
+    <MenuOption Id="91" Link="/orderPeriod.do?action=setup" LevelField="2" ParentId="1"/>
+    <MenuOption Id="92" Link="/invoice/batchDownload.jsp" LevelField="2" ParentId="35"/>
+    <MenuOption Id="93" Link="/task.do?action=setup" LevelField="2" ParentId="4"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>
     <NotificationMessageType Id="3" Sections="2"/>

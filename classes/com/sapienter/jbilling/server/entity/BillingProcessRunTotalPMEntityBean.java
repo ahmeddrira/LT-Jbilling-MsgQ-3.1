@@ -36,7 +36,7 @@ import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * @ejb:bean name="BillingProcessRunTotalPMEntity" 
- *          display-name="Object representation of the table BILLING_PROCESS_RUN_TOTAL_PM" 
+ *          display-name="Object representation of the table PROCESS_RUN_TOTAL_PM" 
  *          view-type="local" 
  *          type="CMP" 
  *          local-jndi-name="com/sapienter/jbilling/server/entity/BillingProcessRunTotalPMEntityLocal"
@@ -44,14 +44,14 @@ import com.sapienter.jbilling.server.util.Constants;
  *          reentrant="false"
  *          cmp-version="2.x"
  *          primkey-field="id"
- *          schema="billing_process_run_total_pm"
+ *          schema="process_run_total_pm"
  *
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
  * 
  * @ejb.value-object name="BillingProcessRunTotalPM"
  * 
- * @jboss:table-name "billing_process_run_total_pm"
+ * @jboss:table-name "process_run_total_pm"
  * 
  * @jboss:create-table create="false"
  * @jboss:remove-table remove="false"
@@ -80,7 +80,7 @@ public abstract class BillingProcessRunTotalPMEntityBean implements EntityBean {
         } catch (Exception e) {
             throw new CreateException(
                     "Problems generating the primary key "
-                    + "for the billing_process_run_total_pm table");
+                    + "for the process_run_total_pm table");
         }
 
         setId(newId);

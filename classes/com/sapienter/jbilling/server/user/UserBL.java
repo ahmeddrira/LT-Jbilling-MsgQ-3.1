@@ -20,6 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.user;
 
+
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -677,9 +678,11 @@ public class UserBL  extends ResultList
      * Not deleted for reporting reasong: invoices, payments
      */
     public void delete(Integer executorId) 
-            throws RemoveException {
+            throws RemoveException{
         Integer deleted = new Integer(1);
         user.setDeleted(deleted);
+        user.setStatusId(UserDTOEx.STATUS_DELETED);
+        user.setLastStatusChange(Calendar.getInstance().getTime());
         
         // credit cards
         for (Iterator it = user.getCreditCard().iterator(); it.hasNext();) {

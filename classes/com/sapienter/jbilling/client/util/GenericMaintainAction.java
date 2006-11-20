@@ -672,27 +672,31 @@ public class GenericMaintainAction {
                 }
             }
 
-            // verify that this entity actually accepts this kind of 
-            //payment method
-            try {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                PaymentSessionHome paymentHome =
-                        (PaymentSessionHome) EJBFactory.lookUpHome(
-                        PaymentSessionHome.class,
-                        PaymentSessionHome.JNDI_NAME);
-    
-                PaymentSession paymentSession = paymentHome.create();
-                
-                if (!paymentSession.isMethodAccepted((Integer)
-                        session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
-                        Util.getPaymentMethod(creditCardDto.getNumber()))) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("payment.error.notAccepted", 
-                                "payment.method"));
-    
+            // the credit card number is required
+            required(creditCardDto.getNumber(),"payment.cc.number");
+            if (errors.isEmpty()) {
+                // verify that this entity actually accepts this kind of 
+                //payment method
+                try {
+                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
+                    PaymentSessionHome paymentHome =
+                            (PaymentSessionHome) EJBFactory.lookUpHome(
+                            PaymentSessionHome.class,
+                            PaymentSessionHome.JNDI_NAME);
+        
+                    PaymentSession paymentSession = paymentHome.create();
+                    
+                    if (!paymentSession.isMethodAccepted((Integer)
+                            session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
+                            Util.getPaymentMethod(creditCardDto.getNumber()))) {
+                        errors.add(ActionErrors.GLOBAL_ERROR,
+                                new ActionError("payment.error.notAccepted", 
+                                    "payment.method"));
+        
+                    }
+                } catch (Exception e) {
+                    throw new SessionInternalError(e);
                 }
-            } catch (Exception e) {
-                throw new SessionInternalError(e);
             }
             
             // update the autimatic payment type for this customer

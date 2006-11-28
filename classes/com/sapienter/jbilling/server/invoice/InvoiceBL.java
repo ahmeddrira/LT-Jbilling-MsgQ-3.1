@@ -375,6 +375,8 @@ public class InvoiceBL extends ResultList
             PaymentInvoiceMapEntityLocal map = (PaymentInvoiceMapEntityLocal)
                     it.next();
             payment.removeInvoiceLink(map.getId());
+            // needed because the collection has changed
+            it = invoice.getPaymentMap().iterator();
         }
 
         // log that this was deleted, otherwise there will be no trace

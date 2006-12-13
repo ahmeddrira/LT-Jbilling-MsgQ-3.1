@@ -63,13 +63,15 @@ public class NewOrderDTO extends OrderDTO {
             period = order.getPeriod();
             periodStr = order.getPeriodStr();
             billingTypeStr = order.getBillingTypeStr();
-            orderLines = null;
+            orderLines = new Hashtable();
             rawOrderLines = new Vector();
             
             for (int f=0; f < order.getOrderLines().length; f++) {
                 Logger.getLogger(NewOrderDTO.class).debug("line " + order.getOrderLines()[f]);
                 OrderLineDTOEx line = new OrderLineDTOEx(order.getOrderLines()[f]);
                 rawOrderLines.add(line); 
+                // the next line is to be able to call BasicLineTotalTaks
+                orderLines.put(line.getItemId(), line);
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);

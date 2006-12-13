@@ -45,17 +45,18 @@ public class WSTest extends TestCase {
       
     public void testCreateUpdateDelete() {
         try {
+        	int i;
             /* If using https, you need an ssh key. You can configure ANT to
              * pass on the java properties like this:
              * export ANT_OPTS="-Djavax.net.ssl.trustStore=c:\\\\sapienter\\\\ssl\\\\client.keystore -Djavax.net.ssl.trustStorePassword=claudius"
              */
-            String endpoint = "https://localhost/jboss-net/services/billing";
+            String endpoint = "http://localhost/jboss-net/services/billing";
             
             Service  service = new Service();
             Call  call = (Call) service.createCall();
             call.setTargetEndpointAddress( new java.net.URL(endpoint) );
             call.setOperationName("createOrder");
-            call.setUsername("testapi");
+            call.setUsername("admin");
             call.setPassword("asdfasdf");
             
 
@@ -79,13 +80,13 @@ public class WSTest extends TestCase {
              * Create
              */
             OrderWS newOrder = new OrderWS();
-            newOrder.setUserId(new Integer(1906)); // for peter
+            newOrder.setUserId(new Integer(2)); // for gandlaf
             newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             newOrder.setPeriod(new Integer(1)); // once
             newOrder.setCurrencyId(new Integer(1));
             
             // now add some lines
-            OrderLineWS lines[] = new OrderLineWS[3];
+            OrderLineWS lines[] = new OrderLineWS[4];
             OrderLineWS line;
             
             line = new OrderLineWS();
@@ -94,15 +95,15 @@ public class WSTest extends TestCase {
             line.setQuantity(new Integer(1));
             line.setAmount(new Float(10));
             line.setDescription("Fist line");
-            line.setItemId(new Integer(10));
+            line.setItemId(new Integer(1));
             lines[0] = line;
             
             // this is an item line
             line = new OrderLineWS();
             line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
             line.setQuantity(new Integer(1));
-            line.setItemId(new Integer(307));
-            //line.setDescription("Second line");
+            line.setItemId(new Integer(2));
+            // take the description from the item
             line.setUseItem(new Boolean(true));
             lines[1] = line;
             
@@ -110,9 +111,17 @@ public class WSTest extends TestCase {
             line = new OrderLineWS();
             line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
             line.setQuantity(new Integer(1));
-            line.setItemId(new Integer(307));
+            line.setItemId(new Integer(3));
             line.setUseItem(new Boolean(true));
             lines[2] = line;
+
+            // this is a discount (10%)
+            line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setQuantity(new Integer(1));
+            line.setItemId(new Integer(14));
+            line.setUseItem(new Boolean(true));
+            lines[3] = line;
 
             newOrder.setOrderLines(lines);
             
@@ -130,8 +139,8 @@ public class WSTest extends TestCase {
             call.setOperationName("getOrder");
             // try getting one that doesn't belong to us
             try {
-                call.invoke( new Object[] { new Integer(28) } );
-                fail("Order 28 belongs to entity 2");
+                call.invoke( new Object[] { new Integer(5) } );
+                fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
             System.out.println("Getting created order");
@@ -140,6 +149,7 @@ public class WSTest extends TestCase {
                     newOrder.getBillingTypeId());
             assertEquals("created order billing period", retOrder.getPeriod(),
                     newOrder.getPeriod());
+            //retOrder
             
             /*
              * get order line
@@ -148,27 +158,42 @@ public class WSTest extends TestCase {
             // try getting one that doesn't belong to us
             try {
                 System.out.println("Getting bad order line");
-                call.invoke( new Object[] { new Integer(8826) } );
-                fail("Order line 8826 belongs to entity 301");
+                call.invoke( new Object[] { new Integer(6) } );
+                fail("Order line 6 belongs to entity 6");
             } catch (Exception e) {
             }
             System.out.println("Getting created order line");
-            Integer lineId = retOrder.getOrderLines()[0].getId();
-            OrderLineWS retOrderLine = (OrderLineWS) call.invoke( new Object[] { lineId } );
-            assertEquals("created line item id", retOrderLine.getItemId(),
-                    new Integer(10));
+            boolean found = false;
+            OrderLineWS retOrderLine = null;
+            OrderLineWS normalOrderLine = null;
+            Integer lineId = null;
+            for (i = 0; i < retOrder.getOrderLines().length; i++) {
+	            lineId = retOrder.getOrderLines()[i].getId();
+	            retOrderLine = (OrderLineWS) call.invoke( new Object[] { lineId } );
+	            if (retOrderLine.getItemId().equals(new Integer(14))) {
+	                assertEquals("created line item id", retOrderLine.getItemId(), 
+	                        new Integer(14));
+	                assertEquals("total of discount", new Float(-4.5), retOrderLine.getAmount());
+	                found = true;
+	            } else {
+	            	normalOrderLine = retOrderLine;
+	            	if (found) break;
+	            }
+            }
+            assertTrue("Order line not found", found);
             
             /*
              * Update the order line
              */
+            retOrderLine = normalOrderLine; // use a normal one, not the percentage
             call.setOperationName("updateOrderLine");
             retOrderLine.setQuantity(new Integer(99));
             lineId = retOrderLine.getId();
             try {
                 System.out.println("Updating bad order line");
-                retOrderLine.setId(new Integer(8826));
+                retOrderLine.setId(new Integer(6));
                 call.invoke( new Object[] { retOrderLine } );
-                fail("Order line 8826 belongs to entity 301");
+                fail("Order line 6 belongs to entity 301");
             } catch (Exception e) {
             }
             retOrderLine.setId(lineId);
@@ -178,7 +203,7 @@ public class WSTest extends TestCase {
             retOrderLine = (OrderLineWS) call.invoke( new Object[] { retOrderLine.getId() } );
             assertEquals("updated quantity", retOrderLine.getQuantity(),
                     new Integer(99));
-            //delete a line through updating iwht quantity = 0
+            //delete a line through updating with quantity = 0
             System.out.println("Delete order line");
             call.setOperationName("updateOrderLine");
             retOrderLine.setQuantity(new Integer(0));
@@ -199,6 +224,7 @@ public class WSTest extends TestCase {
             cal.set(2003, 9, 29, 0, 0, 0);
             retOrder.setActiveSince(cal.getTime());
             retOrder.getOrderLines()[1].setDescription("Modified description");
+            retOrder.getOrderLines()[1].setQuantity(new Integer(2));
             retOrder.setStatusId(new Integer(2));
             call.setOperationName("updateOrder");
             call.setReturnClass(null);
@@ -206,9 +232,10 @@ public class WSTest extends TestCase {
             call.invoke( new Object[] { retOrder } );
             // try to update an order of another entity
             try {
-                retOrder.setId(new Integer(28));
+            	System.out.println("Updating bad order...");
+                retOrder.setId(new Integer(5));
                 call.invoke( new Object[] { retOrder } );
-                fail("Order 28 belongs to entity 2");
+                fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
             // and ask for it to verify the modification
@@ -219,61 +246,62 @@ public class WSTest extends TestCase {
             assertEquals("Active since", retOrder.getActiveSince(),
                     cal.getTime()); 
             assertEquals("Status id", new Integer(2), retOrder.getStatusId());
+            assertEquals("Modified line description", "Modified description",
+            		retOrder.getOrderLines()[1].getDescription());
+            assertEquals("Modified quantity", new Integer(2),
+            		retOrder.getOrderLines()[1].getQuantity());
+            for (i = 0; i < retOrder.getOrderLines().length; i++) {
+            	retOrderLine = retOrder.getOrderLines()[i];
+	            if (retOrderLine.getItemId().equals(new Integer(14))) {
+	            	// the is one less line for 15
+	            	// but one extra item for 20
+	            	// difference is 5 and 10% of that is 0.5  thus 4.5 + 0.5 = 5
+	                assertEquals("total of discount", new Float(-5.0), retOrderLine.getAmount());
+	                break;
+	            } 
+            }
             
+            assertFalse(i == retOrder.getOrderLines().length);
+           
             /*
              * Get latest
              */
             call.setOperationName("getLatestOrder");
             System.out.println("Getting latest");
             retOrder = (OrderWS) call.invoke( new Object[] { 
-                    new Integer(1906) } );
+                    new Integer(2) } );
             assertNotNull("Didn't get any latest order", retOrder);
             assertEquals("Latest id", ret, retOrder.getId());
             // now one for an invalid user
             System.out.println("Getting latest invalid");
             try {
                 retOrder = (OrderWS) call.invoke( new Object[] { 
-                        new Integer(1736) } );
-                fail("User 1736 belongs to entity 301");
+                        new Integer(13) } );
+                fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
 
-            /*
-             * More test: delete me
-            
-            call.setOperationName("getLatestOrder");
-            System.out.println("Getting latest");
-            retOrder = (OrderWS) call.invoke( new Object[] { 
-                    new Integer(1906) } );
-            assertNotNull("Didn't get any latest order", retOrder);
-            retOrder.setStatusId(new Integer(3));
-            call.setOperationName("updateOrder");
-            call.setReturnClass(null);
-            System.out.println("Updating order...");
-            call.invoke( new Object[] { retOrder } );
-             */
-            
             /*
              * Get last
              */
             call.setOperationName("getLastOrders");
             System.out.println("Getting last 5 ... ");
             int list[] = (int[]) call.invoke( new Object[] { 
-                    new Integer(1906), new Integer(5) } );
+                    new Integer(2), new Integer(5) } );
             assertNotNull("Missing list", list);
             assertTrue("No more than five", list.length <= 5);
             
             call.setOperationName("getOrder");
-            // try getting one that doesn't belong to us
+            // the first in the list is the last one created
             retOrder = (OrderWS) call.invoke( new Object[] { new Integer(list[0]) } );
             assertEquals("Latest id", ret, retOrder.getId());
             
             // try to get the orders of my neighbor
             try {
                 System.out.println("Getting last 5 - invalid");
-                call.invoke( new Object[] { new Integer(1736),
+                call.invoke( new Object[] { new Integer(13),
                         new Integer(5)} );
-                fail("User 1736 belongs to entity 301");
+                fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
 
@@ -285,8 +313,8 @@ public class WSTest extends TestCase {
             call.invoke( new Object[] { ret } );
             // try to delete from my neightbor
             try {
-                call.invoke( new Object[] { new Integer(28) } );
-                fail("Order 28 belongs to entity 2");
+                call.invoke( new Object[] { new Integer(5) } );
+                fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
             // try to get the deleted order
@@ -305,14 +333,14 @@ public class WSTest extends TestCase {
             System.out.println("Getting orders by period for invalid user " + ret);
             // try to get from my neightbor
             try {
-                call.invoke( new Object[] { new Integer(1736), new Integer(1) } );
-                fail("User 1736 belongs to entity 301");
+                call.invoke( new Object[] { new Integer(13), new Integer(1) } );
+                fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
             // now from a valid user
             System.out.println("Getting orders by period ");
             int orders[] = (int[]) call.invoke( new Object[] { 
-                    new Integer(1906), new Integer(1) } );
+                    new Integer(2), new Integer(1) } );
             System.out.println("Got total orders " + orders.length +
                     " first is " + orders[0]);
 

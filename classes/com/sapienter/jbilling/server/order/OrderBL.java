@@ -265,7 +265,7 @@ public class OrderBL extends ResultList
      */
     public void recalculate(Integer entityId) throws SessionInternalError {
         log = Logger.getLogger(OrderBL.class);
-        log.debug("Processing and order for reviewing.");
+        log.debug("Processing and order for reviewing." + newOrder.getOrderLinesMap().size());
 
         try {
             PluggableTaskManager taskManager = new PluggableTaskManager(
@@ -279,7 +279,8 @@ public class OrderBL extends ResultList
 
         } catch (PluggableTaskException e) {
             log.fatal("Problems handling order processing task.", e);
-            throw new SessionInternalError("Problems handling order " +            	"processing task.");
+            throw new SessionInternalError("Problems handling order " +
+                    "processing task.");
         } catch (TaskException e) {
 			log.fatal("Problems excecuting order processing task.", e);
 			throw new SessionInternalError("Problems executing order processing task.");
@@ -939,8 +940,7 @@ public class OrderBL extends ResultList
         OrderLineWS retValue = new OrderLineWS(line.getId(),line.getItemId(), 
                 line.getDescription(), line.getAmount(), line.getQuantity(), 
                 line.getPrice(), line.getItemPrice(), line.getCreateDate(), 
-                line.getDeleted());
-        retValue.setTypeId(line.getType().getId());
+                line.getDeleted(), line.getType().getId(), line.getEditable());
         return retValue;
     }
     

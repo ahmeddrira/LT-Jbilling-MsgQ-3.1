@@ -28,7 +28,7 @@ import com.sapienter.jbilling.server.item.ItemDTOEx;
 /**
  * Extension of the generated DTO to add the CMR fields
  * @author emilc
- *
+ * @jboss-net.xml-schema urn="sapienter:OrderLineDTOEx"
  */
 public class OrderLineDTOEx extends OrderLineDTO {
 
@@ -88,6 +88,7 @@ public class OrderLineDTOEx extends OrderLineDTO {
     public OrderLineDTOEx(OrderLineWS dto) {
         super(dto);
         typeId = dto.getTypeId();
+        item = dto.getItem();
     }
 
     // Accessors to extended fields

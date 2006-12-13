@@ -34,7 +34,7 @@ import com.sapienter.jbilling.server.entity.OrderLineDTO;
  * @author Emil
  * @jboss-net.xml-schema urn="sapienter:OrderLineWS"
  */
-public class OrderLineWS extends OrderLineDTO implements Serializable {
+public class OrderLineWS extends OrderLineDTOEx implements Serializable {
 
     private Integer typeId = null;
     private Boolean useItem = null;
@@ -58,15 +58,17 @@ public class OrderLineWS extends OrderLineDTO implements Serializable {
      * @param deleted
      */
     public OrderLineWS(
-        Integer id,
-        Integer itemId,
-        String description,
-        Float amount,
-        Integer quantity,
-        Float price,
-        Integer itemPrice,
-        Date createDate,
-        Integer deleted) {
+    		Integer id,
+            Integer itemId,
+            String description,
+            Float amount,
+            Integer quantity,
+            Float price,
+            Integer itemPrice,
+            Date create,
+            Integer deleted,
+            Integer newTypeId,
+            Boolean editable) {
         super(
             id,
             itemId,
@@ -75,9 +77,10 @@ public class OrderLineWS extends OrderLineDTO implements Serializable {
             quantity,
             price,
             itemPrice,
-            createDate,
-            deleted);
-        // TODO Auto-generated constructor stub
+            create,
+            deleted,
+            newTypeId,
+            editable);
     }
 
     /**

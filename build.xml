@@ -117,8 +117,6 @@
               todir="${deploy.local.dir}/jboss-net.sar/jboss-net.war/WEB-INF"/>
         <copy file="${source.descriptor.dir}/jboss-net/web.xml"
               todir="${deploy.local.dir}/jboss-net.sar/jboss-net.war/WEB-INF"/>
-    	<copy file="${source.view.dir}/other/index.html"
-    	     		  tofile="${jboss.web.dir}/ROOT.war"/>
 
     	<!-- Copy the messages file -->
     	<copy todir="${deploy.resources.dir}">
@@ -468,6 +466,10 @@
       </junit>
   </target>
   
+  <!--
+     Warning: this task needs a lot of memory. At least 400Megs. Otherwise
+     it fails with an obscure error. To fix use ANT_OPTS=-Xmx400m -Xss128k
+   -->
   <target name="db" depends="init">
      <!-- copy the schema files into torque dirs -->
      <copy todir="${torque.home.dir}/src/schema">

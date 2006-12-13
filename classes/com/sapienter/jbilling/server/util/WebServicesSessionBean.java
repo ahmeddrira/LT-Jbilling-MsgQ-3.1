@@ -604,6 +604,9 @@ public class WebServicesSessionBean implements SessionBean {
             
             // call the creation
             OrderBL orderBL = new OrderBL();
+            orderBL.setDTO(dto);
+            log.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
+            orderBL.recalculate(entityId);
             return orderBL.create(entityId, executorId, dto);
             
         } catch(Exception e) {
@@ -617,20 +620,23 @@ public class WebServicesSessionBean implements SessionBean {
         throws SessionInternalError {
         for (int f = 0 ; f < order.getOrderLines().length; f++) {
             OrderLineWS line = order.getOrderLines()[f];
+            // get the related item
+            ItemSessionBean itemSession = new ItemSessionBean();
+            
+            ItemDTOEx item = itemSession.get(line.getItemId(), 
+                    languageId, order.getUserId(), order.getCurrencyId(),
+                    entityId);
+            line.setItem(item);
             if (line.getUseItem().booleanValue()) {
-                // get the related item
-                ItemSessionBean itemSession = new ItemSessionBean();
-                
-                ItemDTOEx item = itemSession.get(line.getItemId(), 
-                        languageId, order.getUserId(), order.getCurrencyId(),
-                        entityId);
-                line.setPrice(item.getPrice());
+                if (item.getPrice() == null) {
+                	line.setPrice(item.getPercentage());
+                } else {
+                	line.setPrice(item.getPrice());
+                }
                 if (line.getDescription() == null || 
                         line.getDescription().length() == 0) {
                     line.setDescription(item.getDescription());
                 }
-                line.setAmount(new Float(line.getPrice().floatValue() * 
-                        line.getQuantity().intValue()));
             }
         }
     }
@@ -646,16 +652,19 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
+            Integer entityId = bl.getEntity().getEntity().getId(); 
             
             // see if the related items should provide info
             processItemLine(order, bl.getEntity().getLanguageIdField(),
-                    bl.getEntity().getEntity().getId());
+                    entityId);
 
             // make a dto out of the ws
             NewOrderDTO dto = new NewOrderDTO(order);
             
             // call the update
             OrderBL orderBL = new OrderBL(dto.getId());
+            orderBL.setDTO(dto);
+            orderBL.recalculate(entityId);
             orderBL.update(executorId, dto);
             
             

@@ -940,7 +940,8 @@ public class OrderBL extends ResultList
         OrderLineWS retValue = new OrderLineWS(line.getId(),line.getItemId(), 
                 line.getDescription(), line.getAmount(), line.getQuantity(), 
                 line.getPrice(), line.getItemPrice(), line.getCreateDate(), 
-                line.getDeleted(), line.getType().getId(), line.getEditable());
+                line.getDeleted(), line.getType().getId(), 
+                new Boolean(line.getEditable()));
         return retValue;
     }
     

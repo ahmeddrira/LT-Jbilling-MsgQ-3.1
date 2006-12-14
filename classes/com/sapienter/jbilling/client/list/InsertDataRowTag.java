@@ -134,20 +134,23 @@ public class InsertDataRowTag extends BodyTagSupport {
                     }
                     break;
                 case Types.TIMESTAMP:
-                    Date ts;
+                    Date ts = null;
                     if (method == ListTagBase.METHOD_JDBC) {
                         Object timeObj = results.getObject(f);
-                        if (timeObj instanceof java.util.Date) {
-                            ts = results.getDate(f);
-                        } else if (timeObj.getClass().getName().equals("oracle.sql.TIMESTAMP")){
-                            // Oracle does its own thing. Not good :(
-                            // we do not want to have any dependencies with Oracle. Thus, use reflexion
-                            Method toCall = timeObj.getClass().getMethod("timestampValue", null);
-                            ts = new Date(((Timestamp) toCall.invoke(timeObj, null)).getTime());
-                        } else {
-                            log.error("Time stamp of type " + 
-                                    timeObj.getClass().getName() + " not supported");
-                            ts = new Date(Calendar.getInstance().getTime().getTime());
+                        //log.debug(timeObj + " class " + ((timeObj == null) ? "null" : timeObj.getClass()) );
+                        if (timeObj != null) {
+	                        if (timeObj instanceof java.util.Date) {
+	                            ts = results.getDate(f);
+	                        } else if (timeObj.getClass().getName().equals("oracle.sql.TIMESTAMP")){
+	                            // Oracle does its own thing. Not good :(
+	                            // we do not want to have any dependencies with Oracle. Thus, use reflexion
+	                            Method toCall = timeObj.getClass().getMethod("timestampValue", null);
+	                            ts = new Date(((Timestamp) toCall.invoke(timeObj, null)).getTime());
+	                        } else {
+	                            log.error("Time stamp of type " + 
+	                                    timeObj.getClass().getName() + " not supported");
+	                            ts = new Date(Calendar.getInstance().getTime().getTime());
+	                        }
                         }
                     } else { 
                         ts = (Date) dtoLine[f-1];

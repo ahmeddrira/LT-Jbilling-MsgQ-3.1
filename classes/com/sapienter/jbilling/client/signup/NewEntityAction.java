@@ -119,7 +119,8 @@ public class NewEntityAction extends Action {
                     (String) myForm.get("last_name"), 
                     (String) myForm.get("first_name"), 
                     null, null, null, 
-                    Integer.valueOf((String) myForm.get("phone_area")), 
+                    ((String)myForm.get("phone_area")).length() == 0 ? 
+                        null : Integer.valueOf((String) myForm.get("phone_area")), 
                     (String) myForm.get("phone_number"), 
                     null, null, null, 
                     (String) myForm.get("email"), 

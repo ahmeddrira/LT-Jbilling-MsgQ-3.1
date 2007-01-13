@@ -48,7 +48,7 @@ public class WSTest extends TestCase {
         	int i;
             /* If using https, you need an ssh key. You can configure ANT to
              * pass on the java properties like this:
-             * export ANT_OPTS="-Djavax.net.ssl.trustStore=c:\\\\sapienter\\\\ssl\\\\client.keystore -Djavax.net.ssl.trustStorePassword=claudius"
+             * export ANT_OPTS="-Djavax.net.ssl.trustStore=c:\\\\sapienter\\\\ssl\\\\client.keystore -Djavax.net.ssl.trustStorePassword=pass"
              */
             String endpoint = "http://localhost/jboss-net/services/billing";
             

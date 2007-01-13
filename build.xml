@@ -24,10 +24,6 @@
         <fileset dir="${jboss.client.dir}">
             <include name="*.jar"/>
         </fileset>
-        <!-- these drivers are necessary for the db target -->
-        <fileset dir="${jdbc.home.dir}">
-            <include name="*.jar"/>
-        </fileset>
         <!-- classes for webservices -->
         <fileset dir="${axis.dir}">
             <include name="*.jar"/>
@@ -458,11 +454,16 @@
       		 includes="**/WSTest.java">
           <classpath refid="test.classpath"/>
       </javac>
+  	  <!-- The test expect a particular set of data -->
+  	  <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
+  	  	 <fileset dir="${basedir}/sql" includes="localDB.*" />
+      </copy>
       <junit printsummary="off"
              haltonfailure="true">
           <classpath refid="test.classpath"/>
           <formatter type="brief" usefile="false"/>
-      	  <test name="com.sapienter.jbilling.server.payment.WSTest"/>
+      	  <test name="com.sapienter.jbilling.server.order.WSTest"/>
+    	  <test name="com.sapienter.jbilling.server.user.WSTest"/>
       </junit>
   </target>
   

@@ -49,17 +49,19 @@ import com.sapienter.jbilling.server.util.Constants;
 public class WSTest extends TestCase {
       
     public void testGetUser() {
-        if (true) return;
         try {
+            /* If using https, you need an ssh key. You can configure ANT to
+             * pass on the java properties like this:
+             * export ANT_OPTS="-Djavax.net.ssl.trustStore=c:\\\\sapienter\\\\ssl\\\\client.keystore -Djavax.net.ssl.trustStorePassword=pass"
+             */
             String endpoint = "http://localhost/jboss-net/services/billing";
-
             
             Service  service = new Service();
             Call  call = (Call) service.createCall();
             call.setTargetEndpointAddress( new java.net.URL(endpoint) );
             call.setOperationName("getUserWS");
             call.setReturnClass(UserWS.class);
-            call.setUsername("testapi");
+            call.setUsername("admin");
             call.setPassword("asdfasdf");
 
             // UserWS            
@@ -86,16 +88,16 @@ public class WSTest extends TestCase {
                     CreditCardDTO.class, qn);
             call.registerTypeMapping(CreditCardDTO.class, qn, ser1, ser2); 
 
-            
-            UserWS ret = (UserWS) call.invoke( new Object[] { new Integer(1906) } );
-            assertEquals(ret.getUserId(), new Integer(1906));
+            System.out.println("Getting user 2");
+            UserWS ret = (UserWS) call.invoke( new Object[] { new Integer(2) } );
+            assertEquals(new Integer(2), ret.getUserId());
             try {
-                ret = (UserWS) call.invoke( new Object[] { new Integer(1736) } );
-                fail("Shouldn't be able to access user 1736");
+                System.out.println("Getting invalid user 13");
+                ret = (UserWS) call.invoke( new Object[] { new Integer(13) } );
+                fail("Shouldn't be able to access user 13");
             } catch(Exception e) {
             }
             
-            System.out.println("User 1906 , got [" + ret + "]");
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
@@ -104,17 +106,15 @@ public class WSTest extends TestCase {
 
 
     public void testCreateUpdateDeleteUser() {
-        //if (true) return;
         try {
             String endpoint = "http://localhost/jboss-net/services/billing";
-
             
             Service  service = new Service();
             Call  call = (Call) service.createCall();
             call.setTargetEndpointAddress( new java.net.URL(endpoint) );
             call.setOperationName("createUser");
             //call.setReturnClass(Integer.class);
-            call.setUsername("testapi");
+            call.setUsername("admin");
             call.setPassword("asdfasdf");
             
 
@@ -180,11 +180,11 @@ public class WSTest extends TestCase {
             
             // add a contact
             ContactWS contact = new ContactWS();
-            contact.setEmail("emilc@sapienter.com");
-            contact.setFirstName("Paul");
-            contact.setLastName("Casal");
+            contact.setEmail("frodo@shire.com");
+            contact.setFirstName("Frodo");
+            contact.setLastName("Baggins");
             String fields[] = new String[1];
-            fields[0] = "12";
+            fields[0] = "1";
             String fieldValues[] = new String[1];
             fieldValues[0] = "serial-from-ws";
             contact.setFieldNames(fields);
@@ -193,7 +193,7 @@ public class WSTest extends TestCase {
             
             // add a credit card
             CreditCardDTO cc = new CreditCardDTO();
-            cc.setName("Paul Casal");
+            cc.setName("Frodo Baggins");
             cc.setNumber("4111111111111111");
             cc.setExpiry(Calendar.getInstance().getTime());
             newUser.setCreditCard(cc);
@@ -243,7 +243,7 @@ public class WSTest extends TestCase {
             line.setQuantity(new Integer(1));
             line.setAmount(new Float(10));
             line.setDescription("Fist line");
-            line.setItemId(new Integer(10));
+            line.setItemId(new Integer(1));
             lines[0] = line;
             
             line = new OrderLineWS();
@@ -252,7 +252,7 @@ public class WSTest extends TestCase {
             line.setQuantity(new Integer(1));
             line.setAmount(new Float(10));
             line.setDescription("Second line");
-            line.setItemId(new Integer(11));
+            line.setItemId(new Integer(2));
             lines[1] = line;
             
             newOrder.setOrderLines(lines);
@@ -261,13 +261,6 @@ public class WSTest extends TestCase {
                     new Object[] { retUser, newOrder} );
             
             System.out.println("Mega call result: " + mcRet);
-            // now delete this new guy
-            /*
-            call.setOperationName("deleteUser");
-            call.setReturnClass(null);
-            System.out.println("Deleting MC user...");
-            call.invoke( new Object[] { mcRet.getUserId() } );
-            */
  
             /*
              * Update
@@ -320,13 +313,20 @@ public class WSTest extends TestCase {
             // now delete this new guy
             call.setOperationName("deleteUser");
             call.setReturnClass(null);
-            System.out.println("Deleting user...");
+            System.out.println("Deleting user..." + newUserId);
             call.invoke( new Object[] { newUserId } );
             
-            // verify I can't delete 
+            // try to fetch the deleted user
+            System.out.println("Getting deleted user " + newUserId);
+            call.setOperationName("getUserWS");
+            updatedUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            assertEquals(updatedUser.getDeleted(), new Integer(1));
+            
+            // verify I can't delete users from another company 
             try {
-                call.invoke( new Object[] { new Integer(16) } );
-                fail("Shouldn't be able to access user 16");
+                System.out.println("Deleting user base user ... 13");
+                call.invoke( new Object[] { new Integer(13) } );
+                fail("Shouldn't be able to access user 13");
             } catch(Exception e) {
             }
             
@@ -338,6 +338,7 @@ public class WSTest extends TestCase {
             System.out.println("Getting active users...");
             int[] users = (int[]) call.invoke( 
                     new Object[] { new Integer(1) } );
+            assertEquals(users.length, 3);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
@@ -349,6 +350,7 @@ public class WSTest extends TestCase {
             System.out.println("Getting NOTactive users...");
             users = (int[]) call.invoke( 
                     new Object[] { new Integer(1) } );
+            assertEquals(users.length, 1);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
@@ -359,96 +361,14 @@ public class WSTest extends TestCase {
             call.setOperationName("getUsersByCustomField");
             System.out.println("Getting by custom field...");
             users = (int[]) call.invoke( 
-                    new Object[] { new Integer(12), new String("123-345-678-ABC") } );
-            for (int f = 0; f < users.length; f++) {
-                System.out.println("Got user " + users[f]);
-            }
-
+                    new Object[] { new Integer(1), new String("serial-from-ws") } );
+            
+            // only the one from the megacall is not deleted and has the custom field
+            assertEquals(users.length, 1); 
+            assertEquals(users[0], mcRet.getUserId().intValue());
+            
             System.out.println("Done");
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception caught:" + e);
-        }
-    }
-
-    public void testValidator() {
-        //if (true) return;
-        try {
-            String endpoint = "http://localhost/jboss-net/services/billing";
-
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
-            call.setOperationName("createUser");
-            //call.setReturnClass(Integer.class);
-            call.setUsername("testapi");
-            call.setPassword("asdfasdf");
-            
-
-            // UserWS            
-            QName qn = new QName("http://www.sapienter.com/billing", "UserWS");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    UserWS.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    UserWS.class, qn);
-            call.registerTypeMapping(UserWS.class, qn, ser1, ser2); 
-
-            // ContactWS            
-            qn = new QName("http://www.sapienter.com/billing", "ContactWS");
-            ser1 = new BeanSerializerFactory(
-                    ContactWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    ContactWS.class, qn);
-            call.registerTypeMapping(ContactDTO.class, qn, ser1, ser2); 
-
-            // CreditCardDTO            
-            qn = new QName("http://www.sapienter.com/billing", "CreditCardDTO");
-            ser1 = new BeanSerializerFactory(
-                    CreditCardDTO.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    CreditCardDTO.class, qn);
-            call.registerTypeMapping(CreditCardDTO.class, qn, ser1, ser2); 
-
-
-            /*
-             * Create
-             */
-            Random rnd = new Random();
-            UserWS newUser = new UserWS();
-            newUser.setUserName("wsCreated" + rnd.nextInt(100));
-            String newUserName = newUser.getUserName();
-            newUser.setPassword("asdfasdf");
-            newUser.setLanguageId(new Integer(1));
-            newUser.setMainRoleId(new Integer(5));
-            newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
-            
-            // add a contact
-            ContactWS contact = new ContactWS();
-            contact.setEmail("emilc@sapienter.com");
-            contact.setFirstName("Paul");
-            contact.setLastName("Casal");
-            String fields[] = new String[1];
-            fields[0] = "12";
-            String fieldValues[] = new String[1];
-            fieldValues[0] = "serial-from-ws";
-            contact.setFieldNames(fields);
-            contact.setFieldValues(fieldValues);
-            newUser.setContact(contact);
-            
-            // add a credit card
-            CreditCardDTO cc = new CreditCardDTO();
-            cc.setName("Paul Casal");
-            cc.setNumber("4111111111111111");
-            cc.setExpiry(Calendar.getInstance().getTime());
-            newUser.setCreditCard(cc);
-            
-            System.out.println("Creating user ...");
-            Integer newUserId = (Integer) call.invoke( new Object[] { newUser } );
-            assertNotNull("The user was not created", newUserId);
-
-            
-       } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }

@@ -39,6 +39,9 @@ import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
 import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
+import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
+import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
@@ -165,7 +168,32 @@ public class WSTest extends TestCase {
             ser2 = new BeanDeserializerFactory (
                     CreateResponseWS.class, qn);
             call.registerTypeMapping(CreateResponseWS.class, qn, ser1, ser2); 
+            
+            // InvoiceWS            
+            qn = new QName("http://www.sapienter.com/billing", "InvoiceWS");
+            ser1 = new BeanSerializerFactory(
+                    InvoiceWS.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    InvoiceWS.class, qn);
+            call.registerTypeMapping(InvoiceWS.class, qn, ser1, ser2); 
 
+            // InvoiceLineDTO            
+            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTO");
+            ser1 = new BeanSerializerFactory(
+                    InvoiceLineDTO.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    InvoiceLineDTO.class, qn);
+            call.registerTypeMapping(InvoiceLineDTO.class, qn, ser1, ser2); 
+
+            // InvoiceLineDTOEx            
+            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTOEx");
+            ser1 = new BeanSerializerFactory(
+                    InvoiceLineDTOEx.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    InvoiceLineDTOEx.class, qn);
+            call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
+
+            
             /*
              * Create
              */
@@ -228,7 +256,7 @@ public class WSTest extends TestCase {
             
             // need an order for it
             OrderWS newOrder = new OrderWS();
-            newOrder.setUserId(new Integer(1906)); // for peter
+            newOrder.setUserId(new Integer(-1)); // it does not matter, the user will be created
             newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             newOrder.setPeriod(new Integer(1)); // once
             newOrder.setCurrencyId(new Integer(1));
@@ -260,7 +288,22 @@ public class WSTest extends TestCase {
             CreateResponseWS mcRet = (CreateResponseWS) call.invoke(
                     new Object[] { retUser, newOrder} );
             
-            System.out.println("Mega call result: " + mcRet);
+            System.out.println("Validating new invoice");
+            // validate that the results are reasonable
+            assertNotNull("Mega call result can't be null", mcRet);
+            assertNotNull("Mega call invoice result can't be null", mcRet.getInvoiceId());
+            // get the invoice
+            call.setOperationName("getInvoiceWS");
+            InvoiceWS retInvoice = (InvoiceWS) call.invoke( 
+                    new Object[] { mcRet.getInvoiceId() } );
+            assertNotNull("New invoice not present", retInvoice);
+            assertEquals("Balance of invoice should be total of order", retInvoice.getBalance(),
+                    new Float(20));
+            assertEquals("Total of invoice should be total of order", retInvoice.getTotal(),
+                    new Float(20));
+            assertEquals("New invoice not paid", retInvoice.getToProcess(), new Integer(1));
+            
+            // TO-DO test that the invoice total is equal to the order total
  
             /*
              * Update

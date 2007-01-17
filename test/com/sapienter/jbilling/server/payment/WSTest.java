@@ -36,8 +36,11 @@ import org.apache.axis.client.Service;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
+import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
+import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -47,12 +50,12 @@ public class WSTest extends TestCase {
       
     public void testApplyGet() {
         try {
-            String endpoint = "https://localhost/jboss-net/services/billing";
+            String endpoint = "http://localhost/jboss-net/services/billing";
             
             Service  service = new Service();
             Call  call = (Call) service.createCall();
             call.setTargetEndpointAddress( new java.net.URL(endpoint) );
-            call.setUsername("testapi");
+            call.setUsername("admin");
             call.setPassword("asdfasdf");
             
 
@@ -78,19 +81,44 @@ public class WSTest extends TestCase {
             ser2 = new BeanDeserializerFactory ( PaymentAuthorizationDTO.class,
                      qn);
             call.registerTypeMapping(PaymentAuthorizationDTO.class, qn, ser1, ser2); 
+            
+            // InvoiceWS            
+            qn = new QName("http://www.sapienter.com/billing", "InvoiceWS");
+            ser1 = new BeanSerializerFactory(
+                    InvoiceWS.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    InvoiceWS.class, qn);
+            call.registerTypeMapping(InvoiceWS.class, qn, ser1, ser2); 
+
+            // InvoiceLineDTO            
+            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTO");
+            ser1 = new BeanSerializerFactory(
+                    InvoiceLineDTO.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    InvoiceLineDTO.class, qn);
+            call.registerTypeMapping(InvoiceLineDTO.class, qn, ser1, ser2); 
+
+            // InvoiceLineDTOEx            
+            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTOEx");
+            ser1 = new BeanSerializerFactory(
+                    InvoiceLineDTOEx.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    InvoiceLineDTOEx.class, qn);
+            call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
+
            
             /*
              * apply payment
              */
             call.setOperationName("applyPayment");
             PaymentWS payment = new PaymentWS();
-            payment.setAmount(new Float(4.32));
+            payment.setAmount(new Float(15));
             payment.setIsRefund(new Integer(0));
             payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
             payment.setPaymentDate(Calendar.getInstance().getTime());
             payment.setResultId(Constants.RESULT_ENTERED);
             payment.setCurrencyId(new Integer(1));
-            payment.setUserId(new Integer(1906));
+            payment.setUserId(new Integer(2));
             
             PaymentInfoChequeDTO cheque = new PaymentInfoChequeDTO();
             cheque.setBank("ws bank");
@@ -100,7 +128,7 @@ public class WSTest extends TestCase {
            
             System.out.println("Applying payment");
             Integer ret = (Integer) call.invoke( new Object[] { 
-                        payment, new Integer(1168) } );
+                        payment, new Integer(35) } );
             System.out.println("Created payemnt " + ret);
             assertNotNull("Didn't get the payment id", ret);
             
@@ -118,6 +146,26 @@ public class WSTest extends TestCase {
                     payment.getCheque().getNumber());
             assertEquals("created payment user ", retPayment.getUserId(), 
                     payment.getUserId());
+            System.out.println("Validated created payment and paid invoice");
+            assertNotNull("payment not related to invoice", retPayment.getInvoiceIds());
+            assertTrue("payment not related to invoice", 
+                    retPayment.getInvoiceIds().length == 1);
+            assertEquals("payment not related to invoice", 
+                    retPayment.getInvoiceIds()[0], new Integer(35));
+            call.setOperationName("getInvoiceWS");
+            InvoiceWS retInvoice = (InvoiceWS) call.invoke( 
+                    new Object[] { retPayment.getInvoiceIds()[0] } );
+            assertNotNull("New invoice not present", retInvoice);
+            assertEquals("Balance of invoice should be total of order", retInvoice.getBalance(),
+                    new Float(0));
+            assertEquals("Total of invoice should be total of order", retInvoice.getTotal(),
+                    new Float(15));
+            assertEquals("New invoice not paid", retInvoice.getToProcess(), new Integer(0));
+            assertNotNull("invoice not related to payment", retInvoice.getPayments());
+            assertTrue("invoice not related to payment", 
+                    retInvoice.getPayments().length == 1);
+            assertEquals("invoice not related to payment", 
+                    retInvoice.getPayments()[0], retPayment.getId());
             
             /*
              * get latest
@@ -126,7 +174,7 @@ public class WSTest extends TestCase {
             call.setOperationName("getLatestPayment");
             System.out.println("Getting latest");
             retPayment = (PaymentWS) call.invoke( new Object[] { 
-                    new Integer(1906)} );
+                    new Integer(2)} );
             assertNotNull("didn't get payment ", retPayment);
             assertEquals("latest id", ret, retPayment.getId());
             assertEquals("created payment result", retPayment.getResultId(),
@@ -138,8 +186,8 @@ public class WSTest extends TestCase {
             try {
                 System.out.println("Getting latest - invalid");
                 retPayment = (PaymentWS) call.invoke( new Object[] { 
-                        new Integer(1736)} );
-                fail("User 1736 belongs to entity 301");
+                        new Integer(13)} );
+                fail("User 13 belongs to entity 301");
             } catch (Exception e) {
             }
             
@@ -149,7 +197,7 @@ public class WSTest extends TestCase {
             call.setOperationName("getLastPayments");
             System.out.println("Getting last");
             int retPayments[] = (int[]) call.invoke( new Object[] { 
-                    new Integer(1906), new Integer(2)} );
+                    new Integer(2), new Integer(2)} );
             assertNotNull("didn't get payment ", retPayments);
             // fetch the payment
             call.setOperationName("getPayment");
@@ -164,53 +212,16 @@ public class WSTest extends TestCase {
             try {
                 System.out.println("Getting last - invalid");
                 retPayment = (PaymentWS) call.invoke( new Object[] { 
-                        new Integer(1736), new Integer(2)} );
-                fail("User 1736 belongs to entity 301");
+                        new Integer(13), new Integer(2)} );
+                fail("User 13 belongs to entity 301");
             } catch (Exception e) {
             }
             
             
             /*
-             * create refund
+             * TODO test refunds. There are no refund WS methods.
+             * Using applyPayment with is_refund = 1 DOES NOT work
              */
-            call.setOperationName("applyPayment");
-            PaymentWS refund = new PaymentWS();
-            refund.setAmount(new Float(4.32));
-            refund.setIsRefund(new Integer(1));
-            refund.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
-            refund.setPaymentDate(Calendar.getInstance().getTime());
-            refund.setResultId(Constants.RESULT_OK);
-            refund.setUserId(new Integer(1906));
-            refund.setCurrencyId(new Integer(1));
-
-            refund.setPaymentId(retPayment.getId());
-            
-            cheque = new PaymentInfoChequeDTO();
-            cheque.setBank("our bank");
-            cheque.setDate(Calendar.getInstance().getTime());
-            cheque.setNumber("22999-2323-2323");
-            refund.setCheque(cheque);
-           
-            System.out.println("Applying refund");
-            ret = (Integer) call.invoke( new Object[] { 
-                        refund, null } );
-            System.out.println("Created refund " + ret);
-            assertNotNull("Didn't get the refund id", ret);
-            
-            /*
-             * get refund
-             */
-            //verify the created payment       
-            call.setOperationName("getPayment");
-            System.out.println("Getting created refund");
-            retPayment = (PaymentWS) call.invoke( new Object[] { ret } );
-            assertNotNull("didn't get payment ", retPayment);
-            assertEquals("created refund flag", retPayment.getIsRefund(),
-                    refund.getIsRefund());
-            assertEquals("created refund cheque ", retPayment.getCheque().getNumber(),
-                    refund.getCheque().getNumber());
-            assertEquals("created refund user ", retPayment.getUserId(), 
-                    refund.getUserId());
 
  
         } catch (Exception e) {

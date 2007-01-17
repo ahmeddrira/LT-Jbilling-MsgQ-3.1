@@ -448,22 +448,26 @@
       </junit>
   </target>
 
+  <target name="prepare-test">
+	  <!-- The test expect a particular set of data -->
+	  <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
+	  	 <fileset dir="${basedir}/sql" includes="localDB.*" />
+      </copy>
+  	  <echo>Ready. Start-up JBoss and run 'ant test-ws'</echo>
+  </target>
   <target name="test-ws">
       <javac debug="on" destdir="${build.test.dir}"
              srcdir="${source.test.dir}"
       		 includes="**/WSTest.java">
           <classpath refid="test.classpath"/>
       </javac>
-  	  <!-- The test expect a particular set of data -->
-  	  <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
-  	  	 <fileset dir="${basedir}/sql" includes="localDB.*" />
-      </copy>
       <junit printsummary="off"
              haltonfailure="true">
           <classpath refid="test.classpath"/>
           <formatter type="brief" usefile="false"/>
       	  <test name="com.sapienter.jbilling.server.order.WSTest"/>
     	  <test name="com.sapienter.jbilling.server.user.WSTest"/>
+	  	  <test name="com.sapienter.jbilling.server.payment.WSTest"/>
       </junit>
   </target>
   

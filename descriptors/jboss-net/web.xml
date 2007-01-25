@@ -92,9 +92,12 @@
 		<auth-constraint>
           <role-name>2</role-name>    
         </auth-constraint>
+        <!-- 
+          This is needed to secure web service over SSL
         <user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
+        -->
 	</security-constraint>
 	
 	<!-- we do BASIC authentication for now -->

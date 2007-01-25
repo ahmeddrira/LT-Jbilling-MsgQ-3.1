@@ -593,17 +593,20 @@
 		<zip filesonly="false" update="false"
             destfile="${image.target.dir}/${image.src.name}">
            <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties"/>
+                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp"/>
             <!-- the following three files are taken from the binary
                  view. My own are configured for my box -->
-           <zipfileset dir="${image.source.dir}/jbilling/server/default/conf" includes="log4j.xml" prefix="jbilling/src/descriptors/jboss"/>
-           <zipfileset dir="${image.source.dir}/jbilling/server/default/deploy/jbossweb-tomcat50.sar" includes="server.xml" prefix="jbilling/src/descriptors/jboss"/>
+           <zipfileset dir="${image.source.dir}/jbilling/server/default/conf" 
+                includes="log4j.xml" prefix="jbilling/src/descriptors/jboss"/>
+           <zipfileset dir="${image.source.dir}/jbilling/server/default/deploy/jbossweb-tomcat50.sar" 
+                includes="server.xml" prefix="jbilling/src/descriptors/jboss"/>
            <zipfileset dir="${basedir}" includes="build.xml" prefix="jbilling/src"/>
            <zipfileset dir="${basedir}" includes="build.properties.sample" 
                 fullpath="jbilling/src/build.properties"/>
            <zipfileset dir="${basedir}" includes="license.txt" prefix="jbilling/src"/>
            <zipfileset dir="${xdoclet.home.dir}" includes="*.jar" prefix="jbilling/src/libs/xdoclet"/>
            <zipfileset dir="${libs.client.dir}" includes="*.jar" prefix="jbilling/src/libs/client"/>
+           <zipfileset dir="${junit.dir}" includes="junit.jar" prefix="jbilling/src/libs/junit"/>
         </zip>
 	</target>
 	

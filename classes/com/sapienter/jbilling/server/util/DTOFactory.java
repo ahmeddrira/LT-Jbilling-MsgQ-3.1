@@ -20,6 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.util;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -352,14 +353,14 @@ public class DTOFactory {
         retValue.setNotesInInvoice(order.getNotesInInvoice());
         
         // add the lines
-        float orderTotal = 0; // the total will be calculated for display
+        BigDecimal orderTotal = new BigDecimal("0"); // the total will be calculated for display
         Integer entityId = order.getUser().getEntity().getId();
         for (Iterator lines = order.getOrderLines().iterator(); 
                 lines.hasNext();) {
             OrderLineEntityLocal line = (OrderLineEntityLocal) lines.next();
             if (line.getDeleted().equals(new Integer(0))) {
                 OrderLineDTOEx lineDto = getOrderLineDTOEx(line);
-                orderTotal += line.getAmount().floatValue();
+                orderTotal = orderTotal.add(new BigDecimal(line.getAmount().toString()));
                 if (line.getItemId() != null) {
                     // the language is not important
                     ItemBL itemBL = new ItemBL(line.getItemId());
@@ -433,7 +434,7 @@ public class DTOFactory {
         OrderStatusEntityLocal orderStatus = orderStatusHome.findByPrimaryKey(
                 order.getStatusId());
         retValue.setStatusStr(orderStatus.getDescription(languageId));
-        retValue.setTotal(new Float(orderTotal));
+        retValue.setTotal(new Float(orderTotal.floatValue()));
         retValue.setTimeUnitStr(Util.getPeriodUnitStr(
                 retValue.getDueDateUnitId(), languageId));
         

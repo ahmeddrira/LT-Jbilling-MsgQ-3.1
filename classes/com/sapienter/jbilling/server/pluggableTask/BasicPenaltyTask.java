@@ -24,6 +24,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -114,23 +115,26 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
             
             // to add the item, we have to find the total first
             // start by getting the invoice total
-            float penaltyBase = 0;
+            BigDecimal penaltyBase = null;
             // not delegated: pure
             if (invoice.getDelegatedInvoice() == null) {
-                penaltyBase = invoice.getBalance().floatValue();
+                penaltyBase = new BigDecimal(invoice.getBalance().toString());
             } else {
                 // has been delegated, the balance will be 0
                 InvoiceBL newInvoice = new InvoiceBL(
                         invoice.getDelegatedInvoice());
-                penaltyBase = invoice.getTotal().floatValue() - 
-                        newInvoice.getTotalPaid() - invoiceBL.getTotalPaid();
+                penaltyBase = new BigDecimal(invoice.getTotal().toString());
+                penaltyBase = penaltyBase.subtract(new BigDecimal(newInvoice.getTotalPaid()));
+                penaltyBase = penaltyBase.subtract(new BigDecimal(invoiceBL.getTotalPaid()));
             }
             Float fee;
             // if the item is a percentage ..
             if (item.getEntity().getPercentage() != null) {
-                fee = new Float((penaltyBase / 100) 
-                        * item.getEntity().getPercentage().floatValue());
-            } else if (penaltyBase > 0) {
+            	penaltyBase = penaltyBase.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            	penaltyBase = penaltyBase.multiply(new BigDecimal(
+                        item.getEntity().getPercentage().toString()));
+                fee = new Float(penaltyBase.floatValue());
+            } else if (penaltyBase.floatValue() > 0) {
                 fee = new Float(item.getPrice(userId, 
                         currencyId, entityId).floatValue());
             } else {

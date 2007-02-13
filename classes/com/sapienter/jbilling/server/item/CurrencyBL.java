@@ -25,6 +25,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.item;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +41,7 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CurrencyEntityLocal;
@@ -131,8 +133,9 @@ public class CurrencyBL {
         
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
-        retValue = new Float(amount.floatValue() / 
-                exchange.getRate().floatValue());
+        BigDecimal tmp = new BigDecimal(amount.toString());
+        tmp = tmp.divide(new BigDecimal(exchange.getRate().toString()), CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
+        retValue = new Float(tmp.floatValue());
         
         return retValue;
     }
@@ -150,9 +153,9 @@ public class CurrencyBL {
         
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
-        retValue = new Float(amount.floatValue() * 
-                exchange.getRate().floatValue());
-        
+        BigDecimal tmp = new BigDecimal(amount.toString());
+        tmp.multiply(new BigDecimal(exchange.getRate().toString()));
+        retValue = new Float(tmp.floatValue());
         
         return retValue;
     }

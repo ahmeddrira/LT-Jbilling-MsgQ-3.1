@@ -20,6 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.process;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -535,8 +536,9 @@ public class BillingProcessBL extends ResultList
                         float iBalance = (invoice.getBalance() 
                                 == null) ? 0 : invoice.getBalance().
                                     floatValue();
-                        holder.setCarriedBalance(new Float(holder.
-                                getCarriedBalance().floatValue() + iBalance));
+                        BigDecimal cBalance = new BigDecimal(holder.getCarriedBalance().toString());
+                        cBalance = cBalance.add(new BigDecimal(iBalance));
+                        holder.setCarriedBalance(new Float(cBalance.floatValue()));
 
                         // since this invoice is being delegated, reset its balance
                         if (!isReview) {
@@ -895,15 +897,19 @@ public class BillingProcessBL extends ResultList
                         getTotal(totalRow.getCurrencyId(), runDto.getTotals());
                 BillingProcessRunTotalDTOEx sum = 
                         getTotal(totalRow.getCurrencyId(), grandTotal.getTotals());
-                sum.setTotalInvoiced(new Float(totalDto.getTotalInvoiced().
-                        floatValue() + sum.getTotalInvoiced().floatValue()));
-                sum.setTotalPaid(new Float(totalDto.getTotalPaid().
-                        floatValue() + sum.getTotalPaid().floatValue()));
+                BigDecimal totalTmp = new BigDecimal(totalDto.getTotalInvoiced().toString());
+                totalTmp = totalTmp.add(new BigDecimal(sum.getTotalInvoiced().toString()));
+                sum.setTotalInvoiced(new Float(totalTmp.floatValue()));
+                
+                totalTmp = new BigDecimal(totalDto.getTotalPaid().toString());
+                totalTmp = totalTmp.add(new BigDecimal(sum.getTotalPaid().toString()));
+                sum.setTotalPaid(new Float(totalTmp.toString()));
                 // can't add up the not paid, because many runs will try to
                 // get the same invoices paid, so the not paid field gets
                 // duplicated ammounts.
-                sum.setTotalNotPaid(new Float(sum.getTotalInvoiced().
-                        floatValue() - sum.getTotalPaid().floatValue()));
+                totalTmp = new BigDecimal(sum.getTotalInvoiced().toString());
+                totalTmp = totalTmp.subtract(new BigDecimal(sum.getTotalPaid().toString()));
+                sum.setTotalNotPaid(new Float(totalTmp.floatValue()));
                 
                 // make sure this total has the currency name initialized
                 if (sum.getCurrencyName() == null) {
@@ -915,15 +921,16 @@ public class BillingProcessBL extends ResultList
                 for (Enumeration en = totalDto.getPmTotals().keys(); 
                         en.hasMoreElements();) {
                     String method = (String) en.nextElement();
-                    float methodTotal = ((Float) totalDto.getPmTotals().get(method)).
-                            floatValue();
+                    BigDecimal methodTotal = new BigDecimal(totalDto.getPmTotals().get(method).toString());
+                    
                     if (sum.getPmTotals().containsKey(method)) {
                         if (sum.getPmTotals().get(method) != null) {
-                            methodTotal += ((Float) sum.getPmTotals().
-                                    get(method)).floatValue();
+                        	methodTotal = methodTotal.add(new BigDecimal(((Float) sum.getPmTotals().
+                                     get(method)).toString()));
+                            
                         }
                     }
-                    sum.getPmTotals().put(method, new Float(methodTotal));
+                    sum.getPmTotals().put(method, new Float(methodTotal.floatValue()));
                 }
                 
                 log.debug("Added total to run dto. PMs in total:" + sum.getPmTotals().size() 

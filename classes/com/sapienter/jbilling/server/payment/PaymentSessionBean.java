@@ -397,22 +397,21 @@ public class PaymentSessionBean implements SessionBean {
                 CustomerEntityLocal customer = invoice.getUser().getCustomer();
                 if (customer != null && customer.getPartner() != null) {
                     PartnerEntityLocal partner = customer.getPartner();
-                    float pBalance = partner.getBalance().
-                            floatValue();
-                    float paymentAmount = payment.getAmount().floatValue();
+                    BigDecimal pBalance = new BigDecimal(partner.getBalance().toString());
+                    BigDecimal paymentAmount = new BigDecimal(payment.getAmount().toString());
                     if (payment.getIsRefund().intValue() == 0) {
-                        pBalance += paymentAmount;
+                    	pBalance = pBalance.add(paymentAmount);
+                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalPayments().toString()));
                         partner.setTotalPayments(new Float(
-                                partner.getTotalPayments().floatValue() + 
-                                    paymentAmount));
+                                paymentAmount.floatValue()));
                         
-                    } else { 
-                        pBalance -= paymentAmount;    
+                    } else {
+                    	pBalance = pBalance.subtract(paymentAmount);
+                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalRefunds().toString()));
                         partner.setTotalRefunds(new Float(
-                                partner.getTotalRefunds().floatValue() + 
-                                    paymentAmount));
+                                paymentAmount.floatValue()));
                     }
-                    partner.setBalance(new Float(pBalance));
+                    partner.setBalance(new Float(pBalance.floatValue()));
                 } 
             }
         }

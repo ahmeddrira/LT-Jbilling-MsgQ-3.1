@@ -90,10 +90,10 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                     line.getItem().getPercentage() != null &&
                     !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
                 BigDecimal amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), 
-                        BigDecimal.ROUND_HALF_EVEN);
+                        Constants.BIGDECIMAL_ROUND);
                 amount = amount.multiply(new BigDecimal(
                         line.getPrice().toString()));
-                amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
                 line.setAmount(new Float(amount.floatValue()));
                 nonTaxPerTotal = nonTaxPerTotal.add(amount);
                 log.debug("adding no tax percentage line. Total =" + nonTaxPerTotal);
@@ -115,7 +115,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                         BigDecimal.ROUND_HALF_EVEN);
                 amount = amount.multiply(new BigDecimal(
                         line.getPrice().toString()));
-                amount = amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
                 line.setAmount(new Float(amount.floatValue()));
                 taxPerTotal = taxPerTotal.add(amount);
                 log.debug("adding tax percentage line. Total =" + taxPerTotal);
@@ -124,7 +124,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
 
         orderTotal = taxNonPerTotal.add(taxPerTotal).add(nonTaxPerTotal)
                 .add(nonTaxNonPerTotal);
-        orderTotal = orderTotal.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        orderTotal = orderTotal.setScale(2, Constants.BIGDECIMAL_ROUND);
         order.setOrderTotal(new Float(orderTotal.floatValue()));
     }
 

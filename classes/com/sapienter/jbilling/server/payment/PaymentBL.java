@@ -20,6 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.payment;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -691,14 +692,15 @@ public class PaymentBL extends ResultList
             // find the map
             PaymentInvoiceMapEntityLocal map = mapHome.findByPrimaryKey(mapId);
             // start returning the money to the payment's balance
-            float amount = map.getAmount().floatValue();
+            BigDecimal amount = new BigDecimal(map.getAmount().toString());
             payment = map.getPayment();
-            payment.setBalance(new Float(payment.getBalance().floatValue() +
-                    amount));
+            amount = amount.add(new BigDecimal(payment.getBalance().toString()));
+            payment.setBalance(new Float(amount.floatValue()));
             // the balace of the invoice also increases
+            amount = new BigDecimal(map.getAmount().toString());
             InvoiceEntityLocal invoice = map.getInvoice();
-            invoice.setBalance(new Float(invoice.getBalance().floatValue() +
-                    amount));
+            amount = amount.add(new BigDecimal(invoice.getBalance().toString()));
+            invoice.setBalance(new Float(amount.floatValue()));
             // this invoice probably has to be paid now
             if (invoice.getBalance().floatValue() >= 0.01) {
                 invoice.setToProcess(new Integer(1));

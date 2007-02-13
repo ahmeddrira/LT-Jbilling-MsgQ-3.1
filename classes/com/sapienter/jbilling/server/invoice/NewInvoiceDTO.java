@@ -25,6 +25,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.invoice;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
@@ -177,13 +178,13 @@ public class NewInvoiceDTO extends InvoiceDTO {
     
     public void calculateTotal() {
         Iterator lines = resultLines.iterator();
-        float total = 0F;
+        BigDecimal total = new BigDecimal(0);
         while (lines.hasNext()) {
             InvoiceLineDTOEx line = (InvoiceLineDTOEx) lines.next();
-            total += line.getAmount().floatValue();
+            total = total.add(new BigDecimal(line.getAmount().toString()));
         }
         
-        setTotal(new Float(total));
+        setTotal(new Float(total.floatValue()));
     }
 
     /**

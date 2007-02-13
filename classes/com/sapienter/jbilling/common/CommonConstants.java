@@ -20,6 +20,8 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.common;
 
+import java.math.BigDecimal;
+
 /**
  * @author Emil
  */
@@ -139,4 +141,7 @@ public interface CommonConstants {
     public static final Integer OPERATION_TYPE_DATE = new Integer(4);
     public static final Integer OPERATION_TYPE_NUMBER = new Integer(5);
     
+    // BigDecimal caculation constants
+    public static final int BIGDECIMAL_SCALE = 10;
+    public static final int BIGDECIMAL_ROUND = BigDecimal.ROUND_HALF_UP;
 }

@@ -21,6 +21,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.invoice;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -397,8 +398,9 @@ public class InvoiceBL extends ResultList
         invoice.setTotal(calculateTotal()); // new total
         // adjust the balance
         addition.calculateTotal();
-        invoice.setBalance(new Float(invoice.getBalance().floatValue() +
-                addition.getTotal().floatValue()));
+        BigDecimal balance = new BigDecimal(invoice.getBalance().toString());
+        balance = balance.add(new BigDecimal(addition.getTotal().toString()));
+        invoice.setBalance(new Float(balance.floatValue()));
         if (invoice.getBalance().floatValue() <= 0.001F) {
             invoice.setToProcess(new Integer(0));
         }
@@ -428,12 +430,12 @@ public class InvoiceBL extends ResultList
     }
     
     public float getTotalPaid() {
-        float retValue = 0;
+        BigDecimal retValue = new BigDecimal(0);
         for (Iterator it = invoice.getPaymentMap().iterator(); it.hasNext();) {
             PaymentInvoiceMapEntityLocal paymentMap = (PaymentInvoiceMapEntityLocal) it.next();
-            retValue += paymentMap.getAmount().floatValue();
+            retValue = retValue.add(new BigDecimal( paymentMap.getAmount().toString()));
         }
-        return retValue;
+        return retValue.floatValue();
     }
 
     public CachedRowSet getList(Integer orderId) 
@@ -966,8 +968,9 @@ public class InvoiceBL extends ResultList
                 // there had been at least one sub-account processed
                 if (line.getTypeId().equals(
                         Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT)) {
-                    total = new Float(total.floatValue() + 
-                            line.getAmount().floatValue());
+                	BigDecimal decTotal = new BigDecimal(total.toString());
+                	decTotal = decTotal.add(new BigDecimal(line.getAmount().toString()));
+                    total = new Float( decTotal.floatValue() );
                 } else {
                     // this is the last total to display, from now on the
                     // lines are not of subaccounts

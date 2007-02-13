@@ -25,6 +25,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.user;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.entity.PartnerPayoutDTO;
@@ -115,9 +116,8 @@ public class PartnerPayoutDTOEx extends PartnerPayoutDTO {
     }
     
     public Float getTotal() {
-        float balance = (getBalanceLeft() == null) ? 0 : 
-                getBalanceLeft().floatValue();
-        return new Float(balance + 
-                getPayment().getAmount().floatValue());
+        BigDecimal balance = (getBalanceLeft() == null) ? new BigDecimal("0") : 
+                new BigDecimal(getBalanceLeft().toString());
+        return new Float(balance.add(new BigDecimal(getPayment().getAmount().toString())).floatValue());
     }
 }

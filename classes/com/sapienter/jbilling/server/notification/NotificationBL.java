@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -853,7 +854,7 @@ public class NotificationBL extends ResultList
             // an independent parameter, and add the taxes rates as more
             // parameters
             Vector lines = invoice.getInvoiceLines();
-            float taxTotal = 0F;
+            BigDecimal taxTotal = new BigDecimal(0);
             int taxItemIndex = 0;
             for (int f = 0; f < lines.size(); f++) {
                 InvoiceLineDTOEx line = (InvoiceLineDTOEx) lines.get(f);
@@ -862,7 +863,7 @@ public class NotificationBL extends ResultList
                 if (line.getTypeId() != null && // for headers/footers 
                         line.getTypeId().equals(Constants.INVOICE_LINE_TYPE_TAX)) {
                     // update the total tax variable
-                    taxTotal += line.getAmount().floatValue();
+                	taxTotal = taxTotal.add(new BigDecimal(line.getAmount().toString()));
                     // add the tax amount as an array parameter
                     parameters.put("taxItem_" + taxItemIndex, 
                             Util.float2string(line.getPrice(), locale));
@@ -878,12 +879,12 @@ public class NotificationBL extends ResultList
             // remove the last line, that is the total footer
             lines.remove(lines.size() - 1);
             // now add the tax
-            parameters.put("tax", Util.formatMoney(new Float(taxTotal), 
+            parameters.put("tax", Util.formatMoney(new Float(taxTotal.floatValue()), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));
             parameters.put("totalWithTax", Util.formatMoney(invoice.getTotal(), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));
             parameters.put("totalWithoutTax", Util.formatMoney(
-                    new Float(invoice.getTotal().floatValue() - taxTotal), 
+                    new Float(invoice.getTotal().floatValue() - taxTotal.floatValue()), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));
             parameters.put("balance", Util.formatMoney(invoice.getBalance(), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));

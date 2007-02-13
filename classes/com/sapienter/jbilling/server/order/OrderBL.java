@@ -26,6 +26,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.order;
 
 import java.sql.SQLException;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -216,15 +217,20 @@ public class OrderBL extends ResultList
         OrderLineDTOEx line =
             (OrderLineDTOEx) newOrder.orderLines.get(item.getId());
 
-        float additionAmount = (item.getPercentage() == null) ?
-                item.getPrice().floatValue() * quantity.intValue() :
-                item.getPercentage().floatValue();
+        BigDecimal additionAmount;
+        if (item.getPercentage() == null) {
+            additionAmount = new BigDecimal(item.getPrice().toString());
+            additionAmount = additionAmount.multiply(
+                    new BigDecimal(quantity.toString()));
+        } else {
+            additionAmount = new BigDecimal(item.getPercentage().toString());
+        }
 
         if (line == null) { // not yet there
             Boolean editable = lookUpEditable(item.getOrderLineTypeId());
 
             line = new OrderLineDTOEx(null, item.getId(), item.getDescription(), 
-                    new Float(additionAmount), quantity,
+                    new Float(additionAmount.floatValue()), quantity,
                     (item.getPercentage() == null) ? item.getPrice() :
                         item.getPercentage(), 
                     new Integer(0), null, new Integer(0), 
@@ -238,8 +244,10 @@ public class OrderBL extends ResultList
                 new Integer(
                     line.getQuantity().intValue() + quantity.intValue()));
             // and also the total amount for this order line
+            BigDecimal dec = new BigDecimal(line.getAmount().toString());
+            dec = dec.add(additionAmount);
             line.setAmount(
-                new Float(line.getAmount().floatValue() + additionAmount));
+                new Float(dec.floatValue()));
 
         }
 

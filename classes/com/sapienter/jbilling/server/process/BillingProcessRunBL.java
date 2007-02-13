@@ -20,6 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.process;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
@@ -158,14 +159,18 @@ public class BillingProcessRunBL {
             throws CreateException, NamingException, FinderException {
         // update the payments total
         BillingProcessRunTotalEntityLocal totalRow = findOrCreateTotal(currencyId);
+        
+        BigDecimal tmpValue = null;
         if (ok) {
-            totalRow.setTotalPaid(new Float(totalRow.getTotalPaid().floatValue() +
-                    total.floatValue()));
+        	tmpValue = new BigDecimal(totalRow.getTotalPaid().toString());
+        	tmpValue = tmpValue.add(new BigDecimal(total.toString()));
+            totalRow.setTotalPaid(new Float(tmpValue.toString()));
             // the payment is good, update the method total as well
             BillingProcessRunTotalPMEntityLocal pm = findOrCreateTotalPM(
                     methodId, totalRow);
-            pm.setTotal(new Float(pm.getTotal().floatValue() + 
-                    total.floatValue()));
+            tmpValue = new BigDecimal(pm.getTotal().toString());
+            tmpValue = tmpValue.add(new BigDecimal(total.toString()));
+            pm.setTotal(new Float(tmpValue.toString()));
             PaymentMethodEntityLocalHome paymentMethodHome = 
                 (PaymentMethodEntityLocalHome) 
                 EJBFactory.lookUpLocalHome(
@@ -175,8 +180,9 @@ public class BillingProcessRunBL {
             pm.setPaymentMethod(paymentMethodHome.findByPrimaryKey(methodId));
             
         } else {
-            totalRow.setTotalNotPaid(new Float(totalRow.getTotalNotPaid().floatValue() +
-                    total.floatValue()));
+        	tmpValue = new BigDecimal(totalRow.getTotalNotPaid().toString());
+        	tmpValue = tmpValue.add(new BigDecimal(total.toString()));
+            totalRow.setTotalNotPaid(new Float(tmpValue.toString()));
         }
        
     }
@@ -197,8 +203,9 @@ public class BillingProcessRunBL {
         
         // add the total to the total invoiced
         BillingProcessRunTotalEntityLocal totalRow = findOrCreateTotal(currencyId);
-        totalRow.setTotalInvoiced(new Float(totalRow.getTotalInvoiced().floatValue() +
-                invoiceTotal.floatValue()));
+        BigDecimal tmpValue = new BigDecimal(totalRow.getTotalInvoiced().toString());
+        tmpValue = tmpValue.add(new BigDecimal(invoiceTotal.toString()));
+        totalRow.setTotalInvoiced(new Float( tmpValue.toString() ));
     }
     
     private BillingProcessRunTotalEntityLocal findOrCreateTotal(Integer currencyId) 

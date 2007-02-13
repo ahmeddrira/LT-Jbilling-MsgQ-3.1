@@ -20,6 +20,8 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
@@ -45,12 +47,13 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
      * @see com.sapienter.jbilling.server.order.OrderProcessingTask#doProcessing(com.sapienter.betty.server.order.NewOrderDTO)
      */
     public void doProcessing(NewOrderDTO order) throws TaskException {
-        float orderTotal = order.getOrderTotal().floatValue();
-        float taxRate = ((Float) parameters.get(PARAMETER_RATE))
-                .floatValue();
-        float gstTax = (orderTotal / 100F) * taxRate;
+        BigDecimal orderTotal = new BigDecimal(order.getOrderTotal().toString());
+        BigDecimal taxRate = new BigDecimal(parameters.get(PARAMETER_RATE).toString());
+        
+        BigDecimal gstTax = orderTotal.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(taxRate);
+        
         OrderLineDTOEx taxLine = new OrderLineDTOEx();
-        taxLine.setAmount(new Float(gstTax));
+        taxLine.setAmount(new Float(gstTax.floatValue()));
         taxLine.setDeleted(new Integer(0));
         taxLine.setDescription((String) parameters.get(PARAMETER_DESCRIPTION));
         taxLine.setTypeId(Constants.ORDER_LINE_TYPE_TAX);
@@ -63,7 +66,7 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
         }
         order.setOrderLine(new Integer(0), taxLine);
 
-        order.setOrderTotal(new Float(orderTotal + gstTax));
+        order.setOrderTotal(new Float(orderTotal.add(gstTax).floatValue()));
     }
 
 }

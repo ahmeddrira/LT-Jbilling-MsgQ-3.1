@@ -25,6 +25,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.user;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,6 +45,7 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
@@ -367,9 +369,9 @@ public class PartnerBL extends ResultList
     public PartnerPayoutDTOEx calculatePayout(Date start, Date end, Integer currencyId) 
             throws NamingException, SQLException, FinderException,
                 SessionInternalError {
-        float total = 0;
-        float paymentTotal = 0;
-        float refundTotal = 0;
+    	BigDecimal total = new BigDecimal("0");
+        BigDecimal paymentTotal = new BigDecimal("0");
+        BigDecimal refundTotal = new BigDecimal("0");
         
         log.debug("Calculating payout partner " + partner.getId() + " from " + 
                 start + " to " + end);
@@ -388,21 +390,20 @@ public class PartnerBL extends ResultList
             // the amount will have to be in the requested currency
             // convert then the payment amout
             CurrencyBL currency = new CurrencyBL();
-            float paymentAmount = currency.convert(paymentCurrencyId, 
-                    currencyId, payment.getEntity().getAmount(), entityId)
-                    .floatValue();
+            BigDecimal paymentAmount = new BigDecimal(currency.convert(paymentCurrencyId, 
+                    currencyId, payment.getEntity().getAmount(), entityId).toString());
             log.debug("payment amount = " + paymentAmount);
-            float amount = calculateCommission(paymentAmount, currencyId, 
-                    payment.getEntity().getUser(), payout != null); 
+            BigDecimal amount = new BigDecimal(calculateCommission(paymentAmount.floatValue(), currencyId, 
+                    payment.getEntity().getUser(), payout != null)); 
             log.debug("commission = " + amount);
             
             // payments add, refunds take
             if (payment.getEntity().getIsRefund().intValue() == 0) {
-                total += amount;
-                paymentTotal += amount;
+                total = total.add(amount);
+                paymentTotal = paymentTotal.add(amount);
             } else {
-                total -= amount;
-                refundTotal += amount;
+            	total = total.subtract(amount);
+                refundTotal = refundTotal.add(amount);
             }
             if (payout != null) {
                 // update the payment record with the new payout
@@ -415,16 +416,16 @@ public class PartnerBL extends ResultList
         
         if (payout != null) {
             // update the payout row
-            payout.setPaymentsAmount(new Float(paymentTotal));
-            payout.setRefundsAmount(new Float(refundTotal));
+            payout.setPaymentsAmount(new Float(paymentTotal.floatValue()));
+            payout.setRefundsAmount(new Float(refundTotal.floatValue()));
         }
         
         log.debug("total " + total + " currency = " + currencyId);
         PartnerPayoutDTOEx retValue = new PartnerPayoutDTOEx();
-        retValue.getPayment().setAmount(new Float(total));
+        retValue.getPayment().setAmount(new Float(total.floatValue()));
         retValue.getPayment().setCurrencyId(currencyId);
-        retValue.setRefundsAmount(new Float(refundTotal));
-        retValue.setPaymentsAmount(new Float(paymentTotal));
+        retValue.setRefundsAmount(new Float(refundTotal.floatValue()));
+        retValue.setPaymentsAmount(new Float(paymentTotal.floatValue()));
         retValue.setStartingDate(start);
         retValue.setEndingDate(end);
         
@@ -463,14 +464,14 @@ public class PartnerBL extends ResultList
     public void applyPayout(PartnerPayoutDTOEx dto) 
             throws SessionInternalError {
         // the balance goes down with a payout
-        float newBalance = partner.getBalance().floatValue() - 
-                dto.getPayment().getAmount().floatValue();
-        partner.setBalance(new Float(newBalance));
+    	BigDecimal newBalance = new BigDecimal(partner.getBalance().toString());
+    	newBalance = newBalance.subtract(new BigDecimal(dto.getPayment().getAmount().toString())); 
+        partner.setBalance(new Float(newBalance.floatValue()));
         
         // add this payout to her total
-        float newTotal = partner.getTotalPayouts().floatValue() +
-                dto.getPayment().getAmount().floatValue();
-        partner.setTotalPayouts(new Float(newTotal));
+        BigDecimal newTotal = new BigDecimal(partner.getTotalPayouts().toString());
+        newTotal = newTotal.add(new BigDecimal(dto.getPayment().getAmount().toString()));
+        partner.setTotalPayouts(new Float(newTotal.floatValue()));
         
         // the next payout
         GregorianCalendar cal = new GregorianCalendar();
@@ -518,6 +519,7 @@ public class PartnerBL extends ResultList
                 SQLException {
         log.debug("Calculating commision on " + amount); 
         float result;
+        BigDecimal decAmount = new BigDecimal(amount);
         if (partner.getOneTime().intValue() == 1) {
             // this partner gets paid once per customer she brings
             Integer flag = user.getCustomer().getReferralFeePaid();
@@ -533,21 +535,23 @@ public class PartnerBL extends ResultList
         } 
         
         // find the rate
-        Float rate = null;
-        Float fee = null;
+        BigDecimal rate = null;
+        BigDecimal fee = null;
         if (partner.getRanges().size() > 0) {
             getRangedCommission();
-            rate = partnerRange.getPercentageRate();
-            fee = partnerRange.getReferralFee();
+            rate = new BigDecimal(partnerRange.getPercentageRate().toString());
+            fee = new BigDecimal(partnerRange.getReferralFee().toString());
         } else {
-            rate = partner.getPercentageRate();
-            fee = partner.getReferralFee();
+            rate = new BigDecimal(partner.getPercentageRate().toString());
+            fee = new BigDecimal(partner.getReferralFee().toString());
         }
 
         log.debug("using rate " + rate + " fee " + fee);
         // apply the rate to get the commission value
         if (rate != null) {
-            result = (amount / 100) * rate.floatValue();
+            result = decAmount.divide(new BigDecimal("100"), 
+            		CommonConstants.BIGDECIMAL_SCALE, 
+            		CommonConstants.BIGDECIMAL_ROUND).multiply(rate).floatValue();
         } else if (fee != null) {
             CurrencyBL currency = new CurrencyBL();
             Integer partnerCurrencyId = partner.getFeeCurrencyId();
@@ -556,7 +560,7 @@ public class PartnerBL extends ResultList
                 partnerCurrencyId = partner.getUser().getEntity().getCurrencyId();
             }
             result = currency.convert(partnerCurrencyId, 
-                    currencyId, fee, 
+                    currencyId, new Float(fee.floatValue()), 
                     partner.getUser().getEntity().getId()).floatValue();
         } else {
             throw new SessionInternalError(

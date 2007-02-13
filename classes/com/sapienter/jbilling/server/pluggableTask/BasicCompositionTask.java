@@ -25,6 +25,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -140,9 +141,9 @@ public class BasicCompositionTask extends PluggableTask
                             // we have this tax already: add up the total
                             invoiceLine = (InvoiceLineDTOEx) invoiceDTO.
                                     getResultLines().get(taxLine);
-                            invoiceLine.setAmount(new Float(invoiceLine.
-                                    getAmount().floatValue() +
-                                    orderLine.getAmount().floatValue()));
+                            BigDecimal tmpDec = new BigDecimal(invoiceLine.getAmount().toString());
+                            tmpDec = tmpDec.add(new BigDecimal(orderLine.getAmount().toString()));
+                            invoiceLine.setAmount(new Float(tmpDec.floatValue()));
                             continue;
                         } 
                         // it is not there yet: add

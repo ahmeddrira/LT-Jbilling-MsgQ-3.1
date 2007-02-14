@@ -47,8 +47,10 @@
 	<form-property name="rangeEnd" type="java.lang.String" />
 	<form-property name="process" type="java.lang.String" />
 <form-property name="date_from_year" type="java.lang.String" /><form-property name="date_from_month" type="java.lang.String" /><form-property name="date_from_day" type="java.lang.String" /><form-property name="date_to_year" type="java.lang.String" /><form-property name="date_to_month" type="java.lang.String" /><form-property name="date_to_day" type="java.lang.String" /><form-property name="number_from" type="java.lang.String" /><form-property name="number_to" type="java.lang.String" /></form-bean>
-
-  <form-bean name="UserLoginForm" type="com.sapienter.jbilling.client.user.UserLoginForm" />
+<form-bean name="logoUpload" type="org.apache.struts.action.DynaActionForm">
+<form-property name="logoFile" type="org.apache.struts.upload.FormFile"/>
+</form-bean>
+<form-bean name="UserLoginForm" type="com.sapienter.jbilling.client.user.UserLoginForm" />
 <form-bean name="OrderAddItemForm" type="com.sapienter.jbilling.client.order.OrderAddItemForm" />
 <form-bean name="orderDTOForm" type="com.sapienter.jbilling.client.order.NewOrderDTOForm" />
 <form-bean name="payment" type="com.sapienter.jbilling.client.util.DynaForm">
@@ -605,6 +607,10 @@
 	<forward name="done" path="/invoice/fileDownload.jsp" />
 </action>
 
+<action path="/invoice/logoUpload" type="com.sapienter.jbilling.client.invoice.LogoUploadAction" name="logoUpload" scope="request" input="/invoice/logo.jsp" validate="true">
+	<forward name="done" path="/invoice/logo.jsp" redirect="false"/>
+</action>
+
 <action path="/task" type="com.sapienter.jbilling.client.system.TaskAction" name="task" validate="false" scope="session">
         <forward name="edit" path="/system/task.jsp" redirect="false" />
         <forward name="deleted" path="/task.do?action=setup" redirect="false" />
@@ -614,6 +620,7 @@
 
 </action-mappings>
 
+  <controller maxFileSize="250K" />
 
   <message-resources parameter="ApplicationResources.properties" />
   <!-- 

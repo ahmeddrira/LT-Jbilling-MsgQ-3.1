@@ -1030,6 +1030,7 @@ Contributor(s): ______________________________________
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Penalty"/>
     <InternationalDescription TableId="52" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Lost password"/>
     <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="1" Content="Plug-ins"/>
+    <InternationalDescription TableId="63" ForeignId="94" PsudoColumn="display" LanguageId="1" Content="Logo"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="2" Content="Eliminação manual de facturas"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Manutenção de facturas"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="2" Content="Manutenção de tarefas de plug-ins"/>
@@ -2337,6 +2338,7 @@ Contributor(s): ______________________________________
     <MenuOption Id="91" Link="/orderPeriod.do?action=setup" LevelField="2" ParentId="1"/>
     <MenuOption Id="92" Link="/invoice/batchDownload.jsp" LevelField="2" ParentId="35"/>
     <MenuOption Id="93" Link="/task.do?action=setup" LevelField="2" ParentId="4"/>
+    <MenuOption Id="94" Link="/invoice/logo.jsp" LevelField="2" ParentId="35"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>
     <NotificationMessageType Id="3" Sections="2"/>
@@ -2519,6 +2521,7 @@ Contributor(s): ______________________________________
     <Permission Id="135" TypeId="1" ForeignId="92"/>
     <Permission Id="136" TypeId="1" ForeignId="93"/>
     <Permission Id="137" TypeId="9"/>
+    <Permission Id="138" TypeId="1" ForeignId="94"/>
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2855,6 +2858,7 @@ Contributor(s): ______________________________________
     <PermissionRoleMap PermissionId="135" RoleId="2"/>
     <PermissionRoleMap PermissionId="136" RoleId="2"/>
     <PermissionRoleMap PermissionId="137" RoleId="2"/>
+    <PermissionRoleMap PermissionId="138" RoleId="2"/>
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>

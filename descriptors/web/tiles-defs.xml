@@ -245,7 +245,9 @@
     	<put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
     </definition>
 
-    
+
+    <definition name="invoice.logo" extends="main"><put name="featureTitle" value="bar.invoice.logo" /><put name="body" value="/invoice/logoUpload.jsp" />
+    </definition>
     <definition name="process.list" extends="main"><put name="featureTitle" value="bar.process.list" /><put name="body" value="process.list.body" />
     </definition>
     <definition name="process.list.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/process/listTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />

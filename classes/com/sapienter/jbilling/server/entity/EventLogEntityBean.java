@@ -53,7 +53,7 @@ import com.sapienter.jbilling.server.util.Constants;
  *          primkey-field="id"
  *          schema="event_log"
  * 
- * @ejb.transaction type="RequiresNew"
+ * @ejb.transaction type="Supports"
  *
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"

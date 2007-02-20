@@ -29,7 +29,10 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.EventLogEntityLocal;
 import com.sapienter.jbilling.interfaces.EventLogEntityLocalHome;
+import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.server.user.UserBL;
 
 public class EventLogger {
     
@@ -145,13 +148,16 @@ public class EventLogger {
             Integer module, Integer message, Integer oldInt, String oldStr,
             Date oldDate) {
         try {
-            // have to replace the db logging by file logging due to 
-            // transaction deadlocks and db performance
+            /*
+             * Logging was switched from the db to file because of
+             * transaction locks and performance.
+             * Still, transactions where rearranged and inserts should not
+             * have a performance issue.
             log.info("Audit row->" + "userExecutingId:" + userExecutingId + 
                     " table:" + table + " rowId:" + rowId + " module: " + module + 
                     " message:" + message + " oldInt:" + oldInt + " oldStr:" + 
                     oldStr + " oldDate:" + oldDate);
-            /*
+            */
             UserEntityLocal user = UserBL.getUserEntity(userExecutingId);
                     
             EventLogEntityLocal event = eventLogHome.create(user.getEntity().getId(),
@@ -160,7 +166,6 @@ public class EventLogger {
             event.setOldDate(oldDate);
             event.setOldNum(oldInt);
             event.setOldStr(oldStr);
-            */
         } catch (Exception e) {
             log.error("Can't create an eventLog audit record.", e);
         }
@@ -175,19 +180,21 @@ public class EventLogger {
             Integer module, Integer message, Integer oldInt, String oldStr,
             Date oldDate) {
         try {
-            // have to replace the db logging by file logging due to 
-            // transaction deadlocks and db performance
+            /*
+             * Logging was switched from the db to file because of
+             * transaction locks and performance.
+             * Still, transactions where rearranged and inserts should not
+             * have a performance issue.
             log.info("Audit row->" + "entityId:" + entityId + 
                     " table:" + table + " rowId:" + rowId + " module: " + module + 
                     " message:" + message + " oldInt:" + oldInt + " oldStr:" + 
                     oldStr + " oldDate:" + oldDate);
-            /*
+             */
             EventLogEntityLocal event = eventLogHome.create(entityId,
                     rowId, LEVEL_INFO, module, message, table);
             event.setOldDate(oldDate);
             event.setOldNum(oldInt);
             event.setOldStr(oldStr);
-            */
         } catch (Exception e) {
             log.error("Can't create an eventLog audit record.", e);
         }

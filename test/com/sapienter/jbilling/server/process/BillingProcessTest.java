@@ -41,6 +41,8 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
+import com.sapienter.jbilling.interfaces.PaymentSession;
+import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
@@ -51,6 +53,9 @@ import com.sapienter.jbilling.server.entity.OrderProcessDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessRunDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessRunTotalDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -75,10 +80,12 @@ public class BillingProcessTest extends TestCase {
     InvoiceSession remoteInvoice = null;
     BillingProcessSession remoteBillingProcess = null;
     UserSession remoteUser = null;
+    PaymentSession remotePayment = null;
     GregorianCalendar cal;
     Date processDate = null;
     Integer entityId = null;
     Integer languageId = null;
+    Date runDate = null;
 
     public BillingProcessTest(String arg0) {
         super(arg0);
@@ -109,11 +116,19 @@ public class BillingProcessTest extends TestCase {
                     UserSessionHome.JNDI_NAME);
         remoteUser = userHome.create();
 
+        PaymentSessionHome paymentHome = (PaymentSessionHome) JNDILookup.getFactory(
+                true).lookUpHome(PaymentSessionHome.class, 
+                    PaymentSessionHome.JNDI_NAME);
+        remotePayment= paymentHome.create();
+
         entityId = new Integer(1);
         languageId = new Integer(1);
         cal = new GregorianCalendar();
+        cal.set(2006, GregorianCalendar.OCTOBER, 26); 
+        runDate = cal.getTime();
+
     }
-    /*    
+    
     public void testRun() {
         try {
             // get the latest process
@@ -124,16 +139,26 @@ public class BillingProcessTest extends TestCase {
             // set the configuration to something we are sure about
             BillingProcessConfigurationDTO configDto = remoteBillingProcess.
                     getConfigurationDto(entityId);
-            cal.set(2003, GregorianCalendar.APRIL, 1); 
-            configDto.setNextRunDate(cal.getTime());
+            configDto.setNextRunDate(runDate);
             configDto.setRetries(new Integer(1));
             configDto.setDaysForRetry(new Integer(5));
             configDto.setGenerateReport(new Integer(0));
+            configDto.setAutoPayment(new Integer(0));
+            configDto.setAutoPaymentApplication(new Integer(1));
+            configDto.setDfFm(new Integer(0));
+            configDto.setDueDateUnitId(Constants.PERIOD_UNIT_MONTH);
+            configDto.setDueDateValue(new Integer(1));
+            configDto.setInvoiceDateProcess(new Integer(1));
+            configDto.setMaximumPeriods(new Integer(10));
+            configDto.setOnlyRecurring(new Integer(1));
+            configDto.setPeriodUnitId(Constants.PERIOD_UNIT_MONTH);
+            configDto.setPeriodValue(new Integer(1));
+            
             remoteBillingProcess.createUpdateConfiguration(new Integer(1),
                  configDto);
             
-            // run trigger for March 1st     
-            cal.set(2003, GregorianCalendar.MARCH, 1); 
+            // run trigger but too early     
+            cal.set(2005, GregorianCalendar.JANUARY, 26); 
             remoteBillingProcess.trigger(cal.getTime());
 
             // get latest run (b)            
@@ -165,7 +190,7 @@ public class BillingProcessTest extends TestCase {
                     entityId, languageId);
             
             // not review should be there
-            assertNull("3 - Review shouldn't be there", reviewDto);
+            assertNull("3 - The test DB should not have any review", reviewDto);
             
             // set the configuration to something we are sure about
             BillingProcessConfigurationDTO configDto = remoteBillingProcess.
@@ -176,9 +201,8 @@ public class BillingProcessTest extends TestCase {
             remoteBillingProcess.createUpdateConfiguration(new Integer(1),
                  configDto);
 
-            // run trigger for Apr 1st     
-            cal.set(2003, GregorianCalendar.APRIL, 1); 
-            remoteBillingProcess.trigger(cal.getTime());
+            // run trigger, this time it should run and generate a report     
+            remoteBillingProcess.trigger(runDate);
             
            // get the latest process
             BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(
@@ -205,8 +229,8 @@ public class BillingProcessTest extends TestCase {
             remoteBillingProcess.setReviewApproval(new Integer(1), entityId,
                     new Boolean(false));
                     
-            // run trigger for March 26st     
-            cal.set(2003, GregorianCalendar.MARCH, 26); 
+            // run trigger, but too early (six days, instead of 5)    
+            cal.set(2006, GregorianCalendar.OCTOBER, 21); 
             remoteBillingProcess.trigger(cal.getTime());
             
             // get the latest process
@@ -231,8 +255,8 @@ public class BillingProcessTest extends TestCase {
             assertEquals("9 - Review still disapproved", configDto.getReviewStatus(),
                     Constants.REVIEW_STATUS_DISAPPROVED);
 
-            // run trigger for March 27st     
-            cal.set(2003, GregorianCalendar.MARCH, 27); 
+            // run trigger this time has to generate a review report
+            cal.set(2006, GregorianCalendar.OCTOBER, 22); 
             remoteBillingProcess.trigger(cal.getTime());
 
             // get the latest process
@@ -257,8 +281,8 @@ public class BillingProcessTest extends TestCase {
             assertEquals("12 - Review generated", configDto.getReviewStatus(),
                     Constants.REVIEW_STATUS_GENERATED);
             
-            // run trigger for March 28     
-            cal.set(2003, GregorianCalendar.MARCH, 28); 
+            // run trigger, date is good, but the review is not approved
+            cal.set(2006, GregorianCalendar.OCTOBER, 22); 
             remoteBillingProcess.trigger(cal.getTime());
             
             // get the review
@@ -268,8 +292,8 @@ public class BillingProcessTest extends TestCase {
             assertEquals("13 - No new review run", reviewDto.getId(), 
                     reviewDto2.getId());
 
-            // run trigger for Apr 1     
-            cal.set(2003, GregorianCalendar.APRIL, 1); 
+            // run trigger report still not approved, no process then
+            cal.set(2006, GregorianCalendar.OCTOBER, 22); 
             remoteBillingProcess.trigger(cal.getTime());
                     
             // get the latest process
@@ -278,7 +302,7 @@ public class BillingProcessTest extends TestCase {
                     languageId);
                     
             // no new process should have run
-            assertEquals("14 - No new process, review not yet revied", lastDto.getId(),  
+            assertEquals("14 - No new process, review not yet approved", lastDto.getId(),  
                     lastDtoB.getId());
 
             // disapprove the review so it should run again 
@@ -286,27 +310,11 @@ public class BillingProcessTest extends TestCase {
                     new Boolean(false));
 
             //
-            //  Test the 'days for review'
-            // 
-            // Too early 
-            // run trigger for March 15     
-            cal.set(2003, GregorianCalendar.MARCH, 15); 
-            remoteBillingProcess.trigger(cal.getTime());
-            // get the review
-            reviewDto2 = remoteBillingProcess.getReviewDto(
-                    entityId, languageId);
-            // it's too early, no new review should have run
-            assertTrue("14.1 - No new review run", reviewDto.getId().intValue() == 
-                    reviewDto2.getId().intValue());
-             
-
-            //
             //  Run the review and approve it to allow the process to run
             //              
-            // run trigger for Apr 1 - retry days
             cal.clear();
-            cal.set(2003, GregorianCalendar.APRIL, 1);
-            cal.add(GregorianCalendar.DATE, -5); 
+            cal.set(2006, GregorianCalendar.OCTOBER, 26); 
+            cal.add(GregorianCalendar.DATE, -4); 
             remoteBillingProcess.trigger(cal.getTime());
 
             // get the review
@@ -316,7 +324,7 @@ public class BillingProcessTest extends TestCase {
             assertFalse("14.2 - New review run", reviewDto.getId().intValue() == 
                     reviewDto2.getId().intValue());
             
-            // finally, approve the review
+            // finally, approve the review. The billing process is next
             remoteBillingProcess.setReviewApproval(new Integer(1), entityId,
                     new Boolean(true));
 
@@ -334,25 +342,13 @@ public class BillingProcessTest extends TestCase {
                     remoteBillingProcess.getLast(entityId),
                     languageId);
             
-            // set up the billing porcess date for april 1st
-            // set the configuration to something we are sure about
-            BillingProcessConfigurationDTO configDto = remoteBillingProcess.
-                    getConfigurationDto(entityId);
-            cal.set(2003, GregorianCalendar.APRIL, 1); 
-            configDto.setNextRunDate(cal.getTime());
-            configDto.setPeriodUnitId(Constants.PERIOD_UNIT_MONTH);
-            configDto.setPeriodValue(new Integer(1));
-            remoteBillingProcess.createUpdateConfiguration(new Integer(1),
-                 configDto);
-            
             // get the review, so we can later check that what id had
             // is the same that is generated in the real process
             BillingProcessDTOEx reviewDto = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
             
-            // run trigger for Apr 1     
-            cal.set(2003, GregorianCalendar.APRIL, 1); 
-            remoteBillingProcess.trigger(cal.getTime());
+            // run trigger on the run date     
+            remoteBillingProcess.trigger(runDate);
 
             // get the latest process
             BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(
@@ -364,11 +360,11 @@ public class BillingProcessTest extends TestCase {
             // initially, runs should be 1
             assertEquals("16 - Only one run", lastDtoB.getRuns().size(), 1);
 
-            // chech that the next billing date is updated
-            configDto = remoteBillingProcess.
+            // check that the next billing date is updated
+            BillingProcessConfigurationDTO configDto = remoteBillingProcess.
                     getConfigurationDto(entityId);
             cal.add(GregorianCalendar.MONTH, 1);
-            assertTrue("17 - Next billing date for May 1st", 
+            assertTrue("17 - Next billing date for a month later", 
                     configDto.getNextRunDate().equals(Util.truncateDate(
                         cal.getTime())));
             
@@ -632,9 +628,11 @@ public class BillingProcessTest extends TestCase {
                 InvoiceDTOEx invoice = (InvoiceDTOEx) it.next();
                 
                 if (invoice.getUserId().intValue() == 9) { // Chisky Peters has a cc to pay with
-                    assertFalse("Invoice " + invoice.getId(), invoice.getPayments()
+                    assertFalse("Invoice " + invoice.getId(), invoice.getPaymentMap()
                             .isEmpty());
-                    PaymentDTO payment = (PaymentDTO) invoice.getPayments().get(0);
+                    
+                    PaymentDTO payment = remotePayment.getPayment(
+                            (Integer) invoice.getPaymentMap().get(0), languageId); 
 
                     if (payment.getResultId().equals(Constants.RESULT_OK)) {
                         assertEquals("(to_process) Invoice " + invoice.getId(),
@@ -867,7 +865,7 @@ public class BillingProcessTest extends TestCase {
             throw new Exception("Can't parse " + str);
         }
     }
-*/    
+
     public void testQuicky() {
         try {
             cal.clear();

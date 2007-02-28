@@ -2887,6 +2887,7 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="17" CategoryId="5" ClassName="com.sapienter.jbilling.server.pluggableTask.OrderPeriodAnticipateTask" MinParameters="0"/>
     <PluggableTaskType Id="18" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentBitMoversTask" MinParameters="0"/>
     <PluggableTaskType Id="19" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask" MinParameters="1"/>
+    <PluggableTaskType Id="20" CategoryId="10" ClassName="com.sapienter.jbilling.server.pluggableTask.ProcessorEmailAlarmTask" MinParameters="3"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
@@ -2896,6 +2897,7 @@ Contributor(s): ______________________________________
     <PluggableTaskTypeCategory Id="7" Description="notification task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.NotificationTask"/>
     <PluggableTaskTypeCategory Id="8" Description="payment information task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask"/>
     <PluggableTaskTypeCategory Id="9" Description="invoice overdue penalty" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PenaltyTask"/>
+    <PluggableTaskTypeCategory Id="10" Description="processor alarm task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm"/>
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

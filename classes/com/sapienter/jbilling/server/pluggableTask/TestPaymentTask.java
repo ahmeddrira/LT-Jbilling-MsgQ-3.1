@@ -70,7 +70,7 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
         dto.setApprovalCode("myApproval");
         dto.setCode1("super code 1");
         PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(dto);
-        retValue.setResult(cc.getName().charAt(0) == '4');
+        retValue.setResult(cc.getNumber().charAt(0) == '4');
         
         return retValue;
         

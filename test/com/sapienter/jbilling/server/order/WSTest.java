@@ -36,6 +36,7 @@ import org.apache.axis.client.Service;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -75,6 +76,14 @@ public class WSTest extends TestCase {
             ser2 = new BeanDeserializerFactory (
                     OrderLineWS.class, qn);
             call.registerTypeMapping(OrderLineWS.class, qn, ser1, ser2); 
+
+            // PaymentAuthroizationDTOEx            
+            qn = new QName("http://www.sapienter.com/billing", "PaymentAuthorizationDTOEx");
+            ser1 = new BeanSerializerFactory(
+                    PaymentAuthorizationDTOEx.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    PaymentAuthorizationDTOEx.class, qn);
+            call.registerTypeMapping(PaymentAuthorizationDTOEx.class, qn, ser1, ser2); 
 
             /*
              * Create
@@ -268,10 +277,10 @@ public class WSTest extends TestCase {
              */
             call.setOperationName("getLatestOrder");
             System.out.println("Getting latest");
-            retOrder = (OrderWS) call.invoke( new Object[] { 
+            OrderWS lastOrder = (OrderWS) call.invoke( new Object[] { 
                     new Integer(2) } );
-            assertNotNull("Didn't get any latest order", retOrder);
-            assertEquals("Latest id", ret, retOrder.getId());
+            assertNotNull("Didn't get any latest order", lastOrder);
+            assertEquals("Latest id", ret, lastOrder.getId());
             // now one for an invalid user
             System.out.println("Getting latest invalid");
             try {
@@ -343,6 +352,30 @@ public class WSTest extends TestCase {
                     new Integer(2), new Integer(1) } );
             System.out.println("Got total orders " + orders.length +
                     " first is " + orders[0]);
+            
+            /*
+             * Create an order with pre-authorization
+             */
+            call.setOperationName("createOrderPreAuthorize");
+            System.out.println("Create an order with pre-authorization" + ret);
+            PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) 
+                    call.invoke( new Object[] { newOrder } );
+            assertNotNull("Missing list", auth);
+            // the test processor should always approve gandalf
+            assertEquals("Result is ok", new Boolean(true), auth.getResult());
+            System.out.println("Order pre-authorized. Approval code = " + auth.getApprovalCode());
+            // check the last one is a new one
+            call.setOperationName("getLatestOrder");
+            System.out.println("Getting latest");
+            retOrder = (OrderWS) call.invoke( new Object[] { 
+                    new Integer(2) } );
+            System.out.println("Order created with ID = " + retOrder.getId());
+            assertNotSame("New order is there", retOrder.getId(), lastOrder.getId());
+            // delete this order
+            call.setOperationName("deleteOrder");
+            System.out.println("Deleteing order " + retOrder.getId());
+            call.invoke( new Object[] { retOrder.getId() } );
+
 
         } catch (Exception e) {
             e.printStackTrace();

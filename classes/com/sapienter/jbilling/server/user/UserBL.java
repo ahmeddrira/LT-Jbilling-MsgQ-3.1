@@ -730,6 +730,14 @@ public class UserBL  extends ResultList
                 user.getCreateDateTime(), user.getLastStatusChange(),
                 user.getLastLogin());
     }   
+    
+    /**
+     * 
+     * @return true if the user has a credit card, or fals if it doeas not
+     */
+    public boolean hasCreditCard() {
+        return !user.getCreditCard().isEmpty();
+    }
     /**
      * Verifies that both user belong to the same entity. 
      * @param rootUserName 

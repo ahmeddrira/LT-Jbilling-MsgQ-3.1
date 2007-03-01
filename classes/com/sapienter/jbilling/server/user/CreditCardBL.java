@@ -44,12 +44,12 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.EventLogger;
-import com.sapienter.jbilling.server.util.PreferenceBL;
 
 public class CreditCardBL extends ResultList 
         implements CreditCardSQL {
@@ -225,35 +225,22 @@ public class CreditCardBL extends ResultList
         return number.replaceAll("[-\\ ]", "").trim();
     }
     
-    public boolean validatePreAuthorization(Integer entityId, CreditCardDTO cc) 
+    public PaymentAuthorizationDTOEx validatePreAuthorization(Integer entityId, CreditCardDTO cc, 
+            Float amount, Integer currencyId) 
             throws NamingException, PluggableTaskException, FinderException {
-        boolean retValue = true;
-        PreferenceBL preference = new PreferenceBL();
-        try {
-            preference.set(entityId, 
-                    Constants.PREFERENCE_PRE_AUTHORIZE_CC);
-        } catch (FinderException e1) {
-            // I'll use the defaults
-        }
-        float amount = preference.getFloat();
-        if (amount > 0) {
-            // let's do it then
-            PluggableTaskManager taskManager =
-                new PluggableTaskManager(entityId,
-                Constants.PLUGGABLE_TASK_PAYMENT);
-            PaymentTask task = (PaymentTask) taskManager.getNextClass();
-        
-            if (task == null) {
-                // at least there has to be one task configurated !
-                log.warn("No payment pluggable" +
-                        "tasks configurated for entity " + entityId);
-            } else {
-                EntityBL entity = new EntityBL(entityId);
-                Integer currencyId = entity.getEntity().getCurrencyId();
-                retValue = task.preAuth(cc, new Float(amount), currencyId);
-            }
 
-        }
+        PaymentAuthorizationDTOEx retValue = null;
+        // use the payment processor configured 
+        PluggableTaskManager taskManager =
+            new PluggableTaskManager(entityId,
+            Constants.PLUGGABLE_TASK_PAYMENT);
+        PaymentTask task = (PaymentTask) taskManager.getNextClass();
+    
+        while (task != null && retValue == null) {
+            retValue = task.preAuth(cc, amount, currencyId);
+            // get the next task
+            task = (PaymentTask) taskManager.getNextClass();
+        } 
         
         return retValue;
     }

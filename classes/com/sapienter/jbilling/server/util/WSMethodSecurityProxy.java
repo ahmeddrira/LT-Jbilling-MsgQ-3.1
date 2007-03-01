@@ -56,7 +56,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        log = Logger.getLogger(WSMethodSecurityProxy.class);
        String methodName = null;
        try {
-           Method methods[] = new Method[21];
+           Method methods[] = new Method[22];
            Method aMethod;
            int i = 0;
 
@@ -117,7 +117,14 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
            methodName = "createOrder";
            aMethod = beanLocal.getDeclaredMethod(methodName, params);
            methods[i++] = aMethod;
-           
+
+           // createOrderPreAuthorize
+           params = new Class[1];
+           params[0] = OrderWS.class;
+           methodName = "createOrderPreAuthorize";
+           aMethod = beanLocal.getDeclaredMethod(methodName, params);
+           methods[i++] = aMethod;
+
            // updateOrder - takes same parameters as create
            methodName = "updateOrder";
            aMethod = beanLocal.getDeclaredMethod(methodName, params);
@@ -257,7 +264,9 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                 if (arg != null) {
                     validate(arg.getUserId());
                 }
-            } else if(m.getName().equals("createOrder") || m.getName().equals("updateOrder")) {
+            } else if(m.getName().equals("createOrder") || 
+                    m.getName().equals("updateOrder") ||
+                    m.getName().equals("createOrderPreAuthorize") ) {
                 OrderWS arg = (OrderWS) args[0];
                 
                 if (arg != null) {

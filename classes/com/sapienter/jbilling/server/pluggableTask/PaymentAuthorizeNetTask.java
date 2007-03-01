@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -428,8 +429,13 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         return dto;
     }
     
-    public boolean preAuth(CreditCardDTO cc, Float amount, Integer currencyId) 
+    /**
+     * @return The information with the results of the pre-authorization, or null if the was
+     * a problem, such as the processor being unavailable
+     */
+    public PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId) 
             throws PluggableTaskException {
+        log = Logger.getLogger(PaymentAuthorizeNetTask.class);
         String login = (String) parameters.get(PARAMETER_LOGIN);
         String transaction = (String) parameters.get(PARAMETER_TRANSACTION);
         
@@ -447,15 +453,28 @@ public class PaymentAuthorizeNetTask extends PluggableTask
                     currencyCode, false, new Integer(0));
             
             AuthorizeNetResponseDTO response = makeCall(data);
-            // the result of this request goes in the dto
+            
+            // save this authorization into the DB
+            PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
+            PaymentAuthorizationDTOEx  authDto = new PaymentAuthorizationDTOEx(
+                    response.getPaymentAuthorizationDTO());
+            authDto.setProcessor("Authorize.net");
+            bl.create(authDto);
+            // since this is just an authorization, without a related payment
+            // we leave it like this, no links to the payment table
+            
+            // prepare the return info
             if (Integer.valueOf(response.getPaymentAuthorizationDTO().
                     getCode1()).intValue() == 1) {
-                return true;
+                authDto.setResult(new Boolean(true));
             } else {
-                return false;
+                authDto.setResult(new Boolean(false));
             }
+            
+            return authDto;
         } catch (Exception e) {
-            throw new PluggableTaskException(e);
+            log.info("error trying to pre-authorize", e);
+            return null;
         } 
     }
 }

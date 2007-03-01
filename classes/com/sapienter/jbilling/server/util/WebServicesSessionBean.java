@@ -46,6 +46,7 @@ import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -53,6 +54,7 @@ import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.OrderDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentBL;
@@ -214,15 +216,6 @@ public class WebServicesSessionBean implements SessionBean {
             Integer entityId = bl.getEntity().getEntity().getId(); 
             log.info("WS - Creating user " + newUser);
             
-            // some entities want to validate the cc with the payment processor
-            if (newUser.getCreditCard() != null) {
-                CreditCardBL ccBl = new CreditCardBL();
-                if (!ccBl.validatePreAuthorization(entityId, 
-                        newUser.getCreditCard())) {
-                    throw new SessionInternalError("Credit card decline in " +
-                            "payment processor pre-authorization");
-                }
-            }
             if (!bl.exists(newUser.getUserName(), entityId)) {
                 
                 ContactBL cBl = new ContactBL();
@@ -246,9 +239,6 @@ public class WebServicesSessionBean implements SessionBean {
             log.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         } catch (FinderException e) {
-            log.error("WS user creation error", e);
-            throw new SessionInternalError("Error creating user");
-        } catch (PluggableTaskException e) {
             log.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         } catch (CreateException e) {
@@ -578,6 +568,42 @@ public class WebServicesSessionBean implements SessionBean {
     /*
      * ORDERS
      */
+    /**
+     * @ejb:interface-method view-type="local"
+     * @return the information of the payment aurhotization, or NULL if the 
+     * user does not have a credit card
+     */
+    public PaymentAuthorizationDTO createOrderPreAuthorize(OrderWS order) 
+            throws SessionInternalError {
+        
+        PaymentAuthorizationDTO retValue = null;
+        // start by creating the order. It'll do the checks as well
+        Integer orderId = createOrder(order);
+        
+        try {
+            Integer userId = order.getUserId();
+            UserBL user = new UserBL(userId);
+            Integer entityId = user.getEntity().getEntity().getId();
+            if (user.hasCreditCard()) {
+                // find it
+                PaymentDTOEx paymentDto = PaymentBL.findPaymentInstrument(
+                        entityId, userId);
+                
+                CreditCardBL ccBl = new CreditCardBL();
+                // calling for the DTOEx of order seems an overkill to just get
+                // the total. However, in a new order most related objects won't 
+                // be there (process, invoices, etc).
+                OrderDTOEx newOrder = DTOFactory.getOrderDTOEx(orderId, 1);
+                retValue = ccBl.validatePreAuthorization(entityId, 
+                        paymentDto.getCreditCard(), 
+                        newOrder.getTotal(), newOrder.getCurrencyId());
+            }
+        } catch(Exception e) {
+            log.debug("Exception:", e);
+            throw new SessionInternalError("error pre-validating order");
+        }
+        return retValue;
+    }
     
     /**
      * @ejb:interface-method view-type="local"

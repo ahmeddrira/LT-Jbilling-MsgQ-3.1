@@ -25,13 +25,16 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.util.Calendar;
+
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
 /**
  * This is only a test so the framwork has a task of this type.
- * Basically, if it the user is even, it goes fine, otherwise, it fails
  * @author Emil
  */
 public class TestPaymentTask extends PluggableTask implements PaymentTask {
@@ -44,8 +47,7 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
         
         paymentInfo.setMethodId(new Integer(1));
         
-        if (paymentInfo.getUserId().intValue() % 2 == 0) {
-            retValue = true;
+        if (paymentInfo.getCreditCard().getNumber().charAt(0) == '4') {
             paymentInfo.setResultId(Constants.RESULT_OK);
         } else {
             paymentInfo.setResultId(Constants.RESULT_FAIL);
@@ -58,9 +60,20 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
         // not doing anything right now
     }
     
-    public boolean preAuth(CreditCardDTO cc, Float amount, Integer currencyId)
+    /**
+     * returns OK for visa only
+     */
+    public PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId)
             throws PluggableTaskException {
-        return false;
+        PaymentAuthorizationDTO dto = new PaymentAuthorizationDTO();
+        dto.setCreateDate(Calendar.getInstance().getTime());
+        dto.setApprovalCode("myApproval");
+        dto.setCode1("super code 1");
+        PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(dto);
+        retValue.setResult(cc.getName().charAt(0) == '4');
+        
+        return retValue;
+        
 
     }
 

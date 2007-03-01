@@ -53,6 +53,7 @@ public class EventLogger {
     public static final Integer CANT_PAY_PARTNER = new Integer(15);
     // order maintenance
     public static final Integer ORDER_STATUS_CHANGE = new Integer(13);
+    public static final Integer ORDER_LINE_UPDATED = new Integer(17);
     // invoice related message
     public static final Integer INVOICE_ORDER_APPLIED = new Integer(16);
     // others

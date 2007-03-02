@@ -57,11 +57,11 @@ import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -573,10 +573,10 @@ public class WebServicesSessionBean implements SessionBean {
      * @return the information of the payment aurhotization, or NULL if the 
      * user does not have a credit card
      */
-    public PaymentAuthorizationDTO createOrderPreAuthorize(OrderWS order) 
+    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) 
             throws SessionInternalError {
         
-        PaymentAuthorizationDTO retValue = null;
+        PaymentAuthorizationDTOEx retValue = null;
         // start by creating the order. It'll do the checks as well
         Integer orderId = createOrder(order);
         

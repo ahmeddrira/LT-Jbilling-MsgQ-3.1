@@ -297,11 +297,11 @@ public class WSTest extends TestCase {
             InvoiceWS retInvoice = (InvoiceWS) call.invoke( 
                     new Object[] { mcRet.getInvoiceId() } );
             assertNotNull("New invoice not present", retInvoice);
-            assertEquals("Balance of invoice should be total of order", retInvoice.getBalance(),
-                    new Float(20));
+            assertEquals("Balance of invoice should be zero, is paid", retInvoice.getBalance(),
+                    new Float(0));
             assertEquals("Total of invoice should be total of order", retInvoice.getTotal(),
                     new Float(20));
-            assertEquals("New invoice not paid", retInvoice.getToProcess(), new Integer(1));
+            assertEquals("New invoice paid", retInvoice.getToProcess(), new Integer(0));
             
             // TO-DO test that the invoice total is equal to the order total
  

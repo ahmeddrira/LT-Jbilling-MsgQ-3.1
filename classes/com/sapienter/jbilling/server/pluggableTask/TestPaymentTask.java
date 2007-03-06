@@ -73,8 +73,11 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
         retValue.setResult(cc.getNumber().charAt(0) == '4');
         
         return retValue;
-        
-
+      }
+    
+    public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

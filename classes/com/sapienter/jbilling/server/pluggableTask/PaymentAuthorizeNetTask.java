@@ -477,4 +477,13 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             return null;
         } 
     }
+    
+    public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, 
+            PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        // TODO Auto-generated method stub
+        // Transaction type has to be PRIOR_AUTH_CAPTURE
+        // the transactio id of the original authorization has to be included
+        // along with the amount
+        return null;
+    }
 }

@@ -63,5 +63,8 @@ public class PaymentPartnerTestTask
 
     }
 
-
+    public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

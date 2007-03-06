@@ -43,7 +43,34 @@ public interface PaymentTask {
     boolean process(PaymentDTOEx paymentInfo) throws PluggableTaskException;
     
     void failure(Integer userId, Integer retry);
-    
+
+    /**
+     * Does the authorization, but not capture, of a payment. This means that
+     * the amount is approved, but if this charge is not confirmed within X
+     * number of days, the charge will be dropped and the credit card not charged.
+     * The way to confirm the charge is by calling ConfirmPreAuth
+     * @param cc
+     * @param amount
+     * @param currencyId
+     * @return
+     * @throws PluggableTaskException
+     */
     PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId) 
             throws PluggableTaskException;
+    
+    /**
+     * This will confirm a previously authorized charge, so it is 'captured'.
+     * If this method is not called in a pre-auth, the charge will be dropped.
+     * By calling this method, the end customer will see the charge in her 
+     * credit card.
+     * @param auth
+     * @param amount
+     * @param currencyId
+     * @return
+     * @throws PluggableTaskException
+     */
+    PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, 
+            PaymentDTOEx paymentInfo) 
+            throws PluggableTaskException;
+    
 }

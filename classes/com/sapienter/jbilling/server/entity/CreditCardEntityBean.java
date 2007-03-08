@@ -29,6 +29,9 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
@@ -50,7 +53,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
  * 
- * @ejb.value-object name="CreditCard"
+ * @ejb.value-object name="CreditCard" match="matched"
  * 
  * @jboss:table-name "credit_card"
  * 
@@ -103,6 +106,7 @@ public abstract class CreditCardEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
      * @ejb:pk-field
+     * @ejb.value-object match="matched"
      * @jboss:column-name name="id"
      * @jboss.method-attributes read-only="true"
      */
@@ -111,19 +115,36 @@ public abstract class CreditCardEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb:persistent-field
-     * @jboss:column-name name="cc_number"
-     * @jboss.method-attributes read-only="true"
+     * @ejb.value-object match="matched"
      */
-    public abstract String getNumber();
+    public String getNumber(){
+    	return JBCrypto.getCreditCardCrypto().decrypt(getNumberCrypt());
+    }
+    
     /**
      * @ejb:interface-method view-type="local"
      */
-    public abstract void setNumber(String number);
+    public void setNumber(String number){
+    	setNumberCrypt(JBCrypto.getCreditCardCrypto().encrypt(number));
+    }
     
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @jboss:column-name name="cc_number"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract String getNumberCrypt();
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setNumberCrypt(String number);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @ejb.value-object match="matched"
      * @jboss:column-name name="cc_expiry"
      * @jboss.method-attributes read-only="true"
      */
@@ -135,19 +156,38 @@ public abstract class CreditCardEntityBean implements EntityBean {
     
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb:persistent-field
-     * @jboss:column-name name="name"
-     * @jboss.method-attributes read-only="true"
+     * @ejb.value-object match="matched"
      */
-    public abstract String getName();
+    public String getName(){
+    	String crypted = getNameCrypt();
+    	return JBCrypto.getCreditCardCrypto().decrypt(crypted);
+    }
+    
     /**
      * @ejb:interface-method view-type="local"
      */
-    public abstract void setName(String name);
+    public void setName(String name){
+    	String crypted = JBCrypto.getCreditCardCrypto().encrypt(name);
+    	setNameCrypt(crypted);
+    }
 
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @jboss:column-name name="name"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract String getNameCrypt();
+
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setNameCrypt(String name);
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @ejb.value-object match="matched"
      * @jboss:column-name name="cc_type"
      * @jboss.method-attributes read-only="true"
      */
@@ -157,6 +197,7 @@ public abstract class CreditCardEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @ejb.value-object match="matched"
      * @jboss:column-name name="deleted"
      * @jboss.method-attributes read-only="true"
      */
@@ -169,6 +210,7 @@ public abstract class CreditCardEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @ejb.value-object match="matched"
      * @jboss:column-name name="security_code"
      * @jboss.method-attributes read-only="true"
      */

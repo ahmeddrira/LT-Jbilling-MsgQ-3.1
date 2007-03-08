@@ -33,3 +33,12 @@ force_https=false
 process.time=
 #   frequency: the number of minutes between runs
 process.frequency=720
+# if the credit cards are stored encrypted or not
+credit_card_secure=true
+# a key used for the encryption of credit cards
+credit_card_password=a_long_secret_key
+# if true, all the passwords in the system are encrypted with a one-way method
+# if false, only root and clerk are encrypted, the rest are not (needed if
+# you will show passwords to the users in the invoices/notifications or for the
+# lost password feature).
+password_encrypt_all=true

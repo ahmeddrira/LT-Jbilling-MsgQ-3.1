@@ -38,10 +38,9 @@ $Revision: 1.5.6.1 $
 		</authentication>
 	</application-policy>
 	
-
 	<application-policy name="betty">
 		<authentication>
-			<login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule"
+			<login-module code="com.sapienter.jbilling.server.user.WebServiceLoginModule"
 				flag="required">
 				<module-option name="dsJndiName">java:/ApplicationDS</module-option>
 				<module-option name="principalsQuery">select password from base_user, permission_user where user_name = ? and base_user.id = permission_user.user_id and permission_user.permission_id = 120 and is_grant = 1</module-option>

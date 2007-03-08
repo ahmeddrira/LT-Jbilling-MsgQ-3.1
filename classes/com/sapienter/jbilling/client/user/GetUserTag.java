@@ -100,7 +100,9 @@ public class GetUserTag extends TagSupport {
                 form.set("type", dto.getMainRoleId());
                 form.set("status", dto.getStatusId());
                 form.set("username", dto.getUserName());
-                form.set("password", dto.getPassword());
+                //password may be crypted, we can not hint it anymore
+                //form.set("password", dto.getPassword());
+                form.set("password", "");
                 form.set("language", dto.getLanguageId());
                 form.set("currencyId", dto.getCurrencyId());
                 if (dto.getCustomerDto() != null) {

@@ -26,6 +26,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -38,6 +40,7 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
@@ -159,8 +162,14 @@ public class UserBL  extends ResultList
             throws NamingException, FinderException, SessionInternalError,
               CreateException, RemoveException {
         // password is the only one that might've not been set
-        if (dto.getPassword() != null &&
-                !dto.getPassword().equals(user.getPassword())) {
+    	String changedPassword = dto.getPassword();
+    	if (changedPassword != null){
+    		//encrypt it based on the user role
+    		changedPassword = JBCrypto.getPasswordCrypto(getMainRole()).encrypt(changedPassword);
+    	}
+    	
+        if (changedPassword != null &&
+                !changedPassword.equals(user.getPassword())) {
             // if it is not the same user changing its password, I'll log it
             if (!executorId.equals(user.getUserId())) {
                 eLogger.audit(executorId, Constants.TABLE_BASE_USER, user.getUserId(),
@@ -168,7 +177,7 @@ public class UserBL  extends ResultList
                         EventLogger.PASSWORD_CHANGE, null, user.getPassword(), 
                         null);
             }
-            user.setPassword(dto.getPassword());
+            user.setPassword(changedPassword);
         }
         if (dto.getUserName() != null && !user.getUserName().equals(
         		dto.getUserName())) {
@@ -281,6 +290,11 @@ public class UserBL  extends ResultList
                 log.warn("Creating user without any role...");
             }
         }
+        
+        Integer newUserRole = dto.getMainRoleId();
+        JBCrypto passwordCrypter = JBCrypto.getPasswordCrypto(newUserRole);
+        dto.setPassword(passwordCrypter.encrypt(dto.getPassword()));
+        
         // may be this is a partner
         if (dto.getPartnerDto() != null) {
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
@@ -373,14 +387,24 @@ public class UserBL  extends ResultList
                 db.getCustomerDto().getParentId() != null) {
             return false;
         }
+        
         // the user status is not part of this check, as a customer that
         // can't login to the entity's service still has to be able to
         // login to sapienter to pay
-        if (db.getDeleted().intValue() == 0 && loggingUser.getPassword().
-                compareTo(db.getPassword()) == 0 &&
+        if (db.getDeleted().intValue() == 0 && 
                 loggingUser.getEntityId().equals(db.getEntityId())) {
-            user = getUserEntity(db.getUserId());
-            return true;
+        	
+        	String dbPassword = db.getPassword();
+        	String notCryptedLoggingPassword = loggingUser.getPassword();
+        	
+        	//using service specific for DB-user, logging one may not have its role set
+        	JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());
+        	String comparableLoggingPassword = passwordCryptoService.encrypt(notCryptedLoggingPassword);
+
+        	if (comparableLoggingPassword.equals(dbPassword)){
+                user = getUserEntity(db.getUserId());
+                return true;
+        	}
         }
         
         return false;
@@ -619,19 +643,27 @@ public class UserBL  extends ResultList
     }
     
     public Integer getMainRole() {
-        
         if (mainRole == null) {
-            // the main role is the smallest of them, so they have to be ordered in the
-            // db in ascending order (small = important);
-            for (Iterator it = user.getRoles().iterator(); it.hasNext(); ) {
-                RoleEntityLocal role = (RoleEntityLocal) it.next();
-                if (mainRole == null || role.getId().compareTo(mainRole) < 0) {
-                    mainRole = role.getId();
-                }
-            }
+        	List<Integer> roleIds = new LinkedList<Integer>();
+        	for (Object next : user.getRoles()){
+        		RoleEntityLocal nextRoleObject = (RoleEntityLocal)next;
+        		roleIds.add(nextRoleObject.getId());
+        	}
+        	mainRole = selectMainRole(roleIds);
         }
-
         return mainRole;
+    }
+    
+    private static Integer selectMainRole(Collection<Integer> allRoleIds){
+        // the main role is the smallest of them, so they have to be ordered in the
+        // db in ascending order (small = important);
+    	Integer result = null;
+    	for (Integer nextId : allRoleIds){
+            if (result == null || nextId.compareTo(result) < 0) {
+                result = nextId;
+            }
+    	}
+        return result;
     }
 
     public Locale getLocale() 

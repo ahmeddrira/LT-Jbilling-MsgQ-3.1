@@ -395,7 +395,7 @@ Contributor(s): ______________________________________
     <InternationalDescription TableId="64" ForeignId="177" PsudoColumn="description" LanguageId="1" Content="Rwanda"/>
     <InternationalDescription TableId="64" ForeignId="178" PsudoColumn="description" LanguageId="1" Content="Samoa"/>
     <InternationalDescription TableId="64" ForeignId="179" PsudoColumn="description" LanguageId="1" Content="San Marino"/>
-    <InternationalDescription TableId="64" ForeignId="180" PsudoColumn="description" LanguageId="1" Content="S„1¤7o Tom„1¤7 and Pr„1¤7ncipe"/>
+    <InternationalDescription TableId="64" ForeignId="180" PsudoColumn="description" LanguageId="1" Content="Sï¿½1ï¿½7o Tomï¿½1ï¿½7 and Prï¿½1ï¿½7ncipe"/>
     <InternationalDescription TableId="64" ForeignId="181" PsudoColumn="description" LanguageId="1" Content="Saudi Arabia"/>
     <InternationalDescription TableId="64" ForeignId="182" PsudoColumn="description" LanguageId="1" Content="Senegal"/>
     <InternationalDescription TableId="64" ForeignId="183" PsudoColumn="description" LanguageId="1" Content="Serbia and Montenegro"/>
@@ -626,7 +626,7 @@ Contributor(s): ______________________________________
     <InternationalDescription TableId="64" ForeignId="49" PsudoColumn="description" LanguageId="1" Content="Congo"/>
     <InternationalDescription TableId="64" ForeignId="50" PsudoColumn="description" LanguageId="1" Content="Cook Islands"/>
     <InternationalDescription TableId="64" ForeignId="51" PsudoColumn="description" LanguageId="1" Content="Costa Rica"/>
-    <InternationalDescription TableId="64" ForeignId="52" PsudoColumn="description" LanguageId="1" Content="C„1¤7te d&amp;#39;Ivoire"/>
+    <InternationalDescription TableId="64" ForeignId="52" PsudoColumn="description" LanguageId="1" Content="Cï¿½1ï¿½7te d&amp;#39;Ivoire"/>
     <InternationalDescription TableId="64" ForeignId="53" PsudoColumn="description" LanguageId="1" Content="Croatia &amp;#40;Hrvatska&amp;#41;"/>
     <InternationalDescription TableId="64" ForeignId="54" PsudoColumn="description" LanguageId="1" Content="Cuba"/>
     <InternationalDescription TableId="64" ForeignId="55" PsudoColumn="description" LanguageId="1" Content="Cyprus"/>
@@ -1780,7 +1780,7 @@ Contributor(s): ______________________________________
     <JbillingTable Id="63" Name="menu_option" NextId="92"/>
     <JbillingTable Id="20" Name="order_status" NextId="5"/>
     <JbillingTable Id="23" Name="pluggable_task_type_category" NextId="10"/>
-    <JbillingTable Id="24" Name="pluggable_task_type" NextId="20"/>
+    <JbillingTable Id="24" Name="pluggable_task_type" NextId="25"/>
     <JbillingTable Id="30" Name="invoice_line_type" NextId="6"/>
     <JbillingTable Id="4" Name="currency" NextId="11"/>
     <JbillingTable Id="73" Name="report_type" NextId="10"/>
@@ -2888,6 +2888,9 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="18" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentBitMoversTask" MinParameters="0"/>
     <PluggableTaskType Id="19" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask" MinParameters="1"/>
     <PluggableTaskType Id="20" CategoryId="10" ClassName="com.sapienter.jbilling.server.pluggableTask.ProcessorEmailAlarmTask" MinParameters="3"/>
+    <PluggableTaskType Id="21" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentFakeTask" MinParameters="0"/>
+    <PluggableTaskType Id="22" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentRouterTask" MinParameters="0"/>
+    <PluggableTaskType Id="23" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentECHOTask" MinParameters="3"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

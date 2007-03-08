@@ -194,6 +194,8 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             Integer languageId = languageHome.findByCode(language).getId();
             Integer entityId = bl.create(user, contact, languageId);
             
+            final String notCryptedPassword = user.getPassword();
+            
             if (paymentContact != null) {
                 // now a new customer for Sapienter
                 user.setEntityId(new Integer(1));
@@ -212,7 +214,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                 params[0] = contact.getFirstName();
                 params[1] = contact.getLastName();
                 params[2] = userName;
-                params[3] = user.getPassword();
+                params[3] = notCryptedPassword;
                 params[4] = entityId.toString();
                 params[5] = entityId.toString();
                 NotificationBL.sendSapienterEmail(entityId, "signup.welcome", 

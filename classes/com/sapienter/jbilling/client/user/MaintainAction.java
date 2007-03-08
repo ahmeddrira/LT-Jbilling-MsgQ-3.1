@@ -177,13 +177,23 @@ public class MaintainAction extends Action {
                             new ActionError("user.create.error.password_match"));
                 }
                 
-                // test that the old password is correct if this is a self-update
-                if (updatePassword && userId.equals(executorId) && 
-                        !userDto.getPassword().equals((String) userForm.get(
-                        "oldPassword"))) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("user.edit.error.invalidOldPassword"));
-                } 
+                //XXX
+                //Since passwords are stored encrypted, we can not do this check at client side anymore
+                //It should not be critical, because user is already authenticated
+                //and probably knows what to do.
+                //XXX: see commented block below
+                /**
+				 * <code>
+				 * // test that the old password is correct if this is a self-update
+				 * if (updatePassword && userId.equals(executorId) &&
+				 * 		!userDto.getPassword().equals((String) userForm.get(
+				 * 			"oldPassword"))) {
+				 * 
+				 * 		errors.add(ActionErrors.GLOBAL_ERROR,
+				 * 			new ActionError("user.edit.error.invalidOldPassword"));
+				 * }
+				 * </code>
+				 */
                 
                 String partnerId = (String) userForm.get("partnerId");
                 // validate the partnerId if present

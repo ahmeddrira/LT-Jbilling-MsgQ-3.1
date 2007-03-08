@@ -130,7 +130,7 @@ public class NewEntityAction extends Action {
             UserDTOEx user = new UserDTOEx();
             user.setUserName((String) myForm.get("user_name"));
             user.setPassword((String) myForm.get("password"));
-            user.setMainRoleId(Constants.TYPE_CUSTOMER);
+            user.setMainRoleId(Constants.TYPE_ROOT);
             CustomerDTOEx cust = new CustomerDTOEx();
             cust.setInvoiceDeliveryMethodId(Constants.D_METHOD_EMAIL);
             user.setCustomerDto(cust);

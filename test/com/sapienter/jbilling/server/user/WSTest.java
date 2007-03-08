@@ -253,6 +253,9 @@ public class WSTest extends TestCase {
             System.out.println("Making mega call");
             call.setOperationName("create");
             retUser.setUserName("megaUser");
+            // need to reset the password, it came encrypted
+            // let's use a long one
+            retUser.setPassword("0fu3js8wl1;a$e2w)xRQ"); 
             
             // need an order for it
             OrderWS newOrder = new OrderWS();
@@ -320,7 +323,7 @@ public class WSTest extends TestCase {
             retUser = (UserWS) call.invoke( new Object[] { newUserId } );
             assertNotNull("Didn't get updated user", retUser);
             assertEquals("Password ", retUser.getPassword(), 
-                    "newPassword");
+                    "Kg8kTBrB5Mr.y.SNPmHXr"); // this is how it translates after encryption
             assertEquals("Contact name", retUser.getContact().getFirstName(),
                     newUser.getContact().getFirstName());
 
@@ -330,6 +333,7 @@ public class WSTest extends TestCase {
             retUser.setCreditCard(null);
             // call the update
             call.setOperationName("updateUser");
+            retUser.setPassword("newPassword"); // reset, the one I have is crypted
             call.invoke( new Object[] { retUser } );
             // fetch the user
             call.setOperationName("getUserWS");

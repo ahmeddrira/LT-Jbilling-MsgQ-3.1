@@ -28,6 +28,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.CommonConstants;
+import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.entity.ContactDTO;
@@ -69,14 +73,16 @@ public final class EntitySignup {
 
     /**
      * 
-     * @param user
+     * @param root
      * It uses only the user name and password
      * @param contact
      * @param languageId
      */
-    public EntitySignup(UserDTOEx user, ContactDTO contact,
+    public EntitySignup(UserDTOEx root, ContactDTO contact,
             Integer languageId) {
-        this.user = user;
+    	
+    	checkMainRole(root);
+        this.user = root;
         this.contact = contact;
         this.languageId = languageId;
     }
@@ -340,7 +346,7 @@ public final class EntitySignup {
         };
         String userData[][] = { 
             { String.valueOf(newEntityId), user.getUserName(), 
-                user.getPassword(), "0", "1", "1", now, null, 
+                getDBPassword(user), "0", "1", "1", now, null, 
                 languageId.toString() },  //1
         };
         table = addTable(Constants.TABLE_BASE_USER, userColumns, userData, false);
@@ -816,5 +822,18 @@ public final class EntitySignup {
         stmt.executeUpdate();
         stmt.close();
     	ptTable.nextId++;
+    }
+    
+    private static void checkMainRole(UserDTOEx root){
+    	if (CommonConstants.TYPE_ROOT.equals(root.getMainRoleId())){
+    		Logger.getLogger(EntitySignup.class).warn("Attention: Root user passed with roleId: " + root.getMainRoleId());
+    	}
+    	root.setMainRoleId(CommonConstants.TYPE_ROOT);
+    }
+    
+    private static String getDBPassword(UserDTOEx root){
+    	checkMainRole(root);
+    	JBCrypto crypto = JBCrypto.getPasswordCrypto(root.getMainRoleId());
+    	return crypto.encrypt(root.getPassword());
     }
 }

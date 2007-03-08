@@ -248,9 +248,9 @@
     </table>
     <table name="credit_card">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="cc_number" required="true" size="30" type="VARCHAR"/>
+        <column name="cc_number" required="true" size="45" type="VARCHAR"/>
         <column name="cc_expiry" required="true" type="DATE"/>
-        <column name="name" size="50" type="VARCHAR"/>
+        <column name="name" size="100" type="VARCHAR"/>
         <column name="cc_type" required="true" type="INTEGER"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column name="security_code" type="INTEGER"/>

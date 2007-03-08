@@ -450,6 +450,10 @@
 
   <target name="prepare-test">
 	  <!-- The test expect a particular set of data -->
+  	  <echo>Copying the jbilling.properties file</echo>
+	  <copy tofile="${jboss.server.dir}/conf/jbilling.properties" overwrite="true" 
+            file="${source.descriptor.dir}/resources/jbilling.properties.sample"/>
+  	  <echo>Copying the development base</echo>
 	  <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
 	  	 <fileset dir="${basedir}/sql" includes="localDB.*" />
       </copy>

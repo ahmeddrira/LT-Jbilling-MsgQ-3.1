@@ -246,7 +246,9 @@ Contributor(s): ______________________________________.
 				</jbilling:permission>
 	 	        <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>' 
                                   negative="true">
-                    ****************
+                                <c:set var="ccNumber" value="${dto.creditCard.number}"/>
+               ************<%=((String)(pageContext.getAttribute("ccNumber"))).substring(
+                              ((String)(pageContext.getAttribute("ccNumber"))).length() - 4) %>
 				</jbilling:permission>
 			</td>
 		</tr>

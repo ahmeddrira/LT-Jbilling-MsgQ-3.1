@@ -51,6 +51,10 @@ import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.apache.struts.validator.Resources;
+import org.apache.struts.validator.FieldChecks;
+import org.apache.commons.validator.Field;
+import org.apache.commons.validator.ValidatorAction;
+import org.apache.commons.validator.Arg;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -358,8 +362,76 @@ public class GenericMaintainAction {
                 session.setAttribute("tmp_process_now", new Boolean(false));                
                 
             } else if (((String) myForm.get("method")).equals("cc")) {
+                String ccNumber = (String) myForm.get("ccNumber");
+                boolean masked = false;
+
+                // check if cc number is masked
+                if (ccNumber != null && ccNumber.length() >= 16
+                        && ccNumber.substring(0, 12).equals("************")) {
+                    log.debug("cc no. masked; " 
+                            + "getting user's existing cc details");
+                    // try to get existing cc details
+                    UserDTOEx user;
+                    try {
+                        user = getUser((Integer) session.
+                                getAttribute(Constants.SESSION_USER_ID));
+                    } catch (FinderException e) {
+                        throw new SessionInternalError(e); 
+                    }
+                    CreditCardDTO existingCcDTO = user.getCreditCard();
+                    if(existingCcDTO != null) {
+                        String existingNumber = existingCcDTO.getNumber();
+                        // check that four last digits match
+                        if(existingNumber.substring(
+                                existingNumber.length() - 4).equals(
+                                ccNumber.substring(ccNumber.length() - 4))) {
+                            log.debug("got a matching masked cc number");
+                            masked = true;
+                            ccNumber = existingNumber;
+                        }
+                    }
+                }
+
+                // do cc validation for non-masked numbers
+                if (!masked) {
+                    // set up for cc validation, 
+                    // (meant for use within Validator framework)
+
+                    // from validator.xml
+                    Arg arg = new Arg();
+                    arg.setKey("all.prompt.creditCard");
+                    arg.setPosition(0);
+                    Field field = new Field();
+                    field.addArg(arg);
+                    field.setProperty("ccNumber");
+                    field.setDepends("creditCard");
+
+                    // from validator-rules.xml
+                    ValidatorAction va = new ValidatorAction();
+                    va.setName("creditCard");
+                    va.setClassname("org.apache.struts.validator.FieldChecks");
+                    va.setMethod("validateCreditCard");
+                    va.setMethodParams("java.lang.Object, "
+                            + "org.apache.commons.validator.ValidatorAction, "
+                            + "org.apache.commons.validator.Field, "
+                            + "org.apache.struts.action.ActionErrors, "
+                            + "javax.servlet.http.HttpServletRequest");
+                    va.setDepends("");
+                    va.setMsg("errors.creditcard");
+
+                    // do cc number validation
+                    log.debug("doing credit card number validation");
+                    FieldChecks.validateCreditCard(myForm, va, field, errors, 
+                            request);
+
+                    // return if credit card validation failed
+                    if (!errors.isEmpty()) {
+                        return "edit";
+                    }
+                }
+
                 CreditCardDTO ccDto = new CreditCardDTO();
-                ccDto.setNumber((String) myForm.get("ccNumber"));
+                ccDto.setNumber(ccNumber);
                 ccDto.setName((String) myForm.get("ccName"));
                 myForm.set("ccExpiry_day", "01"); // to complete the date
                 ccDto.setExpiry(parseDate("ccExpiry", "payment.cc.date"));
@@ -1401,7 +1473,11 @@ public class GenericMaintainAction {
         
             
             if (ccDto != null) {
-                myForm.set("ccNumber", ccDto.getNumber());
+                String ccNumber = ccDto.getNumber();
+                // mask cc number
+                ccNumber = "************" + ccNumber.substring(
+                        ccNumber.length() - 4);
+                myForm.set("ccNumber", ccNumber);
                 myForm.set("ccName", ccDto.getName());
                 GregorianCalendar cal = new GregorianCalendar();
                 cal.setTime(ccDto.getExpiry());
@@ -1517,7 +1593,14 @@ public class GenericMaintainAction {
             	use = new Boolean(true);
             }
             if (dto != null) { // it could be that the user has no cc yet
-                myForm.set("number", dto.getNumber());
+                String ccNumber = dto.getNumber();
+                if (!((UserDTOEx) session.getAttribute(Constants.SESSION_USER_DTO)).
+                        isGranted(Constants.P_USER_EDIT_VIEW_CC)) {
+                    // mask cc number
+                    ccNumber = "************" + ccNumber.substring(
+                            ccNumber.length() - 4);
+                }
+                myForm.set("number", ccNumber);
                 setFormDate("expiry", dto.getExpiry());
                 myForm.set("name", dto.getName());
                 myForm.set("chbx_use_this", use);

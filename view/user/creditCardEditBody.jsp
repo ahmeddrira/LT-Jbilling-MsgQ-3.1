@@ -67,15 +67,7 @@ Contributor(s): ______________________________________.
      <table class="form">
       	  <tr class="form">
 	 		  <td class="form_prompt"><bean:message key="payment.cc.number"/></td>
-	 		  <td colspan="4">
-	 	        <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'>
-                   <html:text property="number" size="20" />
-                </jbilling:permission>
-	 	        <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>' 
-                                  negative="true">
-                   <html:text property="number" size="20" value="****************"/>
-                </jbilling:permission>
-               </td>
+	 		  <td colspan="4"><html:text property="number" size="20" /></td>
 	 	  </tr>
       	  <tr class="form">
 	 		  <td class="form_prompt"><bean:message key="payment.cc.name"/></td>

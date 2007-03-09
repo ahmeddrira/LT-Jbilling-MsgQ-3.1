@@ -154,9 +154,6 @@
 <arg1 name="range" key="${var:min}" resource="false" />
 <arg2 name="range" key="${var:max}" resource="false" />
 </field>
-<field property="ccNumber" depends="creditCard">
-<arg0 key="all.prompt.creditCard" />
-</field>
 <field property="ccExpiry_year" depends="integer,range">
 <var>
 <var-name>min</var-name>

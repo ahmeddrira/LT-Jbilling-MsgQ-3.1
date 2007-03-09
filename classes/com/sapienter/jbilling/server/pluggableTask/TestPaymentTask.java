@@ -28,8 +28,8 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.util.Calendar;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
@@ -42,10 +42,20 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
     /* (non-Javadoc)
      * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#process(com.sapienter.betty.server.payment.PaymentDTOEx)
      */
-    public boolean process(PaymentDTOEx paymentInfo) {
+    public boolean process(PaymentDTOEx paymentInfo) 
+            throws PluggableTaskException {
         boolean retValue = false;
         
         paymentInfo.setMethodId(new Integer(1));
+        
+        PaymentAuthorizationDTOEx dto = getAuthDTO(paymentInfo);
+        dto.setResult(paymentInfo.getCreditCard().getNumber().charAt(0) == '4');
+        try {
+            PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
+            bl.create(dto, paymentInfo.getId());
+        } catch (Exception e) {
+            throw new PluggableTaskException(e);
+        } 
         
         if (paymentInfo.getCreditCard().getNumber().charAt(0) == '4') {
             paymentInfo.setResultId(Constants.RESULT_OK);
@@ -63,14 +73,16 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
     /**
      * returns OK for visa only
      */
-    public PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId)
+    public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo)
             throws PluggableTaskException {
-        PaymentAuthorizationDTO dto = new PaymentAuthorizationDTO();
-        dto.setCreateDate(Calendar.getInstance().getTime());
-        dto.setApprovalCode("myApproval");
-        dto.setCode1("super code 1");
-        PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(dto);
-        retValue.setResult(cc.getNumber().charAt(0) == '4');
+        PaymentAuthorizationDTOEx retValue = getAuthDTO(paymentInfo);
+        retValue.setResult(paymentInfo.getCreditCard().getNumber().charAt(0) == '4');
+        try {
+            PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
+            bl.create(retValue, paymentInfo.getId());
+        } catch (Exception e) {
+            throw new PluggableTaskException(e);
+        } 
         
         return retValue;
       }
@@ -78,6 +90,17 @@ public class TestPaymentTask extends PluggableTask implements PaymentTask {
     public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, PaymentDTOEx paymentInfo) throws PluggableTaskException {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    private PaymentAuthorizationDTOEx getAuthDTO(PaymentDTOEx paymentInfo) {
+        PaymentAuthorizationDTO dto = new PaymentAuthorizationDTO();
+        dto.setCreateDate(Calendar.getInstance().getTime());
+        dto.setApprovalCode("myApproval");
+        dto.setCode1("super code 1");
+        dto.setCardCode(paymentInfo.getCreditCard().getNumber());
+        dto.setProcessor("simple test processor");
+        PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(dto);
+        return retValue;
     }
 
 }

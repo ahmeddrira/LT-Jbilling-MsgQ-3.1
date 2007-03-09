@@ -20,7 +20,6 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
@@ -49,13 +48,16 @@ public interface PaymentTask {
      * the amount is approved, but if this charge is not confirmed within X
      * number of days, the charge will be dropped and the credit card not charged.
      * The way to confirm the charge is by calling ConfirmPreAuth
-     * @param cc
-     * @param amount
-     * @param currencyId
+     * @param paymentInfo 
+     *   This object needs to have
+     *   - currency
+     *   - amount
+     *   - credit card
+     *   - the id of the existing payment row
      * @return
      * @throws PluggableTaskException
      */
-    PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId) 
+    PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo) 
             throws PluggableTaskException;
     
     /**

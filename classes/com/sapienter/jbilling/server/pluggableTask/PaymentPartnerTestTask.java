@@ -25,7 +25,6 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
@@ -57,7 +56,7 @@ public class PaymentPartnerTestTask
 
     }
     
-    public PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId) 
+    public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo) 
         throws PluggableTaskException {
         return null;
 

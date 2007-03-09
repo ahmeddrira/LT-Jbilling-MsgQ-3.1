@@ -594,7 +594,7 @@ public class WebServicesSessionBean implements SessionBean {
                 // the total. However, in a new order most related objects won't 
                 // be there (process, invoices, etc).
                 OrderDTOEx newOrder = DTOFactory.getOrderDTOEx(orderId, 1);
-                retValue = ccBl.validatePreAuthorization(entityId, 
+                retValue = ccBl.validatePreAuthorization(entityId, userId,
                         paymentDto.getCreditCard(), 
                         newOrder.getTotal(), newOrder.getCurrencyId());
             }

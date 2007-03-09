@@ -198,12 +198,9 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             // now create the db row with the results of this authorization call
             PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-            log.debug("Finding payment " + paymentInfo.getId());
-            PaymentBL paymentBl = new PaymentBL(paymentInfo.getId());
             // set the processor
             response.getPaymentAuthorizationDTO().setProcessor("Authorize.net");
-            bl.create(response.getPaymentAuthorizationDTO());
-            bl.getEntity().setPayment(paymentBl.getEntity());
+            bl.create(response.getPaymentAuthorizationDTO(), paymentInfo.getId());
             
         } catch (HttpException e) {
             log.warn("Http exception when calling Authorize.net", e);
@@ -430,10 +427,15 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     }
     
     /**
+     * The argument 'payment' has to have
+     *   - currency
+     *   - amount
+     *   - credit card
+     *   - the id of the existing payment row
      * @return The information with the results of the pre-authorization, or null if the was
      * a problem, such as the processor being unavailable
      */
-    public PaymentAuthorizationDTOEx preAuth(CreditCardDTO cc, Float amount, Integer currencyId) 
+    public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx payment) 
             throws PluggableTaskException {
         log = Logger.getLogger(PaymentAuthorizeNetTask.class);
         String login = (String) parameters.get(PARAMETER_LOGIN);
@@ -445,11 +447,12 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         }
         
         try {
-            CurrencyBL currencyBL = new CurrencyBL(currencyId);
+            CurrencyBL currencyBL = new CurrencyBL(payment.getCurrencyId());
             String currencyCode = currencyBL.getEntity().getCode();
 
             NameValuePair data[] = getChargeData(login, transaction, false, 
-                    amount, cc.getNumber(), CreditCardBL.get4digitExpiry(cc),
+                    payment.getAmount(), payment.getCreditCard().getNumber(), 
+                    CreditCardBL.get4digitExpiry(payment.getCreditCard()),
                     currencyCode, false, new Integer(0));
             
             AuthorizeNetResponseDTO response = makeCall(data);
@@ -459,7 +462,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             PaymentAuthorizationDTOEx  authDto = new PaymentAuthorizationDTOEx(
                     response.getPaymentAuthorizationDTO());
             authDto.setProcessor("Authorize.net");
-            bl.create(authDto);
+            bl.create(authDto, payment.getId());
             // since this is just an authorization, without a related payment
             // we leave it like this, no links to the payment table
             

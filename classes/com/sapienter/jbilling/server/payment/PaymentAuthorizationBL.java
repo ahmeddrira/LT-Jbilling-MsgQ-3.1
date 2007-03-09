@@ -24,20 +24,16 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocalHome;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
-import com.sapienter.jbilling.server.util.EventLogger;
 
 public class PaymentAuthorizationBL {
     private JNDILookup EJBFactory = null;
     private PaymentAuthorizationEntityLocalHome paymentAuthorizationHome = null;
     private PaymentAuthorizationEntityLocal paymentAuthorization = null;
-    private Logger log = null;
-    private EventLogger eLogger = null;
 
     public PaymentAuthorizationBL(Integer paymentAuthorizationId) 
             throws NamingException, FinderException {
@@ -56,8 +52,6 @@ public class PaymentAuthorizationBL {
     }
 
     private void init() throws NamingException {
-        log = Logger.getLogger(PaymentAuthorizationBL.class);     
-        eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         paymentAuthorizationHome = (PaymentAuthorizationEntityLocalHome) 
                 EJBFactory.lookUpLocalHome(
@@ -74,7 +68,7 @@ public class PaymentAuthorizationBL {
         paymentAuthorization = paymentAuthorizationHome.findByPrimaryKey(id);
     }
     
-    public void create(PaymentAuthorizationDTO dto) 
+    public void create(PaymentAuthorizationDTO dto, Integer paymentId) 
             throws CreateException {
         // create the record, there's no need for an event to be logged 
         // since the timestamp and the user are already in the paymentAuthorization row
@@ -88,6 +82,14 @@ public class PaymentAuthorizationBL {
         paymentAuthorization.setCode3(dto.getCode3());
         paymentAuthorization.setMD5(dto.getMD5());
         paymentAuthorization.setTransactionId(dto.getTransactionId());
+        
+        // all authorization have to be linked to a payment
+        try {
+            PaymentBL payment = new PaymentBL(paymentId);
+            paymentAuthorization.setPayment(payment.getEntity());
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
     
     public PaymentAuthorizationDTO getDTO() 

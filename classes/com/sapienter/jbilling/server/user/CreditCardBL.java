@@ -45,6 +45,8 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
@@ -225,11 +227,31 @@ public class CreditCardBL extends ResultList
         return number.replaceAll("[-\\ ]", "").trim();
     }
     
-    public PaymentAuthorizationDTOEx validatePreAuthorization(Integer entityId, CreditCardDTO cc, 
+    public PaymentAuthorizationDTOEx validatePreAuthorization(Integer entityId, 
+            Integer userId, CreditCardDTO cc, 
             Float amount, Integer currencyId) 
-            throws NamingException, PluggableTaskException, FinderException {
+            throws NamingException, PluggableTaskException, FinderException, CreateException {
 
         PaymentAuthorizationDTOEx retValue = null;
+        // create a new payment record
+        PaymentDTOEx paymentDto = new PaymentDTOEx();
+        paymentDto.setAmount(amount);
+        paymentDto.setCurrencyId(currencyId);
+        paymentDto.setCreditCard(cc);
+        paymentDto.setUserId(userId);
+        // TO-DO: mark this payment as a pre-auth, so it doesn't get mixed up with
+        // real payments
+        // filler fields, required
+        paymentDto.setIsRefund(new Integer(0));
+        paymentDto.setMethodId(Util.getPaymentMethod(cc.getNumber()));
+        paymentDto.setAttempt(new Integer(1));
+        paymentDto.setResultId(Constants.RESULT_ENTERED); // to be updated later
+        paymentDto.setPaymentDate(Calendar.getInstance().getTime());
+        paymentDto.setBalance(amount);
+        
+        PaymentBL payment = new PaymentBL();
+        payment.create(paymentDto); // this updates the id
+        
         // use the payment processor configured 
         PluggableTaskManager taskManager =
             new PluggableTaskManager(entityId,
@@ -237,10 +259,13 @@ public class CreditCardBL extends ResultList
         PaymentTask task = (PaymentTask) taskManager.getNextClass();
     
         while (task != null && retValue == null) {
-            retValue = task.preAuth(cc, amount, currencyId);
+            retValue = task.preAuth(paymentDto);
             // get the next task
             task = (PaymentTask) taskManager.getNextClass();
         } 
+        
+        // update the result
+        payment.getEntity().setResultId(paymentDto.getResultId());
         
         return retValue;
     }

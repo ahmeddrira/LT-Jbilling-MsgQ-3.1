@@ -222,7 +222,7 @@ public class WSTest extends TestCase {
             // add a credit card
             CreditCardDTO cc = new CreditCardDTO();
             cc.setName("Frodo Baggins");
-            cc.setNumber("4111111111111111");
+            cc.setNumber("4111111111111152");
             cc.setExpiry(Calendar.getInstance().getTime());
             newUser.setCreditCard(cc);
             

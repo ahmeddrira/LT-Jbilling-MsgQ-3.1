@@ -232,7 +232,6 @@ public class CreditCardBL extends ResultList
             Float amount, Integer currencyId) 
             throws NamingException, PluggableTaskException, FinderException, CreateException {
 
-        PaymentAuthorizationDTOEx retValue = null;
         // create a new payment record
         PaymentDTOEx paymentDto = new PaymentDTOEx();
         paymentDto.setAmount(amount);
@@ -258,14 +257,20 @@ public class CreditCardBL extends ResultList
             Constants.PLUGGABLE_TASK_PAYMENT);
         PaymentTask task = (PaymentTask) taskManager.getNextClass();
     
-        while (task != null && retValue == null) {
-            retValue = task.preAuth(paymentDto);
+        boolean processNext = true;
+        while (task != null && processNext) {
+            processNext = task.preAuth(paymentDto);
             // get the next task
             task = (PaymentTask) taskManager.getNextClass();
         } 
         
         // update the result
         payment.getEntity().setResultId(paymentDto.getResultId());
+        
+        //create the return value
+        PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(
+                paymentDto.getAuthorization());
+        retValue.setResult(paymentDto.getResultId().equals(Constants.RESULT_OK));
         
         return retValue;
     }

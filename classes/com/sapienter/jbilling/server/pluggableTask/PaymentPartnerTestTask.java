@@ -25,7 +25,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -56,14 +56,14 @@ public class PaymentPartnerTestTask
 
     }
     
-    public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo) 
+    public boolean preAuth(PaymentDTOEx paymentInfo) 
         throws PluggableTaskException {
-        return null;
+        return true;
 
     }
 
-    public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, PaymentDTOEx paymentInfo) throws PluggableTaskException {
+    public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx paymentInfo) throws PluggableTaskException {
         // TODO Auto-generated method stub
-        return null;
+        return true;
     }
 }

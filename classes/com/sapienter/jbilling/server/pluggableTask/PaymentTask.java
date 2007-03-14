@@ -20,7 +20,7 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
 /*
@@ -36,8 +36,8 @@ public interface PaymentTask {
      * additional information for this implementation. For example, a task
      * fro credit card processing would expect an extension of PaymentDTO with
      * the credit card information.
-     * @return If the next pluggable task has to be called or not, usually
-     * meaning that this has been succesfull or not.
+     * @return If the next pluggable task has to be called or not. True would 
+     * be returned usually when the gatway is not available.
      */
     boolean process(PaymentDTOEx paymentInfo) throws PluggableTaskException;
     
@@ -54,10 +54,11 @@ public interface PaymentTask {
      *   - amount
      *   - credit card
      *   - the id of the existing payment row
-     * @return
+     * @return If the next pluggable task has to be called or not. True would 
+     * be returned usually when the gatway is not available.
      * @throws PluggableTaskException
      */
-    PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo) 
+    boolean preAuth(PaymentDTOEx paymentInfo) 
             throws PluggableTaskException;
     
     /**
@@ -68,10 +69,11 @@ public interface PaymentTask {
      * @param auth
      * @param amount
      * @param currencyId
-     * @return
+     * @return If the next pluggable task has to be called or not. True would 
+     * be returned usually when the gatway is not available.
      * @throws PluggableTaskException
      */
-    PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, 
+    boolean confirmPreAuth(PaymentAuthorizationDTO auth, 
             PaymentDTOEx paymentInfo) 
             throws PluggableTaskException;
     

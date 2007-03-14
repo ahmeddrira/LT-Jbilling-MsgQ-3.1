@@ -5,7 +5,6 @@ import javax.naming.NamingException;
 
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
 public abstract class PaymentTaskBase extends PluggableTask implements PaymentTask {
@@ -47,14 +46,14 @@ public abstract class PaymentTaskBase extends PluggableTask implements PaymentTa
 	 */
 	protected static final class Result {
 		private final boolean myCallOtherProcessors;
-		private final PaymentAuthorizationDTOEx myAuthorizationData;
+		private final PaymentAuthorizationDTO myAuthorizationData;
 		
-		public Result(PaymentAuthorizationDTOEx data, boolean shouldCallOthers){
+		public Result(PaymentAuthorizationDTO data, boolean shouldCallOthers){
 			myAuthorizationData = data;
 			myCallOtherProcessors = shouldCallOthers;
 		}
 		
-		public PaymentAuthorizationDTOEx getAuthorizationData() {
+		public PaymentAuthorizationDTO getAuthorizationData() {
 			return myAuthorizationData;
 		}
 		

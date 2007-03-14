@@ -25,7 +25,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -41,34 +41,43 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 
 	public boolean process(PaymentDTOEx paymentInfo)
 			throws PluggableTaskException {
-
+	    LOG.debug("Routing for " + paymentInfo);
 		PaymentTask delegate = selectDelegate(paymentInfo.getUserId());
 		if (delegate == null) {
 			// give them a chance
-			return true;
+            LOG.error("ATTENTION! " +
+                    "Could not find a process to delegate for user : " +
+                    paymentInfo.getUserId());
+			return false;
 		}
 
 		delegate.process(paymentInfo);
 
+        LOG.debug("done");
 		// they already used their chance
 		return false;
 	}
 	
-	public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo) throws PluggableTaskException {
+	public boolean preAuth(PaymentDTOEx paymentInfo) throws PluggableTaskException {
 		PaymentTask delegate = selectDelegate(paymentInfo.getUserId());
-		return delegate == null ? null : delegate.preAuth(paymentInfo);
+        delegate.preAuth(paymentInfo);
+
+        // they already used their chance
+        return false;
 	}
 	
-	public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, PaymentDTOEx paymentInfo)
+	public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx paymentInfo)
 			throws PluggableTaskException {
 	
 		PaymentTask delegate = selectDelegate(paymentInfo.getUserId());
 		if (delegate == null){
-			LOG.warn("ATTENTION! " +
+			LOG.error("ATTENTION! " +
 					"Delegate is recently changed for user : " + paymentInfo.getUserId() + " with not captured transaction: " +  auth.getTransactionId());
-			return null;
+			return false;
 		}
-		return delegate.confirmPreAuth(auth, paymentInfo);
+		delegate.confirmPreAuth(auth, paymentInfo);
+        // they already used their chance
+        return false;
 	}
 
 	private PaymentTask selectDelegate(Integer userId)
@@ -117,20 +126,6 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 		}
 		return selectedTask;
 	}
-
-    /*
-	@SuppressWarnings("unchecked")
-	private ContactFieldDTOEx findPaymentProcessorField(Map fields) {
-		for (Object next : fields.values()){
-			ContactFieldDTOEx nextField = (ContactFieldDTOEx)next;
-			ContactFieldTypeDTO nextType = nextField.getType();
-			if (CUSTOM_FIELD_PAYMENT_PROCESSOR.equals(nextType.getPromptKey())){
-				return nextField;
-			}
-		}
-		return null;
-	}
-    */
 
 	private PaymentTask instantiateTask(Integer taskId)
 			throws PluggableTaskException {

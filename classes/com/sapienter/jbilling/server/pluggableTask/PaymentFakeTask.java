@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
@@ -78,33 +79,37 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 	}
 	
 	public boolean process(PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        LOG.debug("Fake processing " + paymentInfo);
 		Result result = doFakeAuthorization(paymentInfo, null);
 		return result.shouldCallOtherProcessors();
 	}
 	
-	public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx paymentInfo)
+	public boolean preAuth(PaymentDTOEx paymentInfo)
 		throws PluggableTaskException {
 		
 		String transactionId = generatePreAuthTransactionId();
 		Result result = doFakeAuthorization(paymentInfo, transactionId);
+        paymentInfo.setAuthorization(result.getAuthorizationData());
 		
-		return result.shouldCallOtherProcessors() ? null : result.getAuthorizationData();
+		return result.shouldCallOtherProcessors();
 	}
 	
-	public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, PaymentDTOEx paymentInfo)
+	public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx paymentInfo)
 		throws PluggableTaskException {
 		
 		if (!getFakeProcessorName().equals(auth.getProcessor())){
-			return null;
+			return true;
 		}
 		
 		if (!isPreAuthTransactionId(auth.getTransactionId())){
 			LOG.warn("AuthorizationDTOEx with transaction id: " + auth.getTransactionId() + " is used as preauth data");
-			return null;
+			return true;
 		}
 		
 		Result result = doFakeAuthorization(paymentInfo, null);
-		return result.shouldCallOtherProcessors() ? null : result.getAuthorizationData();
+        paymentInfo.setAuthorization(result.getAuthorizationData());
+
+		return result.shouldCallOtherProcessors();
 	}
 		
 	private Result doFakeAuthorization(PaymentDTOEx payment, String transactionId) throws PluggableTaskException {

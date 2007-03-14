@@ -31,11 +31,10 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
@@ -435,7 +434,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
      * @return The information with the results of the pre-authorization, or null if the was
      * a problem, such as the processor being unavailable
      */
-    public PaymentAuthorizationDTOEx preAuth(PaymentDTOEx payment) 
+    public boolean preAuth(PaymentDTOEx payment) 
             throws PluggableTaskException {
         log = Logger.getLogger(PaymentAuthorizeNetTask.class);
         String login = (String) parameters.get(PARAMETER_LOGIN);
@@ -474,19 +473,20 @@ public class PaymentAuthorizeNetTask extends PluggableTask
                 authDto.setResult(new Boolean(false));
             }
             
-            return authDto;
+            payment.setAuthorization(authDto);
+            return false;
         } catch (Exception e) {
             log.info("error trying to pre-authorize", e);
-            return null;
+            return true;
         } 
     }
     
-    public PaymentAuthorizationDTOEx confirmPreAuth(PaymentAuthorizationDTOEx auth, 
+    public boolean confirmPreAuth(PaymentAuthorizationDTO auth, 
             PaymentDTOEx paymentInfo) throws PluggableTaskException {
         // TODO Auto-generated method stub
         // Transaction type has to be PRIOR_AUTH_CAPTURE
         // the transactio id of the original authorization has to be included
         // along with the amount
-        return null;
+        return true;
     }
 }

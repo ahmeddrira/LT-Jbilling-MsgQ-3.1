@@ -359,6 +359,11 @@
         <column name="old_num" type="INTEGER"/>
         <column name="old_str" size="1000" type="VARCHAR"/>
         <column name="old_date" type="TIMESTAMP"/>
+        <index name="ix_el_main">
+        	<index-column name="module_id"/>
+        	<index-column name="message_id"/>
+        	<index-column name="create_datetime"/>
+        </index>
         <foreign-key foreignTable="event_log_module">
             <reference foreign="id" local="module_id"/>
         </foreign-key>
@@ -894,6 +899,12 @@
         <column name="md5" size="100" type="VARCHAR"/>
         <column name="card_code" size="100" type="VARCHAR"/>
         <column name="create_datetime" required="true" type="DATE"/>
+        <index name="create_datetime">
+        	<index-column name="create_datetime"/>
+        </index>
+        <index name="transaction_id">
+        	<index-column name="transaction_id"/>
+        </index>
         <foreign-key foreignTable="payment">
             <reference foreign="id" local="payment_id"/>
         </foreign-key>

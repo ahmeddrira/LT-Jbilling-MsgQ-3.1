@@ -78,6 +78,10 @@ public class ReportDTOEx extends ReportDTO {
     public static final Integer REPORT_INVOICE_LINE = new Integer(17);
     public static final Integer REPORT_USERS = new Integer(18);
     public static final Integer REPORT_ITEMS = new Integer(19);
+    public static final Integer REPORT_TRANSACTIONS = new Integer(20);
+    public static final Integer REPORT_SUBSCRIPTIONS = new Integer(21);
+    public static final Integer REPORT_STATUS_TRANSITIONS = new Integer(22);
+    public static final Integer REPORT_SUBSC_TRANSITIONS = new Integer(23);
     
     /*
      * Private fields

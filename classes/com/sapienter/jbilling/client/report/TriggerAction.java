@@ -130,7 +130,11 @@ public class TriggerAction extends Action {
                 report.getId().equals(ReportDTOEx.REPORT_REFUND) ||
                 report.getId().equals(ReportDTOEx.REPORT_PARTNER) ||
                 report.getId().equals(ReportDTOEx.REPORT_PAYOUT) ||
-                report.getId().equals(ReportDTOEx.REPORT_USERS) ) {
+                report.getId().equals(ReportDTOEx.REPORT_USERS) ||
+                report.getId().equals(ReportDTOEx.REPORT_TRANSACTIONS) ||
+                report.getId().equals(ReportDTOEx.REPORT_SUBSCRIPTIONS) ||
+                report.getId().equals(ReportDTOEx.REPORT_STATUS_TRANSITIONS) ||
+                report.getId().equals(ReportDTOEx.REPORT_SUBSC_TRANSITIONS)) {
         	//reports with both entity and language
             report.addDynamicParameter(entityId);
             report.addDynamicParameter(languageId);

@@ -26,6 +26,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.user;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 import javax.xml.namespace.QName;
@@ -355,6 +356,27 @@ public class WSTest extends TestCase {
             updatedUser = (UserWS) call.invoke( new Object[] { newUserId } );
             assertEquals("updated contact f name", retUser.getContact().getFirstName(),
                     updatedUser.getContact().getFirstName());
+
+            // update credit card details
+            System.out.println("Updating credit card");
+            call.setOperationName("updateCreditCard");
+            String ccName = "Updated ccName";
+            String ccNumber = "4012888888881881";
+            Date ccExpiry = Calendar.getInstance().getTime();
+
+            cc = new CreditCardDTO();
+            cc.setName(ccName);
+            cc.setNumber(ccNumber);
+            cc.setExpiry(ccExpiry);
+            call.invoke( new Object[] { newUserId, cc } );
+
+            // check updated cc details
+            call.setOperationName("getUserWS");
+            retUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            CreditCardDTO retCc = retUser.getCreditCard();
+            assertEquals("updated cc name", ccName, retCc.getName());
+            assertEquals("updated cc number", ccNumber, retCc.getNumber());
+            assertEquals("updated cc expiry", ccExpiry, retCc.getExpiry());
 
             /*
              * Delete

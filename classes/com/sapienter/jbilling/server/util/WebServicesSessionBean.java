@@ -46,6 +46,7 @@ import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -563,6 +564,35 @@ public class WebServicesSessionBean implements SessionBean {
         }
         
         return retValue;
+    }
+
+    /**
+     * Updates a user's credit card.
+     * @ejb:interface-method view-type="local"
+     * @param userId
+     * The id of the user updating credit card data.
+     * @param creditCard
+     * The credit card data to be updated. 
+     */
+    public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
+            throws SessionInternalError {
+        try {
+            CreditCardBL ccBL = new CreditCardBL();
+            // check dto has cc data
+            if (CreditCardBL.validate(creditCard)) {
+                UserBL bl = new UserBL();
+                bl.setRoot(context.getCallerPrincipal().getName());
+                Integer executorId = bl.getEntity().getUserId();
+                ccBL.updateForUser(executorId, userId, creditCard);
+            } else {
+                log.debug("WS - updateCreditCard: " 
+                        + "credit card validation error.");
+                throw new SessionInternalError("Missing cc data.");
+            }
+        } catch (Exception e) {
+            log.error("WS - updateCreditCard: ", e);
+            throw new SessionInternalError("Error updating user's credit card");
+        }
     }
 
     /*

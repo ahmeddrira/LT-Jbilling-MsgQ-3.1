@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -39,6 +40,7 @@ import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
+import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -288,5 +290,33 @@ public class CreditCardBL extends ResultList
         
         return expiry;
 
+    }
+    
+    /**
+     * Deletes existing cc records and adds a new one.
+     * @param executorId
+     * Id of the user executing this method.
+     * @param userId
+     * Id of user who is updating cc.
+     * @param cc
+     * New cc data.
+     */
+    public void updateForUser(Integer executorId, Integer userId, 
+                              CreditCardDTO cc) 
+            throws CreateException, RemoveException, NamingException,
+            FinderException {
+
+        UserEntityLocal user = UserBL.getUserEntity(userId);
+
+        Iterator iter = user.getCreditCard().iterator();
+        // delete existing cc records
+        while (iter.hasNext()) {
+            set((CreditCardEntityLocal) iter.next());
+            delete(executorId);
+            iter.remove();
+        }
+        // add the new one
+        create(cc);
+        user.getCreditCard().add(creditCard);
     }
 }

@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -56,7 +57,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        log = Logger.getLogger(WSMethodSecurityProxy.class);
        String methodName = null;
        try {
-           Method methods[] = new Method[22];
+           Method methods[] = new Method[23];
            Method aMethod;
            int i = 0;
 
@@ -218,6 +219,14 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
            aMethod = beanLocal.getDeclaredMethod(methodName, params);
            methods[i++] = aMethod;
 
+           // updateCreditCard
+           params = new Class[2];
+           params[0] = Integer.class;
+           params[1] = CreditCardDTO.class;
+           methodName = "updateCreditCard";
+           aMethod = beanLocal.getDeclaredMethod(methodName, params);
+           methods[i++] = aMethod;
+
            // set the parent methods
            setMethods(methods);          
 
@@ -253,7 +262,8 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             } else if(m.getName().equals("getUserWS") || 
                     m.getName().equals("deleteUser") ||
                     m.getName().equals("updateUserContact") ||
-                    m.getName().equals("getUserContactsWS")) {
+                    m.getName().equals("getUserContactsWS") ||
+                    m.getName().equals("updateCreditCard")) {
                 Integer arg = (Integer) args[0];
             
                 if (arg != null) {

@@ -37,6 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.validator.Arg;
+import org.apache.commons.validator.Field;
+import org.apache.commons.validator.ValidatorAction;
 import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionError;
@@ -50,11 +53,8 @@ import org.apache.struts.action.ActionServlet;
 import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
-import org.apache.struts.validator.Resources;
 import org.apache.struts.validator.FieldChecks;
-import org.apache.commons.validator.Field;
-import org.apache.commons.validator.ValidatorAction;
-import org.apache.commons.validator.Arg;
+import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -93,8 +93,10 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.OptionDTO;
+import com.sapienter.jbilling.server.util.PreferenceBL;
 
 public class GenericMaintainAction {
     private ActionMapping mapping = null;
@@ -1594,8 +1596,14 @@ public class GenericMaintainAction {
             }
             if (dto != null) { // it could be that the user has no cc yet
                 String ccNumber = dto.getNumber();
+
+                // if the user is not allowed to see cc info
+                // or the entity does not want anybody to see cc numbers
                 if (!((UserDTOEx) session.getAttribute(Constants.SESSION_USER_DTO)).
-                        isGranted(Constants.P_USER_EDIT_VIEW_CC)) {
+                        isGranted(Constants.P_USER_EDIT_VIEW_CC) || 
+                        ((UserSession) remoteSession).getEntityPreference(
+                                entityId, 
+                                com.sapienter.jbilling.server.util.Constants.PREFERENCE_HIDE_CC_NUMBERS).equals("1")) {
                     // mask cc number
                     ccNumber = "************" + ccNumber.substring(
                             ccNumber.length() - 4);

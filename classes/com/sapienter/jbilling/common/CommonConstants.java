@@ -116,6 +116,7 @@ public interface CommonConstants {
     public static Integer PREFERENCE_PRE_AUTHORIZE_CC = new Integer(34);
     public static Integer PREFERENCE_ORDER_IN_INVOICE_LINE = new Integer(35);
     public static Integer PREFERENCE_CUSTOMER_CONTACT_EDIT = new Integer(36);
+    public static Integer PREFERENCE_HIDE_CC_NUMBERS = new Integer(37);
 
     // order status, in synch with db
     public static final Integer ORDER_STATUS_ACTIVE = new Integer(1);

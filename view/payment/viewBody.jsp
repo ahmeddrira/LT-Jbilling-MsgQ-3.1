@@ -239,17 +239,27 @@ Contributor(s): ______________________________________.
 		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="payment.cc.number"/></td>
 			<td class="infodata">	
-				<jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'>
+			  <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'>
+			    <jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_HIDE_CC_NUMBERS%>'
+			                            beanName="hide_cc"/>
+				<logic:equal name="hide_cc" value="0">
 					<bean:write name="dto" 
 							property="creditCard.number"
 							scope="page"/>
-				</jbilling:permission>
-	 	        <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>' 
-                                  negative="true">
+				</logic:equal>    
+			    <logic:equal name="hide_cc" value="1">
                                 <c:set var="ccNumber" value="${dto.creditCard.number}"/>
                ************<%=((String)(pageContext.getAttribute("ccNumber"))).substring(
                               ((String)(pageContext.getAttribute("ccNumber"))).length() - 4) %>
-				</jbilling:permission>
+				</logic:equal>
+			  </jbilling:permission>
+			  <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'
+                            negative="true">
+                   <c:set var="ccNumber" value="${dto.creditCard.number}"/>
+               ************<%=((String)(pageContext.getAttribute("ccNumber"))).substring(
+                              ((String)(pageContext.getAttribute("ccNumber"))).length() - 4) %>
+                            
+              </jbilling:permission>
 			</td>
 		</tr>
 		<tr class="infoB">

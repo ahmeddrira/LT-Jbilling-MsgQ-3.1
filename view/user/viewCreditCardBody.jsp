@@ -26,6 +26,7 @@ Contributor(s): ______________________________________.
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <logic:notPresent name='<%=Constants.SESSION_CUSTOMER_DTO%>' 
 		property="customerDto.parentId">
@@ -38,13 +39,23 @@ Contributor(s): ______________________________________.
    <tr class="infoA">
 	   <td class="infoprompt"><bean:message key="payment.cc.number"/></td>
 	   <td class="infodata">
-	 	  <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'>
-            <bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="creditCard.number" />
-          </jbilling:permission>
-	 	  <jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'
+	   
+	 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'>
+	 	     <jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_HIDE_CC_NUMBERS%>'
+			                     beanName="hide_cc"/>
+		     <logic:equal name="hide_cc" value="0">
+            		<bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="creditCard.number" />
+             </logic:equal>
+		     <logic:equal name="hide_cc" value="1">
+            		     <c:set var="ccNumber" value="${customer_dto.creditCard.number}"/>
+                                  ************<%=((String)(pageContext.getAttribute("ccNumber"))).substring(
+                                        ((String)(pageContext.getAttribute("ccNumber"))).length() - 4) %>
+             </logic:equal>
+        </jbilling:permission>
+	 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_CC%>'
                             negative="true">
-                ****************
-          </jbilling:permission>
+                       ****************
+        </jbilling:permission>
        </td>
    </tr>
    <tr class="infoB">

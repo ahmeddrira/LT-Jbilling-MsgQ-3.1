@@ -639,6 +639,24 @@ public class UserBL  extends ResultList
             // this user has no contact ...
         }
         
+        // some entities rather not know the credit card numbers
+        if (retValue.getCreditCard() != null) {
+            PreferenceBL pref = new PreferenceBL();
+            try {
+                pref.set(dto.getEntityId(), Constants.PREFERENCE_HIDE_CC_NUMBERS);
+            } catch (FinderException e) {
+                // the default is good for me
+            }
+            
+            if (pref.getInt() == 1) {
+                String ccNumber = retValue.getCreditCard().getNumber();
+                if (ccNumber != null) {
+                    retValue.getCreditCard().setNumber("************" +
+                            ccNumber.substring(ccNumber.length()-4));
+                }
+            }
+        }
+        
         return retValue;
     }
     

@@ -559,11 +559,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             CreditCardDTO dto, Integer executorId) 
             throws SessionInternalError {
         // find this user and get the first cc
+
         try {
 
             UserBL userBL = new UserBL();
             userBL.set(user);
-            if (dto != null) { // it is providing a new cc
+            // if it starts with a *, it is passing a masked cc, which means no update
+            if (dto != null && dto.getNumber().charAt(0) != '*') { // it is providing a new cc
                 if (!userBL.getEntity().getCreditCard().isEmpty()) {
                     CreditCardBL ccBL = new CreditCardBL((CreditCardEntityLocal)
                             userBL.getEntity().getCreditCard().iterator().next());

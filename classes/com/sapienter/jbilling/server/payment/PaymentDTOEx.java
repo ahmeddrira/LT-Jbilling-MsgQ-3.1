@@ -130,7 +130,21 @@ public class PaymentDTOEx extends PaymentDTO {
                 maps.append(" - ");
             }
         }
-        return super.toString() + " credit card:" + creditCard + 
+
+        // had to repeat this code :( To exclude the number
+        StringBuffer cc = new StringBuffer("{");
+        if (creditCard != null) {
+            cc.append("id=" + creditCard.getId() + " " + "expiry="
+                    + creditCard.getExpiry() + " " + "name="
+                    + creditCard.getName() + " " + "type="
+                    + creditCard.getType() + " " + "deleted="
+                    + creditCard.getDeleted() + " " + "securityCode="
+                    + creditCard.getSecurityCode());
+        }        
+        cc.append('}');
+
+        
+        return super.toString() + " credit card:" + cc.toString() + 
             " cheque:" + cheque + " payment maps:" + maps.toString();
     } 
     /**

@@ -662,9 +662,9 @@ public class UserBL  extends ResultList
     
     public Integer getMainRole() {
         if (mainRole == null) {
-        	List<Integer> roleIds = new LinkedList<Integer>();
-        	for (Object next : user.getRoles()){
-        		RoleEntityLocal nextRoleObject = (RoleEntityLocal)next;
+            List roleIds = new LinkedList();
+            for (Iterator roles = user.getRoles().iterator(); roles.hasNext();){
+                RoleEntityLocal nextRoleObject = (RoleEntityLocal)roles.next();
         		roleIds.add(nextRoleObject.getId());
         	}
         	mainRole = selectMainRole(roleIds);
@@ -672,11 +672,12 @@ public class UserBL  extends ResultList
         return mainRole;
     }
     
-    private static Integer selectMainRole(Collection<Integer> allRoleIds){
+    private static Integer selectMainRole(Collection allRoleIds){
         // the main role is the smallest of them, so they have to be ordered in the
         // db in ascending order (small = important);
     	Integer result = null;
-    	for (Integer nextId : allRoleIds){
+    	for (Iterator roleIds = allRoleIds.iterator(); roleIds.hasNext();){
+            Integer nextId = (Integer)roleIds.next();
             if (result == null || nextId.compareTo(result) < 0) {
                 result = nextId;
             }

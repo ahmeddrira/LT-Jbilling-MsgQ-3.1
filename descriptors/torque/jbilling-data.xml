@@ -296,6 +296,8 @@ Contributor(s): ______________________________________
     <EventLogMessage Id="14"/>
     <EventLogMessage Id="15"/>
     <EventLogMessage Id="16"/>
+    <EventLogMessage Id="17"/>
+    <EventLogMessage Id="18"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>

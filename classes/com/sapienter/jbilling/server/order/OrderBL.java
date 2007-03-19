@@ -25,8 +25,8 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.order;
 
-import java.sql.SQLException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,6 +91,7 @@ public class OrderBL extends ResultList
     private OrderLineEntityLocalHome orderLineHome = null;
     private OrderLineTypeEntityLocalHome orderLineTypeHome = null;
     private OrderPeriodEntityLocalHome orderPeriodHome = null;
+    
     private Logger log = null;
     private EventLogger eLogger = null;
 
@@ -130,7 +131,7 @@ public class OrderBL extends ResultList
                 (OrderPeriodEntityLocalHome) EJBFactory.lookUpLocalHome(
                 OrderPeriodEntityLocalHome.class,
                 OrderPeriodEntityLocalHome.JNDI_NAME);
-    
+        
     }
 
     public OrderEntityLocal getEntity() {
@@ -177,7 +178,6 @@ public class OrderBL extends ResultList
                 order.getBillingTypeId(), languageId));
         retValue.setUserId(order.getUser().getUserId());
         
-        int f = 0;
         Vector lines = new Vector();
         for (Iterator it = order.getOrderLines().iterator(); it.hasNext();) {
             OrderLineEntityLocal line = (OrderLineEntityLocal) it.next();
@@ -369,6 +369,8 @@ public class OrderBL extends ResultList
         order.setOwnInvoice(dto.getOwnInvoice());
         order.setNotes(dto.getNotes());
         order.setNotesInInvoice(dto.getNotesInInvoice());
+        // this one needs more to get updated
+        updateNextBillableDay(executorId, dto.getNextBillableDay());
         
         // now update this order's lines
         // first, mark all the lines as deleted
@@ -384,6 +386,27 @@ public class OrderBL extends ResultList
                 EventLogger.ROW_UPDATED, null,  
                 null, null);
         
+    }
+    
+    private void updateNextBillableDay(Integer executorId, Date newDate) {
+        if (newDate == null) return;
+        // only if the new date is in the future
+        if (order.getNextBillableDay() == null ||
+                newDate.after(order.getNextBillableDay())) {
+            // this audit can be added to the order details screen
+            // otherwise the user can't account for the lost time
+            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
+                    order.getId(),
+                    EventLogger.MODULE_ORDER_MAINTENANCE, 
+                    EventLogger.ORDER_NEXT_BILL_DATE_UPDATED, null,  
+                    null, order.getNextBillableDay());
+            // do the actual update
+            order.setNextBillableDay(newDate);
+        } else {
+            log.info("order " + order.getId() + 
+                    " next billable day not updated from " + 
+                    order.getNextBillableDay() + " to " + newDate);
+        }
     }
     
     private void createLines(NewOrderDTO orderDto) 

@@ -54,6 +54,7 @@ public class EventLogger {
     // order maintenance
     public static final Integer ORDER_STATUS_CHANGE = new Integer(13);
     public static final Integer ORDER_LINE_UPDATED = new Integer(17);
+    public static final Integer ORDER_NEXT_BILL_DATE_UPDATED = new Integer(18);
     // invoice related message
     public static final Integer INVOICE_ORDER_APPLIED = new Integer(16);
     // others

@@ -512,7 +512,7 @@ Contributor(s): ______________________________________.
 								property='<%= "periods[" + index + "].origin" %>'
 								scope="session" 
 								value="2">
-						<bean:message key="invioce.origin.manual"/>
+						<bean:message key="invoice.origin.manual"/>
 					</logic:equal>
 				</td>
 			</tr>	

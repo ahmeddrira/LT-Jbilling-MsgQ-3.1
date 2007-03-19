@@ -1096,7 +1096,7 @@ public class WebServicesSessionBean implements SessionBean {
         order.setAnticipatePeriods(zero2null(order.getAnticipatePeriods()));
         order.setActiveSince(zero2null(order.getActiveSince()));
         order.setActiveUntil(zero2null(order.getActiveUntil()));
-        order.setNextBillableDay(null);
+        order.setNextBillableDay(zero2null(order.getNextBillableDay()));
         order.setLastNotified(null);
         try {
             GatewayBL valid = new GatewayBL();

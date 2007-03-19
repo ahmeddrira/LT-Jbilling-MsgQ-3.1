@@ -237,8 +237,11 @@ public class WSTest extends TestCase {
             retOrder.setStatusId(new Integer(2));
             call.setOperationName("updateOrder");
             call.setReturnClass(null);
+            // also update the next billable day
+            retOrder.setNextBillableDay(cal.getTime());
             System.out.println("Updating order...");
             call.invoke( new Object[] { retOrder } );
+            
             // try to update an order of another entity
             try {
             	System.out.println("Updating bad order...");
@@ -259,6 +262,8 @@ public class WSTest extends TestCase {
             		retOrder.getOrderLines()[1].getDescription());
             assertEquals("Modified quantity", new Integer(2),
             		retOrder.getOrderLines()[1].getQuantity());
+            assertEquals("New billable date", cal.getTimeInMillis(), 
+                    retOrder.getNextBillableDay().getTime());
             for (i = 0; i < retOrder.getOrderLines().length; i++) {
             	retOrderLine = retOrder.getOrderLines()[i];
 	            if (retOrderLine.getItemId().equals(new Integer(14))) {

@@ -298,6 +298,7 @@ Contributor(s): ______________________________________
     <EventLogMessage Id="16"/>
     <EventLogMessage Id="17"/>
     <EventLogMessage Id="18"/>
+    <EventLogMessage Id="19"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -309,6 +310,7 @@ Contributor(s): ______________________________________
     <EventLogModule Id="9"/>
     <EventLogModule Id="10"/>
     <EventLogModule Id="11"/>
+    <EventLogModule Id="12"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Manual invoice deletion"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Invoice maintenance"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Pluggable tasks maintenance"/>

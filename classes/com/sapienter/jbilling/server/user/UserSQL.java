@@ -44,4 +44,18 @@ public interface UserSQL {
         "       and i.is_review = 0  " +
         "       and i.deleted = 0 " +
         "    )";
+    
+    static final String findUserTransitions =
+      	"SELECT el.id, el.old_str, el.create_datetime, el.old_num, el.user_id" +
+        " FROM event_log el" +
+        " WHERE el.module_id = 2 AND el.message_id = 12 AND el.entity_id = ?";
+    
+    static final String findUserTransitionsByIdSuffix =
+    	  " AND el.id > ?";
+    
+    static final String findUserTransitionsByDateSuffix =
+    	  " AND el.create_datetime >= ?";
+    
+    static final String findUserTransitionsUpperDateSuffix =
+    	  " AND el.create_datetime <= ?";
 }

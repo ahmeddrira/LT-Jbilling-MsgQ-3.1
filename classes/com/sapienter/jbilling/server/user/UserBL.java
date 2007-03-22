@@ -21,6 +21,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.user;
 
 
+import java.util.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -911,5 +912,118 @@ public class UserBL  extends ResultList
         execute();
         conn.close();
         return cachedResults;
+    }
+
+    
+    public UserTransitionResponseWS[] getUserTransitionsById (Integer last, Date to) 
+    		throws SQLException, NamingException {
+    	
+    	UserTransitionResponseWS[] result = null;
+    	java.sql.Date toDate = null;
+    	String query = UserSQL.findUserTransitions;
+    	if (last.intValue() > 0) {
+    		query += UserSQL.findUserTransitionsByIdSuffix;
+    	}
+    	if (to != null) {
+    		query += UserSQL.findUserTransitionsUpperDateSuffix;
+    		toDate = new java.sql.Date(to.getTime());
+    	}
+
+    	int pos = 2;
+    	log.info("Getting transaction list by Id. query --> " + query);
+    	prepareStatement(query);
+    	cachedResults.setInt(1, getEntity().getEntity().getId());
+
+    	if (last.intValue() > 0) {
+    		cachedResults.setInt(pos, last);
+    		pos++;
+    	}
+    	if (toDate != null) {
+    		cachedResults.setDate(pos, toDate);
+    	}
+
+    	execute();
+    	conn.close();
+    	
+    	if (cachedResults == null || !cachedResults.next()) {
+    		return null;
+    	}
+    	
+    	// Load the results into a linked list.
+    	List tempList = new LinkedList();
+    	UserTransitionResponseWS temp;
+    	do {
+    		temp = new UserTransitionResponseWS();
+    		temp.setId(cachedResults.getInt(1));
+    		temp.setToStatusId(Integer.parseInt(cachedResults.getString(2)));
+    		temp.setTransitionDate(new Date(cachedResults.getDate(3).getTime()));
+    		temp.setUserId(cachedResults.getInt(5));
+    		temp.setFromStatusId(cachedResults.getInt(4));
+    		tempList.add(temp);
+    	} while (cachedResults.next());
+    	
+    	// The list is now ready. Convert into an array and return.
+    	conn.close();
+    	
+    	result = new UserTransitionResponseWS[tempList.size()];
+    	int count = 0;
+    	for (Iterator i = tempList.iterator(); i.hasNext(); ) {
+    		result[count] = (UserTransitionResponseWS)i.next();
+    		count++;
+    	}
+    	return result;
+    }
+
+
+    public UserTransitionResponseWS[] getUserTransitionsByDate (Date from, Date to)
+    		throws SQLException, NamingException {
+    	
+    	UserTransitionResponseWS[] result = null;
+    	java.sql.Date toDate = null;
+    	String query = UserSQL.findUserTransitions;
+    	query += UserSQL.findUserTransitionsByDateSuffix;
+
+    	if (to != null) {
+    		query += UserSQL.findUserTransitionsUpperDateSuffix;
+    		toDate = new java.sql.Date(to.getTime());
+    	}
+    	log.info("Getting transaction list by date. query --> " + query);
+
+    	prepareStatement(query);
+    	cachedResults.setInt(1, getEntity().getEntity().getId());
+    	cachedResults.setDate(2, new java.sql.Date(from.getTime()));
+    	if (toDate != null) {
+    		cachedResults.setDate(3, toDate);
+    	}
+    	execute();
+    	conn.close();
+    	
+    	if (cachedResults == null || !cachedResults.next()) {
+    		return null;
+    	}
+    	
+    	// Load the results into a linked list.
+    	List tempList = new LinkedList();
+    	UserTransitionResponseWS temp;
+    	do {
+    		temp = new UserTransitionResponseWS();
+    		temp.setId(cachedResults.getInt(1));
+    		temp.setToStatusId(Integer.parseInt(cachedResults.getString(2)));
+    		temp.setTransitionDate(new Date(cachedResults.getDate(3).getTime()));
+    		temp.setUserId(cachedResults.getInt(5));
+    		temp.setFromStatusId(cachedResults.getInt(4));
+    		tempList.add(temp);
+    	} while (cachedResults.next());
+    	
+    	// The list is now ready. Convert into an array and return.
+    	conn.close();
+    	
+    	result = new UserTransitionResponseWS[tempList.size()];
+    	int count = 0;
+    	for (Iterator i = tempList.iterator(); i.hasNext(); ) {
+    		result[count] = (UserTransitionResponseWS)i.next();
+    		count++;
+    	}
+    	return result;
     }
 }

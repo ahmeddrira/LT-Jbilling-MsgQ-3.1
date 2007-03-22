@@ -25,6 +25,10 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.util;
 
 import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -43,6 +47,7 @@ import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.GatewayBL;
+import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
@@ -72,6 +77,7 @@ import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserSessionBean;
+import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 
 /**
@@ -1002,6 +1008,67 @@ public class WebServicesSessionBean implements SessionBean {
             throw new SessionInternalError("Error creating item");
         }
 
+    }
+    
+    /**
+     * @ejb.interface-method view-type = "local"
+     * Implementation of the User Transitions List webservice. This accepts a
+     * start and end date as arguments, and produces an array of data containing
+     * the user transitions logged in the requested time range.
+     * @param from Date indicating the lower limit for the extraction of transition
+     * logs. It can be <code>null</code>, in such a case, the extraction will start
+     * where the last extraction left off. If no extractions have been done so far and
+     * this parameter is null, the function will extract from the oldest transition
+     * logged.
+     * @param to Date indicatin the upper limit for the extraction of transition logs.
+     * It can be <code>null</code>, in which case the extraction will have no upper
+     * limit. 
+     * @return UserTransitionResponseWS[] an array of objects containing the result
+     * of the extraction, or <code>null</code> if there is no data thas satisfies
+     * the extraction parameters.
+     */
+    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) 
+    		throws SessionInternalError {
+    	
+    	UserTransitionResponseWS[] result = null;
+    	Integer last = null;
+    	// Obtain the current entity and language Ids
+    	
+    	try {
+    		UserBL user = new UserBL();
+    		user.setRoot(context.getCallerPrincipal().getName());
+    		Integer entityId  = user.getEntity().getEntity().getId();
+    		Integer callerId  = user.getEntity().getUserId();
+    		EventLogger evLog = EventLogger.getInstance();
+    		
+    		if (from == null) {
+    			last = evLog.getLastTransitionEvent(entityId);
+    		}
+
+    		if (last != null) {
+    			result = user.getUserTransitionsById(last, to);
+    		} else {
+    			result = user.getUserTransitionsByDate(from, to);
+    		}
+    		
+    		if (result == null) {
+    			log.info("Data retrieved but resultset is null");
+    		} else {
+    			log.info("Data retrieved. Result size = " + result.length);
+    		}
+
+    		// Log the last value returned if there was any. This happens always,
+    		// unless the returned array is empty.
+    		if (result!= null && result.length > 0) {
+    			log.info("Registering transition list event");
+    			evLog.audit(callerId, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
+    						EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
+    						result[0].getId().toString(), null);
+    		}
+    	} catch (Exception e) {
+    		throw new SessionInternalError("Error accessing database [" + e.getLocalizedMessage() + "]", this.getClass(), e);
+    	}
+    	return result;
     }
     
     private Integer zero2null(Integer var) {

@@ -20,12 +20,16 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.util;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.ejb.CreateException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
+
+import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -60,6 +64,7 @@ public class EventLogger {
     // others
     public static final Integer ROW_DELETED = new Integer(7);
     public static final Integer ROW_UPDATED= new Integer(9); // field not specified
+    public static final Integer USER_TRANSITIONS_LIST = new Integer(19);
 
 
     // event log modules in synch with db (event_log_module)
@@ -74,6 +79,7 @@ public class EventLogger {
     public static final Integer MODULE_INVOICE_MAINTENANCE = new Integer(9);
     public static final Integer MODULE_PAYMENT_MAINTENANCE = new Integer(10);
     public static final Integer MODULE_TASK_MAINTENANCE = new Integer(11);
+    public static final Integer MODULE_WEBSERVICES = new Integer(12);
 
     
     // levels of logging    
@@ -200,5 +206,39 @@ public class EventLogger {
         } catch (Exception e) {
             log.error("Can't create an eventLog audit record.", e);
         }
-    }   
+    }
+    
+    /**
+     * Queries the event_log table to determine the position where the last query
+     * of the user transitions ended. This is called if the user passes
+     * <code>null</code> as the <code>from</code> parameter to the getUserTransitions
+     * webservice call.
+     * @return the id of the last queried transitions list.
+     */
+    public Integer getLastTransitionEvent(Integer entityId) 
+    		throws SQLException, NamingException {
+    	
+    	/*
+    	 * Extract the last id logged (the one with higher id) and return it.
+    	 * 
+    	 * TODO: this is a potential performance problem: the query above extracts
+    	 * all logged events and sorts them in descending order (so that the newest
+    	 * log event is on top of the list). A better solution would be to extract
+    	 * only the last event in the db, or limit the extraction based on a date,
+    	 * or put the last id somewhere else.
+    	 */
+    	CachedRowSet cachedResults = new CachedRowSet();
+    	Integer result = new Integer(0);
+    	JNDILookup jndi = JNDILookup.getFactory();
+    	Connection conn = jndi.lookUpDataSource().getConnection();
+    	cachedResults.setCommand(EventLoggerSQL.searchLog);
+    	cachedResults.setInt(1, entityId);
+    	cachedResults.execute(conn);
+    	
+    	if (cachedResults.next()) {
+    		result = Integer.valueOf(cachedResults.getInt(1));
+    	}
+		conn.close();
+		return new Integer(result);
+    }
 }

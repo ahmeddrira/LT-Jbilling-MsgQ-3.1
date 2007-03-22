@@ -37,6 +37,7 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import javax.xml.rpc.ParameterMode;
 
 import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -46,6 +47,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 
 /**
  * @author Emil
@@ -439,6 +441,84 @@ public class WSTest extends TestCase {
             assertEquals(users[0], mcRet.getUserId().intValue());
             
             System.out.println("Done");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+    
+    public void testUserTransitions() {
+        try {
+            String endpoint = "http://localhost/jboss-net/services/billing";
+            
+            Service  service = new Service();
+            Call  call = (Call) service.createCall();
+            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
+            call.setOperationName("getUserTransitions");
+            call.setReturnClass(UserTransitionResponseWS[].class);
+            call.setUsername("admin");
+            call.setPassword("asdfasdf");
+            
+
+            // UserTransitionResponseWS[]            
+            QName qn = new QName("http://www.sapienter.com/billing", "UserTransitionResponseWS");
+            BeanSerializerFactory ser1 = new BeanSerializerFactory(
+                    UserTransitionResponseWS.class, qn);
+            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
+                    UserTransitionResponseWS.class, qn);
+            call.registerTypeMapping(UserTransitionResponseWS.class, 
+            		qn, ser1, ser2);
+            call.addParameter(new QName("from"),
+            	new QName("Date"), 
+            	Date.class, 
+            	ParameterMode.IN);
+            call.addParameter(new QName("to"),
+            	new QName("Date"), 
+            	Date.class, 
+            	ParameterMode.IN);
+
+            System.out.println("Getting complete list of user transitions");
+            UserTransitionResponseWS[] ret = (UserTransitionResponseWS[]) 
+            		call.invoke( new Object[] { null, null } );
+            
+            if (ret == null)
+            	fail("Transition list should not be empty!");
+            assertEquals(ret.length, 2);
+            
+            // Check the ids of the returned transitions
+            assertEquals(ret[0].getId().intValue(), 1);
+            assertEquals(ret[1].getId().intValue(), 2);
+            // Check the value of returned data
+            assertEquals(ret[0].getUserId().intValue(), 2);
+            assertEquals(ret[0].getFromStatusId().intValue(), 2);
+            assertEquals(ret[0].getToStatusId().intValue(), 1);
+            assertEquals(ret[1].getUserId().intValue(), 2);
+            assertEquals(ret[1].getFromStatusId().intValue(), 2);
+            assertEquals(ret[1].getToStatusId().intValue(), 1);
+
+            System.out.println("Getting first partial list of user transitions");
+            ret = (UserTransitionResponseWS[])
+            		call.invoke(new Object[]{ new Date(2000 - 1900,0,0), 
+            				new Date(2007 - 1900, 0, 1) } );
+            if (ret == null)
+            	fail("Transition list should not be empty!");
+            assertEquals(ret.length, 1);
+            assertEquals(ret[0].getId().intValue(), 1);
+            assertEquals(ret[0].getUserId().intValue(), 2);
+            assertEquals(ret[0].getFromStatusId().intValue(), 2);
+            assertEquals(ret[0].getToStatusId().intValue(), 1);
+            
+            System.out.println("Getting second partial list of user transitions");
+            ret = (UserTransitionResponseWS[])
+            		call.invoke(new Object[]{ null, null } );
+            if (ret == null)
+            	fail("Transition list should not be empty!");
+            assertEquals(ret.length, 1);
+            assertEquals(ret[0].getId().intValue(), 2);
+            assertEquals(ret[0].getUserId().intValue(), 2);
+            assertEquals(ret[0].getFromStatusId().intValue(), 2);
+            assertEquals(ret[0].getToStatusId().intValue(), 1);
+            
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

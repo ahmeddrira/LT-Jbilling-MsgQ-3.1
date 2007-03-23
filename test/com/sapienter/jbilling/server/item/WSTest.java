@@ -50,7 +50,7 @@ public class WSTest extends TestCase {
             call.setTargetEndpointAddress( new java.net.URL(endpoint) );
             call.setOperationName("createItem");
             //call.setReturnClass(Integer.class);
-            call.setUsername("testapi");
+            call.setUsername("admin");
             call.setPassword("asdfasdf");
             
 
@@ -71,7 +71,7 @@ public class WSTest extends TestCase {
             
             
             Integer types[] = new Integer[1];
-            types[0] = new Integer(296);
+            types[0] = new Integer(1);
             newItem.setTypes(types);
             newItem.setPriceManual(new Integer(0));
             
@@ -88,5 +88,54 @@ public class WSTest extends TestCase {
         }
     }
 
+    public void testGetAllItems() {
+        try {
+        	String endpoint = "http://localhost/jboss-net/services/billing";
+        
+            
+            Service  service = new Service();
+            Call  call = (Call) service.createCall();
+            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
+            call.setOperationName("getAllItems");
+            call.setUsername("admin");
+            call.setPassword("asdfasdf");
+            
+
+            // ItemDTOEx
+            QName qn = new QName("http://www.sapienter.com/billing", "ItemDTOEx");
+            BeanSerializerFactory ser1 = new BeanSerializerFactory(
+                    ItemDTOEx.class, qn);
+            BeanDeserializerFactory ser2 = new BeanDeserializerFactory(
+                    ItemDTOEx.class, qn);
+            call.registerTypeMapping(ItemDTOEx.class, qn, ser1, ser2);
+            
+            // ItemPriceDTOEx
+            qn = new QName("http://www.sapienter.com/billing", "ItemPriceDTOEx");
+            ser1 = new BeanSerializerFactory(
+                    ItemPriceDTOEx.class, qn);
+            ser2 = new BeanDeserializerFactory(
+                    ItemPriceDTOEx.class, qn);
+            call.registerTypeMapping(ItemPriceDTOEx.class, qn, ser1, ser2);
+
+            /*
+             * Get all items
+             */
+             
+            System.out.println("Getting all items");
+            ItemDTOEx[] items = (ItemDTOEx[]) call.invoke( new Object[] { } );
+            assertNotNull("The items were not retrieved", items);
+            
+            for (int i = 0; i < items.length; i++) {
+                System.out.println("Description: " + items[i].getDescription());
+                System.out.println("Price: " + items[i].getPrice());
+            }
+            System.out.println("Done!");
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 
 }

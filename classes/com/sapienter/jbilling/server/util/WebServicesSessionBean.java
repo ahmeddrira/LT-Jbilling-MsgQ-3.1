@@ -1011,6 +1011,24 @@ public class WebServicesSessionBean implements SessionBean {
     }
     
     /**
+     * Retrieves an array of items for the caller's entity. 
+     * @ejb:interface-method view-type="local"
+     * @return an array of items from the caller's entity
+     */
+    public ItemDTOEx[] getAllItems() throws SessionInternalError {
+        try {
+            UserBL userBL = new UserBL();
+            userBL.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId = userBL.getEntity().getEntity().getId(); 
+            ItemBL itemBL = new ItemBL();
+            return itemBL.getAllItems(entityId);
+        } catch (Exception e) {
+            log.error("WS - getAllItems", e);
+            throw new SessionInternalError("Error getting all items");
+        }
+    }
+    
+    /**
      * @ejb.interface-method view-type = "local"
      * Implementation of the User Transitions List webservice. This accepts a
      * start and end date as arguments, and produces an array of data containing

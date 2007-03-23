@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CurrencyEntityLocal;
+import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ItemPriceEntityLocal;
@@ -481,6 +482,31 @@ public class ItemBL {
      */
     public String getPriceCurrencySymbol() {
         return priceCurrencySymbol;
+    }
+
+    /**
+     * Returns all items for the given entity.
+     * @param entityId
+     * The id of the entity.
+     * @return an array of all items
+     */
+    public ItemDTOEx[] getAllItems(Integer entityId)
+            throws FinderException, NamingException {
+        EntityBL entityBL = new EntityBL(entityId);
+        EntityEntityLocal entity = entityBL.getEntity();
+        Collection itemEntities = entity.getItems();
+        ItemDTOEx[] items = new ItemDTOEx[itemEntities.size()];
+
+        // iterate through returned item entities, converting them into a DTO
+        int index = 0;
+        for (Iterator iter = itemEntities.iterator(); iter.hasNext(); index++) {
+            ItemEntityLocal item = (ItemEntityLocal) iter.next();
+            this.item = item;
+            items[index] = getDTO(entity.getLanguageId(), null, entityId,
+                entity.getCurrencyId());
+        }
+
+        return items;
     }
 
 }

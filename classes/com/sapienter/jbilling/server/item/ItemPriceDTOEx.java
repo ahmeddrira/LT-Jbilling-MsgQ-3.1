@@ -21,16 +21,17 @@ Contributor(s): ______________________________________.
 /*
  * Created on Mar 12, 2004
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.item;
 
+import java.io.Serializable;
 import com.sapienter.jbilling.server.entity.ItemPriceDTO;
 
 /**
  * @author Emil
+ * @jboss-net.xml-schema urn="sapienter:ItemPriceDTOEx"
  */
-public class ItemPriceDTOEx extends ItemPriceDTO {
+public class ItemPriceDTOEx extends ItemPriceDTO implements Serializable {
 
     private String name = null;
     // this is useful for the form, exposing a Float is trouble

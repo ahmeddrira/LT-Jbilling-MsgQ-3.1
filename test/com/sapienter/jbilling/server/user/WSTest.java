@@ -21,7 +21,6 @@ Contributor(s): ______________________________________.
 /*
  * Created on Dec 18, 2003
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.user;
 
@@ -30,15 +29,13 @@ import java.util.Date;
 import java.util.Random;
 
 import javax.xml.namespace.QName;
-
-import junit.framework.TestCase;
-
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import javax.xml.rpc.ParameterMode;
 
+import org.apache.axis.client.Call;
+import org.apache.axis.encoding.ser.BeanDeserializerFactory;
+import org.apache.axis.encoding.ser.BeanSerializerFactory;
+
+import com.sapienter.jbilling.server.WSTestBase;
 import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
@@ -47,28 +44,17 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 
 /**
  * @author Emil
  */
-public class WSTest extends TestCase {
+public class WSTest extends WSTestBase {
       
     public void testGetUser() {
         try {
-            /* If using https, you need an ssh key. You can configure ANT to
-             * pass on the java properties like this:
-             * export ANT_OPTS="-Djavax.net.ssl.trustStore=c:\\\\sapienter\\\\ssl\\\\client.keystore -Djavax.net.ssl.trustStorePassword=pass"
-             */
-            String endpoint = "http://localhost/jboss-net/services/billing";
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
+            Call  call = createTestCall();
             call.setOperationName("getUserWS");
             call.setReturnClass(UserWS.class);
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
 
             // UserWS            
             QName qn = new QName("http://www.sapienter.com/billing", "UserWS");
@@ -113,16 +99,9 @@ public class WSTest extends TestCase {
 
     public void testCreateUpdateDeleteUser() {
         try {
-            String endpoint = "http://localhost/jboss-net/services/billing";
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
+            Call call = createTestCall();
             call.setOperationName("createUser");
             //call.setReturnClass(Integer.class);
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
-            
 
             // UserWS            
             QName qn = new QName("http://www.sapienter.com/billing", "UserWS");
@@ -257,7 +236,7 @@ public class WSTest extends TestCase {
              */
             System.out.println("Making mega call");
             call.setOperationName("create");
-            retUser.setUserName("megaUser");
+            retUser.setUserName("MU" + Long.toHexString(System.currentTimeMillis()));
             // need to reset the password, it came encrypted
             // let's use a long one
             retUser.setPassword("0fu3js8wl1;a$e2w)xRQ"); 
@@ -449,16 +428,9 @@ public class WSTest extends TestCase {
     
     public void testUserTransitions() {
         try {
-            String endpoint = "http://localhost/jboss-net/services/billing";
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
+            Call  call = createTestCall();
             call.setOperationName("getUserTransitions");
             call.setReturnClass(UserTransitionResponseWS[].class);
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
-            
 
             // UserTransitionResponseWS[]            
             QName qn = new QName("http://www.sapienter.com/billing", "UserTransitionResponseWS");

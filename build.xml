@@ -462,7 +462,7 @@
   <target name="test-ws">
       <javac debug="on" destdir="${build.test.dir}"
              srcdir="${source.test.dir}"
-      		 includes="**/WSTest.java">
+      		 includes="**/WSTest*.java">
           <classpath refid="test.classpath"/>
       </javac>
       <junit printsummary="off"

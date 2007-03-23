@@ -25,10 +25,6 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.util;
 
 import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -47,12 +43,13 @@ import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.GatewayBL;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.entity.PaymentDTO;
+import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -514,62 +511,70 @@ public class WebServicesSessionBean implements SessionBean {
      */
     public CreateResponseWS create(UserWS user, OrderWS order) 
             throws SessionInternalError {
-        CreateResponseWS retValue = new CreateResponseWS();
+    
+    	validateCaller();
+
+    	CreateResponseWS retValue = new CreateResponseWS();
+
+    	// the user first
+        final Integer userId = createUser(user); 
+        retValue.setUserId(userId);
         
-        String root = context.getCallerPrincipal().getName();
-        Integer entityId = null;
-        try {
-            UserBL bl = new UserBL();
-            bl.setRoot(root);
-            entityId = bl.getEntity().getEntity().getId();
-        } catch (Exception e) {
-            throw new SessionInternalError("Error identifiying the caller");
-        }
-            
-        // the user first
-        retValue.setUserId(createUser(user));
-        
-        if (retValue.getUserId() == null) {
+        if (userId == null) {
             return retValue;
         }
         
-        // the order
-        order.setUserId(retValue.getUserId());
-        retValue.setOrderId(createOrder(order));
-        
-        // the invoce
-        try {
-            BillingProcessBL process = new BillingProcessBL();
-            InvoiceEntityLocal invoice = process.generateInvoice(
-                    retValue.getOrderId(), null);
-            retValue.setInvoiceId(invoice.getId());
-            
-            // the payment, if we have a credit card
-            if (user.getCreditCard() != null) {
-                PaymentSessionBean payment = new PaymentSessionBean();
-                PaymentDTOEx paymentDto = new PaymentDTOEx();
-                paymentDto.setIsRefund(new Integer(0));
-                paymentDto.setAmount(invoice.getTotal());
-                paymentDto.setCreditCard(user.getCreditCard());
-                paymentDto.setCurrencyId(invoice.getCurrencyId());
-                paymentDto.setUserId(retValue.getUserId());
-                paymentDto.setMethodId(
-                        com.sapienter.jbilling.common.Util.getPaymentMethod(
-                                user.getCreditCard().getNumber()));
-                
-                // make the call
-                retValue.setPaymentResult(payment.processAndUpdateInvoice(
-                        paymentDto, invoice));
-                
-                retValue.setPaymentId(paymentDto.getId());
+        // the order and (if needed) invoice
+        order.setUserId(userId);
+        final int orderId = createOrder(order);
+        retValue.setOrderId(orderId);
+        if (shouldAutoCreateInvoice(order)){
+        	//we assume that createOrder have actually created an invoice
+        	//it would be better to access it directly from createOrder() 
+        	//but we don't want to change API for now
+        	//so we will get it indirectly, as the latest invoice
+        	
+        	Integer[] lastInvoiceId = getLastInvoices(userId, 1);
+        	if (lastInvoiceId == null || lastInvoiceId.length < 1){
+        		throw new SessionInternalError("Invoice expected for order: " + orderId);
+        	}
+        	retValue.setInvoiceId(lastInvoiceId[0]);
+        	
+            //the payment, if we have a credit card
+            if (user.getCreditCard() != null){
+            	InvoiceEntityLocal invoice = findInvoice(lastInvoiceId[0]);
+            	ProcessedPaymentInfo info = doPayInvoice(invoice, user.getCreditCard());
+        	    retValue.setPaymentResult(info.getPaymentResult());
+        	    retValue.setPaymentId(info.getPaymentId());
             }
-
-        } catch (Exception e) {
-            log.error("WS - create:", e);
-            throw new SessionInternalError("Error while generating a new invoice");
         }
-        
+            
         return retValue;
+    }
+    
+    /**
+	 * Pays given invoice, using the first credit card available for invoice'd
+	 * user.
+	 * 
+	 * @return <code>null</code> if invoice has not positive balance, or if
+	 *         user does not have credit card
+	 * @return resulting payment
+	 *  
+	 * @ejb:interface-method view-type="local"
+	 */
+    public Integer payInvoice(Integer invoiceId) throws SessionInternalError {
+    	if (invoiceId == null){
+    		throw new SessionInternalError("Can not pay null invoice");
+    	}
+    	
+    	final InvoiceEntityLocal invoice = findInvoice(invoiceId);
+		CreditCardDTO creditCard = getCreditCard(invoice.getUser().getUserId());
+		if (creditCard == null){
+			return null;
+		}
+		
+		ProcessedPaymentInfo result = doPayInvoice(invoice, creditCard);
+		return result == null ? null : result.getPaymentId();
     }
 
     /**
@@ -618,20 +623,16 @@ public class WebServicesSessionBean implements SessionBean {
         
         try {
             Integer userId = order.getUserId();
+            CreditCardDTO cc = getCreditCard(userId);
             UserBL user = new UserBL(userId);
             Integer entityId = user.getEntity().getEntity().getId();
-            if (user.hasCreditCard()) {
-                // find it
-                PaymentDTOEx paymentDto = PaymentBL.findPaymentInstrument(
-                        entityId, userId);
-                
+            if (cc != null) {
                 CreditCardBL ccBl = new CreditCardBL();
                 // calling for the DTOEx of order seems an overkill to just get
                 // the total. However, in a new order most related objects won't 
                 // be there (process, invoices, etc).
                 OrderDTOEx newOrder = DTOFactory.getOrderDTOEx(orderId, 1);
-                retValue = ccBl.validatePreAuthorization(entityId, userId,
-                        paymentDto.getCreditCard(), 
+                retValue = ccBl.validatePreAuthorization(entityId, userId, cc,
                         newOrder.getTotal(), newOrder.getCurrencyId());
             }
         } catch(Exception e) {
@@ -646,35 +647,12 @@ public class WebServicesSessionBean implements SessionBean {
      */
     public Integer createOrder(OrderWS order) 
             throws SessionInternalError {
-        validateOrder(order);
-        try {
-            // get the info from the caller
-            UserBL bl = new UserBL();
-            bl.setRoot(context.getCallerPrincipal().getName());
-            Integer executorId = bl.getEntity().getUserId();
-            Integer entityId = bl.getEntity().getEntity().getId();
-            
-            // we'll need the langauge later
-            bl.set(order.getUserId());
-            
-            // see if the related items should provide info
-            processItemLine(order, bl.getEntity().getLanguageIdField(),
-                    entityId);
-            
-            // make a dto out of the ws
-            NewOrderDTO dto = new NewOrderDTO(order);
-            
-            // call the creation
-            OrderBL orderBL = new OrderBL();
-            orderBL.setDTO(dto);
-            log.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
-            orderBL.recalculate(entityId);
-            return orderBL.create(entityId, executorId, dto);
-            
-        } catch(Exception e) {
-            log.debug("Exception:", e);
-            throw new SessionInternalError("error creating purchase order");
-        }
+    	
+    	Integer orderId = doCreateOrder(order);
+    	if (shouldAutoCreateInvoice(order)){
+    		doCreateInvoice(orderId);
+    	}
+    	return orderId;
     }
     
     private void processItemLine(OrderWS order, Integer languageId,
@@ -1301,6 +1279,152 @@ public class WebServicesSessionBean implements SessionBean {
             RemoteException {
         log = Logger.getLogger(WebServicesSessionBean.class);
         context = arg0;
+    }
+
+	private InvoiceEntityLocal doCreateInvoice(Integer orderId) {
+		try {
+            BillingProcessBL process = new BillingProcessBL();
+            return process.generateInvoice(orderId, null);
+        } catch (Exception e){
+            log.error("WS - create invoice:", e);
+            throw new SessionInternalError("Error while generating a new invoice");
+        }
+	}
+
+	private void validateCaller() {
+		String root = context.getCallerPrincipal().getName();
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            bl.getEntity().getEntity().getId();
+        } catch (Exception e) {
+            throw new SessionInternalError("Error identifiying the caller");
+        }
+	}
+    
+	private ProcessedPaymentInfo doPayInvoice(InvoiceEntityLocal invoice, CreditCardDTO creditCard) 
+		throws SessionInternalError {
+
+		if (invoice.getBalance() == null || invoice.getBalance() <= 0){
+			log.warn("Can not pay invoice: " + invoice.getId() + ", balance: " + invoice.getBalance());
+			return null;
+		}
+
+		try {
+			PaymentSessionBean payment = new PaymentSessionBean();
+		    PaymentDTOEx paymentDto = new PaymentDTOEx();
+		    paymentDto.setIsRefund(0);
+		    paymentDto.setAmount(invoice.getBalance());
+		    paymentDto.setCreditCard(creditCard);
+		    paymentDto.setCurrencyId(invoice.getCurrencyId());
+		    paymentDto.setUserId(invoice.getUser().getUserId());
+		    paymentDto.setMethodId(
+		            com.sapienter.jbilling.common.Util.getPaymentMethod(
+		                    creditCard.getNumber()));
+		    
+		    // make the call
+		    Integer paymentResult = payment.processAndUpdateInvoice(
+		            paymentDto, invoice);
+		    
+		    return new ProcessedPaymentInfo(paymentDto, paymentResult);
+	    } catch (Exception e){
+            log.error("WS - make payment:", e);
+            throw new SessionInternalError("Error while making payment for invoice: " + invoice.getId());
+	    }
+	}
+	
+	/**
+	 * Conveniance method to find a credit card
+	 */
+	private CreditCardDTO getCreditCard(Integer userId){
+		if (userId == null){
+			return null;
+		}
+
+		CreditCardDTO result = null;
+        try {
+            UserBL user = new UserBL(userId);
+            Integer entityId = user.getEntity().getEntity().getId();
+            if (user.hasCreditCard()) {
+                    // find it
+                PaymentDTOEx paymentDto = PaymentBL.findPaymentInstrument(
+                        entityId, userId);
+                result = paymentDto.getCreditCard();
+            }
+        } catch (Exception e) {
+            log.error("WS - finding a credit card", e);
+            throw new SessionInternalError("Error finding a credit card for user: " + userId);
+        }
+
+		return result;
+	}
+
+    private Integer doCreateOrder(OrderWS order) throws SessionInternalError {
+        validateOrder(order);
+        try {
+            // get the info from the caller
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            Integer entityId = bl.getEntity().getEntity().getId();
+            
+            // we'll need the langauge later
+            bl.set(order.getUserId());
+            
+            // see if the related items should provide info
+            processItemLine(order, bl.getEntity().getLanguageIdField(),
+                    entityId);
+            
+            // make a dto out of the ws
+            NewOrderDTO dto = new NewOrderDTO(order);
+            
+            // call the creation
+            OrderBL orderBL = new OrderBL();
+            orderBL.setDTO(dto);
+            log.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
+            orderBL.recalculate(entityId);
+            return orderBL.create(entityId, executorId, dto);
+            
+        } catch(Exception e) {
+            log.debug("Exception:", e);
+            throw new SessionInternalError("error creating purchase order");
+        }
+    }
+    
+    private boolean shouldAutoCreateInvoice(OrderWS order){
+    	return order.getActiveSince() == null;
+    }
+
+	private InvoiceEntityLocal findInvoice(Integer invoiceId) {
+		final InvoiceEntityLocal invoice;
+    	try {
+			invoice = new InvoiceBL(invoiceId).getEntity();
+		} catch (NamingException e) {
+			log.error("WS: findInvoice error: ", e);
+			throw new SessionInternalError("Configuration problems");
+		} catch (FinderException e) {
+			log.error("WS: findInvoice error: ", e);
+			throw new SessionInternalError("Unknown invoice : " + invoiceId);
+		}
+		return invoice;
+	}
+
+    private static class ProcessedPaymentInfo {
+    	private final Integer myPaymentResult;
+		private final Integer myPaymentId;
+
+		public ProcessedPaymentInfo(PaymentDTO paymentDTO, Integer paymentResult){
+			myPaymentResult = paymentResult;
+			myPaymentId = paymentDTO.getId();
+    	}
+		
+		public Integer getPaymentId() {
+			return myPaymentId;
+		}
+		
+		public Integer getPaymentResult() {
+			return myPaymentResult;
+		}
     }
 
 }

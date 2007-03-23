@@ -21,75 +21,42 @@ Contributor(s): ______________________________________.
 /*
  * Created on Dec 18, 2003
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.order;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-
-import javax.xml.namespace.QName;
-
-import junit.framework.TestCase;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
+import com.sapienter.jbilling.server.WSTestBase;
+import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
+import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
+import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * @author Emil
  */
-public class WSTest extends TestCase {
+public class WSTest extends WSTestBase {
+	private static final Integer GANDALF_USER_ID = 2;
       
     public void testCreateUpdateDelete() {
         try {
         	int i;
-            /* If using https, you need an ssh key. You can configure ANT to
-             * pass on the java properties like this:
-             * export ANT_OPTS="-Djavax.net.ssl.trustStore=c:\\\\sapienter\\\\ssl\\\\client.keystore -Djavax.net.ssl.trustStorePassword=pass"
-             */
-            String endpoint = "http://localhost/jboss-net/services/billing";
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
+            Call call = createTestCall();
             call.setOperationName("createOrder");
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
-            
-
-            // OrderWS            
-            QName qn = new QName("http://www.sapienter.com/billing", "OrderWS");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    OrderWS.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    OrderWS.class, qn);
-            call.registerTypeMapping(OrderWS.class, qn, ser1, ser2); 
-
-            // OrderLineWS            
-            qn = new QName("http://www.sapienter.com/billing", "OrderLineWS");
-            ser1 = new BeanSerializerFactory(
-                    OrderLineWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    OrderLineWS.class, qn);
-            call.registerTypeMapping(OrderLineWS.class, qn, ser1, ser2); 
-
-            // PaymentAuthroizationDTOEx            
-            qn = new QName("http://www.sapienter.com/billing", "PaymentAuthorizationDTOEx");
-            ser1 = new BeanSerializerFactory(
-                    PaymentAuthorizationDTOEx.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    PaymentAuthorizationDTOEx.class, qn);
-            call.registerTypeMapping(PaymentAuthorizationDTOEx.class, qn, ser1, ser2); 
 
             /*
              * Create
              */
             OrderWS newOrder = new OrderWS();
-            newOrder.setUserId(new Integer(2)); // for gandlaf
+            newOrder.setUserId(GANDALF_USER_ID); 
             newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             newOrder.setPeriod(new Integer(1)); // once
             newOrder.setCurrencyId(new Integer(1));
@@ -387,6 +354,201 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-
     
+    public void testCreateOrderAutoCreatesAnInvoice() throws Exception {
+    	final int USER_ID = GANDALF_USER_ID;
+    	InvoiceWS before = callGetLatestInvoice(USER_ID);
+    	assertTrue(before == null || before.getId() != null);
+    	
+    	OrderWS order = createMockOrder(USER_ID, 3, 42);
+    	Integer orderId = callCreateOrder(order);
+        assertNotNull(orderId);
+        
+        InvoiceWS afterNormalOrder = callGetLatestInvoice(USER_ID);
+        assertNotNull("createOrder should create invoice", afterNormalOrder);
+        assertNotNull("invoice without id", afterNormalOrder.getId());
+        
+        if (before != null){
+        	assertFalse("createOrder should create the most recent invoice", afterNormalOrder.getId().equals(before.getId()));
+        }
+        
+        //even if empty
+    	OrderWS emptyOrder = createMockOrder(USER_ID, 0, 123); //empty
+    	Integer emptyOrderId = callCreateOrder(emptyOrder);
+        assertNotNull(emptyOrderId);
+        
+        InvoiceWS afterEmptyOrder = callGetLatestInvoice(USER_ID);
+        assertNotNull("invoice without id", afterEmptyOrder.getId());
+        assertNotNull("createOrder should create invoice even for empty order", afterEmptyOrder);
+        assertFalse("createOrder should create the most recent invoice", afterNormalOrder.getId().equals(afterEmptyOrder.getId()));
+    }
+
+    public void testCreateNotActiveOrderDoesNotCreateInvoices() throws Exception {
+    	final int USER_ID = GANDALF_USER_ID;
+    	InvoiceWS before = callGetLatestInvoice(USER_ID);
+    	
+    	OrderWS orderWS = createMockOrder(USER_ID, 2, 234);
+    	orderWS.setActiveSince(nextWeek());
+    	Integer orderId = callCreateOrder(orderWS);
+    	assertNotNull(orderId);
+    	
+    	InvoiceWS after = callGetLatestInvoice(USER_ID);
+    	
+    	if (before == null){
+    		assertNull("Not yet active order -- no new invoices expected", after);
+    	} else {
+    		assertEquals("Not yet active order -- no new invoices expected", before.getId(), after.getId());
+    	}
+    }
+    
+    public void testCreatedOrderIsCorrect() throws Exception {
+    	final int USER_ID = GANDALF_USER_ID;
+    	final int LINES = 3;
+    	
+    	OrderWS requestOrder = createMockOrder(USER_ID, LINES, 567);
+    	assertEquals(LINES, requestOrder.getOrderLines().length);
+    	Integer orderId = callCreateOrder(requestOrder);
+    	assertNotNull(orderId);
+    	
+    	Call call = createTestCall();
+    	call.setOperationName("getOrder");
+    	
+    	OrderWS resultOrder = (OrderWS) call.invoke(new Object[] {orderId});
+    	assertNotNull(resultOrder);
+    	assertEquals(orderId, resultOrder.getId());
+    	assertEquals(LINES, resultOrder.getOrderLines().length);
+    	
+    	HashMap<String, OrderLineWS> actualByDescription = new HashMap<String, OrderLineWS>();
+    	for (OrderLineWS next : resultOrder.getOrderLines()){
+    		assertNotNull(next.getId());
+    		assertNotNull(next.getDescription());
+    		actualByDescription.put(next.getDescription(), next);
+    	}
+    	
+    	for (int i = 0; i < LINES; i++){
+    		OrderLineWS nextRequested = requestOrder.getOrderLines()[i];
+    		OrderLineWS nextActual = actualByDescription.remove(nextRequested.getDescription());
+    		assertNotNull(nextActual);
+
+    		assertEquals(nextRequested.getDescription(), nextActual.getDescription());
+    		assertEquals(nextRequested.getAmount(), nextActual.getAmount());
+    		assertEquals(nextRequested.getQuantity(), nextActual.getQuantity());
+    		assertEquals(nextRequested.getPrice(), nextActual.getPrice());
+    	}
+    }
+    
+    public void testAutoCreatedInvoiceIsCorrect() throws Exception {
+    	final int USER_ID = GANDALF_USER_ID;
+    	final int LINES = 2;
+
+    	// it is critical to make sure that this invoice can not be composed by
+		// previous payments
+    	// so, make the price unusual
+    	final float PRICE = 687654.29f;
+    	
+    	OrderWS orderWS = createMockOrder(USER_ID, LINES, PRICE);
+    	Integer orderId = callCreateOrder(orderWS);
+    	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
+    	assertNotNull(invoice.getOrders());
+    	assertTrue("Expected: " + orderId + ", actual: " + Arrays.toString(invoice.getOrders()), Arrays.equals(new Integer[] {orderId}, invoice.getOrders()));
+    	
+    	assertNotNull(invoice.getInvoiceLines());
+    	assertEquals(LINES, invoice.getInvoiceLines().length);
+    	
+    	assertEmptyArray(invoice.getPayments());
+    	assertEquals(Integer.valueOf(0), invoice.getPaymentAttempts());
+    	
+    	assertNotNull(invoice.getBalance());
+    	assertEquals(PRICE * LINES, invoice.getBalance().floatValue(), 0.00000001f);
+    }
+    
+    public void testAutoCreatedInvoiceIsPayable() throws Exception {
+    	final int USER_ID = GANDALF_USER_ID;
+    	callCreateOrder(createMockOrder(USER_ID, 1, 789));
+    	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
+    	assertNotNull(invoice);
+    	assertNotNull(invoice.getId());
+
+    	Call call = createTestCall();
+    	call.setOperationName("payInvoice");
+    	Integer paymentId = (Integer) call.invoke(new Object[] {invoice.getId()});
+    	assertNotNull(paymentId);
+    }
+    
+    public void testEmptyInvoiceIsNotPayable() throws Exception {
+    	final int USER_ID = GANDALF_USER_ID;
+    	callCreateOrder(createMockOrder(USER_ID, 0, 890)); 
+    	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
+    	assertNotNull(invoice);
+    	assertNotNull(invoice.getId());
+
+    	Call call = createTestCall();
+    	call.setOperationName("payInvoice");
+    	Integer paymentId = (Integer) call.invoke(new Object[] {invoice.getId()});
+    	assertNull(paymentId);
+    }
+    
+    private Date nextWeek() {
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTimeInMillis(System.currentTimeMillis());
+		calendar.add(Calendar.WEEK_OF_YEAR, 1);
+		return calendar.getTime();
+	}
+
+	protected Call createTestCall() throws Exception {
+    	Call result = super.createTestCall();
+    	setupTypeMappings(result);
+    	return result;
+    }
+    
+    private void setupTypeMappings(Call call){
+    	addBeanTypeMapping(call, OrderWS.class);
+    	addBeanTypeMapping(call, OrderLineWS.class);
+    	addBeanTypeMapping(call, PaymentAuthorizationDTOEx.class);
+    	addBeanTypeMapping(call, InvoiceWS.class);
+    	addBeanTypeMapping(call, InvoiceLineDTOEx.class);
+    	addBeanTypeMapping(call, InvoiceLineDTO.class);
+    }
+    
+    private InvoiceWS callGetLatestInvoice(int userId) throws Exception {
+    	Call call = createTestCall();
+    	call.setOperationName("getLatestInvoice");
+    	return (InvoiceWS)call.invoke(new Object[] {userId});
+    }
+    
+    private Integer callCreateOrder(OrderWS order) throws Exception {
+    	Call call = createTestCall();
+    	call.setOperationName("createOrder");
+    	return (Integer)call.invoke(new Object[] {order});
+    	
+    }
+    
+	private OrderWS createMockOrder(int userId, int orderLinesCount, float linePrice) {
+		OrderWS order = new OrderWS();
+    	order.setUserId(userId); 
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(1); // once
+        order.setCurrencyId(1);
+        
+        ArrayList<OrderLineWS> lines = new ArrayList<OrderLineWS>(orderLinesCount);
+        for (int i = 0; i < orderLinesCount; i++){
+            OrderLineWS nextLine = new OrderLineWS();
+            nextLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            nextLine.setDescription("Order line: " + i);
+            nextLine.setItemId(i + 1);
+            nextLine.setQuantity(1);
+            nextLine.setPrice(linePrice);
+            nextLine.setAmount(nextLine.getQuantity() * linePrice);
+            
+            lines.add(nextLine);
+        }
+        order.setOrderLines(lines.toArray(new OrderLineWS[lines.size()]));
+		return order;
+	}
+	
+	private void assertEmptyArray(Object[] array){
+		assertNotNull(array);
+		assertEquals("Empty array expected: " + Arrays.toString(array), 0, array.length);
+	}
+	
 }

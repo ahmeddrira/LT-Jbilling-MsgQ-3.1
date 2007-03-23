@@ -26,6 +26,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.util;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
@@ -57,51 +58,43 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        log = Logger.getLogger(WSMethodSecurityProxy.class);
        String methodName = null;
        try {
-           Method methods[] = new Method[23];
-           Method aMethod;
-           int i = 0;
+    	   ArrayList<Method> methods = new ArrayList<Method>(24);
 
            // getInvoiceWS
            Class params[] = new Class[1];
            params[0] = Integer.class;
            methodName = "getInvoiceWS";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getLatestInvoice
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getLatestInvoice";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // getLastInvoices
            params = new Class[2];
            params[0] = Integer.class;
            params[1] = Integer.class;
            methodName = "getLastInvoices";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getUserWS
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getUserWS";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // deleteUser
            // the parameters are the same
            methodName = "deleteUser";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // updateUser
            params = new Class[1];
            params[0] = UserWS.class;
            methodName ="updateUser";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // updateUserContact
            params = new Class[3];
@@ -109,126 +102,112 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
            params[1] = Integer.class;
            params[2] = ContactWS.class;
            methodName ="updateUserContact";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // createOrder
            params = new Class[1];
            params[0] = OrderWS.class;
            methodName = "createOrder";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // createOrderPreAuthorize
            params = new Class[1];
            params[0] = OrderWS.class;
            methodName = "createOrderPreAuthorize";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // updateOrder - takes same parameters as create
            methodName = "updateOrder";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getOrder
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getOrder";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // deleteOrder
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "deleteOrder";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getLatestOrder
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getLatestOrder";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getLastOrders
            params = new Class[2];
            params[0] = Integer.class;
            params[1] = Integer.class;
            methodName = "getLastOrders";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // applyPayment
            params = new Class[2];
            params[0] = PaymentWS.class;
            params[1] = Integer.class;
            methodName = "applyPayment";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getPayment
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getPayment";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getLatestPayment
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getLatestPayment";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getLastPayments
            params = new Class[2];
            params[0] = Integer.class;
            params[1] = Integer.class;
            methodName = "getLastPayments";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // getOrderLine
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getOrderLine";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
            
            // updateOrderLine
            params = new Class[1];
            params[0] = OrderLineWS.class;
            methodName = "updateOrderLine";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // getOrderByPeriod
            params = new Class[2];
            params[0] = Integer.class;
            params[1] = Integer.class;
            methodName = "getOrderByPeriod";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // getUserContactsWS
            params = new Class[1];
            params[0] = Integer.class;
            methodName = "getUserContactsWS";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
 
            // updateCreditCard
            params = new Class[2];
            params[0] = Integer.class;
            params[1] = CreditCardDTO.class;
            methodName = "updateCreditCard";
-           aMethod = beanLocal.getDeclaredMethod(methodName, params);
-           methods[i++] = aMethod;
+           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+           
+           //payInvoice
+           methods.add(beanLocal.getDeclaredMethod("payInvoice", new Class[]{Integer.class}));
 
            // set the parent methods
-           setMethods(methods);          
+           setMethods(methods.toArray(new Method[methods.size()]));          
 
        } catch(NoSuchMethodException e) {
           String msg = "Failed to find method " + methodName;
@@ -244,7 +223,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             return;
         }
         try {
-            if(m.getName().equals("getInvoiceWS")) {
+            if(m.getName().equals("getInvoiceWS") || m.getName().equals("payInvoice")) {
                 Integer arg = (Integer) args[0];
                 
                 if (arg != null) {

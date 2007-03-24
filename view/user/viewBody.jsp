@@ -68,6 +68,11 @@ Contributor(s): ______________________________________.
 		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
 			property="lastLogin" scope="session" formatKey="format.timestamp"/></td>
 	</tr>
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="user.prompt.subscriber_status"/></td>
+		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
+			property="subscriptionStatusStr" scope="session"/></td>
+	</tr>
 	
 	<logic:notEqual name='<%=Constants.SESSION_USER_DTO%>'
 					 property="mainRoleId"
@@ -77,7 +82,7 @@ Contributor(s): ______________________________________.
 			property="customerDto" scope="session">
 	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
 			property="customerDto.parentId" scope="session">
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="user.prompt.parent"/></td>
 		<td class="infodata">
 			<html:link page="/userMaintain.do?action=setup" 

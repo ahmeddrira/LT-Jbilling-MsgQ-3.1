@@ -100,6 +100,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_PARTNER_RANGE = "partner_range";
     public static final String TABLE_PARTNER_PAYOUT = "partner_payout";
     public static final String TABLE_USER_STATUS = "user_status";
+    public static final String TABLE_USER_SUBSCRIBER_STATUS = "subscriber_status";
     public static final String TABLE_ITEM_TYPE = "item_type";
     public static final String TABLE_ITEM_USER_PRICE= "item_user_price";
     public static final String TABLE_PROMOTION= "promotion";
@@ -148,6 +149,7 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_PAYMENT_INFO = new Integer(8);
     public static final Integer PLUGGABLE_TASK_PENALTY = new Integer(9);
     public static final Integer PLUGGABLE_TASK_PROCESSOR_ALARM = new Integer(10);
+    public static final Integer PLUGGABLE_TASK_SUBSCRIPTION_STATUS = new Integer(11);
     
     // pluggable task types (belongs to a category)
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);

@@ -42,6 +42,7 @@ public class UserWS extends UserDTO implements Serializable {
     private String status = null;
     private Integer mainRoleId = null;
     private Integer statusId = null;
+    private Integer subscriberStatusId = null;
     private Integer partnerId = null;
     
     public Integer getPartnerId() {
@@ -63,6 +64,7 @@ public class UserWS extends UserDTO implements Serializable {
         status = dto.getStatusStr();
         role = dto.getMainRoleStr();
         statusId = dto.getStatusId();
+        subscriberStatusId = dto.getSubscriptionStatusId();
         if (dto.getCustomerDto() != null) {
             partnerId = dto.getCustomerDto().getPartnerId();
         }
@@ -72,7 +74,8 @@ public class UserWS extends UserDTO implements Serializable {
         return "credit card = [" + creditCard + "] contact = [" +
                 contact + "] type = [" + role + "] language = [" +
                 language + "] status = [" + status + "] statusId = [" +
-                statusId + "] roleId = [" + mainRoleId + "] " +  super.toString();
+                statusId + "] subscriberStatusId = [" + subscriberStatusId +
+                "] roleId = [" + mainRoleId + "] " +  super.toString();
                 
     }
     /**
@@ -171,6 +174,12 @@ public class UserWS extends UserDTO implements Serializable {
      */
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+    }
+    public Integer getSubscriberStatusId() {
+        return subscriberStatusId;
+    }
+    public void setSubscriberStatusId(Integer subscriberStatusId) {
+        this.subscriberStatusId = subscriberStatusId;
     }
 
 

@@ -21,11 +21,11 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.user;
 
 
-import java.util.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +61,7 @@ import com.sapienter.jbilling.interfaces.PermissionUserEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
 import com.sapienter.jbilling.interfaces.RoleEntityLocal;
 import com.sapienter.jbilling.interfaces.RoleEntityLocalHome;
+import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocalHome;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
@@ -84,10 +85,11 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
  * @author emilc
  *
  */
-public class UserBL  extends ResultList 
+public class UserBL  extends ResultList
         implements UserSQL {
     private JNDILookup EJBFactory = null;
     private UserEntityLocalHome userHome = null;
+    private SubscriptionStatusEntityLocalHome subscirptionStatusHome = null;
     private UserEntityLocal user = null;
     private Logger log = null;
     private EventLogger eLogger = null;
@@ -150,6 +152,9 @@ public class UserBL  extends ResultList
             customerHome = (CustomerEntityLocalHome) EJBFactory.lookUpLocalHome(
                     CustomerEntityLocalHome.class,
                     CustomerEntityLocalHome.JNDI_NAME);
+            subscirptionStatusHome = (SubscriptionStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
+                    SubscriptionStatusEntityLocalHome.class,
+                    SubscriptionStatusEntityLocalHome.JNDI_NAME);
         } catch (NamingException e) {
             throw new SessionInternalError("init UserBL", this.getClass(), e);
         }
@@ -300,7 +305,7 @@ public class UserBL  extends ResultList
         if (dto.getPartnerDto() != null) {
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
             		dto.getLanguageId(), dto.getRoles(), dto.getCurrencyId(),
-					dto.getStatusId());
+					dto.getStatusId(), dto.getSubscriptionStatusId());
             PartnerBL partner = new PartnerBL();
             partner.create(dto.getPartnerDto());
             user.setPartner(partner.getEntity());
@@ -321,7 +326,7 @@ public class UserBL  extends ResultList
                 newId = create(dto.getEntityId(), dto.getUserName(), 
                         dto.getPassword(), dto.getLanguageId(), 
                         dto.getRoles(), dto.getCurrencyId(),
-						dto.getStatusId());
+						dto.getStatusId(), dto.getSubscriptionStatusId());
                 user.setCustomer(customerHome.create());
                 user.getCustomer().setReferralFeePaid(dto.getCustomerDto().
                         getReferralFeePaid());
@@ -342,7 +347,7 @@ public class UserBL  extends ResultList
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
                     dto.getLanguageId(), dto.getRoles(), dto.getCurrencyId(),
-					dto.getStatusId());
+					dto.getStatusId(), dto.getSubscriptionStatusId());
         }
         
         log.debug("created user id " + newId);
@@ -352,7 +357,7 @@ public class UserBL  extends ResultList
 
     private Integer create(Integer entityId, String userName, String password,
             Integer languageId, Vector roles, Integer currencyId, 
-			Integer statusId) 
+			Integer statusId, Integer subscriberStatusId) 
             throws CreateException, NamingException, SessionInternalError {
         // Default the language and currency to that one of the entity         
         try {
@@ -369,11 +374,16 @@ public class UserBL  extends ResultList
 					" user: " + entityId);
 		}
 		
+        // default the statuses
 		if (statusId == null) {
 			statusId = UserDTOEx.STATUS_ACTIVE;
 		}
+        if (subscriberStatusId == null) {
+            subscriberStatusId = UserDTOEx.SUBSCRIBER_NONSUBSCRIBED;
+        }
+        
     	user = userHome.create(entityId, userName, password, languageId, 
-                currencyId, statusId);
+                currencyId, statusId, subscriberStatusId);
         updateRoles(roles, null);
         
         return user.getUserId();
@@ -1025,5 +1035,22 @@ public class UserBL  extends ResultList
     		count++;
     	}
     	return result;
+    }
+    
+    public void updateSubscriptionStatus(Integer id) {
+        eLogger.auditBySystem(user.getEntity().getId(), 
+                Constants.TABLE_BASE_USER, user.getUserId(), 
+                EventLogger.MODULE_USER_MAINTENANCE,
+                EventLogger.SUBSCRIPTION_STATUS_CHANGE,
+                user.getSubscriptionStatus().getId(), id.toString(), null);
+        try {
+            user.setSubscriptionStatus(subscirptionStatusHome
+                    .findByPrimaryKey(id));
+        } catch (Exception e) {
+            throw new SessionInternalError("Can't update a user subscription status",
+                    UserBL.class, e);
+        }        
+        
+        log.debug("Subscription status updated to " + id);
     }
 }

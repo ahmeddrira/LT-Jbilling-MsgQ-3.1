@@ -44,6 +44,15 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     public static final Integer STATUS_ACTIVE = new Integer(1); // this HAS to be the very first status
     public static final Integer STATUS_DELETED = new Integer(8); // this HAS to be the last status
     
+    // subscriber status in synch with db table subscriber_status
+    public static final Integer SUBSCRIBER_ACTIVE = new Integer(1); 
+    public static final Integer SUBSCRIBER_PENDING_UNSUBSCRIPTION = new Integer(2);
+    public static final Integer SUBSCRIBER_UNSUBSCRIBED = new Integer(3);
+    public static final Integer SUBSCRIBER_PENDING_EXPIRATION= new Integer(4);
+    public static final Integer SUBSCRIBER_EXPIRED = new Integer(5);
+    public static final Integer SUBSCRIBER_NONSUBSCRIBED = new Integer(6);
+    
+    
     // private fields
     private Integer entityId = null;
     private Menu menu = null;
@@ -55,6 +64,8 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     private String languageStr = null;
     private Integer statusId = null;
     private String statusStr = null;
+    private Integer subscriptionStatusId = null;
+    private String subscriptionStatusStr = null;
     private CreditCardDTO creditCard = null; 
     private AchDTO ach = null;
     private Integer lastInvoiceId = null;
@@ -101,6 +112,7 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
         languageStr = dto.getLanguage();
         statusStr = dto.getStatus();
         statusId = dto.getStatusId();
+        subscriptionStatusId = dto.getSubscriberStatusId();
         this.entityId = entityId;
         
         roles = new Vector();
@@ -383,5 +395,21 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     }
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    public Integer getSubscriptionStatusId() {
+        return subscriptionStatusId;
+    }
+
+    public void setSubscriptionStatusId(Integer subscriptionStatusId) {
+        this.subscriptionStatusId = subscriptionStatusId;
+    }
+
+    public String getSubscriptionStatusStr() {
+        return subscriptionStatusStr;
+    }
+
+    public void setSubscriptionStatusStr(String subscriptionStatusStr) {
+        this.subscriptionStatusStr = subscriptionStatusStr;
     }
 }

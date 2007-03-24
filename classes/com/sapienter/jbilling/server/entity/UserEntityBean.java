@@ -43,6 +43,9 @@ import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
 import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
+import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocal;
+import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocalHome;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -123,13 +126,13 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 
 public abstract class UserEntityBean implements EntityBean {
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(UserEntityBean.class); 
     /**
      * @ejb:create-method view-type="local"
      */
     public Integer ejbCreate(Integer entityId, String userName,
             String password, Integer languageId, Integer currencyId,
-			Integer statusId) 
+			Integer statusId, Integer subscriptionStatusId) 
             throws CreateException {
         Integer newId;
         try {
@@ -144,7 +147,7 @@ public abstract class UserEntityBean implements EntityBean {
                     Constants.TABLE_BASE_USER));
 
         } catch (Exception e) {
-            log.debug("Can't create primary key for base_user", e);
+            LOG.debug("Can't create primary key for base_user", e);
             throw new CreateException(
                     "Problems generating the primary key "
                     + "for the base_user table:" + e);
@@ -155,14 +158,14 @@ public abstract class UserEntityBean implements EntityBean {
         setLanguageId(languageId);
         setDeleted(new Integer(0));
         setCurrencyId(currencyId);
-        setCreateDateTime(Calendar.getInstance().getTime());        
+        setCreateDateTime(Calendar.getInstance().getTime());       
 
         return newId;
     }
 
     public void ejbPostCreate(Integer entityId, String userName, 
             String password, Integer languageId, Integer currencyId,
-			Integer statusId) {
+			Integer statusId, Integer subscriptionStatusId) {
         try {
         	JNDILookup EJBFactory = JNDILookup.getFactory(false);
             // set the entity
@@ -172,7 +175,7 @@ public abstract class UserEntityBean implements EntityBean {
                     EntityEntityLocalHome.JNDI_NAME);
             EntityEntityLocal entityRow = entityHome.findByPrimaryKey(entityId);
             setEntity(entityRow);
-            // set the status to 'active'
+            // set the status 
             UserStatusEntityLocalHome statusHome =
                     (UserStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
                     UserStatusEntityLocalHome.class,
@@ -180,9 +183,19 @@ public abstract class UserEntityBean implements EntityBean {
             UserStatusEntityLocal statusRow = statusHome.findByPrimaryKey(
                     statusId);
             setStatus(statusRow);
+
+            SubscriptionStatusEntityLocalHome subStatusHome =
+                (SubscriptionStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
+                SubscriptionStatusEntityLocalHome.class,
+                SubscriptionStatusEntityLocalHome.JNDI_NAME);
+            SubscriptionStatusEntityLocal status = subStatusHome.findByPrimaryKey(
+                    subscriptionStatusId);
+            setSubscriptionStatus(status);
             
+            LOG.debug("created user with subscirber = " + subscriptionStatusId);
+
         } catch (Exception e) {
-            log.fatal("exception in post create",e);
+            LOG.fatal("exception in post create",e);
         }
     }
     
@@ -214,7 +227,7 @@ public abstract class UserEntityBean implements EntityBean {
             UserStatusEntityLocal statusRow = statusHome.findByPrimaryKey(statusId);
             setStatus(statusRow);
         } catch (Exception e) {
-            log.error("exception setting the status id:" + statusId, e);
+            LOG.error("exception setting the status id:" + statusId, e);
         }
         
     }         
@@ -355,6 +368,22 @@ public abstract class UserEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
      public abstract void setStatus(UserStatusEntityLocal status);
+
+     /**
+      * @ejb:interface-method view-type="local"
+      * @ejb.relation name="user-subscriber-status"
+      *               role-name="user-belongs-to-s_status"
+      *               target-ejb="SubscriptionStatusEntity"
+      *               target-role-name="status-marks-users"
+      *               target-multiple="yes"
+      * @jboss.relation related-pk-field="id"  
+      *                 fk-column="subscriber_status"            
+      */
+     public abstract SubscriptionStatusEntityLocal getSubscriptionStatus();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+     public abstract void setSubscriptionStatus(SubscriptionStatusEntityLocal status);
 
     /**
      * @ejb:interface-method view-type="local"
@@ -558,7 +587,6 @@ public abstract class UserEntityBean implements EntityBean {
      */
     public void setEntityContext(EntityContext arg0)
             throws EJBException, RemoteException {
-        log = Logger.getLogger(UserEntityBean.class);
     }
 
     /* (non-Javadoc)

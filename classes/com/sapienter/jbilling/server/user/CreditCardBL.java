@@ -49,9 +49,11 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.EventLogger;
 
@@ -277,6 +279,13 @@ public class CreditCardBL extends ResultList
         PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(
                 paymentDto.getAuthorization());
         retValue.setResult(paymentDto.getResultId().equals(Constants.RESULT_OK));
+        
+        // at the time, a pre-auth acts just like a normal payment for events
+        if (retValue.getResult()) {
+            PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
+                    entityId, paymentDto);
+            EventManager.process(event);
+        }
         
         return retValue;
     }

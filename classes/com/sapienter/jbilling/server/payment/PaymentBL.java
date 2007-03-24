@@ -63,11 +63,14 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
+import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -300,7 +303,10 @@ public class PaymentBL extends ResultList
                 // failed (like notification, suspension, etc ... )
                 if (!processorUnavailable && info.getResultId() == 
                         Constants.RESULT_FAIL) {
-                    task.failure(info.getUserId(), info.getAttempt());                
+                    task.failure(info.getUserId(), info.getAttempt());  
+                    // trigger an event
+                    PaymentFailedEvent event = new PaymentFailedEvent(entityId, info);
+                    EventManager.process(event);
                 }
                 // get the next task
                 task = (PaymentTask) taskManager.getNextClass();
@@ -318,6 +324,8 @@ public class PaymentBL extends ResultList
             if (retValue.equals(Constants.RESULT_OK) || 
                     retValue.equals(Constants.RESULT_ENTERED)) {
                 payment.setBalance(payment.getAmount());
+                PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(entityId, info);
+                EventManager.process(event);
             } else {
                 payment.setBalance(new Float(0));
             }

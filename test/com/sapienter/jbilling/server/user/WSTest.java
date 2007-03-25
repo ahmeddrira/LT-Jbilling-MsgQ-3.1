@@ -359,6 +359,16 @@ public class WSTest extends WSTestBase {
             assertEquals("updated cc number", ccNumber, retCc.getNumber());
             assertEquals("updated cc expiry", ccExpiry, retCc.getExpiry());
 
+            // try to update cc of user from different company
+            call.setOperationName("updateCreditCard");
+            System.out.println("Attempting to update cc of a user from " 
+                    + "a different company");
+            try {
+                call.invoke( new Object[] { new Integer(13), cc } );
+                fail("Shouldn't be able to update cc of user 13");
+            } catch(Exception e) {
+            }
+
             /*
              * Delete
              */

@@ -788,7 +788,8 @@ public class BillingProcessBL extends ResultList
         // all one timers are done
         if (order.getPeriod().getId().compareTo(
                 Constants.ORDER_PERIOD_ONCE) == 0) {
-            order.setStatusId(Constants.ORDER_STATUS_FINISHED);
+            OrderBL orderBL = new OrderBL(order);
+            orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
         } else { // recursive orders get more complicated
             // except those that are immortal :)
             if (order.getActiveUntil() == null) {
@@ -802,7 +803,8 @@ public class BillingProcessBL extends ResultList
                     + " active until " + order.getActiveUntil());
             if (endOfBillingPeriod.
                     compareTo(Util.truncateDate(order.getActiveUntil())) >= 0) {
-                order.setStatusId(Constants.ORDER_STATUS_FINISHED);   
+                OrderBL orderBL = new OrderBL(order);
+                orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
             }
         }
     }

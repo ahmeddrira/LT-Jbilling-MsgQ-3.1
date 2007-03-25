@@ -20,7 +20,10 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.user.event;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
+import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
+import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.EventProcessor;
 import com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager;
@@ -41,6 +44,25 @@ public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscripti
         if (event instanceof PaymentFailedEvent) {
             PaymentFailedEvent pfEvent = (PaymentFailedEvent) event;
             task.paymentFailed(pfEvent.getEntityId(), pfEvent.getPayment());
+        } else if (event instanceof PaymentSuccessfulEvent) {
+            PaymentSuccessfulEvent psEvent = (PaymentSuccessfulEvent) event;
+            task.paymentSuccessful(psEvent.getEntityId(), psEvent.getPayment());
+        } else if (event instanceof NewActiveUntilEvent) {
+            NewActiveUntilEvent auEvent = (NewActiveUntilEvent) event;
+            // process the event only if the order is not a one timer
+            // and is active
+            if (!auEvent.getOrderType().equals(Constants.ORDER_PERIOD_ONCE) &&
+                    auEvent.getStatusId().equals(Constants.ORDER_STATUS_ACTIVE)) {
+                task.subscriptionEnds(auEvent.getUserId(), 
+                        auEvent.getNewActiveUntil(), auEvent.getOldActiveUnti());
+            }
+        } else if (event instanceof NewStatusEvent) {
+            NewStatusEvent sEvent = (NewStatusEvent) event;
+            // if the order was active and is not a one timer
+            if (!sEvent.getOrderType().equals(Constants.ORDER_PERIOD_ONCE) &&
+                    sEvent.getOldStatusId().equals(Constants.ORDER_STATUS_ACTIVE)) {
+                task.subscriptionEnds(sEvent.getUserId(), sEvent.getNewStatusId());
+            }
         }
     }
 }

@@ -66,11 +66,14 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
+import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -104,6 +107,16 @@ public class OrderBL extends ResultList
     public OrderBL() throws NamingException {
         init();
     }
+    
+    public OrderBL (OrderEntityLocal order) {
+        try {
+            init();
+        } catch (NamingException e) {
+            throw new SessionInternalError(e);
+        }
+        this.order = order;
+    }
+    
     
     public OrderBL(NewOrderDTO order) throws NamingException {
         newOrder = order;
@@ -342,17 +355,19 @@ public class OrderBL extends ResultList
         // update first the order own fields
         if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
             audit(executorId, order.getActiveUntil());
+            // this needs an event
+            NewActiveUntilEvent event = new NewActiveUntilEvent(
+                    order.getId(), dto.getActiveUntil(), 
+                    order.getActiveUntil());
+            EventManager.process(event);
+            // update it
             order.setActiveUntil(dto.getActiveUntil());
         }
         if (!Util.equal(order.getActiveSince(), dto.getActiveSince())) {
             audit(executorId, order.getActiveSince());
             order.setActiveSince(dto.getActiveSince());
         }
-        if (dto.getStatusId() != null && !order.getStatusId().equals(
-                dto.getStatusId())) {
-            audit(executorId, order.getStatusId());
-            order.setStatusId(dto.getStatusId());
-        }
+        setStatus(executorId, dto.getStatusId());
         
         OrderPeriodEntityLocal period = orderPeriodHome.findByPrimaryKey(
                 dto.getPeriod());
@@ -556,6 +571,9 @@ public class OrderBL extends ResultList
     }
     
     public void setStatus(Integer executorId, Integer statusId) {
+        if (statusId == null || order.getStatusId().equals(statusId)) {
+            return;
+        }
         if (executorId != null) {
             eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
                     order.getId(), 
@@ -571,6 +589,9 @@ public class OrderBL extends ResultList
                     order.getStatusId(), null, null);
 
         }
+        NewStatusEvent event = new NewStatusEvent(
+                order.getId(), order.getStatusId(), statusId);
+        EventManager.process(event);
         order.setStatusId(statusId);
 
     }

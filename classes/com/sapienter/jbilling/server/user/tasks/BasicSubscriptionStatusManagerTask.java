@@ -19,6 +19,10 @@ Contributor(s): ______________________________________.
 */
 package com.sapienter.jbilling.server.user.tasks;
 
+import java.util.Date;
+
+import javax.ejb.FinderException;
+
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -27,6 +31,7 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.util.Constants;
 
 public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         ISubscriptionStatusManager {
@@ -46,7 +51,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         
         LOG.debug("A payment failed " + payment);
         
-        UserBL user = getUser();
+        UserBL user = getUser(null);
         Integer status = user.getEntity().getSubscriptionStatus().getId();
 
         if (isLastRetry()) {
@@ -72,12 +77,54 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
             return;
         }
 
-        UserBL user = getUser();
+        UserBL user = getUser(null);
 
         // currently, any payment get's you to active, regardless of the amount.
         // hence, this is not supporting partial payments ... event a partial 
         // payment will take you to active.
         user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_ACTIVE);
+    }
+    
+    public void subscriptionEnds(Integer userId, Date newActiveUntil, 
+            Date oldActiveUntil) {
+        UserBL user = null;
+        // it is known that both are different
+        if (oldActiveUntil == null || (newActiveUntil != null && 
+                newActiveUntil.after(oldActiveUntil))) {
+            user = getUser(userId);
+            if (user.getEntity().getSubscriptionStatus().getId().equals(
+                    UserDTOEx.SUBSCRIBER_ACTIVE)) {
+                user.updateSubscriptionStatus(
+                        UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION);
+            } else {
+                LOG.info("Should go to pending unsubscription, but is in " + 
+                        user.getEntity().getSubscriptionStatus().getDescription(1));
+            }
+        } else if (newActiveUntil == null) { // it's going back to on-going (subscribed)
+            user = getUser(userId);
+            if (user.getEntity().getSubscriptionStatus().getId().equals(
+                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION)) {
+                user.updateSubscriptionStatus(
+                        UserDTOEx.SUBSCRIBER_ACTIVE);
+            } else {
+                LOG.info("Should go to active, but is in " + 
+                        user.getEntity().getSubscriptionStatus().getDescription(1));
+            }
+        }
+    }
+    
+    public void subscriptionEnds(Integer userId, Integer statusId) {
+        if (statusId.equals(Constants.ORDER_STATUS_FINISHED)) {
+            UserBL user = getUser(userId);
+            if (user.getEntity().getSubscriptionStatus().getId().equals(
+                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION)) {
+                user.updateSubscriptionStatus(
+                        UserDTOEx.SUBSCRIBER_UNSUBSCRIBED);
+            } else {
+                LOG.info("Should go to unsubscribed, but is in " + 
+                        user.getEntity().getSubscriptionStatus().getDescription(1));
+            }
+        }
     }
     
     private boolean isPaymentApplicable(boolean failed) {
@@ -105,19 +152,24 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
                     BasicSubscriptionStatusManagerTask.class, e);
         }
         
+        // it is the number of retries plus one for the initial process
         if (payment.getAttempt().intValue() >= 
-                config.getEntity().getRetries().intValue()) {
+                config.getEntity().getRetries().intValue() + 1) { // 
             return true;
         } else {
             return false;
         }
     }
     
-    private UserBL getUser() {
+    private UserBL getUser(Integer userId) {
         // find the user, and its status
         UserBL user = null; 
         try {
-            user = new UserBL(payment.getUserId());
+            if (userId == null) {
+                user = new UserBL(payment.getUserId());
+            } else {
+                user = new UserBL(userId);
+            }
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }        

@@ -168,7 +168,7 @@ public class DTOFactory {
         dto.setStatusStr(user.getStatus().getDescription(user.getLanguageIdField()));
         // the subscriber status
         dto.setSubscriptionStatusId(user.getSubscriptionStatus().getId());
-        dto.setSubscriptionStatusStr(user.getStatus().getDescription(
+        dto.setSubscriptionStatusStr(user.getSubscriptionStatus().getDescription(
                 user.getLanguageIdField()));
         
         // add the roles

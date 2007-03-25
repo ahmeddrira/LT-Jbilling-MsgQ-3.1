@@ -36,6 +36,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.EventLogger;
@@ -149,8 +150,8 @@ public class BasicOrderFilterTask
                                     EventLogger.MODULE_BILLING_PROCESS,
                                     EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
                                     Constants.TABLE_PUCHASE_ORDER);
-                                
-                            order.setStatusId(Constants.ORDER_STATUS_FINISHED);   
+                            OrderBL orderBL = new OrderBL(order);
+                            orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);    
                             order.setNextBillableDay(null);         
                         }
                     }
@@ -185,13 +186,15 @@ public class BasicOrderFilterTask
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_EXPIRED,
                                 Constants.TABLE_PUCHASE_ORDER);
-                        order.setStatusId(Constants.ORDER_STATUS_FINISHED);
+                        OrderBL orderBL = new OrderBL(order);
+                        orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
                         order.setNextBillableDay(null);                                   
                     }
                 } else if (activeUntil != null && process.getBillingDate().
                         after(activeUntil)) {
                     retValue = false;
-                    order.setStatusId(Constants.ORDER_STATUS_FINISHED);
+                    OrderBL orderBL = new OrderBL(order);
+                    orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
                     eLog.warning(process.getEntityId(), order.getId(), 
                             EventLogger.MODULE_BILLING_PROCESS,
                             EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,

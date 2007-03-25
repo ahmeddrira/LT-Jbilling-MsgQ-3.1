@@ -465,7 +465,7 @@ public class WSTest extends WSTestBase {
             
             if (ret == null)
             	fail("Transition list should not be empty!");
-            assertEquals(ret.length, 2);
+            assertEquals(3, ret.length);
             
             // Check the ids of the returned transitions
             assertEquals(ret[0].getId().intValue(), 1);
@@ -495,7 +495,7 @@ public class WSTest extends WSTestBase {
             		call.invoke(new Object[]{ null, null } );
             if (ret == null)
             	fail("Transition list should not be empty!");
-            assertEquals(ret.length, 1);
+            assertEquals(2, ret.length);
             assertEquals(ret[0].getId().intValue(), 2);
             assertEquals(ret[0].getUserId().intValue(), 2);
             assertEquals(ret[0].getFromStatusId().intValue(), 2);

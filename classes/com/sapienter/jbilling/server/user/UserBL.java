@@ -206,6 +206,7 @@ public class UserBL  extends ResultList
             age.setUserStatus(executorId, user.getUserId(), dto.getStatusId(), 
                     Calendar.getInstance().getTime());
         }
+        updateSubscriptionStatus(dto.getSubscriptionStatusId());
         if (dto.getCurrencyId() != null && !user.getCurrencyId().equals(
         		dto.getCurrencyId())) {
         	user.setCurrencyId(dto.getCurrencyId());
@@ -1038,6 +1039,10 @@ public class UserBL  extends ResultList
     }
     
     public void updateSubscriptionStatus(Integer id) {
+        if (user.getSubscriptionStatus().getId().equals(id)) {
+            // no update ... it's already there
+            return;
+        }
         eLogger.auditBySystem(user.getEntity().getId(), 
                 Constants.TABLE_BASE_USER, user.getUserId(), 
                 EventLogger.MODULE_USER_MAINTENANCE,

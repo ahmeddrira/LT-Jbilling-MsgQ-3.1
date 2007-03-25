@@ -24,6 +24,8 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
+import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.user.event.SubscriptionStatusEventProcessor;
@@ -49,11 +51,21 @@ public final class EventManager {
         // PaymentSuccessful
         subscriptions.put(PaymentSuccessfulEvent.class,
                 new Class[] { SubscriptionStatusEventProcessor.class, } );
+        // NewActiveUntil (orders)
+        subscriptions.put(NewActiveUntilEvent.class,
+                new Class[] { SubscriptionStatusEventProcessor.class, } );
+        // NewStatus (orders)
+        subscriptions.put(NewStatusEvent.class,
+                new Class[] { SubscriptionStatusEventProcessor.class, } );
     }
 
     public static final void process(Event event){
         LOG.debug("processing event " + event);
         Class processors[] = (Class[]) subscriptions.get(event.getClass());
+        if (processors == null) {
+            LOG.warn("No processors for class " + event.getClass());
+            return;
+        }
         for (int f = 0; f < processors.length; f++) {
             // create a new processor
             EventProcessor processor;

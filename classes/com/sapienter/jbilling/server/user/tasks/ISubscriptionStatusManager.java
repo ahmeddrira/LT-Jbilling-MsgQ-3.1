@@ -19,9 +19,14 @@ Contributor(s): ______________________________________.
 */
 package com.sapienter.jbilling.server.user.tasks;
 
+import java.util.Date;
+
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
 public interface ISubscriptionStatusManager {
     public void paymentFailed(Integer entityId, PaymentDTOEx payment);
     public void paymentSuccessful(Integer entityId, PaymentDTOEx payment);
+    public void subscriptionEnds(Integer userId, Date newActiveUntil, 
+            Date oldActiveUntil);
+    public void subscriptionEnds(Integer userId, Integer statusId);
 }

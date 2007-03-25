@@ -332,7 +332,8 @@ public class InvoiceBL extends ResultList
                 // the next billable day doesn't need updating
                 if (order.getStatusId().equals(
                         Constants.ORDER_STATUS_FINISHED)) {
-                    order.setStatusId(Constants.ORDER_STATUS_ACTIVE);
+                    OrderBL orderBL = new OrderBL(order);
+                    orderBL.setStatus(null, Constants.ORDER_STATUS_ACTIVE);
                 }
                 continue;
             }
@@ -343,7 +344,8 @@ public class InvoiceBL extends ResultList
                 order.setNextBillableDay(orderProcess.getPeriodStart());
                 if (order.getStatusId().equals(
                         Constants.ORDER_STATUS_FINISHED)) {
-                    order.setStatusId(Constants.ORDER_STATUS_ACTIVE);
+                    OrderBL orderBL = new OrderBL(order);
+                    orderBL.setStatus(null, Constants.ORDER_STATUS_ACTIVE);
                 }
             }
             

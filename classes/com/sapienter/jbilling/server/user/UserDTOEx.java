@@ -42,6 +42,7 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     
     // user status in synch with db table user_status
     public static final Integer STATUS_ACTIVE = new Integer(1); // this HAS to be the very first status
+    public static final Integer STATUS_SUSPENDED = new Integer(5); 
     public static final Integer STATUS_DELETED = new Integer(8); // this HAS to be the last status
     
     // subscriber status in synch with db table subscriber_status

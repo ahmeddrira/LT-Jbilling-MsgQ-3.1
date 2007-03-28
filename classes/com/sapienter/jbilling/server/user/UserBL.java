@@ -1054,7 +1054,31 @@ public class UserBL  extends ResultList
         } catch (Exception e) {
             throw new SessionInternalError("Can't update a user subscription status",
                     UserBL.class, e);
-        }        
+        }     
+        
+        // make sure this is in synch with the ageing status of the user
+        try {
+            PreferenceBL link = new PreferenceBL();
+            try {
+                link.set(user.getEntity().getId(), 
+                        Constants.PREFERENCE_LINK_AGEING_TO_SUBSCRIPTION);
+            } catch (FinderException e) {
+                // i'll use the default
+            }
+            if (link.getInt() == 1) {
+                AgeingBL ageing = new AgeingBL();
+                if (id.equals(UserDTOEx.SUBSCRIBER_ACTIVE)) {
+                    ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_ACTIVE, 
+                            Calendar.getInstance().getTime());
+                } else if (id.equals(UserDTOEx.SUBSCRIBER_EXPIRED)) {
+                    ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_SUSPENDED, 
+                            Calendar.getInstance().getTime());
+                }
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError("Can't update a user status",
+                    UserBL.class, e);
+        } 
         
         log.debug("Subscription status updated to " + id);
     }

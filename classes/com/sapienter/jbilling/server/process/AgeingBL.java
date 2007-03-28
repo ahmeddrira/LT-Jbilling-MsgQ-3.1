@@ -368,6 +368,10 @@ public class AgeingBL {
     	return null;
     }
     
+    public static boolean isAgeingInUse(EntityEntityLocal entity) {
+        return entity.getSteps().size() > 1;
+    }
+    
     /**
      * Goes over all the users that are not active, and calls age on them.
      * This doesn't discriminate over entities.

@@ -57,6 +57,7 @@ import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentResultEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentResultEntityLocalHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -87,7 +88,7 @@ public class PaymentBL extends ResultList
     private PaymentResultEntityLocalHome resultHome = null;
     private PaymentInvoiceMapEntityLocalHome mapHome = null;
     private PaymentEntityLocal payment = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(PaymentBL.class); 
     private EventLogger eLogger = null;
 
     public PaymentBL(Integer paymentId) 
@@ -107,7 +108,6 @@ public class PaymentBL extends ResultList
 
     private void init() {
         try {
-            log = Logger.getLogger(PaymentBL.class);     
             eLogger = EventLogger.getInstance();        
             EJBFactory = JNDILookup.getFactory(false);
             paymentHome = (PaymentEntityLocalHome) 
@@ -209,6 +209,11 @@ public class PaymentBL extends ResultList
             }
         }
         
+        // preauth payments
+        if (dto.getIsPreauth() != null && dto.getIsPreauth().intValue() == 1) {
+            payment.setIsPreauth(1);
+        }
+        
         dto.setId(payment.getId());
     }
     
@@ -288,7 +293,7 @@ public class PaymentBL extends ResultList
             
             if (task == null) {
                 // at least there has to be one task configurated !
-                log.warn("No payment pluggable" +
+                LOG.warn("No payment pluggable" +
                         "tasks configurated for entity " + entityId);
                 return null;
             }
@@ -296,8 +301,22 @@ public class PaymentBL extends ResultList
             create(info);
             boolean processorUnavailable = true;
             while (task != null && processorUnavailable) {
-                // get this payment processed
-                processorUnavailable = task.process(info);
+                // see if this user has pre-auths
+                PaymentAuthorizationBL authBL = new PaymentAuthorizationBL();
+                PaymentAuthorizationDTO auth = authBL.getPreAuthorization(info.getUserId());
+                if (auth != null) {
+                    processorUnavailable = task.confirmPreAuth(auth, info);
+                    if (!processorUnavailable) {
+                        if (info.getResultId() == Constants.RESULT_FAIL) {
+                            processorUnavailable = task.process(info);
+                        }
+                        // in any case, don't use this preAuth again
+                        authBL.markAsUsed(info);
+                    }
+                } else {
+                    // get this payment processed
+                    processorUnavailable = task.process(info);
+                }
                 
                 // allow the pluggable task to do something if the payment 
                 // failed (like notification, suspension, etc ... )
@@ -330,7 +349,7 @@ public class PaymentBL extends ResultList
                 payment.setBalance(new Float(0));
             }
         } catch (Exception e) {
-            log.fatal("Problems handling payment task.", e);
+            LOG.fatal("Problems handling payment task.", e);
             throw new SessionInternalError(
                 "Problems handling payment task.");
         }  
@@ -350,7 +369,8 @@ public class PaymentBL extends ResultList
                 payment.getUpdateDateTime(),payment.getPaymentDate(),
                 payment.getAttempt(), payment.getDeleted(), 
                 payment.getMethodId(), payment.getResultId(), 
-                payment.getIsRefund(), payment.getCurrencyId());
+                payment.getIsRefund(), payment.getIsPreauth(),
+                payment.getCurrencyId());
     }
     
     public PaymentDTOEx getDTOEx(Integer language) 
@@ -475,11 +495,11 @@ public class PaymentBL extends ResultList
     public void delete() throws SessionInternalError {
     	
     	try {
-            log.debug("Deleting payment " + payment.getId());
+            LOG.debug("Deleting payment " + payment.getId());
             payment.setUpdateDateTime(Calendar.getInstance().getTime());
             payment.setDeleted(new Integer(1));
         } catch (Exception e) {
-            log.warn("Problem deleteing payment.", e);
+            LOG.warn("Problem deleteing payment.", e);
             throw new SessionInternalError("Problem deleteing payment.");
         }
      }
@@ -684,7 +704,7 @@ public class PaymentBL extends ResultList
         } catch (NotificationNotFoundException e1) {
             // won't send anyting because the entity didn't specify the
             // notification
-            log.warn("Can not notify a customer about a payment " +
+            LOG.warn("Can not notify a customer about a payment " +
                     "beacuse the entity lacks the notification. " +
                     "entity = " + entityId);
         }
@@ -723,7 +743,7 @@ public class PaymentBL extends ResultList
                     EventLogger.ROW_DELETED, Constants.TABLE_PAYMENT_INVOICE_MAP);
 
         } catch (Exception e) {
-            log.error("Exception removing payment-invoice link", e);
+            LOG.error("Exception removing payment-invoice link", e);
             throw new SessionInternalError(e);
         } 
     }
@@ -739,4 +759,5 @@ public class PaymentBL extends ResultList
         dto.setCurrencyId(map.getPayment().getCurrencyId());
         return dto;
     }
+    
 }

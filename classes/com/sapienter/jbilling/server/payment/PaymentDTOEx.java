@@ -93,10 +93,10 @@ public class PaymentDTOEx extends PaymentDTO {
             Date updateDateTime,
             Date paymentDate, Integer attempt, Integer deleted,
             Integer methodId, Integer resultId, Integer isRefund,
-            Integer currencyId, Float balance) {
+            Integer isPreauth, Integer currencyId, Float balance) {
         super(id, amount, balance, createDateTime, updateDateTime,
-                paymentDate, attempt, 
-                deleted, methodId, resultId, isRefund, currencyId);
+                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
+                isPreauth, currencyId);
         invoiceIds = new Vector();
         paymentMaps = new Vector();
     }

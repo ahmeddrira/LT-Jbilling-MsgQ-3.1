@@ -20,20 +20,27 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.payment;
 
+import java.util.Collection;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
+
+import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocalHome;
+import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
+import com.sapienter.jbilling.interfaces.PaymentEntityLocalHome;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 
 public class PaymentAuthorizationBL {
     private JNDILookup EJBFactory = null;
     private PaymentAuthorizationEntityLocalHome paymentAuthorizationHome = null;
     private PaymentAuthorizationEntityLocal paymentAuthorization = null;
+    private static final Logger LOG = Logger.getLogger(PaymentAuthorizationBL.class); 
 
     public PaymentAuthorizationBL(Integer paymentAuthorizationId) 
             throws NamingException, FinderException {
@@ -109,5 +116,44 @@ public class PaymentAuthorizationBL {
         return dto;
     }
         
+    public PaymentAuthorizationDTO getPreAuthorization(Integer userId) {
+        PaymentAuthorizationDTO auth = null;
+        try {
+            EJBFactory = JNDILookup.getFactory(false);
+            PaymentEntityLocalHome paymentHome = (PaymentEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PaymentEntityLocalHome.class,
+                    PaymentEntityLocalHome.JNDI_NAME);
 
+            Collection payments = paymentHome.findPreauth(userId);
+            // at the time, use the very first one
+            if (!payments.isEmpty()) {
+                PaymentEntityLocal payment = (PaymentEntityLocal) payments.toArray()[0];
+                Collection auths = payment.getAuthorizations();
+                if (!auths.isEmpty()) {
+                    paymentAuthorization = 
+                            (PaymentAuthorizationEntityLocal) auths.toArray()[0];
+                    auth = getDTO();
+                } else {
+                    LOG.warn("Auth payment found, but without auth record?");
+                }
+            }
+        } catch (Exception e) {
+            LOG.warn("Exceptions finding a pre authorization", e);
+        }
+        LOG.debug("Looking for preauth for " + userId + " result " + auth);
+        return auth;
+    }
+
+    public void markAsUsed(PaymentDTOEx user) {
+        paymentAuthorization.getPayment().setBalance(0F);
+        // this authorization got used by a real payment. Link them
+        try {
+            PaymentBL payment = new PaymentBL(user.getId());
+            paymentAuthorization.getPayment().setPayment(payment.getEntity());
+        } catch (Exception e) {
+            throw new SessionInternalError("linking authorization to user payment",
+                    PaymentAuthorizationBL.class, e);
+        } 
+    }
 }

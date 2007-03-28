@@ -79,36 +79,39 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 	}
 	
 	public boolean process(PaymentDTOEx paymentInfo) throws PluggableTaskException {
-        LOG.debug("Fake processing " + paymentInfo);
+        LOG.debug("processing " + paymentInfo);
 		Result result = doFakeAuthorization(paymentInfo, null);
+        LOG.debug("result " + result);
 		return result.shouldCallOtherProcessors();
 	}
 	
 	public boolean preAuth(PaymentDTOEx paymentInfo)
 		throws PluggableTaskException {
-		
+        LOG.debug("preAuth payment " + paymentInfo);
 		String transactionId = generatePreAuthTransactionId();
 		Result result = doFakeAuthorization(paymentInfo, transactionId);
         paymentInfo.setAuthorization(result.getAuthorizationData());
 		
+        LOG.debug("result " + result);
 		return result.shouldCallOtherProcessors();
 	}
 	
 	public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx paymentInfo)
 		throws PluggableTaskException {
-		
+		LOG.debug("confirmPreAuth" + auth + " payment " + paymentInfo);
 		if (!getFakeProcessorName().equals(auth.getProcessor())){
-			return true;
+            LOG.warn("name of processor does not match " + getFakeProcessorName() + 
+                    " " + auth.getProcessor());
 		}
 		
 		if (!isPreAuthTransactionId(auth.getTransactionId())){
 			LOG.warn("AuthorizationDTOEx with transaction id: " + auth.getTransactionId() + " is used as preauth data");
-			return true;
 		}
 		
 		Result result = doFakeAuthorization(paymentInfo, null);
         paymentInfo.setAuthorization(result.getAuthorizationData());
 
+        LOG.debug("returning " + result);
 		return result.shouldCallOtherProcessors();
 	}
 		

@@ -60,6 +60,11 @@ public abstract class PaymentTaskBase extends PluggableTask implements PaymentTa
 		public boolean shouldCallOtherProcessors() {
 			return myCallOtherProcessors;
 		}
+        
+        public String toString() {
+            return "Result: myCallOtherProcessors " + myCallOtherProcessors + 
+                " data " + myAuthorizationData;
+        }
 	}
 	
 	protected static final Result NOT_APPLICABLE = new Result(null, true);

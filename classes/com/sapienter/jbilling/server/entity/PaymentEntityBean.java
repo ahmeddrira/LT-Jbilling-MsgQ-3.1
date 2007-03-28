@@ -64,9 +64,19 @@ import com.sapienter.jbilling.server.util.Constants;
  *                     WHERE p.user.userId = ?1
  *                       AND p.balance >= 0.01
  *                       AND p.isRefund = 0
+ *                       AND p.isPreauth = 0
  *                       AND p.deleted = 0"
  *             result-type-mapping="Local"
  *
+ * @ejb:finder signature="Collection findPreauth(java.lang.Integer userId)"
+ *             query="SELECT OBJECT(p) 
+ *                      FROM payment p
+ *                     WHERE p.user.userId = ?1
+ *                       AND p.balance >= 0.01
+ *                       AND p.isRefund = 0
+ *                       AND p.isPreauth = 1
+ *                       AND p.deleted = 0"
+ *             result-type-mapping="Local"
  * 
  * @ejb.value-object name="Payment"
  * 
@@ -113,6 +123,7 @@ public abstract class PaymentEntityBean implements EntityBean {
         setCurrencyId(currencyId);
         // by default, this is a normal payment, not a refund
         setIsRefund(new Integer(0));
+        setIsPreauth(new Integer(0));
         
         return newId;
     }
@@ -257,6 +268,18 @@ public abstract class PaymentEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public abstract void setIsRefund(Integer flag);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="is_preauth"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getIsPreauth();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setIsPreauth(Integer flag);
 
     /**
       * @ejb:interface-method view-type="local"

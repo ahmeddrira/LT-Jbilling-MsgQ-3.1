@@ -246,8 +246,7 @@ public class CreditCardBL extends ResultList
         paymentDto.setCurrencyId(currencyId);
         paymentDto.setCreditCard(cc);
         paymentDto.setUserId(userId);
-        // TO-DO: mark this payment as a pre-auth, so it doesn't get mixed up with
-        // real payments
+        paymentDto.setIsPreauth(new Integer(1));
         // filler fields, required
         paymentDto.setIsRefund(new Integer(0));
         paymentDto.setMethodId(Util.getPaymentMethod(cc.getNumber()));
@@ -285,6 +284,9 @@ public class CreditCardBL extends ResultList
             PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
                     entityId, paymentDto);
             EventManager.process(event);
+        } else {
+            // if it was not successfull, it should not have balance
+            payment.getEntity().setBalance(0F);
         }
         
         return retValue;

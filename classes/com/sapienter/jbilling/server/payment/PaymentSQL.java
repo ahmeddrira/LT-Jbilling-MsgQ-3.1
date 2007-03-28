@@ -34,6 +34,7 @@ public interface PaymentSQL {
         "       payment_result pr " +
         " where p.user_id = u.id " +
         "   and p.is_refund = ?" +
+        "   and p.is_preauth = 0" +
         "   and p.method_id = pm.id " +
         "   and p.currency_id = c.id " +
         "   and u.entity_id = ? " +
@@ -61,6 +62,7 @@ public interface PaymentSQL {
         "       customer cu, currency c, contact co " +
         " where p.user_id = u.id " +
         "   and p.is_refund = ?" +
+        "   and p.is_preauth = 0" +
         "   and p.method_id = pm.id " +
         "   and p.currency_id = c.id " +
         "   and u.entity_id = ? " +
@@ -86,6 +88,7 @@ public interface PaymentSQL {
         "       payment_result pr " +
         " where p.user_id = u.id " +
         "   and p.is_refund = ?" +
+        "   and p.is_preauth = 0" +
         "   and p.method_id = pm.id " +
         "   and p.currency_id = c.id " +
         "   and u.id = ? " +
@@ -116,6 +119,7 @@ public interface PaymentSQL {
         "       payment_result pr " +
         " where p.user_id = u.id " +
         "   and p.is_refund = ?" +
+        "   and p.is_preauth = 0" +
         "   and p.method_id = pm.id " +
         "   and p.currency_id = c.id " +
         "   and u.id = ? " +

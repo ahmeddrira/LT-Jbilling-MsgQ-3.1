@@ -859,6 +859,7 @@
         <column name="credit_card_id" type="INTEGER"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column default="0" name="is_refund" required="true" type="SMALLINT"/>
+        <column default="0" name="is_preauth" required="true" type="SMALLINT"/>
         <column name="payment_id" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>
         <column name="payout_id" type="INTEGER"/>
@@ -867,6 +868,10 @@
         <index name="payment_i_2">
         	<index-column name="user_id"/>
         	<index-column name="create_datetime"/>
+        </index>
+        <index name="payment_i_3">
+        	<index-column name="user_id"/>
+        	<index-column name="balance"/>
         </index>
         <foreign-key foreignTable="ach">
             <reference foreign="id" local="ach_id"/>
@@ -908,6 +913,9 @@
         </index>
         <index name="transaction_id">
         	<index-column name="transaction_id"/>
+        </index>
+        <index name="ix_pa_payment">
+        	<index-column name="payment_id"/>
         </index>
         <foreign-key foreignTable="payment">
             <reference foreign="id" local="payment_id"/>

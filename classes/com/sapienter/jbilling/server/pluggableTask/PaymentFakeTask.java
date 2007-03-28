@@ -174,6 +174,8 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 		auth.setResult(Boolean.valueOf(isAuthorized));
 		auth.setCode1(getFakeCode1());
 		auth.setTransactionId(transactionId);
+        auth.setResponseMessage(isAuthorized ? "The transaction has been approved" :
+                "Transaction failed");
 		return auth;
 	}
 

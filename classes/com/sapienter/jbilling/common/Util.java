@@ -196,6 +196,7 @@ public class Util {
     }     
 
     static public String truncateString(String str, int length) {
+        if (str == null) return null;
         String retValue;
         if (str.length() <= length) {
             retValue = str;

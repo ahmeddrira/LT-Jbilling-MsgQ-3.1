@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
@@ -89,6 +90,7 @@ public class PaymentAuthorizationBL {
         paymentAuthorization.setCode3(dto.getCode3());
         paymentAuthorization.setMD5(dto.getMD5());
         paymentAuthorization.setTransactionId(dto.getTransactionId());
+        paymentAuthorization.setResponseMessage(Util.truncateString(dto.getResponseMessage(),200));
         
         // all authorization have to be linked to a payment
         try {
@@ -113,6 +115,7 @@ public class PaymentAuthorizationBL {
         dto.setProcessor(paymentAuthorization.getProcessor());        
         dto.setTransactionId(paymentAuthorization.getTransactionId());
         dto.setCreateDate(paymentAuthorization.getCreateDate());
+        dto.setResponseMessage(paymentAuthorization.getResponseMessage());
         return dto;
     }
         

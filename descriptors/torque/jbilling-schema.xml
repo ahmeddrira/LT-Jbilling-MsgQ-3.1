@@ -908,6 +908,7 @@
         <column name="md5" size="100" type="VARCHAR"/>
         <column name="card_code" size="100" type="VARCHAR"/>
         <column name="create_datetime" required="true" type="DATE"/>
+        <column name="response_message" size="200" type="VARCHAR"/>
         <index name="create_datetime">
         	<index-column name="create_datetime"/>
         </index>

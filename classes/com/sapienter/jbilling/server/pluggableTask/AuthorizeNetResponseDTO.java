@@ -26,7 +26,6 @@ import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 
 public class AuthorizeNetResponseDTO implements Serializable {
     private PaymentAuthorizationDTO dbRow = null;
-    private String reasonText;
     
     public AuthorizeNetResponseDTO(String rawResponse) {
         // wow, how easy this is ?!! :)
@@ -36,7 +35,7 @@ public class AuthorizeNetResponseDTO implements Serializable {
         dbRow.setCode1(fields[0]); // code 
         dbRow.setCode2(fields[1]); // subcode
         dbRow.setCode3(fields[2]); // reason code
-        reasonText = fields[3];
+        dbRow.setResponseMessage(fields[3]); // a string with plain text with a reason for this result
         dbRow.setApprovalCode(fields[4]); 
         dbRow.setAVS(fields[5]);
         dbRow.setTransactionId(fields[6]);
@@ -49,20 +48,13 @@ public class AuthorizeNetResponseDTO implements Serializable {
             "code=" + dbRow.getCode1() + "," +
         "subCode=" + dbRow.getCode2() + "," +
         "reasonCode=" + dbRow.getCode3() + "," +
-        "reasonText=" + reasonText + "," +
+        "reasonText=" + dbRow.getResponseMessage() + "," +
         "approvalCode=" + dbRow.getApprovalCode() + "," +
         "AVSResultCode=" + dbRow.getAVS() + "," +
         "transactionId=" + dbRow.getTransactionId() + "," +
         "MD5Hash=" + dbRow.getMD5() + "," +
         "cardCode=" + dbRow.getCardCode() + 
         "]";
-    }
-    
-    /**
-     * @return
-     */
-    public String getReasonText() {
-        return reasonText;
     }
     
     public PaymentAuthorizationDTO getPaymentAuthorizationDTO() {

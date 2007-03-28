@@ -226,6 +226,17 @@ public abstract class PaymentAuthorizationEntityBean implements EntityBean {
     public abstract Date getCreateDate();
     public abstract void setCreateDate(Date date);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="response_message"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract String getResponseMessage();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setResponseMessage(String message);
     // CMR fields ------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"

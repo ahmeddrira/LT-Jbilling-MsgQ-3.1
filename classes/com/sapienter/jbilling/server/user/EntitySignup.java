@@ -114,7 +114,7 @@ public final class EntitySignup {
         	throws Exception {
 
         StringBuffer sql = new StringBuffer();
-        if (table.columns[0].equals("id")) {
+        if (table.columns[0].equals("i_id")) {
             initTable(table);
         }
         int rowIdx = table.nextId;
@@ -127,7 +127,7 @@ public final class EntitySignup {
             // generate the INSERT string with this table's columns
             sql.append("insert into " + table.name + " (");
             for (int columnsIdx = 0; columnsIdx < table.columns.length;) {
-                sql.append(table.columns[columnsIdx]);
+                sql.append(table.columns[columnsIdx].substring(2));
                 columnsIdx++;
                 if (columnsIdx < table.columns.length) {
                     sql.append(",");
@@ -158,23 +158,41 @@ public final class EntitySignup {
                         columnIdx < table.columns.length;
                         columnIdx++) {
                     String field;
-                    if (table.columns[columnIdx].equals("id")) {
+                    if (table.columns[columnIdx].equals("i_id")) {
                         // this is the id, which is automatically generated
-                        field = String.valueOf(rowIdx);
                         idxDifference = 1; // this is a normal table
-                        stmt.setString(columnIdx + 1, field);
-                    } else if (table.columns[columnIdx].equalsIgnoreCase("create_datetime") ||
-                            table.columns[columnIdx].equalsIgnoreCase("next_run_date")) {
-                        // date columns have to be treated as date types
-                        // otherwise, we rely on the JDBC driver to make the conversion
-                        java.sql.Date dateField = new Date(Util.parseDate(
-                                table.data[rowCount][columnIdx - idxDifference]).getTime());
-                    
-                        stmt.setDate(columnIdx + 1, dateField);
+                        stmt.setInt(columnIdx + 1, rowIdx);
                     } else {
-                        // this is just a normal column
+                        String type = table.columns[columnIdx].substring(0, 2);
                         field = table.data[rowCount][columnIdx - idxDifference];
-                        stmt.setString(columnIdx + 1, field);
+                        if (type.equals("d_")) {
+                            if (field == null) {
+                                stmt.setNull(columnIdx + 1, Types.DATE);
+                            } else {
+                                java.sql.Date dateField = new Date(Util.parseDate(field).getTime());
+                                stmt.setDate(columnIdx + 1, dateField);
+                            }
+                        } else if (type.equals("s_")) {
+                            if (field == null) {
+                                stmt.setNull(columnIdx + 1, Types.VARCHAR);
+                            } else {
+                                stmt.setString(columnIdx + 1, field);
+                            }
+                        } else if (type.equals("i_")) {
+                            if (field == null) {
+                                stmt.setNull(columnIdx + 1, Types.INTEGER);
+                            } else {
+                                stmt.setInt(columnIdx + 1, Integer.valueOf(field));
+                            }                            
+                        } else if (type.equals("f_")) {
+                            if (field == null) {
+                                stmt.setNull(columnIdx + 1, Types.FLOAT);
+                            } else {
+                                stmt.setFloat(columnIdx + 1, Float.valueOf(field));
+                            }                            
+                        } else {
+                            throw new Exception("Don't know the type " + type);
+                        }
                     }
                     
 
@@ -203,7 +221,7 @@ public final class EntitySignup {
             stmt.close();
             updateBettyTablesRows(table.index, rowIdx);
             table.nextId = rowIdx;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
             throw new Exception("Error inserting table " + table.name + 
@@ -322,7 +340,7 @@ public final class EntitySignup {
         //ENTITY
         // defaults currency to US dollars
         String entityColumns[] =
-        { "id", "external_id", "description", "create_datetime", "language_id", "currency_id" };
+        { "i_id", "i_external_id", "s_description", "d_create_datetime", "i_language_id", "i_currency_id" };
         String entityData[][] = { 
             { null, contact.getOrganizationName(), now, languageId.toString(), "1" }, 
         };
@@ -333,16 +351,16 @@ public final class EntitySignup {
         
         //BASE_USER
         String userColumns[] = {
-            "id",
-            "entity_id",
-            "user_name",
-            "password",
-            "deleted",
-            "status_id",
-            "currency_id",
-            "create_datetime",
-            "last_status_change",
-            "language_id"
+            "i_id",
+            "i_entity_id",
+            "s_user_name",
+            "s_password",
+            "i_deleted",
+            "i_status_id",
+            "i_currency_id",
+            "d_create_datetime",
+            "d_last_status_change",
+            "i_language_id"
         };
         String userData[][] = { 
             { String.valueOf(newEntityId), user.getUserName(), 
@@ -356,8 +374,8 @@ public final class EntitySignup {
         //USER_ROLE_MAP
         String userRoleColumns[] =
         {
-            "user_id",
-            "role_id",
+            "i_user_id",
+            "i_role_id",
         };
         String userRoleData[][] = {
             { String.valueOf(rootUserId), "2"}, 
@@ -367,7 +385,7 @@ public final class EntitySignup {
         processTable(table);
         
         //CONTACT_TYPE
-        String contactType[] = { "id", "entity_id", "is_primary" };
+        String contactType[] = { "i_id", "i_entity_id", "i_is_primary" };
         String contactTypeData[][] = new String[1][2];
         String contactTypeIntColumns[][][] = new String [1][1][2];
         contactTypeData[0][0] = String.valueOf(newEntityId);
@@ -381,28 +399,28 @@ public final class EntitySignup {
         
         //CONTACT
         String contactColumns[] = {
-            "id",
-            "ORGANIZATION_NAME",
-            "STREET_ADDRES1",
-            "STREET_ADDRES2",
-            "CITY",
-            "STATE_PROVINCE",
-            "POSTAL_CODE",
-            "COUNTRY_CODE",
-            "LAST_NAME",
-            "FIRST_NAME",
-            "PERSON_INITIAL",
-            "PERSON_TITLE",
-            "PHONE_COUNTRY_CODE",
-            "PHONE_AREA_CODE",
-            "PHONE_PHONE_NUMBER",
-            "FAX_COUNTRY_CODE",
-            "FAX_AREA_CODE",
-            "FAX_PHONE_NUMBER",
-            "EMAIL",
-            "CREATE_DATETIME",
-            "deleted",
-            "user_id"
+            "i_id",
+            "s_ORGANIZATION_NAME",
+            "s_STREET_ADDRES1",
+            "s_STREET_ADDRES2",
+            "s_CITY",
+            "s_STATE_PROVINCE",
+            "s_POSTAL_CODE",
+            "s_COUNTRY_CODE",
+            "s_LAST_NAME",
+            "s_FIRST_NAME",
+            "s_PERSON_INITIAL",
+            "s_PERSON_TITLE",
+            "s_PHONE_COUNTRY_CODE",
+            "s_PHONE_AREA_CODE",
+            "s_PHONE_PHONE_NUMBER",
+            "s_FAX_COUNTRY_CODE",
+            "s_FAX_AREA_CODE",
+            "s_FAX_PHONE_NUMBER",
+            "s_EMAIL",
+            "d_CREATE_DATETIME",
+            "i_deleted",
+            "i_user_id"
         };
         String contactData[][] = {
             {
@@ -462,7 +480,7 @@ public final class EntitySignup {
         
         //CONTACT_MAP
         String contactMapColumns[] =
-        { "id", "contact_id", "type_id", "table_id", "foreign_id" };
+        { "i_id", "i_contact_id", "i_type_id", "i_table_id", "i_foreign_id" };
         String contactMapData[][] = { 
 			{ String.valueOf(contactId), "1", "5", String.valueOf(newEntityId) }, // the contact for the entity
             { String.valueOf(contactId + 1), String.valueOf(pContactType), "10", String.valueOf(rootUserId) }, 
@@ -472,7 +490,7 @@ public final class EntitySignup {
         
         //ORDER_PERIODS
         // puts only monthly now
-        String orderPeriod[] = { "id", "entity_id", "value", "unit_id" };
+        String orderPeriod[] = { "i_id", "i_entity_id", "i_value", "i_unit_id" };
         String orderPeriodData[][] = new String[1][3];
         String orderPeriodIntColumns[][][] = new String [1][1][2];
         orderPeriodData[0][0] = String.valueOf(newEntityId);
@@ -487,7 +505,7 @@ public final class EntitySignup {
         
         //PLUGGABLE_TASK
         String pluggableTaskColumns[] =
-        { "id", "entity_id", "type_id", "processing_order" };
+        { "i_id", "i_entity_id", "i_type_id", "i_processing_order" };
         String pluggableTaskData[][] =
         { 
             { String.valueOf(newEntityId), "1", "1" }, // BasicLineTotalTask
@@ -510,12 +528,12 @@ public final class EntitySignup {
         //PLUGGABLE_TASK_PARAMETER
         String pluggableTaskParameterColumns[] =
         {
-            "id",
-            "task_id",
-            "name",
-            "int_value",
-            "str_value",
-            "float_value" 
+            "i_id",
+            "i_task_id",
+            "s_name",
+            "i_int_value",
+            "s_str_value",
+            "f_float_value" 
         };
         String pluggableTaskParameterData[][] = {
             { String.valueOf(lastCommonPT), "design", null, "simple_invoice_b2b", null},
@@ -548,8 +566,8 @@ public final class EntitySignup {
         //ENTITY_PAYMENT_METHOD_MAP
         String entityPaymentMethodMapColumns[] =
         {
-            "entity_id",
-            "payment_method_id",
+            "i_entity_id",
+            "i_payment_method_id",
         };
         
         String entityPaymentMethodMapData[][] = new String[3][2];
@@ -568,13 +586,13 @@ public final class EntitySignup {
         //PREFERENCE
         String preferenceColumns[] =
         {
-            "id",
-            "type_id",
-            "table_id",
-            "foreign_id",
-            "int_value",
-            "str_value",
-            "float_value"
+            "i_id",
+            "i_type_id",
+            "i_table_id",
+            "i_foreign_id",
+            "i_int_value",
+            "s_str_value",
+            "f_float_value"
         };
         // the table_id = 5, foregin_id = 1, means entity = 1
         String preferenceData[][] = {
@@ -600,8 +618,8 @@ public final class EntitySignup {
         //REPORT_ENTITY_MAP
         String reportEntityColumns[] =
         {
-            "entity_id",
-            "report_id",
+            "i_entity_id",
+            "i_report_id",
         };
         String reportEntityData[][] = {
             {String.valueOf(newEntityId),"1"},
@@ -630,7 +648,7 @@ public final class EntitySignup {
         
         //AGEING_ENTITY_STEP
         String ageingEntityStepColumns[] =
-                {"id", "entity_id", "status_id", "days"};
+                {"i_id", "i_entity_id", "i_status_id", "i_days"};
         String ageingEntityStepMessageData[][] = {
             {String.valueOf(newEntityId), "1", "0"}, // active (for the welcome message) 
         };
@@ -651,21 +669,21 @@ public final class EntitySignup {
         String inAMonth = Util.parseDate(cal.getTime());
         String billingProcessConfigurationColumns[] =
         {
-            "id",
-            "entity_id",
-            "next_run_date",
-            "generate_report",
-            "retries",
-            "days_for_retry",
-            "days_for_report",
-            "review_status",
-            "period_unit_id",
-            "period_value",
-            "due_date_unit_id",
-            "due_date_value",
-            "only_recurring",
-            "invoice_date_process",
-            "auto_payment"
+            "i_id",
+            "i_entity_id",
+            "d_next_run_date",
+            "i_generate_report",
+            "i_retries",
+            "i_days_for_retry",
+            "i_days_for_report",
+            "i_review_status",
+            "i_period_unit_id",
+            "i_period_value",
+            "i_due_date_unit_id",
+            "i_due_date_value",
+            "i_only_recurring",
+            "i_invoice_date_process",
+            "i_auto_payment"
         };
         String billingProcessConfigurationData[][] = {
             { String.valueOf(newEntityId), inAMonth, 
@@ -679,7 +697,7 @@ public final class EntitySignup {
         
         // CURRENCY_ENTITY_MAP
         String currencyEntityMapColumns[] =
-        { "entity_id", "currency_id", };
+        { "i_entity_id", "i_currency_id", };
         String currencyEntityMapData[][] = { 
             { String.valueOf(newEntityId), "1", }, 
         };
@@ -689,10 +707,10 @@ public final class EntitySignup {
         
         //NOTIFICATION_MESSAGE
         String messageColumns[] = {
-            "id",
-            "type_id",
-            "entity_id",
-            "language_id",
+            "i_id",
+            "i_type_id",
+            "i_entity_id",
+            "i_language_id",
         };
         // we provide at least those for english
         String messageData[][] = { 
@@ -712,9 +730,9 @@ public final class EntitySignup {
 
         //NOTIFICATION_MESSAGE_SECTION
         String sectionColumns[] = {
-            "id",
-            "message_id",
-            "section",
+            "i_id",
+            "i_message_id",
+            "i_section",
         };
         String sectionData[][] = { 
             { String.valueOf(messageId), "1"},
@@ -741,9 +759,9 @@ public final class EntitySignup {
 
         //NOTIFICATION_MESSAGE_LINE
         String lineColumns[] = {
-            "id",
-            "message_section_id",
-            "content",
+            "i_id",
+            "i_message_section_id",
+            "s_content",
         };
         String lineData[][] = { 
             { String.valueOf(sectionId), "Billing Statement from |company_name|"},
@@ -769,8 +787,8 @@ public final class EntitySignup {
         
         //ENTITY_DELIVERY_METHOD_MAP
         String methodsColumns[] = {
-                "entity_id",
-                "method_id",
+                "i_entity_id",
+                "i_method_id",
             };
             String methodsData[][] = { 
                 { String.valueOf(newEntityId), "1"},

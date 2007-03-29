@@ -322,7 +322,7 @@ public final class EntitySignup {
             } else {
                 language = data[entry][2];
             }
-            stmt.setString(4, language);
+            stmt.setInt(4, Integer.valueOf(language));
 
             if (stmt.executeUpdate() != 1) {
                 throw new SQLException("Should've insterted one row into international_description");
@@ -411,11 +411,11 @@ public final class EntitySignup {
             "s_FIRST_NAME",
             "s_PERSON_INITIAL",
             "s_PERSON_TITLE",
-            "s_PHONE_COUNTRY_CODE",
-            "s_PHONE_AREA_CODE",
+            "i_PHONE_COUNTRY_CODE",
+            "i_PHONE_AREA_CODE",
             "s_PHONE_PHONE_NUMBER",
-            "s_FAX_COUNTRY_CODE",
-            "s_FAX_AREA_CODE",
+            "i_FAX_COUNTRY_CODE",
+            "i_FAX_AREA_CODE",
             "s_FAX_PHONE_NUMBER",
             "s_EMAIL",
             "d_CREATE_DATETIME",

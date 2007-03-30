@@ -386,6 +386,26 @@ public class OrderBL extends ResultList
         order.setNotesInInvoice(dto.getNotesInInvoice());
         // this one needs more to get updated
         updateNextBillableDay(executorId, dto.getNextBillableDay());
+        OrderLineEntityLocal oldLine = null;
+    	int nonDeletedLines = 0;
+        // Determine if the item of the order changes and, if it is,
+        // log a subscription change event.
+        log.info("Order lines: " + order.getOrderLines().size() + "  --> new Order: "+
+        		dto.getNumberOfLines().intValue());
+        if (dto.getNumberOfLines().intValue() == 1 &&
+        	order.getOrderLines().size() >= 1) {
+        	// This event needs to log the old item id and description, so
+        	// it can only happen when updating orders with only one line.
+        	
+        	for (Iterator i = order.getOrderLines().iterator(); i.hasNext();) {
+        		// Check which order is not deleted.
+        		OrderLineEntityLocal temp = (OrderLineEntityLocal)i.next();
+        		if (temp.getDeleted() == 0) {
+        			oldLine = temp;
+        			nonDeletedLines++;
+        		}
+        	}
+        }
         
         // now update this order's lines
         // first, mark all the lines as deleted
@@ -395,6 +415,24 @@ public class OrderBL extends ResultList
         }  
         createLines(dto);
  
+        if (oldLine != null && nonDeletedLines == 1) {
+    		OrderLineEntityLocal newLine = null;
+    		for (Iterator i = order.getOrderLines().iterator(); i.hasNext();) {
+    			OrderLineEntityLocal temp = (OrderLineEntityLocal)i.next();
+    			if (temp.getDeleted() == 0) {
+    				newLine = temp;
+    			}
+    		}
+    	   	if (newLine != null && !oldLine.getItemId().equals(newLine.getItemId())) {
+    	   		eLogger.audit(executorId, 
+    	   				Constants.TABLE_ORDER_LINE,
+    	   				newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
+    	   				EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
+    	   				oldLine.getDescription(),
+    	   				null);
+    	   	}
+    	}
+
         eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
                 order.getId(),
                 EventLogger.MODULE_ORDER_MAINTENANCE, 

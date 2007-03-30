@@ -640,6 +640,8 @@ public final class EntitySignup {
             {String.valueOf(newEntityId),"16"},
             {String.valueOf(newEntityId),"17"},
             {String.valueOf(newEntityId),"18"},
+            {String.valueOf(newEntityId),"20"},
+            {String.valueOf(newEntityId),"22"},
         };
         table = addTable(Constants.TABLE_REPORT_ENTITY_MAP, 
                 reportEntityColumns, 

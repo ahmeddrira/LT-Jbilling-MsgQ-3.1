@@ -44,12 +44,10 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
-import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemBL;

@@ -62,6 +62,8 @@ The following shouldn't be necessary since the creation of the tables first drop
   		psql -d betty
   		CREATE USER betty_user
         grant all privileges on database betty to betty_user;
+  - to run the initialization scripts:
+    psql -U jbilling -f jbilling-data.sql -a -L 2.txt test 
   - download the latest JDBC driver
   - run a good find to lcate all the copies of the old driver and delete them.
   Having old versions of the JDBC driver is a source of endless headaches !!.

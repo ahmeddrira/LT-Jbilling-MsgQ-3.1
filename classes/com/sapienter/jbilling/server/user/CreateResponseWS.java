@@ -26,6 +26,8 @@ package com.sapienter.jbilling.server.user;
 
 import java.io.Serializable;
 
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+
 /**
  * @author Emil
  * @jboss-net.xml-schema urn="sapienter:CreateResponseWS"
@@ -35,7 +37,7 @@ public class CreateResponseWS implements Serializable {
     private Integer orderId = null;
     private Integer invoiceId = null;
     private Integer paymentId = null;
-    private Integer paymentResult = null;
+    private PaymentAuthorizationDTOEx paymentResult = null;
     
     public Integer getInvoiceId() {
         return invoiceId;
@@ -55,10 +57,10 @@ public class CreateResponseWS implements Serializable {
     public void setPaymentId(Integer paymentId) {
         this.paymentId = paymentId;
     }
-    public Integer getPaymentResult() {
+    public PaymentAuthorizationDTOEx getPaymentResult() {
         return paymentResult;
     }
-    public void setPaymentResult(Integer paymentResult) {
+    public void setPaymentResult(PaymentAuthorizationDTOEx paymentResult) {
         this.paymentResult = paymentResult;
     }
     public Integer getUserId() {

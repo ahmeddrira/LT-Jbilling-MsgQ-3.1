@@ -468,11 +468,25 @@ public class WSTest extends WSTestBase {
     	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
     	assertNotNull(invoice);
     	assertNotNull(invoice.getId());
+        assertEquals("new invoice is not paid", 1, invoice.getToProcess().intValue());
+        assertTrue("new invoice with a balance", invoice.getBalance().floatValue() > 0);
 
     	Call call = createTestCall();
     	call.setOperationName("payInvoice");
-    	Integer paymentId = (Integer) call.invoke(new Object[] {invoice.getId()});
-    	assertNotNull(paymentId);
+    	PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) call.invoke(
+                new Object[] {invoice.getId()});
+    	assertNotNull(auth);
+        assertEquals("Payment result OK", true, auth.getResult().booleanValue());
+        assertEquals("Processor code", "The transaction has been approved", 
+                auth.getResponseMessage());
+                
+        // now the invoice should be shown as paid
+        invoice = callGetLatestInvoice(USER_ID);
+        assertNotNull(invoice);
+        assertNotNull(invoice.getId());
+        assertEquals("new invoice is now paid", 0, invoice.getToProcess().intValue());
+        assertTrue("new invoice without a balance", invoice.getBalance().floatValue() == 0F);
+
     }
     
     public void testEmptyInvoiceIsNotPayable() throws Exception {
@@ -484,8 +498,9 @@ public class WSTest extends WSTestBase {
 
     	Call call = createTestCall();
     	call.setOperationName("payInvoice");
-    	Integer paymentId = (Integer) call.invoke(new Object[] {invoice.getId()});
-    	assertNull(paymentId);
+        PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) call.invoke(
+                new Object[] {invoice.getId()});
+    	assertNull(auth);
     }
     
     private Date nextWeek() {

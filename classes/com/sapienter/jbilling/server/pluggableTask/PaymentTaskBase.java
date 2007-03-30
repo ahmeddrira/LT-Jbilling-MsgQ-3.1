@@ -33,6 +33,7 @@ public abstract class PaymentTaskBase extends PluggableTask implements PaymentTa
 		
 		try {
 			new PaymentAuthorizationBL().create(auth, paymentInfo.getId());
+            paymentInfo.setAuthorization(auth);
 		} catch (CreateException e){
 			throw new PluggableTaskException("Can't create auth entity", e);
 		} catch (NamingException e){

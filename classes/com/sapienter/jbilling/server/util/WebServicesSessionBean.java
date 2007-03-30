@@ -47,7 +47,6 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -282,8 +281,6 @@ public class WebServicesSessionBean implements SessionBean {
             
             // get the entity
             bl.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId = bl.getEntity().getEntity().getId();
-            Integer executorId =   bl.getEntity().getUserId(); 
             log.info("WS - Updating contact for user " + userId);
             
             // update the contact
@@ -541,9 +538,14 @@ public class WebServicesSessionBean implements SessionBean {
             //the payment, if we have a credit card
             if (user.getCreditCard() != null){
             	InvoiceEntityLocal invoice = findInvoice(lastInvoiceId[0]);
-            	ProcessedPaymentInfo info = doPayInvoice(invoice, user.getCreditCard());
-        	    retValue.setPaymentResult(info.getPaymentResult());
-        	    retValue.setPaymentId(info.getPaymentId());
+            	PaymentDTOEx payment = doPayInvoice(invoice, user.getCreditCard());
+                PaymentAuthorizationDTOEx result = null;
+                if (payment != null) {
+                    result = new PaymentAuthorizationDTOEx(payment.getAuthorization());
+                    result.setResult(payment.getResultId().equals(Constants.RESULT_OK));
+                }
+        	    retValue.setPaymentResult(result);
+        	    retValue.setPaymentId(payment.getId());
             }
         }
             
@@ -556,11 +558,12 @@ public class WebServicesSessionBean implements SessionBean {
 	 * 
 	 * @return <code>null</code> if invoice has not positive balance, or if
 	 *         user does not have credit card
-	 * @return resulting payment
+	 * @return resulting authorization record. The payment itself can be found by
+     * calling getLatestPayment
 	 *  
 	 * @ejb:interface-method view-type="local"
 	 */
-    public Integer payInvoice(Integer invoiceId) throws SessionInternalError {
+    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError {
     	if (invoiceId == null){
     		throw new SessionInternalError("Can not pay null invoice");
     	}
@@ -571,8 +574,13 @@ public class WebServicesSessionBean implements SessionBean {
 			return null;
 		}
 		
-		ProcessedPaymentInfo result = doPayInvoice(invoice, creditCard);
-		return result == null ? null : result.getPaymentId();
+		PaymentDTOEx payment = doPayInvoice(invoice, creditCard);
+        PaymentAuthorizationDTOEx result = null;
+        if (payment != null) {
+            result = new PaymentAuthorizationDTOEx(payment.getAuthorization());
+            result.setResult(payment.getResultId().equals(Constants.RESULT_OK));
+        }
+		return result;
     }
 
     /**
@@ -748,7 +756,6 @@ public class WebServicesSessionBean implements SessionBean {
             // get the info from the caller
             UserBL userbl = new UserBL();
             userbl.setRoot(context.getCallerPrincipal().getName());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
             
             // now get the order
             OrderBL bl = new OrderBL();
@@ -1300,7 +1307,7 @@ public class WebServicesSessionBean implements SessionBean {
         }
 	}
     
-	private ProcessedPaymentInfo doPayInvoice(InvoiceEntityLocal invoice, CreditCardDTO creditCard) 
+	private PaymentDTOEx doPayInvoice(InvoiceEntityLocal invoice, CreditCardDTO creditCard) 
 		throws SessionInternalError {
 
 		if (invoice.getBalance() == null || invoice.getBalance() <= 0){
@@ -1321,10 +1328,9 @@ public class WebServicesSessionBean implements SessionBean {
 		                    creditCard.getNumber()));
 		    
 		    // make the call
-		    Integer paymentResult = payment.processAndUpdateInvoice(
-		            paymentDto, invoice);
+		    payment.processAndUpdateInvoice(paymentDto, invoice);
 		    
-		    return new ProcessedPaymentInfo(paymentDto, paymentResult);
+		    return paymentDto;
 	    } catch (Exception e){
             log.error("WS - make payment:", e);
             throw new SessionInternalError("Error while making payment for invoice: " + invoice.getId());
@@ -1406,23 +1412,5 @@ public class WebServicesSessionBean implements SessionBean {
 		}
 		return invoice;
 	}
-
-    private static class ProcessedPaymentInfo {
-    	private final Integer myPaymentResult;
-		private final Integer myPaymentId;
-
-		public ProcessedPaymentInfo(PaymentDTO paymentDTO, Integer paymentResult){
-			myPaymentResult = paymentResult;
-			myPaymentId = paymentDTO.getId();
-    	}
-		
-		public Integer getPaymentId() {
-			return myPaymentId;
-		}
-		
-		public Integer getPaymentResult() {
-			return myPaymentResult;
-		}
-    }
 
 }

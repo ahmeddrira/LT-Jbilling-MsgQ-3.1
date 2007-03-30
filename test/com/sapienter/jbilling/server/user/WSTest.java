@@ -43,6 +43,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -175,6 +176,13 @@ public class WSTest extends WSTestBase {
                     InvoiceLineDTOEx.class, qn);
             call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
 
+            // PaymentAuthorizationDTOEx            
+            qn = new QName("http://www.sapienter.com/billing", "PaymentAuthorizationDTOEx");
+            ser1 = new BeanSerializerFactory(
+                    PaymentAuthorizationDTOEx.class, qn);
+            ser2 = new BeanDeserializerFactory (
+                    PaymentAuthorizationDTOEx.class, qn);
+            call.registerTypeMapping(PaymentAuthorizationDTOEx.class, qn, ser1, ser2); 
             
             /*
              * Create
@@ -279,6 +287,9 @@ public class WSTest extends WSTestBase {
             // validate that the results are reasonable
             assertNotNull("Mega call result can't be null", mcRet);
             assertNotNull("Mega call invoice result can't be null", mcRet.getInvoiceId());
+            // there should be a successfull payment
+            assertEquals("Payment result OK", true, mcRet.getPaymentResult().getResult().booleanValue());
+            assertEquals("Processor code", "fake-code-default", mcRet.getPaymentResult().getCode1());
             // get the invoice
             call.setOperationName("getInvoiceWS");
             InvoiceWS retInvoice = (InvoiceWS) call.invoke( 

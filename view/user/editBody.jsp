@@ -173,6 +173,29 @@ Contributor(s): ______________________________________.
 			 </tr>
 	 	</jbilling:permission>			 	 			 			 	
 
+		<%-- Subscriber Status is editable for some, viewable for others, and nothing for the rest --%>
+	 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_CHANGE_STATUS%>'>		
+	 		<jbilling:getOptions subscriberStatus="true"/>
+			 <tr class="form">
+  			 	 <td></td>
+				 <td class="form_prompt"><bean:message key="user.prompt.subscriber_status"/></td>
+				 <td >
+				 	<html:select property="subscriberStatus">
+						 	<html:options collection='<%=Constants.PAGE_SUBSCRIBER_STATUS%>' 
+				                    property="code"
+				                    labelProperty="description"/>
+					</html:select>
+	 				<bean:define id="submitable" value="1"/>
+				 </td>
+			 </tr>
+	 	</jbilling:permission>
+	 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_VIEW_STATUS%>'>		
+			 <tr class="form">
+  			 	 <td></td>
+				 <td class="form_prompt"><bean:message key="user.prompt.subscriber_status"/></td>
+				 <td ><bean:write name='<%=Constants.PAGE_USER_DTO%>'  property="subscriptionStatusStr" scope="page"/></td>
+			 </tr>
+	 	</jbilling:permission>
 
 		<%-- Language is editable for some, viewable for others, and nothing for the rest --%>
 	 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_CHANGE_LANGUAGE%>'>		

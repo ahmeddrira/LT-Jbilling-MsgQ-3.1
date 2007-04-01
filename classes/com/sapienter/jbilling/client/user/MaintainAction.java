@@ -238,7 +238,9 @@ public class MaintainAction extends Action {
                     dto.setLanguageId((Integer) userForm.get("language"));
                     dto.setStatusId((Integer) userForm.get("status"));
                     dto.setCurrencyId((Integer) userForm.get("currencyId"));
-                    
+                    dto.setSubscriptionStatusId((Integer) 
+                            userForm.get("subscriberStatus"));
+
                     
                     if (dto.getMainRoleId().equals(Constants.TYPE_CUSTOMER)) {
                         dto.setCustomerDto(new CustomerDTOEx());

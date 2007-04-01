@@ -146,6 +146,26 @@ Contributor(s): ______________________________________.
 	 	</tr>
 	 	<tr class="form">
 			<td>
+				 <jbilling:help page="orders" anchor="active">
+					 <img border="0" src="/billing/graphics/help.gif"/>
+				 </jbilling:help>
+			</td>
+	 		<td class="form_prompt"><bean:message key="order.prompt.nextBillableDay"/></td>
+	 		<td> <table> <tr class="form">
+	 		<jbilling:dateFormat format="mm-dd">
+		 		<td><html:text property="next_billable_month" size="2" maxlength="2"/></td>
+		 		<td><html:text property="next_billable_day" size="2" maxlength="2"/></td>
+	 		</jbilling:dateFormat>
+	 		<jbilling:dateFormat format="dd-mm">
+		 		<td><html:text property="next_billable_day" size="2" maxlength="2"/></td>
+		 		<td><html:text property="next_billable_month" size="2" maxlength="2"/></td>
+	 		</jbilling:dateFormat>
+	 		<td><html:text property="next_billable_year" size="4" maxlength="4"/></td>
+	 		<td><bean:message key="all.prompt.dateFormat"/></td>
+	 		</tr></table></td>
+	 	</tr>
+	 	<tr class="form">
+			<td>
 				 <jbilling:help page="orders" anchor="dueDate">
 					 <img border="0" src="/billing/graphics/help.gif"/>
 				 </jbilling:help>

@@ -571,6 +571,8 @@ public class GenericMaintainAction {
                     "order.prompt.activeSince"));
             summary.setActiveUntil(parseDate("until", 
                     "order.prompt.activeUntil"));
+            summary.setNextBillableDay(parseDate("next_billable",
+                    "order.prompt.nextBillableDay"));
             summary.setBillingTypeId((Integer) myForm.get("billingType"));
             summary.setPromoCode((String) myForm.get("promotion_code"));
             summary.setNotify(new Integer(((Boolean) myForm.
@@ -590,6 +592,11 @@ public class GenericMaintainAction {
                     Constants.PAGE_BILLING_TYPE, session));
             summary.setDueDateUnitId((Integer) myForm.get("due_date_unit_id"));
             summary.setDueDateValue(getInteger("due_date_value"));
+
+            // return any date validation errors to user
+            if (!errors.isEmpty()) {
+                return "edit";
+            }
             
             // if she wants notification, we need a date of expiration
             if (summary.getNotify().intValue() == 1 && 
@@ -647,7 +654,37 @@ public class GenericMaintainAction {
                     }
                 }
             }
-                    
+
+            // validate next billable day
+            OrderDTOEx orderDTO = (OrderDTOEx) session.getAttribute(
+                    Constants.SESSION_ORDER_DTO);
+            // if a date was submitted, check that it is >= old date or
+            // greater than today if old date is null.
+            if (summary.getNextBillableDay() != null) {
+                if (orderDTO != null && orderDTO.getNextBillableDay() != null) {
+                    if (summary.getNextBillableDay().before(
+                            orderDTO.getNextBillableDay())) {
+                        // new date is less than old date
+                        errors.add(ActionErrors.GLOBAL_ERROR,
+                                new ActionError("order.error.nextBillableDay.hasOldDate"));
+                        return "edit";                    
+                    }
+                } else if (!summary.getNextBillableDay().after(
+                        Calendar.getInstance().getTime())) {
+                    // old date doesn't exist and new date is not after todays date
+                    errors.add(ActionErrors.GLOBAL_ERROR,
+                            new ActionError("order.error.nextBillableDay.noOldDate"));
+                    return "edit";                    
+                }
+            } else {
+                // else no date was submitted, check that old date isn't null
+                if (orderDTO != null && orderDTO.getNextBillableDay() != null) {
+                    errors.add(ActionErrors.GLOBAL_ERROR,
+                            new ActionError("order.error.nextBillableDay.null"));
+                    return "edit";
+                }
+            }
+
             // now process this promotion if specified
             if (summary.getPromoCode() != null && 
                     summary.getPromoCode().length() > 0) {
@@ -1534,6 +1571,7 @@ public class GenericMaintainAction {
                     false : dto.getNotify().intValue() == 1));
             setFormDate("since", dto.getActiveSince());
             setFormDate("until", dto.getActiveUntil());
+            setFormDate("next_billable", dto.getNextBillableDay());
             myForm.set("due_date_unit_id", dto.getDueDateUnitId());
             myForm.set("due_date_value", dto.getDueDateValue() == null ?
                     null : dto.getDueDateValue().toString());

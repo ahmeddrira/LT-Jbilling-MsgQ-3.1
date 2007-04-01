@@ -61,6 +61,7 @@ public class GetOptionsTag extends TagSupport {
     private Boolean deliveryMethod = new Boolean(false);
     private Boolean orderLineType = new Boolean(false);
     private Boolean taskClasses = new Boolean(false);
+    private Boolean subscriberStatus = new Boolean(false);
 
     // these are flag to indicate some particluar behavior
     private Boolean inSession = new Boolean(false);
@@ -137,6 +138,9 @@ public class GetOptionsTag extends TagSupport {
             } else if (taskClasses.booleanValue()) {
                 type = "taskClasses";
                 attributeKey = Constants.PAGE_TASK_CLASSES;
+            } else if (subscriberStatus.booleanValue()) {
+                type = "subscriberStatus";
+                attributeKey = Constants.PAGE_SUBSCRIBER_STATUS;                
             } else {
                 log.error("At least one flag has to be present");
                 throw new Exception("at least one attribute required");
@@ -401,5 +405,17 @@ public class GetOptionsTag extends TagSupport {
     }
     public void setTaskClasses(Boolean taskClasses) {
         this.taskClasses = taskClasses;
+    }
+    
+    /**
+     * @jsp:attribute required="false"
+     *                rtexprvalue="true"
+     *                type="java.lang.Boolean"
+     */
+    public Boolean getSubscriberStatus() {
+        return subscriberStatus;
+    }
+    public void setSubscriberStatus(Boolean subscriberStatus) {
+        this.subscriberStatus = subscriberStatus;
     }
 }

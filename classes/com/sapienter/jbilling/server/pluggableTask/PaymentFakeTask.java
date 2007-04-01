@@ -90,7 +90,6 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
         LOG.debug("preAuth payment " + paymentInfo);
 		String transactionId = generatePreAuthTransactionId();
 		Result result = doFakeAuthorization(paymentInfo, transactionId);
-        paymentInfo.setAuthorization(result.getAuthorizationData());
 		
         LOG.debug("result " + result);
 		return result.shouldCallOtherProcessors();
@@ -109,7 +108,6 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 		}
 		
 		Result result = doFakeAuthorization(paymentInfo, null);
-        paymentInfo.setAuthorization(result.getAuthorizationData());
 
         LOG.debug("returning " + result);
 		return result.shouldCallOtherProcessors();

@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
+import com.sapienter.jbilling.server.payment.event.AbstractPaymentEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
@@ -269,6 +269,12 @@ public class CreditCardBL extends ResultList
             processNext = task.preAuth(paymentDto);
             // get the next task
             task = (PaymentTask) taskManager.getNextClass();
+
+            // at the time, a pre-auth acts just like a normal payment for events
+            AbstractPaymentEvent event = AbstractPaymentEvent.forPaymentResult(entityId, paymentDto);
+            if (event != null){
+            	EventManager.process(event);
+            }
         } 
         
         // update the result
@@ -278,21 +284,15 @@ public class CreditCardBL extends ResultList
         PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(
                 paymentDto.getAuthorization());
         retValue.setResult(paymentDto.getResultId().equals(Constants.RESULT_OK));
-        
-        // at the time, a pre-auth acts just like a normal payment for events
-        if (retValue.getResult()) {
-            PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
-                    entityId, paymentDto);
-            EventManager.process(event);
-        } else {
+        if (!retValue.getResult()) {
             // if it was not successfull, it should not have balance
             payment.getEntity().setBalance(0F);
         }
         
         return retValue;
     }
-    
-    public static String get4digitExpiry(CreditCardDTO cc) {
+
+	public static String get4digitExpiry(CreditCardDTO cc) {
         String expiry = null;
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(cc.getExpiry());

@@ -24,6 +24,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 
 /**
@@ -45,8 +46,20 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     private String processorName;
     private Integer entityId;
     private ProcessorEmailAlarm alarm;
+    
+    private int failedLimit;
+    private int failedTime;
+    private int timeBetweenAlarms;
 
     private Logger log = Logger.getLogger(ProcessorEmailAlarmTask.class);
+    
+    @Override
+    public void initializeParamters(PluggableTaskEntityLocal task) throws PluggableTaskException {
+    	super.initializeParamters(task);
+    	failedLimit = parseInt(parameters.get(PARAMETER_FAILED_LIMIT));
+    	failedTime = parseInt(parameters.get(PARAMETER_FAILED_TIME));
+    	failedTime = parseInt(parameters.get(PARAMETER_TIME_BETWEEN_ALARMS));
+    }
 
     // Initialisation
     public void init(String processorName, Integer entityId) {
@@ -57,13 +70,7 @@ public class ProcessorEmailAlarmTask extends PluggableTask
 
     // Payment processed, but failed/declined.
     public void fail() {
-        if (alarm.fail(((Integer) parameters.get(
-                    PARAMETER_FAILED_LIMIT)).intValue(),
-                    ((Integer) parameters.get(
-                    PARAMETER_FAILED_TIME)).intValue(),
-                    ((Integer) parameters.get(
-                    PARAMETER_TIME_BETWEEN_ALARMS)).intValue())) {
-
+        if (alarm.fail(failedLimit, failedTime, timeBetweenAlarms)) {
             String params[] = new String[4];
             params[0] = processorName;
             params[1] = entityId.toString();
@@ -75,8 +82,7 @@ public class ProcessorEmailAlarmTask extends PluggableTask
 
     // Processor was unavailable.
     public void unavailable() {
-        if (alarm.unavailable(((Integer) parameters.get(
-                    PARAMETER_TIME_BETWEEN_ALARMS)).intValue())) {
+        if (alarm.unavailable(timeBetweenAlarms)) {
             String params[] = new String[3];
             params[0] = processorName;
             params[1] = entityId.toString();
@@ -110,5 +116,19 @@ public class ProcessorEmailAlarmTask extends PluggableTask
         } catch (Exception e) {
             log.error("Couldn't send email.", e);
         }
+    }
+    
+    private int parseInt(Object object) throws PluggableTaskException {
+    	if (object instanceof Number){
+    		return ((Number)object).intValue();
+    	}
+    	if (object instanceof String){
+    		try {
+    			return Integer.parseInt((String)object);
+    		} catch (NumberFormatException e){
+    			//fall through
+    		}
+    	}
+    	throw new PluggableTaskException("Number expected: " + object);
     }
 }

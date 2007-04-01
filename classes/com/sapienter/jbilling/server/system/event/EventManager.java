@@ -26,7 +26,9 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
 import com.sapienter.jbilling.server.order.event.NewStatusEvent;
+import com.sapienter.jbilling.server.payment.event.GatewayAlarmEventProcessor;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
+import com.sapienter.jbilling.server.payment.event.PaymentProcessorUnavailableEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.user.event.SubscriptionStatusEventProcessor;
 
@@ -47,10 +49,22 @@ public final class EventManager {
         subscriptions = new Hashtable<Class, Class[]>();
         // PaymentFailedEvent
         subscriptions.put(PaymentFailedEvent.class, 
-                new Class[] { SubscriptionStatusEventProcessor.class, } );
+                new Class[] { 
+        			SubscriptionStatusEventProcessor.class,
+        			GatewayAlarmEventProcessor.class,
+        		} );
         // PaymentSuccessful
         subscriptions.put(PaymentSuccessfulEvent.class,
-                new Class[] { SubscriptionStatusEventProcessor.class, } );
+                new Class[] { 
+        			SubscriptionStatusEventProcessor.class,
+        			GatewayAlarmEventProcessor.class,
+        		} );
+        // PaymentProcessorUnavailable
+        subscriptions.put(PaymentProcessorUnavailableEvent.class,
+                new Class[] { 
+        			GatewayAlarmEventProcessor.class,
+        		} );
+        
         // NewActiveUntil (orders)
         subscriptions.put(NewActiveUntilEvent.class,
                 new Class[] { SubscriptionStatusEventProcessor.class, } );

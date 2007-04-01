@@ -111,8 +111,7 @@ public class ProcessorEmailAlarm {
 
     // Returns true if enought time has elapsed for next alarm.
     private boolean canSendEmail(int timeBetAlarms) {
-        long currentTime = (new Date()).getTime();
-        timeBetAlarms *= 1000;
-        return (currentTime - lastEmailTime > timeBetAlarms);
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastEmailTime > timeBetAlarms * 1000L);
     }
 }

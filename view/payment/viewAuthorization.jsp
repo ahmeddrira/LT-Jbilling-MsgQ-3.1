@@ -107,6 +107,14 @@ Contributor(s): ______________________________________.
                         formatKey="format.timestamp"/>
         </td>
 	</tr>
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="authorization.responseMessage"/></td>
+		<td class="infodata">	
+            <bean:write name="authorizationDto" 
+                        property="responseMessage"
+                        scope="request"/>
+        </td>
+	</tr>
 	
 </table>	
 </logic:present>

@@ -517,6 +517,7 @@ public final class EntitySignup {
             { String.valueOf(newEntityId), "9", "1" }, // BasicEmailNotificationTask
             { String.valueOf(newEntityId), "10","1" }, // BasicPaymentInfoTask cc info fetcher
             { String.valueOf(newEntityId), "12","2" }, // Paper invoice (for download PDF).
+            { String.valueOf(newEntityId), "23","1" }, // Subscriber status manager
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK, pluggableTaskColumns, pluggableTaskData, false);
         processTable(table);
@@ -535,29 +536,30 @@ public final class EntitySignup {
             "s_str_value",
             "f_float_value" 
         };
+        // paper invoice
         String pluggableTaskParameterData[][] = {
-            { String.valueOf(lastCommonPT), "design", null, "simple_invoice_b2b", null},
+            { String.valueOf(lastCommonPT - 1), "design", null, "simple_invoice_b2b", null},
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK_PARAMETER, pluggableTaskParameterColumns, 
                 pluggableTaskParameterData, false);
         processTable(table);
         
         // email parameters. They are all optional
-		addTaskParameter(table, lastCommonPT - 2, "smtp_server", null, 
+		addTaskParameter(table, lastCommonPT - 3, "smtp_server", null, 
     			null, null);
-		addTaskParameter(table, lastCommonPT - 2, "from", null, 
+		addTaskParameter(table, lastCommonPT - 3, "from", null, 
     			contact.getEmail(), null);
-		addTaskParameter(table, lastCommonPT - 2, "username", null, 
+		addTaskParameter(table, lastCommonPT - 3, "username", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 2, "password", null, 
+		addTaskParameter(table, lastCommonPT - 3, "password", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 2, "port", null, 
+		addTaskParameter(table, lastCommonPT - 3, "port", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 2, "reply_to", null, 
+		addTaskParameter(table, lastCommonPT - 3, "reply_to", null, 
                 null, null);
-        addTaskParameter(table, lastCommonPT - 2, "bcc_to", null, 
+        addTaskParameter(table, lastCommonPT - 3, "bcc_to", null, 
                 null, null);
-        addTaskParameter(table, lastCommonPT - 2, "from_name", null, 
+        addTaskParameter(table, lastCommonPT - 3, "from_name", null, 
                 contact.getOrganizationName(), null);
         
         updateBettyTablesRows(table.index, table.nextId);

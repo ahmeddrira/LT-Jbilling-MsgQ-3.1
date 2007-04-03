@@ -117,4 +117,8 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
     public void setType(Integer type) {
         this.type = type;
     }
+
+    public String toString(){
+        return super.toString() + fields.toString(); 
+    }
 }

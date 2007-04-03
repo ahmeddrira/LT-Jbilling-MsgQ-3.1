@@ -98,7 +98,8 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
                 parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR));
 		if (paymentProcessorField == null){
             LOG.warn("Can't find CCF with type " + 
-                    parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR));
+                    parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR) +
+                    " contact = " + contact);
 			return null;
 		}
 		

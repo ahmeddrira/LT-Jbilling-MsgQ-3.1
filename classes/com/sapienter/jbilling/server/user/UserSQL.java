@@ -48,10 +48,10 @@ public interface UserSQL {
         "    )";
     
     static final String findUserTransitions =
-      	"SELECT el.id, el.old_str, el.create_datetime, el.old_num, el.user_id" +
+      	"SELECT el.id, el.old_str, el.create_datetime, el.old_num, el.foreign_id" +
         " FROM event_log el" +
         " WHERE el.module_id = " + EventLogger.MODULE_USER_MAINTENANCE  + 
-        " AND el.message_id = " + EventLogger.SUBSCRIPTION_STATUS_CHANGE+ " AND el.entity_id = ?";
+        " AND el.message_id = " + EventLogger.SUBSCRIPTION_STATUS_CHANGE + " AND el.entity_id = ?";
     
     static final String findUserTransitionsByIdSuffix =
     	  " AND el.id > ?";

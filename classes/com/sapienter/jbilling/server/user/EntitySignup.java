@@ -508,6 +508,7 @@ public final class EntitySignup {
         { "i_id", "i_entity_id", "i_type_id", "i_processing_order" };
         String pluggableTaskData[][] =
         { 
+            { String.valueOf(newEntityId), "21","1" }, // Fake payment processor
             { String.valueOf(newEntityId), "1", "1" }, // BasicLineTotalTask
             { String.valueOf(newEntityId), "3", "1" }, // CalculateDueDate
             { String.valueOf(newEntityId), "4", "2" }, // BasicCompositionTask
@@ -543,6 +544,9 @@ public final class EntitySignup {
         table = addTable(Constants.TABLE_PLUGGABLE_TASK_PARAMETER, pluggableTaskParameterColumns, 
                 pluggableTaskParameterData, false);
         processTable(table);
+        
+        // fake payment processor
+        addTaskParameter(table,lastCommonPT - 10, "all", null, "yes", null);
         
         // email parameters. They are all optional
 		addTaskParameter(table, lastCommonPT - 3, "smtp_server", null, 

@@ -121,8 +121,4 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
     public String toString(){
         return super.toString() + fields.toString(); 
     }
-
-    public String toString(){
-        return super.toString() + fields.toString(); 
-    }
 }

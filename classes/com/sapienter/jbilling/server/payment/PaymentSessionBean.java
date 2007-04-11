@@ -48,7 +48,9 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -456,6 +458,10 @@ public class PaymentSessionBean implements SessionBean {
                     // link it with the invoice
                     paymentBl.createMap(invoiceBl.getEntity(), new Float(paid));
                 }
+                // let know about this payment with an event
+                PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
+                        paymentBl.getEntity().getUser().getEntity().getId(),payment);
+                EventManager.process(event);
             } else {
                 if (payment.getPayment() != null && !payment.getPayment().
                         getInvoiceIds().isEmpty()) {

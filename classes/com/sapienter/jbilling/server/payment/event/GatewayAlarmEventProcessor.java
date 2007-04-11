@@ -21,7 +21,6 @@ package com.sapienter.jbilling.server.payment.event;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.EventProcessor;
@@ -35,6 +34,14 @@ public class GatewayAlarmEventProcessor extends EventProcessor<ProcessorAlarm> {
 		if (false == event instanceof AbstractPaymentEvent){
 			return;
 		}
+        
+        // the alarm does not care about entered payments. Filter them out
+        if (event instanceof PaymentSuccessfulEvent) {
+            PaymentSuccessfulEvent success = (PaymentSuccessfulEvent) event;
+            if (success.getPayment().getResultId().equals(Constants.RESULT_ENTERED)) {
+                return;
+            }
+        }
 		
 		AbstractPaymentEvent paymentEvent = (AbstractPaymentEvent)event;
 		ProcessorAlarm alarm = getPluggableTask(event.getEntityId(), 

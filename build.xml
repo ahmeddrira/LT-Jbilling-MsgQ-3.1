@@ -551,7 +551,7 @@
 
 
    	<!-- Creates the full downloadable package -->
-	<target name="packageImage" depends="db,jspc">
+	<target name="packageImage" depends="jspc">
 		<!-- make sure it'll get the latest binaries -->
 		<copy todir="${image.source.dir}/jbilling/server/default/deploy">
             <fileset dir="${build.deploy.dir}"/>

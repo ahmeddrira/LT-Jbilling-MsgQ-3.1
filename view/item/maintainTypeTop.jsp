@@ -54,9 +54,6 @@ Contributor(s): ______________________________________.
    	    </p>
 	</logic:equal>
 	
-	<logic:equal parameter="confirm" value="yes">
-          <p><bean:message key="item.type.delete.done"/></p>
-	</logic:equal>	
 	<logic:equal parameter="confirm" value="no">
           <p><bean:message key="item.type.delete.notDone"/></p>
 	</logic:equal>	

@@ -507,7 +507,7 @@
 <action path="/itemTypeMaintain" type="com.sapienter.jbilling.client.item.TypeMaintainAction" name="itemType" validate="false" scope="session">
 <forward name="type_edit" redirect="false" path="/item/maintainType.jsp" />
 <forward name="type_create" path="/item/createType.jsp?create=yes" redirect="false" />
-<forward name="type_deleted" redirect="false" path="/item/maintainType.jsp?confirm=yes" />
+<forward name="type_deleted" redirect="false" path="/item/listType.jsp" />
 <forward name="type_list" redirect="false" path="/item/listType.jsp" />
 </action>
 <action path="/itemPriceMaintain" type="com.sapienter.jbilling.client.item.PriceMaintainAction" name="userPrice" validate="false" scope="session">

@@ -20,7 +20,11 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.util;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
+import javax.ejb.FinderException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +44,11 @@ import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
 
+import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.UserSession;
+import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 
 /**
  * This action is a helper class that replaces GenericMaintainAction.
@@ -152,16 +160,20 @@ public abstract class CrudAction extends Action {
                     if (!createCalled) {
                         String messageKey = update(dtoHolder);
                         if (messageKey != null) {
-                            messages.add(ActionMessages.GLOBAL_MESSAGE, 
-                                    new ActionMessage(messageKey));
-
+                        	addGlobalMessage(messageKey);
                         }
                     }
                     
                     if (forward.equals("list")) {
-                        // remove the form from the session, otherwise it
+                        //XXX: [MG] 
+                    	//Most probably this is never called
+                    	//Subclasses generally return forwards in the form of <mode>_<action>,
+                    	//e.g: "type_list" instead of just "list"
+                    	//
+                    	//Original intention was:
+                    	// remove the form from the session, otherwise it
                         // might show up in a later
-                        session.removeAttribute(formName);
+                    	removeFormFromSession();
                     } 
                 }
             } else if(action.equals("setup")) {
@@ -172,8 +184,7 @@ public abstract class CrudAction extends Action {
                 preDelete();
                 String messageKey = delete();
                 if (messageKey != null) {
-                    messages.add(ActionMessages.GLOBAL_MESSAGE, 
-                            new ActionMessage(messageKey));
+                	addGlobalMessage(messageKey);
                 }
                 postDelete();
             } else if (!otherAction(action)){
@@ -207,7 +218,7 @@ public abstract class CrudAction extends Action {
         return mapping.findForward(forward);
     }
     
-    private void preSetup() {
+	private void preSetup() {
         ModuleConfig moduleConfig = RequestUtils.getModuleConfig(request,
                 servlet.getServletContext());
         myForm = (DynaValidatorForm) RequestUtils.createActionForm(
@@ -280,8 +291,7 @@ public abstract class CrudAction extends Action {
     public abstract String delete();
     
     public void postDelete() {
-        session.removeAttribute(formName); 
-
+    	removeFormFromSession();
     }
     
     private void preReset() {
@@ -312,4 +322,68 @@ public abstract class CrudAction extends Action {
     protected void setForward(String aForward){
     	this.forward = aForward;
     }
+
+    protected final void removeFormFromSession() {
+    	session.removeAttribute(formName);		
+	}
+    
+    protected final void addGlobalMessage(String messageCode){
+    	if (messageCode != null){
+    		messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(messageCode));
+    	}
+    }
+    
+    protected final String float2string(Float arg) {
+		return float2string(arg, session);
+	}
+
+    protected final Float string2float(String arg) {
+        return string2float(arg, session);
+    }
+    
+	private static String float2string(Float arg, HttpSession sess) {
+		if (arg == null) {
+			return null;
+		}
+		UserDTOEx user = (UserDTOEx) sess
+				.getAttribute(Constants.SESSION_USER_DTO);
+		NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+		if (nf instanceof DecimalFormat) {
+			((DecimalFormat) nf).applyPattern("0.00");
+		}
+		return nf.format(arg);
+	}
+
+    private static Float string2float(String arg, HttpSession sess) {
+        if (arg == null || arg.trim().length() == 0) {
+            return null;
+        }
+        UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
+        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+        
+        try {
+            return new Float(nf.parse(arg).floatValue());
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+    
+	protected UserDTOEx getUser(Integer userId) throws FinderException {    
+		UserDTOEx retValue = null;
+		try {
+			JNDILookup EJBFactory = JNDILookup.getFactory(false);
+			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(//
+					UserSessionHome.class,
+					UserSessionHome.JNDI_NAME);
+			UserSession userSession = userHome.create();
+			retValue = userSession.getUserDTOEx(userId);
+		} catch (FinderException e) {
+			//XXX: [MG] why?
+			throw new FinderException();
+		} catch (Exception e) {
+			throw new SessionInternalError(e);
+		}
+		return retValue;
+	}
+    
 }

@@ -78,7 +78,6 @@ import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
 import com.sapienter.jbilling.server.item.ItemUserPriceDTOEx;
 import com.sapienter.jbilling.server.item.PromotionDTOEx;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -223,7 +222,6 @@ public class GenericMaintainAction {
 
         // create a dto with the info from the form and call
         // the remote session
-        ItemTypeDTOEx typeDto = null;
         ItemDTOEx itemDto = null;
         ItemUserPriceDTOEx priceDto = null;
         PromotionDTOEx promotionDto = null;
@@ -257,13 +255,7 @@ public class GenericMaintainAction {
             return(retValue);
         }                
         
-        if (mode.equals("type")) {
-            typeDto = new ItemTypeDTOEx();
-            typeDto.setDescription((String) myForm.get("name"));
-            typeDto.setOrderLineTypeId((Integer) myForm.get("order_line_type"));
-            typeDto.setEntityId((Integer) session.getAttribute(
-                    Constants.SESSION_ENTITY_ID_KEY));
-        } else if (mode.equals("item")) { // an item
+        if (mode.equals("item")) { // an item
             if (request.getParameter("reload") != null) {
                 // this is just a change of language the requires a reload
                 // of the bean
@@ -1097,11 +1089,7 @@ public class GenericMaintainAction {
                     
             retValue = "create";
 
-            if (mode.equals("type")) {
-                ((ItemSession) remoteSession).createType(typeDto);
-                messageKey = "item.type.create.done";
-                retValue = "list";
-            } else if (mode.equals("item")) {
+            if (mode.equals("item")) {
                 // we pass a null language, so it'll pick up the one from
                 // the entity
                 Integer newItem = ((ItemSession) remoteSession).create(
@@ -1183,11 +1171,7 @@ public class GenericMaintainAction {
             }                 
         } else { // this is then an update
             retValue = "list";
-            if (mode.equals("type")) {                    
-                typeDto.setId(selectedId);
-                ((ItemSession) remoteSession).updateType(executorId, typeDto);
-                messageKey = "item.type.update.done";
-            } else if (mode.equals("item")) {
+            if (mode.equals("item")) {
                 
                 itemDto.setId(selectedId);
                 ((ItemSession) remoteSession).update(executorId, itemDto, 
@@ -1326,12 +1310,7 @@ public class GenericMaintainAction {
                 
         retValue = "edit";
                 
-        if (mode.equals("type")) {        
-            ItemTypeDTOEx dto = ((ItemSession) remoteSession).getType(
-                    selectedId);
-            myForm.set("name", dto.getDescription());
-            myForm.set("order_line_type", dto.getOrderLineTypeId());
-        } else if (mode.equals("item")) {
+        if (mode.equals("item")) {
             // the price is actually irrelevant in this call, since it's going
             // to be overwirtten by the user's input
             // in this case the currency doesn't matter, it
@@ -1910,11 +1889,7 @@ public class GenericMaintainAction {
     private String delete() throws SessionInternalError, RemoteException {
         String retValue = null;
        
-        
-        if (mode.equals("type")) {    
-            ((ItemSession) remoteSession).deleteType(executorId, 
-                    selectedId);
-        } else if (mode.equals("item")) {
+        if (mode.equals("item")) {
             ((ItemSession) remoteSession).delete(executorId, selectedId);
         } else if (mode.equals("price")) { // it's a price
             ((ItemSession) remoteSession).deletePrice(executorId, 

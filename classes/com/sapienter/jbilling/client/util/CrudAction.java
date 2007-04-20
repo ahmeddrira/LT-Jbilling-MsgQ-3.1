@@ -308,4 +308,8 @@ public abstract class CrudAction extends Action {
     public void setFormName(String formName) {
         this.formName = formName;
     }
+    
+    protected void setForward(String aForward){
+    	this.forward = aForward;
+    }
 }

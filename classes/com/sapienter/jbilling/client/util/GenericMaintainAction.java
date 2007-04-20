@@ -93,10 +93,8 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.OptionDTO;
-import com.sapienter.jbilling.server.util.PreferenceBL;
 
 public class GenericMaintainAction {
     private ActionMapping mapping = null;
@@ -236,7 +234,6 @@ public class GenericMaintainAction {
         BillingProcessConfigurationDTO configurationDto = null;
         MessageDTO messageDto = null;
         PluggableTaskDTOEx taskDto = null;
-        String[] brandingData = null; 
         PartnerDTOEx partnerDto = null;
         Object[] partnerDefaultData = null;
         Integer[] notificationPreferenceData = null;
@@ -888,10 +885,6 @@ public class GenericMaintainAction {
                                 names[f]));
                 }
             }       
-        } else if (mode.equals("branding")) {
-            brandingData = new String[2];
-            brandingData[0] = (String) myForm.get("css");
-            brandingData[1] = (String) myForm.get("logo");
         } else if (mode.equals("invoiceNumbering")) {
             numberingData = new String[2];
             numberingData[0] = (String) myForm.get("prefix");
@@ -1250,13 +1243,6 @@ public class GenericMaintainAction {
                         Integer.valueOf(numberingData[1]));
                 ((UserSession) remoteSession).setEntityParameters(entityId, params);
                 messageKey = "invoice.numbering.updated";
-                retValue = "edit";
-            } else if (mode.equals("branding")) {
-                HashMap params = new HashMap();
-                params.put(Constants.PREFERENCE_CSS_LOCATION, brandingData[0].trim());
-                params.put(Constants.PREFERENCE_LOGO_LOCATION, brandingData[1].trim());
-                ((UserSession) remoteSession).setEntityParameters(entityId, params);
-                messageKey = "system.branding.updated";
                 retValue = "edit";
             } else  if (mode.equals("notificationPreference")) {
                 HashMap params = new HashMap();
@@ -1718,20 +1704,6 @@ public class GenericMaintainAction {
             myForm.set("value", values);
             // this will be needed for the update                    
             session.setAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO, dto);
-        } else if (mode.equals("branding")) {
-            // set up which preferences do we need
-            Integer[] preferenceIds = new Integer[2];
-            preferenceIds[0] = Constants.PREFERENCE_CSS_LOCATION;
-            preferenceIds[1] = Constants.PREFERENCE_LOGO_LOCATION;
-            
-            // get'em
-            HashMap result = ((UserSession) remoteSession).
-                    getEntityParameters(entityId, preferenceIds);
-            
-            String css = (String) result.get(Constants.PREFERENCE_CSS_LOCATION); 
-            myForm.set("css", (css == null) ? "" : css);
-            String logo = (String) result.get(Constants.PREFERENCE_LOGO_LOCATION); 
-            myForm.set("logo", (logo == null) ? "" : logo);
         } else if (mode.equals("invoiceNumbering")) {
             // set up[ which preferences do we need
             Integer[] preferenceIds = new Integer[2];

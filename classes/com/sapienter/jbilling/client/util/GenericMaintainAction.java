@@ -78,7 +78,6 @@ import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
-import com.sapienter.jbilling.server.item.ItemUserPriceDTOEx;
 import com.sapienter.jbilling.server.item.PromotionDTOEx;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
@@ -223,7 +222,6 @@ public class GenericMaintainAction {
         // create a dto with the info from the form and call
         // the remote session
         ItemDTOEx itemDto = null;
-        ItemUserPriceDTOEx priceDto = null;
         PromotionDTOEx promotionDto = null;
         PaymentDTOEx paymentDto = null;
         CreditCardDTO creditCardDto = null;
@@ -313,10 +311,6 @@ public class GenericMaintainAction {
                         new ActionError("item.error.price"));
             }
             
-        } else if (mode.equals("price")) { // a price
-            priceDto = new ItemUserPriceDTOEx();
-            priceDto.setPrice(string2float((String) myForm.get("price")));
-            priceDto.setCurrencyId((Integer) myForm.get("currencyId"));
         } else if (mode.equals("promotion")) {
             promotionDto = new PromotionDTOEx();
             promotionDto.setCode((String) myForm.get("code"));
@@ -1105,21 +1099,6 @@ public class GenericMaintainAction {
                             newItem);
                 }
                 
-            } else if (mode.equals("price")) {// a price
-                // an item has just been selected from the generic list
-                priceDto.setItemId((Integer) session.getAttribute(
-                        Constants.SESSION_LIST_ID_SELECTED));
-                // the user has been also selected from a list, but it has
-                // its own key in the session
-                priceDto.setUserId((Integer) session.getAttribute(
-                        Constants.SESSION_USER_ID));
-                if (((ItemSession) remoteSession).createPrice(
-                        executorId, priceDto) != null) {
-                    messageKey = "item.user.price.create.done";
-                } else {
-                    messageKey = "item.user.price.create.duplicate";
-                }
-                retValue = "list";
             } else if (mode.equals("promotion")) {
                 // this is the item that has been created for this promotion
                 promotionDto.setItemId((Integer) session.getAttribute(
@@ -1177,10 +1156,6 @@ public class GenericMaintainAction {
                 ((ItemSession) remoteSession).update(executorId, itemDto, 
                         (Integer) myForm.get("language"));
                 messageKey = "item.update.done";
-            } else if (mode.equals("price")) { // a price
-                priceDto.setId((Integer) myForm.get("id"));
-                ((ItemSession) remoteSession).updatePrice(executorId, priceDto);
-                messageKey = "item.user.price.update.done";
             } else if (mode.equals("promotion")) {
                 promotionDto.setId((Integer) myForm.get("id"));
                 ((ItemSession) remoteSession).updatePromotion(executorId, 
@@ -1337,68 +1312,6 @@ public class GenericMaintainAction {
                 // previously edited item!
                 myForm.set("percentage", null);
             }
-        } else if (mode.equals("price")) { // a price
-            // for prices, a setup is needed when creating one, because
-            // the item information is displayed
-            ItemDTOEx itemDto;
-            
-            // to get a price I need the user and the item
-            // the item: it's just been selected from a list, so it is in selectedId
-            // the user:
-            Integer userId = (Integer) session.getAttribute(
-                    Constants.SESSION_USER_ID);
-                  
-            // check if I'm being called from the list of prices or from
-            // a create  
-            ItemUserPriceDTOEx dto;
-            
-            if (session.getAttribute(Constants.SESSION_ITEM_PRICE_ID) != null) {
-                // called from the prices list
-                dto  = ((ItemSession) remoteSession). getPrice(
-                        (Integer) session.getAttribute(
-                            Constants.SESSION_ITEM_PRICE_ID));
-                selectedId = dto.getItemId();
-            } else {                
-                // called from the items list
-                dto  = ((ItemSession) remoteSession).
-                        getPrice(userId, selectedId);
-            }
-
-            if (dto != null) { // the combination is found
-                myForm.set("id", dto.getId());
-                myForm.set("price", float2string(dto.getPrice()));
-                myForm.set("currencyId", dto.getCurrencyId());
-                // the id of the price is left in the session, so it can
-                // be used later in the delete
-                session.setAttribute(Constants.SESSION_ITEM_PRICE_ID,
-                        dto.getId());
-                // as a currency, as pass just a 1 because I don't care
-                // about the price 
-                itemDto = ((ItemSession) remoteSession).get(selectedId,
-                        languageId, null, new Integer(1), entityId);
-            } else { // it's a create
-                // this is a create, because there no previous price for this 
-                //user-item combination.
-                // I need the currency of the user, because the price will
-                // be defaulted to this item's price
-                UserDTOEx user;
-                try {
-                    user = getUser(userId);
-                } catch (FinderException e) {
-                    throw new SessionInternalError(e);
-                }
-                itemDto = ((ItemSession) remoteSession).get(selectedId,
-                        languageId, null, user.getCurrencyId(), entityId);
-                // We then use this item's current price
-                myForm.set("price", float2string(itemDto.getPrice()));
-                myForm.set("currencyId", user.getCurrencyId());
-                
-                retValue = "create";
-            }
-            // the item dto is needed, because its data is just displayed
-            // with <bean>, it is not edited with <html:text>
-            session.setAttribute(Constants.SESSION_ITEM_DTO, 
-                    itemDto);
         } else if (mode.equals("promotion")) {
             PromotionDTOEx dto = ((ItemSession) remoteSession).
                     getPromotion(selectedId);
@@ -1891,10 +1804,6 @@ public class GenericMaintainAction {
        
         if (mode.equals("item")) {
             ((ItemSession) remoteSession).delete(executorId, selectedId);
-        } else if (mode.equals("price")) { // it's a price
-            ((ItemSession) remoteSession).deletePrice(executorId, 
-                    (Integer) session.getAttribute(
-                        Constants.SESSION_ITEM_PRICE_ID));
         } else if (mode.equals("promotion")) {
             Integer promotionId = ((PromotionDTOEx) session.getAttribute(
                     Constants.SESSION_PROMOTION_DTO)).getId();

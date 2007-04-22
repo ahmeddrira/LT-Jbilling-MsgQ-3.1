@@ -223,7 +223,6 @@ public class GenericMaintainAction {
         // the remote session
         ItemDTOEx itemDto = null;
         PaymentDTOEx paymentDto = null;
-        CreditCardDTO creditCardDto = null;
         AchDTO achDto = null;
         Boolean automaticPaymentType = null;
         BillingProcessConfigurationDTO configurationDto = null;
@@ -703,39 +702,6 @@ public class GenericMaintainAction {
             }
             
             return "items";
-        } else if (mode.equals("ach")) {
-        	achDto = new AchDTO();
-        	achDto.setAbaRouting((String) myForm.get("aba_code"));
-        	achDto.setBankAccount((String) myForm.get("account_number"));
-        	achDto.setAccountType((Integer) myForm.get("account_type"));
-        	achDto.setBankName((String) myForm.get("bank_name"));
-        	achDto.setAccountName((String) myForm.get("account_name"));
-            // update the autimatic payment type for this customer
-          	automaticPaymentType = (Boolean) myForm.get("chbx_use_this");
-          	
-            // verify that this entity actually accepts this kind of 
-            //payment method
-            try {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                PaymentSessionHome paymentHome =
-                        (PaymentSessionHome) EJBFactory.lookUpHome(
-                        PaymentSessionHome.class,
-                        PaymentSessionHome.JNDI_NAME);
-    
-                PaymentSession paymentSession = paymentHome.create();
-                
-                if (!paymentSession.isMethodAccepted((Integer)
-                        session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
-                        Constants.PAYMENT_METHOD_ACH)) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("payment.error.notAccepted", 
-                                "payment.method"));
-    
-                }
-            } catch (Exception e) {
-                throw new SessionInternalError(e);
-            }
-
         } else if (mode.equals("configuration")) {
             configurationDto = new BillingProcessConfigurationDTO();
             
@@ -1092,15 +1058,6 @@ public class GenericMaintainAction {
                         createUpdateConfiguration(executorId, configurationDto);
                 messageKey = "process.configuration.updated";
                 retValue = "edit";
-            } else if (mode.equals("ach")) {
-            	Integer userId = (Integer) session.getAttribute(
-                        Constants.SESSION_USER_ID);
-                ((UserSession) remoteSession).updateACH(userId, 
-                		executorId, achDto);
-                ((UserSession) remoteSession).setAuthPaymentType(userId,
-                		Constants.AUTO_PAYMENT_TYPE_ACH, automaticPaymentType);
-                messageKey = "ach.update.done";
-                retValue = "done";                
             } else if (mode.equals("notification")) {
                 ((NotificationSession) remoteSession).createUpdate(
                         messageDto, entityId);
@@ -1367,32 +1324,6 @@ public class GenericMaintainAction {
             myForm.set("billingType", dto.getBillingTypeId());
             if (dto.getPromoCode() != null) {
                 myForm.set("promotion_code", dto.getPromoCode());
-            }
-        } else if (mode.equals("ach")) {
-        	Integer userId = (Integer) session.getAttribute(
-                    Constants.SESSION_USER_ID);
-            // now only one credit card is supported per user
-            AchDTO dto = ((UserSession) remoteSession).
-                    getACH(userId);
-            Integer type = ((UserSession) remoteSession).getAuthPaymentType(
-            		userId);
-            Boolean use;
-            if (type == null || !type.equals(
-            		Constants.AUTO_PAYMENT_TYPE_ACH)) {
-            	use = new Boolean(false);
-            } else {
-            	use = new Boolean(true);
-            }
-            if (dto != null) { // it could be that the user has no cc yet
-                myForm.set("aba_code", dto.getAbaRouting());
-                myForm.set("account_number", dto.getBankAccount());
-                myForm.set("account_type", dto.getAccountType());
-                myForm.set("bank_name", dto.getBankName());
-                myForm.set("account_name", dto.getAccountName());
-                myForm.set("chbx_use_this", use);
-            } else {
-                session.removeAttribute(formName);
-                return retValue;
             }
         } else if (mode.equals("configuration")) {
             BillingProcessConfigurationDTO dto = ((BillingProcessSession) remoteSession).
@@ -1666,10 +1597,6 @@ public class GenericMaintainAction {
        
         if (mode.equals("item")) {
             ((ItemSession) remoteSession).delete(executorId, selectedId);
-        } else if (mode.equals("ach")) {
-            ((UserSession) remoteSession).removeACH(
-            		(Integer) session.getAttribute(Constants.SESSION_USER_ID),
-					executorId);
         } else if (mode.equals("payment")) {
             PaymentDTOEx paymentDto = (PaymentDTOEx) session
                     .getAttribute(Constants.SESSION_PAYMENT_DTO);

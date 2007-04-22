@@ -27,20 +27,14 @@ import java.util.GregorianCalendar;
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
+import com.sapienter.jbilling.client.user.PaymentMethodCrudContext.CCContext;
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 
 public class CreditCardMaintainAction extends
-		CrudActionBase<CreditCardCrudContext> {
+		AbstractPaymentMethodMaintainAction<CCContext> {
 	private static final String FORM_CREDIT_CARD = "creditCard";
 
 	private static final String FIELD_NUMBER = "number";
@@ -53,35 +47,16 @@ public class CreditCardMaintainAction extends
 	private static final String FORWARD_DONE = "creditCard_done";
 	private static final String FORWARD_DELETED = "creditCard_deleted";
 
-	private final UserSession myUserSession;
-	private final PaymentSession myPaymentSession;
-
 	public CreditCardMaintainAction() {
-		super(FORM_CREDIT_CARD, "credit card");
-		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-					UserSessionHome.class, UserSessionHome.JNDI_NAME);
-
-			PaymentSessionHome paymentHome = (PaymentSessionHome) EJBFactory
-					.lookUpHome(PaymentSessionHome.class,
-							PaymentSessionHome.JNDI_NAME);
-
-			myUserSession = userHome.create();
-			myPaymentSession = paymentHome.create();
-
-		} catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing credit card CRUD action: " + e.getMessage());
-		}
+		super(FORM_CREDIT_CARD, "credit card", FIELD_NUMBER, FORWARD_EDIT);
 	}
 
 	@Override
 	protected ForwardAndMessage doSetup() throws RemoteException {
 		Integer userId = customGetUserId();
 		// now only one credit card is supported per user
-		CreditCardDTO dto = myUserSession.getCreditCard(userId);
-		Integer type = myUserSession.getAuthPaymentType(userId);
+		CreditCardDTO dto = getUserSession().getCreditCard(userId);
+		Integer type = getUserSession().getAuthPaymentType(userId);
 		boolean use = Constants.AUTO_PAYMENT_TYPE_CC.equals(type);
 		if (dto != null) { // it could be that the user has no cc yet
 			String ccNumber = maskCreditCardNumberIfNeeded(dto);
@@ -90,37 +65,13 @@ public class CreditCardMaintainAction extends
 			myForm.set(FIELD_NAME, dto.getName());
 			myForm.set(FIELD_USE_CARD, use);
 		} else {
-			// we will use empty field number as a flag for postSetup();
-			// @see postSetup
-			myForm.set(FIELD_NUMBER, "");
+			setupNotFound();
 		}
 		return new ForwardAndMessage(FORWARD_EDIT);
 	}
 
 	@Override
-	protected void postSetup() {
-		super.postSetup();
-		// we are using an empty FIELD_NUMBER as a flag indicating
-		// that DTO were not found
-		// in any case, empty FIELD_NUMBER means that something is wrong
-		// so it makes sence to remove the cached form anyway
-		// @see setup()
-
-		if ("".equals(myForm.get(FIELD_NUMBER))) {
-			removeFormFromSession();
-		}
-	}
-
-	@Override
-	protected void preEdit() {
-		super.preEdit();
-		// this default forward used, e.g, in case of validation problems
-		String forwardOnValidationProblem = FORWARD_EDIT;
-		setForward(forwardOnValidationProblem);
-	}
-
-	@Override
-	protected CreditCardCrudContext doEditFormToDTO() throws RemoteException {
+	protected CCContext doEditFormToDTO() throws RemoteException {
 		CreditCardDTO dto = new CreditCardDTO();
 		dto.setName((String) myForm.get(FIELD_NAME));
 		dto.setNumber((String) myForm.get(FIELD_NUMBER));
@@ -144,7 +95,7 @@ public class CreditCardMaintainAction extends
 			// verify that this entity actually accepts this kind of
 			// payment method
 			Integer paymentMethod = Util.getPaymentMethod(dto.getNumber());
-			if (!myPaymentSession.isMethodAccepted(entityId, paymentMethod)) {
+			if (!getPaymentSession().isMethodAccepted(entityId, paymentMethod)) {
 				errors.add( //
 						ActionErrors.GLOBAL_ERROR, //
 						new ActionError("payment.error.notAccepted",
@@ -152,7 +103,7 @@ public class CreditCardMaintainAction extends
 			}
 		}
 
-		CreditCardCrudContext result = new CreditCardCrudContext(dto);
+		CCContext result = new CCContext(dto);
 		// update the autimatic payment type for this customer
 		Boolean shouldUse = (Boolean) myForm.get(FIELD_USE_CARD);
 		if (shouldUse != null) {
@@ -163,33 +114,21 @@ public class CreditCardMaintainAction extends
 	}
 
 	@Override
-	protected ForwardAndMessage doUpdate(CreditCardCrudContext dto)
+	protected ForwardAndMessage doUpdate(CCContext dto)
 			throws RemoteException {
 		Integer userId = commonGetUserId();
-		myUserSession.updateCreditCard(executorId, userId, dto.getDto());
-		myUserSession.setAuthPaymentType(userId,
+		getUserSession().updateCreditCard(executorId, userId, dto.getDto());
+		getUserSession().setAuthPaymentType(userId,
 				Constants.AUTO_PAYMENT_TYPE_CC, dto.isAutomaticPayment());
 		return new ForwardAndMessage(FORWARD_DONE, MESSAGE_UPDATE_SUCCESS);
 	}
 
 	@Override
 	protected ForwardAndMessage doDelete() throws RemoteException {
-		myUserSession.deleteCreditCard(executorId, commonGetUserId());
+		getUserSession().deleteCreditCard(executorId, commonGetUserId());
 		// no need to modify the auto payment type. If it is cc and
 		// there's no cc the payment will be bypassed
 		return new ForwardAndMessage(FORWARD_DELETED);
-	}
-
-	@Override
-	protected ForwardAndMessage doCreate(CreditCardCrudContext dto)
-			throws RemoteException {
-		throw new UnsupportedOperationException(
-				"Can't create credit card. Create mode is not directly supported");
-	}
-
-	@Override
-	protected void resetCachedList() {
-		// single credit card per customer, no lists
 	}
 
 	private Integer customGetUserId() {
@@ -217,7 +156,7 @@ public class CreditCardMaintainAction extends
 				Constants.P_USER_EDIT_VIEW_CC);
 		if (!maskNeeded) {
 			final Integer HIDE_CC_NUMBERS = com.sapienter.jbilling.server.util.Constants.PREFERENCE_HIDE_CC_NUMBERS;
-			String maskAll = myUserSession.getEntityPreference(//
+			String maskAll = getUserSession().getEntityPreference(//
 					entityId, HIDE_CC_NUMBERS);
 			maskNeeded = "1".equals(maskAll);
 		}

@@ -222,7 +222,6 @@ public class GenericMaintainAction {
         // create a dto with the info from the form and call
         // the remote session
         ItemDTOEx itemDto = null;
-        PromotionDTOEx promotionDto = null;
         PaymentDTOEx paymentDto = null;
         CreditCardDTO creditCardDto = null;
         AchDTO achDto = null;
@@ -737,55 +736,6 @@ public class GenericMaintainAction {
                 throw new SessionInternalError(e);
             }
 
-        } else if (mode.equals("creditCard")) {
-            creditCardDto = new CreditCardDTO();
-            creditCardDto.setName((String) myForm.get("name"));
-            creditCardDto.setNumber((String) myForm.get("number"));
-            myForm.set("expiry_day", "01"); // to complete the date
-            creditCardDto.setExpiry(parseDate("expiry", "payment.cc.date"));
-
-            // validate the expiry date
-            if (creditCardDto.getExpiry() != null) {            
-                GregorianCalendar cal = new GregorianCalendar();
-                cal.setTime(creditCardDto.getExpiry());
-                cal.add(GregorianCalendar.MONTH, 1); // add 1 month
-                if (Calendar.getInstance().getTime().after(cal.getTime())) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("creditcard.error.expired", 
-                                "payment.cc.date"));
-                }
-            }
-
-            // the credit card number is required
-            required(creditCardDto.getNumber(),"payment.cc.number");
-            if (errors.isEmpty()) {
-                // verify that this entity actually accepts this kind of 
-                //payment method
-                try {
-                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                    PaymentSessionHome paymentHome =
-                            (PaymentSessionHome) EJBFactory.lookUpHome(
-                            PaymentSessionHome.class,
-                            PaymentSessionHome.JNDI_NAME);
-        
-                    PaymentSession paymentSession = paymentHome.create();
-                    
-                    if (!paymentSession.isMethodAccepted((Integer)
-                            session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
-                            Util.getPaymentMethod(creditCardDto.getNumber()))) {
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("payment.error.notAccepted", 
-                                    "payment.method"));
-        
-                    }
-                } catch (Exception e) {
-                    throw new SessionInternalError(e);
-                }
-            }
-            
-            // update the autimatic payment type for this customer
-          	automaticPaymentType = (Boolean) myForm.get("chbx_use_this");
-          	
         } else if (mode.equals("configuration")) {
             configurationDto = new BillingProcessConfigurationDTO();
             
@@ -1151,15 +1101,6 @@ public class GenericMaintainAction {
                 		Constants.AUTO_PAYMENT_TYPE_ACH, automaticPaymentType);
                 messageKey = "ach.update.done";
                 retValue = "done";                
-            } else if (mode.equals("creditCard")) {
-            	Integer userId = (Integer) session.getAttribute(
-                        Constants.SESSION_USER_ID);
-                ((UserSession) remoteSession).updateCreditCard(executorId,
-                        userId, creditCardDto);
-                ((UserSession) remoteSession).setAuthPaymentType(userId,
-                		Constants.AUTO_PAYMENT_TYPE_CC, automaticPaymentType);
-                messageKey = "creditcard.update.done";
-                retValue = "done";
             } else if (mode.equals("notification")) {
                 ((NotificationSession) remoteSession).createUpdate(
                         messageDto, entityId);
@@ -1453,45 +1394,6 @@ public class GenericMaintainAction {
                 session.removeAttribute(formName);
                 return retValue;
             }
-        } else if (mode.equals("creditCard")) {
-            Integer userId = (request.getParameter("userId") == null) 
-                    ? (Integer) session.getAttribute(
-                            Constants.SESSION_USER_ID)
-                    : Integer.valueOf(request.getParameter("userId"));
-            // now only one credit card is supported per user
-            CreditCardDTO dto = ((UserSession) remoteSession).
-                    getCreditCard(userId);
-            Integer type = ((UserSession) remoteSession).getAuthPaymentType(
-            		userId);
-            Boolean use;
-            if (type == null || !type.equals(
-            		Constants.AUTO_PAYMENT_TYPE_CC)) {
-            	use = new Boolean(false);
-            } else {
-            	use = new Boolean(true);
-            }
-            if (dto != null) { // it could be that the user has no cc yet
-                String ccNumber = dto.getNumber();
-
-                // if the user is not allowed to see cc info
-                // or the entity does not want anybody to see cc numbers
-                if (!((UserDTOEx) session.getAttribute(Constants.SESSION_USER_DTO)).
-                        isGranted(Constants.P_USER_EDIT_VIEW_CC) || 
-                        ((UserSession) remoteSession).getEntityPreference(
-                                entityId, 
-                                com.sapienter.jbilling.server.util.Constants.PREFERENCE_HIDE_CC_NUMBERS).equals("1")) {
-                    // mask cc number
-                    ccNumber = "************" + ccNumber.substring(
-                            ccNumber.length() - 4);
-                }
-                myForm.set("number", ccNumber);
-                setFormDate("expiry", dto.getExpiry());
-                myForm.set("name", dto.getName());
-                myForm.set("chbx_use_this", use);
-            } else {
-                session.removeAttribute(formName);
-                return retValue;
-            }
         } else if (mode.equals("configuration")) {
             BillingProcessConfigurationDTO dto = ((BillingProcessSession) remoteSession).
                     getConfigurationDto((Integer) session.getAttribute(
@@ -1764,11 +1666,6 @@ public class GenericMaintainAction {
        
         if (mode.equals("item")) {
             ((ItemSession) remoteSession).delete(executorId, selectedId);
-        } else if (mode.equals("creditCard")) {
-            ((UserSession) remoteSession).deleteCreditCard(executorId, 
-                    (Integer) session.getAttribute(Constants.SESSION_USER_ID));
-            // no need to modify the auto payment type. If it is cc and
-            // there's no cc the payment will be bypassed
         } else if (mode.equals("ach")) {
             ((UserSession) remoteSession).removeACH(
             		(Integer) session.getAttribute(Constants.SESSION_USER_ID),

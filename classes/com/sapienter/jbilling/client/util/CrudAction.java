@@ -142,6 +142,8 @@ public abstract class CrudAction extends Action {
                     
                     // some errors could be added during the form->dto copy
                     if (!errors.isEmpty()) {
+                        // Save the error messages we need
+                        request.setAttribute(Globals.ERROR_KEY, errors);
                         return(mapping.findForward(forward));
                     }                
                     
@@ -238,14 +240,14 @@ public abstract class CrudAction extends Action {
      */
     public abstract void setup();
     
-    private void postSetup() {
+    protected void postSetup() {
         log.debug("setting up form name=" + formName + 
                 " dyna=" + myForm);
                 
         session.setAttribute(formName, myForm);
     }
         
-    private void preEdit() {
+    protected void preEdit() {
         // do the validation, before moving any info to the dto
         errors = new ActionErrors(myForm.validate(mapping, request));
         forward = "edit";
@@ -420,6 +422,22 @@ public abstract class CrudAction extends Action {
         }
     }
     
+    protected void required(String field, String key) {
+        if (field == null || field.trim().length() == 0) {
+            String name = Resources.getMessage(request, key);
+            errors.add(ActionErrors.GLOBAL_ERROR,
+                    new ActionError("errors.required", name));
+        }
+    }
+    
+    protected void required(Date field, String key) {
+        if (field == null) {
+            String name = Resources.getMessage(request, key);
+            errors.add(ActionErrors.GLOBAL_ERROR,
+                    new ActionError("errors.required", name));
+        }
+    }
+
 	
     
 }

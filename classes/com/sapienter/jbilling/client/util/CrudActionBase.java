@@ -7,7 +7,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 public abstract class CrudActionBase<DTO> extends CrudAction {
 	private final String myLogFriendlyActionType;
 	
-	protected abstract DTO doEditFormToDTO();
+	protected abstract DTO doEditFormToDTO() throws RemoteException;
 	protected abstract ForwardAndMessage doSetup() throws RemoteException;
 	protected abstract ForwardAndMessage doCreate(DTO dto) throws RemoteException;
 	protected abstract ForwardAndMessage doUpdate(DTO dto) throws RemoteException;
@@ -73,7 +73,11 @@ public abstract class CrudActionBase<DTO> extends CrudAction {
 	
 	@Override
 	public final Object editFormToDTO() {
-		return doEditFormToDTO();
+		try {
+			return doEditFormToDTO();
+		} catch (RemoteException e){
+			throw wrapError("validate", e);
+		}	
 	}
 	
 	@Override

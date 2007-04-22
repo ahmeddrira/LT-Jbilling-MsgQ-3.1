@@ -20,30 +20,36 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.client.item;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
+import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
+import com.sapienter.jbilling.server.item.PromotionDTOEx;
 
-public class PromotionMaintainAction extends Action {
+public class PromotionMaintainAction extends CrudActionBase<PromotionDTOEx> {
+	private static final String FORM_PROMOTION = "promotion";
+	private static final String FIELD_ID = "id";
+	private static final String FIELD_CODE = "code";
+	private static final String FIELD_NOTES = "notes";
+	private static final String FIELD_ONLY_ONCE = "chbx_once";
+	private static final String FIELD_GROUP_SINCE = "since";
+	private static final String FIELD_GROUP_UNTIL = "until";
 
-    public ActionForward execute(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        
-        Logger log = Logger.getLogger(PromotionMaintainAction.class);
+	private static final String MESSAGE_CREATE_SUCCESS = "promotion.create.done";
+	private static final String MESSAGE_UPDATE_SUCCESS = "promotion.update.done";
+
+	private static final String FORWARD_LIST = "promotion_list";
+	private static final String FORWARD_EDIT = "promotion_edit";
+	private static final String FORWARD_DELETED = "promotion_deleted";
+	
+	private final ItemSession myItemSession;
+	
+	public PromotionMaintainAction(){
+		super(FORM_PROMOTION, "promotion");
         try {
             JNDILookup EJBFactory = JNDILookup.getFactory(false);
             ItemSessionHome itemHome =
@@ -51,17 +57,67 @@ public class PromotionMaintainAction extends Action {
                     ItemSessionHome.class,
                     ItemSessionHome.JNDI_NAME);
         
-            ItemSession itemSession = itemHome.create();
-            GenericMaintainAction gma = new GenericMaintainAction(mapping,
-                    form, request, response, servlet, itemSession, 
-                    "promotion");
-                    
-            return gma.process();            
+            myItemSession = itemHome.create();
         } catch (Exception e) {
-            log.error("Exception ", e);
+			throw new SessionInternalError(
+					"Initializing promotion CRUD action: " + e.getMessage());
         }
-        
-        return mapping.findForward("error");
-    }
-  
+	}
+	
+	@Override
+	protected PromotionDTOEx doEditFormToDTO() {
+		PromotionDTOEx dto = new PromotionDTOEx();
+        dto.setCode((String) myForm.get(FIELD_CODE));
+        dto.setNotes((String) myForm.get(FIELD_NOTES));
+        dto.setOnce(((Boolean) myForm.get(FIELD_ONLY_ONCE)).booleanValue() ? 1 : 0);
+        dto.setSince(parseDate(FIELD_GROUP_SINCE, "promotion.prompt.since"));
+        dto.setUntil(parseDate(FIELD_GROUP_UNTIL, "promotion.prompt.until"));
+        return dto;
+	}
+	
+	@Override
+	protected ForwardAndMessage doCreate(PromotionDTOEx dto) throws RemoteException {
+        // this is the item that has been created for this promotion
+        dto.setItemId((Integer) session.getAttribute(Constants.SESSION_ITEM_ID));
+        myItemSession.createPromotion(executorId, entityId, dto);
+        return new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATE_SUCCESS);
+	}
+	
+	@Override
+	protected ForwardAndMessage doUpdate(PromotionDTOEx dto) throws RemoteException {
+        dto.setId((Integer) myForm.get("id"));
+        myItemSession.updatePromotion(executorId, dto);
+        return new ForwardAndMessage(FORWARD_LIST, MESSAGE_UPDATE_SUCCESS);
+	}
+	
+	@Override
+	protected ForwardAndMessage doSetup() throws RemoteException {
+        PromotionDTOEx dto = myItemSession.getPromotion(selectedId);
+        myForm.set(FIELD_ID, dto.getId());
+        myForm.set(FIELD_CODE, dto.getCode());
+        myForm.set(FIELD_NOTES, dto.getNotes());
+        myForm.set(FIELD_ONLY_ONCE, (dto.getOnce().intValue() == 1));
+        // new parse the dates
+        setFormDate(FIELD_GROUP_SINCE, dto.getSince());
+        setFormDate(FIELD_GROUP_UNTIL, dto.getUntil());
+                 
+		// the item id will be needed if the user wants to edit the 
+		// item related with this promotion.
+		session.setAttribute(Constants.SESSION_LIST_ID_SELECTED, dto.getItemId());
+		session.setAttribute(Constants.SESSION_PROMOTION_DTO, dto);
+		return new ForwardAndMessage(FORWARD_EDIT);
+	}
+	
+	@Override
+	protected ForwardAndMessage doDelete() throws RemoteException {
+		PromotionDTOEx dto = (PromotionDTOEx) session.getAttribute(Constants.SESSION_PROMOTION_DTO);
+        Integer promotionId = dto.getId();
+        myItemSession.deletePromotion(executorId, promotionId);
+        return new ForwardAndMessage(FORWARD_DELETED);
+	}
+	
+	@Override
+	protected void resetCachedList() {
+		session.removeAttribute(Constants.SESSION_LIST_KEY + "promotion");
+	}
 }

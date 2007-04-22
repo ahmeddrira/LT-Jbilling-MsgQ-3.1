@@ -21,9 +21,6 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.util;
 
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -112,6 +109,8 @@ public class GenericMaintainAction {
     private Integer languageId = null;
     private Integer entityId = null;
     private Integer executorId = null;
+    
+    private final FormHelper formHelper;
 
     public GenericMaintainAction(ActionMapping mapping, ActionForm form,
             HttpServletRequest request) { 
@@ -121,8 +120,8 @@ public class GenericMaintainAction {
         errors = new ActionErrors();
         messages = new ActionMessages();
         session = request.getSession(false);
-        
         myForm = (DynaValidatorForm) form;
+        formHelper = new FormHelper(session);
     }  
     
     public GenericMaintainAction(ActionMapping mapping, ActionForm form,
@@ -140,6 +139,7 @@ public class GenericMaintainAction {
         session = request.getSession(false);
         action = request.getParameter("action");
         mode = request.getParameter("mode");
+        formHelper = new FormHelper(session);
         this.formName = formName;
         
         if (action == null) {
@@ -311,16 +311,6 @@ public class GenericMaintainAction {
                         new ActionError("item.error.price"));
             }
             
-        } else if (mode.equals("promotion")) {
-            promotionDto = new PromotionDTOEx();
-            promotionDto.setCode((String) myForm.get("code"));
-            promotionDto.setNotes((String) myForm.get("notes"));
-            promotionDto.setOnce(new Integer(((Boolean) myForm.get
-                    ("chbx_once")).booleanValue() ? 1 : 0));
-            promotionDto.setSince(parseDate("since", 
-                    "promotion.prompt.since"));
-            promotionDto.setUntil(parseDate("until", 
-                    "promotion.prompt.until"));
         } else if (mode.equals("payment")) {
             paymentDto = new PaymentDTOEx();
             // the id, only for payment edits
@@ -1099,15 +1089,6 @@ public class GenericMaintainAction {
                             newItem);
                 }
                 
-            } else if (mode.equals("promotion")) {
-                // this is the item that has been created for this promotion
-                promotionDto.setItemId((Integer) session.getAttribute(
-                        Constants.SESSION_ITEM_ID));    
-                ((ItemSession) remoteSession).createPromotion(executorId, 
-                        (Integer) session.getAttribute(
-                        Constants.SESSION_ENTITY_ID_KEY), promotionDto);
-                messageKey = "promotion.create.done";
-                retValue = "list";
             } else if (mode.equals("payment")) {
                 // this is not an update, it's the previous step of the review
                 // payments have no updates (unmodifiable transactions).
@@ -1156,11 +1137,6 @@ public class GenericMaintainAction {
                 ((ItemSession) remoteSession).update(executorId, itemDto, 
                         (Integer) myForm.get("language"));
                 messageKey = "item.update.done";
-            } else if (mode.equals("promotion")) {
-                promotionDto.setId((Integer) myForm.get("id"));
-                ((ItemSession) remoteSession).updatePromotion(executorId, 
-                        promotionDto);
-                messageKey = "promotion.update.done";
             } else if (mode.equals("configuration")) {
                 ((BillingProcessSession) remoteSession).
                         createUpdateConfiguration(executorId, configurationDto);
@@ -1312,22 +1288,6 @@ public class GenericMaintainAction {
                 // previously edited item!
                 myForm.set("percentage", null);
             }
-        } else if (mode.equals("promotion")) {
-            PromotionDTOEx dto = ((ItemSession) remoteSession).
-                    getPromotion(selectedId);
-            myForm.set("id", dto.getId());
-            myForm.set("code", dto.getCode());
-            myForm.set("notes", dto.getNotes());
-            myForm.set("chbx_once", new Boolean(dto.getOnce().intValue() == 1));
-            // new parse the dates
-            setFormDate("since", dto.getSince());
-            setFormDate("until", dto.getUntil());
-                             
-            // the item id will be needed if the user wants to edit the 
-            // item related with this promotion.
-            session.setAttribute(Constants.SESSION_LIST_ID_SELECTED, 
-                    dto.getItemId());
-            session.setAttribute(Constants.SESSION_PROMOTION_DTO, dto);
         } else if (mode.equals("payment")) {
             CreditCardDTO ccDto = null;
             AchDTO achDto = null;
@@ -1804,11 +1764,6 @@ public class GenericMaintainAction {
        
         if (mode.equals("item")) {
             ((ItemSession) remoteSession).delete(executorId, selectedId);
-        } else if (mode.equals("promotion")) {
-            Integer promotionId = ((PromotionDTOEx) session.getAttribute(
-                    Constants.SESSION_PROMOTION_DTO)).getId();
-            ((ItemSession) remoteSession).deletePromotion(executorId, 
-                    promotionId);
         } else if (mode.equals("creditCard")) {
             ((UserSession) remoteSession).deleteCreditCard(executorId, 
                     (Integer) session.getAttribute(Constants.SESSION_USER_ID));
@@ -1992,43 +1947,16 @@ public class GenericMaintainAction {
         return retValue;
     }
     
-    private String float2string(Float arg) {
-        return float2string(arg,session);
-    }
-
-    public static String float2string(Float arg, HttpSession sess) {
-        if (arg == null) {
-            return null;
-        }
-        UserDTOEx user = (UserDTOEx) sess.getAttribute(
-                Constants.SESSION_USER_DTO);
-        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
-        if (nf instanceof DecimalFormat) {
-            ((DecimalFormat) nf).applyPattern("0.00");
-        }
-        return nf.format(arg);
-    }
-
-    private Float string2float(String arg) {
-        return string2float(arg, session);
-    }
-    
-    public static Float string2float(String arg, HttpSession sess) {
-        if (arg == null || arg.trim().length() == 0) {
-            return null;
-        }
-        UserDTOEx user = (UserDTOEx) sess.getAttribute(
-                Constants.SESSION_USER_DTO);
-        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
-        
-        try {
-            return new Float(nf.parse(arg).floatValue());
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
     public ActionErrors getErrors() {
         return errors;
     }
+    
+	private String float2string(Float arg) {
+		return formHelper.float2string(arg);
+	}
+
+	private Float string2float(String arg) {
+		return formHelper.string2float(arg);
+	}
+
 }

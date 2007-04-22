@@ -48,6 +48,7 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.FormHelper;
 import com.sapienter.jbilling.client.util.GenericMaintainAction;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -114,7 +115,7 @@ public class ReviewOrderAction extends Action {
                     Integer key = (Integer) it.next();
                     OrderLineDTOEx line = (OrderLineDTOEx) newOrder.
                             getOrderLinesMap().get(key);
-                    line.setPriceStr(GenericMaintainAction.float2string(
+                    line.setPriceStr(FormHelper.float2string(
                             line.getPrice(), session));
                 }
                 
@@ -147,7 +148,7 @@ public class ReviewOrderAction extends Action {
                                 getOrderLinesMap().get(key);
                         if (!line.getEditable().booleanValue()) //probalby a tax
                             continue;
-                        line.setPrice(GenericMaintainAction.string2float(
+                        line.setPrice(FormHelper.string2float(
                                 line.getPriceStr(), session));
                         log.debug("line = " + line);
                         if (line.getPrice() == null) {

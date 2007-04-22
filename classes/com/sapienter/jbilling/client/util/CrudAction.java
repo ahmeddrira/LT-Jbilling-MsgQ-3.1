@@ -20,9 +20,8 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.util;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.ejb.FinderException;
 import javax.servlet.ServletException;
@@ -43,9 +42,11 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
+import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -78,6 +79,8 @@ public abstract class CrudAction extends Action {
     // by default, it goes to a predefined value
     // the implementations can change this at will
     protected String forward;
+    
+    private FormHelper formHelper;
  
     /**
      * A constructor with no arguments is required from the implementation
@@ -334,41 +337,14 @@ public abstract class CrudAction extends Action {
     }
     
     protected final String float2string(Float arg) {
-		return float2string(arg, session);
+		return getFormHelper().float2string(arg);
 	}
 
     protected final Float string2float(String arg) {
-        return string2float(arg, session);
+        return getFormHelper().string2float(arg);
     }
     
-	private static String float2string(Float arg, HttpSession sess) {
-		if (arg == null) {
-			return null;
-		}
-		UserDTOEx user = (UserDTOEx) sess
-				.getAttribute(Constants.SESSION_USER_DTO);
-		NumberFormat nf = NumberFormat.getInstance(user.getLocale());
-		if (nf instanceof DecimalFormat) {
-			((DecimalFormat) nf).applyPattern("0.00");
-		}
-		return nf.format(arg);
-	}
-
-    private static Float string2float(String arg, HttpSession sess) {
-        if (arg == null || arg.trim().length() == 0) {
-            return null;
-        }
-        UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
-        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
-        
-        try {
-            return new Float(nf.parse(arg).floatValue());
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-    
-	protected UserDTOEx getUser(Integer userId) throws FinderException {    
+	protected final UserDTOEx getUser(Integer userId) throws FinderException {    
 		UserDTOEx retValue = null;
 		try {
 			JNDILookup EJBFactory = JNDILookup.getFactory(false);
@@ -385,5 +361,65 @@ public abstract class CrudAction extends Action {
 		}
 		return retValue;
 	}
+	
+	protected final FormHelper getFormHelper(){
+		if (formHelper == null){
+			formHelper = new FormHelper(session);
+		}
+		return formHelper;
+	}
+	
+    protected Date parseDate(String prefix, String prompt) {
+        Date date = null;
+        String year = (String) myForm.get(prefix + "_year");
+        String month = (String) myForm.get(prefix + "_month");
+        String day = (String) myForm.get(prefix + "_day");
+        
+        // if one of the fields have been entered, all should've been
+        if ((year.length() > 0 && (month.length() <= 0 || day.length() <= 0)) ||
+            (month.length() > 0 && (year.length() <= 0 || day.length() <= 0)) ||
+            (day.length() > 0 && (month.length() <= 0 || year.length() <= 0)) ) {
+            // get the localized name of this field
+            String field = Resources.getMessage(request, prompt); 
+            errors.add(ActionErrors.GLOBAL_ERROR,
+                    new ActionError("errors.incomplete.date", field));
+            return null;
+        }
+        if (year.length() > 0 && month.length() > 0 && day.length() > 0) {
+            try {
+                date = Util.getDate(Integer.valueOf(year), 
+                        Integer.valueOf(month), Integer.valueOf(day));
+            } catch (Exception e) {
+                log.info("Exception when converting the fields to integer", e);
+                date = null;
+            }
+            if (date == null) {
+                // get the localized name of this field
+                String field = Resources.getMessage(request, prompt); 
+                errors.add(ActionErrors.GLOBAL_ERROR,
+                        new ActionError("errors.date", field));
+            } 
+        }
+        return date;
+    }
+    
+    protected void setFormDate(String prefix, Date date) {
+        if (date != null) {
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(date);
+            myForm.set(prefix + "_month", String.valueOf(cal.get(
+                    GregorianCalendar.MONTH) + 1));
+            myForm.set(prefix + "_day", String.valueOf(cal.get(
+                    GregorianCalendar.DAY_OF_MONTH)));
+            myForm.set(prefix + "_year", String.valueOf(cal.get(
+                    GregorianCalendar.YEAR)));
+        } else {
+            myForm.set(prefix + "_month", null);
+            myForm.set(prefix + "_day", null);
+            myForm.set(prefix + "_year", null);
+        }
+    }
+    
+	
     
 }

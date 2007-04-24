@@ -28,6 +28,11 @@ Common errors :(
 
   To run the 'create-db' target. It is useless.
   
+MySQL getting started:
+----------------------
+ - Use this command line to run scripts:
+    mysql -D jbilling -u jbilling -h localhost --password=pass < jbilling-data.sql
+ - 
 Hypersonic getting started:
 ---------------------------
  - The database is just 4 files in jbilling\server\jbilling\data\hypersonic
@@ -37,7 +42,6 @@ Hypersonic getting started:
   
 PostgreSQL getting started:
 ----------------------------------------
-- There is a user  postgres in the unix box. Login with it
 - To startup/shutdown : pg_ctl start/stop            
 The following shouldn't be necessary since the creation of the tables first drops the tables:
 - To drop a database : dropdb betty

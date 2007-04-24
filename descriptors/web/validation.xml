@@ -219,7 +219,7 @@
 </var>
 <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
 </field>
-<field property="password" depends="required,minlength,maxlength">
+<field property="password" depends="required,minlength,maxlength,alphanum">
 <var>
 <var-name>minlength</var-name>
 <var-value>6</var-value>
@@ -990,7 +990,7 @@
 <field property="partnerId" depends="integer">
 <arg0 key="user.prompt.partner" />
 </field>
-<field property="password" depends="minlength">
+<field property="password" depends="minlength,alphanum">
 <var>
 <var-name>minlength</var-name>
 <var-value>6</var-value>
@@ -1050,8 +1050,8 @@
 <arg1 name="minlength" key="${var:minlength}" resource="false" />
 <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
 </field>
-<field property="password" depends="required,minlength,maxlength">
-<arg0 key="prompt.password" />
+<field property="password" depends="required,minlength,maxlength,alphanum">
+<arg0 key="prompt.password" ></arg0>
 <var>
 <var-name>minlength</var-name>
 <var-value>6</var-value>
@@ -1145,7 +1145,7 @@
 <arg1 name="minlength" key="${var:minlength}" resource="false" />
 <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
 </field>
-<field property="password" depends="required,minlength,maxlength">
+<field property="password" depends="required,minlength,maxlength,alphanum">
 <arg0 key="prompt.password" />
 <var>
 <var-name>minlength</var-name>

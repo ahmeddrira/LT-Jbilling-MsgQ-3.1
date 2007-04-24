@@ -950,6 +950,17 @@
          </javascript>
 
       </validator>
+      <validator name="alphanum"
+      			 classname="com.sapienter.jbilling.server.user.validator.AlphaNumValidator" 
+      			 method="validateAlphaNum"
+      			 methodParams="java.lang.Object,
+							   org.apache.commons.validator.ValidatorAction,
+							   org.apache.commons.validator.Field,
+							   org.apache.struts.action.ActionErrors,
+							   javax.servlet.http.HttpServletRequest,
+							   javax.servlet.ServletContext"  
+      			 msg="errors.alphanum">
+      </validator>
 
    </global>
 

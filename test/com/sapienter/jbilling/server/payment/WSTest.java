@@ -27,90 +27,28 @@ package com.sapienter.jbilling.server.payment;
 
 import java.util.Calendar;
 
-import javax.xml.namespace.QName;
-
 import junit.framework.TestCase;
 
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
-
-import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 /**
  * @author Emil
  */
 public class WSTest extends TestCase {
+	
       
     public void testApplyGet() {
         try {
-            String endpoint = "http://localhost/jboss-net/services/billing";
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
-            
-
-            // PaymentWS
-            QName qn = new QName("http://www.sapienter.com/billing", "PaymentWS");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    PaymentWS.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    PaymentWS.class, qn);
-            call.registerTypeMapping(PaymentWS.class, qn, ser1, ser2); 
-
-            // PaymentInfoChequeDTO            
-            qn = new QName("http://www.sapienter.com/billing", "PaymentInfoChequeDTO");
-            ser1 = new BeanSerializerFactory(
-                    PaymentInfoChequeDTO.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    PaymentInfoChequeDTO.class, qn);
-            call.registerTypeMapping(PaymentInfoChequeDTO.class, qn, ser1, ser2); 
-
-            // PaymentAuthorizationDTO            
-            qn = new QName("http://www.sapienter.com/billing", "PaymentAuthorizationDTO");
-            ser1 = new BeanSerializerFactory(PaymentAuthorizationDTO.class, qn);
-            ser2 = new BeanDeserializerFactory ( PaymentAuthorizationDTO.class,
-                     qn);
-            call.registerTypeMapping(PaymentAuthorizationDTO.class, qn, ser1, ser2); 
-            
-            // InvoiceWS            
-            qn = new QName("http://www.sapienter.com/billing", "InvoiceWS");
-            ser1 = new BeanSerializerFactory(
-                    InvoiceWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    InvoiceWS.class, qn);
-            call.registerTypeMapping(InvoiceWS.class, qn, ser1, ser2); 
-
-            // InvoiceLineDTO            
-            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTO");
-            ser1 = new BeanSerializerFactory(
-                    InvoiceLineDTO.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    InvoiceLineDTO.class, qn);
-            call.registerTypeMapping(InvoiceLineDTO.class, qn, ser1, ser2); 
-
-            // InvoiceLineDTOEx            
-            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTOEx");
-            ser1 = new BeanSerializerFactory(
-                    InvoiceLineDTOEx.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    InvoiceLineDTOEx.class, qn);
-            call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
-
+        	
+            JbillingAPI api = JbillingAPIFactory.getAPI();
            
             /*
              * apply payment
              */
-            call.setOperationName("applyPayment");
             PaymentWS payment = new PaymentWS();
             payment.setAmount(new Float(15));
             payment.setIsRefund(new Integer(0));
@@ -127,8 +65,7 @@ public class WSTest extends TestCase {
             payment.setCheque(cheque);
            
             System.out.println("Applying payment");
-            Integer ret = (Integer) call.invoke( new Object[] { 
-                        payment, new Integer(35) } );
+            Integer ret = api.applyPayment(payment, new Integer(35));
             System.out.println("Created payemnt " + ret);
             assertNotNull("Didn't get the payment id", ret);
             
@@ -136,9 +73,8 @@ public class WSTest extends TestCase {
              * get
              */
             //verify the created payment       
-            call.setOperationName("getPayment");
             System.out.println("Getting created payment");
-            PaymentWS retPayment = (PaymentWS) call.invoke( new Object[] { ret } );
+            PaymentWS retPayment = api.getPayment(ret);
             assertNotNull("didn't get payment ", retPayment);
             assertEquals("created payment result", retPayment.getResultId(),
                     payment.getResultId());
@@ -152,9 +88,8 @@ public class WSTest extends TestCase {
                     retPayment.getInvoiceIds().length == 1);
             assertEquals("payment not related to invoice", 
                     retPayment.getInvoiceIds()[0], new Integer(35));
-            call.setOperationName("getInvoiceWS");
-            InvoiceWS retInvoice = (InvoiceWS) call.invoke( 
-                    new Object[] { retPayment.getInvoiceIds()[0] } );
+            
+            InvoiceWS retInvoice = api.getInvoiceWS(retPayment.getInvoiceIds()[0]);
             assertNotNull("New invoice not present", retInvoice);
             assertEquals("Balance of invoice should be total of order", retInvoice.getBalance(),
                     new Float(0));
@@ -171,10 +106,8 @@ public class WSTest extends TestCase {
              * get latest
              */
             //verify the created payment       
-            call.setOperationName("getLatestPayment");
             System.out.println("Getting latest");
-            retPayment = (PaymentWS) call.invoke( new Object[] { 
-                    new Integer(2)} );
+            retPayment = api.getLatestPayment(new Integer(2));
             assertNotNull("didn't get payment ", retPayment);
             assertEquals("latest id", ret, retPayment.getId());
             assertEquals("created payment result", retPayment.getResultId(),
@@ -185,8 +118,7 @@ public class WSTest extends TestCase {
                     payment.getUserId());
             try {
                 System.out.println("Getting latest - invalid");
-                retPayment = (PaymentWS) call.invoke( new Object[] { 
-                        new Integer(13)} );
+                retPayment = api.getLatestPayment(new Integer(13));
                 fail("User 13 belongs to entity 301");
             } catch (Exception e) {
             }
@@ -194,14 +126,15 @@ public class WSTest extends TestCase {
             /*
              * get last
              */
-            call.setOperationName("getLastPayments");
             System.out.println("Getting last");
-            int retPayments[] = (int[]) call.invoke( new Object[] { 
-                    new Integer(2), new Integer(2)} );
+            Integer retPayments[] = api.getLastPayments(new Integer(2), 
+            		new Integer(2));
             assertNotNull("didn't get payment ", retPayments);
             // fetch the payment
-            call.setOperationName("getPayment");
-            retPayment = (PaymentWS) call.invoke( new Object[] { new Integer(retPayments[0]) } );
+            
+            
+            retPayment = api.getPayment(retPayments[0]);
+            
             assertEquals("created payment result", retPayment.getResultId(),
                     payment.getResultId());
             assertEquals("created payment cheque ", retPayment.getCheque().getNumber(),
@@ -211,8 +144,8 @@ public class WSTest extends TestCase {
             assertTrue("No more than two records", retPayments.length <= 2);
             try {
                 System.out.println("Getting last - invalid");
-                retPayment = (PaymentWS) call.invoke( new Object[] { 
-                        new Integer(13), new Integer(2)} );
+                retPayments = api.getLastPayments(new Integer(13), 
+                	new Integer(2));
                 fail("User 13 belongs to entity 301");
             } catch (Exception e) {
             }

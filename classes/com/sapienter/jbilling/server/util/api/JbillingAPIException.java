@@ -34,4 +34,8 @@ public class JbillingAPIException extends Exception {
     public JbillingAPIException(String s) {
         super(s);
     }
+    
+    public JbillingAPIException(Exception e) {
+        super(e);
+    }
 }

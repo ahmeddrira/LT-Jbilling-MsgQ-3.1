@@ -20,6 +20,7 @@
     	<path refid="compile.classpath"/>
         <pathelement location="${build.classes.dir}"/>
         <pathelement location="${build.test.dir}"/>
+
         <!-- this is necessary to find the jndi.properties -->
         <fileset dir="${jboss.client.dir}">
             <include name="*.jar"/>
@@ -465,6 +466,8 @@
       		 includes="**/WSTest*.java">
           <classpath refid="test.classpath"/>
       </javac>
+	  <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
+	  	    todir="${build.test.dir}"/>
       <junit printsummary="off"
              haltonfailure="true">
           <classpath refid="test.classpath"/>

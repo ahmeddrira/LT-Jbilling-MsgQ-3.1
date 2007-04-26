@@ -28,65 +28,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import javax.xml.namespace.QName;
-import javax.xml.rpc.ParameterMode;
+import junit.framework.TestCase;
 
-import org.apache.axis.client.Call;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
-
-import com.sapienter.jbilling.server.WSTestBase;
-import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 /**
  * @author Emil
  */
-public class WSTest extends WSTestBase {
+public class WSTest extends TestCase {
       
     public void testGetUser() {
         try {
-            Call  call = createTestCall();
-            call.setOperationName("getUserWS");
-            call.setReturnClass(UserWS.class);
-
-            // UserWS            
-            QName qn = new QName("http://www.sapienter.com/billing", "UserWS");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    UserWS.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    UserWS.class, qn);
-            call.registerTypeMapping(UserWS.class, qn, ser1, ser2); 
-
-            // ContactWS
-            qn = new QName("http://www.sapienter.com/billing", "ContactWS");
-            ser1 = new BeanSerializerFactory(
-                    ContactWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    ContactWS.class, qn);
-            call.registerTypeMapping(ContactWS.class, qn, ser1, ser2); 
-
-            // CreditCardDTO            
-            qn = new QName("http://www.sapienter.com/billing", "CreditCardDTO");
-            ser1 = new BeanSerializerFactory(
-                    CreditCardDTO.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    CreditCardDTO.class, qn);
-            call.registerTypeMapping(CreditCardDTO.class, qn, ser1, ser2); 
+            JbillingAPI api = JbillingAPIFactory.getAPI();
 
             System.out.println("Getting user 2");
-            UserWS ret = (UserWS) call.invoke( new Object[] { new Integer(2) } );
+            UserWS ret = api.getUserWS(new Integer(2));
             assertEquals(new Integer(2), ret.getUserId());
             try {
                 System.out.println("Getting invalid user 13");
-                ret = (UserWS) call.invoke( new Object[] { new Integer(13) } );
+                ret = api.getUserWS(new Integer(13));
                 fail("Shouldn't be able to access user 13");
             } catch(Exception e) {
             }
@@ -100,90 +66,8 @@ public class WSTest extends WSTestBase {
 
     public void testCreateUpdateDeleteUser() {
         try {
-            Call call = createTestCall();
-            call.setOperationName("createUser");
-            //call.setReturnClass(Integer.class);
-
-            // UserWS            
-            QName qn = new QName("http://www.sapienter.com/billing", "UserWS");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    UserWS.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    UserWS.class, qn);
-            call.registerTypeMapping(UserWS.class, qn, ser1, ser2); 
-
-            // ContactWS            
-            qn = new QName("http://www.sapienter.com/billing", "ContactWS");
-            ser1 = new BeanSerializerFactory(
-                    ContactWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    ContactWS.class, qn);
-            call.registerTypeMapping(ContactDTO.class, qn, ser1, ser2); 
-
-            // CreditCardDTO            
-            qn = new QName("http://www.sapienter.com/billing", "CreditCardDTO");
-            ser1 = new BeanSerializerFactory(
-                    CreditCardDTO.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    CreditCardDTO.class, qn);
-            call.registerTypeMapping(CreditCardDTO.class, qn, ser1, ser2); 
-
-            // OrderWS            
-            qn = new QName("http://www.sapienter.com/billing", "OrderWS");
-            ser1 = new BeanSerializerFactory(
-                    OrderWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    OrderWS.class, qn);
-            call.registerTypeMapping(OrderWS.class, qn, ser1, ser2); 
-
-            // OrderLineWS            
-            qn = new QName("http://www.sapienter.com/billing", "OrderLineWS");
-            ser1 = new BeanSerializerFactory(
-                    OrderLineWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    OrderLineWS.class, qn);
-            call.registerTypeMapping(OrderLineWS.class, qn, ser1, ser2); 
-
-            // CreateResponseWS            
-            qn = new QName("http://www.sapienter.com/billing", "CreateResponseWS");
-            ser1 = new BeanSerializerFactory(
-                    CreateResponseWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    CreateResponseWS.class, qn);
-            call.registerTypeMapping(CreateResponseWS.class, qn, ser1, ser2); 
-            
-            // InvoiceWS            
-            qn = new QName("http://www.sapienter.com/billing", "InvoiceWS");
-            ser1 = new BeanSerializerFactory(
-                    InvoiceWS.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    InvoiceWS.class, qn);
-            call.registerTypeMapping(InvoiceWS.class, qn, ser1, ser2); 
-
-            // InvoiceLineDTO            
-            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTO");
-            ser1 = new BeanSerializerFactory(
-                    InvoiceLineDTO.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    InvoiceLineDTO.class, qn);
-            call.registerTypeMapping(InvoiceLineDTO.class, qn, ser1, ser2); 
-
-            // InvoiceLineDTOEx            
-            qn = new QName("http://www.sapienter.com/billing", "InvoiceLineDTOEx");
-            ser1 = new BeanSerializerFactory(
-                    InvoiceLineDTOEx.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    InvoiceLineDTOEx.class, qn);
-            call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
-
-            // PaymentAuthorizationDTOEx            
-            qn = new QName("http://www.sapienter.com/billing", "PaymentAuthorizationDTOEx");
-            ser1 = new BeanSerializerFactory(
-                    PaymentAuthorizationDTOEx.class, qn);
-            ser2 = new BeanDeserializerFactory (
-                    PaymentAuthorizationDTOEx.class, qn);
-            call.registerTypeMapping(PaymentAuthorizationDTOEx.class, qn, ser1, ser2); 
-            
+        	JbillingAPI api = JbillingAPIFactory.getAPI();
+        	
             /*
              * Create
              */
@@ -219,19 +103,16 @@ public class WSTest extends WSTestBase {
             newUser.setCreditCard(cc);
             
             System.out.println("Creating user ...");
-            Integer newUserId = (Integer) call.invoke( new Object[] { newUser } );
+            Integer newUserId = api.createUser(newUser);
             assertNotNull("The user was not created", newUserId);
             
             System.out.println("Getting the id of the new user");
-            call.setOperationName("getUserId");
-            Integer ret = (Integer) call.invoke( new Object[] { newUserName} );
+            Integer ret = api.getUserId(newUserName);
             assertEquals("Id of new user found", newUserId, ret);
             
             //verify the created user       
-            call.setOperationName("getUserWS");
-            //call.setReturnClass(UserWS.class);
             System.out.println("Getting created user ");
-            UserWS retUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            UserWS retUser = api.getUserWS(newUserId);
             assertEquals("created username", retUser.getUserName(),
                     newUser.getUserName());
             assertEquals("created user first name", retUser.getContact().getFirstName(),
@@ -243,7 +124,6 @@ public class WSTest extends WSTestBase {
              * Make a create mega call
              */
             System.out.println("Making mega call");
-            call.setOperationName("create");
             retUser.setUserName("MU" + Long.toHexString(System.currentTimeMillis()));
             // need to reset the password, it came encrypted
             // let's use a long one
@@ -280,8 +160,7 @@ public class WSTest extends WSTestBase {
             
             newOrder.setOrderLines(lines);
             
-            CreateResponseWS mcRet = (CreateResponseWS) call.invoke(
-                    new Object[] { retUser, newOrder} );
+            CreateResponseWS mcRet = api.create(retUser,newOrder);
             
             System.out.println("Validating new invoice");
             // validate that the results are reasonable
@@ -291,9 +170,7 @@ public class WSTest extends WSTestBase {
             assertEquals("Payment result OK", true, mcRet.getPaymentResult().getResult().booleanValue());
             assertEquals("Processor code", "fake-code-default", mcRet.getPaymentResult().getCode1());
             // get the invoice
-            call.setOperationName("getInvoiceWS");
-            InvoiceWS retInvoice = (InvoiceWS) call.invoke( 
-                    new Object[] { mcRet.getInvoiceId() } );
+            InvoiceWS retInvoice = api.getInvoiceWS(mcRet.getInvoiceId());
             assertNotNull("New invoice not present", retInvoice);
             assertEquals("Balance of invoice should be zero, is paid", retInvoice.getBalance(),
                     new Float(0));
@@ -308,14 +185,12 @@ public class WSTest extends WSTestBase {
              */
             // now update the created user
             retUser.setPassword("newPassword");
-            call.setOperationName("updateUser");
-            call.setReturnClass(null);
             System.out.println("Updating user...");
-            call.invoke( new Object[] { retUser } );
+            api.updateUser(retUser);
+            
             // and ask for it to verify the modification
-            call.setOperationName("getUserWS");
             System.out.println("Getting updated user ");
-            retUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            retUser = api.getUserWS(newUserId);
             assertNotNull("Didn't get updated user", retUser);
             assertEquals("Password ", retUser.getPassword(), 
                     "Kg8kTBrB5Mr.y.SNPmHXr"); // this is how it translates after encryption
@@ -327,12 +202,10 @@ public class WSTest extends WSTestBase {
             retUser.getContact().setLastName("New L.Name");
             retUser.setCreditCard(null);
             // call the update
-            call.setOperationName("updateUser");
             retUser.setPassword("newPassword"); // reset, the one I have is crypted
-            call.invoke( new Object[] { retUser } );
+            api.updateUser(retUser);
             // fetch the user
-            call.setOperationName("getUserWS");
-            UserWS updatedUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            UserWS updatedUser = api.getUserWS(newUserId);
             assertEquals("updated f name", retUser.getContact().getFirstName(),
                     updatedUser.getContact().getFirstName());
             assertEquals("updated l name", retUser.getContact().getLastName(),
@@ -341,17 +214,14 @@ public class WSTest extends WSTestBase {
 
             // now update the contact only
             retUser.getContact().setFirstName("New Name2");
-            call.setOperationName("updateUserContact");
-            call.invoke( new Object[] { retUser.getUserId(), new Integer(2), retUser.getContact() } );
+            api.updateUserContact(retUser.getUserId(),new Integer(2),retUser.getContact());
              // fetch the user
-            call.setOperationName("getUserWS");
-            updatedUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            updatedUser = api.getUserWS(newUserId);
             assertEquals("updated contact f name", retUser.getContact().getFirstName(),
                     updatedUser.getContact().getFirstName());
 
             // update credit card details
             System.out.println("Updating credit card");
-            call.setOperationName("updateCreditCard");
             String ccName = "Updated ccName";
             String ccNumber = "4012888888881881";
             Date ccExpiry = Calendar.getInstance().getTime();
@@ -360,22 +230,20 @@ public class WSTest extends WSTestBase {
             cc.setName(ccName);
             cc.setNumber(ccNumber);
             cc.setExpiry(ccExpiry);
-            call.invoke( new Object[] { newUserId, cc } );
+            api.updateCreditCard(newUserId,cc);
 
             // check updated cc details
-            call.setOperationName("getUserWS");
-            retUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            retUser = api.getUserWS(newUserId);
             CreditCardDTO retCc = retUser.getCreditCard();
             assertEquals("updated cc name", ccName, retCc.getName());
             assertEquals("updated cc number", ccNumber, retCc.getNumber());
             assertEquals("updated cc expiry", ccExpiry, retCc.getExpiry());
 
             // try to update cc of user from different company
-            call.setOperationName("updateCreditCard");
             System.out.println("Attempting to update cc of a user from " 
                     + "a different company");
             try {
-                call.invoke( new Object[] { new Integer(13), cc } );
+            	api.updateCreditCard(new Integer(13),cc);
                 fail("Shouldn't be able to update cc of user 13");
             } catch(Exception e) {
             }
@@ -384,21 +252,18 @@ public class WSTest extends WSTestBase {
              * Delete
              */
             // now delete this new guy
-            call.setOperationName("deleteUser");
-            call.setReturnClass(null);
             System.out.println("Deleting user..." + newUserId);
-            call.invoke( new Object[] { newUserId } );
+            api.deleteUser(newUserId);
             
             // try to fetch the deleted user
             System.out.println("Getting deleted user " + newUserId);
-            call.setOperationName("getUserWS");
-            updatedUser = (UserWS) call.invoke( new Object[] { newUserId } );
+            updatedUser = api.getUserWS(newUserId);
             assertEquals(updatedUser.getDeleted(), new Integer(1));
             
             // verify I can't delete users from another company 
             try {
                 System.out.println("Deleting user base user ... 13");
-                call.invoke( new Object[] { new Integer(13) } );
+                api.getUserWS(new Integer(13));
                 fail("Shouldn't be able to access user 13");
             } catch(Exception e) {
             }
@@ -407,11 +272,9 @@ public class WSTest extends WSTestBase {
             /*
              * Get list of active customers
              */
-            call.setOperationName("getUsersInStatus");
             System.out.println("Getting active users...");
-            int[] users = (int[]) call.invoke( 
-                    new Object[] { new Integer(1) } );
-            assertEquals(users.length, 3);
+            Integer[] users = api.getUsersInStatus(new Integer(1));
+            assertEquals(3,users.length);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
@@ -419,10 +282,8 @@ public class WSTest extends WSTestBase {
             /*
              * Get list of not active customers
              */
-            call.setOperationName("getUsersNotInStatus");
             System.out.println("Getting NOTactive users...");
-            users = (int[]) call.invoke( 
-                    new Object[] { new Integer(1) } );
+            users = api.getUsersNotInStatus(new Integer(1));
             assertEquals(users.length, 1);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
@@ -431,14 +292,12 @@ public class WSTest extends WSTestBase {
             /*
              * Get list using a custom field
              */
-            call.setOperationName("getUsersByCustomField");
             System.out.println("Getting by custom field...");
-            users = (int[]) call.invoke( 
-                    new Object[] { new Integer(1), new String("serial-from-ws") } );
+            users = api.getUsersByCustomField(new Integer(1),new String("serial-from-ws"));
             
             // only the one from the megacall is not deleted and has the custom field
             assertEquals(users.length, 1); 
-            assertEquals(users[0], mcRet.getUserId().intValue());
+            assertEquals(users[0], mcRet.getUserId());
             
             System.out.println("Done");
         } catch (Exception e) {
@@ -449,30 +308,10 @@ public class WSTest extends WSTestBase {
     
     public void testUserTransitions() {
         try {
-            Call  call = createTestCall();
-            call.setOperationName("getUserTransitions");
-            call.setReturnClass(UserTransitionResponseWS[].class);
-
-            // UserTransitionResponseWS[]            
-            QName qn = new QName("http://www.sapienter.com/billing", "UserTransitionResponseWS");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    UserTransitionResponseWS.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    UserTransitionResponseWS.class, qn);
-            call.registerTypeMapping(UserTransitionResponseWS.class, 
-            		qn, ser1, ser2);
-            call.addParameter(new QName("from"),
-            	new QName("Date"), 
-            	Date.class, 
-            	ParameterMode.IN);
-            call.addParameter(new QName("to"),
-            	new QName("Date"), 
-            	Date.class, 
-            	ParameterMode.IN);
+            JbillingAPI api = JbillingAPIFactory.getAPI();
 
             System.out.println("Getting complete list of user transitions");
-            UserTransitionResponseWS[] ret = (UserTransitionResponseWS[]) 
-            		call.invoke( new Object[] { null, null } );
+            UserTransitionResponseWS[] ret = api.getUserTransitions(null, null);
             
             if (ret == null)
             	fail("Transition list should not be empty!");
@@ -490,9 +329,8 @@ public class WSTest extends WSTestBase {
             assertEquals(ret[1].getToStatusId().intValue(), 1);
 
             System.out.println("Getting first partial list of user transitions");
-            ret = (UserTransitionResponseWS[])
-            		call.invoke(new Object[]{ new Date(2000 - 1900,0,0), 
-            				new Date(2007 - 1900, 0, 1) } );
+            ret =  api.getUserTransitions(new Date(2000 - 1900,0,0), 
+            				new Date(2007 - 1900, 0, 1));
             if (ret == null)
             	fail("Transition list should not be empty!");
             assertEquals(ret.length, 1);
@@ -502,8 +340,7 @@ public class WSTest extends WSTestBase {
             assertEquals(ret[0].getToStatusId().intValue(), 1);
             
             System.out.println("Getting second partial list of user transitions");
-            ret = (UserTransitionResponseWS[])
-            		call.invoke(new Object[]{ null, null } );
+            ret = api.getUserTransitions(null,null);
             if (ret == null)
             	fail("Transition list should not be empty!");
             assertEquals(2, ret.length);

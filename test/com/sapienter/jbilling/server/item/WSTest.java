@@ -25,43 +25,20 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.item;
 
-import javax.xml.namespace.QName;
-
 import junit.framework.TestCase;
 
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 /**
  * @author Emil
  */
-public class WSTest extends TestCase {
+public class WSTest  extends TestCase {
       
 
     public void testCreate() {
         try {
-        	String endpoint = "http://localhost/jboss-net/services/billing";
-        
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
-            call.setOperationName("createItem");
-            //call.setReturnClass(Integer.class);
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
-            
-
-            // ItemDTOEx            
-            QName qn = new QName("http://www.sapienter.com/billing", "ItemDTOEx");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    ItemDTOEx.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory (
-                    ItemDTOEx.class, qn);
-            call.registerTypeMapping(ItemDTOEx.class, qn, ser1, ser2); 
-
+        	JbillingAPI api = JbillingAPIFactory.getAPI();
             /*
              * Create
              */
@@ -76,7 +53,7 @@ public class WSTest extends TestCase {
             newItem.setPriceManual(new Integer(0));
             
             System.out.println("Creating item ...");
-            Integer ret = (Integer) call.invoke( new Object[] { newItem } );
+            Integer ret = api.createItem(newItem);
             assertNotNull("The item was not created", ret);
             System.out.println("Done!");
             
@@ -90,39 +67,14 @@ public class WSTest extends TestCase {
 
     public void testGetAllItems() {
         try {
-        	String endpoint = "http://localhost/jboss-net/services/billing";
+            JbillingAPI api = JbillingAPIFactory.getAPI();
         
-            
-            Service  service = new Service();
-            Call  call = (Call) service.createCall();
-            call.setTargetEndpointAddress( new java.net.URL(endpoint) );
-            call.setOperationName("getAllItems");
-            call.setUsername("admin");
-            call.setPassword("asdfasdf");
-            
-
-            // ItemDTOEx
-            QName qn = new QName("http://www.sapienter.com/billing", "ItemDTOEx");
-            BeanSerializerFactory ser1 = new BeanSerializerFactory(
-                    ItemDTOEx.class, qn);
-            BeanDeserializerFactory ser2 = new BeanDeserializerFactory(
-                    ItemDTOEx.class, qn);
-            call.registerTypeMapping(ItemDTOEx.class, qn, ser1, ser2);
-            
-            // ItemPriceDTOEx
-            qn = new QName("http://www.sapienter.com/billing", "ItemPriceDTOEx");
-            ser1 = new BeanSerializerFactory(
-                    ItemPriceDTOEx.class, qn);
-            ser2 = new BeanDeserializerFactory(
-                    ItemPriceDTOEx.class, qn);
-            call.registerTypeMapping(ItemPriceDTOEx.class, qn, ser1, ser2);
-
             /*
              * Get all items
              */
              
             System.out.println("Getting all items");
-            ItemDTOEx[] items = (ItemDTOEx[]) call.invoke( new Object[] { } );
+            ItemDTOEx[] items =  api.getAllItems();
             assertNotNull("The items were not retrieved", items);
             assertTrue("Wrong number of items", items.length == 5);
 

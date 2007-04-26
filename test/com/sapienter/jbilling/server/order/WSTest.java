@@ -31,26 +31,25 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import org.apache.axis.client.Call;
+import junit.framework.TestCase;
 
-import com.sapienter.jbilling.server.WSTestBase;
-import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 /**
  * @author Emil
  */
-public class WSTest extends WSTestBase {
+public class WSTest  extends TestCase {
 	private static final Integer GANDALF_USER_ID = 2;
       
     public void testCreateUpdateDelete() {
         try {
+        	
+            JbillingAPI api = JbillingAPIFactory.getAPI();
         	int i;
-            Call call = createTestCall();
-            call.setOperationName("createOrder");
 
             /*
              * Create
@@ -102,25 +101,24 @@ public class WSTest extends WSTestBase {
             newOrder.setOrderLines(lines);
             
             System.out.println("Creating order ...");
-            Integer ret = (Integer) call.invoke( new Object[] { newOrder } );
+            Integer ret = api.createOrder(newOrder);
             assertNotNull("The order was not created", ret);
             // create another one so we can test get by period.
-            ret = (Integer) call.invoke( new Object[] { newOrder } );
+            ret = api.createOrder(newOrder);
             System.out.println("Created order " + ret);
             
             /*
              * get
              */
             //verify the created order       
-            call.setOperationName("getOrder");
             // try getting one that doesn't belong to us
             try {
-                call.invoke( new Object[] { new Integer(5) } );
+                api.getOrder(new Integer(5));
                 fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
             System.out.println("Getting created order");
-            OrderWS retOrder = (OrderWS) call.invoke( new Object[] { ret } );
+            OrderWS retOrder = api.getOrder(ret);
             assertEquals("created order billing type", retOrder.getBillingTypeId(),
                     newOrder.getBillingTypeId());
             assertEquals("created order billing period", retOrder.getPeriod(),
@@ -130,11 +128,10 @@ public class WSTest extends WSTestBase {
             /*
              * get order line
              */
-            call.setOperationName("getOrderLine");
             // try getting one that doesn't belong to us
             try {
                 System.out.println("Getting bad order line");
-                call.invoke( new Object[] { new Integer(6) } );
+                api.getOrderLine(new Integer(6));
                 fail("Order line 6 belongs to entity 6");
             } catch (Exception e) {
             }
@@ -145,7 +142,7 @@ public class WSTest extends WSTestBase {
             Integer lineId = null;
             for (i = 0; i < retOrder.getOrderLines().length; i++) {
 	            lineId = retOrder.getOrderLines()[i].getId();
-	            retOrderLine = (OrderLineWS) call.invoke( new Object[] { lineId } );
+	            retOrderLine = api.getOrderLine(lineId);
 	            if (retOrderLine.getItemId().equals(new Integer(14))) {
 	                assertEquals("created line item id", retOrderLine.getItemId(), 
 	                        new Integer(14));
@@ -162,31 +159,27 @@ public class WSTest extends WSTestBase {
              * Update the order line
              */
             retOrderLine = normalOrderLine; // use a normal one, not the percentage
-            call.setOperationName("updateOrderLine");
             retOrderLine.setQuantity(new Integer(99));
             lineId = retOrderLine.getId();
             try {
                 System.out.println("Updating bad order line");
                 retOrderLine.setId(new Integer(6));
-                call.invoke( new Object[] { retOrderLine } );
+                api.updateOrderLine(retOrderLine);
                 fail("Order line 6 belongs to entity 301");
             } catch (Exception e) {
             }
             retOrderLine.setId(lineId);
             System.out.println("Update order line");
-            call.invoke( new Object[] { retOrderLine } );
-            call.setOperationName("getOrderLine");
-            retOrderLine = (OrderLineWS) call.invoke( new Object[] { retOrderLine.getId() } );
+            api.updateOrderLine(retOrderLine);
+            retOrderLine = api.getOrderLine(retOrderLine.getId());
             assertEquals("updated quantity", retOrderLine.getQuantity(),
                     new Integer(99));
             //delete a line through updating with quantity = 0
             System.out.println("Delete order line");
-            call.setOperationName("updateOrderLine");
             retOrderLine.setQuantity(new Integer(0));
-            call.invoke( new Object[] { retOrderLine } );
+            api.updateOrderLine(retOrderLine);
             int totalLines = retOrder.getOrderLines().length;
-            call.setOperationName("getOrder");
-            retOrder = (OrderWS) call.invoke( new Object[] { retOrder.getId() } );
+            retOrder = api.getOrder(retOrder.getId());
             // the order has to have one less line now
             assertEquals("order should have one less line", totalLines, 
                     retOrder.getOrderLines().length + 1);
@@ -202,25 +195,22 @@ public class WSTest extends WSTestBase {
             retOrder.getOrderLines()[1].setDescription("Modified description");
             retOrder.getOrderLines()[1].setQuantity(new Integer(2));
             retOrder.setStatusId(new Integer(2));
-            call.setOperationName("updateOrder");
-            call.setReturnClass(null);
             // also update the next billable day
             retOrder.setNextBillableDay(cal.getTime());
             System.out.println("Updating order...");
-            call.invoke( new Object[] { retOrder } );
+            api.updateOrder(retOrder);
             
             // try to update an order of another entity
             try {
             	System.out.println("Updating bad order...");
                 retOrder.setId(new Integer(5));
-                call.invoke( new Object[] { retOrder } );
+                api.updateOrder(retOrder);
                 fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
             // and ask for it to verify the modification
-            call.setOperationName("getOrder");
             System.out.println("Getting updated order ");
-            retOrder = (OrderWS) call.invoke( new Object[] { ret } );
+            retOrder = api.getOrder(ret);
             assertNotNull("Didn't get updated order", retOrder);
             assertEquals("Active since", retOrder.getActiveSince(),
                     cal.getTime()); 
@@ -247,17 +237,14 @@ public class WSTest extends WSTestBase {
             /*
              * Get latest
              */
-            call.setOperationName("getLatestOrder");
             System.out.println("Getting latest");
-            OrderWS lastOrder = (OrderWS) call.invoke( new Object[] { 
-                    new Integer(2) } );
+            OrderWS lastOrder = api.getLatestOrder(new Integer(2));
             assertNotNull("Didn't get any latest order", lastOrder);
             assertEquals("Latest id", ret, lastOrder.getId());
             // now one for an invalid user
             System.out.println("Getting latest invalid");
             try {
-                retOrder = (OrderWS) call.invoke( new Object[] { 
-                        new Integer(13) } );
+            	retOrder = api.getLatestOrder(new Integer(13));
                 fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
@@ -265,23 +252,19 @@ public class WSTest extends WSTestBase {
             /*
              * Get last
              */
-            call.setOperationName("getLastOrders");
             System.out.println("Getting last 5 ... ");
-            int list[] = (int[]) call.invoke( new Object[] { 
-                    new Integer(2), new Integer(5) } );
+            Integer[] list = api.getLastOrders(new Integer(2), new Integer(5));
             assertNotNull("Missing list", list);
             assertTrue("No more than five", list.length <= 5);
             
-            call.setOperationName("getOrder");
             // the first in the list is the last one created
-            retOrder = (OrderWS) call.invoke( new Object[] { new Integer(list[0]) } );
+            retOrder = api.getOrder(new Integer(list[0]));
             assertEquals("Latest id", ret, retOrder.getId());
             
             // try to get the orders of my neighbor
             try {
                 System.out.println("Getting last 5 - invalid");
-                call.invoke( new Object[] { new Integer(13),
-                        new Integer(5)} );
+                api.getOrder(new Integer(5));
                 fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
@@ -289,20 +272,18 @@ public class WSTest extends WSTestBase {
             /*
              * Delete
              */        
-            call.setOperationName("deleteOrder");
             System.out.println("Deleteing order " + ret);
-            call.invoke( new Object[] { ret } );
+            api.deleteOrder(ret);
             // try to delete from my neightbor
             try {
-                call.invoke( new Object[] { new Integer(5) } );
+            	api.deleteOrder(new Integer(5));
                 fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
             // try to get the deleted order
             try {
-                call.setOperationName("getOrder");
                 System.out.println("Getting deleted order ");
-                retOrder = (OrderWS) call.invoke( new Object[] { ret } );
+                retOrder = api.getOrder(ret);
                 fail("Order " + ret + " should have been deleted");
             } catch (Exception e) {
             }
@@ -310,43 +291,37 @@ public class WSTest extends WSTestBase {
             /*
              * Get by user and period
              */
-            call.setOperationName("getOrderByPeriod");
             System.out.println("Getting orders by period for invalid user " + ret);
             // try to get from my neightbor
             try {
-                call.invoke( new Object[] { new Integer(13), new Integer(1) } );
+            	api.getOrderByPeriod(new Integer(13), new Integer(1));
                 fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
             // now from a valid user
             System.out.println("Getting orders by period ");
-            int orders[] = (int[]) call.invoke( new Object[] { 
-                    new Integer(2), new Integer(1) } );
+            Integer orders[] = api.getOrderByPeriod(new Integer(2), new Integer(1));
             System.out.println("Got total orders " + orders.length +
                     " first is " + orders[0]);
             
             /*
              * Create an order with pre-authorization
              */
-            call.setOperationName("createOrderPreAuthorize");
             System.out.println("Create an order with pre-authorization" + ret);
             PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) 
-                    call.invoke( new Object[] { newOrder } );
+        	api.createOrderPreAuthorize(newOrder);
             assertNotNull("Missing list", auth);
             // the test processor should always approve gandalf
             assertEquals("Result is ok", new Boolean(true), auth.getResult());
             System.out.println("Order pre-authorized. Approval code = " + auth.getApprovalCode());
             // check the last one is a new one
-            call.setOperationName("getLatestOrder");
             System.out.println("Getting latest");
-            retOrder = (OrderWS) call.invoke( new Object[] { 
-                    new Integer(2) } );
+            retOrder = api.getLatestOrder(new Integer(2));
             System.out.println("Order created with ID = " + retOrder.getId());
             assertNotSame("New order is there", retOrder.getId(), lastOrder.getId());
             // delete this order
-            call.setOperationName("deleteOrder");
             System.out.println("Deleteing order " + retOrder.getId());
-            call.invoke( new Object[] { retOrder.getId() } );
+            api.deleteOrder(retOrder.getId());
 
 
         } catch (Exception e) {
@@ -410,10 +385,8 @@ public class WSTest extends WSTestBase {
     	Integer orderId = callCreateOrder(requestOrder);
     	assertNotNull(orderId);
     	
-    	Call call = createTestCall();
-    	call.setOperationName("getOrder");
-    	
-    	OrderWS resultOrder = (OrderWS) call.invoke(new Object[] {orderId});
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+    	OrderWS resultOrder = api.getOrder(orderId);
     	assertNotNull(resultOrder);
     	assertEquals(orderId, resultOrder.getId());
     	assertEquals(LINES, resultOrder.getOrderLines().length);
@@ -470,11 +443,8 @@ public class WSTest extends WSTestBase {
     	assertNotNull(invoice.getId());
         assertEquals("new invoice is not paid", 1, invoice.getToProcess().intValue());
         assertTrue("new invoice with a balance", invoice.getBalance().floatValue() > 0);
-
-    	Call call = createTestCall();
-    	call.setOperationName("payInvoice");
-    	PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) call.invoke(
-                new Object[] {invoice.getId()});
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+    	PaymentAuthorizationDTOEx auth = api.payInvoice(invoice.getId());
     	assertNotNull(auth);
         assertEquals("Payment result OK", true, auth.getResult().booleanValue());
         assertEquals("Processor code", "The transaction has been approved", 
@@ -495,11 +465,8 @@ public class WSTest extends WSTestBase {
     	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
     	assertNotNull(invoice);
     	assertNotNull(invoice.getId());
-
-    	Call call = createTestCall();
-    	call.setOperationName("payInvoice");
-        PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) call.invoke(
-                new Object[] {invoice.getId()});
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+        PaymentAuthorizationDTOEx auth = api.payInvoice(invoice.getId());
     	assertNull(auth);
     }
     
@@ -510,31 +477,14 @@ public class WSTest extends WSTestBase {
 		return calendar.getTime();
 	}
 
-	protected Call createTestCall() throws Exception {
-    	Call result = super.createTestCall();
-    	setupTypeMappings(result);
-    	return result;
-    }
-    
-    private void setupTypeMappings(Call call){
-    	addBeanTypeMapping(call, OrderWS.class);
-    	addBeanTypeMapping(call, OrderLineWS.class);
-    	addBeanTypeMapping(call, PaymentAuthorizationDTOEx.class);
-    	addBeanTypeMapping(call, InvoiceWS.class);
-    	addBeanTypeMapping(call, InvoiceLineDTOEx.class);
-    	addBeanTypeMapping(call, InvoiceLineDTO.class);
-    }
-    
     private InvoiceWS callGetLatestInvoice(int userId) throws Exception {
-    	Call call = createTestCall();
-    	call.setOperationName("getLatestInvoice");
-    	return (InvoiceWS)call.invoke(new Object[] {userId});
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+    	return api.getLatestInvoice(userId);
     }
     
     private Integer callCreateOrder(OrderWS order) throws Exception {
-    	Call call = createTestCall();
-    	call.setOperationName("createOrder");
-    	return (Integer)call.invoke(new Object[] {order});
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+    	return api.createOrder(order);
     	
     }
     

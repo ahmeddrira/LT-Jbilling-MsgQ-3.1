@@ -2915,6 +2915,7 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="21" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentFakeTask" MinParameters="0"/>
     <PluggableTaskType Id="22" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentRouterTask" MinParameters="2"/>
     <PluggableTaskType Id="23" CategoryId="11" ClassName="com.sapienter.jbilling.server.user.tasks.BasicSubscriptionStatusManagerTask" MinParameters="0"/>
+    <PluggableTaskType Id="24" CategoryId="6" ClassName="com.sapienter.jbilling.server.user.tasks.PaymentACHCommerceTask" MinParameters="5"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

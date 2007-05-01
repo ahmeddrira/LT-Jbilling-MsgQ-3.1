@@ -149,7 +149,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     
     /**
      * @ejb:interface-method view-type="remote"
-     * @return the new user id if everthing ok, or nullif the username is already 
+     * @return the new user id if everthing ok, or null if the username is already 
      * taken, any other problems go as an exception
      */
     public Integer create(UserDTOEx newUser, ContactDTOEx contact) 
@@ -162,6 +162,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                 
                 Integer userId = bl.create(newUser);
                 if (userId != null) {
+                    // children inherit the contact of the parent user
+                    if (newUser.getCustomerDto() != null && 
+                            newUser.getCustomerDto().getParentId() != null) {
+                        cBl.setFromChild(userId);
+                        contact = cBl.getDTO();
+                        log.debug("Using parent's contact " + contact.getId());
+                    }
                     cBl.createPrimaryForUser(contact, userId);
                 } else {
                     // means that the partner doens't exist

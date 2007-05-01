@@ -46,7 +46,6 @@ import com.sapienter.jbilling.interfaces.ContactTypeEntityLocalHome;
 import com.sapienter.jbilling.server.entity.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 
 public class ContactBL {
     // contact types in synch with the table contact_type
@@ -494,5 +493,15 @@ public class ContactBL {
         // last the contact
         contact.remove();
         contact = null;
+    }
+    
+    /**
+     * Sets this contact object to that on the parent, taking the children id
+     * as a parameter. 
+     * @param customerId
+     */
+    public void setFromChild(Integer userId) throws FinderException {
+        UserBL customer = new UserBL(userId);
+        set(customer.getEntity().getCustomer().getParent().getUser().getUserId());
     }
 }

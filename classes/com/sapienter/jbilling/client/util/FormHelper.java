@@ -6,6 +6,8 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.struts.action.DynaActionForm;
+
 import com.sapienter.jbilling.server.user.UserDTOEx;
 
 public class FormHelper {
@@ -21,6 +23,19 @@ public class FormHelper {
 
 	public Float string2float(String arg) {
 		return string2float(arg, mySession);
+	}
+	
+	public Integer parseInteger(String text){
+		if (text == null){
+			text = "";
+		}
+		text = text.trim();
+		return text.length() == 0 ? null : Integer.valueOf(text);
+	}
+	
+	public Integer getIntegerFieldValue(DynaActionForm form, String fieldName){
+		String value = (String) form.get(fieldName);
+		return parseInteger(value);
 	}
 	
 	public static Float string2float(String arg, HttpSession sess) {

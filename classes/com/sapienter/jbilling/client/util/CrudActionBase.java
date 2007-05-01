@@ -108,6 +108,10 @@ public abstract class CrudActionBase<DTO> extends CrudAction {
 					+ e.getMessage());
 	}
 	
+	protected final Integer getIntegerFieldValue(String field){
+		return getFormHelper().getIntegerFieldValue(myForm, field);
+	}
+	
 	protected static final class ForwardAndMessage {
 		private final String myForward;
 		private final String myMessage;

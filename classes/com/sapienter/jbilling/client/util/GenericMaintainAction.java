@@ -56,7 +56,6 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
@@ -64,11 +63,9 @@ import com.sapienter.jbilling.interfaces.NotificationSession;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
@@ -223,9 +220,6 @@ public class GenericMaintainAction {
         // the remote session
         ItemDTOEx itemDto = null;
         PaymentDTOEx paymentDto = null;
-        AchDTO achDto = null;
-        Boolean automaticPaymentType = null;
-        BillingProcessConfigurationDTO configurationDto = null;
         MessageDTO messageDto = null;
         PluggableTaskDTOEx taskDto = null;
         PartnerDTOEx partnerDto = null;
@@ -702,42 +696,6 @@ public class GenericMaintainAction {
             }
             
             return "items";
-        } else if (mode.equals("configuration")) {
-            configurationDto = new BillingProcessConfigurationDTO();
-            
-            configurationDto.setRetries(getInteger("retries"));
-            configurationDto.setNextRunDate(parseDate("run", 
-                    "process.configuration.prompt.nextRunDate"));
-            configurationDto.setDaysForRetry(getInteger("retries_days"));       
-            configurationDto.setDaysForReport(getInteger("report_days"));       
-            configurationDto.setGenerateReport(new Integer(((Boolean) myForm.
-                    get("chbx_generateReport")).booleanValue() ? 1 : 0));
-            configurationDto.setDfFm(new Integer(((Boolean) myForm.
-                    get("chbx_df_fm")).booleanValue() ? 1 : 0));
-            configurationDto.setOnlyRecurring(new Integer(((Boolean) myForm.
-                    get("chbx_only_recurring")).booleanValue() ? 1 : 0));
-            configurationDto.setInvoiceDateProcess(new Integer(((Boolean) myForm.
-                    get("chbx_invoice_date")).booleanValue() ? 1 : 0));
-            configurationDto.setAutoPayment(new Integer(((Boolean) myForm.
-                    get("chbx_auto_payment")).booleanValue() ? 1 : 0));
-            configurationDto.setAutoPaymentApplication(new Integer(((Boolean) myForm.
-                    get("chbx_payment_apply")).booleanValue() ? 1 : 0));
-            configurationDto.setEntityId((Integer) session.getAttribute(
-                    Constants.SESSION_ENTITY_ID_KEY));
-            configurationDto.setPeriodUnitId(Integer.valueOf((String) myForm.
-                    get("period_unit_id")));
-            configurationDto.setPeriodValue(Integer.valueOf((String) myForm.
-                    get("period_unit_value")));
-            configurationDto.setDueDateUnitId(Integer.valueOf((String) myForm.
-                    get("due_date_unit_id")));
-            configurationDto.setDueDateValue(Integer.valueOf((String) myForm.
-                    get("due_date_value")));
-            configurationDto.setMaximumPeriods(getInteger("maximum_periods"));
-            if (configurationDto.getAutoPayment().intValue() == 0 &&
-                    configurationDto.getRetries().intValue() > 0) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("process.configuration.error.auto"));
-            }
         } else if (mode.equals("notification")) {
             if (request.getParameter("reload") != null) {
                 // this is just a change of language the requires a reload
@@ -1053,11 +1011,6 @@ public class GenericMaintainAction {
                 ((ItemSession) remoteSession).update(executorId, itemDto, 
                         (Integer) myForm.get("language"));
                 messageKey = "item.update.done";
-            } else if (mode.equals("configuration")) {
-                ((BillingProcessSession) remoteSession).
-                        createUpdateConfiguration(executorId, configurationDto);
-                messageKey = "process.configuration.updated";
-                retValue = "edit";
             } else if (mode.equals("notification")) {
                 ((NotificationSession) remoteSession).createUpdate(
                         messageDto, entityId);
@@ -1325,35 +1278,6 @@ public class GenericMaintainAction {
             if (dto.getPromoCode() != null) {
                 myForm.set("promotion_code", dto.getPromoCode());
             }
-        } else if (mode.equals("configuration")) {
-            BillingProcessConfigurationDTO dto = ((BillingProcessSession) remoteSession).
-                    getConfigurationDto((Integer) session.getAttribute(
-                        Constants.SESSION_ENTITY_ID_KEY));
-            setFormDate("run", dto.getNextRunDate());
-            myForm.set("chbx_generateReport", new Boolean(
-                    dto.getGenerateReport().intValue() == 1));
-            myForm.set("chbx_df_fm", dto.getDfFm() == null ? null : 
-                new Boolean(dto.getDfFm().intValue() == 1));
-            myForm.set("chbx_only_recurring", dto.getOnlyRecurring() == null ? null : 
-                new Boolean(dto.getOnlyRecurring().intValue() == 1));
-            myForm.set("chbx_invoice_date", dto.getInvoiceDateProcess() == null ? null : 
-                new Boolean(dto.getInvoiceDateProcess().intValue() == 1));
-            myForm.set("chbx_auto_payment", dto.getAutoPayment() == null ? null : 
-                new Boolean(dto.getAutoPayment().intValue() == 1));
-            myForm.set("chbx_payment_apply", dto.getAutoPaymentApplication() == null ? null : 
-                new Boolean(dto.getAutoPaymentApplication().intValue() == 1));
-            myForm.set("retries", dto.getRetries() == null ? null :
-                    dto.getRetries().toString());
-            myForm.set("retries_days", dto.getDaysForRetry() == null ? null:
-                    dto.getDaysForRetry().toString());
-            myForm.set("report_days", dto.getDaysForReport() == null ? null :
-                    dto.getDaysForReport().toString());
-            myForm.set("period_unit_id", dto.getPeriodUnitId().toString());
-            myForm.set("period_unit_value", dto.getPeriodValue().toString());
-            myForm.set("due_date_unit_id", dto.getDueDateUnitId().toString());
-            myForm.set("due_date_value", dto.getDueDateValue().toString());
-            myForm.set("maximum_periods", dto.getMaximumPeriods() == null ? null:
-                dto.getMaximumPeriods().toString());
         } else if (mode.equals("notification")) {
             MessageDTO dto = ((NotificationSession) remoteSession).getDTO(
                     selectedId, languageId, entityId);

@@ -23,6 +23,8 @@ Contributor(s): ______________________________________.
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
 
  <table class="info">
  	 <tr>
@@ -74,6 +76,26 @@ Contributor(s): ______________________________________.
 		 <td class="infoprompt"><bean:message key="contact.prompt.countryCode"/></td>
 		 <td class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property="countryCode"  /></td>
 	 </tr>
+	 
+	<%-- Now the entity specific custom contact fields (CCF) --%>
+ 	<logic:iterate id="field" name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property="fields">
+ 		<bean:define id="typeId" name="field" property="key"/>
+		<c:choose>
+			<c:when test="${colorFlag == 1}">
+				<tr class="infoA">
+				<c:remove var="colorFlag"/>
+			</c:when>
+			<c:otherwise>
+				<tr class="infoB">
+				<c:set var="colorFlag" value="1"/>
+			</c:otherwise>
+	    </c:choose>
+	 		<td class="infoprompt"><bean:message name="field" property="value.type.promptKey"/></td>
+	 		<td class="infodata"> 
+	 			<bean:write name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property='<%= "fields(" + typeId + ").content" %>'/>
+	 		</td>
+	 	</tr>
+ 	</logic:iterate>
 	 
 	 <jbilling:permission permission='<%=Constants.P_USER_EDIT_LINKS%>'>
 	 <tr>

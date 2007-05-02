@@ -25,7 +25,7 @@ import java.rmi.RemoteException;
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
-import com.sapienter.jbilling.client.util.CrudActionBase;
+import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
@@ -33,7 +33,7 @@ import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 
 public class ConfigurationMaintainAction extends
-		CrudActionBase<BillingProcessConfigurationDTO> {
+		UpdateOnlyCrudActionBase<BillingProcessConfigurationDTO> {
 
 	private static final String FORM_CONFIGURATION = "configuration";
 
@@ -60,7 +60,7 @@ public class ConfigurationMaintainAction extends
 	private final BillingProcessSession myBillingSession;
 
 	public ConfigurationMaintainAction() {
-		super(FORM_CONFIGURATION, "billing process configuration");
+		super(FORM_CONFIGURATION, "billing process configuration", FORWARD_EDIT);
 		try {
 			JNDILookup EJBFactory = JNDILookup.getFactory(false);
 			BillingProcessSessionHome processHome = (BillingProcessSessionHome) EJBFactory
@@ -150,25 +150,7 @@ public class ConfigurationMaintainAction extends
 		myForm.set(FIELD_DUE_DATE_UNIT, dto.getDueDateUnitId().toString());
 		myForm.set(FIELD_DUE_DATE_VALUE, dto.getDueDateValue().toString());
 
-		return new ForwardAndMessage(FORWARD_EDIT);
-	}
-
-	@Override
-	protected ForwardAndMessage doCreate(BillingProcessConfigurationDTO dto)
-			throws RemoteException {
-		throw wrapError("create", new RemoteException(
-				"Can not create -- it is always here"));
-	}
-
-	@Override
-	protected ForwardAndMessage doDelete() throws RemoteException {
-		throw wrapError("delete", new RemoteException(
-				"Can not delete -- it is always here"));
-	}
-
-	@Override
-	protected void resetCachedList() {
-		// not in list
+		return getForwardEdit();
 	}
 
 	private Integer getCheckBoxValue(String fieldName) {

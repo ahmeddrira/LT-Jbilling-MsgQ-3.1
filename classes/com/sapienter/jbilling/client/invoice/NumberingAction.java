@@ -24,36 +24,29 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.client.invoice;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.HashMap;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-
-import com.sapienter.jbilling.client.system.BrandingMaintainAction;
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
+import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 
-/**
- * @author Emil
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-public class NumberingAction extends Action {
-    public ActionForward execute(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        
-        Logger log = Logger.getLogger(BrandingMaintainAction.class);
+public class NumberingAction extends UpdateOnlyCrudActionBase<NumberingActionContext> {
+    private static final String FORM_NUMBERING = "invoiceNumbering";
+    private static final String FORWARD_EDIT = "invoiceNumbering_edit";
+    
+    private static final String FIELD_PREFIX = "prefix";
+    private static final String FIELD_NUMBER = "number";
+    
+    private static final String MESSAGE_SUCCESSFULLY_UPDATED = "invoice.numbering.updated";
+    
+    private final UserSession myUserSession;
+    
+    public NumberingAction(){
+        super(FORM_NUMBERING, "invoice numbering", FORWARD_EDIT);
         try {
             JNDILookup EJBFactory = JNDILookup.getFactory(false);
             UserSessionHome userHome =
@@ -61,16 +54,55 @@ public class NumberingAction extends Action {
                     UserSessionHome.class,
                     UserSessionHome.JNDI_NAME);
         
-            UserSession userSession = userHome.create();
-            GenericMaintainAction gma = new GenericMaintainAction(mapping,
-                    form, request, response, servlet, userSession, 
-                    "invoiceNumbering");
-                    
-            return gma.process();            
+            myUserSession = userHome.create();
         } catch (Exception e) {
-            log.error("Exception ", e);
+            throw new SessionInternalError(
+                    "Initializing invoice numbering "
+                            + " CRUD action: " + e.getMessage());
         }
-        
-        return mapping.findForward("error");
     }
+    
+    @Override
+    protected NumberingActionContext doEditFormToDTO() throws RemoteException {
+        String prefix = (String) myForm.get(FIELD_PREFIX);
+        String number = (String) myForm.get(FIELD_NUMBER);
+        return new NumberingActionContext(prefix, number);
+    }
+    
+    @Override
+    protected ForwardAndMessage doUpdate(NumberingActionContext dto) throws RemoteException {
+        HashMap<Integer, String> params = new HashMap<Integer, String>();
+        params.put(Constants.PREFERENCE_INVOICE_PREFIX, dto.getPrefix());
+        params.put(Constants.PREFERENCE_INVOICE_NUMBER, dto.getNumber()); 
+        myUserSession.setEntityParameters(entityId, params);
+        return getForwardEdit(MESSAGE_SUCCESSFULLY_UPDATED);
+    }
+    
+    @Override
+    protected ForwardAndMessage doSetup() throws RemoteException {
+        Integer[] preferenceIds = new Integer[] {
+                Constants.PREFERENCE_INVOICE_PREFIX, 
+                Constants.PREFERENCE_INVOICE_NUMBER,
+        };
+        HashMap<?, ?> result = myUserSession.getEntityParameters(entityId, preferenceIds);
+        
+        String prefix = (String) result.get(Constants.PREFERENCE_INVOICE_PREFIX); 
+        String number = (String) result.get(Constants.PREFERENCE_INVOICE_NUMBER); 
+        myForm.set(FIELD_NUMBER, notNull(number));
+        myForm.set(FIELD_PREFIX, notNull(prefix));
+        
+        return getForwardEdit();
+    }
+    
+
+    @Override
+    protected void preEdit() {
+        super.preEdit();
+        setForward(FORWARD_EDIT);
+    }
+
+    private static String notNull(String text){
+        return text == null ? "" : text;
+    }
+    
 }

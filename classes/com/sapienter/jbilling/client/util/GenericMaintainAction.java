@@ -225,7 +225,6 @@ public class GenericMaintainAction {
         PartnerDTOEx partnerDto = null;
         Object[] partnerDefaultData = null;
         Integer[] notificationPreferenceData = null;
-        String[] numberingData = null;
         PartnerRangeDTO[] partnerRangesData = null;
         
         // do the validation, before moving any info to the dto
@@ -735,10 +734,6 @@ public class GenericMaintainAction {
                                 names[f]));
                 }
             }       
-        } else if (mode.equals("invoiceNumbering")) {
-            numberingData = new String[2];
-            numberingData[0] = (String) myForm.get("prefix");
-            numberingData[1] = (String) myForm.get("number");
         } else if (mode.equals("notificationPreference")) {
         	notificationPreferenceData = new Integer[8];
         	notificationPreferenceData[0] = new Integer(((Boolean) 
@@ -1020,15 +1015,6 @@ public class GenericMaintainAction {
                 ((PluggableTaskSession) remoteSession).updateParameters(
                         executorId, taskDto);
                 messageKey = "task.parameter.update.done";
-                retValue = "edit";
-            } else if (mode.equals("invoiceNumbering")) {
-                HashMap params = new HashMap();
-                params.put(Constants.PREFERENCE_INVOICE_PREFIX, 
-                        numberingData[0].trim());
-                params.put(Constants.PREFERENCE_INVOICE_NUMBER, 
-                        Integer.valueOf(numberingData[1]));
-                ((UserSession) remoteSession).setEntityParameters(entityId, params);
-                messageKey = "invoice.numbering.updated";
                 retValue = "edit";
             } else  if (mode.equals("notificationPreference")) {
                 HashMap params = new HashMap();
@@ -1313,22 +1299,6 @@ public class GenericMaintainAction {
             myForm.set("value", values);
             // this will be needed for the update                    
             session.setAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO, dto);
-        } else if (mode.equals("invoiceNumbering")) {
-            // set up[ which preferences do we need
-            Integer[] preferenceIds = new Integer[2];
-            preferenceIds[0] = Constants.PREFERENCE_INVOICE_PREFIX;
-            preferenceIds[1] = Constants.PREFERENCE_INVOICE_NUMBER;
-            
-            // get'em
-            HashMap result = ((UserSession) remoteSession).
-                    getEntityParameters(entityId, preferenceIds);
-            
-            String prefix = (String) result.get(
-                    Constants.PREFERENCE_INVOICE_PREFIX); 
-            myForm.set("prefix", (prefix == null) ? "" : prefix);
-            String number = (String) result.get(
-                    Constants.PREFERENCE_INVOICE_NUMBER); 
-            myForm.set("number", (number == null) ? "" : number);
         } else if (mode.equals("notificationPreference")) {
             Integer[] preferenceIds = new Integer[8];
             preferenceIds[0] = Constants.PREFERENCE_PAPER_SELF_DELIVERY;

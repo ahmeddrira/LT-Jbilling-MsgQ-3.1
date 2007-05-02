@@ -44,7 +44,7 @@ public final class JbillingAPIFactory {
                     throw new JbillingAPIException("properties user_name " +
                             "password end_point are required for AXIS");
                 }
-                api =  new AxisAPI(userName,password,"http://localhost/jboss-net/services/billing");
+                api =  new AxisAPI(userName,password,endPoint);
             } else {
                 throw new JbillingAPIException("api [" + default_api + "] is not supported");
             }

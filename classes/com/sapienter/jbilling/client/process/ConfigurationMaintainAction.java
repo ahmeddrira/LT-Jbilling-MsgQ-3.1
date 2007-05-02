@@ -78,12 +78,6 @@ public class ConfigurationMaintainAction extends
 	}
 
 	@Override
-	protected void preEdit() {
-		super.preEdit();
-		setForward(FORWARD_EDIT);
-	}
-
-	@Override
 	protected BillingProcessConfigurationDTO doEditFormToDTO()
 			throws RemoteException {
 		BillingProcessConfigurationDTO dto = new BillingProcessConfigurationDTO();

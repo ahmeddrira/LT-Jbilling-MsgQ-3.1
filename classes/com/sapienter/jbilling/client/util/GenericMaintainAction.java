@@ -224,7 +224,6 @@ public class GenericMaintainAction {
         PluggableTaskDTOEx taskDto = null;
         PartnerDTOEx partnerDto = null;
         Object[] partnerDefaultData = null;
-        Integer[] notificationPreferenceData = null;
         PartnerRangeDTO[] partnerRangesData = null;
         
         // do the validation, before moving any info to the dto
@@ -734,84 +733,6 @@ public class GenericMaintainAction {
                                 names[f]));
                 }
             }       
-        } else if (mode.equals("notificationPreference")) {
-        	notificationPreferenceData = new Integer[8];
-        	notificationPreferenceData[0] = new Integer(((Boolean) 
-                    myForm.get("chbx_self_delivery")).booleanValue() ? 1 : 0);
-        	notificationPreferenceData[1] = new Integer(((Boolean) 
-                    myForm.get("chbx_show_notes")).booleanValue() ? 1 : 0);
-            String field = (String) myForm.get("order_days1");
-            if (field == null || field.trim().length() == 0) {
-            	notificationPreferenceData[2] = null;
-            } else {
-            	notificationPreferenceData[2] = Integer.valueOf(field);
-            }
-            field = (String) myForm.get("order_days2");
-            if (field == null || field.trim().length() == 0) {
-            	notificationPreferenceData[3] = null; 
-            } else {
-                notificationPreferenceData[3] = Integer.valueOf(field);
-            }
-            field = (String) myForm.get("order_days3");
-            if (field == null || field.trim().length() == 0) {
-                notificationPreferenceData[4] = null; 
-            } else {
-                notificationPreferenceData[4] = Integer.valueOf(field);
-            }
-            
-            // validate that the day values are incremental
-            boolean error = false;
-            if (notificationPreferenceData[2] != null) {
-            	if (notificationPreferenceData[3] != null) {
-            		if (notificationPreferenceData[2].intValue() <=
-                            notificationPreferenceData[3].intValue()) {
-            			error = true;
-                    }
-                }
-                if (notificationPreferenceData[4] != null) {
-                    if (notificationPreferenceData[2].intValue() <=
-                            notificationPreferenceData[4].intValue()) {
-                        error = true;
-                    }
-                }
-            }
-            if (notificationPreferenceData[3] != null) {
-                if (notificationPreferenceData[4] != null) {
-                    if (notificationPreferenceData[3].intValue() <=
-                            notificationPreferenceData[4].intValue()) {
-                        error = true;
-                    }
-                }
-            }
-            
-            if (error) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("notification.orderDays.error"));
-            }
-            
-            // now get the preferences related with the invoice reminders
-            field = (String) myForm.get("first_reminder");
-            if (field == null || field.trim().length() == 0) {
-                notificationPreferenceData[5] = null; 
-            } else {
-                notificationPreferenceData[5] = Integer.valueOf(field);
-            }
-            field = (String) myForm.get("next_reminder");
-            if (field == null || field.trim().length() == 0) {
-                notificationPreferenceData[6] = null; 
-            } else {
-                notificationPreferenceData[6] = Integer.valueOf(field);
-            }
-            notificationPreferenceData[7] = new Integer(((Boolean) 
-                    myForm.get("chbx_invoice_reminders")).booleanValue() 
-                        ? 1 : 0);
-            // validate taht if the remainders are on, the parameters are there
-            if (notificationPreferenceData[7].intValue() == 1 &&
-                    (notificationPreferenceData[5] == null ||
-                            notificationPreferenceData[6] == null)) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("notification.reminders.error"));
-            }
         } else if (mode.equals("partnerDefault")) {
             partnerDefaultData = new Object[8];
             if (((String) myForm.get("rate")).trim().length() > 0) {
@@ -1015,27 +936,6 @@ public class GenericMaintainAction {
                 ((PluggableTaskSession) remoteSession).updateParameters(
                         executorId, taskDto);
                 messageKey = "task.parameter.update.done";
-                retValue = "edit";
-            } else  if (mode.equals("notificationPreference")) {
-                HashMap params = new HashMap();
-                params.put(Constants.PREFERENCE_PAPER_SELF_DELIVERY, 
-                		notificationPreferenceData[0]);
-                params.put(Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE, 
-                		notificationPreferenceData[1]);
-                params.put(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1, 
-                		notificationPreferenceData[2]);
-                params.put(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2, 
-                        notificationPreferenceData[3]);
-                params.put(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3, 
-                        notificationPreferenceData[4]);
-                params.put(Constants.PREFERENCE_FIRST_REMINDER, 
-                        notificationPreferenceData[5]);
-                params.put(Constants.PREFERENCE_NEXT_REMINDER, 
-                        notificationPreferenceData[6]);
-                params.put(Constants.PREFERENCE_USE_INVOICE_REMINDERS, 
-                        notificationPreferenceData[7]);
-                ((UserSession) remoteSession).setEntityParameters(entityId, params);
-                messageKey = "notification.preference.update";
                 retValue = "edit";
             } else  if (mode.equals("partnerDefault")) {
                 HashMap params = new HashMap();
@@ -1299,49 +1199,6 @@ public class GenericMaintainAction {
             myForm.set("value", values);
             // this will be needed for the update                    
             session.setAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO, dto);
-        } else if (mode.equals("notificationPreference")) {
-            Integer[] preferenceIds = new Integer[8];
-            preferenceIds[0] = Constants.PREFERENCE_PAPER_SELF_DELIVERY;
-            preferenceIds[1] = Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE;
-            preferenceIds[2] = Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1;
-            preferenceIds[3] = Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2;
-            preferenceIds[4] = Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3;
-            preferenceIds[5] = Constants.PREFERENCE_FIRST_REMINDER;
-            preferenceIds[6] = Constants.PREFERENCE_NEXT_REMINDER;
-            preferenceIds[7] = Constants.PREFERENCE_USE_INVOICE_REMINDERS;
-            
-            // get'em
-            HashMap result = ((UserSession) remoteSession).
-                    getEntityParameters(entityId, preferenceIds);
-            
-            String value = (String) result.get(
-            		Constants.PREFERENCE_PAPER_SELF_DELIVERY); 
-            myForm.set("chbx_self_delivery", new Boolean(value.equals("1") 
-                    ? true : false));
-            value = (String) result.get(
-            		Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE); 
-            myForm.set("chbx_show_notes", new Boolean(value.equals("1") 
-                    ? true : false));
-            value = (String) result.get(
-            		Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1);
-            myForm.set("order_days1", value);
-            value = (String) result.get(
-                    Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2);
-            myForm.set("order_days2", value);
-            value = (String) result.get(
-                    Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3);
-            myForm.set("order_days3", value);
-            value = (String) result.get(
-                    Constants.PREFERENCE_FIRST_REMINDER);
-            myForm.set("first_reminder", value);
-            value = (String) result.get(
-                    Constants.PREFERENCE_NEXT_REMINDER);
-            myForm.set("next_reminder", value);
-            value = (String) result.get(
-                    Constants.PREFERENCE_USE_INVOICE_REMINDERS); 
-            myForm.set("chbx_invoice_reminders", new Boolean(value.equals("1") 
-                    ? true : false));
-
         } else if (mode.equals("partnerDefault")) {
             // set up[ which preferences do we need
             Integer[] preferenceIds = new Integer[8];

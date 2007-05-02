@@ -40,4 +40,11 @@ public abstract class UpdateOnlyCrudActionBase<DTO> extends CrudActionBase<DTO> 
 				"Can not delete -- it is always here"));
 	}
 	
+	@Override
+	protected void preEdit() {
+		super.preEdit();
+		setForward(getForwardEdit().getForward());
+	}
+	
+	
 }

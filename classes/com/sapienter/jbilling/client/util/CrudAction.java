@@ -122,19 +122,12 @@ public abstract class CrudAction extends Action {
         log.debug("processing action : " + action);
         try {
             if (action.equals("edit")) {
-                try {
-                    // this deals with a button that resets a form
-                    // that is why it works on a field from the form, 
-                    // and not on an action from the request.
-                    String reset = (String) myForm.get("reset");
-                    if (reset != null && reset.length() > 0) {
-                        preReset();
-                        reset();
-                    }
-                } catch (IllegalArgumentException e) {
+            	if (isResetRequested()){
+                    preReset();
+                    reset();
                 }
-                
-                if (forward == null) {
+
+            	if (forward == null) {
                     preEdit();
                     if (errors.isEmpty()) {
                         dtoHolder = editFormToDTO();
@@ -299,7 +292,7 @@ public abstract class CrudAction extends Action {
     	removeFormFromSession();
     }
     
-    private void preReset() {
+    protected void preReset() {
         forward = "edit";
         myForm.initialize(mapping);
     }
@@ -315,6 +308,20 @@ public abstract class CrudAction extends Action {
      * If you don't need to implement this methos, simply return false.
      */
     public abstract boolean otherAction(String action);
+    
+    protected boolean isResetRequested(){
+    	String reset;
+    	try {
+            // this deals with a button that resets a form
+            // that is why it works on a field from the form, 
+            // and not on an action from the request.
+            reset = (String) myForm.get("reset");
+        } catch (IllegalArgumentException e) {
+        	return false;
+        }
+
+        return (reset != null && reset.length() > 0);
+    }
 
     public String getFormName() {
         return formName;

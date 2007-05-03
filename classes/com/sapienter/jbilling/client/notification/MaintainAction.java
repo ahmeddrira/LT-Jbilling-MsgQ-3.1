@@ -82,20 +82,6 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
 	}
 	
 	@Override
-	public String update(Object dtoHolder) {
-		if (request.getParameter("reload") != null) {
-			// this is just a change of language the requires a reload
-			// of the bean
-			languageId = (Integer) myForm.get(FIELD_LANGUAGE);
-			setup();
-
-			//forward is set inside setup(), don't need to return anything.
-			return null;
-		}
-		return super.update(dtoHolder);
-	}
-	
-	@Override
 	protected ForwardAndMessage doUpdate(MessageDTO dto) throws RemoteException {
         myNotificationSession.createUpdate(dto, entityId);
         return new ForwardAndMessage(FORWARD_EDIT, MESSAGE_UPDATE_OK);
@@ -135,8 +121,29 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
 				"Set of notification events is fixed. You can not create it, only switch it on");
 	}
 
+	@Override
 	protected boolean isCancelled(HttpServletRequest request) {
 		return !request.getParameter("mode").equals("setup");
+	}
+	
+	@Override
+	protected boolean isResetRequested() {
+		return request.getParameter("reload") != null || super.isResetRequested();
+	}
+	
+	@Override
+	protected void preReset() {
+		//call to super would re-init the form from mapping 
+		setForward(FORWARD_EDIT);
+	}
+	
+	@Override
+	public void reset() {
+		super.reset();
+		// this is just a change of language the requires a reload
+		// of the bean
+		languageId = (Integer) myForm.get(FIELD_LANGUAGE);
+		setup();
 	}
 	
 	@Override
@@ -144,5 +151,4 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
 		super.preEdit();
 		setForward(FORWARD_EDIT);
 	}
-
 }

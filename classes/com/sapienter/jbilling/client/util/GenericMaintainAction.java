@@ -68,8 +68,6 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
 import com.sapienter.jbilling.server.item.PromotionDTOEx;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
@@ -97,7 +95,6 @@ public class GenericMaintainAction {
     private EJBObject remoteSession = null;
     private String formName = null;
     // handy variables
-    private Integer selectedId = null;
     private Integer languageId = null;
     private Integer entityId = null;
     private Integer executorId = null;
@@ -144,8 +141,9 @@ public class GenericMaintainAction {
             throw new Exception("formName has to be present");
         }
         
-        selectedId = (Integer) session.getAttribute(
-                Constants.SESSION_LIST_ID_SELECTED);
+        // NOT USED ANYMORE
+        // selectedId = (Integer) session.getAttribute(Constants.SESSION_LIST_ID_SELECTED);
+
         languageId = (Integer) session.getAttribute(
                 Constants.SESSION_LANGUAGE);
         executorId = (Integer) session.getAttribute(
@@ -213,7 +211,6 @@ public class GenericMaintainAction {
 
         // create a dto with the info from the form and call
         // the remote session
-        ItemDTOEx itemDto = null;
         PaymentDTOEx paymentDto = null;
         PluggableTaskDTOEx taskDto = null;
         PartnerRangeDTO[] partnerRangesData = null;
@@ -221,12 +218,7 @@ public class GenericMaintainAction {
         // do the validation, before moving any info to the dto
         errors = new ActionErrors(myForm.validate(mapping, request));
         
-        // this is a hack for items created for promotions
-        if (mode.equals("item") && ((String) myForm.get("create")).equals(
-                "promotion")) {
-            retValue = "promotion";
-            log.debug("Processing an item for a promotion");
-        }
+        // this is a hack 
         if (mode.equals("payment") && ((String) myForm.get("direct")).equals(
                 "yes")) {
             retValue = "fromOrder";
@@ -235,65 +227,7 @@ public class GenericMaintainAction {
             return(retValue);
         }                
         
-        if (mode.equals("item")) { // an item
-            if (request.getParameter("reload") != null) {
-                // this is just a change of language the requires a reload
-                // of the bean
-                languageId = (Integer) myForm.get("language");
-                return setup();
-            }
-
-            itemDto = new ItemDTOEx();
-            itemDto.setDescription((String) myForm.get("description"));
-            itemDto.setEntityId((Integer) session.getAttribute(
-                    Constants.SESSION_ENTITY_ID_KEY));
-            itemDto.setNumber((String) myForm.get("internalNumber"));
-            itemDto.setPriceManual(new Integer(((Boolean) myForm.get
-                    ("chbx_priceManual")).booleanValue() ? 1 : 0));
-            itemDto.setTypes((Integer[]) myForm.get("types"));
-            if (((String) myForm.get("percentage")).trim().length() > 0) {
-                itemDto.setPercentage(string2float(
-                        (String) myForm.get("percentage")));
-            }
-            // because of the bad idea of using the same bean for item/type/price,
-            // the validation has to be manual
-            if (itemDto.getTypes().length == 0) {
-                String field = Resources.getMessage(request, "item.prompt.types"); 
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("errors.required", field));
-            }
-            
-            // get the prices. At least one has to be present
-            itemDto.setPrices((Vector) myForm.get("prices"));
-            boolean priceFlag = false;
-            for (int f = 0; f < itemDto.getPrices().size(); f++) {
-                String priceStr = ((ItemPriceDTOEx)itemDto.getPrices().get(f)).
-                        getPriceForm(); 
-                log.debug("Now processing item price " + f + " data:" + 
-                        (ItemPriceDTOEx)itemDto.getPrices().get(f));
-                Float price = null;
-                if (priceStr != null && priceStr.trim().length() > 0) {
-                    price = string2float(priceStr.trim());
-                    if (price == null) {
-                        String field = Resources.getMessage(request, "item.prompt.price"); 
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("errors.float", field));
-                        break;
-                    } else {
-                        priceFlag = true;
-                    }
-                }
-                ((ItemPriceDTOEx)itemDto.getPrices().get(f)).setPrice(
-                        price);
-            }
-
-            // either is a percentage or a price is required.
-            if (!priceFlag && itemDto.getPercentage() == null) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("item.error.price"));
-            }
-            
-        } else if (mode.equals("payment")) {
+        if (mode.equals("payment")) {
             paymentDto = new PaymentDTOEx();
             // the id, only for payment edits
             paymentDto.setId((Integer) myForm.get("id"));
@@ -771,23 +705,7 @@ public class GenericMaintainAction {
                     
             retValue = "create";
 
-            if (mode.equals("item")) {
-                // we pass a null language, so it'll pick up the one from
-                // the entity
-                Integer newItem = ((ItemSession) remoteSession).create(
-                        itemDto, null);
-                messageKey = "item.create.done";
-                retValue = "list";
-                // an item can be created to create a promotion
-                if (((String) myForm.get("create")).equals("promotion")) {
-                    retValue = "promotion";
-                    // the id of the new item is needed later, when the
-                    // promotion record is created
-                    session.setAttribute(Constants.SESSION_ITEM_ID, 
-                            newItem);
-                }
-                
-            } else if (mode.equals("payment")) {
+            if (mode.equals("payment")) {
                 // this is not an update, it's the previous step of the review
                 // payments have no updates (unmodifiable transactions).
                 
@@ -807,13 +725,7 @@ public class GenericMaintainAction {
             }                 
         } else { // this is then an update
             retValue = "list";
-            if (mode.equals("item")) {
-                
-                itemDto.setId(selectedId);
-                ((ItemSession) remoteSession).update(executorId, itemDto, 
-                        (Integer) myForm.get("language"));
-                messageKey = "item.update.done";
-            } else if (mode.equals("parameter")) { /// for pluggable task parameters
+            if (mode.equals("parameter")) { /// for pluggable task parameters
                 ((PluggableTaskSession) remoteSession).updateParameters(
                         executorId, taskDto);
                 messageKey = "task.parameter.update.done";
@@ -855,34 +767,7 @@ public class GenericMaintainAction {
                 
         retValue = "edit";
                 
-        if (mode.equals("item")) {
-            // the price is actually irrelevant in this call, since it's going
-            // to be overwirtten by the user's input
-            // in this case the currency doesn't matter, it
-            ItemDTOEx dto = ((ItemSession) remoteSession).get(selectedId, 
-                    languageId, null, null, entityId);
-            // the prices have to be localized
-            for (int f = 0; f < dto.getPrices().size(); f++) {
-                ItemPriceDTOEx pr = (ItemPriceDTOEx) dto.getPrices().get(f);
-                pr.setPriceForm(float2string(pr.getPrice()));
-            }
-            myForm.set("internalNumber", dto.getNumber());
-            myForm.set("description", dto.getDescription());
-            myForm.set("chbx_priceManual", new Boolean(dto.
-                    getPriceManual().intValue() > 0 ? 
-                            true : false));
-            myForm.set("types", dto.getTypes());
-            myForm.set("id", dto.getId());
-            myForm.set("prices", dto.getPrices());
-            myForm.set("language", languageId);
-            if (dto.getPercentage() != null) {
-                myForm.set("percentage", float2string(dto.getPercentage()));
-            } else {
-                // otherwise it will pickup the percentage of a 
-                // previously edited item!
-                myForm.set("percentage", null);
-            }
-        } else if (mode.equals("payment")) {
+        if (mode.equals("payment")) {
             CreditCardDTO ccDto = null;
             AchDTO achDto = null;
             PaymentInfoChequeDTO chequeDto = null;
@@ -1084,9 +969,7 @@ public class GenericMaintainAction {
     private String delete() throws SessionInternalError, RemoteException {
         String retValue = null;
        
-        if (mode.equals("item")) {
-            ((ItemSession) remoteSession).delete(executorId, selectedId);
-        } else if (mode.equals("payment")) {
+        if (mode.equals("payment")) {
             PaymentDTOEx paymentDto = (PaymentDTOEx) session
                     .getAttribute(Constants.SESSION_PAYMENT_DTO);
             Integer id = paymentDto.getId();

@@ -58,7 +58,6 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.NotificationSession;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
@@ -72,8 +71,6 @@ import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
 import com.sapienter.jbilling.server.item.PromotionDTOEx;
-import com.sapienter.jbilling.server.notification.MessageDTO;
-import com.sapienter.jbilling.server.notification.MessageSection;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
 import com.sapienter.jbilling.server.order.OrderPeriodDTOEx;
@@ -218,7 +215,6 @@ public class GenericMaintainAction {
         // the remote session
         ItemDTOEx itemDto = null;
         PaymentDTOEx paymentDto = null;
-        MessageDTO messageDto = null;
         PluggableTaskDTOEx taskDto = null;
         PartnerRangeDTO[] partnerRangesData = null;
         
@@ -690,26 +686,6 @@ public class GenericMaintainAction {
             }
             
             return "items";
-        } else if (mode.equals("notification")) {
-            if (request.getParameter("reload") != null) {
-                // this is just a change of language the requires a reload
-                // of the bean
-                languageId = (Integer) myForm.get("language");
-                return setup();
-            }
-            messageDto = new MessageDTO();
-            messageDto.setLanguageId((Integer) myForm.get("language"));
-            messageDto.setTypeId(selectedId);
-            messageDto.setUseFlag((Boolean) myForm.get("chbx_use_flag"));
-            // set the sections
-            String sections[] = (String[]) myForm.get("sections");
-            Integer sectionNumbers[] = (Integer[]) myForm.get("sectionNumbers");
-            for (int f = 0; f < sections.length; f++) {
-                messageDto.addSection(new MessageSection(sectionNumbers[f], 
-                        sections[f]));
-                log.debug("adding section:" + f + " "  + sections[f]);
-            }
-            log.debug("message is " + messageDto);
         } else if (mode.equals("parameter")) { /// for pluggable task parameters
             taskDto = (PluggableTaskDTOEx) session.getAttribute(
                     Constants.SESSION_PLUGGABLE_TASK_DTO);
@@ -837,11 +813,6 @@ public class GenericMaintainAction {
                 ((ItemSession) remoteSession).update(executorId, itemDto, 
                         (Integer) myForm.get("language"));
                 messageKey = "item.update.done";
-            } else if (mode.equals("notification")) {
-                ((NotificationSession) remoteSession).createUpdate(
-                        messageDto, entityId);
-                messageKey = "notification.message.update.done";
-                retValue = "edit";
             } else if (mode.equals("parameter")) { /// for pluggable task parameters
                 ((PluggableTaskSession) remoteSession).updateParameters(
                         executorId, taskDto);
@@ -1050,20 +1021,6 @@ public class GenericMaintainAction {
             if (dto.getPromoCode() != null) {
                 myForm.set("promotion_code", dto.getPromoCode());
             }
-        } else if (mode.equals("notification")) {
-            MessageDTO dto = ((NotificationSession) remoteSession).getDTO(
-                    selectedId, languageId, entityId);
-            myForm.set("language", languageId);
-            myForm.set("chbx_use_flag", dto.getUseFlag());
-            // now cook the sections for the form's taste
-            String sections[] = new String[dto.getContent().length];
-            Integer sectionNubmers[] = new Integer[dto.getContent().length];
-            for (int f = 0; f < sections.length; f++) {
-                sections[f] = dto.getContent()[f].getContent();
-                sectionNubmers[f] = dto.getContent()[f].getSection();
-            }
-            myForm.set("sections", sections);
-            myForm.set("sectionNumbers", sectionNubmers);
         } else if (mode.equals("parameter")) { /// for pluggable task parameters
             Integer type = null;
             if (request.getParameter("type").equals("notification")) {

@@ -20,51 +20,129 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.client.notification;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
 
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
+import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.NotificationSession;
 import com.sapienter.jbilling.interfaces.NotificationSessionHome;
+import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.notification.MessageSection;
 
-public class MaintainAction extends Action {
-    
-    public ActionForward execute(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        
-        Logger log = Logger.getLogger(MaintainAction.class);
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            NotificationSessionHome notificationHome =
-                    (NotificationSessionHome) EJBFactory.lookUpHome(
-                    NotificationSessionHome.class,
-                    NotificationSessionHome.JNDI_NAME);
-            NotificationSession notificationSession = notificationHome.create();
-        
-            GenericMaintainAction gma = new GenericMaintainAction(mapping,
-                    form, request, response, servlet, notificationSession, 
-                    "notification");
-                    
-            return gma.process();            
-        } catch (Exception e) {
-            log.error("Exception ", e);
+public class MaintainAction extends CrudActionBase<MessageDTO> {
+
+	private static final String FORM = "notification";
+
+	private static final String FIELD_SECTION_CONSTANTS = "sectionNumbers";
+	private static final String FIELD_SECTIONS = "sections";
+	private static final String FIELD_USE_ME = "chbx_use_flag";
+	private static final String FIELD_LANGUAGE = "language";
+	
+	private static final String FORWARD_EDIT = "notification_edit";
+	private static final String MESSAGE_UPDATE_OK = "notification.message.update.done";
+
+	private final NotificationSession myNotificationSession;
+
+	public MaintainAction() {
+		super(FORM, "notification");
+		log = Logger.getLogger(MaintainAction.class);
+		try {
+			JNDILookup EJBFactory = JNDILookup.getFactory(false);
+			NotificationSessionHome notificationHome = (NotificationSessionHome) EJBFactory
+					.lookUpHome(NotificationSessionHome.class,
+							NotificationSessionHome.JNDI_NAME);
+			myNotificationSession = notificationHome.create();
+		} catch (Exception e) {
+			throw new SessionInternalError(
+					"Initializing notification CRUD action: " + e.getMessage());
+		}
+	}
+	
+	@Override
+	protected MessageDTO doEditFormToDTO() throws RemoteException {
+		MessageDTO dto = new MessageDTO();
+        dto.setLanguageId((Integer) myForm.get("language"));
+        dto.setTypeId(selectedId);
+        dto.setUseFlag((Boolean) myForm.get("chbx_use_flag"));
+        // set the sections
+        String sections[] = (String[]) myForm.get("sections");
+        Integer sectionNumbers[] = (Integer[]) myForm.get("sectionNumbers");
+        for (int f = 0; f < sections.length; f++) {
+            dto.addSection(new MessageSection(sectionNumbers[f], sections[f]));
+            log.debug("adding section:" + f + " "  + sections[f]);
         }
-        
-        return mapping.findForward("error");
-    }
-    
-    protected boolean isCancelled(HttpServletRequest request) {
-        return !request.getParameter("mode").equals("setup");
-    }     
+        log.debug("message is " + dto);
+        return dto;
+	}
+	
+	@Override
+	public String update(Object dtoHolder) {
+		if (request.getParameter("reload") != null) {
+			// this is just a change of language the requires a reload
+			// of the bean
+			languageId = (Integer) myForm.get(FIELD_LANGUAGE);
+			setup();
+
+			//forward is set inside setup(), don't need to return anything.
+			return null;
+		}
+		return super.update(dtoHolder);
+	}
+	
+	@Override
+	protected ForwardAndMessage doUpdate(MessageDTO dto) throws RemoteException {
+        myNotificationSession.createUpdate(dto, entityId);
+        return new ForwardAndMessage(FORWARD_EDIT, MESSAGE_UPDATE_OK);
+	}
+	
+	@Override
+	protected ForwardAndMessage doSetup() throws RemoteException {
+        MessageDTO dto = myNotificationSession.getDTO(selectedId, languageId, entityId);
+        myForm.set(FIELD_LANGUAGE, languageId);
+        myForm.set(FIELD_USE_ME, dto.getUseFlag());
+        // now cook the sections for the form's taste
+        String sections[] = new String[dto.getContent().length];
+        Integer sectionNubmers[] = new Integer[dto.getContent().length];
+        for (int f = 0; f < sections.length; f++) {
+            sections[f] = dto.getContent()[f].getContent();
+            sectionNubmers[f] = dto.getContent()[f].getSection();
+        }
+        myForm.set(FIELD_SECTIONS, sections);
+        myForm.set(FIELD_SECTION_CONSTANTS, sectionNubmers);
+        return new ForwardAndMessage(FORWARD_EDIT);
+	}
+	
+	@Override
+	protected void resetCachedList() {
+		session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
+	}
+	
+	@Override
+	protected ForwardAndMessage doDelete() throws RemoteException {
+		throw new UnsupportedOperationException(
+				"Set of notification events is fixed. You can not delete it, only switch it off");
+	}
+	
+	@Override
+	protected ForwardAndMessage doCreate(MessageDTO dto) throws RemoteException {
+		throw new UnsupportedOperationException(
+				"Set of notification events is fixed. You can not create it, only switch it on");
+	}
+
+	protected boolean isCancelled(HttpServletRequest request) {
+		return !request.getParameter("mode").equals("setup");
+	}
+	
+	@Override
+	protected void preEdit() {
+		super.preEdit();
+		setForward(FORWARD_EDIT);
+	}
+
 }

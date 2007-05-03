@@ -47,7 +47,7 @@ public abstract class CrudActionBase<DTO> extends CrudAction {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public final String update(Object dtoHolder) {
+	public String update(Object dtoHolder) {
 		ForwardAndMessage result;
 		try {
 			result = doUpdate((DTO)dtoHolder);

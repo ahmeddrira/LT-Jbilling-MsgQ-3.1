@@ -37,7 +37,6 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CustomerSession;
@@ -167,7 +166,7 @@ public class MaintainAction extends Action {
                             // I need to update the DTO, so the left bar can
                             // make the right decitions
                             if (invoiceId != null) {
-                                Vector invoices = new Vector();
+                                Vector<Integer> invoices = new Vector<Integer>();
                                 invoices.add(invoiceId);
                                 paymentDto.setInvoiceIds(invoices);
                             } 
@@ -336,11 +335,9 @@ public class MaintainAction extends Action {
                 session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
                 forward = "payment_setupView";
             } else {
-                GenericMaintainAction gma = new GenericMaintainAction(mapping,
-                        form, request, response, servlet, myRemoteSession, 
-                        "payment");
-                        
-                retValue = gma.process();
+            	PaymentCrudAction delegate = new PaymentCrudAction(myRemoteSession);
+            	delegate.setServlet(getServlet());
+            	retValue = delegate.execute(mapping, form, request, response);
             }      
             
             saveMessages(request, messages);      

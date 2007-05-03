@@ -33,9 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.validator.Arg;
-import org.apache.commons.validator.Field;
-import org.apache.commons.validator.ValidatorAction;
 import org.apache.log4j.Logger;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionError;
@@ -49,7 +46,6 @@ import org.apache.struts.action.ActionServlet;
 import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
-import org.apache.struts.validator.FieldChecks;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.common.JNDILookup;
@@ -60,19 +56,13 @@ import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
-import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.item.PromotionDTOEx;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
 import com.sapienter.jbilling.server.order.OrderPeriodDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
@@ -211,246 +201,17 @@ public class GenericMaintainAction {
 
         // create a dto with the info from the form and call
         // the remote session
-        PaymentDTOEx paymentDto = null;
         PluggableTaskDTOEx taskDto = null;
         PartnerRangeDTO[] partnerRangesData = null;
         
         // do the validation, before moving any info to the dto
         errors = new ActionErrors(myForm.validate(mapping, request));
         
-        // this is a hack 
-        if (mode.equals("payment") && ((String) myForm.get("direct")).equals(
-                "yes")) {
-            retValue = "fromOrder";
-        }
         if (!errors.isEmpty()) {
             return(retValue);
         }                
         
-        if (mode.equals("payment")) {
-            paymentDto = new PaymentDTOEx();
-            // the id, only for payment edits
-            paymentDto.setId((Integer) myForm.get("id"));
-            // set the amount
-            paymentDto.setAmount(string2float((String) myForm.get("amount")));
-            // set the date
-            paymentDto.setPaymentDate(parseDate("date", "payment.date"));
-            if (((String) myForm.get("method")).equals("cheque")) {
-                // create the cheque dto
-                PaymentInfoChequeDTO chequeDto = new PaymentInfoChequeDTO();
-                chequeDto.setBank((String) myForm.get("bank"));
-                chequeDto.setNumber((String) myForm.get("chequeNumber"));
-                chequeDto.setDate(parseDate("chequeDate", "payment.cheque.date"));
-                // set the cheque
-                paymentDto.setCheque(chequeDto);
-                paymentDto.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
-                // validate required fields        
-                required(chequeDto.getNumber(),"payment.cheque.number");
-                required(chequeDto.getDate(), "payment.cheque.date");
-                // cheques now are never process realtime (may be later will support
-                // electronic cheques
-                paymentDto.setResultId(Constants.RESULT_ENTERED);
-                session.setAttribute("tmp_process_now", new Boolean(false));                
-                
-            } else if (((String) myForm.get("method")).equals("cc")) {
-                String ccNumber = (String) myForm.get("ccNumber");
-                boolean masked = false;
-
-                // check if cc number is masked
-                if (ccNumber != null && ccNumber.length() >= 16
-                        && ccNumber.substring(0, 12).equals("************")) {
-                    log.debug("cc no. masked; " 
-                            + "getting user's existing cc details");
-                    // try to get existing cc details
-                    UserDTOEx user;
-                    try {
-                        user = getUser((Integer) session.
-                                getAttribute(Constants.SESSION_USER_ID));
-                    } catch (FinderException e) {
-                        throw new SessionInternalError(e); 
-                    }
-                    CreditCardDTO existingCcDTO = user.getCreditCard();
-                    if(existingCcDTO != null) {
-                        String existingNumber = existingCcDTO.getNumber();
-                        // check that four last digits match
-                        if(existingNumber.substring(
-                                existingNumber.length() - 4).equals(
-                                ccNumber.substring(ccNumber.length() - 4))) {
-                            log.debug("got a matching masked cc number");
-                            masked = true;
-                            ccNumber = existingNumber;
-                        }
-                    }
-                }
-
-                // do cc validation for non-masked numbers
-                if (!masked) {
-                    // set up for cc validation, 
-                    // (meant for use within Validator framework)
-
-                    // from validator.xml
-                    Arg arg = new Arg();
-                    arg.setKey("all.prompt.creditCard");
-                    arg.setPosition(0);
-                    Field field = new Field();
-                    field.addArg(arg);
-                    field.setProperty("ccNumber");
-                    field.setDepends("creditCard");
-
-                    // from validator-rules.xml
-                    ValidatorAction va = new ValidatorAction();
-                    va.setName("creditCard");
-                    va.setClassname("org.apache.struts.validator.FieldChecks");
-                    va.setMethod("validateCreditCard");
-                    va.setMethodParams("java.lang.Object, "
-                            + "org.apache.commons.validator.ValidatorAction, "
-                            + "org.apache.commons.validator.Field, "
-                            + "org.apache.struts.action.ActionErrors, "
-                            + "javax.servlet.http.HttpServletRequest");
-                    va.setDepends("");
-                    va.setMsg("errors.creditcard");
-
-                    // do cc number validation
-                    log.debug("doing credit card number validation");
-                    FieldChecks.validateCreditCard(myForm, va, field, errors, 
-                            request);
-
-                    // return if credit card validation failed
-                    if (!errors.isEmpty()) {
-                        return "edit";
-                    }
-                }
-
-                CreditCardDTO ccDto = new CreditCardDTO();
-                ccDto.setNumber(ccNumber);
-                ccDto.setName((String) myForm.get("ccName"));
-                myForm.set("ccExpiry_day", "01"); // to complete the date
-                ccDto.setExpiry(parseDate("ccExpiry", "payment.cc.date"));
-                if (ccDto.getExpiry() != null) {
-                    // the expiry can't be past today
-                    GregorianCalendar cal = new GregorianCalendar();
-                    cal.setTime(ccDto.getExpiry());
-                    cal.add(GregorianCalendar.MONTH, 1); // add 1 month
-                    if (Calendar.getInstance().getTime().after(cal.getTime())) {
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("creditcard.error.expired", 
-                                    "payment.cc.date"));
-                    }
-                }
-                paymentDto.setCreditCard(ccDto);
-                
-                // this will be checked when the payment is sent
-                session.setAttribute("tmp_process_now", 
-                        (Boolean) myForm.get("chbx_processNow"));
-                // validate required fields        
-                required(ccDto.getNumber(), "payment.cc.number");
-                required(ccDto.getExpiry(), "payment.cc.date");
-                required(ccDto.getName(), "payment.cc.name");
-
-                // make sure that the cc is valid before trying to get
-                // the payment method from it
-                if (errors.isEmpty()) {
-                    paymentDto.setMethodId(Util.getPaymentMethod(
-                            ccDto.getNumber()));
-                }
-
-            } else if (((String) myForm.get("method")).equals("ach")) {
-            	AchDTO ach = new AchDTO();
-            	ach.setAbaRouting((String) myForm.get("aba_code"));
-            	ach.setBankAccount((String) myForm.get("account_number"));
-            	ach.setAccountType((Integer) myForm.get("account_type"));
-            	ach.setBankName((String) myForm.get("bank_name"));
-            	ach.setAccountName((String) myForm.get("account_name"));
-            	paymentDto.setAch(ach);
-                //this will be checked when the payment is sent
-                session.setAttribute("tmp_process_now",  new Boolean(true));
-                // since it is one big form for all methods, we need to 
-                // validate the required manually
-                required(ach.getAbaRouting(), "ach.aba.prompt");
-                required(ach.getBankAccount(), "ach.account_number.prompt");
-                required(ach.getBankName(), "ach.bank_name.prompt");
-                required(ach.getAccountName(), "ach.account_name.prompt");
-                
-                if (errors.isEmpty()) {
-                    paymentDto.setMethodId(Constants.PAYMENT_METHOD_ACH);
-                }
-            }
-            // set the customer id selected in the list (not the logged)
-            paymentDto.setUserId((Integer) session.getAttribute(
-                    Constants.SESSION_USER_ID));
-            // specify if this is a normal payment or a refund
-            paymentDto.setIsRefund(session.getAttribute("jsp_is_refund") == 
-                    null ? new Integer(0) : new Integer(1));
-            log.debug("refund = " + paymentDto.getIsRefund());
-            // set the selected payment for refunds
-            if (paymentDto.getIsRefund().intValue() == 1) {
-                PaymentDTOEx refundPayment = (PaymentDTOEx) session.getAttribute(
-                        Constants.SESSION_PAYMENT_DTO); 
-                /*
-                 * Right now, to process a real-time credit card refund it has to be to
-                 * refund a previously done credit card payment. This could be
-                 * changed, to say, refund using the customer's credit card no matter
-                 * how the guy paid initially. But this might be subjet to the
-                 * processor features.
-                 * 
-                 */
-                if (((Boolean) myForm.get("chbx_processNow")).booleanValue() &&
-                        ((String) myForm.get("method")).equals("cc") &&
-                        (refundPayment == null || 
-                         refundPayment.getCreditCard() == null ||
-                         refundPayment.getAuthorization() == null ||
-                         !refundPayment.getResultId().equals(Constants.RESULT_OK))) {
-
-                     errors.add(ActionErrors.GLOBAL_ERROR,
-                             new ActionError("refund.error.realtimeNoPayment", 
-                                 "payment.cc.processNow"));
-                    
-                } else {
-                    paymentDto.setPayment(refundPayment);
-                }
-                // refunds, I need to manually delete the list, because
-                // in the end only the LIST_PAYMENT will be removed
-                session.removeAttribute(Constants.SESSION_LIST_KEY + 
-                        Constants.LIST_TYPE_REFUND);
-            }
-            
-            // last, set the currency
-            //If a related document is
-            // set (invoice/payment) it'll take it from there. Otherwise it
-            // wil inherite the one from the user
-            paymentDto.setCurrencyId((Integer) myForm.get("currencyId"));
-            if (paymentDto.getCurrencyId() == null) {
-                try {
-                    paymentDto.setCurrencyId(getUser(paymentDto.getUserId()).
-                            getCurrencyId());
-                } catch (FinderException e) {
-                    throw new SessionInternalError(e);
-                }
-            }
-            
-            if (errors.isEmpty()) {
-                // verify that this entity actually accepts this kind of 
-                //payment method
-                if (!((PaymentSession) remoteSession).isMethodAccepted((Integer)
-                        session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
-                        paymentDto.getMethodId())) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("payment.error.notAccepted", 
-                                "payment.method"));
-                }
-            }
-
-            // just in case there was an error
-            log.debug("direct = " + (String) myForm.get("direct"));
-            if (((String) myForm.get("direct")).equals("yes")) {
-                retValue = "fromOrder";
-            }
-
-            log.debug("now payment methodId = " + paymentDto.getMethodId());
-            log.debug("now paymentDto = " + paymentDto);
-            log.debug("retValue = " + retValue);
- 
-        } else if (mode.equals("order")) {
+        if (mode.equals("order")) {
             // this is kind of a wierd case. The dto in the session is all
             // it is required to edit.
             NewOrderDTO summary = (NewOrderDTO) session.getAttribute(
@@ -702,27 +463,7 @@ public class GenericMaintainAction {
         // if here the validation was successfull, procede to modify the server
         // information
         if (((String) myForm.get("create")).length() > 0) {
-                    
             retValue = "create";
-
-            if (mode.equals("payment")) {
-                // this is not an update, it's the previous step of the review
-                // payments have no updates (unmodifiable transactions).
-                
-                if (paymentDto.getIsRefund().intValue() == 1) {
-                    session.setAttribute(Constants.SESSION_PAYMENT_DTO_REFUND, 
-                            paymentDto);
-                } else {
-                    session.setAttribute(Constants.SESSION_PAYMENT_DTO, paymentDto);
-                }
-                
-                if (((String) myForm.get("create")).equals("payout")) {
-                    retValue = "reviewPayout";
-                } else {
-                    retValue = "review";
-                }
-                messageKey = "payment.review";              
-            }                 
         } else { // this is then an update
             retValue = "list";
             if (mode.equals("parameter")) { /// for pluggable task parameters
@@ -767,120 +508,7 @@ public class GenericMaintainAction {
                 
         retValue = "edit";
                 
-        if (mode.equals("payment")) {
-            CreditCardDTO ccDto = null;
-            AchDTO achDto = null;
-            PaymentInfoChequeDTO chequeDto = null;
-            
-            boolean isEdit = request.getParameter("submode") == null ?
-                    false : request.getParameter("submode").equals("edit");
-            
-            // if an invoice was selected, pre-populate the amount field
-            InvoiceDTO invoiceDto = (InvoiceDTO) session.getAttribute(
-                    Constants.SESSION_INVOICE_DTO);
-            PaymentDTOEx paymentDto = (PaymentDTOEx) session.getAttribute(
-                    Constants.SESSION_PAYMENT_DTO);
-            if (invoiceDto != null) {
-                log.debug("setting payment with invoice:" + invoiceDto.getId());
-                
-                myForm.set("amount", float2string(invoiceDto.getBalance()));
-                //paypal can't take i18n amounts
-                session.setAttribute("jsp_paypay_amount", invoiceDto.getBalance());
-                myForm.set("currencyId", invoiceDto.getCurrencyId());
-            } else if (paymentDto != null) {
-                // this works for both refunds and payouts
-                log.debug("setting form with payment:" + paymentDto.getId());
-                myForm.set("id", paymentDto.getId());
-                myForm.set("amount", float2string(paymentDto.getAmount()));
-                setFormDate("date", paymentDto.getPaymentDate());
-                myForm.set("currencyId", paymentDto.getCurrencyId());
-                ccDto = paymentDto.getCreditCard();
-                achDto = paymentDto.getAch();
-                chequeDto = paymentDto.getCheque();
-            } else { // this is not an invoice selected, it's the first call
-                log.debug("setting payment without invoice");
-                // the date might come handy
-                setFormDate("date", Calendar.getInstance().getTime());
-                // make the default real-time
-                myForm.set("chbx_processNow", new Boolean(true));
-                // find out if this is a payment or a refund
-            }
-            boolean isRefund = session.getAttribute(
-                        "jsp_is_refund") != null; 
-
-            // populate the credit card fields with the cc in file
-            // if this is a payment creation only
-            if (!isRefund && !isEdit && 
-                    ((String) myForm.get("ccNumber")).length() == 0) {
-                // normal payment, get the selected user cc
-                // if the user has a credit card, put it (this is a waste for
-                // cheques, but it really doesn't hurt)
-                log.debug("getting this user's cc");
-                UserDTOEx user;
-                try {
-                    user = getUser((Integer) session.
-                        getAttribute(Constants.SESSION_USER_ID));
-                } catch (FinderException e) {
-                    throw new SessionInternalError(e); 
-                }
-                ccDto = user.getCreditCard();
-                achDto = user.getAch();
-            } 
-        
-            
-            if (ccDto != null) {
-                String ccNumber = ccDto.getNumber();
-                // mask cc number
-                ccNumber = "************" + ccNumber.substring(
-                        ccNumber.length() - 4);
-                myForm.set("ccNumber", ccNumber);
-                myForm.set("ccName", ccDto.getName());
-                GregorianCalendar cal = new GregorianCalendar();
-                cal.setTime(ccDto.getExpiry());
-                myForm.set("ccExpiry_month", String.valueOf(cal.get(
-                        GregorianCalendar.MONTH) + 1));
-                myForm.set("ccExpiry_year", String.valueOf(cal.get(
-                        GregorianCalendar.YEAR)));
-            }    
-            
-            if (achDto != null) {
-            	myForm.set("aba_code", achDto.getAbaRouting());
-                myForm.set("account_number", achDto.getBankAccount());
-                myForm.set("bank_name", achDto.getBankName());
-                myForm.set("account_name", achDto.getAccountName());
-                myForm.set("account_type", achDto.getAccountType());
-            }
-
-            if (chequeDto != null) {
-                myForm.set("bank", chequeDto.getBank());
-                myForm.set("chequeNumber", chequeDto.getNumber());
-                setFormDate("chequeDate", chequeDto.getDate());
-            }
-
-            // if this payment is direct from an order, continue with the
-            // page without invoice list
-            if (request.getParameter("direct") != null) {
-                // the date won't be shown, and it has to be initialized
-                setFormDate("date", Calendar.getInstance().getTime());
-                myForm.set("method", "cc");
-                
-                // add the message 
-                messages.add(ActionMessages.GLOBAL_MESSAGE,  
-                        new ActionMessage("process.invoiceGenerated"));
-                retValue = "fromOrder";
-            }
-            
-            // if this is a payout, it has its own page
-            if (request.getParameter("payout") != null) {
-                retValue = "payout";
-            } 
-            
-            // payment edition has a different layout
-            if (isEdit) {
-                retValue = "update";
-            }
-
-        } else if (mode.equals("order")) {
+        if (mode.equals("order")) {
             OrderDTOEx dto = (OrderDTOEx) session.getAttribute(
                     Constants.SESSION_ORDER_DTO);
             myForm.set("period", dto.getPeriodId());
@@ -967,17 +595,8 @@ public class GenericMaintainAction {
     }
     
     private String delete() throws SessionInternalError, RemoteException {
-        String retValue = null;
-       
-        if (mode.equals("payment")) {
-            PaymentDTOEx paymentDto = (PaymentDTOEx) session
-                    .getAttribute(Constants.SESSION_PAYMENT_DTO);
-            Integer id = paymentDto.getId();
-            ((PaymentSession) (remoteSession)).deletePayment(id);
-        }
-                
         session.removeAttribute(formName); 
-        retValue = "deleted";
+        String retValue = "deleted";
         
         // remove a possible list so there's no old cached list
         session.removeAttribute(Constants.SESSION_LIST_KEY + mode);
@@ -990,14 +609,7 @@ public class GenericMaintainAction {
      */
     private String reset() throws SessionInternalError {
         String retValue = "edit";
-        
         myForm.initialize(mapping);
-        
-        if (mode.equals("payment")) {
-            session.removeAttribute(Constants.SESSION_INVOICE_DTO);
-            session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
-        }
-        
         return retValue;
     }
     

@@ -71,9 +71,11 @@ public class NumberingAction extends UpdateOnlyCrudActionBase<NumberingActionCon
     
     @Override
     protected ForwardAndMessage doUpdate(NumberingActionContext dto) throws RemoteException {
-        HashMap<Integer, String> params = new HashMap<Integer, String>();
+        HashMap<Integer, Object> params = new HashMap<Integer, Object>();
         params.put(Constants.PREFERENCE_INVOICE_PREFIX, dto.getPrefix());
-        params.put(Constants.PREFERENCE_INVOICE_NUMBER, dto.getNumber()); 
+        // this has to be an Integer, otherwise the preference will be set as a String
+        // then invoice generation fails as the number gets ++
+        params.put(Constants.PREFERENCE_INVOICE_NUMBER, Integer.valueOf(dto.getNumber())); 
         myUserSession.setEntityParameters(entityId, params);
         return getForwardEdit(MESSAGE_SUCCESSFULLY_UPDATED);
     }

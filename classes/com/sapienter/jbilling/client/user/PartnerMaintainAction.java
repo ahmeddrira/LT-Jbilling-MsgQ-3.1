@@ -35,7 +35,6 @@ import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.item.PromotionMaintainAction;
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
@@ -117,8 +116,7 @@ public class PartnerMaintainAction extends Action {
                 
                 // the list of customer has to be removed, or it will take the
                 // one from the latest partner selected
-                session.removeAttribute(Constants.SESSION_LIST_KEY + 
-                        Constants.LIST_TYPE_PARTNERS_CUSTOMER);
+                session.removeAttribute(Constants.SESSION_LIST_KEY + Constants.LIST_TYPE_PARTNERS_CUSTOMER);
 
                         
                 return mapping.findForward(forward);
@@ -131,10 +129,9 @@ public class PartnerMaintainAction extends Action {
                             ((PartnerDTO) session.getAttribute(
                                     Constants.SESSION_PARTNER_DTO)).getId());
                 }
-                GenericMaintainAction gma = new GenericMaintainAction(mapping,
-                        form, request, response, servlet, userSession, 
-                        "partner");
-                return gma.process();            
+                PartnerCrudAction delegate = new PartnerCrudAction(userSession);
+                delegate.setServlet(this.getServlet());
+                return delegate.execute(mapping, form, request, response);
             }
         } catch (Exception e) {
             log.error("Exception ", e);

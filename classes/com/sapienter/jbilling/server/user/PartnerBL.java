@@ -618,6 +618,7 @@ public class PartnerBL extends ResultList
         retValue.setAutomaticProcess(partner.getAutomaticProcess());
         retValue.setBalance(partner.getBalance());
         retValue.setDuePayout(partner.getDuePayout());
+        retValue.setReferralFee(partner.getReferralFee());
         retValue.setFeeCurrencyId(partner.getFeeCurrencyId());
         retValue.setId(partner.getId());
         retValue.setNextPayoutDate(partner.getNextPayoutDate());

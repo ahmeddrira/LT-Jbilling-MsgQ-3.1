@@ -34,6 +34,7 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.PreferencesCrudActionBase;
+import com.sapienter.jbilling.client.util.PreferencesMap;
 
 /**
  * @author Emil

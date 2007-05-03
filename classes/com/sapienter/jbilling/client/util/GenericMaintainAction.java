@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Vector;
 
 import javax.ejb.EJBObject;
@@ -82,7 +81,6 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
-import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -222,8 +220,6 @@ public class GenericMaintainAction {
         PaymentDTOEx paymentDto = null;
         MessageDTO messageDto = null;
         PluggableTaskDTOEx taskDto = null;
-        PartnerDTOEx partnerDto = null;
-        Object[] partnerDefaultData = null;
         PartnerRangeDTO[] partnerRangesData = null;
         
         // do the validation, before moving any info to the dto
@@ -784,47 +780,6 @@ public class GenericMaintainAction {
             if (!errors.isEmpty()) {
                 retValue = "edit";
             }
-        } else if (mode.equals("partner")) {
-            partnerDto = new PartnerDTOEx();
-            partnerDto.setBalance(string2float((String) myForm.get(
-                    "balance")));
-            String optField = (String) myForm.get("rate");
-            if (optField != null && optField.trim().length() > 0) {
-                partnerDto.setPercentageRate(string2float(optField));
-            }
-            optField = (String) myForm.get("fee");
-            if (optField != null && optField.trim().length() > 0) {
-                partnerDto.setReferralFee(string2float(optField));
-                partnerDto.setFeeCurrencyId((Integer) myForm.get(
-                        "fee_currency"));
-            }
-            partnerDto.setPeriodUnitId((Integer) myForm.get(
-                    "period_unit_id"));
-            partnerDto.setPeriodValue(Integer.valueOf((String) myForm.get(
-                    "period_value")));
-            partnerDto.setNextPayoutDate(parseDate("payout", 
-                    "partner.prompt.nextPayout"));
-            partnerDto.setAutomaticProcess(new Integer(((Boolean) myForm.get(
-                    "chbx_process")).booleanValue() ? 1 : 0));
-            partnerDto.setOneTime(new Integer(((Boolean) myForm.get(
-                    "chbx_one_time")).booleanValue() ? 1 : 0));
-            try {
-                Integer clerkId = Integer.valueOf((String) myForm.get(
-                        "clerk"));
-                UserDTOEx clerk = getUser(clerkId);
-                if (!entityId.equals(clerk.getEntityId()) || 
-                        clerk.getDeleted().intValue() == 1 ||
-                        clerk.getMainRoleId().intValue() > 
-                            Constants.TYPE_CLERK.intValue()) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("partner.error.clerkinvalid"));
-                } else {
-                    partnerDto.setRelatedClerkUserId(clerkId);
-                }
-            } catch (FinderException e) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("partner.error.clerknotfound"));
-            }
         } else {
             throw new SessionInternalError("mode is not supported:" + mode);
         }
@@ -873,28 +828,6 @@ public class GenericMaintainAction {
                     retValue = "review";
                 }
                 messageKey = "payment.review";              
-            } else if (mode.equals("partner")) {
-                // get the user dto from the session. This is the dto with the
-                // info of the user to create
-                UserDTOEx user = (UserDTOEx) session.getAttribute(
-                        Constants.SESSION_CUSTOMER_DTO);
-                ContactDTOEx contact = (ContactDTOEx) session.getAttribute(
-                        Constants.SESSION_CUSTOMER_CONTACT_DTO);
-                // add the partner information just submited to the user to be
-                // created
-                user.setPartnerDto(partnerDto);
-                // make the call
-                Integer newUserID = ((UserSession) remoteSession).create(user, 
-                        contact);
-                log.debug("Partner created = " + newUserID);
-                session.setAttribute(Constants.SESSION_USER_ID, 
-                        newUserID);
-                messageKey = "partner.created";
-                if (request.getParameter("ranges") == null) {
-                    retValue = "list";
-                } else {
-                    retValue = "ranges";
-                }
             }                 
         } else { // this is then an update
             retValue = "list";
@@ -922,17 +855,6 @@ public class GenericMaintainAction {
                         partner.getId(), partnerRangesData);
                 messageKey = "partner.ranges.updated";
                 retValue = "partner";
-            } else  if (mode.equals("partner")) {
-                partnerDto.setId((Integer) session.getAttribute(
-                        Constants.SESSION_PARTNER_ID));
-                ((UserSession) remoteSession).updatePartner(executorId,
-                        partnerDto);
-                messageKey = "partner.updated";
-                if (request.getParameter("ranges") == null) {
-                    retValue = "list";
-                } else {
-                    retValue = "ranges";
-                }
             }
         }
         
@@ -1190,76 +1112,6 @@ public class GenericMaintainAction {
             myForm.set("range_to", arr2);
             myForm.set("percentage_rate", arr3);
             myForm.set("referral_fee", arr4);
-        } else if (mode.equals("partner")) {
-            Integer partnerId = (Integer) session.getAttribute(
-                    Constants.SESSION_PARTNER_ID);
-            
-            PartnerDTOEx partner;
-            if (partnerId != null) {
-                try {
-                    partner = ((UserSession) remoteSession).getPartnerDTO(
-                            partnerId);
-                } catch (FinderException e) {
-                    throw new SessionInternalError(e);
-                }
-            } else {
-                partner = new PartnerDTOEx();
-                // set the values from the preferences (defaults)
-                Integer[] preferenceIds = new Integer[8];
-                preferenceIds[0] = Constants.PREFERENCE_PART_DEF_RATE;
-                preferenceIds[1] = Constants.PREFERENCE_PART_DEF_FEE;
-                preferenceIds[2] = Constants.PREFERENCE_PART_DEF_FEE_CURR;
-                preferenceIds[3] = Constants.PREFERENCE_PART_DEF_ONE_TIME;
-                preferenceIds[4] = Constants.PREFERENCE_PART_DEF_PER_UNIT;
-                preferenceIds[5] = Constants.PREFERENCE_PART_DEF_PER_VALUE;
-                preferenceIds[6] = Constants.PREFERENCE_PART_DEF_AUTOMATIC;
-                preferenceIds[7] = Constants.PREFERENCE_PART_DEF_CLERK;
-            
-                 // get'em
-                HashMap result = ((UserSession) remoteSession).
-                         getEntityParameters(entityId, preferenceIds);
-                String value;
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_RATE);
-                if (value != null && value.trim().length() > 0) { 
-                    partner.setPercentageRate(string2float(value));
-                }
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_FEE);
-                if (value != null && value.trim().length() > 0) { 
-                    partner.setReferralFee(string2float(value));
-                    value = (String) result.get(
-                            Constants.PREFERENCE_PART_DEF_FEE_CURR);
-                    partner.setFeeCurrencyId(Integer.valueOf(value));
-                }
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_ONE_TIME);
-                partner.setOneTime(Integer.valueOf(value));
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_PER_UNIT);
-                partner.setPeriodUnitId(Integer.valueOf(value));
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_PER_VALUE);
-                partner.setPeriodValue(Integer.valueOf(value));
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_AUTOMATIC);
-                partner.setAutomaticProcess(Integer.valueOf(value));
-                value = (String) result.get(Constants.PREFERENCE_PART_DEF_CLERK);
-                partner.setRelatedClerkUserId(Integer.valueOf(value));
-                // some that are not preferences
-                partner.setBalance(new Float(0));
-                retValue = "create";
-            }
-            myForm.set("balance", float2string(partner.getBalance()));
-            if (partner.getPercentageRate() != null) {
-                myForm.set("rate", float2string(partner.getPercentageRate()));
-            }
-            if (partner.getReferralFee() != null) {
-                myForm.set("fee", float2string(partner.getReferralFee()));
-            }
-            myForm.set("fee_currency", partner.getFeeCurrencyId());
-            myForm.set("chbx_one_time", new Boolean(
-                    partner.getOneTime().intValue() == 1));
-            myForm.set("period_unit_id", partner.getPeriodUnitId());
-            myForm.set("period_value", partner.getPeriodValue().toString());
-            myForm.set("chbx_process", new Boolean(
-                    partner.getAutomaticProcess().intValue() == 1));
-            myForm.set("clerk", partner.getRelatedClerkUserId().toString());
-            setFormDate("payout", partner.getNextPayoutDate());
         } else {
             throw new SessionInternalError("mode is not supported:" + mode);
         }

@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.PreferencesCrudActionBase;
+import com.sapienter.jbilling.client.util.PreferencesMap;
 
 public class PartnerDefaultsAction extends PreferencesCrudActionBase<PartnerDefaultsActionContext> {
 	private static final String FORM = "partnerDefault";

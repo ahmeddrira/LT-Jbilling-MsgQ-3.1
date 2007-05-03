@@ -34,7 +34,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
@@ -145,11 +144,10 @@ public class MaintainAction extends Action {
             session.setAttribute(
                     Constants.SESSION_ORDER_SESSION_KEY,
                     remoteSession);
-            GenericMaintainAction gma = new GenericMaintainAction(mapping,
-                    form, request, response, servlet, remoteSession, 
-                    "order");
-                    
-            return gma.process();            
+            
+            OrderCrudAction delegate = new OrderCrudAction(remoteSession);
+            delegate.setServlet(getServlet());
+            return delegate.execute(mapping, form, request, response);
         } catch (Exception e) {
             log.error("Exception ", e);
         }

@@ -21,7 +21,6 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.util;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -51,24 +50,14 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.ItemSession;
-import com.sapienter.jbilling.interfaces.ItemSessionHome;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
-import com.sapienter.jbilling.server.item.PromotionDTOEx;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
-import com.sapienter.jbilling.server.order.OrderPeriodDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.OptionDTO;
 
 public class GenericMaintainAction {
@@ -211,177 +200,7 @@ public class GenericMaintainAction {
             return(retValue);
         }                
         
-        if (mode.equals("order")) {
-            // this is kind of a wierd case. The dto in the session is all
-            // it is required to edit.
-            NewOrderDTO summary = (NewOrderDTO) session.getAttribute(
-                    Constants.SESSION_ORDER_SUMMARY);
-            summary.setPeriod((Integer) myForm.get("period"));
-            summary.setActiveSince(parseDate("since", 
-                    "order.prompt.activeSince"));
-            summary.setActiveUntil(parseDate("until", 
-                    "order.prompt.activeUntil"));
-            summary.setNextBillableDay(parseDate("next_billable",
-                    "order.prompt.nextBillableDay"));
-            summary.setBillingTypeId((Integer) myForm.get("billingType"));
-            summary.setPromoCode((String) myForm.get("promotion_code"));
-            summary.setNotify(new Integer(((Boolean) myForm.
-                    get("chbx_notify")).booleanValue() ? 1 : 0));
-            summary.setDfFm(new Integer(((Boolean) myForm.
-                    get("chbx_df_fm")).booleanValue() ? 1 : 0));
-            summary.setOwnInvoice(new Integer(((Boolean) myForm.
-                    get("chbx_own_invoice")).booleanValue() ? 1 : 0));
-            summary.setNotesInInvoice(new Integer(((Boolean) myForm.
-                    get("chbx_notes")).booleanValue() ? 1 : 0));
-            summary.setNotes((String) myForm.get("notes"));
-            summary.setAnticipatePeriods(getInteger("anticipate_periods"));
-            summary.setPeriodStr(getOptionDescription(summary.getPeriod(),
-                    Constants.PAGE_ORDER_PERIODS, session));
-            summary.setBillingTypeStr(getOptionDescription(
-                    summary.getBillingTypeId(),
-                    Constants.PAGE_BILLING_TYPE, session));
-            summary.setDueDateUnitId((Integer) myForm.get("due_date_unit_id"));
-            summary.setDueDateValue(getInteger("due_date_value"));
-
-            // return any date validation errors to user
-            if (!errors.isEmpty()) {
-                return "edit";
-            }
-            
-            // if she wants notification, we need a date of expiration
-            if (summary.getNotify().intValue() == 1 && 
-            		summary.getActiveUntil() == null) {
-            	errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("order.error.notifyWithoutDate", 
-                        "order.prompt.notify"));
-                return "edit";
-            }
-            
-            // validate the dates if there is a date of expiration
-            if (summary.getActiveUntil() != null) {
-                Date start = summary.getActiveSince() != null ?
-                        summary.getActiveSince() : 
-                        Calendar.getInstance().getTime();
-                start = Util.truncateDate(start);
-                // it has to be grater than the starting date
-                if (!summary.getActiveUntil().after(start)) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("order.error.dates", 
-                            "order.prompt.activeUntil"));
-                    return "edit";
-                }
-                // only if it is a recurring order
-                if (!summary.getPeriod().equals(new Integer(1))) {
-                    // the whole period has to be a multiple of the period unit
-                    // This is true, until there is support for prorating.
-                    JNDILookup EJBFactory = null;
-                    OrderSessionHome orderHome;
-                    try {
-                        EJBFactory = JNDILookup.getFactory(false);
-                        orderHome = (OrderSessionHome) EJBFactory.lookUpHome(
-                                OrderSessionHome.class,
-                                OrderSessionHome.JNDI_NAME);
-            
-                        OrderSession orderSession = orderHome.create();
-                        OrderPeriodDTOEx period = orderSession.getPeriod(
-                                languageId, summary.getPeriod());
-                        GregorianCalendar toTest = new GregorianCalendar();
-                        toTest.setTime(start);
-                        while (toTest.getTime().before(summary.getActiveUntil())) {
-                            toTest.add(MapPeriodToCalendar.map(period.getUnitId()),
-                                    period.getValue().intValue());
-                        }
-                        if (!toTest.getTime().equals(summary.getActiveUntil())) {
-                            log.debug("Fraction of a period:" + toTest.getTime() +
-                                    " until: " + summary.getActiveUntil());
-                            errors.add(ActionErrors.GLOBAL_ERROR,
-                                    new ActionError("order.error.period"));
-                            return "edit";
-                        }
-                    } catch (Exception e) {
-                        throw new SessionInternalError("Validating date periods", 
-                                GenericMaintainAction.class, e);
-                    }
-                }
-            }
-
-            // validate next billable day
-            OrderDTOEx orderDTO = (OrderDTOEx) session.getAttribute(
-                    Constants.SESSION_ORDER_DTO);
-            // if a date was submitted, check that it is >= old date or
-            // greater than today if old date is null.
-            if (summary.getNextBillableDay() != null) {
-                if (orderDTO != null && orderDTO.getNextBillableDay() != null) {
-                    if (summary.getNextBillableDay().before(
-                            orderDTO.getNextBillableDay())) {
-                        // new date is less than old date
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("order.error.nextBillableDay.hasOldDate"));
-                        return "edit";                    
-                    }
-                } else if (!summary.getNextBillableDay().after(
-                        Calendar.getInstance().getTime())) {
-                    // old date doesn't exist and new date is not after todays date
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("order.error.nextBillableDay.noOldDate"));
-                    return "edit";                    
-                }
-            } else {
-                // else no date was submitted, check that old date isn't null
-                if (orderDTO != null && orderDTO.getNextBillableDay() != null) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("order.error.nextBillableDay.null"));
-                    return "edit";
-                }
-            }
-
-            // now process this promotion if specified
-            if (summary.getPromoCode() != null && 
-                    summary.getPromoCode().length() > 0) {
-                try {
-                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                    ItemSessionHome itemHome =
-                            (ItemSessionHome) EJBFactory.lookUpHome(
-                            ItemSessionHome.class,
-                            ItemSessionHome.JNDI_NAME);
-            
-                    ItemSession itemSession = itemHome.create();
-                    PromotionDTOEx promotion = itemSession.getPromotion(
-                            (Integer) session.getAttribute(
-                            Constants.SESSION_ENTITY_ID_KEY), 
-                            summary.getPromoCode());
-                    
-                    if (promotion == null) {
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("promotion.error.noExist", 
-                                "order.prompt.promotion"));
-                        return "edit";
-                    } 
-                    // if this is an update or the promotion hasn't been 
-                    // used by the user
-                    if (summary.getId() != null || itemSession.
-                            promotionIsAvailable(promotion.getId(),
-                                summary.getUserId(), 
-                                promotion.getCode()).booleanValue()) {
-                        summary = ((NewOrderSession) remoteSession).addItem(
-                                promotion.getItemId(), new Integer(1),
-                                summary.getUserId(), entityId);
-                        session.setAttribute(Constants.SESSION_ORDER_SUMMARY, 
-                                summary);
-                    } else {
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("promotion.error.alreadyUsed", 
-                                "order.prompt.promotion"));
-                        return "edit";
-                    }                                
-                    
-                                
-                } catch (Exception e) {
-                }
-            }
-            
-            return "items";
-        } else if (mode.equals("parameter")) { /// for pluggable task parameters
+        if (mode.equals("parameter")) { /// for pluggable task parameters
             taskDto = (PluggableTaskDTOEx) session.getAttribute(
                     Constants.SESSION_PLUGGABLE_TASK_DTO);
             String values[] = (String[]) myForm.get("value");
@@ -508,33 +327,7 @@ public class GenericMaintainAction {
                 
         retValue = "edit";
                 
-        if (mode.equals("order")) {
-            OrderDTOEx dto = (OrderDTOEx) session.getAttribute(
-                    Constants.SESSION_ORDER_DTO);
-            myForm.set("period", dto.getPeriodId());
-            myForm.set("chbx_notify", new Boolean(dto.getNotify() == null ?
-                    false : dto.getNotify().intValue() == 1));
-            setFormDate("since", dto.getActiveSince());
-            setFormDate("until", dto.getActiveUntil());
-            setFormDate("next_billable", dto.getNextBillableDay());
-            myForm.set("due_date_unit_id", dto.getDueDateUnitId());
-            myForm.set("due_date_value", dto.getDueDateValue() == null ?
-                    null : dto.getDueDateValue().toString());
-            myForm.set("chbx_df_fm", new Boolean(dto.getDfFm() == null ?
-                    false : dto.getDfFm().intValue() == 1));
-            myForm.set("chbx_own_invoice", new Boolean(dto.getOwnInvoice() == null ?
-                    false : dto.getOwnInvoice().intValue() == 1));
-            myForm.set("chbx_notes", new Boolean(dto.getNotesInInvoice() == null ?
-                    false : dto.getNotesInInvoice().intValue() == 1));
-            myForm.set("notes", dto.getNotes());
-            myForm.set("anticipate_periods", dto.getAnticipatePeriods() == null ?
-                    null : dto.getAnticipatePeriods().toString());
-
-            myForm.set("billingType", dto.getBillingTypeId());
-            if (dto.getPromoCode() != null) {
-                myForm.set("promotion_code", dto.getPromoCode());
-            }
-        } else if (mode.equals("parameter")) { /// for pluggable task parameters
+        if (mode.equals("parameter")) { /// for pluggable task parameters
             Integer type = null;
             if (request.getParameter("type").equals("notification")) {
                 type = PluggableTaskDTOEx.TYPE_EMAIL;

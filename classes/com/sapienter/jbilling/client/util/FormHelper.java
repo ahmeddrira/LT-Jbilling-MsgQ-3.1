@@ -3,12 +3,15 @@ package com.sapienter.jbilling.client.util;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.DynaActionForm;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.util.OptionDTO;
 
 public class FormHelper {
 	private final HttpSession mySession;
@@ -64,5 +67,24 @@ public class FormHelper {
 		}
 		return nf.format(arg);
 	}
+	
+    public String getOptionDescription(Integer id, String optionType) throws SessionInternalError {
+        Vector<?> options = (Vector<?>) mySession.getAttribute("SESSION_" + optionType);
+        if (options == null) {
+            throw new SessionInternalError("can't find the vector of options" +
+                    " in the session:" + optionType);
+        }
+        
+        OptionDTO option;
+        for (int f=0; f < options.size(); f++) {
+            option = (OptionDTO) options.get(f);
+            if (option.getCode().compareTo(id.toString()) == 0) {
+                return option.getDescription();
+            }
+        }
+        
+        throw new SessionInternalError("id " + id + " not found in options " +
+                optionType);
+    }
 
 }

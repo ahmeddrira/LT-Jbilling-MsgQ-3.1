@@ -33,17 +33,13 @@ import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.client.util.PreferencesCrudActionBase;
 
 /**
  * @author Emil
  * 
  */
-public class PreferenceAction extends UpdateOnlyCrudActionBase<PreferenceActionContext> {
+public class PreferenceAction extends PreferencesCrudActionBase<PreferenceActionContext> {
 	private static final String MESSAGE_UPDATED_OK = "notification.preference.update";
 	private static final String FORM = "notificationPreference";
 	private static final String FORWARD_EDIT = "notificationPreference_edit";
@@ -57,21 +53,8 @@ public class PreferenceAction extends UpdateOnlyCrudActionBase<PreferenceActionC
 	private static final String FIELD_FIRST_REMINDER = "first_reminder";
 	private static final String FIELD_NEXT_REMINDER = "next_reminder";
 
-	private final UserSession myUserSession;
-
 	public PreferenceAction() {
 		super(FORM, "notification preferences", FORWARD_EDIT);
-		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-					UserSessionHome.class, UserSessionHome.JNDI_NAME);
-
-			myUserSession = userHome.create();
-		} catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing notification preferences CRUD action: "
-							+ e.getMessage());
-		}
 	}
 	
 	@Override
@@ -112,40 +95,27 @@ public class PreferenceAction extends UpdateOnlyCrudActionBase<PreferenceActionC
         		Constants.PREFERENCE_NEXT_REMINDER, 
         		Constants.PREFERENCE_USE_INVOICE_REMINDERS,
         };
-        HashMap<Integer, String> prefs = getEntityPreferences(ids);
+        PreferencesMap prefs = getEntityPreferences(ids);
         
-        myForm.set(FIELD_SELF_DELIVERY, booleanFromPreference(prefs.get(Constants.PREFERENCE_PAPER_SELF_DELIVERY)));
-        myForm.set(FIELD_SHOW_NOTES, booleanFromPreference(prefs.get(Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE)));
-        myForm.set(FIELD_INVOICE_REMINDER, booleanFromPreference(prefs.get(Constants.PREFERENCE_USE_INVOICE_REMINDERS)));
+        myForm.set(FIELD_SELF_DELIVERY, prefs.getBoolean(Constants.PREFERENCE_PAPER_SELF_DELIVERY));
+        myForm.set(FIELD_SHOW_NOTES, prefs.getBoolean(Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE));
+        myForm.set(FIELD_INVOICE_REMINDER, prefs.getBoolean(Constants.PREFERENCE_USE_INVOICE_REMINDERS));
         
-        myForm.set(FIELD_ORDER_DAYS_1, prefs.get(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1));
-        myForm.set(FIELD_ORDER_DAYS_2, prefs.get(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2));
-        myForm.set(FIELD_ORDER_DAYS_3, prefs.get(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3));
+        myForm.set(FIELD_ORDER_DAYS_1, prefs.getString(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1));
+        myForm.set(FIELD_ORDER_DAYS_2, prefs.getString(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2));
+        myForm.set(FIELD_ORDER_DAYS_3, prefs.getString(Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3));
         
-        myForm.set(FIELD_FIRST_REMINDER, prefs.get(Constants.PREFERENCE_FIRST_REMINDER));
-        myForm.set(FIELD_NEXT_REMINDER, prefs.get(Constants.PREFERENCE_NEXT_REMINDER));
+        myForm.set(FIELD_FIRST_REMINDER, prefs.getString(Constants.PREFERENCE_FIRST_REMINDER));
+        myForm.set(FIELD_NEXT_REMINDER, prefs.getString(Constants.PREFERENCE_NEXT_REMINDER));
         
         return getForwardEdit();
-	}
-
-	@SuppressWarnings("unchecked")
-	private HashMap<Integer, String> getEntityPreferences(Integer[] ids) throws RemoteException {
-		return myUserSession.getEntityParameters(entityId, ids);
-	}
-	
-	private Boolean booleanFromPreference(String pref) {
-		return "1".equals(pref);
 	}
 
 	@Override
 	protected ForwardAndMessage doUpdate(PreferenceActionContext dto) throws RemoteException {
 		HashMap<Integer, Integer> preferencesMap = dto.asPreferencesMap();
-        myUserSession.setEntityParameters(entityId, preferencesMap);
+        getUserSession().setEntityParameters(entityId, preferencesMap);
         return getForwardEdit(MESSAGE_UPDATED_OK);
-	}
-
-	private boolean getCheckBoxBooleanValue(String fieldName) {
-		return (Boolean) myForm.get(fieldName);
 	}
 
 }

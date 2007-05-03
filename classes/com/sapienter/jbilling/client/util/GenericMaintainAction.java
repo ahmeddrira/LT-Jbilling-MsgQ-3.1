@@ -733,29 +733,6 @@ public class GenericMaintainAction {
                                 names[f]));
                 }
             }       
-        } else if (mode.equals("partnerDefault")) {
-            partnerDefaultData = new Object[8];
-            if (((String) myForm.get("rate")).trim().length() > 0) {
-                partnerDefaultData[0] = string2float((String) myForm.get(
-                        "rate"));
-            } else {
-                partnerDefaultData[0] = null;
-            }
-
-            if (((String) myForm.get("fee")).trim().length() > 0) {
-                partnerDefaultData[1] = string2float((String) myForm.get(
-                        "fee"));
-            } else {
-                partnerDefaultData[1] = null;
-            }
-            partnerDefaultData[2] = (Integer) myForm.get("fee_currency");
-            partnerDefaultData[3] = new Integer(((Boolean) 
-                    myForm.get("chbx_one_time")).booleanValue() ? 1 : 0);
-            partnerDefaultData[4] = (Integer) myForm.get("period_unit_id");
-            partnerDefaultData[5] = Integer.valueOf((String) myForm.get("period_value"));
-            partnerDefaultData[6] = new Integer(((Boolean) 
-                    myForm.get("chbx_process")).booleanValue() ? 1 : 0);
-            partnerDefaultData[7] = Integer.valueOf((String) myForm.get("clerk"));
         } else if (mode.equals("ranges")) {
             retValue = "partner"; // goes to the partner screen
             String from[] = (String[]) myForm.get("range_from");
@@ -936,19 +913,6 @@ public class GenericMaintainAction {
                 ((PluggableTaskSession) remoteSession).updateParameters(
                         executorId, taskDto);
                 messageKey = "task.parameter.update.done";
-                retValue = "edit";
-            } else  if (mode.equals("partnerDefault")) {
-                HashMap params = new HashMap();
-                params.put(Constants.PREFERENCE_PART_DEF_RATE, partnerDefaultData[0]);
-                params.put(Constants.PREFERENCE_PART_DEF_FEE, partnerDefaultData[1]);
-                params.put(Constants.PREFERENCE_PART_DEF_FEE_CURR, partnerDefaultData[2]);
-                params.put(Constants.PREFERENCE_PART_DEF_ONE_TIME, partnerDefaultData[3]);
-                params.put(Constants.PREFERENCE_PART_DEF_PER_UNIT, partnerDefaultData[4]);
-                params.put(Constants.PREFERENCE_PART_DEF_PER_VALUE, partnerDefaultData[5]);
-                params.put(Constants.PREFERENCE_PART_DEF_AUTOMATIC, partnerDefaultData[6]);
-                params.put(Constants.PREFERENCE_PART_DEF_CLERK, partnerDefaultData[7]);
-                ((UserSession) remoteSession).setEntityParameters(entityId, params);
-                messageKey = "partner.default.updated";
                 retValue = "edit";
             } else  if (mode.equals("ranges")) {
                 PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
@@ -1199,41 +1163,6 @@ public class GenericMaintainAction {
             myForm.set("value", values);
             // this will be needed for the update                    
             session.setAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO, dto);
-        } else if (mode.equals("partnerDefault")) {
-            // set up[ which preferences do we need
-            Integer[] preferenceIds = new Integer[8];
-            preferenceIds[0] = Constants.PREFERENCE_PART_DEF_RATE;
-            preferenceIds[1] = Constants.PREFERENCE_PART_DEF_FEE;
-            preferenceIds[2] = Constants.PREFERENCE_PART_DEF_FEE_CURR;
-            preferenceIds[3] = Constants.PREFERENCE_PART_DEF_ONE_TIME;
-            preferenceIds[4] = Constants.PREFERENCE_PART_DEF_PER_UNIT;
-            preferenceIds[5] = Constants.PREFERENCE_PART_DEF_PER_VALUE;
-            preferenceIds[6] = Constants.PREFERENCE_PART_DEF_AUTOMATIC;
-            preferenceIds[7] = Constants.PREFERENCE_PART_DEF_CLERK;
-            
-            // get'em
-            HashMap result = ((UserSession) remoteSession).
-                    getEntityParameters(entityId, preferenceIds);
-            
-            String value;
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_RATE); 
-            myForm.set("rate", (value == null) ? "" : value);
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_FEE); 
-            myForm.set("fee", (value == null) ? "" : value);
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_FEE_CURR); 
-            myForm.set("fee_currency", Integer.valueOf(value));
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_ONE_TIME); 
-            myForm.set("chbx_one_time", new Boolean(value.equals("1") 
-                    ? true : false));
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_PER_UNIT); 
-            myForm.set("period_unit_id", Integer.valueOf(value));
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_PER_VALUE); 
-            myForm.set("period_value", (value == null) ? "" : value);
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_AUTOMATIC); 
-            myForm.set("chbx_process", new Boolean(value.equals("1") 
-                    ? true : false));
-            value = (String) result.get(Constants.PREFERENCE_PART_DEF_CLERK); 
-            myForm.set("clerk", (value == null) ? "" : value);
         } else if (mode.equals("ranges")) {
             PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
                     Constants.SESSION_PARTNER_DTO);

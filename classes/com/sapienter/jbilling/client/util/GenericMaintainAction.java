@@ -21,9 +21,6 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.client.util;
 
 import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Vector;
 
 import javax.ejb.EJBObject;
 import javax.servlet.http.HttpServletRequest;
@@ -43,14 +40,11 @@ import org.apache.struts.action.ActionServlet;
 import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
-import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
-import com.sapienter.jbilling.server.util.OptionDTO;
 
 public class GenericMaintainAction {
     private ActionMapping mapping = null;
@@ -302,82 +296,6 @@ public class GenericMaintainAction {
         String retValue = "edit";
         myForm.initialize(mapping);
         return retValue;
-    }
-    
-    public Date parseDate(String prefix, String prompt) {
-        Date date = null;
-        String year = (String) myForm.get(prefix + "_year");
-        String month = (String) myForm.get(prefix + "_month");
-        String day = (String) myForm.get(prefix + "_day");
-        
-        // if one of the fields have been entered, all should've been
-        if ((year.length() > 0 && (month.length() <= 0 || day.length() <= 0)) ||
-            (month.length() > 0 && (year.length() <= 0 || day.length() <= 0)) ||
-            (day.length() > 0 && (month.length() <= 0 || year.length() <= 0)) ) {
-            // get the localized name of this field
-            String field = Resources.getMessage(request, prompt); 
-            errors.add(ActionErrors.GLOBAL_ERROR,
-                    new ActionError("errors.incomplete.date", field));
-            return null;
-        }
-        if (year.length() > 0 && month.length() > 0 && day.length() > 0) {
-            try {
-                date = Util.getDate(Integer.valueOf(year), 
-                        Integer.valueOf(month), Integer.valueOf(day));
-            } catch (Exception e) {
-                log.info("Exception when converting the fields to integer", e);
-                date = null;
-            }
-            if (date == null) {
-                // get the localized name of this field
-                String field = Resources.getMessage(request, prompt); 
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("errors.date", field));
-            } 
-        }
-        
-        return date;
-    }
-
-    public static void cleanUpSession(HttpSession session) {
-        Enumeration<?> entries = session.getAttributeNames();
-        for (String entry = (String)entries.nextElement(); 
-                entries.hasMoreElements();
-                entry = (String)entries.nextElement()) {
-            if (!entry.startsWith("sys_") && !entry.startsWith("org.apache.struts")) {
-                //Logger.getLogger(GenericMaintainAction.class).debug("removing " + entry);
-                session.removeAttribute(entry);
-                // you can't modify the colleciton and keep iterating with the
-                // same reference (doahhh :p )
-                entries = session.getAttributeNames();
-            }                
-        }
-        
-    }        
-
-    public static String getOptionDescription(Integer id, String optionType,
-            HttpSession session) throws SessionInternalError {
-        Vector<?> options = (Vector<?>) session.getAttribute("SESSION_" + 
-                optionType);
-        if (options == null) {
-            throw new SessionInternalError("can't find the vector of options" +
-                    " in the session:" + optionType);
-        }
-        
-        OptionDTO option;
-        for (int f=0; f < options.size(); f++) {
-            option = (OptionDTO) options.get(f);
-            if (option.getCode().compareTo(id.toString()) == 0) {
-                return option.getDescription();
-            }
-        }
-        
-        throw new SessionInternalError("id " + id + " not found in options " +
-                optionType);
-    }
-
-    public ActionErrors getErrors() {
-        return errors;
     }
     
 }

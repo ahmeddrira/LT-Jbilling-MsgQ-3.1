@@ -49,7 +49,6 @@ import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormHelper;
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CustomerSession;
@@ -123,7 +122,7 @@ public class ReviewOrderAction extends Action {
                 forward = "show";
             } else if (action.equals("cancel")) {
                 // garbage collect the stuff from the session
-                GenericMaintainAction.cleanUpSession(session);
+                FormHelper.cleanUpSession(session);
                 // cancel the remote session
                 try {
                     remoteSession.remove();
@@ -177,7 +176,7 @@ public class ReviewOrderAction extends Action {
                             (Integer) session.getAttribute(
                             Constants.SESSION_LOGGED_USER_ID), newOrder);
                     // garbage collect the stuff from the session
-                    GenericMaintainAction.cleanUpSession(session);
+                    FormHelper.cleanUpSession(session);
                     // cancel the remote session
                     try {
                         remoteSession.remove();

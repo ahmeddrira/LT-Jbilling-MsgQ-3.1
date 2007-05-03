@@ -3,6 +3,7 @@ package com.sapienter.jbilling.client.util;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
@@ -86,5 +87,22 @@ public class FormHelper {
         throw new SessionInternalError("id " + id + " not found in options " +
                 optionType);
     }
+    
+    public static void cleanUpSession(HttpSession session) {
+        Enumeration<?> entries = session.getAttributeNames();
+        for (String entry = (String)entries.nextElement(); 
+                entries.hasMoreElements();
+                entry = (String)entries.nextElement()) {
+            if (!entry.startsWith("sys_") && !entry.startsWith("org.apache.struts")) {
+                //Logger.getLogger(GenericMaintainAction.class).debug("removing " + entry);
+                session.removeAttribute(entry);
+                // you can't modify the colleciton and keep iterating with the
+                // same reference (doahhh :p )
+                entries = session.getAttributeNames();
+            }                
+        }
+        
+    }        
+    
 
 }

@@ -44,7 +44,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.DynaValidatorForm;
 
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
+import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
@@ -183,11 +183,9 @@ public final class DownloadAction extends Action {
                             "invoice.download.err.positive.value"));
                 }
             } else if (operationType.equals(Constants.OPERATION_TYPE_DATE)) {
-                GenericMaintainAction helper = new GenericMaintainAction(mapping, form, 
-                        request);
-                dateFrom = helper.parseDate("date_from", process);
-                dateTo = helper.parseDate("date_to", process);
-                errors = helper.getErrors();
+            	FormDateHelper helper = new FormDateHelper(form, request);
+                dateFrom = helper.parseDate("date_from", process, errors);
+                dateTo = helper.parseDate("date_to", process, errors);
 
                 if (dateFrom == null || dateTo == null) {
                     errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(

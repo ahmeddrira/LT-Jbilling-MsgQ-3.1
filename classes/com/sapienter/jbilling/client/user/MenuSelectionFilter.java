@@ -34,7 +34,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.GenericMaintainAction;
+import com.sapienter.jbilling.client.util.FormHelper;
 import com.sapienter.jbilling.server.user.Menu;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 
@@ -81,7 +81,7 @@ public final class MenuSelectionFilter implements Filter {
                 
                 if (menu.selectOption(option)) {
                     log.debug("Cleaning up the session");
-                    GenericMaintainAction.cleanUpSession(session);
+                    FormHelper.cleanUpSession(session);
                     /*
                     java.util.Enumeration entries = session.getAttributeNames();
                     for (String entry = (String)entries.nextElement(); entries.hasMoreElements();

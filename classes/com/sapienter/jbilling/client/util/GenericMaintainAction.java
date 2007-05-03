@@ -23,11 +23,9 @@ package com.sapienter.jbilling.client.util;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.ejb.EJBObject;
-import javax.ejb.FinderException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -47,17 +45,11 @@ import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.apache.struts.validator.Resources;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
-import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.OptionDTO;
 
 public class GenericMaintainAction {
@@ -74,11 +66,8 @@ public class GenericMaintainAction {
     private EJBObject remoteSession = null;
     private String formName = null;
     // handy variables
-    private Integer languageId = null;
     private Integer entityId = null;
     private Integer executorId = null;
-    
-    private final FormHelper formHelper;
 
     public GenericMaintainAction(ActionMapping mapping, ActionForm form,
             HttpServletRequest request) { 
@@ -89,7 +78,6 @@ public class GenericMaintainAction {
         messages = new ActionMessages();
         session = request.getSession(false);
         myForm = (DynaValidatorForm) form;
-        formHelper = new FormHelper(session);
     }  
     
     public GenericMaintainAction(ActionMapping mapping, ActionForm form,
@@ -107,7 +95,6 @@ public class GenericMaintainAction {
         session = request.getSession(false);
         action = request.getParameter("action");
         mode = request.getParameter("mode");
-        formHelper = new FormHelper(session);
         this.formName = formName;
         
         if (action == null) {
@@ -122,9 +109,7 @@ public class GenericMaintainAction {
         
         // NOT USED ANYMORE
         // selectedId = (Integer) session.getAttribute(Constants.SESSION_LIST_ID_SELECTED);
-
-        languageId = (Integer) session.getAttribute(
-                Constants.SESSION_LANGUAGE);
+        // languageId = (Integer) session.getAttribute(Constants.SESSION_LANGUAGE);
         executorId = (Integer) session.getAttribute(
                 Constants.SESSION_LOGGED_USER_ID);
         entityId = (Integer) session.getAttribute(
@@ -191,8 +176,7 @@ public class GenericMaintainAction {
         // create a dto with the info from the form and call
         // the remote session
         PluggableTaskDTOEx taskDto = null;
-        PartnerRangeDTO[] partnerRangesData = null;
-        
+
         // do the validation, before moving any info to the dto
         errors = new ActionErrors(myForm.validate(mapping, request));
         
@@ -219,57 +203,6 @@ public class GenericMaintainAction {
                                 names[f]));
                 }
             }       
-        } else if (mode.equals("ranges")) {
-            retValue = "partner"; // goes to the partner screen
-            String from[] = (String[]) myForm.get("range_from");
-            String to[] = (String[]) myForm.get("range_to");
-            String percentage[] = (String[]) myForm.get("percentage_rate");
-            String referral[] = (String[]) myForm.get("referral_fee");
-            Vector ranges = new Vector();
-            
-            for (int f = 0; f < from.length; f++) {
-                if (from[f] != null && from[f].trim().length() > 0) {
-                    PartnerRangeDTO range = new PartnerRangeDTO();
-                    try {
-                        range.setRangeFrom(getInteger2(from[f]));
-                        range.setRangeTo(getInteger2(to[f]));
-                        range.setPercentageRate(string2float(percentage[f]));
-                        range.setReferralFee(string2float(referral[f]));
-                        if (range.getRangeFrom() == null || range.getRangeTo() == null ||
-                                (range.getPercentageRate() == null && range.getReferralFee() == null) ||
-                                (range.getPercentageRate() != null && range.getReferralFee() != null)) {
-                            errors.add(ActionErrors.GLOBAL_ERROR,
-                                    new ActionError("partner.ranges.error", 
-                                            new Integer(f + 1)));
-                        } else {
-                            ranges.add(range);
-                        }
-                    } catch (NumberFormatException e) {
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError("partner.ranges.error", 
-                                new Integer(f + 1)));
-                    }
-                } 
-            }
-            
-            partnerRangesData = new PartnerRangeDTO[ranges.size()];
-            ranges.toArray(partnerRangesData);
-            if (errors.isEmpty()) {
-                PartnerDTOEx p = new PartnerDTOEx();
-                p.setRanges(partnerRangesData);
-                int ret = p.validateRanges();
-                if (ret == 2) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("partner.ranges.error.consec"));
-                } else if (ret == 3) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("partner.ranges.error.gap"));
-                }
-            }
-            
-            if (!errors.isEmpty()) {
-                retValue = "edit";
-            }
         } else {
             throw new SessionInternalError("mode is not supported:" + mode);
         }
@@ -290,14 +223,6 @@ public class GenericMaintainAction {
                         executorId, taskDto);
                 messageKey = "task.parameter.update.done";
                 retValue = "edit";
-            } else  if (mode.equals("ranges")) {
-                PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
-                        Constants.SESSION_PARTNER_DTO);
-                partner.setRanges(partnerRangesData); 
-                ((UserSession) remoteSession).updatePartnerRanges(executorId, 
-                        partner.getId(), partnerRangesData);
-                messageKey = "partner.ranges.updated";
-                retValue = "partner";
             }
         }
         
@@ -348,33 +273,6 @@ public class GenericMaintainAction {
             myForm.set("value", values);
             // this will be needed for the update                    
             session.setAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO, dto);
-        } else if (mode.equals("ranges")) {
-            PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
-                    Constants.SESSION_PARTNER_DTO);
-            PartnerRangeDTO ranges[] = partner.getRanges();
-            String arr1[] = new String[20];
-            String arr2[] = new String[20];
-            String arr3[] = new String[20];
-            String arr4[] = new String[20];
-            // add 20 ranges to the session for edition
-            for (int f = 0; f < 20; f++) {
-                if (ranges != null && ranges.length > f) {
-                    arr1[f] = ranges[f].getRangeFrom().toString();
-                    arr2[f] = ranges[f].getRangeTo().toString();
-                    arr3[f] = float2string(ranges[f].getPercentageRate());
-                    arr4[f] = float2string(ranges[f].getReferralFee());
-                } else {
-                    arr1[f] = null;
-                    arr2[f] = null;
-                    arr3[f] = null;
-                    arr4[f] = null;
-                }
-            }
-            
-            myForm.set("range_from", arr1);
-            myForm.set("range_to", arr2);
-            myForm.set("percentage_rate", arr3);
-            myForm.set("referral_fee", arr4);
         } else {
             throw new SessionInternalError("mode is not supported:" + mode);
         }
@@ -440,42 +338,9 @@ public class GenericMaintainAction {
         
         return date;
     }
-    
-    private void setFormDate(String prefix, Date date) {
-        if (date != null) {
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(date);
-            myForm.set(prefix + "_month", String.valueOf(cal.get(
-                    GregorianCalendar.MONTH) + 1));
-            myForm.set(prefix + "_day", String.valueOf(cal.get(
-                    GregorianCalendar.DAY_OF_MONTH)));
-            myForm.set(prefix + "_year", String.valueOf(cal.get(
-                    GregorianCalendar.YEAR)));
-        } else {
-            myForm.set(prefix + "_month", null);
-            myForm.set(prefix + "_day", null);
-            myForm.set(prefix + "_year", null);
-        }
-    }
-    
-    private void required(String field, String key) {
-        if (field == null || field.trim().length() == 0) {
-            String name = Resources.getMessage(request, key);
-            errors.add(ActionErrors.GLOBAL_ERROR,
-                    new ActionError("errors.required", name));
-        }
-    }
-    
-    private void required(Date field, String key) {
-        if (field == null) {
-            String name = Resources.getMessage(request, key);
-            errors.add(ActionErrors.GLOBAL_ERROR,
-                    new ActionError("errors.required", name));
-        }
-    }
 
     public static void cleanUpSession(HttpSession session) {
-        Enumeration entries = session.getAttributeNames();
+        Enumeration<?> entries = session.getAttributeNames();
         for (String entry = (String)entries.nextElement(); 
                 entries.hasMoreElements();
                 entry = (String)entries.nextElement()) {
@@ -492,7 +357,7 @@ public class GenericMaintainAction {
 
     public static String getOptionDescription(Integer id, String optionType,
             HttpSession session) throws SessionInternalError {
-        Vector options = (Vector) session.getAttribute("SESSION_" + 
+        Vector<?> options = (Vector<?>) session.getAttribute("SESSION_" + 
                 optionType);
         if (options == null) {
             throw new SessionInternalError("can't find the vector of options" +
@@ -511,53 +376,8 @@ public class GenericMaintainAction {
                 optionType);
     }
 
-    private UserDTOEx getUser(Integer userId) 
-            throws SessionInternalError, FinderException {    
-        UserDTOEx retValue = null;
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-            UserSession userSession = userHome.create();
-                    
-            retValue = userSession.getUserDTOEx(userId); 
-        } catch (FinderException e) {
-            throw new FinderException();
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-        
-        return retValue;
-    }
-    
-    private Integer getInteger(String fieldName) {
-        String field = (String) myForm.get(fieldName);
-        return getInteger2(field);
-    }
-    
-    private Integer getInteger2(String str) {
-        Integer retValue;
-        if (str != null && str.trim().length() > 0) {
-            retValue = Integer.valueOf(str);
-        } else {
-            retValue = null;
-        }
-        
-        return retValue;
-    }
-    
     public ActionErrors getErrors() {
         return errors;
     }
     
-	private String float2string(Float arg) {
-		return formHelper.float2string(arg);
-	}
-
-	private Float string2float(String arg) {
-		return formHelper.string2float(arg);
-	}
-
 }

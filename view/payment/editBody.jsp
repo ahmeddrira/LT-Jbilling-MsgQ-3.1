@@ -255,8 +255,21 @@ Contributor(s): ______________________________________.
 	   <input type="hidden" name="lc" value="<bean:write name='<%=Constants.SESSION_USER_DTO%>' 
 	   		property="locale.country"/>"/>
 	   		
+		<%--
+		PayPal Instant Payment Notification (IPN) calls back a URL where jbilling listens.
+		See the URL below for the format that the URL should follow.
+		This URL should be setup as part of your PayPal account (for the documentation)
+			1. Log in to your Business or Premier PayPal account.
+			2. Click the Profile subtab.
+			3. Click the Instant Payment Notification Preferences link in the Selling Preferences column.
+			4. Click Edit.
+			5. Click the checkbox and enter the URL at which you would like to receive your IPN Notifications.
+			6. Click Save.
+		
+		For testing, you could use the following line:
 	   <input type="hidden" name="notify_url" 
-	   		value="https://application.sapienter.com/billing/callback?caller=paypal"/>
+	   		value="https://yourserver.com/billing/callback?caller=paypal"/>
+	   	--%>
 	   		
 	   <jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_PAYPAL_BUTTON_URL%>'
 			beanName="jsp_button_url"/> 		

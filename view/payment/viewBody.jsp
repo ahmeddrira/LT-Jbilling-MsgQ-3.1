@@ -208,6 +208,11 @@ Contributor(s): ______________________________________.
 			</td>
 		</tr>
 		</logic:present>
+
+		<%-- the authorization has to be made available to the page that will show it --%>
+		<logic:present name="dto" property="authorization">
+			<bean:define id="authorizationDto"  name="dto" property="authorization" toScope="request"/>
+		</logic:present>
 		
 	</sess:equalsAttribute>
 	

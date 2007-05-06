@@ -140,9 +140,7 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
         //execute the method
         client.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
-        if(logger.isDebugEnabled()){
-	        logger.debug("Got response:" + responseBody);
-        }
+        logger.debug("Got response:" + responseBody);
         
         PaymentAuthorizationDTOEx paymentAuthDTO = processResponse(responseBody);
         post.releaseConnection();
@@ -201,19 +199,21 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
 	 */
 	private PaymentAuthorizationDTOEx processResponse(String gatewayResponse) throws PluggableTaskException{
 		String[] returnData = gatewayResponse.split(RESPONSE_DELIMITER);
-		if(returnData.length<6){
+		if(returnData.length<2){
 			throw new PluggableTaskException("Received invalid response " + gatewayResponse + 
 					" from ACHCommerce Gateway");
 		}
 		String replyCode = returnData[0];
 		String description = returnData[1];
-		String txnId = returnData[2];
-		PaymentAuthorizationDTOEx paymentAuthDTO = new PaymentAuthorizationDTOEx();
-		paymentAuthDTO.setCode1(replyCode);
-		paymentAuthDTO.setResponseMessage(description);
-		paymentAuthDTO.setProcessor(PROCESSOR_NAME);
-		paymentAuthDTO.setTransactionId(txnId);
-		paymentAuthDTO.setResult(replyCode.equals(PAYMENT_SUCCESS_CODE));
+        PaymentAuthorizationDTOEx paymentAuthDTO = new PaymentAuthorizationDTOEx();
+        paymentAuthDTO.setCode1(replyCode);
+        paymentAuthDTO.setResponseMessage(description);
+        paymentAuthDTO.setProcessor(PROCESSOR_NAME);
+        if (returnData.length >= 6) {
+            String txnId = returnData[2];
+            paymentAuthDTO.setTransactionId(txnId);
+        }
+        paymentAuthDTO.setResult(replyCode.equals(PAYMENT_SUCCESS_CODE));
 		return paymentAuthDTO;
 	}
 }

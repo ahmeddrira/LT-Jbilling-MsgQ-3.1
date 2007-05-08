@@ -61,4 +61,12 @@ public interface UserSQL {
     
     static final String findUserTransitionsUpperDateSuffix =
     	  " AND el.create_datetime <= ?";
+
+    static final String lastPasswordChange =
+        "SELECT max(create_datetime)" +
+        " FROM event_log el" +
+        " WHERE el.module_id = " + EventLogger.MODULE_USER_MAINTENANCE  + 
+        " AND el.message_id = " + EventLogger.PASSWORD_CHANGE + 
+        " AND el.foreign_id = ?";
+
 }

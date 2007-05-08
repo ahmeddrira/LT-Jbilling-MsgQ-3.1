@@ -1137,6 +1137,20 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 
 		user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField());	
     }
+    
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+   public boolean isPasswordExpired(Integer userId) {
+        UserBL user;
+        try {
+            user = new UserBL(userId);
+        } catch (FinderException e) {
+            // cant recover from this
+            throw new SessionInternalError(e);
+        }
+        return user.isPasswordExpired();
+    }
 
 
     // -------------------------------------------------------------------------

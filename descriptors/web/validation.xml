@@ -201,6 +201,36 @@
 <arg1 name="maxlength" key="${var:maxlength}" />
 </field>
 </form>
+
+    <form name="changePassword">
+        <field property="password" depends="required,minlength,maxlength,alphanum">
+            <var>
+                <var-name>minlength</var-name>
+                <var-value>6</var-value>
+            </var>
+            <arg0 key="user.prompt.password" />
+            <arg1 name="minlength" key="${var:minlength}" resource="false" />
+            <var>
+                <var-name>maxlength</var-name>
+                <var-value>20</var-value>
+            </var>
+            <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
+        </field>
+        <field property="verifyPassword" depends="required,minlength,maxlength,alphanum">
+            <var>
+                <var-name>minlength</var-name>
+                <var-value>6</var-value>
+            </var>
+            <arg0 key="user.prompt.verifyPassword"/>
+            <arg1 name="minlength" key="${var:minlength}" resource="false" />
+            <var>
+                <var-name>maxlength</var-name>
+                <var-value>20</var-value>
+            </var>
+            <arg1 name="maxlength" key="${var:maxlength}" resource="false" />
+        </field>
+   </form>
+
   <form name="userCreate">
 <field property="username" depends="required,minlength,mask,maxlength">
 <var>

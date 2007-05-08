@@ -382,6 +382,10 @@
 <form-bean name="task" type="org.apache.struts.validator.DynaValidatorForm">
     <form-property name="tasks" type="com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx[]" />
 </form-bean>
+<form-bean name="changePassword" type="org.apache.struts.validator.DynaValidatorForm">
+    <form-property name="password" type="java.lang.String" />
+    <form-property name="verifyPassword" type="java.lang.String" />
+</form-bean>
 
 </form-beans>
   
@@ -424,12 +428,16 @@
   <!-- ========== Action Mapping Definitions ============================== -->
   <action-mappings>
 
-    <!-- Edit user registration -->
     <action path="/verifyPassword" name="UserLoginForm" scope="request" validate="true" input="/user/login.jsp" type="com.sapienter.jbilling.client.user.UserLoginAction">
-           <forward name="success" path="/initial.jsp" />
+        <forward name="success" path="/initial.jsp" />
+        <forward name="changePassword" path="/user/changePassword.jsp" />
     </action>
 
-  <action path="/newOrderItem" type="com.sapienter.jbilling.client.order.NewOrderItemAction" name="OrderAddItemForm" input="/order/newOrder.jsp" scope="request">
+    <action path="/changePassword" name="changePassword" scope="request" validate="true" input="/user/changePassword.jsp" type="com.sapienter.jbilling.client.user.ChangePasswordAction">
+        <forward name="success" path="/initial.jsp" />
+    </action>
+
+    <action path="/newOrderItem" type="com.sapienter.jbilling.client.order.NewOrderItemAction" name="OrderAddItemForm" input="/order/newOrder.jsp" scope="request">
         <forward name="showOrderLIst" path="/order/newOrderItems.jsp" redirect="false" />
     </action>
     <action path="/reviewOrder" type="com.sapienter.jbilling.client.order.ReviewOrderAction" validate="true" scope="session" name="orderDTOForm" input="/order/orderReview.jsp">

@@ -15,7 +15,12 @@
 	  <put name="footer" value="/common/footer.jsp" />
       <put name="body" value="/user/loginBody.jsp" />
   </definition>
-  
+  <definition name="changePassword" path="/layouts/centerLayout.jsp">
+      <put name="title" value="Password Expired" />
+	  <put name="footer" value="/common/footer.jsp" />
+      <put name="body" value="/user/changePasswordBody.jsp" />
+  </definition>
+ 
   <!-- =======================================================  -->
   <!-- Forget Password                                               -->
   <!-- =======================================================  -->

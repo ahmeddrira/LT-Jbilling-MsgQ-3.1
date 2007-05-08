@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import javax.ejb.CreateException;
 import javax.naming.NamingException;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,15 +41,12 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.sapienter.jbilling.client.item.CurrencyArrayWrap;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.list.ListSession;
-import com.sapienter.jbilling.server.list.ListSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 
 
@@ -129,6 +125,7 @@ public final class UserLoginAction extends Action {
         // now do the call to the business object
         // get the value from a Session EJB 
         JNDILookup EJBFactory = null;
+        UserSession myRemoteSession = null;
         try {
             EJBFactory = JNDILookup.getFactory(false);            
             UserSessionHome UserHome =
@@ -136,7 +133,7 @@ public final class UserLoginAction extends Action {
                     UserSessionHome.class,
                     UserSessionHome.JNDI_NAME);
 
-            UserSession myRemoteSession = UserHome.create();
+            myRemoteSession = UserHome.create();
             user = myRemoteSession.authenticate(user);
             if (user == null) {
                 errors.add(
@@ -158,7 +155,7 @@ public final class UserLoginAction extends Action {
             saveErrors(request, errors);
             return (new ActionForward(mapping.getInput()));
         }
-
+        
         // Save our logged-in user in the session
         HttpSession session = request.getSession();
         if (!session.isNew()) {
@@ -166,19 +163,24 @@ public final class UserLoginAction extends Action {
         	session = request.getSession();
         }
         
+        // this is for struts to pick up the right messges file
+        session.setAttribute(Globals.LOCALE_KEY, locale);
+        
+        // verify that the password has not expired
+        boolean  expired = myRemoteSession.isPasswordExpired(user.getUserId());
+        if (expired) {
+            // can't login, go to the change password page
+            // Leave the session empty, otherwise it'd be possible to go directly 
+            // to a page
+            session.setAttribute("jsp_user_id", user.getUserId());
+            return (mapping.findForward("changePassword"));
+        }
+
         if (internalLogin) {
             user.setEntityId(Integer.valueOf(entityId));
         }
-        // this is for struts to pick up the right messges file
-        session.setAttribute(Globals.LOCALE_KEY, locale);
-        session.setAttribute(Constants.SESSION_LOGGED_USER_ID, 
-                user.getUserId());
-        session.setAttribute(Constants.SESSION_ENTITY_ID_KEY, 
-                user.getEntityId());
-        session.setAttribute(Constants.SESSION_LANGUAGE, user.getLanguageId());
-        session.setAttribute(Constants.SESSION_CURRENCY, user.getCurrencyId());
-        // need the whole thing :( for the permissions
-        session.setAttribute(Constants.SESSION_USER_DTO, user); 
+        
+        logUser(session, user);
         
         log.debug("user " + user.getUserName() + " logged. entity = " + user.getEntityId());
         // Forward control to the specified success URI
@@ -186,23 +188,14 @@ public final class UserLoginAction extends Action {
 
     }
     
-    static void logUser(HttpSession session, String userName, Integer entityId) 
-            throws NamingException, CreateException, RemoteException, 
-                SessionInternalError {
+    static void logUser(HttpSession session, UserDTOEx user) {
 
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        UserSessionHome UserHome =
-            (UserSessionHome) EJBFactory.lookUpHome(
-                UserSessionHome.class,
-                UserSessionHome.JNDI_NAME);
-
-        UserSession myRemoteSession = UserHome.create();
-        UserDTOEx user = myRemoteSession.getUserDTOEx(userName, entityId);
-        
-        session.setAttribute(Constants.SESSION_LOGGED_USER_ID, user.getUserId());
+        session.setAttribute(Constants.SESSION_LOGGED_USER_ID, 
+                user.getUserId());
         session.setAttribute(Constants.SESSION_ENTITY_ID_KEY, 
                 user.getEntityId());
         session.setAttribute(Constants.SESSION_LANGUAGE, user.getLanguageId());
+        session.setAttribute(Constants.SESSION_CURRENCY, user.getCurrencyId());
         // need the whole thing :( for the permissions
         session.setAttribute(Constants.SESSION_USER_DTO, user); 
     }

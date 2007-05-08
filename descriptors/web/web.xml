@@ -31,6 +31,10 @@
   			<param-name>forgetPassword_action</param-name>
   			<param-value>/forgetPassword.do</param-value>
   		</init-param>
+  		<init-param>
+  			<param-name>changePassword_action</param-name>
+  			<param-value>/changePassword.do</param-value>
+  		</init-param>
   </filter>
   <filter>
   		<filter-name>Menu Selection</filter-name>

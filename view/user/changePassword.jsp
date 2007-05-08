@@ -21,5 +21,4 @@ Contributor(s): ______________________________________.
 <%@ page language="java" %>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 
-<tiles:insert definition="userLogin" flush="true" />
-
+<tiles:insert definition="changePassword" flush="true" />

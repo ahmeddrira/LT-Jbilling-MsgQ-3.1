@@ -1082,4 +1082,35 @@ public class UserBL  extends ResultList
         
         log.debug("Subscription status updated to " + id);
     }
+    
+    public boolean isPasswordExpired() {
+        boolean retValue = false;
+        try {
+            /*
+             * TODO: 
+             *  - verify that the preference of secure login is on
+             *  - get the 60 out of a preference
+             */
+            prepareStatement(UserSQL.lastPasswordChange);
+            cachedResults.setInt(1, user.getUserId());
+            execute();
+            cachedResults.next();
+            Date lastChange = cachedResults.getDate(1);
+            // no changes? then take when the user signed-up
+            if (lastChange == null) {
+                lastChange = user.getCreateDateTime();
+            }
+            conn.close();
+            
+            long days = (Calendar.getInstance().getTimeInMillis() - 
+                    lastChange.getTime()) / (1000 * 60 * 60 * 24);
+            if (days >= 60) {
+                retValue = true;
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        } 
+
+        return retValue;
+    }
 }

@@ -62,19 +62,19 @@ public final class UserAuthenticationFilter implements Filter {
     private String signupPrefix = null;
     private String forgetPasswordPage =  null;
     private String forgetPasswordAction = null;
-    private FilterConfig filterConfig = null;
+    private String changePasswordAction = null;
     private Logger log = null;
 
     /**
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
         this.loginPage = filterConfig.getInitParameter("login_page");
         this.loginAction = filterConfig.getInitParameter("login_action");
         this.signupPrefix = filterConfig.getInitParameter("signup_prefix");
         this.forgetPasswordPage = filterConfig.getInitParameter("forgetPassword_page");
         this.forgetPasswordAction = filterConfig.getInitParameter("forgetPassword_action");
+        this.changePasswordAction = filterConfig.getInitParameter("changePassword_action");
         
         log = Logger.getLogger(UserAuthenticationFilter.class);
     }
@@ -144,7 +144,8 @@ public final class UserAuthenticationFilter implements Filter {
                 thisPage.compareTo(loginAction) != 0 &&
                 !thisPage.startsWith(signupPrefix) &&
                 thisPage.compareTo(forgetPasswordPage) != 0 &&
-                thisPage.compareTo(forgetPasswordAction) != 0) {
+                thisPage.compareTo(forgetPasswordAction) != 0 &&
+                thisPage.compareTo(changePasswordAction) != 0) {
             // then you need a session
             HttpSession session = httpReq.getSession(false);
             if (session == null) {
@@ -174,7 +175,6 @@ public final class UserAuthenticationFilter implements Filter {
      */
     public void destroy() {
         loginPage = null;
-        filterConfig = null;
     }
 
 }

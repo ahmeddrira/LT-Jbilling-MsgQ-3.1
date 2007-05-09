@@ -39,6 +39,7 @@ import org.apache.struts.validator.Resources;
 
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
@@ -151,7 +152,7 @@ public class RepeatedPasswordValidator {
 				bean, field.getProperty());
 
 		// Determine the id and role of the user changing his password
-		Integer userId = (Integer)request.getSession().getAttribute("user_id");
+		Integer userId = (Integer)request.getSession().getAttribute(Constants.SESSION_USER_ID);
 		Integer userRole = null;
 		try {
 			JNDILookup jndi = JNDILookup.getFactory();

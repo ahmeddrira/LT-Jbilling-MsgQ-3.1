@@ -172,7 +172,7 @@ public final class UserLoginAction extends Action {
             // can't login, go to the change password page
             // Leave the session empty, otherwise it'd be possible to go directly 
             // to a page
-            session.setAttribute("jsp_user_id", user.getUserId());
+            session.setAttribute(Constants.SESSION_USER_ID, user.getUserId());
             return (mapping.findForward("changePassword"));
         }
 

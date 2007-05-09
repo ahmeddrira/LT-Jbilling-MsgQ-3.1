@@ -203,7 +203,7 @@
 </form>
 
     <form name="changePassword">
-        <field property="password" depends="required,minlength,maxlength,alphanum">
+        <field property="password" depends="required,minlength,maxlength,alphanum,noUserInfo,notRepeated">
             <var>
                 <var-name>minlength</var-name>
                 <var-value>6</var-value>
@@ -1020,7 +1020,7 @@
 <field property="partnerId" depends="integer">
 <arg0 key="user.prompt.partner" />
 </field>
-<field property="password" depends="minlength,alphanum">
+<field property="password" depends="minlength,alphanum,noUserInfo,notRepeated">
 <var>
 <var-name>minlength</var-name>
 <var-value>6</var-value>

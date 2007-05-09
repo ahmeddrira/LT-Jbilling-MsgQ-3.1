@@ -34,6 +34,23 @@ public class AlphaNumValidator {
 	private static String NUMBERS = ".*[0-9].*";
 	private static String LETTERS = ".*[A-Za-z].*";
 
+	
+	public static boolean basicValidation(String password) {
+		boolean result = true;
+		if (password == null || password.equals("")) {
+			return true;
+		}
+		try {
+			if (!password.matches(LETTERS) || !password.matches(NUMBERS)) {
+				result = false;
+			}
+		} catch (Throwable e) {
+			result = false;
+		}
+		return result;
+	}
+
+
 	public static boolean validateAlphaNum(
 			Object bean,
 			ValidatorAction va, 
@@ -47,10 +64,9 @@ public class AlphaNumValidator {
 
 		if (!GenericValidator.isBlankOrNull(value)) {
 			try {
-				if (!value.matches(LETTERS) || !value.matches(NUMBERS)) {
+				if (!basicValidation(value)) {
 					errors.add(field.getKey(),
 							Resources.getActionError(
-									// application,
 									request,
 									va,
 									field));
@@ -60,7 +76,6 @@ public class AlphaNumValidator {
 			} catch (Exception e) {
 				errors.add(field.getKey(),
 						Resources.getActionError(
-								// application,
 								request,
 								va,
 								field));

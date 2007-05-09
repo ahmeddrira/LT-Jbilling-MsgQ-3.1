@@ -69,13 +69,13 @@ public class WSTest extends TestCase {
         	JbillingAPI api = JbillingAPIFactory.getAPI();
         	
             /*
-             * Create
+             * Create - This passes the password validation routine.
              */
             Random rnd = new Random();
             UserWS newUser = new UserWS();
             newUser.setUserName("webServicesUserNameCreated" + rnd.nextInt(100));
             String newUserName = newUser.getUserName();
-            newUser.setPassword("asdfasdf");
+            newUser.setPassword("asdfasdf1");
             newUser.setLanguageId(new Integer(1));
             newUser.setMainRoleId(new Integer(5));
             newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
@@ -184,7 +184,8 @@ public class WSTest extends TestCase {
              * Update
              */
             // now update the created user
-            retUser.setPassword("newPassword");
+            System.out.println("Updating user - Pass 1 - Should succeed");
+            retUser.setPassword("newPassword1");
             System.out.println("Updating user...");
             api.updateUser(retUser);
             
@@ -192,17 +193,33 @@ public class WSTest extends TestCase {
             System.out.println("Getting updated user ");
             retUser = api.getUserWS(newUserId);
             assertNotNull("Didn't get updated user", retUser);
-            assertEquals("Password ", retUser.getPassword(), 
-                    "Kg8kTBrB5Mr.y.SNPmHXr"); // this is how it translates after encryption
+            // The password should be the same as in the first step, no update happened.
+            assertEquals("Password ", retUser.getPassword(),
+            		"pgdu8KCGZJ/0xwo1RdgSe");
             assertEquals("Contact name", retUser.getContact().getFirstName(),
                     newUser.getContact().getFirstName());
+
+            System.out.println("Updating user - Pass 2 - Should fail due to invalid password");
+            retUser.setPassword("newPassword");
+            System.out.println("Updating user...");
+            boolean catched = false;
+            try {
+            	api.updateUser(retUser);
+            } catch (Throwable e) {
+            	catched = true;
+            }
+            if (!catched) {
+            	fail("User was updated - Password validation not working!");
+            } else {
+            	System.out.println("User was not updated. Password validation worked.");
+            }
 
             // again, for the contact info, and no cc
             retUser.getContact().setFirstName("New Name");
             retUser.getContact().setLastName("New L.Name");
             retUser.setCreditCard(null);
             // call the update
-            retUser.setPassword("newPassword"); // reset, the one I have is crypted
+            retUser.setPassword("newPassword2"); // reset, the one I have is crypted
             api.updateUser(retUser);
             // fetch the user
             UserWS updatedUser = api.getUserWS(newUserId);

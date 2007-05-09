@@ -961,6 +961,30 @@
 							   javax.servlet.ServletContext"  
       			 msg="errors.alphanum">
       </validator>
+      
+      <validator name="noUserInfo"
+      			 classname="com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator" 
+      			 method="validateNoUserInfo"
+      			 methodParams="java.lang.Object,
+							   org.apache.commons.validator.ValidatorAction,
+							   org.apache.commons.validator.Field,
+							   org.apache.struts.action.ActionErrors,
+							   javax.servlet.http.HttpServletRequest,
+							   javax.servlet.ServletContext"  
+      			 msg="errors.nouserinfo">
+      </validator>
+      
+      <validator name="notRepeated"
+      			 classname="com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator" 
+      			 method="validateRepeatedPassword"
+      			 methodParams="java.lang.Object,
+							   org.apache.commons.validator.ValidatorAction,
+							   org.apache.commons.validator.Field,
+							   org.apache.struts.action.ActionErrors,
+							   javax.servlet.http.HttpServletRequest,
+							   javax.servlet.ServletContext"  
+      			 msg="errors.repeated">
+      </validator>
 
    </global>
 

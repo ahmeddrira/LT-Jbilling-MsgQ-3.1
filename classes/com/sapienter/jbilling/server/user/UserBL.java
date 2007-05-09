@@ -73,6 +73,9 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
+import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
+import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.EventLogger;
@@ -85,7 +88,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
  * @author emilc
  *
  */
-public class UserBL  extends ResultList
+public class UserBL extends ResultList
         implements UserSQL {
     private JNDILookup EJBFactory = null;
     private UserEntityLocalHome userHome = null;
@@ -176,13 +179,10 @@ public class UserBL  extends ResultList
     	
         if (changedPassword != null &&
                 !changedPassword.equals(user.getPassword())) {
-            // if it is not the same user changing its password, I'll log it
-            if (!executorId.equals(user.getUserId())) {
-                eLogger.audit(executorId, Constants.TABLE_BASE_USER, user.getUserId(),
-                        EventLogger.MODULE_USER_MAINTENANCE, 
-                        EventLogger.PASSWORD_CHANGE, null, user.getPassword(), 
-                        null);
-            }
+            eLogger.audit(executorId, Constants.TABLE_BASE_USER, user.getUserId(),
+                    EventLogger.MODULE_USER_MAINTENANCE, 
+                    EventLogger.PASSWORD_CHANGE, null, user.getPassword(), 
+                    null);
             user.setPassword(changedPassword);
         }
         if (dto.getUserName() != null && !user.getUserName().equals(
@@ -1039,7 +1039,7 @@ public class UserBL  extends ResultList
     }
     
     public void updateSubscriptionStatus(Integer id) {
-        if (user.getSubscriptionStatus().getId().equals(id)) {
+        if (id == null || user.getSubscriptionStatus().getId().equals(id)) {
             // no update ... it's already there
             return;
         }
@@ -1083,6 +1083,32 @@ public class UserBL  extends ResultList
         log.debug("Subscription status updated to " + id);
     }
     
+    public boolean validatePassword(String password) {
+    	boolean result = true;
+    	try {
+    		result = AlphaNumValidator.basicValidation(password);
+    		
+    		if (result != false) {
+    			result = RepeatedPasswordValidator.basicValidation(
+    					getEntity().getUserId(),
+    					getMainRole(),
+    					password);
+
+    			if (result != false) {
+    				ContactBL cbl = new ContactBL();
+    				cbl.set(getEntity().getUserId());
+    				ContactDTOEx contact = cbl.getDTO();
+    				result = NoUserInfoInPasswordValidator.basicValidation(
+    						contact,
+    						password);
+    			}
+    		}
+    	} catch (Throwable e) {
+    		result = false;
+    	}
+    	return result;
+    }
+    
     public boolean isPasswordExpired() {
         boolean retValue = false;
         try {
@@ -1113,4 +1139,5 @@ public class UserBL  extends ResultList
 
         return retValue;
     }
+
 }

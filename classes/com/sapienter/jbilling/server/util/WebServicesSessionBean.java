@@ -43,6 +43,7 @@ import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.GatewayBL;
+import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
@@ -308,9 +309,20 @@ public class WebServicesSessionBean implements SessionBean {
             // get the entity
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer entityId = bl.getEntity().getEntity().getId();
-            Integer executorId =   bl.getEntity().getUserId(); 
+            Integer executorId =   bl.getEntity().getUserId();
             log.info("WS - Updating user " + user);
             
+            // Check whether the password changes or not.
+            JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(bl.getMainRole());
+        	String newPassword = passwordCryptoService.encrypt(user.getPassword());
+        	String oldPassword = bl.getEntity().getPassword();
+        	if (!newPassword.equals(oldPassword)) {
+        		// If the password is changing, validate it
+        		if (!bl.validatePassword(user.getPassword())) {
+        			throw new SessionInternalError("Error updating user");
+        		}
+        	}
+
             // convert to a DTO
             UserDTOEx dto = new UserDTOEx(user, entityId);
             

@@ -161,7 +161,8 @@ public class DTOFactory {
                 user.getPassword(), user.getDeleted(), 
                 user.getLanguageIdField(),
                 null, user.getCurrencyId(), user.getCreateDateTime(),
-                user.getLastStatusChange(), user.getLastLogin()); // I'll set all the roles later
+                user.getLastStatusChange(), user.getLastLogin(),
+                user.getFailedAttmepts()); // I'll set all the roles later
 
         // get the status
         dto.setStatusId(user.getStatus().getId());
@@ -348,7 +349,8 @@ public class DTOFactory {
                 order.getUser().getCurrencyId(), 
                 order.getUser().getCreateDateTime(),
                 order.getUser().getLastStatusChange(),
-                order.getUser().getLastLogin()));
+                order.getUser().getLastLogin(),
+                order.getUser().getFailedAttmepts()));
         retValue.setPeriodId(order.getPeriod().getId());
         retValue.setDfFm(order.getDfFm());
         retValue.setAnticipatePeriods(order.getAnticipatePeriods());

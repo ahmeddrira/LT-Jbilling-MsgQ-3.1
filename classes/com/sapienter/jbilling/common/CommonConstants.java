@@ -118,6 +118,8 @@ public interface CommonConstants {
     public static Integer PREFERENCE_CUSTOMER_CONTACT_EDIT = new Integer(36);
     public static Integer PREFERENCE_HIDE_CC_NUMBERS = new Integer(37);
     public static Integer PREFERENCE_LINK_AGEING_TO_SUBSCRIPTION = new Integer(38);
+    public static Integer PREFERENCE_FAILED_LOGINS_LOCKOUT = new Integer(39);
+    public static Integer PREFERENCE_PASSWORD_EXPIRATION = new Integer(40);
 
     // order status, in synch with db
     public static final Integer ORDER_STATUS_ACTIVE = new Integer(1);
@@ -146,4 +148,15 @@ public interface CommonConstants {
     // BigDecimal caculation constants
     public static final int BIGDECIMAL_SCALE = 10;
     public static final int BIGDECIMAL_ROUND = BigDecimal.ROUND_HALF_UP;
+    
+    // codes for login resuls
+    // ok
+    public final static Integer AUTH_OK = new Integer(0);
+    // invalid user name or password
+    public final static Integer AUTH_WRONG_CREDENTIALS = new Integer(1);
+    // same as previous, but on this attempt the password has be changed
+    // to lock the account
+    public final static Integer AUTH_LOCKED = new Integer(2);
+    // the password is good, but too old. Needs to call update
+    public final static Integer AUTH_EXPIRED = new Integer(3);
 }

@@ -46,6 +46,7 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.AchEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.CustomerEntityLocalHome;
@@ -791,7 +792,7 @@ public class UserBL extends ResultList
                 user.getPassword(), user.getDeleted(), 
                 user.getLanguageIdField(), user.getCurrencyId(),
                 user.getCreateDateTime(), user.getLastStatusChange(),
-                user.getLastLogin());
+                user.getLastLogin(), user.getFailedAttmepts());
     }   
     
     /**
@@ -1112,11 +1113,20 @@ public class UserBL extends ResultList
     public boolean isPasswordExpired() {
         boolean retValue = false;
         try {
-            /*
-             * TODO: 
-             *  - verify that the preference of secure login is on
-             *  - get the 60 out of a preference
-             */
+            int expirationDays;
+            PreferenceBL pref = new PreferenceBL();
+            try {
+                pref.set(user.getEntity().getId(), Constants.PREFERENCE_PASSWORD_EXPIRATION);
+                expirationDays = pref.getInt();
+            } catch (FinderException e) {
+                expirationDays = pref.getInt();
+            } 
+            
+            // zero means that this is not enforced
+            if (expirationDays == 0) {
+                return false;
+            }
+
             prepareStatement(UserSQL.lastPasswordChange);
             cachedResults.setInt(1, user.getUserId());
             execute();
@@ -1130,7 +1140,7 @@ public class UserBL extends ResultList
             
             long days = (Calendar.getInstance().getTimeInMillis() - 
                     lastChange.getTime()) / (1000 * 60 * 60 * 24);
-            if (days >= 60) {
+            if (days >= expirationDays) {
                 retValue = true;
             }
         } catch (Exception e) {
@@ -1140,4 +1150,49 @@ public class UserBL extends ResultList
         return retValue;
     }
 
+    /**
+     * Call this method when the user has provided the wrong password
+     * @return
+     * True if the account is now locked (maximum retries) or false if it is not locked.
+     */
+    public boolean failedLoginAttempt() {
+        boolean retValue = false;
+        int allowedRetries;
+        PreferenceBL pref = new PreferenceBL();
+        try {
+            pref.set(user.getEntity().getId(), Constants.PREFERENCE_FAILED_LOGINS_LOCKOUT);
+            allowedRetries = pref.getInt();
+        } catch (FinderException e) {
+            allowedRetries = pref.getInt();
+        } 
+        
+        // zero means not to enforce this rule
+        if (allowedRetries > 0) {
+            int total = user.getFailedAttmepts();
+            total ++;
+            user.setFailedAttmepts(new Integer(total));
+            
+            if (total >= allowedRetries) {
+                retValue = true;
+                // lock out the user
+                JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(getMainRole());
+                String newPassword = passwordCryptoService.encrypt(Util.getSysProp("lockout_password"));
+
+                user.setPassword(newPassword);
+                eLogger.auditBySystem(user.getEntity().getId(), 
+                        Constants.TABLE_BASE_USER, user.getUserId(), 
+                        EventLogger.MODULE_USER_MAINTENANCE, 
+                        EventLogger.ACCOUNT_LOCKED, new Integer(total), 
+                        null, null);
+                log.debug("Locked account for user " + user.getUserId());
+            }
+        }
+        
+        return retValue;
+    }
+    
+    public void successLoginAttempt() {
+        user.setLastLogin(Calendar.getInstance().getTime());
+        user.setFailedAttmepts(new Integer(0));
+    }
 }

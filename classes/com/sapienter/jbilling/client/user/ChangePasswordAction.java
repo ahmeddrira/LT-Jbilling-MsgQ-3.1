@@ -36,16 +36,20 @@ public class ChangePasswordAction extends Action {
         DynaValidatorForm info = (DynaValidatorForm) form;
         String password = (String) info.get("password");
         String verifyPassword = (String) info.get("verifyPassword");
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute(Constants.SESSION_USER_ID);
         
         if (!password.equals(verifyPassword)) {
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("user.create.error.password_match"));
-            saveErrors(request, errors);
-            return (new ActionForward(mapping.getInput()));
         }
 
-        HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute(Constants.SESSION_USER_ID);
+        String oldPassword = (String) session.getAttribute("jsp_initial_password");
+        if (oldPassword.equalsIgnoreCase(password)) {
+            errors.add(ActionErrors.GLOBAL_ERROR,
+                    new ActionError("errors.repeated", "New password"));
+        }
+
 
         JNDILookup EJBFactory = null;
         UserSession myRemoteSession = null;
@@ -59,15 +63,6 @@ public class ChangePasswordAction extends Action {
                     UserSessionHome.JNDI_NAME);
 
             myRemoteSession = UserHome.create();
-            user = myRemoteSession.getUserDTOEx(userId);
-            
-            // validate that the new password is different than the current one
-            user.setPassword(password);
-            user = myRemoteSession.authenticate(user);
-            if (user != null) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("errors.repeated", "New password"));
-            }
         } catch (Exception e) {
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));
@@ -86,7 +81,7 @@ public class ChangePasswordAction extends Action {
 
             // I still need to call this method, because it populates the dto
             // with the menu and other fields needed for the login
-            user = myRemoteSession.authenticate(user);
+            user = myRemoteSession.getGUIDTO(user.getUserName(), user.getEntityId());
         } catch (Exception e) {
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));

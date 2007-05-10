@@ -381,9 +381,17 @@ public class WSTest extends TestCase {
             Integer result = api.authenticate("authuser", "notAGoodOne");
             assertEquals("Authentication has to fail", 
                     WebServicesConstants.AUTH_WRONG_CREDENTIALS, result);
+            result = api.authenticate("authuser", "notAGoodOne");
+            assertEquals("Authentication has to fail", 
+                    WebServicesConstants.AUTH_WRONG_CREDENTIALS, result);
+            System.out.println("Too many retries");
+            result = api.authenticate("authuser", "notAGoodOne");
+            assertEquals("Now locked out", 
+                    WebServicesConstants.AUTH_LOCKED, result);
 
+            // it is locked, but we know the secret password
             System.out.println("Auth for expired");
-            result = api.authenticate("authuser", "123qwe");
+            result = api.authenticate("authuser", "totalSecret");
             assertEquals("Password should be expired", 
                     WebServicesConstants.AUTH_EXPIRED, result);
             

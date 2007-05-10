@@ -88,10 +88,11 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
      */
     public UserDTOEx(Integer userId, Integer entityId, String userName,
             String password, Integer deleted, Integer language, Integer roleId,
-            Integer currencyId, Date creation, Date modified, Date lLogin) {
+            Integer currencyId, Date creation, Date modified, Date lLogin, 
+            Integer failedAttempts) {
         // set the base dto fields
         super(userId, userName, password, deleted, language, currencyId, 
-                creation, modified, lLogin);
+                creation, modified, lLogin, failedAttempts);
         // the entity id
         setEntityId(entityId);
         // the permissions are defaulted to nothing

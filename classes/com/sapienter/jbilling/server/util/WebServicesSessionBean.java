@@ -603,17 +603,13 @@ public class WebServicesSessionBean implements SessionBean {
                     UserSessionHome.JNDI_NAME);
 
             UserSession myRemoteSession = UserHome.create();
-            user = myRemoteSession.authenticate(user);
-            if (user == null) {
-                retValue = WebServicesConstants.AUTH_WRONG_CREDENTIALS;
-            } else {
+            retValue = myRemoteSession.authenticate(user);
+            if (retValue.equals(Constants.AUTH_OK)) {
                 // see if the password is not expired
-                bl.set(user.getUserId());
+                bl.set(user.getUserName(), entityId);
                 if (bl.isPasswordExpired()) {
                     retValue = WebServicesConstants.AUTH_EXPIRED;
-                } else {
-                    retValue = WebServicesConstants.AUTH_OK;
-                }
+                } 
             }
 
         } catch (Exception e) {

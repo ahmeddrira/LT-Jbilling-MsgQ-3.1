@@ -56,6 +56,7 @@ public class EventLogger {
     public static final Integer NO_FURTHER_STEP = new Integer(14);
     public static final Integer CANT_PAY_PARTNER = new Integer(15);
     public static final Integer SUBSCRIPTION_STATUS_CHANGE = new Integer(20);
+    public static final Integer ACCOUNT_LOCKED = new Integer(21);
     // order maintenance
     public static final Integer ORDER_STATUS_CHANGE = new Integer(13);
     public static final Integer ORDER_LINE_UPDATED = new Integer(17);

@@ -91,9 +91,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     * @return the populated userDTO if ok, or null if fails.
     * @param clientUser The userDTO with the username and password to authenticate
     */
-    public UserDTOEx authenticate(UserDTOEx clientUser) 
+    public Integer authenticate(UserDTOEx clientUser) 
             throws SessionInternalError {
-        UserDTOEx result = null;
+        Integer result = Constants.AUTH_WRONG_CREDENTIALS;
         try {
             log.debug("Authentication of " + clientUser.getUserName() + 
             		" password = [" + clientUser.getPassword() + "]" +
@@ -105,15 +105,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             // successfulls logins
             UserBL user = new UserBL();
             if(user.validateUserNamePassword(clientUser, dbUser)) {
-                try {
-                    dbUser.setPermissions(user.getPermissions());
-                    dbUser.setMenu(user.getMenu(dbUser.getPermissions()));
-                } catch (FinderException e) {
-                    throw new SessionInternalError(e);
+                result = Constants.AUTH_OK;
+                user.successLoginAttempt();
+            } else {
+                user.set(clientUser.getUserName(), clientUser.getEntityId());
+                if (user.failedLoginAttempt()) {
+                    result = Constants.AUTH_LOCKED;
                 }
-                result = dbUser;
-                user.getEntity().setLastLogin(
-                        Calendar.getInstance().getTime());
             }
 
         } catch (FinderException e) {
@@ -122,12 +120,33 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         } catch (Exception e) { // all the rest are internal error
             // I catch everything here, and let know to the client that an
             // internal error has happened.
-            
             throw new SessionInternalError(e);
         }
         
-        log.debug("result is " + (result!=null));
+        log.debug("result is " + result);
         return result;
+    }
+    
+    /**
+     * This returns more than a DTOEx, it includes the permissions and menu that
+     * the GUI needs
+     * @param userId
+     * @return
+     * 
+     * @ejb:interface-method view-type="remote"
+     */
+    public UserDTOEx getGUIDTO(String username, Integer entityId) {
+        UserDTOEx retValue;
+        try {
+            UserBL bl = new UserBL(username, entityId);
+            retValue = DTOFactory.getUserDTOEx(bl.getEntity());
+            retValue.setPermissions(bl.getPermissions());
+            retValue.setMenu(bl.getMenu(retValue.getPermissions()));
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        } 
+        
+        return retValue;
     }
 
     /**

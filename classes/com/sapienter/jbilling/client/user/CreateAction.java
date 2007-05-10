@@ -100,7 +100,7 @@ public class CreateAction extends Action {
                         (String)userForm.get("password"),
                         null, languageId, 
                         typeId, (Integer) userForm.get("currencyId"),
-                        null, null,null);
+                        null, null,null, null);
                 
                 // add the roles 
                 // now, it will be just one and directly mapped to the user type

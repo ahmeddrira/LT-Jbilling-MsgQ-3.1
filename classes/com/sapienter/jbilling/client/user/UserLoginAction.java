@@ -130,12 +130,17 @@ public final class UserLoginAction extends Action {
                     UserSessionHome.JNDI_NAME);
 
             myRemoteSession = UserHome.create();
-            user = myRemoteSession.authenticate(user);
-            if (user == null) {
+            Integer result = myRemoteSession.authenticate(user);
+            if (result.equals(Constants.AUTH_WRONG_CREDENTIALS)) {
                 errors.add(
                     ActionErrors.GLOBAL_ERROR,
                     new ActionError("user.login.badpassword"));
+            } else if (result.equals(Constants.AUTH_LOCKED)) {
+                errors.add(
+                        ActionErrors.GLOBAL_ERROR,
+                        new ActionError("user.login.passwordLocked"));
             } else {
+                user = myRemoteSession.getGUIDTO(user.getUserName(), user.getEntityId());
                 locale = myRemoteSession.getLocale(user.getUserId());
                 // it is authenticated, let's create the session
             }
@@ -166,9 +171,13 @@ public final class UserLoginAction extends Action {
         boolean  expired = myRemoteSession.isPasswordExpired(user.getUserId());
         if (expired) {
             // can't login, go to the change password page
+            // the user id is needed to validate the new password (validators)
+            // and for the next action to know who's the user
+            session.setAttribute(Constants.SESSION_USER_ID, user.getUserId());
+            // the password will come handy to compare to the new one
+            session.setAttribute("jsp_initial_password", password);
             // Leave the session empty, otherwise it'd be possible to go directly 
             // to a page
-            session.setAttribute(Constants.SESSION_USER_ID, user.getUserId());
             return (mapping.findForward("changePassword"));
         }
 

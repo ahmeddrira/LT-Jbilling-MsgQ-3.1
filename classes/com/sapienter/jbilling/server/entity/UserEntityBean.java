@@ -41,11 +41,10 @@ import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PartnerEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
-import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
 import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocal;
 import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocalHome;
-import com.sapienter.jbilling.server.system.event.EventManager;
+import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
+import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -158,7 +157,8 @@ public abstract class UserEntityBean implements EntityBean {
         setLanguageId(languageId);
         setDeleted(new Integer(0));
         setCurrencyId(currencyId);
-        setCreateDateTime(Calendar.getInstance().getTime());       
+        setCreateDateTime(Calendar.getInstance().getTime());    
+        setFailedAttmepts(new Integer(0));
 
         return newId;
     }
@@ -549,6 +549,18 @@ public abstract class UserEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public abstract void setAch(AchEntityLocal ach);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="failed_attempts"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getFailedAttmepts();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setFailedAttmepts(Integer number);
 
     // EJB Callbacks -----------------------------------------------------
     /* (non-Javadoc)

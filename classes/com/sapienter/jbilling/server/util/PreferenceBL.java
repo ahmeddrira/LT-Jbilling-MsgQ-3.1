@@ -24,11 +24,11 @@ import java.util.Locale;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.PreferenceEntityLocal;
 import com.sapienter.jbilling.interfaces.PreferenceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PreferenceTypeEntityLocal;
@@ -45,30 +45,33 @@ public class PreferenceBL {
     private PreferenceTypeEntityLocalHome typeHome = null;
     private PreferenceEntityLocal preference = null;
     private PreferenceTypeEntityLocal type = null;
-    private Logger log = null;
+    private static Logger LOG = Logger.getLogger(PreferenceBL.class);
     private Locale locale = null;
     
     public PreferenceBL(Integer preferenceId) 
-            throws NamingException, FinderException {
+            throws FinderException {
         init();
         preference = preferenceHome.findByPrimaryKey(preferenceId);
     }
     
-    public PreferenceBL() throws NamingException {
+    public PreferenceBL() {
         init();
     }
     
-    private void init() throws NamingException {
-        log = Logger.getLogger(PreferenceBL.class);             
-        EJBFactory = JNDILookup.getFactory(false);
-        preferenceHome = (PreferenceEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PreferenceEntityLocalHome.class,
-                PreferenceEntityLocalHome.JNDI_NAME);
-        typeHome = (PreferenceTypeEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PreferenceTypeEntityLocalHome.class,
-                PreferenceTypeEntityLocalHome.JNDI_NAME);
+    private void init() {
+        try {
+            EJBFactory = JNDILookup.getFactory(false);
+            preferenceHome = (PreferenceEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PreferenceEntityLocalHome.class,
+                    PreferenceEntityLocalHome.JNDI_NAME);
+            typeHome = (PreferenceTypeEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                    PreferenceTypeEntityLocalHome.class,
+                    PreferenceTypeEntityLocalHome.JNDI_NAME);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
     
     /**
@@ -82,7 +85,7 @@ public class PreferenceBL {
      */
     public void set(Integer entityId, Integer typeId) 
             throws FinderException {
-        log.debug("Now looking for preference " + typeId + " ent " +
+        LOG.debug("Now looking for preference " + typeId + " ent " +
                 entityId + " table " + Constants.TABLE_ENTITY);
         if (entityId != null) {
             try {
@@ -196,7 +199,7 @@ public class PreferenceBL {
     
     public String getDefaultAsString(Integer id) 
             throws FinderException{
-        log.debug("Looking for preference default for type " + id);
+        LOG.debug("Looking for preference default for type " + id);
         type = typeHome.findByPrimaryKey(id);
         if (type.getIntDefValue() != null) {
             return type.getIntDefValue().toString();

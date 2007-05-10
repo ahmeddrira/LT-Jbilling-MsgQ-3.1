@@ -379,6 +379,13 @@ public class AxisAPI implements JbillingAPI {
 		return ret;
 	}
 
+    public Integer authenticate(String username, String password)
+            throws JbillingAPIException {
+        Integer ret = (Integer) invokeAxisCall(WebServicesConstants.AUTHENTICATE,
+                new Object[]{username, password});
+        return ret;
+    }
+
 	public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
 			throws JbillingAPIException {
 		UserTransitionResponseWS[] response = (UserTransitionResponseWS[])

@@ -24,7 +24,7 @@ package com.sapienter.jbilling.server.util.api;
  * @author Narinder
  *
  */
-class WebServicesConstants {
+public class WebServicesConstants {
 	public final static String APPLY_PAYMENT = "applyPayment";
 	public final static String CREATE = "create";
 	public final static String CREATE_ITEM = "createItem";
@@ -58,4 +58,18 @@ class WebServicesConstants {
 	public final static String UPDATE_ORDERLINE = "updateOrderLine";
 	public final static String UPDATE_USER_CONTACT = "updateUserContact";
 	public final static String PAY_INVOICE = "payInvoice";
+    public final static String AUTHENTICATE = "authenticate";
+    
+    /*
+     *  return values for authentication method
+     */
+    // ok
+    public final static Integer AUTH_OK = new Integer(0);
+    // invalid user name or password
+    public final static Integer AUTH_WRONG_CREDENTIALS = new Integer(1);
+    // same as previous, but on this attempt the password has be changed
+    // to lock the account
+    public final static Integer AUTH_LOCKED = new Integer(2);
+    // the password is good, but too old. Needs to call update
+    public final static Integer AUTH_EXPIRED = new Integer(3);
 }

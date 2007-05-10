@@ -44,9 +44,12 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.JBCrypto;
+import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.interfaces.UserSession;
+import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -74,6 +77,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 
 /**
  * @author Emil
@@ -561,6 +565,62 @@ public class WebServicesSessionBean implements SessionBean {
             }
         }
             
+        return retValue;
+    }
+    
+    /**
+     * Validates the credentials and returns if the user can login or not
+     * @param username
+     * @param password
+     * @return
+     * 0 if the user can login (success), or grater than 0 if the user can not login.
+     * See the constants in WebServicesConstants (AUTH*) for details.
+     * @throws SessionInternalError
+     * 
+     * @ejb:interface-method view-type="local"
+     */
+    public Integer authenticate(String username, String password) 
+            throws SessionInternalError {
+        Integer retValue = null;
+        
+        try {
+            // the caller will tell us what entity is this
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId = bl.getEntity().getEntity().getId();
+            
+            // prepare the DTO for the authentication call
+            UserDTOEx user = new UserDTOEx();
+            user.setEntityId(entityId);
+            user.setUserName(username);
+            user.setPassword(password);
+            
+            // do the authentication
+            JNDILookup EJBFactory = JNDILookup.getFactory(false);            
+            UserSessionHome UserHome =
+                    (UserSessionHome) EJBFactory.lookUpHome(
+                    UserSessionHome.class,
+                    UserSessionHome.JNDI_NAME);
+
+            UserSession myRemoteSession = UserHome.create();
+            user = myRemoteSession.authenticate(user);
+            if (user == null) {
+                retValue = WebServicesConstants.AUTH_WRONG_CREDENTIALS;
+            } else {
+                // see if the password is not expired
+                bl.set(user.getUserId());
+                if (bl.isPasswordExpired()) {
+                    retValue = WebServicesConstants.AUTH_EXPIRED;
+                } else {
+                    retValue = WebServicesConstants.AUTH_OK;
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("WS - authenticate: ", e);
+            throw new SessionInternalError("Error authenticating user");
+        } 
+
         return retValue;
     }
     

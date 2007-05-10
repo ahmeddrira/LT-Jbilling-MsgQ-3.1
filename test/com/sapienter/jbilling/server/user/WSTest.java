@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 
 /**
  * @author Emil
@@ -291,7 +292,7 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(3,users.length);
+            assertEquals(4,users.length);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
@@ -370,5 +371,38 @@ public class WSTest extends TestCase {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
+    }
+    
+    public void testAuthentication() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            System.out.println("Auth with wrong credentials");
+            Integer result = api.authenticate("authuser", "notAGoodOne");
+            assertEquals("Authentication has to fail", 
+                    WebServicesConstants.AUTH_WRONG_CREDENTIALS, result);
+
+            System.out.println("Auth for expired");
+            result = api.authenticate("authuser", "123qwe");
+            assertEquals("Password should be expired", 
+                    WebServicesConstants.AUTH_EXPIRED, result);
+            
+            // update the user's password
+            Integer userId = api.getUserId("authuser");
+            UserWS user = api.getUserWS(userId);
+            user.setPassword("234qwe");
+            api.updateUser(user);
+            
+            // try again ...
+            System.out.println("Auth after password update");
+            result = api.authenticate("authuser", "234qwe");
+            assertEquals("Should auth ok now", 
+                    WebServicesConstants.AUTH_OK, result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+        
     }
 }

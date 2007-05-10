@@ -123,4 +123,6 @@ public interface JbillingAPI {
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
             throws JbillingAPIException;
 
+    public Integer authenticate(String username, String password)
+            throws JbillingAPIException;
 }

@@ -71,6 +71,7 @@ build.designs.dir=${build.dir}/designs
 build.generate.dir=${build.dir}/generate
 build.deploy.dir=${build.dir}/deploy
 build.classes.dir=${build.dir}/classes
+build.api.dir=${build.dir}/api
 build.test.dir=${build.dir}/test
 build.ws.dir=${build.dir}/ws
 build.ws.cs.dir=${build.ws.dir}/cs

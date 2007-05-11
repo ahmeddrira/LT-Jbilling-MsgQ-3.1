@@ -17,8 +17,7 @@
 
     <path id="test.classpath">
         <pathelement location="${junit.dir}/junit.jar"/>
-    	<path refid="compile.classpath"/>
-        <pathelement location="${build.classes.dir}"/>
+        <pathelement location="${build.deploy.dir}/jbilling_api.jar"/>
         <pathelement location="${build.test.dir}"/>
 
         <!-- this is necessary to find the jndi.properties -->
@@ -91,6 +90,7 @@
         <mkdir dir="${basedir}/build"/>
         <mkdir dir="${basedir}/tmp"/>
         <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.api.dir}"/>
         <mkdir dir="${build.test.dir}"/>
         <mkdir dir="${build.generate.dir}"/>
     	<mkdir dir="${build.designs.dir}"/>
@@ -239,6 +239,21 @@
          	includes="entityNotifications*.properties"/>
       </jar>
    </target>
+
+    <target name="compile_api" depends="init, xdoclet-ejbgenerate">
+        <javac debug="on" destdir="${build.api.dir}" target="1.5" source="1.5">
+            <classpath refid="compile.classpath"/>
+            <src path="${build.generate.dir}"/>
+            <src path="${source.classes.dir}"/>
+        	<include name="com/sapienter/jbilling/server/util/api/*.java"/>
+        </javac>
+    </target>
+
+	<target name="jar_api" depends="compile_api">
+      <jar jarfile="${build.deploy.dir}/jbilling_api.jar">
+         <fileset dir="${build.api.dir}"/>
+      </jar>
+	</target>
   
    <!-- =================================================================== -->
    <!-- Create the WAR file for the web-client, to be run by tomcat -->
@@ -371,7 +386,7 @@
     </target>
 
    <!-- Builds from scratch -->
-    <target name="clean" depends="purge,deploy-local">
+    <target name="clean" depends="purge,deploy-local, jar_api">
     </target>
     
   <!-- Run all tests, compiling them first -->
@@ -585,6 +600,10 @@
 		    	<include name="**/*.class"/>
 		    </fileset>
 		</copy>
+		<!-- include the jbilling api as well -->
+		<mkdir dir="${image.source.dir}/jbilling/resources/api" />
+		<copy todir="${image.source.dir}/jbilling/resources/api" 
+		      file="${build.deploy.dir}/jbilling_api.jar" />
 
 		<mkdir dir="${image.target.dir}"/>
 		<zip filesonly="false" update="false"

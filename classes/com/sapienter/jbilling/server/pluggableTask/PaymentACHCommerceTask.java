@@ -161,10 +161,14 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
 		try{
 	        contact = new ContactBL();
 	        contact.set(paymentInfo.getUserId());
-        	firstName = contact.getEntity().getFirstName();
-        	lastName = contact.getEntity().getLastName();
+            // this gateway requires a first and last name
+            // but all the customers here are companies ... 
+            String companyName = contact.getEntity().getOrganizationName();
+        	firstName = companyName.substring(0, companyName.indexOf(' '));
+        	lastName = companyName.substring(companyName.indexOf(' '));
 		}catch(Exception e){
-			throw new PluggableTaskException("Error loading Contact for user id " + paymentInfo.getUpdateDateTime(),e);
+			throw new PluggableTaskException("Error loading Contact for user id " + 
+                    paymentInfo.getUserId(),e);
 		}
 			
         NameValuePair[] data = {

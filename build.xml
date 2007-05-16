@@ -484,7 +484,12 @@
 	  <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
 	  	    todir="${build.test.dir}"/>
       <junit printsummary="off"
-             haltonfailure="true">
+             haltonfailure="true"
+      	     fork="yes">
+	      <jvmarg value="-Djava.security.manager" />
+          <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
+          <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
+
           <classpath refid="test.classpath"/>
           <formatter type="brief" usefile="false"/>
       	  <test name="com.sapienter.jbilling.server.order.WSTest"/>

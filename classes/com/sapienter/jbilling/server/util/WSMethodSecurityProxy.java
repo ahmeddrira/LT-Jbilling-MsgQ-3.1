@@ -50,170 +50,158 @@ import com.sapienter.jbilling.server.user.UserWS;
  * @author Emil
  */
 public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
+    
+    private ArrayList<Method> methods = new ArrayList<Method>();
+    private Class local = null;
+    private Class remote = null;
+    private static Logger LOG = Logger.getLogger(WSMethodSecurityProxy.class);
+    
+    private void addMethod(String name, Class params[]) throws InstantiationException {
+        try {
+            methods.add(local.getDeclaredMethod(name, params));
+            methods.add(remote.getDeclaredMethod(name, params));
+        } catch(NoSuchMethodException e) {
+            String msg = "Failed to find method " + name;
+            LOG.error(msg, e);
+            throw new InstantiationException(msg);
+         }
+    }
+
 
     public void init(Class beanHome, Class beanRemote,
             Class beanLocalHome, Class beanLocal, Object securityMgr)
             throws InstantiationException {
-                
-       log = Logger.getLogger(WSMethodSecurityProxy.class);
-       String methodName = null;
-       try {
-    	   ArrayList<Method> methods = new ArrayList<Method>(24);
 
-           // getInvoiceWS
-           Class params[] = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getInvoiceWS";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getLatestInvoice
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getLatestInvoice";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       local = beanLocal;
+       remote = beanRemote;
+       // getInvoiceWS
+       Class params[] = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getInvoiceWS",params);
+       
+       // getLatestInvoice
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getLatestInvoice",params);
 
-           // getLastInvoices
-           params = new Class[2];
-           params[0] = Integer.class;
-           params[1] = Integer.class;
-           methodName = "getLastInvoices";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getUserWS
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getUserWS";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // deleteUser
-           // the parameters are the same
-           methodName = "deleteUser";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // updateUser
-           params = new Class[1];
-           params[0] = UserWS.class;
-           methodName ="updateUser";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // getLastInvoices
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = Integer.class;
+       addMethod("getLastInvoices",params);
+       
+       // getUserWS
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getUserWS",params);
+       
+       // deleteUser
+       // the parameters are the same
+       addMethod("deleteUser",params);
+       
+       // updateUser
+       params = new Class[1];
+       params[0] = UserWS.class;
+       addMethod("updateUser",params);
 
-           // updateUserContact
-           params = new Class[3];
-           params[0] = Integer.class;
-           params[1] = Integer.class;
-           params[2] = ContactWS.class;
-           methodName ="updateUserContact";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // updateUserContact
+       params = new Class[3];
+       params[0] = Integer.class;
+       params[1] = Integer.class;
+       params[2] = ContactWS.class;
+       addMethod("updateUserContact",params);
 
-           // createOrder
-           params = new Class[1];
-           params[0] = OrderWS.class;
-           methodName = "createOrder";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // createOrder
+       params = new Class[1];
+       params[0] = OrderWS.class;
+       addMethod("createOrder",params);
 
-           // createOrderPreAuthorize
-           params = new Class[1];
-           params[0] = OrderWS.class;
-           methodName = "createOrderPreAuthorize";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // createOrderPreAuthorize
+       params = new Class[1];
+       params[0] = OrderWS.class;
+       addMethod("createOrderPreAuthorize",params);
 
-           // updateOrder - takes same parameters as create
-           methodName = "updateOrder";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getOrder
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getOrder";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // deleteOrder
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "deleteOrder";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getLatestOrder
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getLatestOrder";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getLastOrders
-           params = new Class[2];
-           params[0] = Integer.class;
-           params[1] = Integer.class;
-           methodName = "getLastOrders";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // applyPayment
-           params = new Class[2];
-           params[0] = PaymentWS.class;
-           params[1] = Integer.class;
-           methodName = "applyPayment";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getPayment
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getPayment";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getLatestPayment
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getLatestPayment";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getLastPayments
-           params = new Class[2];
-           params[0] = Integer.class;
-           params[1] = Integer.class;
-           methodName = "getLastPayments";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // getOrderLine
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getOrderLine";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           // updateOrderLine
-           params = new Class[1];
-           params[0] = OrderLineWS.class;
-           methodName = "updateOrderLine";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // updateOrder - takes same parameters as create
+       addMethod("updateOrder",params);
+       
+       // getOrder
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getOrder",params);
+       
+       // deleteOrder
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("deleteOrder",params);
+       
+       // getLatestOrder
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getLatestOrder",params);
+       
+       // getLastOrders
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = Integer.class;
+       addMethod("getLastOrders",params);
+       
+       // applyPayment
+       params = new Class[2];
+       params[0] = PaymentWS.class;
+       params[1] = Integer.class;
+       addMethod("applyPayment",params);
+       
+       // getPayment
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getPayment",params);
+       
+       // getLatestPayment
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getLatestPayment",params);
+       
+       // getLastPayments
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = Integer.class;
+       addMethod("getLastPayments",params);
+       
+       // getOrderLine
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getOrderLine",params);
+       
+       // updateOrderLine
+       params = new Class[1];
+       params[0] = OrderLineWS.class;
+       addMethod("updateOrderLine",params);
 
-           // getOrderByPeriod
-           params = new Class[2];
-           params[0] = Integer.class;
-           params[1] = Integer.class;
-           methodName = "getOrderByPeriod";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // getOrderByPeriod
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = Integer.class;
+       addMethod("getOrderByPeriod",params);
 
-           // getUserContactsWS
-           params = new Class[1];
-           params[0] = Integer.class;
-           methodName = "getUserContactsWS";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
+       // getUserContactsWS
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("getUserContactsWS",params);
 
-           // updateCreditCard
-           params = new Class[2];
-           params[0] = Integer.class;
-           params[1] = CreditCardDTO.class;
-           methodName = "updateCreditCard";
-           methods.add(beanLocal.getDeclaredMethod(methodName, params));
-           
-           //payInvoice
-           methods.add(beanLocal.getDeclaredMethod("payInvoice", new Class[]{Integer.class}));
+       // updateCreditCard
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = CreditCardDTO.class;
+       addMethod("updateCreditCard",params);
+       
+       //payInvoice
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("payInvoice", params);
 
-           // set the parent methods
-           setMethods(methods.toArray(new Method[methods.size()]));          
+       // set the parent methods
+       setMethods(methods.toArray(new Method[methods.size()]));          
 
-       } catch(NoSuchMethodException e) {
-          String msg = "Failed to find method " + methodName;
-          log.error(msg, e);
-          throw new InstantiationException(msg);
-       }
     }
     
     public void invoke(Method m, Object[] args, Object bean)

@@ -86,12 +86,15 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
  *           display-name="A stateless bean for web services"
  *           type="Stateless"
  *           transaction-type="Container"
- *           view-type="local"
+ *           view-type="both"
  *           jndi-name="com/sapienter/jbilling/server/util/WebServicesSession"
- * 
+ *
+ * @ejb:permission role-name = "2" view-type = "remote"
+ *           
  * @jboss-net.web-service urn="billing" 
  *                        expose-all="true"
  * @jboss.security-proxy name="com.sapienter.jbilling.server.util.WSMethodSecurityProxy"
+ * @jboss.container-configuration name="Remote API"
  */
 public class WebServicesSessionBean implements SessionBean {
     private Logger log = null;
@@ -102,7 +105,7 @@ public class WebServicesSessionBean implements SessionBean {
      */
     
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public InvoiceWS getInvoiceWS(Integer invoiceId)
             throws SessionInternalError {
@@ -124,7 +127,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
     
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public InvoiceWS getLatestInvoice(Integer userId)
             throws SessionInternalError {
@@ -151,7 +154,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @ejb.transaction type="Required"
      */
     public Integer[] getLastInvoices(Integer userId, Integer number)
@@ -171,7 +174,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
      /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @ejb.transaction type="Required"
      */
     public Integer[] getInvoicesByDate(String since, String until)
@@ -204,7 +207,7 @@ public class WebServicesSessionBean implements SessionBean {
      * or partner.
      * The username has to be unique, otherwise the creating won't go through. If 
      * that is the case, the return value will be null.
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @param newUser 
      * The user object with all the information of the new user. If contact or 
      * credit card information are present, they will be included in the creation
@@ -258,7 +261,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public void deleteUser(Integer userId) 
             throws SessionInternalError {
@@ -275,7 +278,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
      /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public void updateUserContact(Integer userId, Integer typeId, 
             ContactWS contact)
@@ -299,7 +302,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
    
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @param user 
      */
     public void updateUser(UserWS user) 
@@ -352,7 +355,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * Retrieves a user with its contact and credit card information. 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @param userId
      * The id of the user to be returned
      */
@@ -375,7 +378,7 @@ public class WebServicesSessionBean implements SessionBean {
     
     /**
      * Retrieves aall the contacts of a user 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @param userId
      * The id of the user to be returned
      */
@@ -399,7 +402,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * Retrieves the user id for the given username 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer getUserId(String username) 
             throws SessionInternalError {
@@ -420,7 +423,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * Retrieves an array of users in the required status 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer[] getUsersInStatus(Integer statusId) 
             throws SessionInternalError {
@@ -439,7 +442,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * Retrieves an array of users in the required status 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer[] getUsersNotInStatus(Integer statusId) 
             throws SessionInternalError {
@@ -458,7 +461,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * Retrieves an array of users in the required status 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer[] getUsersByCustomField(Integer typeId, String value) 
             throws SessionInternalError {
@@ -518,7 +521,7 @@ public class WebServicesSessionBean implements SessionBean {
      * Creates a user, then an order for it, an invoice out the order
      * and tries the invoice to be paid by an online payment
      * This is ... the mega call !!! 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public CreateResponseWS create(UserWS user, OrderWS order) 
             throws SessionInternalError {
@@ -577,7 +580,7 @@ public class WebServicesSessionBean implements SessionBean {
      * See the constants in WebServicesConstants (AUTH*) for details.
      * @throws SessionInternalError
      * 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer authenticate(String username, String password) 
             throws SessionInternalError {
@@ -629,7 +632,7 @@ public class WebServicesSessionBean implements SessionBean {
 	 * @return resulting authorization record. The payment itself can be found by
      * calling getLatestPayment
 	 *  
-	 * @ejb:interface-method view-type="local"
+	 * @ejb:interface-method view-type="both"
 	 */
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError {
     	if (invoiceId == null){
@@ -653,7 +656,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * Updates a user's credit card.
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @param userId
      * The id of the user updating credit card data.
      * @param creditCard
@@ -684,7 +687,7 @@ public class WebServicesSessionBean implements SessionBean {
      * ORDERS
      */
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @return the information of the payment aurhotization, or NULL if the 
      * user does not have a credit card
      */
@@ -717,7 +720,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
     
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer createOrder(OrderWS order) 
             throws SessionInternalError {
@@ -756,7 +759,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public void updateOrder(OrderWS order)
             throws SessionInternalError {
@@ -789,7 +792,7 @@ public class WebServicesSessionBean implements SessionBean {
     } 
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public OrderWS getOrder(Integer orderId) 
             throws SessionInternalError {
@@ -813,7 +816,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer[] getOrderByPeriod(Integer userId, Integer periodId) 
             throws SessionInternalError {
@@ -836,7 +839,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public OrderLineWS getOrderLine(Integer orderLineId) 
             throws SessionInternalError {
@@ -860,7 +863,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @ejb.transaction type="Required"
      */
     public void updateOrderLine(OrderLineWS line) 
@@ -878,7 +881,7 @@ public class WebServicesSessionBean implements SessionBean {
 
     
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public OrderWS getLatestOrder(Integer userId) 
             throws SessionInternalError {
@@ -907,7 +910,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @ejb.transaction type="Required"
      */
     public Integer[] getLastOrders(Integer userId, Integer number)
@@ -929,7 +932,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public void deleteOrder(Integer id) 
             throws SessionInternalError {
@@ -948,7 +951,7 @@ public class WebServicesSessionBean implements SessionBean {
      * PAYMENT
      */
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @ejb.transaction type="Required"
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId) 
@@ -965,7 +968,7 @@ public class WebServicesSessionBean implements SessionBean {
     }  
     
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public PaymentWS getPayment(Integer paymentId) 
             throws SessionInternalError {
@@ -984,7 +987,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public PaymentWS getLatestPayment(Integer userId) 
             throws SessionInternalError {
@@ -1009,7 +1012,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @ejb.transaction type="Required"
      */
     public Integer[] getLastPayments(Integer userId, Integer number)
@@ -1035,7 +1038,7 @@ public class WebServicesSessionBean implements SessionBean {
      * ITEM
      */
     /**
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      */
     public Integer createItem(ItemDTOEx dto) 
             throws SessionInternalError {
@@ -1063,7 +1066,7 @@ public class WebServicesSessionBean implements SessionBean {
     
     /**
      * Retrieves an array of items for the caller's entity. 
-     * @ejb:interface-method view-type="local"
+     * @ejb:interface-method view-type="both"
      * @return an array of items from the caller's entity
      */
     public ItemDTOEx[] getAllItems() throws SessionInternalError {
@@ -1080,7 +1083,7 @@ public class WebServicesSessionBean implements SessionBean {
     }
     
     /**
-     * @ejb.interface-method view-type = "local"
+     * @ejb.interface-method view-type="both"
      * Implementation of the User Transitions List webservice. This accepts a
      * start and end date as arguments, and produces an array of data containing
      * the user transitions logged in the requested time range.

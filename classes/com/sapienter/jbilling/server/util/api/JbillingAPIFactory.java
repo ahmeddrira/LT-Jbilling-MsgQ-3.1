@@ -45,6 +45,15 @@ public final class JbillingAPIFactory {
                             "password end_point are required for AXIS");
                 }
                 api =  new AxisAPI(userName,password,endPoint);
+            } else if (default_api.compareToIgnoreCase("ejb") == 0) {
+                String userName = config.getProperty("user_name");
+                String password = config.getProperty("password");
+                String provider_url = config.getProperty("provider_url");
+                if (userName == null || password == null || provider_url == null) {
+                    throw new JbillingAPIException("property provider_url " +
+                            "is required for EJB");
+                }
+                api =  new EJBAPI(provider_url, userName, password);
             } else {
                 throw new JbillingAPIException("api [" + default_api + "] is not supported");
             }

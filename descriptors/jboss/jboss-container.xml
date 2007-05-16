@@ -1,6 +1,7 @@
 <!--
 	This is a copy of the one found in standardjboss.xml. 
 	Differences: commit option to A and max capacity = 10000
+	             added new configuration to secure the remote api
 -->
 <container-configurations>
 	<container-configuration>
@@ -46,6 +47,11 @@
 	   </container-pool-conf>
 	   <commit-option>A</commit-option>
 	</container-configuration>
+
+    <container-configuration extends="Standard Stateless SessionBean">
+         <container-name>Remote API</container-name>
+		 <security-domain>java:/jaas/betty</security-domain>
+    </container-configuration>
 </container-configurations>
 
 

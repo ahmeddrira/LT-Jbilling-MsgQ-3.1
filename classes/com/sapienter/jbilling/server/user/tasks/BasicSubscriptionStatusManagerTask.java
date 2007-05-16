@@ -21,8 +21,6 @@ package com.sapienter.jbilling.server.user.tasks;
 
 import java.util.Date;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -116,14 +114,12 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
     public void subscriptionEnds(Integer userId, Integer statusId) {
         if (statusId.equals(Constants.ORDER_STATUS_FINISHED)) {
             UserBL user = getUser(userId);
-            if (user.getEntity().getSubscriptionStatus().getId().equals(
+            if (!user.getEntity().getSubscriptionStatus().getId().equals(
                     UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION)) {
-                user.updateSubscriptionStatus(
-                        UserDTOEx.SUBSCRIBER_UNSUBSCRIBED);
-            } else {
-                LOG.info("Should go to unsubscribed, but is in " + 
+                LOG.info("Going to unsubscribed, but from " + 
                         user.getEntity().getSubscriptionStatus().getDescription(1));
-            }
+            } 
+            user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_UNSUBSCRIBED);
         }
     }
     

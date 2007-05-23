@@ -33,7 +33,7 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
-import com.sapienter.jbilling.server.customer.CustomerListBL;
+import com.sapienter.jbilling.server.customer.CustomerBL;
 import com.sapienter.jbilling.server.entity.CurrencyDTO;
 import com.sapienter.jbilling.server.entity.ListFieldDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -92,23 +92,23 @@ public class ListSessionBean implements javax.ejb.SessionBean {
                     parameters);
 
             if (type.equals(Constants.LIST_TYPE_CUSTOMER)) {
-                CustomerListBL list = new CustomerListBL();
+                CustomerBL list = new CustomerBL();
                 int entityId =  ((Integer) parameters.get("entityId")).intValue();
                 Integer userType = (Integer) parameters.get("userType");
                 Integer userId = (Integer) parameters.get("userId");
                 retValue = list.getList(entityId, userType, userId); 
             } else if (type.equals(Constants.LIST_TYPE_CUSTOMER_SIMPLE)) {
-                CustomerListBL list = new CustomerListBL();
+                CustomerBL list = new CustomerBL();
                 int entityId =  ((Integer) parameters.get("entityId")).intValue();
                 Integer userType = (Integer) parameters.get("userType");
                 Integer userId = (Integer) parameters.get("userId");
                 retValue = list.getCustomerList(entityId, userType, userId);
             } else if (type.equals(Constants.LIST_TYPE_SUB_ACCOUNTS)) {
-                CustomerListBL list = new CustomerListBL();
+                CustomerBL list = new CustomerBL();
                 Integer userId = (Integer) parameters.get("userId");
                 retValue = list.getSubAccountsList(userId);
             } else if (type.equals(Constants.LIST_TYPE_PARTNERS_CUSTOMER)) {
-                CustomerListBL list = new CustomerListBL();
+                CustomerBL list = new CustomerBL();
                 Integer partnerId = (Integer) parameters.get("partnerId");
                 PartnerBL partner = new PartnerBL(partnerId);
                 int entityId = partner.getEntity().getUser().getEntity().

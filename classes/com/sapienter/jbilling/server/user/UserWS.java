@@ -27,6 +27,9 @@ package com.sapienter.jbilling.server.user;
 
 import java.io.Serializable;
 
+import javax.ejb.FinderException;
+
+import com.sapienter.jbilling.server.customer.CustomerBL;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.UserDTO;
 
@@ -44,6 +47,7 @@ public class UserWS extends UserDTO implements Serializable {
     private Integer statusId = null;
     private Integer subscriberStatusId = null;
     private Integer partnerId = null;
+    private Integer parentId = null;
     
     public Integer getPartnerId() {
         return partnerId;
@@ -67,6 +71,7 @@ public class UserWS extends UserDTO implements Serializable {
         subscriberStatusId = dto.getSubscriptionStatusId();
         if (dto.getCustomerDto() != null) {
             partnerId = dto.getCustomerDto().getPartnerId();
+            parentId = dto.getCustomerDto().getParentId();
         }
     }
     
@@ -75,7 +80,8 @@ public class UserWS extends UserDTO implements Serializable {
                 contact + "] type = [" + role + "] language = [" +
                 language + "] status = [" + status + "] statusId = [" +
                 statusId + "] subscriberStatusId = [" + subscriberStatusId +
-                "] roleId = [" + mainRoleId + "] " +  super.toString();
+                "] roleId = [" + mainRoleId + "] " +  " parentId = [" + parentId +
+                "] " + super.toString();
                 
     }
     /**
@@ -180,6 +186,12 @@ public class UserWS extends UserDTO implements Serializable {
     }
     public void setSubscriberStatusId(Integer subscriberStatusId) {
         this.subscriberStatusId = subscriberStatusId;
+    }
+    public Integer getParentId() {
+        return parentId;
+    }
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
 

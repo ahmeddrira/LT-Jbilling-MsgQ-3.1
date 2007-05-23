@@ -79,6 +79,7 @@ public class WSTest extends TestCase {
             newUser.setPassword("asdfasdf1");
             newUser.setLanguageId(new Integer(1));
             newUser.setMainRoleId(new Integer(5));
+            newUser.setParentId(new Integer(43)); // this parent exists
             newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
             
             // add a contact
@@ -118,6 +119,7 @@ public class WSTest extends TestCase {
                     newUser.getUserName());
             assertEquals("created user first name", retUser.getContact().getFirstName(),
                     newUser.getContact().getFirstName());     
+            assertEquals("create user parent id", new Integer(43), retUser.getParentId());
             System.out.println("My user: " + retUser);
             
             
@@ -129,6 +131,8 @@ public class WSTest extends TestCase {
             // need to reset the password, it came encrypted
             // let's use a long one
             retUser.setPassword("0fu3js8wl1;a$e2w)xRQ"); 
+            // the new user shouldn't be a child
+            retUser.setParentId(null);
             
             // need an order for it
             OrderWS newOrder = new OrderWS();
@@ -292,7 +296,7 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(4,users.length);
+            assertEquals(5,users.length);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
@@ -413,4 +417,4 @@ public class WSTest extends TestCase {
         }
         
     }
-}
+ }

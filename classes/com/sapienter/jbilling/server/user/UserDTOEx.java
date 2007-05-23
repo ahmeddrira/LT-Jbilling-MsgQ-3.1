@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.PermissionTypeIdComparator;
@@ -59,7 +61,7 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     private Menu menu = null;
     private Vector permissions = null;
     private Vector permissionsTypeId = null; // same as before but sorted by type
-    private Vector roles = null;
+    private Vector<Integer> roles = null;
     private Integer mainRoleId = null;
     private String mainRoleStr = null;
     private String languageStr = null;
@@ -117,12 +119,13 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
         subscriptionStatusId = dto.getSubscriberStatusId();
         this.entityId = entityId;
         
-        roles = new Vector();
+        roles = new Vector<Integer>();
         roles.add(mainRoleId);
         
         if (mainRoleId.equals(Constants.TYPE_CUSTOMER)) {
             customerDto = new CustomerDTOEx();
             customerDto.setPartnerId(dto.getPartnerId());
+            customerDto.setParentId(dto.getParentId());
         }
     }
     

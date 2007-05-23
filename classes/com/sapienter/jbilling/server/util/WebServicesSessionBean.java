@@ -1173,6 +1173,7 @@ public class WebServicesSessionBean implements SessionBean {
         // C# sends a 0 when it is null ...
         newUser.setCurrencyId(zero2null(newUser.getCurrencyId()));
         newUser.setPartnerId(zero2null(newUser.getPartnerId()));
+        newUser.setParentId(zero2null(newUser.getParentId()));
         newUser.setMainRoleId(zero2null(newUser.getMainRoleId()));
         newUser.setLanguageId(zero2null(newUser.getLanguageId()));
         newUser.setStatusId(zero2null(newUser.getStatusId()));

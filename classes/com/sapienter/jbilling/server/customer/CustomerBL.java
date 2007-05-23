@@ -22,8 +22,17 @@ package com.sapienter.jbilling.server.customer;
 
 import java.sql.SQLException;
 
+import javax.ejb.FinderException;
+import javax.naming.NamingException;
+
+import org.apache.log4j.Logger;
+
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.CustomerEntityLocal;
+import com.sapienter.jbilling.interfaces.CustomerEntityLocalHome;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -31,7 +40,33 @@ import com.sapienter.jbilling.server.util.Constants;
 /**
  * @author Emil
  */
-public final class CustomerListBL extends ResultList implements CustomerSQL {
+public final class CustomerBL extends ResultList implements CustomerSQL {
+    
+    private CustomerEntityLocal customer = null;
+    private CustomerEntityLocalHome customerHome = null;
+    private final Logger LOG = Logger.getLogger(CustomerBL.class);
+    private JNDILookup EJBFactory = null;
+
+    
+    public CustomerBL() {};
+    
+    public CustomerBL(Integer id) throws FinderException {
+        try {
+            EJBFactory = JNDILookup.getFactory(false);
+            customerHome = (CustomerEntityLocalHome) EJBFactory.lookUpLocalHome(
+                    CustomerEntityLocalHome.class,
+                    CustomerEntityLocalHome.JNDI_NAME);
+            customer = customerHome.findByPrimaryKey(id);
+        } catch (ClassCastException e) {
+            throw new SessionInternalError(e);
+        } catch (NamingException e) {
+            throw new SessionInternalError(e);
+        } 
+    }
+    
+    public CustomerEntityLocal getEntity() {
+        return customer;
+    }
 
     public CachedRowSet getList(int entityID, Integer userRole,
             Integer userId) 

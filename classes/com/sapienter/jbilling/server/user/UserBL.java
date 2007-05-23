@@ -394,12 +394,6 @@ public class UserBL extends ResultList
     
     public boolean validateUserNamePassword(UserDTOEx loggingUser, 
            UserDTOEx db) throws FinderException, NamingException {
-        // children accounts can not login. They have no invoices and
-        // can't make any payments
-        if (db.getCustomerDto() != null && 
-                db.getCustomerDto().getParentId() != null) {
-            return false;
-        }
         
         // the user status is not part of this check, as a customer that
         // can't login to the entity's service still has to be able to

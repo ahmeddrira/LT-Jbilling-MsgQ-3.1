@@ -48,6 +48,7 @@ public class UserWS extends UserDTO implements Serializable {
     private Integer subscriberStatusId = null;
     private Integer partnerId = null;
     private Integer parentId = null;
+    private Boolean isParent = null;
     
     public Integer getPartnerId() {
         return partnerId;
@@ -72,6 +73,8 @@ public class UserWS extends UserDTO implements Serializable {
         if (dto.getCustomerDto() != null) {
             partnerId = dto.getCustomerDto().getPartnerId();
             parentId = dto.getCustomerDto().getParentId();
+            isParent = dto.getCustomerDto().getIsParent() == null ? false : 
+                dto.getCustomerDto().getIsParent().equals(new Integer(1));
         }
     }
     
@@ -192,6 +195,12 @@ public class UserWS extends UserDTO implements Serializable {
     }
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
+    }
+    public Boolean getIsParent() {
+        return isParent;
+    }
+    public void setIsParent(Boolean isParent) {
+        this.isParent = isParent;
     }
 
 

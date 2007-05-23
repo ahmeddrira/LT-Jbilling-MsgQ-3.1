@@ -141,6 +141,14 @@ public final class UserLoginAction extends Action {
                         new ActionError("user.login.passwordLocked"));
             } else {
                 user = myRemoteSession.getGUIDTO(user.getUserName(), user.getEntityId());
+                // children accounts can not login. They have no invoices and
+                // can't make any payments
+                if (user.getCustomerDto() != null && 
+                        user.getCustomerDto().getParentId() != null) {
+                    errors.add(
+                            ActionErrors.GLOBAL_ERROR,
+                            new ActionError("user.login.badpassword"));
+                }
                 locale = myRemoteSession.getLocale(user.getUserId());
                 // it is authenticated, let's create the session
             }

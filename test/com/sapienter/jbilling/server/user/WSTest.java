@@ -417,4 +417,65 @@ public class WSTest extends TestCase {
         }
         
     }
- }
+
+    public void testParentChild() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            /*
+             * Create - This passes the password validation routine.
+             */
+            UserWS newUser = new UserWS();
+            newUser.setUserName("ws-parent");
+            newUser.setPassword("asdfasdf1");
+            newUser.setLanguageId(new Integer(1));
+            newUser.setMainRoleId(new Integer(5));
+            newUser.setIsParent(new Boolean(true));
+            newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+            
+            // add a contact
+            ContactWS contact = new ContactWS();
+            contact.setEmail("frodo@shire.com");
+            newUser.setContact(contact);
+            
+            System.out.println("Creating parent user ...");
+            // do the creation
+            Integer parentId = api.createUser(newUser);
+            assertNotNull("The user was not created", parentId);
+            
+            
+            //verify the created user       
+            System.out.println("Getting created user ");
+            UserWS retUser = api.getUserWS(parentId);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("create user is parent", new Boolean(true), retUser.getIsParent());
+            
+            System.out.println("Creating child user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(false));
+            newUser.setParentId(parentId);
+            newUser.setUserName("childOfParent");
+            newUser.setPassword("asdfasdf1");
+            Integer childId = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(childId);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", parentId, retUser.getParentId());
+            
+            // test authentication of both
+            System.out.println("Authenticating new users ");
+            assertEquals("auth of parent", new Integer(0), 
+                    api.authenticate("ws-parent", "asdfasdf1"));
+            assertEquals("auth of child", new Integer(0), 
+                    api.authenticate("childOfParent", "asdfasdf1"));
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+        
+    }
+}

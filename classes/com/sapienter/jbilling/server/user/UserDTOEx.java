@@ -126,6 +126,8 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
             customerDto = new CustomerDTOEx();
             customerDto.setPartnerId(dto.getPartnerId());
             customerDto.setParentId(dto.getParentId());
+            customerDto.setIsParent(dto.getIsParent() == null ? new Integer(0) :
+                dto.getIsParent().booleanValue() ? new Integer(1) : new Integer(0));
         }
     }
     

@@ -88,19 +88,20 @@ public abstract class CrudAction extends Action {
      *    - setting the formName
      *    - initializing a reference to your remote session bean
      */
+    
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         Object dtoHolder = null;
+        dateHelper = null;
         forward = null;
         this.mapping = mapping;
         this.request = request;
         log = Logger.getLogger(CrudAction.class);
         errors = new ActionErrors();
         messages = new ActionMessages();
-        session = request.getSession(false);
         action = request.getParameter("action");
-        
+        session = request.getSession(false);
         if (action == null) {
             throw new SessionInternalError("action has to be present in the request");
         }
@@ -370,14 +371,14 @@ public abstract class CrudAction extends Action {
 		return retValue;
 	}
 	
-	protected final FormHelper getFormHelper(){
-		if (formHelper == null){
-			formHelper = new FormHelper(session);
-		}
+	protected FormHelper getFormHelper(){
+        if (formHelper == null || !session.getId().equals(formHelper.getSessionId())) {
+            formHelper = new FormHelper(session);
+        }
 		return formHelper;
 	}
 	
-	protected final FormDateHelper getDateHelper(){
+	protected FormDateHelper getDateHelper(){
 		if (dateHelper == null){
 			dateHelper = new FormDateHelper(myForm, request);
 		}

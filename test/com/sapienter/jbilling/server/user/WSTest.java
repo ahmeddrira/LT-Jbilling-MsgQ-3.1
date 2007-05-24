@@ -471,7 +471,10 @@ public class WSTest extends TestCase {
             assertEquals("auth of child", new Integer(0), 
                     api.authenticate("childOfParent", "asdfasdf1"));
             
-            
+     
+            // clean up
+            api.deleteUser(parentId);
+            api.deleteUser(childId);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

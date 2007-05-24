@@ -20,6 +20,10 @@ public class FormHelper {
 	public FormHelper(HttpSession session) {
 		mySession = session;
 	}
+    
+    public String getSessionId() {
+        return mySession.getId();
+    }
 
 	public String float2string(Float arg) {
 		return float2string(arg, mySession);

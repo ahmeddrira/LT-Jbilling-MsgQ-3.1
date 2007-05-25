@@ -249,6 +249,8 @@ public class CreateAction extends Action {
                     Constants.LIST_TYPE_CUSTOMER);
             session.removeAttribute(Constants.SESSION_LIST_KEY + 
                     Constants.LIST_TYPE_CUSTOMER_SIMPLE);
+            session.removeAttribute(Constants.SESSION_LIST_KEY + 
+                    Constants.LIST_TYPE_SUB_ACCOUNTS);
         } else {
             // something failed
             saveErrors(request, errors);

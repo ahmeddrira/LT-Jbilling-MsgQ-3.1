@@ -97,6 +97,11 @@ public class MaintainAction extends Action {
                     userId = (Integer) session.getAttribute(
                             Constants.SESSION_LIST_ID_SELECTED);
                 }
+                // remove any cached list of sub-account, so they
+                // don't mixed up among parents
+                session.removeAttribute(Constants.SESSION_LIST_KEY + 
+                        Constants.LIST_TYPE_SUB_ACCOUNTS);
+                // now put the user data in the session for display
                 userDto = userSession.getUserDTOEx(userId); 
                 session.setAttribute(Constants.SESSION_CUSTOMER_DTO, 
                         userDto);

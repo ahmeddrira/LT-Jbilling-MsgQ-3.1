@@ -101,10 +101,10 @@ public class WSTest  extends TestCase {
             newOrder.setOrderLines(lines);
             
             System.out.println("Creating order ...");
-            Integer ret = api.createOrder(newOrder);
+            Integer ret = api.createOrderAndInvoice(newOrder);
             assertNotNull("The order was not created", ret);
             // create another one so we can test get by period.
-            ret = api.createOrder(newOrder);
+            ret = api.createOrderAndInvoice(newOrder);
             System.out.println("Created order " + ret);
             
             /*
@@ -330,32 +330,32 @@ public class WSTest  extends TestCase {
         }
     }
     
-    public void testCreateOrderAutoCreatesAnInvoice() throws Exception {
+    public void testcreateOrderAndInvoiceAutoCreatesAnInvoice() throws Exception {
     	final int USER_ID = GANDALF_USER_ID;
     	InvoiceWS before = callGetLatestInvoice(USER_ID);
     	assertTrue(before == null || before.getId() != null);
     	
     	OrderWS order = createMockOrder(USER_ID, 3, 42);
-    	Integer orderId = callCreateOrder(order);
+    	Integer orderId = callcreateOrderAndInvoice(order);
         assertNotNull(orderId);
         
         InvoiceWS afterNormalOrder = callGetLatestInvoice(USER_ID);
-        assertNotNull("createOrder should create invoice", afterNormalOrder);
+        assertNotNull("createOrderAndInvoice should create invoice", afterNormalOrder);
         assertNotNull("invoice without id", afterNormalOrder.getId());
         
         if (before != null){
-        	assertFalse("createOrder should create the most recent invoice", afterNormalOrder.getId().equals(before.getId()));
+        	assertFalse("createOrderAndInvoice should create the most recent invoice", afterNormalOrder.getId().equals(before.getId()));
         }
         
         //even if empty
     	OrderWS emptyOrder = createMockOrder(USER_ID, 0, 123); //empty
-    	Integer emptyOrderId = callCreateOrder(emptyOrder);
+    	Integer emptyOrderId = callcreateOrderAndInvoice(emptyOrder);
         assertNotNull(emptyOrderId);
         
         InvoiceWS afterEmptyOrder = callGetLatestInvoice(USER_ID);
         assertNotNull("invoice without id", afterEmptyOrder.getId());
-        assertNotNull("createOrder should create invoice even for empty order", afterEmptyOrder);
-        assertFalse("createOrder should create the most recent invoice", afterNormalOrder.getId().equals(afterEmptyOrder.getId()));
+        assertNotNull("createOrderAndInvoice should create invoice even for empty order", afterEmptyOrder);
+        assertFalse("createOrderAndInvoice should create the most recent invoice", afterNormalOrder.getId().equals(afterEmptyOrder.getId()));
     }
 
     public void testCreateNotActiveOrderDoesNotCreateInvoices() throws Exception {
@@ -364,7 +364,8 @@ public class WSTest  extends TestCase {
     	
     	OrderWS orderWS = createMockOrder(USER_ID, 2, 234);
     	orderWS.setActiveSince(nextWeek());
-    	Integer orderId = callCreateOrder(orderWS);
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+    	Integer orderId = api.createOrder(orderWS);
     	assertNotNull(orderId);
     	
     	InvoiceWS after = callGetLatestInvoice(USER_ID);
@@ -382,7 +383,7 @@ public class WSTest  extends TestCase {
     	
     	OrderWS requestOrder = createMockOrder(USER_ID, LINES, 567);
     	assertEquals(LINES, requestOrder.getOrderLines().length);
-    	Integer orderId = callCreateOrder(requestOrder);
+    	Integer orderId = callcreateOrderAndInvoice(requestOrder);
     	assertNotNull(orderId);
     	
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -420,7 +421,7 @@ public class WSTest  extends TestCase {
     	final float PRICE = 687654.29f;
     	
     	OrderWS orderWS = createMockOrder(USER_ID, LINES, PRICE);
-    	Integer orderId = callCreateOrder(orderWS);
+    	Integer orderId = callcreateOrderAndInvoice(orderWS);
     	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
     	assertNotNull(invoice.getOrders());
     	assertTrue("Expected: " + orderId + ", actual: " + Arrays.toString(invoice.getOrders()), Arrays.equals(new Integer[] {orderId}, invoice.getOrders()));
@@ -437,7 +438,7 @@ public class WSTest  extends TestCase {
     
     public void testAutoCreatedInvoiceIsPayable() throws Exception {
     	final int USER_ID = GANDALF_USER_ID;
-    	callCreateOrder(createMockOrder(USER_ID, 1, 789));
+    	callcreateOrderAndInvoice(createMockOrder(USER_ID, 1, 789));
     	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
     	assertNotNull(invoice);
     	assertNotNull(invoice.getId());
@@ -461,7 +462,7 @@ public class WSTest  extends TestCase {
     
     public void testEmptyInvoiceIsNotPayable() throws Exception {
     	final int USER_ID = GANDALF_USER_ID;
-    	callCreateOrder(createMockOrder(USER_ID, 0, 890)); 
+    	callcreateOrderAndInvoice(createMockOrder(USER_ID, 0, 890)); 
     	InvoiceWS invoice = callGetLatestInvoice(USER_ID);
     	assertNotNull(invoice);
     	assertNotNull(invoice.getId());
@@ -482,9 +483,9 @@ public class WSTest  extends TestCase {
     	return api.getLatestInvoice(userId);
     }
     
-    private Integer callCreateOrder(OrderWS order) throws Exception {
+    private Integer callcreateOrderAndInvoice(OrderWS order) throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
-    	return api.createOrder(order);
+    	return api.createOrderAndInvoice(order);
     	
     }
     

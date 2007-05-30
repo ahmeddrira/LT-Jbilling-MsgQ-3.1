@@ -86,6 +86,8 @@ public interface JbillingAPI {
 
     public Integer createOrder(OrderWS order) throws JbillingAPIException;
 
+    public Integer createOrderAndInvoice(OrderWS order) throws JbillingAPIException;
+
     public void updateOrder(OrderWS order) throws JbillingAPIException;
 
     public OrderWS getOrder(Integer orderId) throws JbillingAPIException;

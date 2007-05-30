@@ -29,6 +29,7 @@ public class WebServicesConstants {
 	public final static String CREATE = "create";
 	public final static String CREATE_ITEM = "createItem";
 	public final static String CREATE_ORDER = "createOrder";
+    public final static String CREATE_ORDER_AND_INVOICE = "createOrderAndInvoice";
 	public final static String CREATE_USER = "createUser";
 	public final static String DELETE_ORDER = "deleteOrder";
 	public final static String DELETE_USER = "deleteUser";

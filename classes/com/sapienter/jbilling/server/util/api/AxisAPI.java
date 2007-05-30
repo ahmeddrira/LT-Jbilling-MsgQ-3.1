@@ -255,6 +255,12 @@ public class AxisAPI implements JbillingAPI {
 		return ret;
 	}
 
+    public Integer createOrderAndInvoice(OrderWS order) throws JbillingAPIException {
+        Integer ret = (Integer)invokeAxisCall(WebServicesConstants.CREATE_ORDER_AND_INVOICE,
+            new Object[]{order});
+        return ret;
+    }
+
 	public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
 			throws JbillingAPIException {
 		PaymentAuthorizationDTOEx ret = (PaymentAuthorizationDTOEx)invokeAxisCall(

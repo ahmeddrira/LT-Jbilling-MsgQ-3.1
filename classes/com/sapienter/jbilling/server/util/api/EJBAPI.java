@@ -98,6 +98,14 @@ public class EJBAPI implements JbillingAPI {
         }
     }
 
+    public Integer createOrderAndInvoice(OrderWS order) throws JbillingAPIException {
+        try {
+            return session.createOrderAndInvoice(order);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
             throws JbillingAPIException {
         try {

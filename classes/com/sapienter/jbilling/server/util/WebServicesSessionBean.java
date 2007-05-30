@@ -99,6 +99,10 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 public class WebServicesSessionBean implements SessionBean {
     private Logger log = null;
     private SessionContext context = null;
+    
+    // used only to know if an invoice was created in the mega call
+    private Integer invoiceId = null;
+    
 
     /*
      * INVOICES
@@ -540,23 +544,20 @@ public class WebServicesSessionBean implements SessionBean {
         
         // the order and (if needed) invoice
         order.setUserId(userId);
-        final int orderId = createOrder(order);
+        final int orderId = createOrderAndInvoice(order);
         retValue.setOrderId(orderId);
-        if (shouldAutoCreateInvoice(order)){
+        if (invoiceId != null){
         	//we assume that createOrder have actually created an invoice
         	//it would be better to access it directly from createOrder() 
         	//but we don't want to change API for now
         	//so we will get it indirectly, as the latest invoice
         	
-        	Integer[] lastInvoiceId = getLastInvoices(userId, 1);
-        	if (lastInvoiceId == null || lastInvoiceId.length < 1){
-        		throw new SessionInternalError("Invoice expected for order: " + orderId);
-        	}
-        	retValue.setInvoiceId(lastInvoiceId[0]);
+        	Integer lastInvoiceId = invoiceId;
+        	retValue.setInvoiceId(lastInvoiceId);
         	
             //the payment, if we have a credit card
             if (user.getCreditCard() != null){
-            	InvoiceEntityLocal invoice = findInvoice(lastInvoiceId[0]);
+            	InvoiceEntityLocal invoice = findInvoice(lastInvoiceId);
             	PaymentDTOEx payment = doPayInvoice(invoice, user.getCreditCard());
                 PaymentAuthorizationDTOEx result = null;
                 if (payment != null) {
@@ -566,6 +567,8 @@ public class WebServicesSessionBean implements SessionBean {
         	    retValue.setPaymentResult(result);
         	    retValue.setPaymentId(payment.getId());
             }
+        } else {
+            throw new SessionInternalError("Invoice expected for order: " + orderId);
         }
             
         return retValue;
@@ -726,12 +729,21 @@ public class WebServicesSessionBean implements SessionBean {
             throws SessionInternalError {
     	
     	Integer orderId = doCreateOrder(order);
-    	if (shouldAutoCreateInvoice(order)){
-    		doCreateInvoice(orderId);
-    	}
     	return orderId;
     }
-    
+
+    /**
+     * @ejb:interface-method view-type="both"
+     */
+    public Integer createOrderAndInvoice(OrderWS order) 
+            throws SessionInternalError {
+        
+        Integer orderId = doCreateOrder(order);
+        doCreateInvoice(orderId);
+
+        return orderId;
+    }
+
     private void processItemLine(OrderWS order, Integer languageId,
             Integer entityId) 
         throws SessionInternalError {
@@ -1361,7 +1373,9 @@ public class WebServicesSessionBean implements SessionBean {
 	private InvoiceEntityLocal doCreateInvoice(Integer orderId) {
 		try {
             BillingProcessBL process = new BillingProcessBL();
-            return process.generateInvoice(orderId, null);
+            InvoiceEntityLocal invoice = process.generateInvoice(orderId, null);
+            invoiceId = invoice == null ? null : invoice.getId();
+            return invoice;
         } catch (Exception e){
             log.error("WS - create invoice:", e);
             throw new SessionInternalError("Error while generating a new invoice");
@@ -1467,10 +1481,6 @@ public class WebServicesSessionBean implements SessionBean {
         }
     }
     
-    private boolean shouldAutoCreateInvoice(OrderWS order){
-    	return order.getActiveSince() == null;
-    }
-
 	private InvoiceEntityLocal findInvoice(Integer invoiceId) {
 		final InvoiceEntityLocal invoice;
     	try {

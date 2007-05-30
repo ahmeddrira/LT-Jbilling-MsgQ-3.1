@@ -267,6 +267,22 @@ Contributor(s): ______________________________________.
 			 	</logic:equal>
 			 </td>
 		</tr>
+	 	<tr class="form">
+		 	 <td></td>
+			 <td class="form_prompt"><bean:message key="user.prompt.invoiceChild"/></td>
+			 <td>
+		 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
+			 		property="customerDto.invoiceChild" 
+			 		scope="page" value="1">
+			 		<bean:message key="all.prompt.yes"/>
+		 	</logic:equal>
+		 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
+			 		property="customerDto.invoiceChild" 
+			 		scope="page" value="0">
+			 		<bean:message key="all.prompt.no"/>
+		 	</logic:equal>
+			 </td>
+		</tr>
 		</logic:present>
 	 	
 	 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_LINKS%>'>

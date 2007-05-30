@@ -505,17 +505,9 @@ public class BillingProcessSessionBean implements SessionBean {
         Integer[] retValue = null;
 
         try {
-/*            
-            if (userId.intValue() == 3919) {
-                throw new Exception("Yikes! an exception");
-            }
-  */          
             UserBL user = new UserBL(userId);
-            Integer entityId = user.getEntity().getEntity().getId();
             
-            if (user.getEntity().getDeleted().intValue() == 1 ||
-                    !user.getMainRole().equals(Constants.TYPE_CUSTOMER)
-                    || user.getEntity().getCustomer().getParent() != null) {
+            if (!user.canInvoice()) {
                 log.debug("Skipping non-customer / subaccount user " + 
                         userId);
                 return new Integer[0];

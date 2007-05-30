@@ -217,6 +217,18 @@ public abstract class CustomerEntityBean implements EntityBean {
      */
     public abstract void setExcludeAging(Integer flag);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="invoice_child"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getInvoiceChild();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setInvoiceChild(Integer flag);
+
     // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"

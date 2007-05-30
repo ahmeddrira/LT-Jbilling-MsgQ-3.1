@@ -456,6 +456,7 @@ public class WSTest extends TestCase {
             newUser.setParentId(parentId);
             newUser.setUserName("childOfParent");
             newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.TRUE);
             Integer childId = api.createUser(newUser);
             //test
             System.out.println("Getting created user ");
@@ -463,6 +464,7 @@ public class WSTest extends TestCase {
             assertEquals("created username", retUser.getUserName(),
                     newUser.getUserName());
             assertEquals("created user parent", parentId, retUser.getParentId());
+            assertEquals("created do not invoice child", Boolean.TRUE, retUser.getInvoiceChild());
             
             // test authentication of both
             System.out.println("Authenticating new users ");

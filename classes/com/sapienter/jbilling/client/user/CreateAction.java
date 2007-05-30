@@ -106,7 +106,7 @@ public class CreateAction extends Action {
                 // now, it will be just one and directly mapped to the user type
                 // this doesn't have to be like this, it is now because it is 
                 // enough for the BAT requirements
-                Vector roles = new Vector();
+                Vector<Integer> roles = new Vector<Integer>();
                 roles.add(typeId);
                 dto.setRoles(roles);
                 
@@ -189,6 +189,21 @@ public class CreateAction extends Action {
                                         "user.create.error.noParent"));
                         }
                     }
+                    
+                    customerDto.setInvoiceChild(((Boolean) userForm.get(
+                            "chbx_invoiceChild")).booleanValue() 
+                            ? new Integer(1) : new Integer(0));
+                    
+                    if (customerDto.getInvoiceChild().intValue() == 1 &&
+                            customerDto.getParentId() == null) {
+                        // it has to be a child with a parent for this flag to 
+                        // make any sense
+                        errors.add(ActionErrors.GLOBAL_ERROR,
+                                new ActionError(
+                                    "user.create.error.invoiceChild"));
+                    }
+                                    
+
                 } 
                 
                 if (typeId.equals(Constants.TYPE_PARTNER) && errors.isEmpty()) {

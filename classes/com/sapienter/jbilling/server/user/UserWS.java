@@ -27,9 +27,6 @@ package com.sapienter.jbilling.server.user;
 
 import java.io.Serializable;
 
-import javax.ejb.FinderException;
-
-import com.sapienter.jbilling.server.customer.CustomerBL;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.UserDTO;
 
@@ -49,6 +46,7 @@ public class UserWS extends UserDTO implements Serializable {
     private Integer partnerId = null;
     private Integer parentId = null;
     private Boolean isParent = null;
+    private Boolean invoiceChild = null;
     
     public Integer getPartnerId() {
         return partnerId;
@@ -75,6 +73,8 @@ public class UserWS extends UserDTO implements Serializable {
             parentId = dto.getCustomerDto().getParentId();
             isParent = dto.getCustomerDto().getIsParent() == null ? false : 
                 dto.getCustomerDto().getIsParent().equals(new Integer(1));
+            invoiceChild = dto.getCustomerDto().getInvoiceChild() == null ? false : 
+                dto.getCustomerDto().getInvoiceChild().equals(new Integer(1));
         }
     }
     
@@ -201,6 +201,12 @@ public class UserWS extends UserDTO implements Serializable {
     }
     public void setIsParent(Boolean isParent) {
         this.isParent = isParent;
+    }
+    public Boolean getInvoiceChild() {
+        return invoiceChild;
+    }
+    public void setInvoiceChild(Boolean invoiceChild) {
+        this.invoiceChild = invoiceChild;
     }
 
 

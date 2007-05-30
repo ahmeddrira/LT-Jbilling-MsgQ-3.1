@@ -157,6 +157,15 @@ Contributor(s): ______________________________________.
 	 	</tr>
 	 	<tr class="form">
 			<td>
+				 <jbilling:help page="users" anchor="parent">
+					 <img border="0" src="/billing/graphics/help.gif"/>
+				 </jbilling:help>
+			</td>
+	 		<td class="form_prompt"><bean:message key="user.prompt.invoiceChild"/></td>
+	 		<td ><html:checkbox property="chbx_invoiceChild"/></td>
+	 	</tr>
+	 	<tr class="form">
+			<td>
 				 <jbilling:help page="users" anchor="allow">
 					 <img border="0" src="/billing/graphics/help.gif"/>
 				 </jbilling:help>

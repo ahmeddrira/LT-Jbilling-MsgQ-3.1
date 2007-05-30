@@ -92,6 +92,7 @@
 <form-property name="partnerId" type="java.lang.String" />
 <form-property name="parentId" type="java.lang.String" />
 <form-property name="chbx_is_parent" type="java.lang.Boolean" />
+<form-property name="chbx_invoiceChild" type="java.lang.Boolean" />
 </form-bean>
 <form-bean name="userEdit" type="com.sapienter.jbilling.client.util.DynaForm">
 <form-property name="id" type="java.lang.Integer" />

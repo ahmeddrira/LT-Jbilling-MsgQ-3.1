@@ -247,6 +247,8 @@ public class DTOFactory {
             customerDto.setDfFm(user.getCustomer().getDfFm());
             customerDto.setExcludeAging(user.getCustomer().getExcludeAging());
             customerDto.setIsParent(user.getCustomer().getIsParent());
+            customerDto.setInvoiceChild(user.getCustomer().getInvoiceChild() == null ?
+                    new Integer(0) : user.getCustomer().getInvoiceChild());
             if (user.getCustomer().getParent() != null) {
                 customerDto.setParentId(user.getCustomer().getParent().
                         getUser().getUserId());

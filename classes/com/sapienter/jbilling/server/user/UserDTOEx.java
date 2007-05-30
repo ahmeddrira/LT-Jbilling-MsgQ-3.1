@@ -99,7 +99,7 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
         setEntityId(entityId);
         // the permissions are defaulted to nothing
         permissions = new Vector();
-        roles = new Vector();
+        roles = new Vector<Integer>();
         if (roleId != null) {
             // we ask for at least one role for this user
             roles.add(roleId);
@@ -128,6 +128,8 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
             customerDto.setParentId(dto.getParentId());
             customerDto.setIsParent(dto.getIsParent() == null ? new Integer(0) :
                 dto.getIsParent().booleanValue() ? new Integer(1) : new Integer(0));
+            customerDto.setInvoiceChild(dto.getInvoiceChild() == null ? new Integer(0) :
+                dto.getInvoiceChild().booleanValue() ? new Integer(1) : new Integer(0));
         }
     }
     

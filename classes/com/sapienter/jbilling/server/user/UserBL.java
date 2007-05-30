@@ -312,8 +312,8 @@ public class UserBL extends ResultList
             partner.create(dto.getPartnerDto());
             user.setPartner(partner.getEntity());
         } else if (dto.getCustomerDto() != null) {
-            // link the partner
             try {
+                // link the partner
                 PartnerBL partner = null;
                 if (dto.getCustomerDto().getPartnerId() != null) {
                     partner = new PartnerBL(dto.getCustomerDto().
@@ -341,8 +341,8 @@ public class UserBL extends ResultList
                 if (dto.getCustomerDto().getParentId() != null) {
                     UserBL parent = new UserBL(dto.getCustomerDto().getParentId());
                     user.getCustomer().setParent(parent.getEntity().getCustomer());
-                    
-                }
+                    user.getCustomer().setInvoiceChild(dto.getCustomerDto().getInvoiceChild());
+                } 
             } catch (FinderException e) {
                 newId = null;
             }
@@ -1188,5 +1188,21 @@ public class UserBL extends ResultList
     public void successLoginAttempt() {
         user.setLastLogin(Calendar.getInstance().getTime());
         user.setFailedAttmepts(new Integer(0));
+    }
+    
+    public boolean canInvoice() {
+        // can't be deleted and has to be a customer
+        if (user.getDeleted().intValue() == 1 ||
+                !getMainRole().equals(Constants.TYPE_CUSTOMER)) {
+            return false;
+        }
+        // child accounts only get invoiced if the exlicit flag is on
+        if (user.getCustomer().getParent() != null &&
+                (user.getCustomer().getInvoiceChild() == null ||
+                user.getCustomer().getInvoiceChild().intValue() == 0)) {
+            return false;
+        }
+        
+        return true;
     }
 }

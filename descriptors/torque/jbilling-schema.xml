@@ -304,6 +304,7 @@
         <column name="parent_id" type="INTEGER"/>
         <column name="is_parent" type="SMALLINT"/>
         <column default="0" name="exclude_aging" required="true" type="SMALLINT"/>
+        <column name="invoice_child" type="SMALLINT"/>
         <index name="customer_i_2">
 	        <index-column name="user_id"/>
         </index>

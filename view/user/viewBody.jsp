@@ -94,6 +94,21 @@ Contributor(s): ______________________________________.
 	        </html:link>
 	     </td>
 	</tr>
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="user.prompt.invoiceChild"/></td>
+		<td class="infodata">
+		 	<logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+			 		property="customerDto.invoiceChild" 
+			 		value="1">
+			 		<bean:message key="all.prompt.yes"/>
+		 	</logic:equal>
+		 	<logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
+			 		property="customerDto.invoiceChild" 
+			 		value="0">
+			 		<bean:message key="all.prompt.no"/>
+		 	</logic:equal>
+		</td>
+	</tr>
 	</logic:present>
 	</logic:present>
 	</logic:notEqual>

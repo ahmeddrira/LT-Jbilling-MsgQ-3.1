@@ -20,9 +20,11 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.order;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -35,8 +37,8 @@ import com.sapienter.jbilling.server.util.Constants;
  *
  */
 public class NewOrderDTO extends OrderDTO {
-    protected Hashtable orderLines = null;
-    private Vector rawOrderLines = null;
+    private Hashtable<Integer, OrderLineDTOEx> orderLines = null;
+    private ArrayList<OrderLineDTOEx> rawOrderLines = null;
     private Float orderTotal = null;
     private Integer period = null;
     private Integer userId = null; // who is buying ?
@@ -49,10 +51,10 @@ public class NewOrderDTO extends OrderDTO {
     private String currencySymbol = null;
 
     public NewOrderDTO() {
-        orderLines = new Hashtable();
+        orderLines = new Hashtable<Integer, OrderLineDTOEx>();
         orderTotal = new Float(0.0F);
         period = Constants.ORDER_PERIOD_ONCE;
-        rawOrderLines = null;
+        rawOrderLines = new ArrayList<OrderLineDTOEx>();
     }
     
     public NewOrderDTO(OrderWS order) 
@@ -63,15 +65,13 @@ public class NewOrderDTO extends OrderDTO {
             period = order.getPeriod();
             periodStr = order.getPeriodStr();
             billingTypeStr = order.getBillingTypeStr();
-            orderLines = new Hashtable();
-            rawOrderLines = new Vector();
+            orderLines = new Hashtable<Integer, OrderLineDTOEx>();
+            rawOrderLines = new ArrayList<OrderLineDTOEx>();
             
             for (int f=0; f < order.getOrderLines().length; f++) {
                 Logger.getLogger(NewOrderDTO.class).debug("line " + order.getOrderLines()[f]);
                 OrderLineDTOEx line = new OrderLineDTOEx(order.getOrderLines()[f]);
                 rawOrderLines.add(line); 
-                // the next line is to be able to call BasicLineTotalTaks
-                orderLines.put(line.getItemId(), line);
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -97,7 +97,7 @@ public class NewOrderDTO extends OrderDTO {
     }
 
 	// probably totaly useless
-    public void setOrderLinesMap(Hashtable newOrderLines) {
+    public void setOrderLinesMap(Hashtable<Integer, OrderLineDTOEx> newOrderLines) {
         orderLines = newOrderLines;
     }
     
@@ -107,11 +107,28 @@ public class NewOrderDTO extends OrderDTO {
     }
 
     public Object getOrderLine(String itemId) {
-        return orderLines.get(Integer.valueOf(itemId));
+        return getOrderLine(Integer.valueOf(itemId));
     }
+    
+    public OrderLineDTOEx getOrderLine(Integer itemId) {
+        return orderLines.get(itemId);
+    }
+
 
     public void setOrderLine(Integer itemId, OrderLineDTOEx line) {
         orderLines.put(itemId, line);
+        rawOrderLines.add(line);
+    }
+    
+    public void removeOrderLine(Integer itemId) {
+        orderLines.remove(itemId);
+        for (Iterator iter = rawOrderLines.iterator(); iter.hasNext();) {
+            OrderLineDTOEx line = (OrderLineDTOEx) iter.next();
+            if (line.getItemId().equals(itemId)) {
+                rawOrderLines.remove(line);
+                iter = rawOrderLines.iterator();
+            }
+        }
     }
 
     /**
@@ -224,10 +241,13 @@ public class NewOrderDTO extends OrderDTO {
         this.currencySymbol = currencySymbol;
     }
 
-    public Vector getRawOrderLines() {
+    public ArrayList<OrderLineDTOEx> getRawOrderLines() {
+        if (rawOrderLines.size() == 0 && orderLines.size() > 0) {
+            rawOrderLines = Collections.list(orderLines.elements());
+        }
         return rawOrderLines;
     }
-    public void setRawOrderLines(Vector rawOrderLines) {
+    public void setRawOrderLines(ArrayList<OrderLineDTOEx> rawOrderLines) {
         this.rawOrderLines = rawOrderLines;
     }
 }

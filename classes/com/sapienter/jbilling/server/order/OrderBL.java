@@ -191,7 +191,7 @@ public class OrderBL extends ResultList
                 order.getBillingTypeId(), languageId));
         retValue.setUserId(order.getUser().getUserId());
         
-        Vector lines = new Vector();
+        Vector<OrderLineWS> lines = new Vector<OrderLineWS>();
         for (Iterator it = order.getOrderLines().iterator(); it.hasNext();) {
             OrderLineEntityLocal line = (OrderLineEntityLocal) it.next();
             if (line.getDeleted().intValue() == 0) {
@@ -228,7 +228,7 @@ public class OrderBL extends ResultList
 
         // check if the item is already in the order
         OrderLineDTOEx line =
-            (OrderLineDTOEx) newOrder.orderLines.get(item.getId());
+            (OrderLineDTOEx) newOrder.getOrderLine(item.getId());
 
         BigDecimal additionAmount;
         if (item.getPercentage() == null) {
@@ -249,7 +249,7 @@ public class OrderBL extends ResultList
                     new Integer(0), null, new Integer(0), 
                     item.getOrderLineTypeId(), editable);          
             line.setItem(item);
-            newOrder.orderLines.put(item.getId(), line);
+            newOrder.setOrderLine(item.getId(), line);
 
         } else {
             // the item is there, I just have to update the quantity
@@ -267,7 +267,7 @@ public class OrderBL extends ResultList
     }
 
     public void deleteItem(Integer itemID) {
-        newOrder.orderLines.remove(itemID);
+        newOrder.removeOrderLine(itemID);
     }
     
     public void delete() {
@@ -469,15 +469,7 @@ public class OrderBL extends ResultList
         /*
          * now go over the order lines
          */
-        Collection values = null;
-        Hashtable lines = orderDto.getOrderLinesMap();
-        if (lines == null) {
-            values = orderDto.getRawOrderLines();
-        } else {
-            values = lines.values();
-        }
-        for (Iterator i = values.iterator(); i.hasNext();) {
-            OrderLineDTOEx line = (OrderLineDTOEx) i.next();
+        for (OrderLineDTOEx line : orderDto.getRawOrderLines()) {
             // get the type id bean for the relationship
             OrderLineTypeEntityLocal lineType =
                 orderLineTypeHome.findByPrimaryKey(line.getTypeId());

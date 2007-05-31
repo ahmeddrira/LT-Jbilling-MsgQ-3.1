@@ -21,7 +21,6 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.math.BigDecimal;
-import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +36,8 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public class BasicLineTotalTask extends PluggableTask implements OrderProcessingTask {
 
+    private final Logger LOG = Logger.getLogger(BasicLineTotalTask.class);
+
     /**
      * 
      * @see com.sapienter.jbilling.server.order.OrderProcessingTask#doProcessing(com.sapienter.betty.server.order.NewOrderDTO)
@@ -51,17 +52,11 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         BigDecimal nonTaxPerTotal = new BigDecimal("0.0000000000");
         BigDecimal nonTaxNonPerTotal = new BigDecimal("0.0000000000");
         
-        Logger log = Logger.getLogger(BasicLineTotalTask.class);
         
         
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
-        for (Enumeration items = order.getOrderLinesMap().keys();
-                items.hasMoreElements();) {
-            Integer itemId = (Integer) items.nextElement();
-            OrderLineDTOEx line = (OrderLineDTOEx) order.getOrderLinesMap().
-                    get(itemId);
-
+        for (OrderLineDTOEx line : order.getRawOrderLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() == null) { 
                 BigDecimal amount = new BigDecimal(
@@ -74,18 +69,13 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 } else {
                     nonTaxNonPerTotal = nonTaxNonPerTotal.add(amount);
                 }
-                log.debug("adding normal line. Totals =" + taxNonPerTotal + 
+                LOG.debug("adding normal line. Totals =" + taxNonPerTotal + 
                         " - " + nonTaxNonPerTotal);
             }
         }
         
         // step two non tax percetage items
-        for (Enumeration items = order.getOrderLinesMap().keys();
-                items.hasMoreElements();) {
-            Integer itemId = (Integer) items.nextElement();
-            OrderLineDTOEx line = (OrderLineDTOEx) order.getOrderLinesMap().
-                    get(itemId);
-
+        for (OrderLineDTOEx line : order.getRawOrderLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() != null &&
                     !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
@@ -96,18 +86,13 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
                 line.setAmount(new Float(amount.floatValue()));
                 nonTaxPerTotal = nonTaxPerTotal.add(amount);
-                log.debug("adding no tax percentage line. Total =" + nonTaxPerTotal);
+                LOG.debug("adding no tax percentage line. Total =" + nonTaxPerTotal);
             }
         }
         
         // step three: tax percetage items
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
-        for (Enumeration items = order.getOrderLinesMap().keys();
-                items.hasMoreElements();) {
-            Integer itemId = (Integer) items.nextElement();
-            OrderLineDTOEx line = (OrderLineDTOEx) order.getOrderLinesMap().
-                    get(itemId);
-
+        for (OrderLineDTOEx line : order.getRawOrderLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() != null &&
                     line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
@@ -118,7 +103,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
                 line.setAmount(new Float(amount.floatValue()));
                 taxPerTotal = taxPerTotal.add(amount);
-                log.debug("adding tax percentage line. Total =" + taxPerTotal);
+                LOG.debug("adding tax percentage line. Total =" + taxPerTotal);
             }
         }
 

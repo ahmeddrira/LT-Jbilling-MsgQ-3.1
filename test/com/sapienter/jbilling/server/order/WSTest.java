@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.order;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -517,4 +518,61 @@ public class WSTest  extends TestCase {
 		assertEquals("Empty array expected: " + Arrays.toString(array), 0, array.length);
 	}
 	
+    public void testUpdateLines() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            OrderWS order = api.getOrder(new Integer(30));
+            int initialCount = order.getOrderLines().length;
+            System.out.println("Got order with " + initialCount + " lines");
+
+            // let's add a line
+            OrderLineWS line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setQuantity(new Integer(1));
+            line.setItemId(new Integer(14));
+            line.setUseItem(new Boolean(true));
+            
+            ArrayList<OrderLineWS> lines = new ArrayList<OrderLineWS>();
+            Collections.addAll(lines, order.getOrderLines());
+            lines.add(line);
+            OrderLineWS[] aLines = new OrderLineWS[lines.size()];
+            lines.toArray(aLines);
+            order.setOrderLines(aLines);
+            
+            // call the update
+            System.out.println("Adding one order line");
+            api.updateOrder(order);
+            
+            // let's see if my new line is there
+            order = api.getOrder(new Integer(30));
+            System.out.println("Got updated order with " + order.getOrderLines().length + " lines");
+            assertEquals("One more line should be there", initialCount + 1, 
+                    order.getOrderLines().length);
+            
+            // and again
+            initialCount = order.getOrderLines().length;
+            lines = new ArrayList<OrderLineWS>();
+            Collections.addAll(lines, order.getOrderLines());
+            lines.add(line);
+            aLines = new OrderLineWS[lines.size()];
+            System.out.println("lines now " + aLines.length);
+            lines.toArray(aLines);
+            order.setOrderLines(aLines);
+            
+            // call the update
+            System.out.println("Adding another order line");
+            api.updateOrder(order);
+            
+            // let's see if my new line is there
+            order = api.getOrder(new Integer(30));
+            System.out.println("Got updated order with " + order.getOrderLines().length + " lines");
+            assertEquals("One more line should be there", initialCount + 1, 
+                    order.getOrderLines().length);
+            
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception: " + e);
+        }
+    }
 }

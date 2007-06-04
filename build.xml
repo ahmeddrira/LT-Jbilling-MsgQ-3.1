@@ -226,7 +226,7 @@
    <!-- Create the JAR file with all the servers side classes (EJBs) -->
    <!-- =================================================================== -->
  
-   <target name="jar" depends="compile">
+   <target name="jar" depends="compile, findRevision">
       <jar jarfile="${build.deploy.dir}/jbilling.jar">
          <fileset dir="${build.classes.dir}">
             <include name="${source.server.package.dir}/**"/>
@@ -237,8 +237,23 @@
          </fileset>
          <fileset dir="${source.resources.descriptor.dir}" 
          	includes="entityNotifications*.properties"/>
+      	<manifest>
+      		<attribute name="Company" value="Sapienter Billing Software Corp."/>
+      		<attribute name="Version" value="${version}"/>
+      		<attribute name="Date" value="${DSTAMP} ${TSTAMP}"/>
+      		<attribute name="Revision" value="${revisionNumber}"/>
+      	</manifest>
       </jar>
    </target>
+	
+   <target name="findRevision">
+   	  <exec executable="svnversion" outputproperty="revisionNumber" failifexecutionfails="false">
+   	  	  <arg value="--no-newline"/>
+   	  	  <arg value="${basedir}"/>
+   	  </exec>
+   	  <tstamp/>
+   </target>
+   	
 
     <target name="compile_api" depends="init, xdoclet-ejbgenerate">
         <javac debug="on" destdir="${build.api.dir}" target="1.5" source="1.5">
@@ -249,9 +264,15 @@
         </javac>
     </target>
 
-	<target name="jar_api" depends="compile_api">
+	<target name="jar_api" depends="compile_api, findRevision">
       <jar jarfile="${build.deploy.dir}/jbilling_api.jar">
          <fileset dir="${build.api.dir}"/>
+       	 <manifest>
+      		<attribute name="Company" value="Sapienter Billing Software Corp."/>
+      		<attribute name="Version" value="${version}"/>
+      		<attribute name="Date" value="${DSTAMP} ${TSTAMP}"/>
+      		<attribute name="Revision" value="${revisionNumber}"/>
+      	 </manifest>
       </jar>
 	</target>
   
@@ -333,7 +354,7 @@
    
     <target name="deploy-local" depends="jar,war,wsr,designs">
         <copy todir="${deploy.local.dir}">
-            <fileset dir="${build.deploy.dir}"/>
+            <fileset dir="${build.deploy.dir}" excludes="jbilling_api.jar"/>
         </copy>
     	<copy todir="${deploy.resources.dir}/designs">
     		<fileset dir="${build.designs.dir}">
@@ -612,7 +633,7 @@
 
 		<mkdir dir="${image.target.dir}"/>
 		<zip filesonly="false" update="false"
-            destfile="${image.target.dir}/${image.name}">
+            destfile="${image.target.dir}/jbilling-${version}.zip">
            <fileset dir="${image.source.dir}">
                <include name="**/*"/>
            </fileset>
@@ -621,9 +642,9 @@
 	
 	<!-- Creates the source packages for distribution -->
 	<target name="packageSource">
-        <delete file="${image.target.dir}/${image.src.name}"/>
+        <delete file="${image.target.dir}/${jbilling-${version}-src.zip}"/>
 		<zip filesonly="false" update="false"
-            destfile="${image.target.dir}/${image.src.name}">
+            destfile="${image.target.dir}/jbilling-${version}-src.zip">
            <zipfileset dir="${source.dir}" prefix="jbilling/src"
                 excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp"/>
             <!-- the following three files are taken from the binary
@@ -646,8 +667,8 @@
 		<ftp password="admin@jbilling.com" remotedir="incoming" depends="yes"
 			 server="upload.sourceforge.net" userid="anonymous">
 	            <fileset dir="${image.target.dir}">
-	                <include name="${image.src.name}"/>
-	                <include name="${image.name}"/>
+	                <include name="${jbilling-${version}-src.zip}"/>
+	                <include name="jbilling-${version}.zip"/>
 	                <include name="jbilling_installation_instructions.pdf"/>
 	            </fileset>
 		</ftp>

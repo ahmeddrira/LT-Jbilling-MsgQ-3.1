@@ -446,8 +446,7 @@ public class NotificationBL extends ResultList
                     languageId);
             UserBL user = new UserBL(userId);
             InvoiceBL invoice = new InvoiceBL();
-            Integer invoiceId = invoice.getLastByUser(user.getEntity().
-                    getUserName(), entityId);
+            Integer invoiceId = invoice.getLastByUser(userId);
             if (invoiceId != null) {
                 invoice.set(invoiceId);
             

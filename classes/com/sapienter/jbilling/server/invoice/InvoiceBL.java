@@ -579,16 +579,15 @@ public class InvoiceBL extends ResultList
     }
     
 
-   public Integer getLastByUser(String username, Integer entityId) 
+   public Integer getLastByUser(Integer userId) 
         throws SQLException, NamingException {
 
         Integer retValue = null;
-        if (username == null || username.length() == 0) {
+        if (userId == null) {
             return null;
         }            
         prepareStatement(InvoiceSQL.lastIdbyUser);
-        cachedResults.setString(1, username);
-        cachedResults.setInt(2, entityId.intValue());
+        cachedResults.setInt(1, userId.intValue());
             
         execute();
         if (cachedResults.next()) {

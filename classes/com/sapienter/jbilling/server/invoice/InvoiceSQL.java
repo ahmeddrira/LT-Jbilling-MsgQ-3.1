@@ -127,10 +127,8 @@ public interface InvoiceSQL {
     // Last invoice id for a user
     static final String lastIdbyUser =
     "select max(i.id) " +
-    "  from invoice i, base_user bu " +
-    " where bu.user_name = ? " +
-    "   and bu.entity_id = ? " +
-    "   and i.user_id = bu.id " +
+    "  from invoice i " +
+    " where i.user_id = ? " +
     "   and i.deleted = 0 " +
     "   and i.is_review = 0";
     

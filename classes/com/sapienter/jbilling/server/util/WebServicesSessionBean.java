@@ -141,12 +141,9 @@ public class WebServicesSessionBean implements SessionBean {
                 return null;
             }
             InvoiceBL bl = new InvoiceBL();
-            UserBL user = new UserBL(userId);
-            Integer invoiceId = bl.getLastByUser(user.getEntity().getUserName(), 
-                    user.getEntity().getEntity().getId());
+            Integer invoiceId = bl.getLastByUser(userId);
             if (invoiceId != null) {
-                bl.set(bl.getLastByUser(user.getEntity().getUserName(), 
-                        user.getEntity().getEntity().getId()));
+                bl.set(invoiceId);
                 retValue = bl.getWS();
             }
             return retValue;

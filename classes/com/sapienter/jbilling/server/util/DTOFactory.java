@@ -201,8 +201,7 @@ public class DTOFactory {
         // add the last invoice id
         InvoiceBL invoiceBL = new InvoiceBL();
         try {
-            dto.setLastInvoiceId(invoiceBL.getLastByUser(dto.getUserName(),
-                    user.getEntity().getId()));
+            dto.setLastInvoiceId(invoiceBL.getLastByUser(user.getUserId()));
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

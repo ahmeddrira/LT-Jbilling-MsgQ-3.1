@@ -144,6 +144,9 @@ Contributor(s): ______________________________________.
 	 		<td><bean:message key="all.prompt.dateFormat"/></td>
 	 		</tr></table></td>
 	 	</tr>
+       <%-- Avoid showing the next billiable day for new orders --%>	 	  
+	 	<logic:present name='<%=Constants.SESSION_ORDER_DTO%>' 
+			  scope="session">
 	 	<tr class="form">
 			<td>
 				 <jbilling:help page="orders" anchor="active">
@@ -164,6 +167,7 @@ Contributor(s): ______________________________________.
 	 		<td><bean:message key="all.prompt.dateFormat"/></td>
 	 		</tr></table></td>
 	 	</tr>
+	 	</logic:present>
 	 	<tr class="form">
 			<td>
 				 <jbilling:help page="orders" anchor="dueDate">

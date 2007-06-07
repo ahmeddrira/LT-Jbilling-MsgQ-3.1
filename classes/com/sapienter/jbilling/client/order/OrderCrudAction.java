@@ -182,7 +182,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
         if (summary.getNextBillableDay() != null) {
             if (orderDTO != null && orderDTO.getNextBillableDay() != null) {
                 if (summary.getNextBillableDay().before(
-                        orderDTO.getNextBillableDay())) {
+                        Util.truncateDate(orderDTO.getNextBillableDay()))) {
 
                 	// new date is less than old date
                     addError("order.error.nextBillableDay.hasOldDate");

@@ -44,6 +44,8 @@ import com.sapienter.jbilling.server.user.ContactBL;
  * password   -- merchant gateway password provided by ACH Commerce
  * merchantid -- merchant id provided by ACH Commerce
  * batchid    -- batch id provided by ACH Commerce
+ * trancode  -- the transaction code. This determines if the transaction is a debit/credit and
+ *               the type of account (chequing/savings). See the ACH Commerce documentation
  * 
  * @author Narinder
  */
@@ -185,7 +187,8 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
             new NameValuePair("fname", firstName),
             new NameValuePair("lname", lastName),
             new NameValuePair("individualid", paymentInfo.getId().toString()),
-            new NameValuePair("trancode", "22"),
+            // it defaults to 27 "Debit to checking account"
+            new NameValuePair("trancode", getOptionalParameter("trancode", "27")),
             new NameValuePair("sec", "PPD"),
             new NameValuePair("replymode", "csv")
         };

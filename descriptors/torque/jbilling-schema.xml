@@ -433,7 +433,7 @@
         <column name="paper_invoice_batch_id" type="INTEGER"/>
         <column name="customer_notes" size="1000" type="VARCHAR"/>
         <column name="public_number" size="40" type="VARCHAR"/>
-        <column name="last_reminder" type="TIMESTAMP"/>
+        <column name="last_reminder" type="DATE"/>
         <column name="overdue_step" type="INTEGER"/>
         <column name="create_timestamp" required="true" type="TIMESTAMP"/>
         <index name="ix_invoice_user_id">
@@ -1097,7 +1097,7 @@
         <column name="active_since" type="DATE"/>
         <column name="active_until" type="DATE"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
-        <column name="next_billable_day" type="TIMESTAMP"/>
+        <column name="next_billable_day" type="DATE"/>
         <column name="created_by" required="true" type="INTEGER"/>
         <column name="status_id" required="true" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>

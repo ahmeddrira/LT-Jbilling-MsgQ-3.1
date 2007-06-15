@@ -241,6 +241,16 @@ public class WSTest extends TestCase {
             updatedUser = api.getUserWS(newUserId);
             assertEquals("updated contact f name", retUser.getContact().getFirstName(),
                     updatedUser.getContact().getFirstName());
+            
+            // now update with a bogus contact type
+            try {
+                System.out.println("Updating with invalid contact type");
+                api.updateUserContact(retUser.getUserId(),new Integer(1),retUser.getContact());
+                fail("Should not update with an invalid contact type");
+            } catch(Exception e) {
+                // good
+                System.out.println("Type rejected " + e.getMessage());
+            }
 
             // update credit card details
             System.out.println("Updating credit card");

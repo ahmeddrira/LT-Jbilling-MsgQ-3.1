@@ -140,6 +140,10 @@ public class ContactBL {
     	return contact;
     }
     
+    public ContactTypeEntityLocalHome getTypeHome() {
+        return contactTypeHome;
+    }
+    
     public ContactDTOEx getVoidDTO(Integer myEntityId) 
             throws NamingException, FinderException {
         entityId = myEntityId;

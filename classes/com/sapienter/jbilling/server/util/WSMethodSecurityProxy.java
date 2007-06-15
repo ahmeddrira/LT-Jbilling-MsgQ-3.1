@@ -45,6 +45,7 @@ import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.ContactBL;
 
 /**
  * @author Emil
@@ -226,9 +227,28 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                     UserBL bl = new UserBL(userId);
                     validate(userId);
                 }
+            } else if(m.getName().equals("updateUserContact")) {
+                Integer userId = (Integer) args[0];
+                Integer contactTypeId = (Integer) args[1];
+                
+                if (userId != null) {
+                    validate(userId);
+                }
+                // check that this is a valid contact type id
+                ContactBL con = new ContactBL();
+                try {
+                    Integer entityId = con.getTypeHome().findByPrimaryKey(
+                            contactTypeId).getEntity().getId();
+                    UserBL user = new UserBL();
+                    user.setRoot(context.getCallerPrincipal().getName());
+                    if (!entityId.equals(user.getEntity().getEntity().getId())) {
+                        throw new SecurityException("Contact type belongs to entity " + entityId);
+                    }
+                } catch (Exception e) {
+                    throw new SecurityException("Invalid contact type " + contactTypeId);
+                }
             } else if(m.getName().equals("getUserWS") || 
                     m.getName().equals("deleteUser") ||
-                    m.getName().equals("updateUserContact") ||
                     m.getName().equals("getUserContactsWS") ||
                     m.getName().equals("updateCreditCard")) {
                 Integer arg = (Integer) args[0];

@@ -57,26 +57,16 @@ import com.sapienter.jbilling.common.Util;
  */
 public final class UserAuthenticationFilter implements Filter {
     
-    private String loginPage = null;
-    private String loginAction = null;
+    private String[] exceptionPages = null;
     private String signupPrefix = null;
-    private String forgetPasswordPage =  null;
-    private String forgetPasswordAction = null;
-    private String changePasswordAction = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(UserAuthenticationFilter.class);
 
     /**
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.loginPage = filterConfig.getInitParameter("login_page");
-        this.loginAction = filterConfig.getInitParameter("login_action");
         this.signupPrefix = filterConfig.getInitParameter("signup_prefix");
-        this.forgetPasswordPage = filterConfig.getInitParameter("forgetPassword_page");
-        this.forgetPasswordAction = filterConfig.getInitParameter("forgetPassword_action");
-        this.changePasswordAction = filterConfig.getInitParameter("changePassword_action");
-        
-        log = Logger.getLogger(UserAuthenticationFilter.class);
+        this.exceptionPages = filterConfig.getInitParameter("exception_pages").split(",");
     }
 
     /**
@@ -88,14 +78,14 @@ public final class UserAuthenticationFilter implements Filter {
         FilterChain fChain)
         throws IOException, ServletException {
             
-        if(loginPage == null || loginAction == null) {
-            log.fatal("Login page not configured. Add this parameter to the " +
+        if(exceptionPages.length <= 1) {
+            LOG.fatal("Exceptions to filter, such as the login page, are not configured. Add this parameter to the " +
                     "web.xml file.");
             return;
         }
         
         if (!(req instanceof HttpServletRequest)) {
-            log.warn("Request not of a servlet.");
+            LOG.warn("Request not of a servlet.");
             return;
         }
         
@@ -104,7 +94,7 @@ public final class UserAuthenticationFilter implements Filter {
         String thisPage = httpReq.getServletPath();
         
         /*
-        log.debug("Filtering page " + thisPage + " Context:" + httpReq.getContextPath() +
+        LOG.debug("Filtering page " + thisPage + " Context:" + httpReq.getContextPath() +
                 " path info:" + httpReq.getPathInfo() + " uri:" + httpReq.getRequestURI() +
                 " protocol:" + httpReq.getProtocol() + " servlet path:" + httpReq.getServletPath()+
                 " url:" + httpReq.getRequestURL());
@@ -116,7 +106,7 @@ public final class UserAuthenticationFilter implements Filter {
             String url = httpReq.getRequestURL().toString();
             if (url.substring(0, 5).equals("http:")) {
                 String newURL = url.replaceFirst("http", "https");
-                log.debug("Redirecting from " + httpReq.getRequestURL() + 
+                LOG.debug("Redirecting from " + httpReq.getRequestURL() + 
                         " to " + newURL + "[" + Boolean.valueOf(Util.getSysProp("force_https")).
                         booleanValue() +"]");
                 ((HttpServletResponse)res).sendRedirect(newURL);
@@ -129,7 +119,7 @@ public final class UserAuthenticationFilter implements Filter {
         if (lock.exists()) {
             HttpSession session = httpReq.getSession(false);
             if (session != null) {
-                log.debug("Kicking user out due to process lock");
+                LOG.debug("Kicking user out due to process lock");
                 try {
                     session.invalidate();
                 } catch (IllegalStateException e) {
@@ -139,32 +129,36 @@ public final class UserAuthenticationFilter implements Filter {
         }
 
         
-        //log.debug("Login = " + loginPage);
-        if (thisPage.compareTo(loginPage) != 0 && 
-                thisPage.compareTo(loginAction) != 0 &&
-                !thisPage.startsWith(signupPrefix) &&
-                thisPage.compareTo(forgetPasswordPage) != 0 &&
-                thisPage.compareTo(forgetPasswordAction) != 0 &&
-                thisPage.compareTo(changePasswordAction) != 0) {
+        //LOG.debug("Login = " + loginPage);
+        boolean isException = false;
+        for (String page: exceptionPages) {
+            if (page.equals(thisPage)) {
+                isException = true;
+                break;
+            }
+        }
+        if (!isException &&
+                !thisPage.startsWith(signupPrefix)) {
             // then you need a session
             HttpSession session = httpReq.getSession(false);
             if (session == null) {
-                log.info("Session not present accessing " + thisPage);
+                LOG.info("Session not present accessing " + thisPage);
                 // TODO add a 'you session might have timed out' message
-                ((HttpServletResponse)res).sendRedirect(httpReq.getContextPath()+loginPage);
+                ((HttpServletResponse)res).sendRedirect(httpReq.getContextPath() + 
+                        exceptionPages[0]);
             } else {
                 if (session.getAttribute(Constants.SESSION_LOGGED_USER_ID) == null) {
-                    log.warn("Session exists but without user.");
+                    LOG.warn("Session exists but without user.");
                     ((HttpServletResponse)res).sendRedirect(
-                            httpReq.getContextPath()+loginPage);
+                            httpReq.getContextPath() + exceptionPages[0]);
                 } else {
-                    //log.debug("Session is good:" + session.getAttribute(Constants.SESSION_USER_ID_KEY));
+                    //LOG.debug("Session is good:" + session.getAttribute(Constants.SESSION_USER_ID_KEY));
                     fChain.doFilter(req, res);
                 }
             }
         } else {
             // it's the login page
-            //log.debug("This is the login page/action.");
+            //LOG.debug("This is the login page/action.");
             fChain.doFilter(req, res);
         }
 
@@ -174,7 +168,7 @@ public final class UserAuthenticationFilter implements Filter {
      * @see javax.servlet.Filter#destroy()
      */
     public void destroy() {
-        loginPage = null;
+        exceptionPages = null;
     }
 
 }

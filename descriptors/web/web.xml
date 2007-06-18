@@ -12,30 +12,14 @@
   		<filter-name>Authentication Filter</filter-name>
   		<filter-class>com.sapienter.jbilling.client.user.UserAuthenticationFilter</filter-class>
   		<init-param>
-  			<param-name>login_page</param-name>
-  			<param-value>/user/login.jsp</param-value>
-  		</init-param>
-  		<init-param>
-  			<param-name>login_action</param-name>
-  			<param-value>/verifyPassword.do</param-value>
+  			<param-name>exception_pages</param-name>
+  			<param-value>/user/login.jsp,/verifyPassword.do,/user/forgetPassword.jsp,/forgetPassword.do,/changePassword.do</param-value>
   		</init-param>
   		<init-param>
   			<param-name>signup_prefix</param-name>
   			<param-value>/signup</param-value>
   		</init-param>
-  		<init-param>
-  			<param-name>forgetPassword_page</param-name>
-  			<param-value>/user/forgetPassword.jsp</param-value>
-  		</init-param>
-  		<init-param>
-  			<param-name>forgetPassword_action</param-name>
-  			<param-value>/forgetPassword.do</param-value>
-  		</init-param>
-  		<init-param>
-  			<param-name>changePassword_action</param-name>
-  			<param-value>/changePassword.do</param-value>
-  		</init-param>
-  </filter>
+    </filter>
   <filter>
   		<filter-name>Menu Selection</filter-name>
   		<filter-class>com.sapienter.jbilling.client.user.MenuSelectionFilter</filter-class>
@@ -95,6 +79,11 @@
   	<servlet-name>callback</servlet-name>
   	<servlet-class>com.sapienter.jbilling.client.api.ExternalCallbackServlet</servlet-class>
   </servlet>
+  <!-- Server Up Check Servlet: Monitoring -->
+  <servlet>
+  	<servlet-name>serverUpCheck</servlet-name>
+  	<servlet-class>com.sapienter.jbilling.client.util.ServerUpCheckServlet</servlet-class>
+  </servlet>
 
 
   <!-- Trigger startup Servlet -->
@@ -120,6 +109,12 @@
   <servlet-mapping>
   	<servlet-name>callback</servlet-name>
   	<url-pattern>/callback</url-pattern>
+  </servlet-mapping>  
+
+  <!-- Server Up Check Servlet Mapping -->
+  <servlet-mapping>
+  	<servlet-name>serverUpCheck</servlet-name>
+  	<url-pattern>/serverUpCheck</url-pattern>
   </servlet-mapping>  
 
   <session-config>

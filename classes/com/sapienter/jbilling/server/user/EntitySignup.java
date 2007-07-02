@@ -519,6 +519,7 @@ public final class EntitySignup {
             { String.valueOf(newEntityId), "10","1" }, // BasicPaymentInfoTask cc info fetcher
             { String.valueOf(newEntityId), "12","2" }, // Paper invoice (for download PDF).
             { String.valueOf(newEntityId), "23","1" }, // Subscriber status manager
+            { String.valueOf(newEntityId), "25","1" }, // Async payment processing (no parameters)
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK, pluggableTaskColumns, pluggableTaskData, false);
         processTable(table);

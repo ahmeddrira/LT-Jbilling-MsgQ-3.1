@@ -1027,7 +1027,7 @@ public class BillingProcessBL extends ResultList
      * @throws FinderException
      */
     public void generatePayment(Integer processId, Integer runId,
-            InvoiceEntityLocal newInvoice) 
+            Integer invoiceId) 
             throws NamingException, SessionInternalError, CreateException,
                 FinderException {
         PaymentSessionLocalHome paymentHome =
@@ -1035,6 +1035,8 @@ public class BillingProcessBL extends ResultList
                 PaymentSessionLocalHome.class,
                 PaymentSessionLocalHome.JNDI_NAME);
 
+        InvoiceBL invoiceBL = new InvoiceBL(invoiceId);
+        InvoiceEntityLocal newInvoice = invoiceBL.getEntity();
         PaymentSessionLocal paymentSess = paymentHome.create();
         Integer result = paymentSess.generatePayment(newInvoice);
         Integer currencyId = newInvoice.getCurrencyId();

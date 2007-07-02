@@ -1,0 +1,11 @@
+<message-driven>
+	<ejb-name>DefaultAsyncPaymentProcessor</ejb-name>
+	<destination-jndi-name>queue/processors</destination-jndi-name>
+	<resource-ref>
+		<res-ref-name>jms/QCF</res-ref-name>
+		<jndi-name>
+			jnp://localhost:1099/UIL2ConnectionFactory
+		</jndi-name>
+	</resource-ref>
+</message-driven>
+

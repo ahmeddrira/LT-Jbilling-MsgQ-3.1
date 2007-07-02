@@ -268,6 +268,7 @@ public class BillingProcessRunBL {
         dto.setInvoiceGenerated(billingProcessRun.getInvoiceGenerated());
         dto.setStarted(billingProcessRun.getStarted());
         dto.setRunDate(billingProcessRun.getRunDate());
+        dto.setPaymentFinished(billingProcessRun.getPaymentFinished());
         // now the totals
         if (!billingProcessRun.getTotals().isEmpty()) {
             for (Iterator tIt = billingProcessRun.getTotals().iterator(); 

@@ -71,7 +71,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
  */
 public class PaymentSessionBean implements SessionBean {
 
-    private Logger log = null;
+    private final Logger LOG = Logger.getLogger(PaymentSessionBean.class);
 
     /**
     * Create the Session Bean
@@ -143,7 +143,7 @@ public class PaymentSessionBean implements SessionBean {
             }
             
         } catch (Exception e) {
-            log.fatal("Problems generating payment.", e);
+            LOG.fatal("Problems generating payment.", e);
             throw new SessionInternalError(
                 "Problems generating payment.");
         } 
@@ -165,7 +165,7 @@ public class PaymentSessionBean implements SessionBean {
             bl.delete();
 
         } catch (Exception e) {
-            log.warn("Problem deleteing payment.", e);
+            LOG.warn("Problem deleteing payment.", e);
             throw new SessionInternalError("Problem deleteing payment");
         }
     }
@@ -181,9 +181,6 @@ public class PaymentSessionBean implements SessionBean {
      */
     public Integer processAndUpdateInvoice(PaymentDTOEx dto, 
             InvoiceEntityLocal invoice) throws SessionInternalError {
-        if (log == null) {
-            log = Logger.getLogger(PaymentSessionBean.class); //leave or get the web services broken
-        }
         try {
             PaymentBL bl = new PaymentBL();
             Integer entityId = invoice.getUser().getEntity().getId();
@@ -208,7 +205,7 @@ public class PaymentSessionBean implements SessionBean {
             if (dto.getAmount().floatValue() > 0) {
                 result = bl.processPayment(entityId, dto);
             } else {
-                log.warn("Skiping payment processing. Payment with negative " +
+                LOG.warn("Skiping payment processing. Payment with negative " +
                         "amount " + dto.getAmount());
             }
             // only if there was any processing at all
@@ -265,7 +262,7 @@ public class PaymentSessionBean implements SessionBean {
             } else {
                 // without an invoice, it's just creating the payment row
                 // and calling the processor
-                log.info("method called without invoice");
+                LOG.info("method called without invoice");
                 
                 PaymentBL bl = new PaymentBL();
                 Integer result = bl.processPayment(entityId, dto);
@@ -287,10 +284,10 @@ public class PaymentSessionBean implements SessionBean {
      * @ejb.transaction type="Required"
      */
     public void applyPayment(Integer paymentId, Integer invoiceId) {
-        log.debug("Applying payment " + paymentId + " to invoice " 
+        LOG.debug("Applying payment " + paymentId + " to invoice " 
                 + invoiceId);
         if (paymentId == null || invoiceId == null) {
-            log.warn("Got null parameters to apply a payment");
+            LOG.warn("Got null parameters to apply a payment");
             return;
         }
 
@@ -304,7 +301,7 @@ public class PaymentSessionBean implements SessionBean {
             // link it with the invoice
             payment.createMap(invoice.getEntity(), new Float(paid));
         } catch (FinderException e) {
-            log.error("Got missing ids to apply a payment " +
+            LOG.error("Got missing ids to apply a payment " +
                     paymentId + " - " + invoiceId, e);
             throw new SessionInternalError("Missing ids");
         } catch (Exception e) {
@@ -325,11 +322,10 @@ public class PaymentSessionBean implements SessionBean {
             throws SessionInternalError, NamingException, FinderException,
                 CreateException, RemoveException, SQLException {
         BigDecimal totalPaid = new BigDecimal(0);
-        log = Logger.getLogger(PaymentSessionBean.class); // leave it or break web services
         if (invoice != null) {
 
             // set the attempt of the invoice
-            log.debug("applying payment to invoice " + invoice.getId());
+            LOG.debug("applying payment to invoice " + invoice.getId());
             if (payment.getIsRefund().intValue() == 0) {
                 //invoice can't take nulls. Default to 1 if so.
                 invoice.setPaymentAttempts(payment.getAttempt() == null ? 
@@ -378,7 +374,7 @@ public class PaymentSessionBean implements SessionBean {
                     }
                     
                     invoice.setBalance(new Float(newBalance.floatValue()));
-                    log.debug("Set invoice balance to: " + invoice.getBalance());
+                    LOG.debug("Set invoice balance to: " + invoice.getBalance());
                     
                     // update the to_process flag if the balance is 0
                     if (newBalance.compareTo(new BigDecimal("0")) == 0) {
@@ -578,10 +574,10 @@ public class PaymentSessionBean implements SessionBean {
                     notificationSess.notify(payment.getUserId(), message);
                     
                 } else {
-                    log.debug("wrong currency " + currency);
+                    LOG.debug("wrong currency " + currency);
                 }
             } else {
-                log.debug("wrong entity paypal account " + paypalAccount + " " 
+                LOG.debug("wrong entity paypal account " + paypalAccount + " " 
                         + entityEmail);
             }
             
@@ -604,7 +600,7 @@ public class PaymentSessionBean implements SessionBean {
             throw new SessionInternalError("ID missing in payment to update");
         }
         
-        log.debug("updateting payment " + dto.getId());
+        LOG.debug("updateting payment " + dto.getId());
         try {
             PaymentBL bl = new PaymentBL(dto.getId());
             if (bl.getEntity().getResultId().equals(Constants.RESULT_ENTERED)) {
@@ -656,7 +652,6 @@ public class PaymentSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext aContext)
             throws EJBException, RemoteException {
-        log = Logger.getLogger(PaymentSessionBean.class);
     }
 
 }

@@ -35,13 +35,13 @@ import com.sapienter.jbilling.server.entity.BillingProcessRunDTO;
  */
 public class BillingProcessRunDTOEx extends BillingProcessRunDTO {
 
-    Vector totals = null;
+    Vector<BillingProcessRunTotalDTOEx> totals = null;
     /**
      * 
      */
     public BillingProcessRunDTOEx() {
         super();
-        totals = new Vector();
+        totals = new Vector<BillingProcessRunTotalDTOEx>();
         setInvoiceGenerated(new Integer(0));
     }
 
@@ -56,17 +56,17 @@ public class BillingProcessRunDTOEx extends BillingProcessRunDTO {
      * @param totalNotPaid
      */
     public BillingProcessRunDTOEx(Integer id, Date runDate, Date started,
-            Date finished, Integer invoiceGenerated) {
-        super(id, runDate, started, finished, invoiceGenerated);
-        totals = new Vector();
+            Date finished, Date paymentFinished, Integer invoiceGenerated) {
+        super(id, runDate, started, finished, paymentFinished, invoiceGenerated);
+        totals = new Vector<BillingProcessRunTotalDTOEx>();
         
     }
 
-    public Vector getTotals() {
+    public Vector<BillingProcessRunTotalDTOEx> getTotals() {
         return totals;
     }
 
-    public void setTotals(Vector totals) {
+    public void setTotals(Vector<BillingProcessRunTotalDTOEx> totals) {
         this.totals = totals;
     }
 

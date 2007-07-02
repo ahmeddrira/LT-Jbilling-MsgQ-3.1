@@ -82,28 +82,11 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 
 	private PaymentTask selectDelegate(Integer userId)
 			throws PluggableTaskException {
-		ContactBL contactLoader;
-		try {
-			contactLoader = new ContactBL();
-			contactLoader.set(userId);
-		} catch (NamingException e) {
-			throw new PluggableTaskException("Configuration problems", e);
-		} catch (FinderException e) {
-			throw new PluggableTaskException("Valid userId expected, actual:"
-					+ userId, e);
-		}
-
-		ContactDTOEx contact = contactLoader.getDTO();
-		ContactFieldDTOEx paymentProcessorField = (ContactFieldDTOEx) contact.getFields().get(
-                parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR));
-		if (paymentProcessorField == null){
-            LOG.warn("Can't find CCF with type " + 
-                    parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR) +
-                    " contact = " + contact);
-			return null;
-		}
 		
-		String processorName = paymentProcessorField.getContent();
+		String processorName = getProcessorName(userId);
+        if (processorName == null) {
+            return null;
+        }
 		Integer selectedTaskId;
 		try {
             // it is a task parameter the id of the processor
@@ -127,6 +110,33 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 		}
 		return selectedTask;
 	}
+    
+    public String getProcessorName(Integer userId) throws PluggableTaskException {
+        ContactBL contactLoader;
+        String processorName = null;
+        try {
+            contactLoader = new ContactBL();
+            contactLoader.set(userId);
+        } catch (NamingException e) {
+            throw new PluggableTaskException("Configuration problems", e);
+        } catch (FinderException e) {
+            throw new PluggableTaskException("Valid userId expected, actual:"
+                    + userId, e);
+        }
+
+        ContactDTOEx contact = contactLoader.getDTO();
+        ContactFieldDTOEx paymentProcessorField = (ContactFieldDTOEx) contact.getFields().get(
+                parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR));
+        if (paymentProcessorField == null){
+            LOG.warn("Can't find CCF with type " + 
+                    parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR) +
+                    " contact = " + contact);
+            processorName = null;
+        } else {
+            processorName = paymentProcessorField.getContent();
+        }
+        return processorName;
+    }
 
 	private PaymentTask instantiateTask(Integer taskId)
 			throws PluggableTaskException {

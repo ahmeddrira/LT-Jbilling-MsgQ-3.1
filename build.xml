@@ -31,10 +31,11 @@
     </path>
     
 
-    <path id="debug.classpath">
+    <path id="run.classpath">
         <path refid="compile.classpath"/>
-        <pathelement location="${jswat.jar}"/>
-        <pathelement location="${java_home.dir}/jre/lib/ext/tools.jar"/>
+        <pathelement location="${build.deploy.dir}/jbilling.jar"/>
+        <pathelement location="${junit.dir}/junit.jar"/>
+        <pathelement location="${build.test.dir}"/>
     </path>
 
     <path id="xdoclet.classpath">
@@ -407,83 +408,9 @@
     </target>
 
    <!-- Builds from scratch -->
-    <target name="clean" depends="purge,deploy-local, jar_api">
+    <target name="clean" depends="purge,deploy-local, jar_api, prepare-test">
     </target>
     
-  <!-- Run all tests, compiling them first -->
-  <target name="test">
-      <javac debug="on" destdir="${build.test.dir}"
-             srcdir="${source.test.dir}">
-          <classpath refid="test.classpath"/>
-      </javac>
-      <junit printsummary="off"
-             haltonfailure="true">
-          <classpath refid="test.classpath"/>
-          <formatter type="brief" usefile="false"/>
-          <batchtest >
-          	 <fileset dir="${build.test.dir}">
-          	 	<include name="**/*Test.class"/> 
-          	 	<exclude name="**/BillingProcessTest.class"/>
-          	 	<exclude name="**/PartnerTest.class"/>
-          	 	<exclude name="**/WSTest.class"/>
-          	 </fileset>
-          </batchtest>
-      </junit>
-  </target>
-
-  <target name="test-process">
-
-      <junit printsummary="off"
-             haltonfailure="true">
-          <classpath refid="test.classpath"/>
-          <formatter type="brief" usefile="false"/>
-          <batchtest >
-          	 <fileset dir="${build.test.dir}">
-          	 	<include name="com.sapienter.jbilling.server.process.BillingProcessTest"/>
-          	 	<include name="com.sapienter.jbilling.server.user.PartnerTest"/>
-          	 </fileset>
-          </batchtest>
-      </junit>
-  </target>
-
-  <target name="test-process-only">
-    <javac debug="on" destdir="${build.test.dir}"
-           srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
-        <classpath refid="test.classpath"/>
-    </javac>
-      <junit printsummary="off"
-             haltonfailure="true">
-          <classpath refid="test.classpath"/>
-          <formatter type="brief" usefile="false"/>
-          <test name="com.sapienter.jbilling.server.process.BillingProcessTest"/>
-      </junit>
-  </target>
-
-  <target name="test-partner-only">
-      <javac debug="on" destdir="${build.test.dir}"
-             srcdir="${source.test.dir}">
-          <classpath refid="test.classpath"/>
-      </javac>
-      <junit printsummary="off"
-             haltonfailure="true">
-          <classpath refid="test.classpath"/>
-          <formatter type="brief" usefile="false"/>
-          <test name="com.sapienter.jbilling.server.user.PartnerTest"/>
-      </junit>
-  </target>
-
-  <target name="test-api-only">
-      <javac debug="on" destdir="${build.test.dir}"
-             srcdir="${source.test.dir}">
-          <classpath refid="test.classpath"/>
-      </javac>
-      <junit printsummary="off"
-             haltonfailure="true">
-          <classpath refid="test.classpath"/>
-          <formatter type="brief" usefile="false"/>
-          <test name="com.sapienter.jbilling.client.api.APITest"/>
-      </junit>
-  </target>
 
   <target name="prepare-test">
 	  <!-- The test expect a particular set of data -->
@@ -496,6 +423,7 @@
       </copy>
   	  <echo>Ready. Start-up JBoss and run 'ant test-ws'</echo>
   </target>
+	
   <target name="test-ws">
       <javac debug="on" destdir="${build.test.dir}"
              srcdir="${source.test.dir}"
@@ -520,6 +448,22 @@
       </junit>
   </target>
   
+  <target name="test-process">
+       <javac debug="on" destdir="${build.test.dir}"
+              srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
+           <classpath refid="run.classpath"/>
+	   </javac>
+	   <junit printsummary="off"
+	             haltonfailure="true">
+	       <classpath refid="run.classpath"/>
+	       <formatter type="brief" usefile="false"/>
+	       <test name="com.sapienter.jbilling.server.process.BillingProcessTest"/>
+	   </junit>
+  </target>
+  
+	<target name="test" depends="test-ws, test-process">
+	</target>
+
   <!--
      Warning: this task needs a lot of memory. At least 400Megs. Otherwise
      it fails with an obscure error. To fix use ANT_OPTS=-Xmx400m -Xss128k

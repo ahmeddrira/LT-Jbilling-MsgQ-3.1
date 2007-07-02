@@ -35,7 +35,7 @@ import com.sapienter.jbilling.server.entity.BillingProcessDTO;
  */
 public class BillingProcessDTOEx extends BillingProcessDTO {
 
-    private Vector runs = null; 
+    private Vector<BillingProcessRunDTOEx> runs = null; 
     private BillingProcessRunDTOEx grandTotal = null;
     private Integer retries = null;
     private Date billingDateEnd = null;

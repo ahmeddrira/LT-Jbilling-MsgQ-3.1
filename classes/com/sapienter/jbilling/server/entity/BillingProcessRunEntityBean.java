@@ -145,6 +145,18 @@ public abstract class BillingProcessRunEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @jboss:column-name name="payment_finished"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Date getPaymentFinished();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setPaymentFinished(Date finished);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
      * @jboss:column-name name="invoices_generated"
      * @jboss.method-attributes read-only="true"
      */

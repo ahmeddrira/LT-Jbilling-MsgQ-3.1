@@ -116,6 +116,7 @@
         <column name="run_date" required="true" type="DATE"/>
         <column name="started" required="true" type="TIMESTAMP"/>
         <column name="finished" type="TIMESTAMP"/>
+        <column name="payment_finished" type="TIMESTAMP"/>
         <column name="invoices_generated" type="INTEGER"/>
         <index name="bp_run_process_ix">
         	<index-column name="process_id"/>

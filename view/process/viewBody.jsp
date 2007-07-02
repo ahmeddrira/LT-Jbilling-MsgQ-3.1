@@ -258,6 +258,14 @@ Contributor(s): ______________________________________.
 			</td>
 		</tr>
 		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="process.run.prompt.payment_finished"/></td>
+			<td class="infodata">	
+				<bean:write name="run" 
+							property="paymentFinished"
+							formatKey="format.timestamp" />
+			</td>
+		</tr>
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.invoicesGenerated"/></td>
 			<td class="infodata">	
 				<bean:write name="run" 
@@ -270,14 +278,14 @@ Contributor(s): ______________________________________.
 				   property="totals"
 				   id="total">
 		
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="currency.external.prompt.name"/></td>
 			<td class="infodata">	
 				<bean:write name="total" property="currencyName"/>
 			</td>
 		</tr>
 		
-		<tr class="infoB">
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalInvoiced"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
@@ -292,7 +300,7 @@ Contributor(s): ______________________________________.
 			</td>
 		</tr>
 		
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalPaid"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
@@ -306,7 +314,7 @@ Contributor(s): ______________________________________.
 							formatKey="format.money"/>
 			</td>
 		</tr>
-		<tr class="infoB">
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalNotPaid"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
@@ -320,7 +328,7 @@ Contributor(s): ______________________________________.
 							formatKey="format.money"/>
 			</td>
 		</tr>
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalPaymentMethod"/></td>
 			<td></td>
 		</tr>
@@ -330,11 +338,11 @@ Contributor(s): ______________________________________.
 					   id="methodTotal">
 			<c:choose>
 				<c:when test="${colorFlag == 1}">
-					<tr class="listB">
+					<tr class="listA">
 					<c:remove var="colorFlag"/>
 				</c:when>
 				<c:otherwise>
-					<tr class="listA">
+					<tr class="listB">
 					<c:set var="colorFlag" value="1"/>
 				</c:otherwise>
 			</c:choose>

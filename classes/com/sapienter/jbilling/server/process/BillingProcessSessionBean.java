@@ -63,7 +63,10 @@ import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.process.BillingProcessRunBL.DateComparator;
+import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
+import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
+import com.sapienter.jbilling.server.system.event.EventManager;
+import com.sapienter.jbilling.server.system.event.EventProcessor;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -342,6 +345,11 @@ public class BillingProcessSessionBean implements SessionBean {
                 BillingProcessRunBL runBL = new BillingProcessRunBL();
                 runBL.setProcess(billingProcessId);
                 runBL.update(billingDate);
+                // the payment processing is happening in parallel
+                // this event marks the end of it
+                EndProcessPaymentEvent event = new EndProcessPaymentEvent(
+                        runBL.getEntity().getId(), entityId);
+                EventManager.process(event);
             }
             
             // and finally the next run date in the config
@@ -364,14 +372,15 @@ public class BillingProcessSessionBean implements SessionBean {
     }
     
     /**
+     * This method process a payment synchronously. It is a wrapper to the payment processing  
+     * so it runs in its own transaction
      * @ejb:interface-method view-type="local"
      * @ejb.transaction type="RequiresNew"
      */
     public void processPayment(Integer processId, Integer runId, Integer invoiceId) {
         try {
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
             BillingProcessBL bl = new BillingProcessBL();
-            bl.generatePayment(processId, runId, invoice.getEntity());
+            bl.generatePayment(processId, runId, invoiceId);
         } catch (Exception e) {
             log.error("Exception processing a payment ", e);
         }
@@ -418,19 +427,31 @@ public class BillingProcessSessionBean implements SessionBean {
                 // it's time for a retry
                 log.debug("Retring process " + processId);
                 Integer runId = process.createRetryRun(processId); 
+                BillingProcessRunBL runBL = new BillingProcessRunBL(runId);
+                Integer entityId = runBL.getEntity().getProcess().getEntityId();
+
                 // get the invoices yet to be paid from this process
                 InvoiceBL invoiceBL = new InvoiceBL();
                 for (Iterator it = invoiceBL.getHome().findProccesableByProcess(
                         processId).iterator(); it.hasNext();) {
                     InvoiceEntityLocal invoice = (InvoiceEntityLocal) it.next();
                     log.debug("Retrying invoice " + invoice.getId());
-                    process.processPayment(null, runId, invoice.getId());
+
+                    // post the need a a payment process, it'll be done asynchronusly
+                    ProcessPaymentEvent event = new ProcessPaymentEvent(invoice.getId(), 
+                            null, runId, entityId);
+                    EventManager.process(event);
                 }
 
                 // update the run record with the results of the run
-                BillingProcessRunBL runBL = new BillingProcessRunBL(runId);
                 runBL.getEntity().setFinished(Calendar.getInstance().getTime());
                 runBL.getEntity().setInvoiceGenerated(new Integer(0));
+                // the payment processing is happening in parallel
+                // this event marks the end of it
+                EndProcessPaymentEvent event = new EndProcessPaymentEvent(
+                        runBL.getEntity().getId(), entityId);
+                EventManager.process(event);
+
                 
                 // update the process: one less retry to do
                 BillingProcessBL bl = new BillingProcessBL(processId);
@@ -483,8 +504,9 @@ public class BillingProcessSessionBean implements SessionBean {
             }
             
             if (processPayment) {
-                BillingProcessBL processBL = new BillingProcessBL();
-                processBL.generatePayment(processId, null, invoice.getEntity());
+                ProcessPaymentEvent event = new ProcessPaymentEvent(invoiceId, 
+                        processId, null, entityId);
+                EventManager.process(event);
             }
         } catch (Exception e) {
             log.error("sending email and processing payment", e);
@@ -675,8 +697,8 @@ public class BillingProcessSessionBean implements SessionBean {
             // loop over all the entities
             EntityBL entityBL = new EntityBL();
             Integer entityArray[] = entityBL.getAllIDs();
-            log.debug("Running trigger. Today = " + today + 
-                    " entities = " + entityArray.length);
+            log.debug("Running trigger. Today = " + today + "[" + today.getTime() +
+                    "] entities = " + entityArray.length);
             for (int entityIndex = 0; entityIndex < entityArray.length;
                     entityIndex++) {
                 log.debug("New entity row index " + entityIndex + 
@@ -754,7 +776,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     }
                 } else {
                     // no run, may be then a review generation
-                	log.debug("No run scheduled");
+                	log.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
                     
                     /*
                      * Review generation

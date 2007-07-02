@@ -27,9 +27,8 @@ package com.sapienter.jbilling.server.process;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -46,17 +45,10 @@ import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
-import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.OrderDTO;
-import com.sapienter.jbilling.server.entity.OrderProcessDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.BillingProcessRunDTOEx;
-import com.sapienter.jbilling.server.process.BillingProcessRunTotalDTOEx;
-import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -124,7 +116,8 @@ public class BillingProcessTest extends TestCase {
         entityId = new Integer(1);
         languageId = new Integer(1);
         cal = new GregorianCalendar();
-        cal.set(2006, GregorianCalendar.OCTOBER, 26); 
+        cal.clear();
+        cal.set(2006, GregorianCalendar.OCTOBER, 26, 0, 0, 0); 
         runDate = cal.getTime();
 
     }
@@ -143,7 +136,7 @@ public class BillingProcessTest extends TestCase {
             configDto.setRetries(new Integer(1));
             configDto.setDaysForRetry(new Integer(5));
             configDto.setGenerateReport(new Integer(0));
-            configDto.setAutoPayment(new Integer(0));
+            configDto.setAutoPayment(new Integer(1));
             configDto.setAutoPaymentApplication(new Integer(1));
             configDto.setDfFm(new Integer(0));
             configDto.setDueDateUnitId(Constants.PERIOD_UNIT_MONTH);
@@ -230,7 +223,7 @@ public class BillingProcessTest extends TestCase {
                     new Boolean(false));
                     
             // run trigger, but too early (six days, instead of 5)    
-            cal.set(2006, GregorianCalendar.OCTOBER, 21); 
+            cal.set(2006, GregorianCalendar.OCTOBER, 20); 
             remoteBillingProcess.trigger(cal.getTime());
             
             // get the latest process
@@ -389,8 +382,71 @@ public class BillingProcessTest extends TestCase {
         }
     }
 
+    // This should work when data of the order lines makes sense (quantity *
+    // price = total).
+    // Yet, the periods have to be added in this function
+    public void testGeneratedInvoices() {
+        try {
+            Collection<InvoiceDTOEx> invoices = remoteBillingProcess.getGeneratedInvoices(
+                    new Integer(35));
+            // we now that only one invoice should be generated
+            assertEquals("Invoices generated", 1, invoices.size());
+            
+            for (InvoiceDTOEx invoice : invoices) {
+                float orderTotal = 0F;
+                Vector<OrderDTO> orders = invoice.getOrders();
+                for (OrderDTO order: orders) {
+                    OrderDTOEx orderDto = remoteOrder.getOrderEx(order.getId(),
+                            languageId);
+                    orderTotal += orderDto.getTotal().floatValue();
+                }
+
+                assertEquals("Orders total = Invoice " + invoice.getId()
+                        + " total", orderTotal, invoice.getTotal().floatValue()
+                        - invoice.getCarriedBalance().floatValue(), 0.005F);
+            }
+            
+            // take the invoice and examine
+            InvoiceDTO invoice = remoteInvoice.getInvoice(57);
+            assertNotNull("Invoice 57 should've been generated", invoice);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception:" + e);
+        }
+    }
+    
+    public void testPayments() {
+        try {
+            BillingProcessDTOEx process = remoteBillingProcess.getDto(35, 1);
+            assertNotNull("The process should be there", process);
+            assertNotNull("The run should be there", process.getRuns());
+            assertEquals("Only one run should be present", 1, process.getRuns().size());
+            BillingProcessRunDTOEx run = (BillingProcessRunDTOEx) process.getRuns().get(0);
+
+            for(int myTry = 0; myTry < 10 && run.getPaymentFinished() == null; myTry++) {
+                System.out.println("Waiting for payment processing ... " + myTry);
+                Thread.sleep(1000);
+                process = remoteBillingProcess.getDto(35, 1);
+                run = (BillingProcessRunDTOEx) process.getRuns().get(0);
+            }
+            
+            assertNotNull("The payment processing did not run", run.getPaymentFinished());
+            // we know that the only one invoice will be payed in full
+            assertEquals("One invoice in the grand total", new Integer(1), process.getGrandTotal().getInvoiceGenerated());
+            assertEquals("Total invoiced is paid", ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced(),
+                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid());
+            InvoiceDTO invoice = remoteInvoice.getInvoice(57);
+            assertEquals("Invoice is paid", new Integer(0), invoice.getToProcess());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception:" + e);
+        }
+    }
 
 
+/*
     
     public void testOrdersProcessedDate() {
         String dates[] = { 
@@ -591,32 +647,6 @@ public class BillingProcessTest extends TestCase {
          
     }
 
-// This should work when data of the order lines makes sense (quantity * price = total).
- //  Yet, the periods have to be added in this function
-        public void testGeneratedInvoiceTotals() {
-        try {
-            
-            for (Iterator it = remoteBillingProcess.getGeneratedInvoices(
-                    new Integer(5)).iterator(); it.hasNext(); ) {
-                InvoiceDTOEx invoice = (InvoiceDTOEx) it.next();
-                float orderTotal = 0F;
-                for (Iterator it2 = invoice.getOrders().iterator(); 
-                        it2.hasNext();){
-                    OrderDTO order = (OrderDTO) it2.next();
-                    OrderDTOEx orderDto = remoteOrder.getOrderEx(order.getId(),
-                            languageId);
-                    orderTotal += orderDto.getTotal().floatValue();
-                }
-    
-                assertEquals("Orders total = Invoice " + invoice.getId() + " total", orderTotal, 
-                        invoice.getTotal().floatValue() - 
-                            invoice.getCarriedBalance().floatValue(), 0.005F);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception:" + e);
-        }
-    }
 
     public void testPayments() {
         try {
@@ -876,5 +906,5 @@ public class BillingProcessTest extends TestCase {
             fail(e.getMessage());
         }
     }
-
+*/
 }

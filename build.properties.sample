@@ -63,8 +63,7 @@ deploy.resources.dir=${basedir}/../resources
 documentation.dir=${jboss.server.dir}/deploy/documentation.war
 image.source.dir=c:/bop/image/source
 image.target.dir=c:/bop/image/target
-image.name=jbilling-1_0.zip
-image.src.name=jbilling-1_0-src.zip
+version=1_0_0
 #<!-- Build temporary directories -->
 build.dir=${basedir}/build
 build.designs.dir=${build.dir}/designs

@@ -542,7 +542,7 @@
 	<target name="packageImage" depends="jspc">
 		<!-- make sure it'll get the latest binaries -->
 		<copy todir="${image.source.dir}/jbilling/server/default/deploy">
-            <fileset dir="${build.deploy.dir}"/>
+            <fileset dir="${build.deploy.dir}" excludes="jbilling_api.jar"/>
         </copy>
 		<!-- if the app server was up, it generated temp files -->
 		<delete dir="${image.source.dir}/jbilling/server/default/tmp"/>

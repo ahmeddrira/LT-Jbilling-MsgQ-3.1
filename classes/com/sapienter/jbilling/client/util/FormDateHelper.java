@@ -32,7 +32,10 @@ public class FormDateHelper {
         String year = (String) myForm.get(prefix + SUFFIX_YEAR);
         String month = (String) myForm.get(prefix + SUFFIX_MONTH);
         String day = (String) myForm.get(prefix + SUFFIX_DAY);
-        
+
+        if (year == null || month == null || day == null) {
+            return null;
+        }
         // if one of the fields have been entered, all should've been
         if ((year.length() > 0 && (month.length() <= 0 || day.length() <= 0)) ||
             (month.length() > 0 && (year.length() <= 0 || day.length() <= 0)) ||

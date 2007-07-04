@@ -611,7 +611,7 @@
 		<ftp password="admin@jbilling.com" remotedir="incoming" depends="yes"
 			 server="upload.sourceforge.net" userid="anonymous">
 	            <fileset dir="${image.target.dir}">
-	                <include name="${jbilling-${version}-src.zip}"/>
+	                <include name="jbilling-${version}-src.zip"/>
 	                <include name="jbilling-${version}.zip"/>
 	                <include name="jbilling_installation_instructions.pdf"/>
 	            </fileset>

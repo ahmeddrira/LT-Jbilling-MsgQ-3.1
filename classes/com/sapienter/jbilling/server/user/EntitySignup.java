@@ -540,7 +540,7 @@ public final class EntitySignup {
         };
         // paper invoice
         String pluggableTaskParameterData[][] = {
-            { String.valueOf(lastCommonPT - 1), "design", null, "simple_invoice_b2b", null},
+            { String.valueOf(lastCommonPT - 2), "design", null, "simple_invoice_b2b", null},
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK_PARAMETER, pluggableTaskParameterColumns, 
                 pluggableTaskParameterData, false);
@@ -550,21 +550,21 @@ public final class EntitySignup {
         addTaskParameter(table,lastCommonPT - 11, "all", null, "yes", null);
         
         // email parameters. They are all optional
-		addTaskParameter(table, lastCommonPT - 3, "smtp_server", null, 
+		addTaskParameter(table, lastCommonPT - 4, "smtp_server", null, 
     			null, null);
-		addTaskParameter(table, lastCommonPT - 3, "from", null, 
+		addTaskParameter(table, lastCommonPT - 4, "from", null, 
     			contact.getEmail(), null);
-		addTaskParameter(table, lastCommonPT - 3, "username", null, 
+		addTaskParameter(table, lastCommonPT - 4, "username", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 3, "password", null, 
+		addTaskParameter(table, lastCommonPT - 4, "password", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 3, "port", null, 
+		addTaskParameter(table, lastCommonPT - 4, "port", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 3, "reply_to", null, 
+		addTaskParameter(table, lastCommonPT - 4, "reply_to", null, 
                 null, null);
-        addTaskParameter(table, lastCommonPT - 3, "bcc_to", null, 
+        addTaskParameter(table, lastCommonPT - 4, "bcc_to", null, 
                 null, null);
-        addTaskParameter(table, lastCommonPT - 3, "from_name", null, 
+        addTaskParameter(table, lastCommonPT - 4, "from_name", null, 
                 contact.getOrganizationName(), null);
         
         updateBettyTablesRows(table.index, table.nextId);

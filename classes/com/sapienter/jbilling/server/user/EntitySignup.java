@@ -547,7 +547,7 @@ public final class EntitySignup {
         processTable(table);
         
         // fake payment processor
-        addTaskParameter(table,lastCommonPT - 10, "all", null, "yes", null);
+        addTaskParameter(table,lastCommonPT - 11, "all", null, "yes", null);
         
         // email parameters. They are all optional
 		addTaskParameter(table, lastCommonPT - 3, "smtp_server", null, 

@@ -136,7 +136,7 @@ public class Util {
                 (date1 != null && date2 == null)) {
             retValue = false;
         } else {
-            retValue = (date1.compareTo(date2) == 1);
+            retValue = (date1.compareTo(date2) == 0);
         }
         
         return retValue;

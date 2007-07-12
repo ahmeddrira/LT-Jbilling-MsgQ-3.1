@@ -121,14 +121,9 @@ public class BillingProcessTest extends TestCase {
         runDate = cal.getTime();
 
     }
-    
-    public void testRun() {
+
+    public void testRetry() {
         try {
-            // get the latest process
-            BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(
-                    remoteBillingProcess.getLast(entityId),
-                    languageId);
-        
             // set the configuration to something we are sure about
             BillingProcessConfigurationDTO configDto = remoteBillingProcess.
                     getConfigurationDto(entityId);
@@ -150,6 +145,81 @@ public class BillingProcessTest extends TestCase {
             remoteBillingProcess.createUpdateConfiguration(new Integer(1),
                  configDto);
             
+            // retries calculate dates using the real date of the run
+            // when know of one from the pre-cooked DB
+            cal.set(2000, GregorianCalendar.DECEMBER, 19, 0, 0, 0); 
+            Date retryDate = Util.truncateDate(cal.getTime());
+            
+            // let's monitor invoice 45, which is the one to be retried
+            InvoiceDTOEx invoice = remoteInvoice.getInvoiceEx(45, 1);
+            assertEquals("Invoice without payments before retry", new Integer(0), 
+                    invoice.getPaymentAttempts());
+            assertEquals("Invoice without payments before retry - 2", 0, 
+                    invoice.getPaymentMap().size());
+            
+            // get the involved process
+            BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(
+                    2, languageId);
+
+            // run trigger
+            remoteBillingProcess.trigger(retryDate);
+            
+            // get the process again
+            BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(
+                    2, languageId);
+            
+            assertEquals("18 - No retries", 1, lastDtoB.getRuns().size());
+            
+            // run trigger 5 days later
+            cal.add(GregorianCalendar.DAY_OF_YEAR, 5);
+            
+            remoteBillingProcess.trigger(cal.getTime());
+                      
+            // get the process again
+            BillingProcessDTOEx lastDtoC = remoteBillingProcess.getDto(
+                    2, languageId);
+
+            // now a retry should be there          
+            assertEquals("19 - First retry", 2, lastDtoC.getRuns().size());
+            
+            // run trigger 10 days later
+            cal.setTime(retryDate);
+            cal.add(GregorianCalendar.DAY_OF_YEAR, 10);
+            remoteBillingProcess.trigger(cal.getTime());
+
+            // get the process again
+            lastDtoC = remoteBillingProcess.getDto(
+                    2, languageId);
+
+            assertEquals("21 - No new retry", 2, lastDtoC.getRuns().size());
+            
+            // let's monitor invoice 45, which is the one to be retried
+            invoice = remoteInvoice.getInvoiceEx(45, 1);
+            assertEquals("Invoice without payments before retry", new Integer(1), 
+                    invoice.getPaymentAttempts());
+            assertEquals("Invoice without payments before retry - 2", 1, 
+                    invoice.getPaymentMap().size());
+            
+            // the billing process has to have a total paid equal to the invoice
+            BillingProcessDTOEx process = remoteBillingProcess.getDto(2, 1);
+            BillingProcessRunDTOEx run = process.getRuns().lastElement();
+            BillingProcessRunTotalDTOEx total = run.getTotals().firstElement();
+            assertEquals("Retry total paid equals to invoice total", 
+                    invoice.getTotal(), total.getTotalPaid());
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception:" + e);
+        }
+    }
+    
+    public void testRun() {
+        try {
+            // get the latest process
+            BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(
+                    remoteBillingProcess.getLast(entityId),
+                    languageId);
+        
             // run trigger but too early     
             cal.set(2005, GregorianCalendar.JANUARY, 26); 
             remoteBillingProcess.trigger(cal.getTime());
@@ -190,7 +260,6 @@ public class BillingProcessTest extends TestCase {
                     getConfigurationDto(entityId);
             configDto.setDaysForReport(new Integer(5));
             configDto.setGenerateReport(new Integer(1));
-            configDto.setRetries(new Integer(0));
             remoteBillingProcess.createUpdateConfiguration(new Integer(1),
                  configDto);
 
@@ -445,7 +514,7 @@ public class BillingProcessTest extends TestCase {
         }
     }
 
-
+ 
 /*
     
     public void testOrdersProcessedDate() {
@@ -680,67 +749,7 @@ public class BillingProcessTest extends TestCase {
     }
 
 
-    public void testRetry() {
-        try {
-            // set up the billing porcess date for april 1st
-            // set the configuration to something we are sure about
-            BillingProcessConfigurationDTO configDto = remoteBillingProcess.
-                    getConfigurationDto(entityId);
-            configDto.setRetries(new Integer(1));
-            configDto.setDaysForRetry(new Integer(5));
-            configDto.setGenerateReport(new Integer(0));
-            remoteBillingProcess.createUpdateConfiguration(new Integer(1),
-                 configDto);
-                 
-            // get the latest process
-            BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(
-                    remoteBillingProcess.getLast(entityId),
-                    languageId);
-
-
-            // run trigger for Apr 5     
-            cal.set(2003, GregorianCalendar.APRIL, 5); 
-            remoteBillingProcess.trigger(cal.getTime());
-            
-            // get the latest process
-            BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(
-                    remoteBillingProcess.getLast(entityId),
-                    languageId);
-
-            assertEquals("18 - No retries", 1, lastDtoB.getRuns().size());
-            assertTrue("18b - No new Process", lastDtoB.getId().equals(lastDto.getId()));
-            
-            // run trigger for Apr 6
-            cal.set(2003, GregorianCalendar.APRIL, 6); 
-            remoteBillingProcess.trigger(cal.getTime());
-                      
-            // get the latest process
-            BillingProcessDTOEx lastDtoC = remoteBillingProcess.getDto(
-                    remoteBillingProcess.getLast(entityId),
-                    languageId);
-
-            // now a retry had to run           
-            assertEquals("19 - First retry", 2, lastDtoC.getRuns().size());
-            assertTrue("20 - No new Process", lastDtoB.getId().equals(lastDtoC.getId()));
-            
-            // run trigger for Apr 16
-            cal.set(2003, GregorianCalendar.APRIL, 16); 
-            remoteBillingProcess.trigger(cal.getTime());
-
-            // get the latest process
-            lastDtoC = remoteBillingProcess.getDto(
-                    remoteBillingProcess.getLast(entityId),
-                    languageId);
-
-            assertEquals("21 - No new retry", 2, lastDtoC.getRuns().size());
-            assertTrue("22 - No new Process", lastDtoB.getId().equals(lastDtoC.getId()));
-           
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception:" + e);
-        }
-    }
-    
+   
     public void testTotals() {
         try {
             // get the latest process

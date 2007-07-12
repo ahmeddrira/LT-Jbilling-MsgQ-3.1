@@ -74,14 +74,14 @@ public class BillingProcessDTOEx extends BillingProcessDTO {
     /**
      * @return
      */
-    public Vector getRuns() {
+    public Vector<BillingProcessRunDTOEx> getRuns() {
         return runs;
     }
 
     /**
      * @param runs
      */
-    public void setRuns(Vector runs) {
+    public void setRuns(Vector<BillingProcessRunDTOEx> runs) {
         this.runs = runs;
     }
 

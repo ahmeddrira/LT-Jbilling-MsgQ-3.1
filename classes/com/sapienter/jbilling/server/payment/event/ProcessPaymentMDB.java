@@ -72,7 +72,8 @@ public class ProcessPaymentMDB implements MessageDrivenBean, MessageListener {
 
             String type = message.getStringProperty("type"); 
             if (type.equals("payment")) {
-                process.processPayment(myMessage.getInt("processId"),
+                process.processPayment(
+                        (myMessage.getInt("processId") == -1) ? null : myMessage.getInt("processId"),
                         (myMessage.getInt("runId") == -1) ? null : myMessage.getInt("runId"),
                         (myMessage.getInt("invoiceId") == -1) ? null : myMessage.getInt("invoiceId"));
             } else if (type.equals("ender")) {

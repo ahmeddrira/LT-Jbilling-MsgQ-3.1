@@ -890,7 +890,7 @@ public class BillingProcessBL extends ResultList
                 new BillingProcessRunDTOEx();
         int totalInvoices = 0;
         int runsCounter = 0;
-        Vector runs = new Vector();
+        Vector<BillingProcessRunDTOEx> runs = new Vector<BillingProcessRunDTOEx>();
         // go throuhg every run
         for (Iterator it = billingProcess.getRuns().iterator(); 
                 it.hasNext();) {

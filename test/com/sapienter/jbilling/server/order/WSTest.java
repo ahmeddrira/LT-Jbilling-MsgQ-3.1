@@ -521,7 +521,8 @@ public class WSTest  extends TestCase {
     public void testUpdateLines() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
-            OrderWS order = api.getOrder(new Integer(30));
+            Integer orderId = new Integer(15);
+            OrderWS order = api.getOrder(orderId);
             int initialCount = order.getOrderLines().length;
             System.out.println("Got order with " + initialCount + " lines");
 
@@ -544,7 +545,7 @@ public class WSTest  extends TestCase {
             api.updateOrder(order);
             
             // let's see if my new line is there
-            order = api.getOrder(new Integer(30));
+            order = api.getOrder(orderId);
             System.out.println("Got updated order with " + order.getOrderLines().length + " lines");
             assertEquals("One more line should be there", initialCount + 1, 
                     order.getOrderLines().length);
@@ -564,7 +565,7 @@ public class WSTest  extends TestCase {
             api.updateOrder(order);
             
             // let's see if my new line is there
-            order = api.getOrder(new Integer(30));
+            order = api.getOrder(orderId);
             System.out.println("Got updated order with " + order.getOrderLines().length + " lines");
             assertEquals("One more line should be there", initialCount + 1, 
                     order.getOrderLines().length);

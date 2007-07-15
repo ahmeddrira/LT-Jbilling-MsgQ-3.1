@@ -69,7 +69,7 @@ public abstract class SubscriptionStatusEntityBean implements EntityBean {
             return descriptionHome.findIt(Constants.TABLE_USER_SUBSCRIBER_STATUS,
                     getId(),"description", language);
         } catch (Exception e) {
-            log.warn("Exception while looking for a role description", 
+            log.warn("Exception while looking for a subscription status description", 
                     e);
             return null;
         }

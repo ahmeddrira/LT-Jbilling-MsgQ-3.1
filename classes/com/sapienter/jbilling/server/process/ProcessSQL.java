@@ -47,6 +47,12 @@ public interface ProcessSQL {
         "where entity_id = ? " +
         "  and is_review = 0 " +
         "  and retries_to_do > 0";
+    
+    static String findRuns = 
+        "select r.id " +
+        "  from process_run r, billing_process bp " +
+        " where r.process_id = bp.id " +
+        "   and bp.id = ?";
 
 }
 

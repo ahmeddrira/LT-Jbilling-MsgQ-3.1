@@ -978,6 +978,19 @@ public class BillingProcessBL extends ResultList
     
     }
     
+    // to avoid deadlocks ... this does not need the process entity row at all
+    // to get the runs
+    public CachedRowSet getRuns(Integer processId) throws SQLException,
+            Exception {
+        prepareStatement(ProcessSQL.findRuns);
+        cachedResults.setInt(1, processId.intValue());
+        execute();
+        conn.close();
+        return cachedResults;
+
+    }
+
+    
     public int getLast(Integer entityId) 
             throws SQLException, Exception {
         int retValue = -1;

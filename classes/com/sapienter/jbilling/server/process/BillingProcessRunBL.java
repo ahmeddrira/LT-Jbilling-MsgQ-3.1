@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.process;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
@@ -34,6 +33,8 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import sun.jdbc.rowset.CachedRowSet;
+
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
@@ -44,7 +45,6 @@ import com.sapienter.jbilling.interfaces.BillingProcessRunTotalPMEntityLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessRunTotalPMEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocalHome;
 import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.util.EventLogger;
 
 public class BillingProcessRunBL {
     private JNDILookup EJBFactory = null;
@@ -52,8 +52,7 @@ public class BillingProcessRunBL {
     private BillingProcessRunTotalEntityLocalHome billingProcessRunTotalHome = null;
     private BillingProcessRunTotalPMEntityLocalHome billingProcessRunTotalPMHome = null;
     private BillingProcessRunEntityLocal billingProcessRun = null;
-    private Logger log = null;
-    private EventLogger eLogger = null;
+    private static final Logger LOG = Logger.getLogger(BillingProcessRunBL.class);
 
     public class DateComparator implements Comparator {
 
@@ -91,8 +90,6 @@ public class BillingProcessRunBL {
     }
     
     private void init() throws NamingException {
-        log = Logger.getLogger(BillingProcessRunBL.class);     
-        eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         billingProcessRunHome = (BillingProcessRunEntityLocalHome) 
                 EJBFactory.lookUpLocalHome(
@@ -121,19 +118,30 @@ public class BillingProcessRunBL {
 
     /**
      * Finds the run based on the process id. Assumes that there is
-     * only one run associated with the process
+     * only one run associated with the process.
+     * It now uses direct SQL to avoid running into deadlocks with the 
+     * billing process. This method is called asynch by the MDBs.
      * @param id
      */
-    public void setProcess(Integer id) 
-            throws SessionInternalError, FinderException, NamingException {
-        // get the only run that should be here
-        BillingProcessBL process = new BillingProcessBL(id);
-        Collection runs = process.getEntity().getRuns();
-        if (runs.size() != 1) {
-            throw new SessionInternalError("Process " + id +
-                    " should have 1 run. It has " + runs.size());
-        }
-        billingProcessRun = (BillingProcessRunEntityLocal) runs.iterator().next();
+    public void setProcess(Integer id) {
+        try {
+            BillingProcessBL bl = new BillingProcessBL();
+            CachedRowSet rows = bl.getRuns(id);
+            if (rows.next()) {
+                set(rows.getInt(1));
+            } else {
+                throw new SessionInternalError("Process " + id +
+                        " should have 1 run. It has none" );
+            }
+            if (rows.next()) {
+                throw new SessionInternalError("Process " + id +
+                        " should have 1 run. It has more" );
+            }
+            rows.close();
+        } catch (Exception e) {
+            throw new SessionInternalError("Error finding run of process", 
+                    BillingProcessRunBL.class, e);
+        } 
     }
     
     public Integer create(Date runDate) 

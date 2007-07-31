@@ -408,7 +408,10 @@
     </target>
 
    <!-- Builds from scratch -->
-    <target name="clean" depends="purge,deploy-local, jar_api, prepare-test">
+    <target name="clean" depends="purge,deploy-local, jar_api">
+    </target>
+   <!-- Builds from scratch and prepares test -->
+    <target name="dclean" depends="purge,deploy-local, jar_api, prepare-test">
     </target>
     
 

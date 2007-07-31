@@ -31,8 +31,9 @@ public final class JbillingAPIFactory {
     static public JbillingAPI getAPI() 
             throws JbillingAPIException, IOException {
     	if (api == null) {
+            String propFile = System.getProperty("JBILLING_PROPERTIES_FILE", "/jbilling_api.properties");
             config = new Properties();
-            config.load(JbillingAPI.class.getResourceAsStream("/jbilling_api.properties"));
+            config.load(JbillingAPI.class.getResourceAsStream(propFile));
 
             String default_api = config.getProperty("default", "axis");
             // check for AXIS

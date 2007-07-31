@@ -54,7 +54,7 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     public static final Integer SUBSCRIBER_PENDING_EXPIRATION= new Integer(4);
     public static final Integer SUBSCRIBER_EXPIRED = new Integer(5);
     public static final Integer SUBSCRIBER_NONSUBSCRIBED = new Integer(6);
-    
+    public static final Integer SUBSCRIBER_DISCONTINUED = new Integer(7);
     
     // private fields
     private Integer entityId = null;

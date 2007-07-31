@@ -695,6 +695,7 @@ Contributor(s): ______________________________________
     <InternationalDescription TableId="81" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Pending Expiration"/>
     <InternationalDescription TableId="81" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Expired"/>
     <InternationalDescription TableId="81" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Nonsubscriber"/>
+    <InternationalDescription TableId="81" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Discontinued"/>
     <InternationalDescription TableId="59" ForeignId="104" PsudoColumn="title" LanguageId="1" Content="Menu Reports"/>
     <InternationalDescription TableId="59" ForeignId="105" PsudoColumn="description" LanguageId="1" Content="Menu Partner option - due payment"/>
     <InternationalDescription TableId="59" ForeignId="105" PsudoColumn="title" LanguageId="1" Content="Menu Partner - payable"/>
@@ -4194,4 +4195,5 @@ Contributor(s): ______________________________________
     <SubscriberStatus Id="4"/>
     <SubscriberStatus Id="5"/>
     <SubscriberStatus Id="6"/>
+    <SubscriberStatus Id="7"/>
 </dataset>

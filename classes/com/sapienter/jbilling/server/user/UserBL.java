@@ -1065,7 +1065,8 @@ public class UserBL extends ResultList
                 if (id.equals(UserDTOEx.SUBSCRIBER_ACTIVE)) {
                     ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_ACTIVE, 
                             Calendar.getInstance().getTime());
-                } else if (id.equals(UserDTOEx.SUBSCRIBER_EXPIRED)) {
+                } else if (id.equals(UserDTOEx.SUBSCRIBER_EXPIRED) ||
+                        id.equals(UserDTOEx.SUBSCRIBER_DISCONTINUED)) {
                     ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_SUSPENDED, 
                             Calendar.getInstance().getTime());
                 }

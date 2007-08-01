@@ -51,14 +51,6 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
  *
- *
- * @ejb:finder signature="Collection findByEntity(java.lang.Integer entityId, java.lang.Integer categoryId)"
- *             query="SELECT OBJECT(b) 
- *                      FROM pluggable_task b 
- *                     WHERE b.entityId = ?1
- *                       AND b.type.category.id = ?2"
- *             result-type-mapping="Local"
- *
  * @ejb:finder signature="Collection findAllByEntity(java.lang.Integer entityId)"
  *             query="SELECT OBJECT(b) 
  *                      FROM pluggable_task b 
@@ -71,15 +63,6 @@ import com.sapienter.jbilling.server.util.Constants;
  *                     WHERE b.entityId = ?1
  *                       AND b.type.id = ?2"
  *             result-type-mapping="Local"
- *
- * 
- *  @jboss.query signature="Collection findByEntity(java.lang.Integer entityId, java.lang.Integer categoryId)"
- *             description="used only for the order by, ejb 2.1 should solve this"
- *             query="SELECT OBJECT(b) 
- *                      FROM pluggable_task b 
- *                     WHERE b.entityId = ?1
- *                       AND b.type.category.id = ?2
- *                     ORDER BY b.processingOrder"
  *
  * @ejb.value-object name="PluggableTask"
  * 
@@ -151,6 +134,7 @@ public abstract class PluggableTaskEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local
      * @ejb:persistent-field
      * @jboss:column-name name="processing_order"
+     * @jboss.method-attributes read-only="true"
      */
     public abstract Integer getProcessingOrder();
     /**

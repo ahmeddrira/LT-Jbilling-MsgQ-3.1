@@ -24,8 +24,8 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
@@ -35,9 +35,11 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocalHome;
+import com.sapienter.jbilling.server.list.ResultList;
 
-public class PluggableTaskManager {
+public class PluggableTaskManager extends ResultList implements PluggableTaskSQL {
 
+    private Vector<Integer> classes = null;
     private Iterator it = null;
     private Logger log = null;
     private int lastProcessingOrder;
@@ -60,25 +62,34 @@ public class PluggableTaskManager {
         try {
         	init();
 			lastProcessingOrder = 0;
-            Collection classes =
-                pluggableTaskHome.findByEntity(entityId, taskCategory);
-            log.debug("total classes = " + classes.size());
+            prepareStatement(PluggableTaskSQL.findByEntity); 
+            cachedResults.setInt(1, entityId.intValue()); 
+            cachedResults.setInt(2, taskCategory.intValue());
+            execute();
+            conn.close();
+            
+            classes = new Vector<Integer>();
+            while (cachedResults.next()) {
+                classes.add(cachedResults.getInt(1));
+            }
             it = classes.iterator();
-        } catch (ClassCastException e) {
+            log.debug("total classes = " + classes.size());
+            
+        } catch (Exception e) {
             throw new PluggableTaskException(e);
-        } catch (NamingException e) {
-            throw new PluggableTaskException(e);
-        } catch (FinderException e) {
-        	log.debug("Nothing found for entity " + entityId + " category " + taskCategory);
-            // there are no tasks plugged to this entity/type combination
-        }
+        } 
 
     }
 
     public Object getNextClass() throws PluggableTaskException {
         if (it != null && it.hasNext()) {
-            PluggableTaskEntityLocal aRule =
-                (PluggableTaskEntityLocal) it.next();
+            Integer ruleId = (Integer) it.next();
+            PluggableTaskEntityLocal aRule;
+            try {
+                aRule = pluggableTaskHome.findByPrimaryKey(ruleId);
+            } catch (FinderException e1) {
+                throw new PluggableTaskException(e1);
+            }
 
             // check if the order by is in place
             int processingOrder = aRule.getProcessingOrder().intValue();
@@ -119,11 +130,9 @@ public class PluggableTaskManager {
                         + " Interface: "
                         + interfaceName,
                     e);
-            } catch (InstantiationException e) {
+            } catch (Exception e) {
                 throw new PluggableTaskException(e);
-            } catch (IllegalAccessException e) {
-                throw new PluggableTaskException(e);
-            }
+            } 
         } 
         
         return null;

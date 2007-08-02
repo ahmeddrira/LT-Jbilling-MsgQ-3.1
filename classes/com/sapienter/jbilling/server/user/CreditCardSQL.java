@@ -33,6 +33,7 @@ public interface CreditCardSQL {
         "select bu.id, cc.id " +
         " from base_user bu, credit_card cc, user_credit_card_map uccm " +
         "where bu.deleted = 0 " +
+        "  and bu.status_id < " + UserDTOEx.STATUS_SUSPENDED +
         "  and cc.deleted = 0 " +
         "  and bu.id = uccm.user_id " +
         "  and cc.id = uccm.credit_card_id " +

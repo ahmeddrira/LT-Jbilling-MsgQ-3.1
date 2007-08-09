@@ -306,7 +306,7 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(5,users.length);
+            assertEquals(7,users.length);
             for (int f = 0; f < users.length; f++) {
                 System.out.println("Got user " + users[f]);
             }
@@ -347,7 +347,7 @@ public class WSTest extends TestCase {
             
             if (ret == null)
             	fail("Transition list should not be empty!");
-            assertEquals(3, ret.length);
+            assertEquals(6, ret.length);
             
             // Check the ids of the returned transitions
             assertEquals(ret[0].getId().intValue(), 1);
@@ -375,7 +375,7 @@ public class WSTest extends TestCase {
             ret = api.getUserTransitions(null,null);
             if (ret == null)
             	fail("Transition list should not be empty!");
-            assertEquals(2, ret.length);
+            assertEquals(5, ret.length);
             assertEquals(ret[0].getId().intValue(), 2);
             assertEquals(ret[0].getUserId().intValue(), 2);
             assertEquals(ret[0].getFromStatusId().intValue(), 2);

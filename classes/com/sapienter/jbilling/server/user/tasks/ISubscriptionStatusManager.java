@@ -28,5 +28,5 @@ public interface ISubscriptionStatusManager {
     public void paymentSuccessful(Integer entityId, PaymentDTOEx payment);
     public void subscriptionEnds(Integer userId, Date newActiveUntil, 
             Date oldActiveUntil);
-    public void subscriptionEnds(Integer userId, Integer statusId);
+    public void subscriptionEnds(Integer userId, Date date);
 }

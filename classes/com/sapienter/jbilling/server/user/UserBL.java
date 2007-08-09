@@ -57,6 +57,7 @@ import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.PermissionEntityLocal;
 import com.sapienter.jbilling.interfaces.PermissionUserEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
@@ -68,6 +69,7 @@ import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.PermissionDTO;
 import com.sapienter.jbilling.server.entity.UserDTO;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -83,19 +85,13 @@ import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 
 
-/**
- * Business Logic class to assist login procedures, like authentication
- * 
- * @author emilc
- *
- */
 public class UserBL extends ResultList
         implements UserSQL {
     private JNDILookup EJBFactory = null;
     private UserEntityLocalHome userHome = null;
     private SubscriptionStatusEntityLocalHome subscirptionStatusHome = null;
     private UserEntityLocal user = null;
-    private Logger log = null;
+    private final static Logger LOG = Logger.getLogger(UserBL.class);
     private EventLogger eLogger = null;
     private Integer mainRole = null;
     private CustomerEntityLocalHome customerHome = null;
@@ -147,7 +143,6 @@ public class UserBL extends ResultList
     
     private void init() {
         try {
-            log = Logger.getLogger(UserBL.class);     
             eLogger = EventLogger.getInstance();        
             EJBFactory = JNDILookup.getFactory(false);
             userHome = (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
@@ -264,7 +259,7 @@ public class UserBL extends ResultList
                 RoleEntityLocal role = roleHome.findByPrimaryKey(roleId);
                 user.getRoles().add(role);
              } catch (FinderException e) {
-                 log.error("Trying to add unexisting role to user " + roleId, e);
+                 LOG.error("Trying to add unexisting role to user " + roleId, e);
                  throw new SessionInternalError("Invalid role " + roleId);
              }
         };        
@@ -273,7 +268,7 @@ public class UserBL extends ResultList
     
     public boolean exists(String userName, Integer entityId) {
         if (userName == null) {
-            log.error("exists is being call with a null username");
+            LOG.error("exists is being call with a null username");
             return true;
         }
         try {
@@ -288,14 +283,14 @@ public class UserBL extends ResultList
             NamingException, SessionInternalError, RemoveException {
         
         Integer newId;
-        log.debug("Creating user " + dto);
+        LOG.debug("Creating user " + dto);
         if (dto.getRoles() == null || dto.getRoles().size() == 0) {
             if (dto.getMainRoleId() != null) {
                 Vector roles = new Vector();
                 roles.add(dto.getMainRoleId());
                 dto.setRoles(roles);
             } else {
-                log.warn("Creating user without any role...");
+                LOG.warn("Creating user without any role...");
             }
         }
         
@@ -352,7 +347,7 @@ public class UserBL extends ResultList
 					dto.getStatusId(), dto.getSubscriptionStatusId());
         }
         
-        log.debug("created user id " + newId);
+        LOG.debug("created user id " + newId);
         
         return newId;
     }    
@@ -392,19 +387,19 @@ public class UserBL extends ResultList
     }    
         
     
-    public boolean validateUserNamePassword(UserDTOEx loggingUser, 
+    public boolean validateUserNamePassword(UserDTOEx LOGgingUser, 
            UserDTOEx db) throws FinderException, NamingException {
         
         // the user status is not part of this check, as a customer that
-        // can't login to the entity's service still has to be able to
-        // login to sapienter to pay
+        // can't LOGin to the entity's service still has to be able to
+        // LOGin to sapienter to pay
         if (db.getDeleted().intValue() == 0 && 
-                loggingUser.getEntityId().equals(db.getEntityId())) {
+                LOGgingUser.getEntityId().equals(db.getEntityId())) {
         	
         	String dbPassword = db.getPassword();
-        	String notCryptedLoggingPassword = loggingUser.getPassword();
+        	String notCryptedLoggingPassword = LOGgingUser.getPassword();
         	
-        	//using service specific for DB-user, logging one may not have its role set
+        	//using service specific for DB-user, LOGging one may not have its role set
         	JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());
         	String comparableLoggingPassword = passwordCryptoService.encrypt(notCryptedLoggingPassword);
 
@@ -459,7 +454,7 @@ public class UserBL extends ResultList
      public Vector getPermissions() { 
          Vector ret = new Vector();
 
-         log.debug("Reading permisions for user " + user.getUserId());
+         LOG.debug("Reading permisions for user " + user.getUserId());
          
          Collection roles = user.getRoles();
          for (Iterator it = roles.iterator(); it.hasNext();) {
@@ -472,7 +467,7 @@ public class UserBL extends ResultList
                         (PermissionEntityLocal) it2.next();
                  ret.add(new PermissionDTO(permission.getId(), 
                         permission.getTypeId(), permission.getForeignId()));
-                 //log.debug("Adding permission from role " + permission.getId());
+                 //LOG.debug("Adding permission from role " + permission.getId());
              }
          }
          // get it sorted to allow binary searches ;)
@@ -491,7 +486,7 @@ public class UserBL extends ResultList
                  // see that this guy has it
                  if (idx < 0) {
                      // not there, add it
-                     //log.debug("adding " + thisPerm.getId());
+                     //LOG.debug("adding " + thisPerm.getId());
                      ret.add(new PermissionDTO(permission.getPermission().getId(),
                              permission.getPermission().getTypeId(),
                              permission.getPermission().getForeignId()));
@@ -500,7 +495,7 @@ public class UserBL extends ResultList
              } else {
                  // make sure she doesn't
                  if (idx >= 0) {
-                     //log.debug("removing " + thisPerm.getId());
+                     //LOG.debug("removing " + thisPerm.getId());
                      ret.remove(idx);
                  }
              }
@@ -514,7 +509,7 @@ public class UserBL extends ResultList
 
         Menu menu = new Menu();
         // this should be doable in EJB/QL !! :( :(
-        log.debug("getting menu for user=" + user.getUserId());
+        LOG.debug("getting menu for user=" + user.getUserId());
 
         for (Iterator iPer = permissions.iterator(); iPer.hasNext();) {
             PermissionDTO permission = (PermissionDTO)
@@ -527,7 +522,7 @@ public class UserBL extends ResultList
                 if (specialMenuFilter(option.getId())) {
                     menu.addOption(option);
                 }
-                //log.debug("adding option " + option + " to menu");
+                //LOG.debug("adding option " + option + " to menu");
             }
         }
         
@@ -569,7 +564,7 @@ public class UserBL extends ResultList
                 retValue = payment.isMethodAccepted(user.getEntity().getId(), 
                         Constants.PAYMENT_METHOD_CHEQUE);
             } catch (Exception e) {
-                log.error("Exception ", e);
+                LOG.error("Exception ", e);
             }
             break;
         case OPTION_PAYMENT_ACH:
@@ -578,7 +573,7 @@ public class UserBL extends ResultList
                 retValue = payment.isMethodAccepted(user.getEntity().getId(), 
                         Constants.PAYMENT_METHOD_ACH);
             } catch (Exception e) {
-                log.error("Exception ", e);
+                LOG.error("Exception ", e);
             }
             break;
         case OPTION_PAYMENT_CC:
@@ -595,7 +590,7 @@ public class UserBL extends ResultList
                         payment.isMethodAccepted(user.getEntity().getId(), 
                                 Constants.PAYMENT_METHOD_DISCOVERY);
             } catch (Exception e) {
-                log.error("Exception ", e);
+                LOG.error("Exception ", e);
             }
             break;
         case OPTION_PAYMENT_PAYPAL:
@@ -604,7 +599,7 @@ public class UserBL extends ResultList
                 retValue = payment.isMethodAccepted(user.getEntity().getId(), 
                         Constants.PAYMENT_METHOD_PAYPAL);
             } catch (Exception e) {
-                log.error("Exception ", e);
+                LOG.error("Exception ", e);
             }
             break;
         case OPTION_CUSTOMER_CONTACT_EDIT:
@@ -617,7 +612,7 @@ public class UserBL extends ResultList
             } catch (FinderException e) {
                 // It doesn't matter, I will take the default
             } catch (Exception e) {
-                log.error("Exception ", e);
+                LOG.error("Exception ", e);
             } 
             
             retValue = (preference.getInt() == 1);
@@ -936,7 +931,7 @@ public class UserBL extends ResultList
     	}
 
     	int pos = 2;
-    	log.info("Getting transaction list by Id. query --> " + query);
+    	LOG.info("Getting transaction list by Id. query --> " + query);
     	prepareStatement(query);
     	cachedResults.setInt(1, getEntity().getEntity().getId());
 
@@ -993,7 +988,7 @@ public class UserBL extends ResultList
     		query += UserSQL.findUserTransitionsUpperDateSuffix;
     		toDate = new java.sql.Date(to.getTime());
     	}
-    	log.info("Getting transaction list by date. query --> " + query);
+    	LOG.info("Getting transaction list by date. query --> " + query);
 
     	prepareStatement(query);
     	cachedResults.setInt(1, getEntity().getEntity().getId());
@@ -1076,7 +1071,7 @@ public class UserBL extends ResultList
                     UserBL.class, e);
         } 
         
-        log.debug("Subscription status updated to " + id);
+        LOG.debug("Subscription status updated to " + id);
     }
     
     public boolean validatePassword(String password) {
@@ -1179,7 +1174,7 @@ public class UserBL extends ResultList
                         EventLogger.MODULE_USER_MAINTENANCE, 
                         EventLogger.ACCOUNT_LOCKED, new Integer(total), 
                         null, null);
-                log.debug("Locked account for user " + user.getUserId());
+                LOG.debug("Locked account for user " + user.getUserId());
             }
         }
         
@@ -1205,5 +1200,41 @@ public class UserBL extends ResultList
         }
         
         return true;
+    }
+    
+    /**
+     * Checks if the user has been invoiced for anything at the time given
+     * as a parameter. Only the latest invoice is considered, so this only
+     * works if the system carries over invoices with balance.
+     * To make this work in more cases, the invoice/s that apply to the 
+     * give date should be considered
+     * @return
+     */
+    public boolean isCurrentlySubscribed(Date forDate) {
+        boolean retValue = false;
+        try {
+            InvoiceBL invoice = new InvoiceBL();
+            Integer id = invoice.getLastByUser(user.getUserId());
+            if (id != null) {
+                invoice = new InvoiceBL(id);
+                for(OrderProcessEntityLocal period: 
+                    (Collection<OrderProcessEntityLocal>)invoice.getEntity().getOrders()) {
+                    
+                    LOG.debug("testing from " + period.getPeriodStart() +
+                            " tp " + period.getPeriodEnd() + " for " + forDate);
+                    if (period.getPeriodStart() != null && period.getPeriodStart().compareTo(forDate) <= 0 &&
+                            period.getPeriodEnd() != null && period.getPeriodEnd().after(forDate)) {
+                        retValue = true;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        } 
+        
+        LOG.debug(" user " + user.getUserId() + " is subscribed result " + retValue);
+        
+        return retValue;
     }
 }

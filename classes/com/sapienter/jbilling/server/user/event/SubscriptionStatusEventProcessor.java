@@ -21,11 +21,12 @@ package com.sapienter.jbilling.server.user.event;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
-import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
+import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.EventProcessor;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -56,12 +57,12 @@ public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscripti
                 task.subscriptionEnds(auEvent.getUserId(), 
                         auEvent.getNewActiveUntil(), auEvent.getOldActiveUnti());
             }
-        } else if (event instanceof NewStatusEvent) {
-            NewStatusEvent sEvent = (NewStatusEvent) event;
-            // if the order was active and is not a one timer
-            if (!sEvent.getOrderType().equals(Constants.ORDER_PERIOD_ONCE) &&
-                    sEvent.getOldStatusId().equals(Constants.ORDER_STATUS_ACTIVE)) {
-                task.subscriptionEnds(sEvent.getUserId(), sEvent.getNewStatusId());
+        } else if (event instanceof NoNewInvoiceEvent) {
+            NoNewInvoiceEvent sEvent = (NoNewInvoiceEvent) event;
+            // this event needs handling only if the user status is pending unsubscription
+            if (sEvent.getSubscriberStatus().equals(
+                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION)) {
+                task.subscriptionEnds(sEvent.getUserId(), sEvent.getBillingProcess());
             }
         }
     }

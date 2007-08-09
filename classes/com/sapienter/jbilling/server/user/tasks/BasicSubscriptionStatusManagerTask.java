@@ -29,7 +29,6 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.Constants;
 
 public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         ISubscriptionStatusManager {
@@ -111,16 +110,11 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         }
     }
     
-    public void subscriptionEnds(Integer userId, Integer statusId) {
-        if (statusId.equals(Constants.ORDER_STATUS_FINISHED)) {
-            UserBL user = getUser(userId);
-            if (!user.getEntity().getSubscriptionStatus().getId().equals(
-                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION)) {
-                LOG.info("Going to unsubscribed, but from " + 
-                        user.getEntity().getSubscriptionStatus().getDescription(1));
-            } 
+    public void subscriptionEnds(Integer userId, Date date) {
+        UserBL user = getUser(userId);
+        if (!user.isCurrentlySubscribed(date)) {
             user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_UNSUBSCRIBED);
-        }
+        } 
     }
     
     private boolean isPaymentApplicable(boolean failed) {

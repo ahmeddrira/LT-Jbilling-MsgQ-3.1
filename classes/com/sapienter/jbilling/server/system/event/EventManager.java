@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.payment.event.PaymentProcessorUnavailableEv
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentProcessor;
+import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.user.event.SubscriptionStatusEventProcessor;
 
 
@@ -70,8 +71,8 @@ public final class EventManager {
         // NewActiveUntil (orders)
         subscriptions.put(NewActiveUntilEvent.class,
                 new Class[] { SubscriptionStatusEventProcessor.class, } );
-        // NewStatus (orders)
-        subscriptions.put(NewStatusEvent.class,
+        // No new invoice after billing process
+        subscriptions.put(NoNewInvoiceEvent.class,
                 new Class[] { SubscriptionStatusEventProcessor.class, } );
         // Process a payment asynchronously
         subscriptions.put(ProcessPaymentEvent.class,

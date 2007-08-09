@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.order.OrderDTOEx;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -78,6 +79,8 @@ public class BillingProcessTest extends TestCase {
     Integer entityId = null;
     Integer languageId = null;
     Date runDate = null;
+    
+    private static final Integer NEW_INVOICE = new Integer(87);
 
     public BillingProcessTest(String arg0) {
         super(arg0);
@@ -445,6 +448,14 @@ public class BillingProcessTest extends TestCase {
                     bTotal.getTotalInvoiced().floatValue(),
                     0.01F);
 
+            // verify that the transition from pending unsubscription to unsubscribed worked
+            assertEquals("User should stay on pending unsubscription",
+                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION,
+                    remoteUser.getUserDTOEx("pendunsus1", new Integer(1)).getSubscriptionStatusId());
+            assertEquals("User should have changed to unsubscribed",
+                    UserDTOEx.SUBSCRIBER_UNSUBSCRIBED,
+                    remoteUser.getUserDTOEx("pendunsus2", new Integer(1)).getSubscriptionStatusId());
+           
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception:" + e);
@@ -458,7 +469,7 @@ public class BillingProcessTest extends TestCase {
         try {
             Collection<InvoiceDTOEx> invoices = remoteBillingProcess.getGeneratedInvoices(
                     new Integer(35));
-            // we now that only one invoice should be generated
+            // we know that only one invoice should be generated
             assertEquals("Invoices generated", 1, invoices.size());
             
             for (InvoiceDTOEx invoice : invoices) {
@@ -476,8 +487,8 @@ public class BillingProcessTest extends TestCase {
             }
             
             // take the invoice and examine
-            InvoiceDTO invoice = remoteInvoice.getInvoice(57);
-            assertNotNull("Invoice 57 should've been generated", invoice);
+            InvoiceDTO invoice = remoteInvoice.getInvoice(NEW_INVOICE);
+            assertNotNull("Invoice should've been generated", invoice);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -505,7 +516,7 @@ public class BillingProcessTest extends TestCase {
             assertEquals("One invoice in the grand total", new Integer(1), process.getGrandTotal().getInvoiceGenerated());
             assertEquals("Total invoiced is paid", ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced(),
                     ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid());
-            InvoiceDTO invoice = remoteInvoice.getInvoice(57);
+            InvoiceDTO invoice = remoteInvoice.getInvoice(NEW_INVOICE);
             assertEquals("Invoice is paid", new Integer(0), invoice.getToProcess());
             
         } catch (Exception e) {

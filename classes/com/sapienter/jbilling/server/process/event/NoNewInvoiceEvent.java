@@ -17,21 +17,24 @@ Portions created by Sapienter Billing Software Corp. are Copyright
 
 Contributor(s): ______________________________________.
 */
-package com.sapienter.jbilling.server.payment.event;
+package com.sapienter.jbilling.server.process.event;
+
+import java.util.Date;
 
 import com.sapienter.jbilling.server.system.event.Event;
 
-public class ProcessPaymentEvent implements Event {
-    private final Integer invoiceId;
-    private final Integer processId;
-    private final Integer runId;
+public class NoNewInvoiceEvent implements Event {
     private final Integer entityId;
+    private final Integer userId;
+    private final Date billingProcess;
+    private final Integer subscriberStauts; // helps determine if the event has to be processed
     
-    public ProcessPaymentEvent(Integer invoiceId,Integer processId,Integer runId,Integer entityId) {
-        this.runId = runId;
-        this.invoiceId = invoiceId;
-        this.processId = processId;
-        this.entityId= entityId;
+    public NoNewInvoiceEvent(Integer entityId, Integer userId, 
+            Date billingProcess, Integer subscriberStatus) {
+        this.entityId = entityId;
+        this.userId = userId;
+        this.billingProcess = billingProcess;
+        this.subscriberStauts = subscriberStatus;
     }
 
     public Integer getEntityId() {
@@ -39,19 +42,19 @@ public class ProcessPaymentEvent implements Event {
     }
 
     public String getName() {
-        return "Process Payment";
+        return "Billing process produced no new invoices for this user";
     }
 
-    public final Integer getInvoiceId() {
-        return invoiceId;
+    public final Date getBillingProcess() {
+        return billingProcess;
     }
 
-    public final Integer getProcessId() {
-        return processId;
+    public final Integer getSubscriberStatus() {
+        return subscriberStauts;
     }
 
-    public final Integer getRunId() {
-        return runId;
+    public final Integer getUserId() {
+        return userId;
     }
 
 }

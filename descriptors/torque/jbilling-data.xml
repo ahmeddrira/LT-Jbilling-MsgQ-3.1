@@ -2931,7 +2931,7 @@ Contributor(s): ______________________________________
     <PluggableTaskTypeCategory Id="9" Description="invoice overdue penalty" InterfaceName="com.sapienter.jbilling.server.pluggableTask.PenaltyTask"/>
     <PluggableTaskTypeCategory Id="10" Description="processor alarm task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm"/>
     <PluggableTaskTypeCategory Id="11" Description="subscription status manager" InterfaceName="com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager"/>
-    <PluggableTaskTypeCategory Id="12" Description="asynchronous payment processor parameters" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
+    <PluggableTaskTypeCategory Id="12" Description="async processor parameters" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

@@ -757,7 +757,7 @@ public class NotificationBL extends ResultList
             Locale locale = (new UserBL(invoice.getUserId())).getLocale();
 			
 			// add all the invoice data
-			HashMap parameters = new HashMap();
+			HashMap<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("invoiceNumber", invoice.getNumber());
 			parameters.put("entityName", printable(from.getOrganizationName()));
 			parameters.put("entityAddress", printable(from.getAddress1()));
@@ -900,6 +900,7 @@ public class NotificationBL extends ResultList
             // at last, generate the report
 			JasperPrint report = JasperFillManager.fillReport(stream, 
 					parameters, data);
+            stream.close();
 			return report;
 		} catch (Exception e) {
 			Logger.getLogger(NotificationBL.class).error(

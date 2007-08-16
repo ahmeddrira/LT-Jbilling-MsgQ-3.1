@@ -600,12 +600,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                     createCreditCard(user.getUserId(), dto);
                 }
             } else { // no new card, really
-                // if there's one in file, delete it
-                if (!userBL.getEntity().getCreditCard().isEmpty()) {
-                    CreditCardBL ccBL = new CreditCardBL((CreditCardEntityLocal)
-                            userBL.getEntity().getCreditCard().iterator().next());
-                    ccBL.delete(executorId);
-                }
+                deleteCreditCard(executorId, user.getUserId());
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);

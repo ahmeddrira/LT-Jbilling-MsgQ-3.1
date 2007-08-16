@@ -191,6 +191,7 @@ public class WSTest extends TestCase {
             // now update the created user
             System.out.println("Updating user - Pass 1 - Should succeed");
             retUser.setPassword("newPassword1");
+            retUser.getCreditCard().setNumber("4111111111111152");
             System.out.println("Updating user...");
             api.updateUser(retUser);
             
@@ -203,6 +204,8 @@ public class WSTest extends TestCase {
             		"pgdu8KCGZJ/0xwo1RdgSe");
             assertEquals("Contact name", retUser.getContact().getFirstName(),
                     newUser.getContact().getFirstName());
+            assertEquals("Credit card updated", "4111111111111152",
+                    retUser.getCreditCard().getNumber());
 
             System.out.println("Updating user - Pass 2 - Should fail due to invalid password");
             retUser.setPassword("newPassword");
@@ -232,6 +235,8 @@ public class WSTest extends TestCase {
                     updatedUser.getContact().getFirstName());
             assertEquals("updated l name", retUser.getContact().getLastName(),
                     updatedUser.getContact().getLastName());
+            assertEquals("Credit card should stay the same", "4111111111111152",
+                    updatedUser.getCreditCard().getNumber());
             System.out.println("Update result:" + updatedUser);
 
             // now update the contact only
@@ -253,8 +258,12 @@ public class WSTest extends TestCase {
             }
 
             // update credit card details
-            System.out.println("Updating credit card");
-            String ccName = "Updated ccName";
+            System.out.println("Removing credit card");
+            api.updateCreditCard(newUserId, null);
+            assertNull("Credit card removed",api.getUserWS(newUserId).getCreditCard());
+            
+            System.out.println("Creating credit card");
+            String ccName = "New ccName";
             String ccNumber = "4012888888881881";
             Date ccExpiry = Calendar.getInstance().getTime();
 
@@ -267,9 +276,15 @@ public class WSTest extends TestCase {
             // check updated cc details
             retUser = api.getUserWS(newUserId);
             CreditCardDTO retCc = retUser.getCreditCard();
-            assertEquals("updated cc name", ccName, retCc.getName());
+            assertEquals("new cc name", ccName, retCc.getName());
             assertEquals("updated cc number", ccNumber, retCc.getNumber());
             assertEquals("updated cc expiry", ccExpiry, retCc.getExpiry());
+            
+            System.out.println("Updating credit card");
+            cc.setName("Updated ccName");
+            api.updateCreditCard(newUserId,cc);
+            retUser = api.getUserWS(newUserId);
+            assertEquals("updated cc name", ccName, retCc.getName());
 
             // try to update cc of user from different company
             System.out.println("Attempting to update cc of a user from " 

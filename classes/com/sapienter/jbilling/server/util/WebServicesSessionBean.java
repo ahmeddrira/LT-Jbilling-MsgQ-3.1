@@ -339,14 +339,18 @@ public class WebServicesSessionBean implements SessionBean {
             bl.update(executorId, dto);
             
             // now update the contact info
-            ContactBL cBl = new ContactBL();
-            cBl.updatePrimaryForUser(new ContactDTOEx(user.getContact()),
-                    user.getUserId());
+            if (user.getContact() != null) {
+                ContactBL cBl = new ContactBL();
+                cBl.updatePrimaryForUser(new ContactDTOEx(user.getContact()),
+                        user.getUserId());
+            }
             
             // and the credit card
-            UserSessionBean sess = new UserSessionBean();
-            sess.updateCreditCard(executorId, user.getUserId(), 
-                    user.getCreditCard());
+            if (user.getCreditCard() != null) {
+                UserSessionBean sess = new UserSessionBean();
+                sess.updateCreditCard(executorId, user.getUserId(), 
+                        user.getCreditCard());
+            }
             
         } catch (Exception e) {
             log.error("WS - updateUser", e);
@@ -665,18 +669,18 @@ public class WebServicesSessionBean implements SessionBean {
     public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
             throws SessionInternalError {
         try {
-            CreditCardBL ccBL = new CreditCardBL();
-            // check dto has cc data
-            if (CreditCardBL.validate(creditCard)) {
-                UserBL bl = new UserBL();
-                bl.setRoot(context.getCallerPrincipal().getName());
-                Integer executorId = bl.getEntity().getUserId();
-                ccBL.updateForUser(executorId, userId, creditCard);
-            } else {
+            if (creditCard != null && !CreditCardBL.validate(creditCard)) {
                 log.debug("WS - updateCreditCard: " 
                         + "credit card validation error.");
                 throw new SessionInternalError("Missing cc data.");
             }
+            
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            UserSessionBean sess = new UserSessionBean();
+            sess.updateCreditCard(executorId, userId, creditCard); 
+            
         } catch (Exception e) {
             log.error("WS - updateCreditCard: ", e);
             throw new SessionInternalError("Error updating user's credit card");

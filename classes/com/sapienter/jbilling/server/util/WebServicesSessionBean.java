@@ -199,6 +199,26 @@ public class WebServicesSessionBean implements SessionBean {
             throw new SessionInternalError("Error getting last invoices");
         }
     }
+    
+    /**
+     * Deletes an invoice 
+     * @ejb:interface-method view-type="both"
+     * @param invoiceId
+     * The id of the invoice to delete
+     */
+    public void deleteInvoice(Integer invoiceId) {
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            invoice.delete(executorId);
+        } catch(Exception e) {
+            log.error("WS - deleteUser", e);
+            throw new SessionInternalError("Error deleting user");
+        }
+    }
+
    
     /*
      * USERS

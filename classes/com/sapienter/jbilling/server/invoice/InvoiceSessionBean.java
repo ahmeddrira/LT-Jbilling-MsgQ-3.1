@@ -246,11 +246,11 @@ public class InvoiceSessionBean implements SessionBean {
      * @ejb:interface-method view-type="remote"
      * @ejb.transaction type="Required"
      */
-    public void delete(Integer invoiceId)
+    public void delete(Integer invoiceId, Integer executorId)
             throws SessionInternalError {
         try {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
-            invoice.delete();
+            invoice.delete(executorId);
         } catch (NamingException e) {
             throw new SessionInternalError(e);
         } catch (FinderException e) {

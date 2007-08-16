@@ -25,22 +25,17 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.invoice;
 
-import javax.xml.namespace.QName;
-
 import junit.framework.TestCase;
 
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
-
-import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 /**
  * @author Emil
  */
 public class WSTest extends TestCase {
       
+    /*
     public void testGet() {
         try {
         	String endpoint = "http://localhost/jboss-net/services/billing";
@@ -77,9 +72,8 @@ public class WSTest extends TestCase {
                     InvoiceLineDTOEx.class, qn);
             call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
 
-            /*
-             * get
-             */
+            // get
+
             // try getting one that doesn't belong to us
             try {
                 System.out.println("Getting invalid invoice");
@@ -95,9 +89,8 @@ public class WSTest extends TestCase {
                     new Integer(171));
             System.out.println("Got = " + retInvoice);
             
-            /*
-             * latest
-             */
+            // latest
+            
             call.setOperationName("getLatestInvoice");
             // first, from a guy that is not mine
             try {
@@ -115,9 +108,8 @@ public class WSTest extends TestCase {
             System.out.println("Got = " + retInvoice);
             Integer lastInvoice = retInvoice.getId();
             
-            /*
-             * List of last
-             */
+            // List of last
+
             call.setOperationName("getLastInvoices");
             // first, from a guy that is not mine
             try {
@@ -184,6 +176,33 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-
+*/
+    public void testDelete() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            Integer invoiceId = new Integer(1);
+            assertNotNull(api.getInvoiceWS(invoiceId));
+            api.deleteInvoice(invoiceId);
+            try {
+                api.getInvoiceWS(invoiceId);
+                fail("Invoice should not have been deleted");
+            } catch(Exception e) {
+                //ok
+            }
+            
+            // try to delete an invoice that is not mine
+            try {
+                api.deleteInvoice(new Integer(75));
+                fail("Not my invoice. It should not have been deleted");
+            } catch(Exception e) {
+                //ok
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+        
+    }
 
 }

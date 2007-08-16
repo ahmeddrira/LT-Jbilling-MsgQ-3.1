@@ -200,6 +200,11 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        params[0] = Integer.class;
        addMethod("payInvoice", params);
 
+       // deleteInvoice
+       params = new Class[1];
+       params[0] = Integer.class;
+       addMethod("deleteInvoice",params);
+
        // set the parent methods
        setMethods(methods.toArray(new Method[methods.size()]));          
 
@@ -212,7 +217,8 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             return;
         }
         try {
-            if(m.getName().equals("getInvoiceWS") || m.getName().equals("payInvoice")) {
+            if(m.getName().equals("getInvoiceWS") || m.getName().equals("payInvoice") || 
+                    m.getName().equals("deleteInvoice") ) {
                 Integer arg = (Integer) args[0];
                 
                 if (arg != null) {

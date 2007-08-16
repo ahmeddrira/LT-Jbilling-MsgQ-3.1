@@ -282,6 +282,10 @@ public class AxisAPI implements JbillingAPI {
 		invokeAxisCall(WebServicesConstants.DELETE_USER,new Object[]{userId});
 	}
 
+    public void deleteInvoice(Integer invoiceId) throws JbillingAPIException {
+        invokeAxisCall(WebServicesConstants.DELETE_INVOICE,new Object[]{invoiceId});
+    }
+
 	public ItemDTOEx[] getAllItems() throws JbillingAPIException {
 		ItemDTOEx[] items = (ItemDTOEx[]) invokeAxisCall(WebServicesConstants.GET_ALL_ITEMS,
 			new Object[]{});

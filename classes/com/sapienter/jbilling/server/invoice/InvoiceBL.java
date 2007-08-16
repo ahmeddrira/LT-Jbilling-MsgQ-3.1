@@ -315,7 +315,7 @@ public class InvoiceBL extends ResultList
      * This will remove all the records (sql delete, not just flag them).
      * It will also update the related orders if applicable
      */
-    public void delete() 
+    public void delete(Integer executorId) 
             throws SessionInternalError, RemoveException {
         if (invoice == null) {
             throw new SessionInternalError("An invoice has to be set before " +
@@ -383,10 +383,11 @@ public class InvoiceBL extends ResultList
         }
 
         // log that this was deleted, otherwise there will be no trace
-        eLogger.info(invoice.getUser().getEntity().getId(),
-                invoice.getId(),
-                EventLogger.MODULE_INVOICE_MAINTENANCE, 
-                EventLogger.ROW_DELETED, Constants.TABLE_INVOICE);
+        if (executorId != null) {
+            eLogger.audit(executorId, Constants.TABLE_INVOICE, invoice.getId(),
+                    EventLogger.MODULE_INVOICE_MAINTENANCE, 
+                    EventLogger.ROW_DELETED, null, null, null);
+        }
 
         // now delete the invoice itself
         invoice.remove();

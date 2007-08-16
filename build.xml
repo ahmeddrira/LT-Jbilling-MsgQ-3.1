@@ -448,6 +448,7 @@
     	  <test name="com.sapienter.jbilling.server.user.WSTest"/>
 	  	  <test name="com.sapienter.jbilling.server.payment.WSTest"/>
 	  	  <test name="com.sapienter.jbilling.server.item.WSTest" />
+	  	  <test name="com.sapienter.jbilling.server.invoice.WSTest" />
       </junit>
   </target>
   

@@ -33,6 +33,7 @@ public class WebServicesConstants {
 	public final static String CREATE_USER = "createUser";
 	public final static String DELETE_ORDER = "deleteOrder";
 	public final static String DELETE_USER = "deleteUser";
+    public final static String DELETE_INVOICE = "deleteInvoice";
 	public final static String GET_ALL_ITEMS = "getAllItems";
 	public final static String GET_INVOICES_BY_DATE = "getInvoicesByDate";
 	public final static String GET_INVOICE = "getInvoiceWS";

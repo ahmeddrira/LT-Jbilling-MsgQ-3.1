@@ -51,6 +51,8 @@ public interface JbillingAPI {
 
     public void deleteUser(Integer userId) throws JbillingAPIException;
 
+    public void deleteInvoice(Integer invoiceId) throws JbillingAPIException;
+
     public void updateUserContact(Integer userId, Integer typeId,
             ContactWS contact) throws JbillingAPIException;
 

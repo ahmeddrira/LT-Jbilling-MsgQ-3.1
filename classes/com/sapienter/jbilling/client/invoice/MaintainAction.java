@@ -109,7 +109,9 @@ public class MaintainAction extends Action {
                 messages.add(ActionMessages.GLOBAL_MESSAGE, 
                         new ActionMessage(field));
             } if (action != null && action.equals("delete")) {
-                invoiceSession.delete(invoiceId);
+                Integer executorId = (Integer) session.getAttribute(
+                        Constants.SESSION_LOGGED_USER_ID);
+                invoiceSession.delete(invoiceId, executorId);
                 messages.add(ActionMessages.GLOBAL_MESSAGE, 
                         new ActionMessage("invoice.delete.done"));
                 // remove the cached list so the deleted invoice doesn't 

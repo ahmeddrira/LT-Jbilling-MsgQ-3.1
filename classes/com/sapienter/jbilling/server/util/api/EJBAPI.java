@@ -139,6 +139,14 @@ public class EJBAPI implements JbillingAPI {
         }
     }
 
+    public void deleteInvoice(Integer invoiceId) throws JbillingAPIException {
+        try {
+            session.deleteInvoice(invoiceId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public ItemDTOEx[] getAllItems() throws JbillingAPIException {
         try {
             return session.getAllItems();

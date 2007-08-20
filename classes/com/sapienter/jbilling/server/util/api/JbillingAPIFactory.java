@@ -51,8 +51,10 @@ public final class JbillingAPIFactory {
                 String password = config.getProperty("password");
                 String provider_url = config.getProperty("provider_url");
                 if (userName == null || password == null || provider_url == null) {
-                    throw new JbillingAPIException("property provider_url " +
-                            "is required for EJB");
+                    throw new JbillingAPIException("properties user_name [" + userName +
+                            "] password [" + password + 
+                            "] provider_url [" + provider_url + 
+                            "] are required for EJB");
                 }
                 api =  new EJBAPI(provider_url, userName, password);
             } else {

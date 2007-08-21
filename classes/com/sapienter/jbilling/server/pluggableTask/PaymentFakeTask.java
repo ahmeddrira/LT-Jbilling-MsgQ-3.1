@@ -55,7 +55,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 	public static final String PARAM_HANDLE_ALL_REQUESTS = "all";
 	public static final String PARAM_NAME_PREFIX = "name_prefix";
 	
-	private static final String PREAUTH_TRANSACTION_PREFIX = ":preauth:";
+	private static final String PREAUTH_TRANSACTION_PREFIX = "pAuth-";
 	
 	private boolean myShouldBlockOtherProcessors;
 	private Filter myFilter = Filter.ACCEPT_ALL;
@@ -131,7 +131,11 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 	}
 	
 	private String generatePreAuthTransactionId(){
-		return PREAUTH_TRANSACTION_PREFIX + System.currentTimeMillis();
+		String retValue = PREAUTH_TRANSACTION_PREFIX + System.currentTimeMillis();
+        if (retValue.length() > 20) {
+            return retValue.substring(0, 20);
+        }
+        return retValue;
 	}
 	
 	private boolean isPreAuthTransactionId(String transactionId){

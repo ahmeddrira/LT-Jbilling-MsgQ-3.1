@@ -341,15 +341,17 @@ public class WebServicesSessionBean implements SessionBean {
             log.info("WS - Updating user " + user);
             
             // Check whether the password changes or not.
-            JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(bl.getMainRole());
-        	String newPassword = passwordCryptoService.encrypt(user.getPassword());
-        	String oldPassword = bl.getEntity().getPassword();
-        	if (!newPassword.equals(oldPassword)) {
-        		// If the password is changing, validate it
-        		if (!bl.validatePassword(user.getPassword())) {
-        			throw new SessionInternalError("Error updating user");
-        		}
-        	}
+            if (user.getPassword() != null) { 
+                JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(bl.getMainRole());
+            	String newPassword = passwordCryptoService.encrypt(user.getPassword());
+            	String oldPassword = bl.getEntity().getPassword();
+            	if (!newPassword.equals(oldPassword)) {
+            		// If the password is changing, validate it
+            		if (!bl.validatePassword(user.getPassword())) {
+            			throw new SessionInternalError("Error updating user");
+            		}
+            	}
+            }
 
             // convert to a DTO
             UserDTOEx dto = new UserDTOEx(user, entityId);

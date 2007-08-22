@@ -227,7 +227,7 @@ public class WSTest extends TestCase {
             retUser.getContact().setLastName("New L.Name");
             retUser.setCreditCard(null);
             // call the update
-            retUser.setPassword("newPassword2"); // reset, the one I have is crypted
+            retUser.setPassword(null); // should not change the password
             api.updateUser(retUser);
             // fetch the user
             UserWS updatedUser = api.getUserWS(newUserId);
@@ -237,6 +237,9 @@ public class WSTest extends TestCase {
                     updatedUser.getContact().getLastName());
             assertEquals("Credit card should stay the same", "4111111111111152",
                     updatedUser.getCreditCard().getNumber());
+            assertEquals("Password should stay the same", "pgdu8KCGZJ/0xwo1RdgSe",
+                    updatedUser.getPassword());
+            
             System.out.println("Update result:" + updatedUser);
 
             // now update the contact only

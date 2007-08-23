@@ -842,8 +842,8 @@ public class OrderBL extends ResultList
 		    	}
 		    	
 		    } 
+            cachedResults.close();
     	}
-	    cachedResults.close();
         // The connection was found null when testing on Oracle
         if (conn != null) {
             conn.close();

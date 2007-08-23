@@ -126,6 +126,7 @@ public class GetUserTag extends TagSupport {
                     } else {
                         form.set("partnerId", null);
                     }
+                    form.set("subscriberStatus", dto.getSubscriptionStatusId());
                 }
                 
                 // make it available to the jsp

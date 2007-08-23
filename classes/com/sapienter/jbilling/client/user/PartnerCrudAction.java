@@ -60,6 +60,13 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
         Integer newUserID = myUserSession.create(user, contact);
         log.debug("Partner created = " + newUserID);
         session.setAttribute(Constants.SESSION_USER_ID, newUserID);
+        
+        try {
+            session.setAttribute(Constants.SESSION_PARTNER_DTO, 
+                    myUserSession.getUserDTOEx(newUserID).getPartnerDto());
+        } catch (FinderException e) {
+            throw new SessionInternalError(e);
+        }
         return (request.getParameter("ranges") == null) ?
         		new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATED) :
         		new ForwardAndMessage(FORWARD_RANGES, MESSAGE_CREATED);

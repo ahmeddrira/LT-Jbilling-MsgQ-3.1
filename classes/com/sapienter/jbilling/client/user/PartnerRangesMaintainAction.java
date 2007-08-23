@@ -172,7 +172,7 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
 	
 	@Override
 	protected ForwardAndMessage doCreate(PartnerRangedMaintainActionContext dto) {
-		throw new UnsupportedOperationException("At max 20 ranges are supported. " +
+		throw new IllegalArgumentException("At max 20 ranges are supported. " +
 				"Direct create is not available");
 	}
 	

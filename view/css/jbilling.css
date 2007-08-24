@@ -57,7 +57,7 @@ tr.bar {
 table.threeBars {
    border-collapse:collapse;
    background-color: #13544E;
-   width: 640;
+   width: 640px;
 }
 td.logo {
     width: 120px;
@@ -127,6 +127,7 @@ td.title {
     text-align: left;
     padding-left: 15px;
     height: 24px;
+    width: 100%;
 }
 
 /* logout */
@@ -136,6 +137,7 @@ td.logout {
     text-align: center;
     padding-left: 3px;
     padding-right: 3px;
+
 }
 td.logout A {  
     font-family: Verdana, Arial, Helvetica, sans-serif; 

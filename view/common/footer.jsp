@@ -20,4 +20,5 @@ Contributor(s): ______________________________________.
 
 <%@ page language="java" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
-    <p class="footer"><bean:message key="all.copyright"/></p>
+    <p class="footer"><bean:message key="all.visit"/>&nbsp;<a target="jbsite" href="http://www.jbilling.com">jbilling.com</a>&nbsp;<bean:message key="all.visit.for"/><br/>
+    <bean:message key="all.copyright"/></p>

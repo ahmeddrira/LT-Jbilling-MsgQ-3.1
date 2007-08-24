@@ -71,7 +71,7 @@ Contributor(s): ______________________________________.
 			<tr class="bar"> <td>
 				<table cellpadding="0" cellspacing="0" border="0">
 					<tr>
-				     <td class="title" width="100%">
+				     <td class="title">
 				     	<tiles:useAttribute id="barTitle" name="featureTitle"/>
 				     	<bean:message name="barTitle"/>
 				     </td>
@@ -81,6 +81,11 @@ Contributor(s): ______________________________________.
 					 	property="mainRoleId"
 					 	scope="session"
 					 	value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
+				     <td class="logout">
+						<a target="jbsite" href="http://www.jbilling.com/?q=node/304">
+						   <bean:message key="all.training"/>
+					    </a>				     
+					 </td>
 				     <td class="logout">
 					    <jbilling:help page="index">
 						   <bean:message key="all.help"/>

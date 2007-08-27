@@ -101,7 +101,7 @@ public interface CustomerSQL {
         "  and c.status_id != 8 " +
         "  and c.id = urm.user_id " +        "  and urm.role_id = " + Constants.TYPE_CUSTOMER +
         "  and cu.user_id = c.id " +
-        "  and cu.parent_id is null ";
+        "  and ( cu.parent_id is null or cu.invoice_child = 1)";
 
     // sub-accounts: all the customers belonigng to another customer
     static final String listSubaccounts = 

@@ -594,7 +594,7 @@
 		<zip filesonly="false" update="false"
             destfile="${image.target.dir}/jbilling-${version}-src.zip">
            <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp"/>
+		   excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp,**/*.jar"/>
             <!-- the following three files are taken from the binary
                  view. My own are configured for my box -->
            <zipfileset dir="${image.source.dir}/jbilling/server/default/conf" 

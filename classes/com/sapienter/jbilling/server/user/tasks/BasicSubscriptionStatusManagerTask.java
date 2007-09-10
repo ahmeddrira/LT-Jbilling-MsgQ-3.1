@@ -52,16 +52,17 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         Integer status = user.getEntity().getSubscriptionStatus().getId();
 
         if (isLastRetry()) {
-            if (!status.equals(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION)) {
-                LOG.warn("Changing subsc status to expired, but from " + status);
+            if (status.equals(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION)) {
+                user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_EXPIRED);
+            } else {
+                LOG.warn("Last retry, but user not in pending expariation. Status = " + status);
             }
-            user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_EXPIRED);
         } else {
             // not paying is not good
             if (status.equals(UserDTOEx.SUBSCRIBER_ACTIVE)) {
                 user.updateSubscriptionStatus(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION);
             } else if (!status.equals(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION)) {
-                LOG.warn("Not clear what to do with a customer is stauts " + status);
+                LOG.warn("Not clear what to do with a customer in status " + status);
             }
         }
     }

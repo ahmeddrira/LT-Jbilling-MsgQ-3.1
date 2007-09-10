@@ -23,7 +23,7 @@ Contributor(s): ______________________________________.
  *
  * Copyright Sapienter Enterprise Software
  */
-package com.sapienter.jbilling.server.pluggableTask;
+package com.sapienter.jbilling.server.pluggableTask.admin;
 
 /**
  * @author Emil

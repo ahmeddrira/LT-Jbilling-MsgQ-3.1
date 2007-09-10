@@ -1008,6 +1008,7 @@
         <column name="entity_id" required="true" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="processing_order" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task_type">
             <reference foreign="id" local="type_id"/>
         </foreign-key>
@@ -1022,6 +1023,7 @@
         <column name="int_value" type="INTEGER"/>
         <column name="str_value" size="200" type="VARCHAR"/>
         <column name="float_value" type="DOUBLE"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task">
             <reference foreign="id" local="task_id"/>
         </foreign-key>

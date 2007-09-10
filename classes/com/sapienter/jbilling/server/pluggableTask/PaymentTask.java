@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 /*
  * Consider a base class to facilitante notifiaction, suspension, and other 

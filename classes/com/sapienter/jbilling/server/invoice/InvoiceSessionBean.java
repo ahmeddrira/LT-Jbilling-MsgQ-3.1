@@ -45,8 +45,8 @@ import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskBL;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -233,7 +233,7 @@ public class InvoiceSessionBean implements SessionBean {
             		new PaperInvoiceNotificationTask();
             PluggableTaskBL taskBL = new PluggableTaskBL();
             taskBL.set(entityId, Constants.PLUGGABLE_TASK_T_PAPER_INVOICE);
-            task.initializeParamters(taskBL.getEntity());
+            task.initializeParamters(taskBL.getDTO());
             return task.getPDF(invoiceBl.getEntity().getUser(), message);
         } catch (Exception e) {
             throw new SessionInternalError(e);

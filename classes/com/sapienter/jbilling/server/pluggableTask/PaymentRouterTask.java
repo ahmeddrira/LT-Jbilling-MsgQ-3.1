@@ -24,9 +24,11 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
@@ -148,7 +150,7 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 					+ taskId, e);
 		}
 
-		PluggableTaskEntityLocal localTask = taskLoader.getEntity();
+		PluggableTaskDTO localTask = taskLoader.getDTO();
 		String fqn = localTask.getType().getClassName();
 		PaymentTask result;
 		try {

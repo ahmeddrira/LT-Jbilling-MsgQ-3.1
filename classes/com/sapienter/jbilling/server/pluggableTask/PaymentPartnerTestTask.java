@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**

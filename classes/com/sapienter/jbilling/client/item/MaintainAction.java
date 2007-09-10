@@ -103,7 +103,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
         boolean atLeastOnePriceFound = false;
         for (int f = 0; f < dto.getPrices().size(); f++) {
         	ItemPriceDTOEx nextPrice = (ItemPriceDTOEx)dto.getPrices().get(f);
-            log.debug("Now processing item price " + f + " data:" + nextPrice); 
+            LOG.debug("Now processing item price " + f + " data:" + nextPrice); 
         	String priceStr = nextPrice.getPriceForm(); 
             if (priceStr != null && priceStr.trim().length() > 0) {
                 Float price = string2float(priceStr);
@@ -138,7 +138,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
             // promotion record is created
             session.setAttribute(Constants.SESSION_ITEM_ID, newItem);
             result = new ForwardAndMessage(FORWARD_PROMOTION, MESSAGE_CREATED_OK);
-            log.debug("Processing an item for a promotion");
+            LOG.debug("Processing an item for a promotion");
         } else {
         	result = new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATED_OK);
         }

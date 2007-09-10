@@ -26,20 +26,20 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
-import com.sapienter.jbilling.interfaces.PluggableTaskParameterEntityLocal;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 
 
 public abstract class PluggableTask {
-    protected HashMap parameters = null;
+    protected HashMap<String, Object> parameters = null;
     Integer entityId = null;
 
-    public void initializeParamters(PluggableTaskEntityLocal task) 
+    public void initializeParamters(PluggableTaskDTO task) 
             throws PluggableTaskException {
-        Collection DBparameters = task.getParameters();
-        parameters = new HashMap();
+        Collection <PluggableTaskParameterDTO>DBparameters = task.getParameters();
+        parameters = new HashMap<String, Object>();
         entityId = task.getEntityId();
         if (DBparameters.size() < 
                 task.getType().getMinParameters().intValue()) {
@@ -53,10 +53,7 @@ public abstract class PluggableTask {
             return;
         }
         
-        for(Iterator it = DBparameters.iterator(); it.hasNext();) {
-            PluggableTaskParameterEntityLocal parameter = 
-                (PluggableTaskParameterEntityLocal) it.next();
-            
+        for(PluggableTaskParameterDTO parameter: DBparameters) {
             Object value = parameter.getIntValue();
             if (value == null) {
                 value = parameter.getStrValue();

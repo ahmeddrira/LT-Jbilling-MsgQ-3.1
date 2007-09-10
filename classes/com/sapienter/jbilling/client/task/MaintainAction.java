@@ -33,13 +33,13 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionHome;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 
 public class MaintainAction extends
-		UpdateOnlyCrudActionBase<PluggableTaskDTOEx> {
+		UpdateOnlyCrudActionBase<PluggableTaskDTO> {
 
 	private static final String FORM_PARAMETER = "parameter";
 	private static final String MESSAGE_UPDATED = "task.parameter.update.done";
@@ -65,15 +65,15 @@ public class MaintainAction extends
 	}
 
 	@Override
-	protected PluggableTaskDTOEx doEditFormToDTO() throws RemoteException {
-		PluggableTaskDTOEx result = (PluggableTaskDTOEx) session
+	protected PluggableTaskDTO doEditFormToDTO() throws RemoteException {
+		PluggableTaskDTO result = (PluggableTaskDTO) session
 				.getAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO);
 		String values[] = (String[]) myForm.get("value");
 		String names[] = (String[]) myForm.get("name");
 
-		List<PluggableTaskParameterDTOEx> allParams = getParamsImpl(result);
+		List<PluggableTaskParameterDTO> allParams = getParamsImpl(result);
 		for (int f = 0; f < values.length; f++) {
-			PluggableTaskParameterDTOEx next = allParams.get(f);
+			PluggableTaskParameterDTO next = allParams.get(f);
 			next.setValue(values[f]);
 			try {
 				next.expandValue();
@@ -86,7 +86,7 @@ public class MaintainAction extends
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(PluggableTaskDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(PluggableTaskDTO dto) throws RemoteException {
         mySession.updateParameters(executorId, dto);
         return getForwardEdit(MESSAGE_UPDATED);
 	}
@@ -95,18 +95,18 @@ public class MaintainAction extends
 	protected ForwardAndMessage doSetup() throws RemoteException {
         Integer type = null;
         if (request.getParameter("type").equals("notification")) {
-            type = PluggableTaskDTOEx.TYPE_EMAIL;
+            type = PluggableTaskDTO.TYPE_EMAIL;
         }
-        PluggableTaskDTOEx dto = mySession.getDTO(type, entityId);
+        PluggableTaskDTO dto = mySession.getDTO(type, entityId);
         // show the values in the form
         String names[] = new String[dto.getParameters().size()];
         String values[] = new String[dto.getParameters().size()];
-        for (int f = 0; f < dto.getParameters().size(); f++) {
-            PluggableTaskParameterDTOEx parameter = 
-                    (PluggableTaskParameterDTOEx) dto.getParameters().
-                            get(f);
+        
+        int f = 0;
+        for (PluggableTaskParameterDTO parameter : dto.getParameters()) {
             names[f] = parameter.getName();
             values[f] = parameter.getValue();
+            f++;
         }
         myForm.set("name", names);
         myForm.set("value", values);
@@ -120,9 +120,8 @@ public class MaintainAction extends
 				|| super.isCancelled(request);
 	}
 	
-	@SuppressWarnings("unchecked")
-	private Vector<PluggableTaskParameterDTOEx> getParamsImpl(PluggableTaskDTOEx dto){
-		return dto.getParameters();
+	private Vector<PluggableTaskParameterDTO> getParamsImpl(PluggableTaskDTO dto){
+		return new Vector<PluggableTaskParameterDTO>(dto.getParameters());
 	}
 
 

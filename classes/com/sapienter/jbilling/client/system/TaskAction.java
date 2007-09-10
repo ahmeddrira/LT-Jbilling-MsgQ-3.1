@@ -2,16 +2,19 @@ package com.sapienter.jbilling.client.system;
 
 import java.rmi.RemoteException;
 
+import javax.persistence.OptimisticLockException;
+
 import com.sapienter.jbilling.client.util.CrudAction;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskParameterDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionHome;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 
 public class TaskAction extends CrudAction {
 
+    //private static final Logger LOG = Logger.getLogger(TaskAction.class);
     private PluggableTaskSession taskSession = null;
     
     public TaskAction() {
@@ -30,11 +33,10 @@ public class TaskAction extends CrudAction {
     
     public void setup() {
         try {
-            PluggableTaskDTOEx[] dtos = taskSession.getAllDTOs(entityId);
+            PluggableTaskDTO[] dtos = taskSession.getAllDTOs(entityId);
             myForm.set("tasks", dtos);
         } catch (RemoteException e) {
-            throw new SessionInternalError("setup task action" + 
-                    e.getMessage());
+            throw new SessionInternalError("setup task action", TaskAction.class, e);
         }
 
     }
@@ -50,10 +52,15 @@ public class TaskAction extends CrudAction {
 
     public String update(Object dtoHolder) {
         try {
-            taskSession.updateAll(executorId, (PluggableTaskDTOEx[]) dtoHolder);
-        } catch (RemoteException e) {
-            throw new SessionInternalError("update task action" + 
-                    e.getMessage());
+            myForm.set("tasks",taskSession.updateAll(
+                    executorId, (PluggableTaskDTO[]) dtoHolder));
+        } catch (Exception e) {
+            if (e.getCause().getClass().equals(OptimisticLockException.class)) {
+                setup();
+                throw new OptimisticLockException();
+            } else {
+                throw new SessionInternalError("update task action", TaskAction.class, e);
+            }
         }
         return "system.task.updated";
     }
@@ -77,10 +84,10 @@ public class TaskAction extends CrudAction {
     public boolean otherAction(String action) {
         if (action.equals("add")) {
             // create a dummy task with default data
-            PluggableTaskDTOEx dto = new PluggableTaskDTOEx();
+            PluggableTaskDTO dto = new PluggableTaskDTO();
             dto.setEntityId(entityId);
             dto.setProcessingOrder(new Integer(1));
-            dto.setTypeId(new Integer(1));
+            dto.getType().setId(new Integer(1));
             // call the server tier to get it into the data base
             try {
                 taskSession.create(executorId, dto);
@@ -89,7 +96,7 @@ public class TaskAction extends CrudAction {
                         this.getClass(), e);
             }
         } else if (action.equals("addParameter")) {
-            PluggableTaskParameterDTOEx dto = new PluggableTaskParameterDTOEx();
+            PluggableTaskParameterDTO dto = new PluggableTaskParameterDTO();
             dto.setStrValue("default");
             dto.setName("parameter_name");
             

@@ -51,7 +51,7 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
 
 	public MaintainAction() {
 		super(FORM, "notification");
-		log = Logger.getLogger(MaintainAction.class);
+		LOG = Logger.getLogger(MaintainAction.class);
 		try {
 			JNDILookup EJBFactory = JNDILookup.getFactory(false);
 			NotificationSessionHome notificationHome = (NotificationSessionHome) EJBFactory
@@ -75,9 +75,9 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
         Integer sectionNumbers[] = (Integer[]) myForm.get("sectionNumbers");
         for (int f = 0; f < sections.length; f++) {
             dto.addSection(new MessageSection(sectionNumbers[f], sections[f]));
-            log.debug("adding section:" + f + " "  + sections[f]);
+            LOG.debug("adding section:" + f + " "  + sections[f]);
         }
-        log.debug("message is " + dto);
+        LOG.debug("message is " + dto);
         return dto;
 	}
 	

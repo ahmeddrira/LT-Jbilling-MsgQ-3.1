@@ -20,8 +20,8 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.system.event;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskException;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 
 /**
  * Implementation of this interface take an event, open it to extracts its data.

@@ -24,8 +24,8 @@ import javax.jms.MapMessage;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.pluggableTask.PaymentRouterTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class RouterAsyncParameters extends PluggableTask implements IAsyncPaymentParameters  {

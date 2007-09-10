@@ -41,8 +41,8 @@ import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskManager;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 

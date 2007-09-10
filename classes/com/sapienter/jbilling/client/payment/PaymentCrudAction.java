@@ -71,7 +71,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	public PaymentCrudAction(PaymentSession paymentSession){
 		super(FORM, "payment");
 		myPaymentSession = paymentSession;
-		log = Logger.getLogger(PaymentCrudAction.class);
+		LOG = Logger.getLogger(PaymentCrudAction.class);
 	}
 	
 	@Override
@@ -115,7 +115,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
                 Constants.SESSION_PAYMENT_DTO);
 
         if (invoiceDto != null) {
-            log.debug("setting payment with invoice:" + invoiceDto.getId());
+            LOG.debug("setting payment with invoice:" + invoiceDto.getId());
             
             myForm.set(FIELD_AMOUNT, float2string(invoiceDto.getBalance()));
             //paypal can't take i18n amounts
@@ -123,7 +123,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             myForm.set(FIELD_CURRENCY, invoiceDto.getCurrencyId());
         } else if (paymentDto != null) {
             // this works for both refunds and payouts
-            log.debug("setting form with payment:" + paymentDto.getId());
+            LOG.debug("setting form with payment:" + paymentDto.getId());
             myForm.set(FIELD_ID, paymentDto.getId());
             myForm.set(FIELD_AMOUNT, float2string(paymentDto.getAmount()));
             setFormDate(FIELD_GROUP_DATE, paymentDto.getPaymentDate());
@@ -132,7 +132,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             achDto = paymentDto.getAch();
             chequeDto = paymentDto.getCheque();
         } else { // this is not an invoice selected, it's the first call
-            log.debug("setting payment without invoice");
+            LOG.debug("setting payment without invoice");
             // the date might come handy
             setFormDate(FIELD_GROUP_DATE, Calendar.getInstance().getTime());
             // make the default real-time
@@ -150,7 +150,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             // normal payment, get the selected user cc
             // if the user has a credit card, put it (this is a waste for
             // cheques, but it really doesn't hurt)
-            log.debug("getting this user's cc");
+            LOG.debug("getting this user's cc");
             UserDTOEx user = getSessionUser();
             ccDto = user.getCreditCard();
             achDto = user.getAch();
@@ -240,7 +240,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 
             // check if cc number is masked
             if (isMaskedCreditCard(ccNumber)) {
-                log.debug("cc no. masked; " 
+                LOG.debug("cc no. masked; " 
                         + "getting user's existing cc details");
                 // try to get existing cc details
                 UserDTOEx user = getSessionUser();
@@ -251,7 +251,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
                     if(existingNumber.substring(
                             existingNumber.length() - 4).equals(
                             ccNumber.substring(ccNumber.length() - 4))) {
-                        log.debug("got a matching masked cc number");
+                        LOG.debug("got a matching masked cc number");
                         masked = true;
                         ccNumber = existingNumber;
                     }
@@ -326,7 +326,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         dto.setUserId((Integer) session.getAttribute(Constants.SESSION_USER_ID));
         // specify if this is a normal payment or a refund
         dto.setIsRefund(session.getAttribute("jsp_is_refund") == null ? 0 : 1);
-        log.debug("refund = " + dto.getIsRefund());
+        LOG.debug("refund = " + dto.getIsRefund());
         // set the selected payment for refunds
         if (dto.getIsRefund().intValue() == 1) {
             PaymentDTOEx refundPayment = (PaymentDTOEx) session.getAttribute(
@@ -392,8 +392,8 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             }
         }
 
-        log.debug("now payment methodId = " + dto.getMethodId());
-        log.debug("now paymentDto = " + dto);
+        LOG.debug("now payment methodId = " + dto.getMethodId());
+        LOG.debug("now paymentDto = " + dto);
 
         return dto;
 	}
@@ -457,7 +457,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 		va.setMsg("errors.creditcard");
 
 		// do cc number validation
-		log.debug("doing credit card number validation");
+		LOG.debug("doing credit card number validation");
 		FieldChecks.validateCreditCard(myForm, va, field, errors, request);
 	}
 	

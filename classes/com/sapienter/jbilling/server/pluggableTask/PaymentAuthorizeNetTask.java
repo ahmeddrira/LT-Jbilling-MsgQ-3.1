@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.util.Constants;

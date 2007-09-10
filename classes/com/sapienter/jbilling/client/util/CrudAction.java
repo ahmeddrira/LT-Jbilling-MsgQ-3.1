@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import javax.ejb.FinderException;
+import javax.persistence.OptimisticLockException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,7 +63,7 @@ public abstract class CrudAction extends Action {
     protected HttpServletRequest request = null;
     protected ActionErrors errors = null;
     protected ActionMessages messages = null;
-    protected Logger log = null;
+    protected Logger LOG = null;
     protected HttpSession session = null;
     protected DynaValidatorForm myForm = null;
     protected String action = null;
@@ -97,7 +98,7 @@ public abstract class CrudAction extends Action {
         forward = null;
         this.mapping = mapping;
         this.request = request;
-        log = Logger.getLogger(CrudAction.class);
+        LOG = Logger.getLogger(CrudAction.class);
         errors = new ActionErrors();
         messages = new ActionMessages();
         action = request.getParameter("action");
@@ -119,7 +120,7 @@ public abstract class CrudAction extends Action {
                 Constants.SESSION_ENTITY_ID_KEY);
         myForm = (DynaValidatorForm) form;
 
-        log.debug("processing action : " + action);
+        LOG.debug("processing action : " + action);
         try {
             if (action.equals("edit")) {
             	if (isResetRequested()){
@@ -186,12 +187,16 @@ public abstract class CrudAction extends Action {
                 }
                 postDelete();
             } else if (!otherAction(action)){
-                log.error("Invalid action:" + action);
+                LOG.error("Invalid action:" + action);
                 errors.add(ActionErrors.GLOBAL_ERROR,
                         new ActionError("all.internal"));
             }
+        } catch (OptimisticLockException e) {
+            LOG.debug("optimistic lock exception");
+            errors.add(ActionErrors.GLOBAL_ERROR,
+                   new ActionError("errors.modified"));
         } catch (Exception e) {
-            log.error("Exception ", e);
+            LOG.error("Exception ", e);
             errors.add(ActionErrors.GLOBAL_ERROR,
                    new ActionError("all.internal"));
         }
@@ -212,7 +217,7 @@ public abstract class CrudAction extends Action {
             request.setAttribute(Globals.MESSAGE_KEY, messages);
         }
         
-        log.debug("forwarding to " + forward);
+        LOG.debug("forwarding to " + forward);
         return mapping.findForward(forward);
     }
     
@@ -234,7 +239,7 @@ public abstract class CrudAction extends Action {
     public abstract void setup();
     
     protected void postSetup() {
-        log.debug("setting up form name=" + formName + 
+        LOG.debug("setting up form name=" + formName + 
                 " dyna=" + myForm);
                 
         session.setAttribute(formName, myForm);

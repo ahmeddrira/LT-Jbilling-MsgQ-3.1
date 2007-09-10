@@ -58,7 +58,7 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
         user.setPartnerDto(dto);
         // make the call
         Integer newUserID = myUserSession.create(user, contact);
-        log.debug("Partner created = " + newUserID);
+        LOG.debug("Partner created = " + newUserID);
         session.setAttribute(Constants.SESSION_USER_ID, newUserID);
         
         try {

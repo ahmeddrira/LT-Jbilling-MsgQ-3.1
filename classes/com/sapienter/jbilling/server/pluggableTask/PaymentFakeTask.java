@@ -21,11 +21,12 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -68,7 +69,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 	}
 	
 	@Override
-	public void initializeParamters(PluggableTaskEntityLocal task) throws PluggableTaskException {
+	public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
 		super.initializeParamters(task);
 		
 		myShouldBlockOtherProcessors = Boolean.parseBoolean((String) parameters.get(PARAM_HANDLE_ALL_REQUESTS));

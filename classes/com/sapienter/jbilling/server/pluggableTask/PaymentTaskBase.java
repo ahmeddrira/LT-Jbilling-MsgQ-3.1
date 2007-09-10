@@ -6,6 +6,7 @@ import javax.naming.NamingException;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 public abstract class PaymentTaskBase extends PluggableTask implements PaymentTask {
 	

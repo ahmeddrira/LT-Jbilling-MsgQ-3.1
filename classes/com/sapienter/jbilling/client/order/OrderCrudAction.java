@@ -51,7 +51,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 	public OrderCrudAction(NewOrderSession newOrderSession){
 		super(FORM_ORDER, "order");
 		myNewOrderSession = newOrderSession;
-		log = Logger.getLogger(OrderCrudAction.class);
+		LOG = Logger.getLogger(OrderCrudAction.class);
 	}
 	
 	@Override
@@ -165,7 +165,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
                             period.getValue().intValue());
                 }
                 if (!toTest.getTime().equals(summary.getActiveUntil())) {
-                    log.debug("Fraction of a period:" + toTest.getTime() +
+                    LOG.debug("Fraction of a period:" + toTest.getTime() +
                             " until: " + summary.getActiveUntil());
                     addError("order.error.period");
                     return null;
@@ -244,7 +244,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
                 }                                
                             
             } catch (Exception e) {
-            	log.warn("Validating promotion", e);
+            	LOG.warn("Validating promotion", e);
             }
         }
         return summary;

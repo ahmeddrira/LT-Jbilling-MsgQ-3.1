@@ -52,7 +52,7 @@ Contributor(s): ______________________________________.
 	    		<bean:write name="oneTask" property="id" />
 	    	</td>
 	    	<td>
-	    		<html:select property='<%= "tasks[" + index + "].typeId" %>'>
+	    		<html:select property='<%= "tasks[" + index + "].type.id" %>'>
 			   		<html:options collection='<%=Constants.PAGE_TASK_CLASSES%>' 
 				 		property="code"
 						labelProperty="description"	/>

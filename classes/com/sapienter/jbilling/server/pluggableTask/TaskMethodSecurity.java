@@ -7,6 +7,10 @@ import javax.ejb.FinderException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.PermissionConstants;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDAS;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.MethodBaseSecurityProxy;
 import com.sapienter.jbilling.server.util.WSMethodSecurityProxy;
@@ -25,7 +29,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             // update
             Class params[] = new Class[2];
             params[0] = Integer.class;
-            params[1] = PluggableTaskDTOEx.class;
+            params[1] = PluggableTaskDTO.class;
             methodName = "update";
             aMethod = beanRemote.getDeclaredMethod(methodName, params);
             methods[i++] = aMethod;
@@ -33,7 +37,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             // updateAll
             params = new Class[2];
             params[0] = Integer.class;
-            params[1] = PluggableTaskDTOEx[].class;
+            params[1] = PluggableTaskDTO[].class;
             methodName = "updateAll";
             aMethod = beanRemote.getDeclaredMethod(methodName, params);
             methods[i++] = aMethod;
@@ -41,7 +45,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             // create
             params = new Class[2];
             params[0] = Integer.class;
-            params[1] = PluggableTaskDTOEx.class;
+            params[1] = PluggableTaskDTO.class;
             methodName = "create";
             aMethod = beanRemote.getDeclaredMethod(methodName, params);
             methods[i++] = aMethod;
@@ -50,7 +54,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             params = new Class[3];
             params[0] = Integer.class;
             params[1] = Integer.class;
-            params[2] = PluggableTaskParameterDTOEx.class;
+            params[2] = PluggableTaskParameterDTO.class;
             methodName = "createParameter";
             aMethod = beanRemote.getDeclaredMethod(methodName, params);
             methods[i++] = aMethod;
@@ -74,7 +78,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             // updateParameters
             params = new Class[2];
             params[0] = Integer.class;
-            params[1] = PluggableTaskDTOEx.class;
+            params[1] = PluggableTaskDTO.class;
             methodName = "updateParameters";
             aMethod = beanRemote.getDeclaredMethod(methodName, params);
             methods[i++] = aMethod;
@@ -101,10 +105,10 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
         validatePermission(userId, PermissionConstants.P_TASK_MODIFY);
         if(m.getName().equals("update") ||
                 m.getName().equals("updateParameters")) {
-            PluggableTaskDTOEx dto = (PluggableTaskDTOEx) args[1];
+            PluggableTaskDTO dto = (PluggableTaskDTO) args[1];
             validate(userId, dto.getId());
         } else if(m.getName().equals("updateAll")) {
-            PluggableTaskDTOEx dto[] = (PluggableTaskDTOEx[]) args[1];
+            PluggableTaskDTO dto[] = (PluggableTaskDTO[]) args[1];
             for (int f = 0; f < dto.length; f++) {
                 validate(userId, dto[f].getId());
             }
@@ -129,7 +133,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             UserBL user = new UserBL(userId);
             PluggableTaskBL task = new PluggableTaskBL(taskId);
             if (!user.getEntity().getEntity().getId().equals(
-                    task.getEntity().getEntityId())) {
+                    task.getDTO().getEntityId())) {
                 throw new SecurityException("Unauthorize access to user " + 
                         userId);
             }
@@ -140,13 +144,7 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
     }
     
     private void validateParameter(Integer userId, Integer parameterId) {
-        PluggableTaskBL task = new PluggableTaskBL();
-        try {
-            validate(userId, task.getParameterHome().findByPrimaryKey(
-                    parameterId).getTask().getId());
-        } catch (FinderException e) {
-            throw new SecurityException("Row not present validating " + 
-                    e.getMessage());
-        }
+        PluggableTaskParameterDAS das = new PluggableTaskParameterDAS();
+        validate(userId, das.find(parameterId).getTask().getId());
     }
 }

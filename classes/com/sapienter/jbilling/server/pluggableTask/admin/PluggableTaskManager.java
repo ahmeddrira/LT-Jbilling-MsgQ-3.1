@@ -22,81 +22,50 @@ Contributor(s): ______________________________________.
  * Created on Apr 15, 2003
  *
  */
-package com.sapienter.jbilling.server.pluggableTask;
+package com.sapienter.jbilling.server.pluggableTask.admin;
 
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocalHome;
-import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 
-public class PluggableTaskManager extends ResultList implements PluggableTaskSQL {
+public class PluggableTaskManager {
 
-    private Vector<Integer> classes = null;
+    private static final Logger LOG = Logger.getLogger(PluggableTaskManager.class);
+    private Vector<PluggableTaskDTO> classes = null;
     private Iterator it = null;
-    private Logger log = null;
     private int lastProcessingOrder;
-	private JNDILookup factory;
-	private PluggableTaskEntityLocalHome pluggableTaskHome;
 	
-	private void init() 
-			throws NamingException{
-        factory = JNDILookup.getFactory(false);
-		pluggableTaskHome = (PluggableTaskEntityLocalHome) factory.lookUpLocalHome(
-		                    PluggableTaskEntityLocalHome.class,
-		                    PluggableTaskEntityLocalHome.JNDI_NAME);
-	}
-
     public PluggableTaskManager(Integer entityId, Integer taskCategory)
         throws PluggableTaskException {
 
-        log = Logger.getLogger(PluggableTaskManager.class);
-
         try {
-        	init();
 			lastProcessingOrder = 0;
-            prepareStatement(PluggableTaskSQL.findByEntity); 
-            cachedResults.setInt(1, entityId.intValue()); 
-            cachedResults.setInt(2, taskCategory.intValue());
-            execute();
-            conn.close();
             
-            classes = new Vector<Integer>();
-            while (cachedResults.next()) {
-                classes.add(cachedResults.getInt(1));
-            }
+            PluggableTaskDAS das = new PluggableTaskDAS();
+            classes = new Vector<PluggableTaskDTO>();
+            classes.addAll(das.findByEntityCategory(entityId, taskCategory));
+            
             it = classes.iterator();
-            log.debug("total classes = " + classes.size());
+            LOG.debug("total classes = " + classes.size());
             
         } catch (Exception e) {
             throw new PluggableTaskException(e);
         } 
-
     }
 
     public Object getNextClass() throws PluggableTaskException {
         if (it != null && it.hasNext()) {
-            Integer ruleId = (Integer) it.next();
-            PluggableTaskEntityLocal aRule;
-            try {
-                aRule = pluggableTaskHome.findByPrimaryKey(ruleId);
-            } catch (FinderException e1) {
-                throw new PluggableTaskException(e1);
-            }
+            PluggableTaskDTO aRule = (PluggableTaskDTO) it.next();
 
             // check if the order by is in place
             int processingOrder = aRule.getProcessingOrder().intValue();
             // this is helpful also to indetify bad data in the table
             if (processingOrder <= lastProcessingOrder) {
                 // means that the results are not ordered !
-                log.fatal("Results of processing tasks are not orderd");
+                LOG.fatal("Results of processing tasks are not orderd");
                 throw new PluggableTaskException("Processing tasks not orderd");
             }
             lastProcessingOrder = processingOrder;
@@ -105,7 +74,7 @@ public class PluggableTaskManager extends ResultList implements PluggableTaskSQL
             String interfaceName =
                 aRule.getType().getCategory().getInterfaceName();
 
-            log.debug("Applying task " + className);
+            LOG.debug("Applying task " + className);
             try {
                 Class task = Class.forName(className);
                 Class taskInterface = Class.forName(interfaceName);

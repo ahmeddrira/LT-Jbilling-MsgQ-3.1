@@ -8,33 +8,8 @@
      the corresponding Java classes for you.  Otherwise, you would
      need only the "form-bean" element itself, with the corresponding
      "name" and "type" attributes.
---><struts-config>
-
-
-  <!-- ========== Data Source Configuration =============================== -->
-<!--
-  <data-sources>
-    <data-source>
-      <set-property property="autoCommit"
-                       value="false"/>
-      <set-property property="description"
-                       value="Example Data Source Configuration"/>
-      <set-property property="driverClass"
-                       value="org.postgresql.Driver"/>
-      <set-property property="maxCount"
-                       value="4"/>
-      <set-property property="minCount"
-                       value="2"/>
-      <set-property property="password"
-                       value="mypassword"/>
-      <set-property property="url"
-                       value="jdbc:postgresql://localhost/mydatabase"/>
-      <set-property property="user"
-                       value="myusername"/>
-    </data-source>
-  </data-sources>
 -->
-
+<struts-config>
   <!-- ========== Form Bean Definitions =================================== -->
   <form-beans>
 
@@ -381,7 +356,7 @@
 </form-bean>
     
 <form-bean name="task" type="org.apache.struts.validator.DynaValidatorForm">
-    <form-property name="tasks" type="com.sapienter.jbilling.server.pluggableTask.PluggableTaskDTOEx[]" />
+    <form-property name="tasks" type="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO[]" />
 </form-bean>
 <form-bean name="changePassword" type="org.apache.struts.validator.DynaValidatorForm">
     <form-property name="password" type="java.lang.String" />

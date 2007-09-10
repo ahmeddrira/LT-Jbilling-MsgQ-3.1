@@ -24,8 +24,9 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 /**
  * Sends an email when a payment processor is down.
@@ -54,7 +55,7 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     private Logger log = Logger.getLogger(ProcessorEmailAlarmTask.class);
     
     @Override
-    public void initializeParamters(PluggableTaskEntityLocal task) throws PluggableTaskException {
+    public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
     	super.initializeParamters(task);
     	failedLimit = parseInt(parameters.get(PARAMETER_FAILED_LIMIT));
     	failedTime = parseInt(parameters.get(PARAMETER_FAILED_TIME));

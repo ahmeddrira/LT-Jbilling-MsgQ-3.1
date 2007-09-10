@@ -4,14 +4,14 @@
 	<property file="{${source.descriptor.dir}/resources/jbilling.properties"/>
 
     <path id="compile.classpath">
-		<fileset dir="${jboss.server.dir}/lib">
-    	     <include name="*.jar"/>
-        </fileset>
     	<fileset dir="${jboss.client.dir}">
     	     <include name="*.jar"/>
         </fileset>
     	<fileset dir="${libs.client.dir}">
              <include name="**/*.jar"/>
+        </fileset>
+		<fileset dir="${jboss.server.dir}/lib">
+    	     <include name="*.jar"/>
         </fileset>
     </path>
 
@@ -228,6 +228,8 @@
    <!-- =================================================================== -->
  
    <target name="jar" depends="compile, findRevision">
+      <copy file="${source.resources.descriptor.dir}/persistence.xml" 
+ 	 	todir="${build.dir}/META-INF"/>
       <jar jarfile="${build.deploy.dir}/jbilling.jar">
          <fileset dir="${build.classes.dir}">
             <include name="${source.server.package.dir}/**"/>

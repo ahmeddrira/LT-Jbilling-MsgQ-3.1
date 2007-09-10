@@ -1,6 +1,7 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.interfaces.PluggableTaskEntityLocal;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 public abstract class PaymentTaskWithTimeout extends PaymentTaskBase {
 	public static final String PARAM_TIMEOUT_SECONDS = "timeout_sec";
@@ -8,7 +9,7 @@ public abstract class PaymentTaskWithTimeout extends PaymentTaskBase {
 	private int myTimeout;
 	
 	@Override
-	public void initializeParamters(PluggableTaskEntityLocal task)
+	public void initializeParamters(PluggableTaskDTO task)
 			throws PluggableTaskException {
 		
 		super.initializeParamters(task);

@@ -17,25 +17,30 @@ Portions created by Sapienter Billing Software Corp. are Copyright
 
 Contributor(s): ______________________________________.
 */
+package com.sapienter.jbilling.server.util.db;
 
-package com.sapienter.jbilling.server.pluggableTask;
+import javax.persistence.EntityManager;
 
 
-public interface PluggableTaskSQL {
-        
-    // Yet another sad example of excesive locking with entity beans
-    // This query was then taken out for direct SQL
-    static final String findByEntity = 
-        "SELECT t.id, t.entity_id, t.type_id, t.processing_order " +
-        "  FROM pluggable_task t, pluggable_task_type ty " +
-        " WHERE t.entity_id = ? " +
-        "   AND ty.category_id = ? " +
-        "   AND t.type_id = ty.id " +
-        "ORDER BY t.processing_order";
+public abstract class AbstractDAS<T> {
 
+    protected EntityManager em = DBUtil.getEntityManager();;
+    
+    /*
+    private Session em;
+    */
+    
+    public T save(T newEntity) {
+        T retValue = em.merge(newEntity);
+        //em.flush();
+        return retValue;
+    }
+    
+    public void delete(T entity) {
+        em.remove(entity);
+        //em.delete(entity);
+    }
+
+    public abstract T find(Integer id);
     
 }
-
-
-
-

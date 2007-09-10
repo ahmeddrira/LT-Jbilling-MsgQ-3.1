@@ -80,7 +80,7 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
@@ -1079,7 +1079,7 @@ public class NotificationBL extends ResultList
                     new PaperInvoiceNotificationTask();
             PluggableTaskBL taskBL = new PluggableTaskBL();
             taskBL.set(entityId, Constants.PLUGGABLE_TASK_T_PAPER_INVOICE);
-            task.initializeParamters(taskBL.getEntity());
+            task.initializeParamters(taskBL.getDTO());
              
             String filename = task.getPDFFile(invoice.getUser(), paperMsg);
             

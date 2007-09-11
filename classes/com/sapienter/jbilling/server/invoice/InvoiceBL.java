@@ -497,6 +497,18 @@ public class InvoiceBL extends ResultList
         return cachedResults;
     }
 
+    public CachedRowSet getInvoicesToPrintByProcessId(Integer processId)
+            throws SQLException, Exception {
+
+        prepareStatement(InvoiceSQL.processPrintableList);
+        cachedResults.setInt(1, processId.intValue());
+
+        execute();
+        conn.close();
+        return cachedResults;
+    }
+
+    
 	public CachedRowSet getInvoicesByUserId(Integer userId)
 			throws SQLException, Exception {
 

@@ -333,7 +333,7 @@ public class InvoiceSessionBean implements SessionBean {
 				} catch(FinderException e) {		
 				}				
 				if ((billingProcessBL!= null) && billingProcessBL.getEntity().getEntityId().equals(entityId)) {
-					cachedRowSet = invoiceBL.getInvoicesByProcessId(process);	
+					cachedRowSet = invoiceBL.getInvoicesToPrintByProcessId(process);	
 				}				
 			} else if (operationType
                     .equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_DATE)) {

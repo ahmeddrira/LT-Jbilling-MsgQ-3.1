@@ -98,6 +98,19 @@ public interface InvoiceSQL {
         "   and i.deleted = 0 " +
         "   and co.user_id = bu.id " +
         " order by 5, 1";
+    
+    static final String processPrintableList = 
+        "select i.id, i.public_number, i.id, bu.user_name, co.organization_name, " +
+        "       i.due_date, c.symbol, i.total, i.to_process " +
+        "  from invoice i, base_user bu, currency c, contact co, customer cu " +
+        " where i.billing_process_id = ? " +
+        "   and bu.id = i.user_id " +
+        "   and i.currency_id = c.id " +
+        "   and i.deleted = 0 " +
+        "   and cu.user_id = bu.id " +
+        "   and cu.invoice_delivery_method_id in (2,3) " +
+        "   and co.user_id = bu.id " +
+        " order by 5, 1";
 
     // Invoices generated in a range
     static final String rangeList = 

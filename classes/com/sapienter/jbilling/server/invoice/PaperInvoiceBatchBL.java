@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -167,26 +166,58 @@ public class PaperInvoiceBatchBL {
     public void compileInvoiceFiles(String destination, String prefix,
             Integer entityId, Integer[] invoices)
             throws PdfFormatException, IOException {
-        List list = new ArrayList();
+        
         String filePrefix = Util.getSysProp("base_dir") + "invoices/"
                 + entityId + "-";
+        String fileName = destination + prefix + "-batch.pdf";
+
+        PdfWriter writer = new PdfWriter(new File(fileName));
+        List<PdfManager> list = new ArrayList<PdfManager>();
+        Vector<PdfReader> readers = new Vector<PdfReader>();
+        
         // now go through each of the invoices
         for (int f = 0; f < invoices.length ; f++) {
-            list.add(new PdfManager(new PdfReader(new PdfInputFile(new File(
-                    filePrefix + invoices[f] + "-invoice.pdf")))));
+            PdfReader reader = new PdfReader(new PdfInputFile(new File(
+                    filePrefix + invoices[f] + "-invoice.pdf")));
+            // add only one
+            list.add(new PdfManager(reader));
+            readers.add(reader);
         }
-        String fileName = destination + prefix + "-batch.pdf";
-        PdfWriter writer = new PdfWriter(new File(fileName));
+        
         PdfAppender appender = new PdfAppender(list, writer);
         appender.append();
         writer.close();
 
-        // delete the individual invoices
+        // delete/close the files
         for (int f = 0; f < invoices.length ; f++) {
+            readers.get(f).close();
             File file = new File(filePrefix + invoices[f] + "-invoice.pdf");
             file.delete();
         }
-        
+
+
+        /*
+        // now go through each of the invoices
+        for (int f = 0; f < invoices.length ; f++) {
+            PdfWriter writer = new PdfWriter(new File(fileName));
+            PdfReader reader = new PdfReader(new PdfInputFile(new File(
+                    filePrefix + invoices[f] + "-invoice.pdf")));
+            
+            // add only one
+            List<PdfManager> list = new ArrayList<PdfManager>();
+            list.add(new PdfManager(reader));
+
+            PdfAppender appender = new PdfAppender(list, writer);
+            appender.append();
+
+            // delete the file
+            reader.close();
+            File file = new File(filePrefix + invoices[f] + "-invoice.pdf");
+            file.delete();
+            writer.close();
+        }
+        */
+
         log.debug("PDF batch file is ready " + fileName);
     }
 

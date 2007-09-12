@@ -56,6 +56,12 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.naming.NamingException;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -90,12 +96,6 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
-
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JasperExportManager;
-import dori.jasper.engine.JasperFillManager;
-import dori.jasper.engine.JasperPrint;
-import dori.jasper.engine.data.JRBeanCollectionDataSource;
 
 public class NotificationBL extends ResultList 
         implements NotificationSQL {

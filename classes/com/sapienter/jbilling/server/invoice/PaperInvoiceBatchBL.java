@@ -26,6 +26,7 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.invoice;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,12 +42,13 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.etymon.pjx.PdfFormatException;
-import com.etymon.pjx.PdfInputFile;
-import com.etymon.pjx.PdfManager;
-import com.etymon.pjx.PdfReader;
-import com.etymon.pjx.PdfWriter;
-import com.etymon.pjx.util.PdfAppender;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PRAcroForm;
+import com.lowagie.text.pdf.PdfCopy;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.SimpleBookmark;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
@@ -66,7 +68,7 @@ public class PaperInvoiceBatchBL {
     private JNDILookup EJBFactory = null;
     private PaperInvoiceBatchEntityLocalHome batchHome = null;
     private PaperInvoiceBatchEntityLocal batch = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(PaperInvoiceBatchBL.class);
     private EventLogger eLogger = null;
 
     public PaperInvoiceBatchBL(Integer batchId) 
@@ -86,7 +88,6 @@ public class PaperInvoiceBatchBL {
     }
 
     private void init() throws NamingException {
-        log = Logger.getLogger(PaperInvoiceBatchBL.class);     
         eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         batchHome = (PaperInvoiceBatchEntityLocalHome) 
@@ -134,7 +135,7 @@ public class PaperInvoiceBatchBL {
      * This then will facilitate the printing of a batch.
      */
     public void compileInvoiceFilesForProcess(Integer entityId) 
-    		throws PdfFormatException, IOException {
+    		throws DocumentException, IOException {
     	String filePrefix = Util.getSysProp("base_dir") + "invoices/" + 
             entityId + "-";
     	// now go through each of the invoices
@@ -165,60 +166,62 @@ public class PaperInvoiceBatchBL {
      */
     public void compileInvoiceFiles(String destination, String prefix,
             Integer entityId, Integer[] invoices)
-            throws PdfFormatException, IOException {
+            throws DocumentException, IOException {
         
         String filePrefix = Util.getSysProp("base_dir") + "invoices/"
                 + entityId + "-";
-        String fileName = destination + prefix + "-batch.pdf";
+        String outFile = destination + prefix + "-batch.pdf";
 
-        PdfWriter writer = new PdfWriter(new File(fileName));
-        List<PdfManager> list = new ArrayList<PdfManager>();
-        Vector<PdfReader> readers = new Vector<PdfReader>();
         
-        // now go through each of the invoices
-        for (int f = 0; f < invoices.length ; f++) {
-            PdfReader reader = new PdfReader(new PdfInputFile(new File(
-                    filePrefix + invoices[f] + "-invoice.pdf")));
-            // add only one
-            list.add(new PdfManager(reader));
-            readers.add(reader);
-        }
-        
-        PdfAppender appender = new PdfAppender(list, writer);
-        appender.append();
-        writer.close();
-
-        // delete/close the files
-        for (int f = 0; f < invoices.length ; f++) {
-            readers.get(f).close();
-            File file = new File(filePrefix + invoices[f] + "-invoice.pdf");
-            file.delete();
-        }
-
-
-        /*
-        // now go through each of the invoices
-        for (int f = 0; f < invoices.length ; f++) {
-            PdfWriter writer = new PdfWriter(new File(fileName));
-            PdfReader reader = new PdfReader(new PdfInputFile(new File(
-                    filePrefix + invoices[f] + "-invoice.pdf")));
+        int pageOffset = 0;
+        ArrayList master = new ArrayList();
+        Document document = null;
+        PdfCopy  writer = null;
+        for(int f = 0; f < invoices.length ; f++) {
+            // we create a reader for a certain document
+            PdfReader reader = new PdfReader(filePrefix + invoices[f] + "-invoice.pdf");
+            reader.consolidateNamedDestinations();
+            // we retrieve the total number of pages
+            int numberOfPages = reader.getNumberOfPages();
+            List bookmarks = SimpleBookmark.getBookmark(reader);
+            if (bookmarks != null) {
+                if (pageOffset != 0)
+                    SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);
+                master.addAll(bookmarks);
+            }
+            pageOffset += numberOfPages;
             
-            // add only one
-            List<PdfManager> list = new ArrayList<PdfManager>();
-            list.add(new PdfManager(reader));
-
-            PdfAppender appender = new PdfAppender(list, writer);
-            appender.append();
-
-            // delete the file
+            if (f == 0) {
+                // step 1: creation of a document-object
+                document = new Document(reader.getPageSizeWithRotation(1));
+                // step 2: we create a writer that listens to the document
+                writer = new PdfCopy(document, new FileOutputStream(outFile));
+                // step 3: we open the document
+                document.open();
+            }
+            // step 4: we add content
+            PdfImportedPage page;
+            for (int i = 0; i < numberOfPages; ) {
+                ++i;
+                page = writer.getImportedPage(reader, i);
+                writer.addPage(page);
+            }
+            PRAcroForm form = reader.getAcroForm();
+            if (form != null)
+                writer.copyAcroForm(reader);
+            
+            //release and delete 
+            writer.freeReader(reader);
             reader.close();
             File file = new File(filePrefix + invoices[f] + "-invoice.pdf");
             file.delete();
-            writer.close();
         }
-        */
+        if (!master.isEmpty())
+            writer.setOutlines(master);
+        // step 5: we close the document
+        document.close();
 
-        log.debug("PDF batch file is ready " + fileName);
+        LOG.debug("PDF batch file is ready " + outFile);
     }
 
     
@@ -242,14 +245,14 @@ public class PaperInvoiceBatchBL {
             		Util.getSysProp("base_dir") + "invoices/" + entityId + 
             		"-" + batch.getId() + "-batch.pdf", null);
         } catch (Exception e) {
-            log.error("Could no send the email with the paper invoices " +
+            LOG.error("Could no send the email with the paper invoices " +
                     "for entity " + entityId, e);
         } 
     }
     
     public String generateFile(CachedRowSet cachedRowSet, Integer entityId, 
             String realPath) throws SQLException,
-            SessionInternalError, NamingException, PdfFormatException,
+            SessionInternalError, NamingException, DocumentException,
             IOException, FinderException {
         NotificationBL notif = new NotificationBL();
         Vector invoices = new Vector();
@@ -258,7 +261,7 @@ public class PaperInvoiceBatchBL {
         while (cachedRowSet.next()) {
             Integer invoiceId = new Integer(cachedRowSet.getInt(1));
             InvoiceBL invoice = new InvoiceBL(invoiceId);
-            log.debug("Generating paper invoice " + invoiceId);
+            LOG.debug("Generating paper invoice " + invoiceId);
             notif.generatePaperInvoiceAsFile(invoice.getEntity());
             invoices.add(invoiceId);
             

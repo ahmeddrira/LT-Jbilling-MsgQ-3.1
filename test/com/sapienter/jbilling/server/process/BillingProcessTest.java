@@ -470,7 +470,7 @@ public class BillingProcessTest extends TestCase {
             Collection<InvoiceDTOEx> invoices = remoteBillingProcess.getGeneratedInvoices(
                     new Integer(35));
             // we know that only one invoice should be generated
-            assertEquals("Invoices generated", 1, invoices.size());
+            assertEquals("Invoices generated", 1001, invoices.size());
             
             for (InvoiceDTOEx invoice : invoices) {
                 float orderTotal = 0F;

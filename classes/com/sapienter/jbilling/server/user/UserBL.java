@@ -1237,4 +1237,36 @@ public class UserBL extends ResultList
         
         return retValue;
     }
+    
+    public CachedRowSet getByStatus(Integer entityId, Integer statusId, boolean in) {
+        try {
+            if (in) {
+                prepareStatement(UserSQL.findInStatus);
+            } else {
+                prepareStatement(UserSQL.findNotInStatus);
+            }
+            cachedResults.setInt(1, entityId.intValue());
+            cachedResults.setInt(2, statusId.intValue());
+            execute();
+            conn.close();
+            return cachedResults;
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user by status", UserBL.class, e);
+        }   
+    }
+    
+    public CachedRowSet getByCustomField(Integer entityId, Integer typeId, String content) {
+        try {
+            prepareStatement(UserSQL.findByCustomField);
+            cachedResults.setInt(1, typeId.intValue());
+            cachedResults.setInt(2, entityId.intValue());
+            cachedResults.setString(3, content);
+            execute();
+            conn.close();
+            return cachedResults;
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user by status", UserBL.class, e);
+        }   
+    }
+
 }

@@ -42,6 +42,8 @@ import javax.naming.NamingException;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 
+import sun.jdbc.rowset.CachedRowSet;
+
 import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
@@ -498,15 +500,17 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(root);
             Integer entityId = bl.getEntity().getEntity().getId();
-            Collection values = bl.getHome().findByCustomField(entityId, 
-                    typeId, value);
-            Integer[] ret = new Integer[values.size()];
-            int f = 0;
-            for (Iterator it = values.iterator(); it.hasNext(); f++) {
-                UserEntityLocal user = (UserEntityLocal) it.next();
-                ret[f] = user.getUserId();
-            }
 
+            CachedRowSet users = bl.getByCustomField(entityId, typeId, value);
+            log.debug("got collection. Now converting");
+            Integer[] ret = new Integer[users.size()];
+            int f = 0;
+            while (users.next()) {
+                ret[f] = users.getInt(1);
+                f++;
+            }
+            users.close();
+            log.debug("done");
             return ret;
         } catch (Exception e) {
             log.error("WS - getUsersByCustomField", e);
@@ -524,19 +528,15 @@ public class WebServicesSessionBean implements SessionBean {
             log.debug("getting list of users. status:" + statusId +
                     " entity:" + entityId + " in:" + in);
             UserBL bl = new UserBL();
-            Collection users;
-            if (in) {
-                users = bl.getHome().findInStatus(entityId, statusId);
-            } else {
-                users = bl.getHome().findNotInStatus(entityId, statusId);
-            }
+            CachedRowSet users = bl.getByStatus(entityId, statusId, in);
             log.debug("got collection. Now converting");
             Integer[] ret = new Integer[users.size()];
             int f = 0;
-            for (Iterator it = users.iterator(); it.hasNext(); f++) {
-                UserEntityLocal user = (UserEntityLocal) it.next();
-                ret[f] = user.getUserId();
+            while (users.next()) {
+                ret[f] = users.getInt(1);
+                f++;
             }
+            users.close();
             log.debug("done");
             return ret;
         } catch (Exception e) {

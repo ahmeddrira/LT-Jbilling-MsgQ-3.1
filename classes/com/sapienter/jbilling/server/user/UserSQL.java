@@ -77,4 +77,30 @@ public interface UserSQL {
         " AND el.message_id = " + EventLogger.PASSWORD_CHANGE + 
         " AND el.foreign_id = ?";
 
+    static final String findInStatus = 
+        "SELECT id " +
+        "  FROM base_user a " + 
+        " WHERE a.status_id = ? " +
+        "   AND a.entity_id = ?" +
+        "   AND a.deleted = 0" +
+        " ORDER BY 1";
+
+    static final String findNotInStatus = 
+        "SELECT id " +
+        "  FROM base_user a " + 
+        " WHERE a.status_id <> ? " +
+        "   AND a.entity_id = ?" +
+        "   AND a.deleted = 0" +
+        " ORDER BY 1";
+
+    static final String findByCustomField= 
+        "SELECT id " +
+        "  FROM base_user a, contact c, contact_field cf " + 
+        " WHERE c.user_id = a.id " +
+        "    AND c.id = cf.contact_id " +
+        "    AND cf.type_id = ? " +
+        "   AND a.entity_id = ?" +
+        "   AND cf.content = ?" +
+        "   AND a.deleted = 0" +
+        " ORDER BY 1";
 }

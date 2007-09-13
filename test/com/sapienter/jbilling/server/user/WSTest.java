@@ -24,6 +24,7 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.user;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -36,6 +37,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 
@@ -72,40 +74,9 @@ public class WSTest extends TestCase {
             /*
              * Create - This passes the password validation routine.
              */
-            Random rnd = new Random();
-            UserWS newUser = new UserWS();
-            newUser.setUserName("webServicesUserNameCreated" + rnd.nextInt(100));
+            UserWS newUser = createUser(true, 43);
+            Integer newUserId = newUser.getUserId();
             String newUserName = newUser.getUserName();
-            newUser.setPassword("asdfasdf1");
-            newUser.setLanguageId(new Integer(1));
-            newUser.setMainRoleId(new Integer(5));
-            newUser.setParentId(new Integer(43)); // this parent exists
-            newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
-            
-            // add a contact
-            ContactWS contact = new ContactWS();
-            contact.setEmail("frodo@shire.com");
-            contact.setFirstName("Frodo");
-            contact.setLastName("Baggins");
-            String fields[] = new String[2];
-            fields[0] = "1";
-            fields[1] = "2"; // the ID of the CCF for the processor
-            String fieldValues[] = new String[2];
-            fieldValues[0] = "serial-from-ws";
-            fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
-            contact.setFieldNames(fields);
-            contact.setFieldValues(fieldValues);
-            newUser.setContact(contact);
-            
-            // add a credit card
-            CreditCardDTO cc = new CreditCardDTO();
-            cc.setName("Frodo Baggins");
-            cc.setNumber("4111111111111152");
-            cc.setExpiry(Calendar.getInstance().getTime());
-            newUser.setCreditCard(cc);
-            
-            System.out.println("Creating user ...");
-            Integer newUserId = api.createUser(newUser);
             assertNotNull("The user was not created", newUserId);
             
             System.out.println("Getting the id of the new user");
@@ -135,35 +106,7 @@ public class WSTest extends TestCase {
             retUser.setParentId(null);
             
             // need an order for it
-            OrderWS newOrder = new OrderWS();
-            newOrder.setUserId(new Integer(-1)); // it does not matter, the user will be created
-            newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
-            newOrder.setPeriod(new Integer(1)); // once
-            newOrder.setCurrencyId(new Integer(1));
-            
-            // now add some lines
-            OrderLineWS lines[] = new OrderLineWS[2];
-            OrderLineWS line;
-            
-            line = new OrderLineWS();
-            line.setPrice(new Float(10));
-            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            line.setQuantity(new Integer(1));
-            line.setAmount(new Float(10));
-            line.setDescription("Fist line");
-            line.setItemId(new Integer(1));
-            lines[0] = line;
-            
-            line = new OrderLineWS();
-            line.setPrice(new Float(10));
-            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            line.setQuantity(new Integer(1));
-            line.setAmount(new Float(10));
-            line.setDescription("Second line");
-            line.setItemId(new Integer(2));
-            lines[1] = line;
-            
-            newOrder.setOrderLines(lines);
+            OrderWS newOrder = getOrder();
             
             CreateResponseWS mcRet = api.create(retUser,newOrder);
             
@@ -270,7 +213,7 @@ public class WSTest extends TestCase {
             String ccNumber = "4012888888881881";
             Date ccExpiry = Calendar.getInstance().getTime();
 
-            cc = new CreditCardDTO();
+            CreditCardDTO cc = new CreditCardDTO();
             cc.setName(ccName);
             cc.setNumber(ccNumber);
             cc.setExpiry(ccExpiry);
@@ -324,10 +267,9 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(7,users.length);
-            for (int f = 0; f < users.length; f++) {
-                System.out.println("Got user " + users[f]);
-            }
+            assertEquals(1007,users.length);
+            assertEquals("First return user ", 1, users[0].intValue());
+            assertEquals("Last returned user ", 1074, users[1006].intValue());
 
             /*
              * Get list of not active customers
@@ -345,9 +287,9 @@ public class WSTest extends TestCase {
             System.out.println("Getting by custom field...");
             users = api.getUsersByCustomField(new Integer(1),new String("serial-from-ws"));
             
-            // only the one from the megacall is not deleted and has the custom field
-            assertEquals(users.length, 1); 
-            assertEquals(users[0], mcRet.getUserId());
+            // the one from the megacall is not deleted and has the custom field
+            assertEquals(users.length, 1001); 
+            assertEquals(users[1000], mcRet.getUserId());
             
             System.out.println("Done");
         } catch (Exception e) {
@@ -511,4 +453,103 @@ public class WSTest extends TestCase {
         }
         
     }
+    
+    private UserWS createUser(boolean goodCC, Integer parentId) throws JbillingAPIException, IOException {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            
+            /*
+             * Create - This passes the password validation routine.
+             */
+            UserWS newUser = new UserWS();
+            newUser.setUserName("testUserName-" + Calendar.getInstance().getTimeInMillis());
+            newUser.setPassword("asdfasdf1");
+            newUser.setLanguageId(new Integer(1));
+            newUser.setMainRoleId(new Integer(5));
+            newUser.setParentId(parentId); // this parent exists
+            newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+            
+            // add a contact
+            ContactWS contact = new ContactWS();
+            contact.setEmail("frodo@shire.com");
+            contact.setFirstName("Frodo");
+            contact.setLastName("Baggins");
+            String fields[] = new String[2];
+            fields[0] = "1";
+            fields[1] = "2"; // the ID of the CCF for the processor
+            String fieldValues[] = new String[2];
+            fieldValues[0] = "serial-from-ws";
+            fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
+            contact.setFieldNames(fields);
+            contact.setFieldValues(fieldValues);
+            newUser.setContact(contact);
+            
+            // add a credit card
+            CreditCardDTO cc = new CreditCardDTO();
+            cc.setName("Frodo Baggins");
+            cc.setNumber(goodCC ? "4111111111111152" : "4111111111111111");
+            cc.setExpiry(Calendar.getInstance().getTime());
+            newUser.setCreditCard(cc);
+            
+            System.out.println("Creating user ...");
+            newUser.setUserId(api.createUser(newUser));
+            
+            return newUser;
+    }
+    
+    private OrderWS getOrder() {
+        // need an order for it
+        OrderWS newOrder = new OrderWS();
+        newOrder.setUserId(new Integer(-1)); // it does not matter, the user will be created
+        newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        newOrder.setPeriod(new Integer(1)); // once
+        newOrder.setCurrencyId(new Integer(1));
+        
+        // now add some lines
+        OrderLineWS lines[] = new OrderLineWS[2];
+        OrderLineWS line;
+        
+        line = new OrderLineWS();
+        line.setPrice(new Float(10));
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setQuantity(new Integer(1));
+        line.setAmount(new Float(10));
+        line.setDescription("First line");
+        line.setItemId(new Integer(1));
+        lines[0] = line;
+        
+        line = new OrderLineWS();
+        line.setPrice(new Float(10));
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setQuantity(new Integer(1));
+        line.setAmount(new Float(10));
+        line.setDescription("Second line");
+        line.setItemId(new Integer(2));
+        lines[1] = line;
+        
+        newOrder.setOrderLines(lines);
+
+        return newOrder;
+    }
+    
+    // name changed so it is not called in normal test runs
+    public void XXtestLoad() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            for (int i = 0; i < 1000; i++) {
+                Random rnd = new Random();
+                UserWS newUser = createUser(rnd.nextBoolean(), null);
+                OrderWS newOrder = getOrder();
+                // change the quantities for viarety
+                newOrder.getOrderLines()[0].setQuantity(rnd.nextInt(100) + 1);
+                newOrder.getOrderLines()[0].setUseItem(true);
+                newOrder.getOrderLines()[1].setQuantity(rnd.nextInt(100) + 1);
+                newOrder.getOrderLines()[1].setUseItem(true);
+                newOrder.setUserId(newUser.getUserId());
+                api.createOrder(newOrder);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+   }
 }

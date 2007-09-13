@@ -202,9 +202,9 @@ public class ContactBL {
         return retValue;
     }
     
-    public Vector getAll(Integer userId) 
+    public Vector<ContactDTOEx> getAll(Integer userId) 
             throws NamingException, FinderException {
-        Vector retValue = new Vector();
+        Vector<ContactDTOEx> retValue = new Vector<ContactDTOEx>();
         UserBL user = new UserBL(userId);
         entityId = user.getEntity().getEntity().getId();
         for (Iterator it = user.getEntity().getEntity().getContactTypes().

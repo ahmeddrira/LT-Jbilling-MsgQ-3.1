@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.PermissionTypeIdComparator;
@@ -130,6 +128,9 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
                 dto.getIsParent().booleanValue() ? new Integer(1) : new Integer(0));
             customerDto.setInvoiceChild(dto.getInvoiceChild() == null ? new Integer(0) :
                 dto.getInvoiceChild().booleanValue() ? new Integer(1) : new Integer(0));
+            if (dto.getCreditCard() != null) {
+                customerDto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
+            }
         }
     }
     

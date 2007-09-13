@@ -27,6 +27,8 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.interfaces.AchEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.server.entity.AchDTO;
@@ -48,6 +50,7 @@ import com.sapienter.jbilling.server.util.Constants;
 public class BasicPaymentInfoTask 
         extends PluggableTask implements PaymentInfoTask {
 
+    private static final Logger LOG = Logger.getLogger(BasicPaymentInfoTask.class);
     /** 
      * This will return an empty payment dto with only the credit card/ach set
      * if a valid credit card is found for the user. Otherwise null.
@@ -99,6 +102,9 @@ public class BasicPaymentInfoTask
             }
         } catch (Exception e) {
             throw new TaskException(e);
+        }
+        if (retValue == null) {
+            LOG.debug("Could not find payment instrument for user " + userId);
         }
         return retValue;
     }

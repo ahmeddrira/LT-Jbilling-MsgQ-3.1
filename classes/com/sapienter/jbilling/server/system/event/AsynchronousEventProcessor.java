@@ -48,7 +48,7 @@ public abstract class AsynchronousEventProcessor<TType> extends EventProcessor<T
     private void setupPTP()
             throws JMSException, NamingException {
         InitialContext iniCtx = new InitialContext();
-        Object tmp = iniCtx.lookup("ConnectionFactory");
+        Object tmp = iniCtx.lookup("java:/ConnectionFactory");
         QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
         conn = qcf.createQueueConnection();
         myQueue = (Queue) iniCtx.lookup("queue/" + getQueueName());

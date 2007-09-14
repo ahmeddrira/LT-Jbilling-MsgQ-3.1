@@ -61,6 +61,7 @@ public class WebServicesConstants {
 	public final static String UPDATE_USER_CONTACT = "updateUserContact";
 	public final static String PAY_INVOICE = "payInvoice";
     public final static String AUTHENTICATE = "authenticate";
+    public final static String GET_USERS_BY_CCNUMBER = "getUsersByCreditCard";
     
     /*
      *  return values for authentication method

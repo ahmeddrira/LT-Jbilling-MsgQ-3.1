@@ -454,6 +454,22 @@ public class WSTest extends TestCase {
         
     }
     
+    public void testGetByCC() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            Integer[] ids = api.getUsersByCreditCard("1152");
+            assertNotNull("One customer with CC", ids);
+            assertEquals("One customer with CC",1, ids.length);
+            assertEquals("Created user with CC", 1074, ids[0].intValue());
+                    
+            // get the user
+            assertNotNull("Getting found user",api.getUserWS(ids[0]));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+    
     private UserWS createUser(boolean goodCC, Integer parentId) throws JbillingAPIException, IOException {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             

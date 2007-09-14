@@ -29,8 +29,6 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
@@ -126,6 +124,7 @@ public abstract class CreditCardEntityBean implements EntityBean {
      */
     public void setNumber(String number){
     	setNumberCrypt(JBCrypto.getCreditCardCrypto().encrypt(number));
+        setNumberPlain(number.substring(number.length()-4));
     }
     
     /**
@@ -140,6 +139,19 @@ public abstract class CreditCardEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public abstract void setNumberCrypt(String number);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="cc_number_plain"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract String getNumberPlain();
+    
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setNumberPlain(String number);
 
     /**
      * @ejb:interface-method view-type="local"

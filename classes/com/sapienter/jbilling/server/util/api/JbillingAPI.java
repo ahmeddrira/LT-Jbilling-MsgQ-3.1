@@ -68,6 +68,9 @@ public interface JbillingAPI {
     public Integer[] getUsersInStatus(Integer statusId)
             throws JbillingAPIException;
 
+    public Integer[] getUsersByCreditCard(String number)
+        throws JbillingAPIException;
+
     public Integer[] getUsersNotInStatus(Integer statusId)
             throws JbillingAPIException;
 

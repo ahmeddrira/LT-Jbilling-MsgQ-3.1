@@ -60,6 +60,7 @@ import com.sapienter.jbilling.server.util.Constants;
  *
  */
 public class ListBL {
+    private static final String CUSTOM_PREFIX = "CUSTOM_";
     private JNDILookup EJBFactory = null;
     private ListEntityLocalHome listHome = null;
     private ListEntityLocal list = null;
@@ -547,29 +548,34 @@ public class ListBL {
         sql.append(getSQL());
         // add the where from the parameters
         ListFieldBL field = new ListFieldBL(fieldId);
-        sql.append(" and " + field.getEntity().getColumnName());
-        if (field.getEntity().getDataType().equals("integer")) {
-            // it is just an equal
-            sql.append(" = ?");
-        } else if (field.getEntity().getDataType().equals("string")) {
-            // it is a like
-            sql.append(" like ?");
-        } else if (field.getEntity().getDataType().equals("date")) {
-            // it is a date range
-            if (start != null) {
-                sql.append(" >= ?");
+        String columnName = field.getEntity().getColumnName();
+        if (columnName.startsWith(CUSTOM_PREFIX)) {
+            sql.append(getCustomFilter(columnName.substring(CUSTOM_PREFIX.length())));
+        } else {
+            sql.append(" and " + field.getEntity().getColumnName());
+            if (field.getEntity().getDataType().equals("integer")) {
+                // it is just an equal
+                sql.append(" = ?");
+            } else if (field.getEntity().getDataType().equals("string")) {
+                // it is a like
+                sql.append(" like ?");
+            } else if (field.getEntity().getDataType().equals("date")) {
+                // it is a date range
+                if (start != null) {
+                    sql.append(" >= ?");
+                    if (end != null) {
+                        sql.append(" and " + field.getEntity().getColumnName());
+                    }
+                }
                 if (end != null) {
-                    sql.append(" and " + field.getEntity().getColumnName());
+                    sql.append(" < ?");
                 }
             }
-            if (end != null) {
-                sql.append(" < ?");
-            }
+    
+            // and a courtesy order
+            sql.append(" order by ");
+            sql.append(field.getEntity().getColumnName());
         }
-
-        // and a courtesy order
-        sql.append(" order by ");
-        sql.append(field.getEntity().getColumnName());
         
         PreparedStatement stmt = conn.prepareStatement(sql.toString());
         int varIndex = setSQLParameters(stmt, null);
@@ -608,6 +614,20 @@ public class ListBL {
         conn.close();
         
         return result;
+    }
+    
+    /**
+     * Map a key to a sql string for a WHERE clause that isn't a simple
+     * column in the query
+     * @param key
+     * @return
+     */
+    private String getCustomFilter(String key) { 
+        if (key.equals("CC")) {
+            return CustomerSQL.listCustomersCCFiler;
+        } else {
+            throw new SessionInternalError("Custom filer " + key + " not supported");
+        }
     }
     
     /*

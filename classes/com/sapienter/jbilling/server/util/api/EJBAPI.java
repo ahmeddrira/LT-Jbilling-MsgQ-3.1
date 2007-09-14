@@ -371,5 +371,14 @@ public class EJBAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+    
+    public Integer[] getUsersByCreditCard(String number)
+        throws JbillingAPIException {
+        try {
+            return session.getUsersByCreditCard(number);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 
 }

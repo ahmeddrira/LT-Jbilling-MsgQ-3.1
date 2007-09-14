@@ -26,9 +26,7 @@ package com.sapienter.jbilling.server.util;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -49,7 +47,6 @@ import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -99,7 +96,7 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
  * @jboss.container-configuration name="Remote API"
  */
 public class WebServicesSessionBean implements SessionBean {
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(WebServicesSessionBean.class);
     private SessionContext context = null;
     
     // used only to know if an invoice was created in the mega call
@@ -127,7 +124,7 @@ public class WebServicesSessionBean implements SessionBean {
 
             return bl.getWS();
         } catch (Exception e) {
-            log.error("WS - getInvoiceWS", e);
+            LOG.error("WS - getInvoiceWS", e);
             throw new SessionInternalError("Error getting invoice");
         }
     }
@@ -150,7 +147,7 @@ public class WebServicesSessionBean implements SessionBean {
             }
             return retValue;
         } catch (Exception e) {
-            log.error("Exception in web service: getting latest invoice" +
+            LOG.error("Exception in web service: getting latest invoice" +
                     " for user " + userId, e);
             throw new SessionInternalError("Error getting latest invoice");
         }
@@ -170,7 +167,7 @@ public class WebServicesSessionBean implements SessionBean {
             InvoiceBL bl = new InvoiceBL();
             return bl.getManyWS(userId, number);
         } catch (Exception e) {
-            log.error("Exception in web service: getting last invoices" +
+            LOG.error("Exception in web service: getting last invoices" +
                     " for user " + userId, e);
             throw new SessionInternalError("Error getting last invoices");
         }
@@ -196,7 +193,7 @@ public class WebServicesSessionBean implements SessionBean {
             InvoiceBL invoiceBl = new InvoiceBL();
             return invoiceBl.getInvoicesByCreateDateArray(entityId, dSince, dUntil);
         } catch (Exception e) {
-            log.error("Exception in web service: getting invoices by date" +
+            LOG.error("Exception in web service: getting invoices by date" +
                     since + until, e);
             throw new SessionInternalError("Error getting last invoices");
         }
@@ -216,7 +213,7 @@ public class WebServicesSessionBean implements SessionBean {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             invoice.delete(executorId);
         } catch(Exception e) {
-            log.error("WS - deleteUser", e);
+            LOG.error("WS - deleteUser", e);
             throw new SessionInternalError("Error deleting user");
         }
     }
@@ -246,7 +243,7 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer entityId = bl.getEntity().getEntity().getId(); 
-            log.info("WS - Creating user " + newUser);
+            LOG.info("WS - Creating user " + newUser);
             
             if (!bl.exists(newUser.getUserName(), entityId)) {
                 
@@ -268,16 +265,16 @@ public class WebServicesSessionBean implements SessionBean {
             return null;
         // need to catch every single one to be able to throw inside
         } catch (NamingException e) {
-            log.error("WS user creation error", e);
+            LOG.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         } catch (FinderException e) {
-            log.error("WS user creation error", e);
+            LOG.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         } catch (CreateException e) {
-            log.error("WS user creation error", e);
+            LOG.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         } catch (RemoveException e) {
-            log.error("WS user creation error", e);
+            LOG.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         }
     }
@@ -295,7 +292,7 @@ public class WebServicesSessionBean implements SessionBean {
             bl.set(userId);
             bl.delete(executorId);
         } catch(Exception e) {
-            log.error("WS - deleteUser", e);
+            LOG.error("WS - deleteUser", e);
             throw new SessionInternalError("Error deleting user");
         }
     }
@@ -312,14 +309,14 @@ public class WebServicesSessionBean implements SessionBean {
             
             // get the entity
             bl.setRoot(context.getCallerPrincipal().getName());
-            log.info("WS - Updating contact for user " + userId);
+            LOG.info("WS - Updating contact for user " + userId);
             
             // update the contact
             ContactBL cBl = new ContactBL();
             cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
             
         } catch (Exception e) {
-            log.error("WS - updateUserContact", e);
+            LOG.error("WS - updateUserContact", e);
             throw new SessionInternalError("Error updating contact");
         }
     }
@@ -340,7 +337,7 @@ public class WebServicesSessionBean implements SessionBean {
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer entityId = bl.getEntity().getEntity().getId();
             Integer executorId =   bl.getEntity().getUserId();
-            log.info("WS - Updating user " + user);
+            LOG.info("WS - Updating user " + user);
             
             // Check whether the password changes or not.
             if (user.getPassword() != null) { 
@@ -377,7 +374,7 @@ public class WebServicesSessionBean implements SessionBean {
             }
             
         } catch (Exception e) {
-            log.error("WS - updateUser", e);
+            LOG.error("WS - updateUser", e);
             throw new SessionInternalError("Error updating user");
         }
     }
@@ -398,7 +395,7 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL(userId);
             dto = bl.getUserWS();
         } catch (Exception e) {
-            log.error("WS - getUserWS", e);
+            LOG.error("WS - getUserWS", e);
             throw new SessionInternalError("Error getting user");
        }
         
@@ -422,7 +419,7 @@ public class WebServicesSessionBean implements SessionBean {
                 dtos[f] = new ContactWS((ContactDTOEx) result.get(f));
             }
         } catch (Exception e) {
-            log.error("WS - getUserWS", e);
+            LOG.error("WS - getUserWS", e);
             throw new SessionInternalError("Error getting user");
        }
         
@@ -444,7 +441,7 @@ public class WebServicesSessionBean implements SessionBean {
             bl.set(username, entityId);
             return bl.getEntity().getUserId();
         } catch (Exception e) {
-            log.error("WS - getUserId", e);
+            LOG.error("WS - getUserId", e);
             throw new SessionInternalError("Error getting user id");
         }
         
@@ -464,7 +461,7 @@ public class WebServicesSessionBean implements SessionBean {
             Integer entityId = bl.getEntity().getEntity().getId();
             return getUsersByStatus(statusId, entityId, true);
         } catch (Exception e) {
-            log.error("WS - getUsersInStatus", e);
+            LOG.error("WS - getUsersInStatus", e);
             throw new SessionInternalError("Error getting users in status");
         }
     }
@@ -483,7 +480,7 @@ public class WebServicesSessionBean implements SessionBean {
             Integer entityId = bl.getEntity().getEntity().getId();
             return getUsersByStatus(statusId, entityId, false);
         } catch (Exception e) {
-            log.error("WS - getUsersNotInStatus", e);
+            LOG.error("WS - getUsersNotInStatus", e);
             throw new SessionInternalError("Error getting users not in status");
         }
     }
@@ -502,7 +499,7 @@ public class WebServicesSessionBean implements SessionBean {
             Integer entityId = bl.getEntity().getEntity().getId();
 
             CachedRowSet users = bl.getByCustomField(entityId, typeId, value);
-            log.debug("got collection. Now converting");
+            LOG.debug("got collection. Now converting");
             Integer[] ret = new Integer[users.size()];
             int f = 0;
             while (users.next()) {
@@ -510,10 +507,40 @@ public class WebServicesSessionBean implements SessionBean {
                 f++;
             }
             users.close();
-            log.debug("done");
+            LOG.debug("done");
             return ret;
         } catch (Exception e) {
-            log.error("WS - getUsersByCustomField", e);
+            LOG.error("WS - getUsersByCustomField", e);
+            throw new SessionInternalError("Error getting users by custom field");
+        }
+    }
+
+    /**
+     * Retrieves an array of users in the required status 
+     * @ejb:interface-method view-type="both"
+     */
+    public Integer[] getUsersByCreditCard(String number) 
+            throws SessionInternalError {
+        // find which entity are we talking here
+        String root = context.getCallerPrincipal().getName();
+        try {
+            UserBL bl = new UserBL();
+            bl.setRoot(root);
+            Integer entityId = bl.getEntity().getEntity().getId();
+
+            CachedRowSet users = bl.getByCCNumber(entityId, number);
+            LOG.debug("getUsersByCreditCard - got collection. Now converting");
+            Integer[] ret = new Integer[users.size()];
+            int f = 0;
+            while (users.next()) {
+                ret[f] = users.getInt(1);
+                f++;
+            }
+            users.close();
+            LOG.debug("done");
+            return ret;
+        } catch (Exception e) {
+            LOG.error("WS - getUsersByCustomField", e);
             throw new SessionInternalError("Error getting users by custom field");
         }
     }
@@ -525,11 +552,11 @@ public class WebServicesSessionBean implements SessionBean {
             boolean in) 
             throws SessionInternalError {
         try {
-            log.debug("getting list of users. status:" + statusId +
+            LOG.debug("getting list of users. status:" + statusId +
                     " entity:" + entityId + " in:" + in);
             UserBL bl = new UserBL();
             CachedRowSet users = bl.getByStatus(entityId, statusId, in);
-            log.debug("got collection. Now converting");
+            LOG.debug("got collection. Now converting");
             Integer[] ret = new Integer[users.size()];
             int f = 0;
             while (users.next()) {
@@ -537,7 +564,7 @@ public class WebServicesSessionBean implements SessionBean {
                 f++;
             }
             users.close();
-            log.debug("done");
+            LOG.debug("done");
             return ret;
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -642,7 +669,7 @@ public class WebServicesSessionBean implements SessionBean {
             }
 
         } catch (Exception e) {
-            log.error("WS - authenticate: ", e);
+            LOG.error("WS - authenticate: ", e);
             throw new SessionInternalError("Error authenticating user");
         } 
 
@@ -692,7 +719,7 @@ public class WebServicesSessionBean implements SessionBean {
             throws SessionInternalError {
         try {
             if (creditCard != null && !CreditCardBL.validate(creditCard)) {
-                log.debug("WS - updateCreditCard: " 
+                LOG.debug("WS - updateCreditCard: " 
                         + "credit card validation error.");
                 throw new SessionInternalError("Missing cc data.");
             }
@@ -704,7 +731,7 @@ public class WebServicesSessionBean implements SessionBean {
             sess.updateCreditCard(executorId, userId, creditCard); 
             
         } catch (Exception e) {
-            log.error("WS - updateCreditCard: ", e);
+            LOG.error("WS - updateCreditCard: ", e);
             throw new SessionInternalError("Error updating user's credit card");
         }
     }
@@ -739,7 +766,7 @@ public class WebServicesSessionBean implements SessionBean {
                         newOrder.getTotal(), newOrder.getCurrencyId());
             }
         } catch(Exception e) {
-            log.debug("Exception:", e);
+            LOG.debug("Exception:", e);
             throw new SessionInternalError("error pre-validating order");
         }
         return retValue;
@@ -821,7 +848,7 @@ public class WebServicesSessionBean implements SessionBean {
             
             
         } catch(Exception e) {
-            log.error("WS - updateOrder", e);
+            LOG.error("WS - updateOrder", e);
             throw new SessionInternalError("Error updating order");
         }
     } 
@@ -840,11 +867,11 @@ public class WebServicesSessionBean implements SessionBean {
             // now get the order
             OrderBL bl = new OrderBL(orderId);
             if (bl.getEntity().getDeleted().equals(new Integer(1))) {
-                log.debug("Returning deleted order " + orderId);
+                LOG.debug("Returning deleted order " + orderId);
             }
             return bl.getWS(languageId);
         } catch (Exception e) {
-            log.error("WS - getOrder", e);
+            LOG.error("WS - getOrder", e);
             throw new SessionInternalError("Error getting order");
         }
     }
@@ -866,7 +893,7 @@ public class WebServicesSessionBean implements SessionBean {
             OrderBL bl = new OrderBL();
             return bl.getByUserAndPeriod(userId, periodId);
         } catch (Exception e) {
-            log.error("WS - getOrderByPeriod", e);
+            LOG.error("WS - getOrderByPeriod", e);
             throw new SessionInternalError("Error getting orders for a user " +
                     "by period");
         }
@@ -878,7 +905,7 @@ public class WebServicesSessionBean implements SessionBean {
     public OrderLineWS getOrderLine(Integer orderLineId) 
             throws SessionInternalError {
         try {
-            log.debug("WS - getOrderLine " + orderLineId);
+            LOG.debug("WS - getOrderLine " + orderLineId);
             // now get the order
             OrderBL bl = new OrderBL();
             OrderLineWS retValue = null;
@@ -891,7 +918,7 @@ public class WebServicesSessionBean implements SessionBean {
             
             return retValue; 
         } catch (Exception e) {
-            log.error("WS - getOrderLine", e);
+            LOG.error("WS - getOrderLine", e);
             throw new SessionInternalError("Error getting order line");
         }
     }
@@ -903,12 +930,12 @@ public class WebServicesSessionBean implements SessionBean {
     public void updateOrderLine(OrderLineWS line) 
             throws SessionInternalError {
         try {
-            log.debug("WS - updateOrderLine " + line);
+            LOG.debug("WS - updateOrderLine " + line);
             // now get the order
             OrderBL bl = new OrderBL();
             bl.updateOrderLine(line);
         } catch (Exception e) {
-            log.error("WS - updateOrderLine", e);
+            LOG.error("WS - updateOrderLine", e);
             throw new SessionInternalError("Error updating order line");
         }
     }
@@ -938,7 +965,7 @@ public class WebServicesSessionBean implements SessionBean {
             }
             return retValue;
         } catch (Exception e) {
-            log.error("WS - getLatestOrder", e);
+            LOG.error("WS - getLatestOrder", e);
             throw new SessionInternalError("Error getting latest order");
         }
     }
@@ -960,7 +987,7 @@ public class WebServicesSessionBean implements SessionBean {
             OrderBL order = new OrderBL();
             return order.getManyWS(userId, number, languageId);
         } catch (Exception e) {
-            log.error("WS - getLastOrders", e);
+            LOG.error("WS - getLastOrders", e);
             throw new SessionInternalError("Error getting last orders");
         }
     }
@@ -975,7 +1002,7 @@ public class WebServicesSessionBean implements SessionBean {
             OrderBL bl = new OrderBL(id);
             bl.delete();
         } catch (Exception e) {
-            log.error("WS - deleteOrder", e);
+            LOG.error("WS - deleteOrder", e);
             throw new SessionInternalError("Error deleting order");
         }
 
@@ -996,7 +1023,7 @@ public class WebServicesSessionBean implements SessionBean {
             PaymentSessionBean session = new PaymentSessionBean();
             return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
         } catch (Exception e) {
-            log.error("WS - applyPayment", e);
+            LOG.error("WS - applyPayment", e);
             throw new SessionInternalError("Error applying payment");
         }
     }  
@@ -1015,7 +1042,7 @@ public class WebServicesSessionBean implements SessionBean {
             PaymentBL bl = new PaymentBL(paymentId);
             return new PaymentWS(bl.getDTOEx(languageId));
         } catch (Exception e) {
-            log.error("WS - getPayment", e);
+            LOG.error("WS - getPayment", e);
             throw new SessionInternalError("Error getting payment");
         }
     }
@@ -1040,7 +1067,7 @@ public class WebServicesSessionBean implements SessionBean {
             }
             return retValue;
         } catch (Exception e) {
-            log.error("WS - getLatestPayment", e);
+            LOG.error("WS - getLatestPayment", e);
             throw new SessionInternalError("Error getting latest payment");
         }
     }
@@ -1054,7 +1081,7 @@ public class WebServicesSessionBean implements SessionBean {
         if (userId == null || number == null) {
             return null;
         }
-        log.debug("WS - getLastPayments " + userId + " " + number);
+        LOG.debug("WS - getLastPayments " + userId + " " + number);
         try {
             UserBL userbl = new UserBL();
             userbl.setRoot(context.getCallerPrincipal().getName());
@@ -1063,7 +1090,7 @@ public class WebServicesSessionBean implements SessionBean {
             PaymentBL payment = new PaymentBL();
             return payment.getManyWS(userId, number, languageId);
         } catch (Exception e) {
-            log.error("WS - getLastPayments", e);
+            LOG.error("WS - getLastPayments", e);
             throw new SessionInternalError("Error getting last payments");
         }
     }
@@ -1092,7 +1119,7 @@ public class WebServicesSessionBean implements SessionBean {
             return itemBL.create(dto, languageId);
             
         } catch(Exception e) {
-            log.error("WS - createItem", e);
+            LOG.error("WS - createItem", e);
             throw new SessionInternalError("Error creating item");
         }
 
@@ -1111,7 +1138,7 @@ public class WebServicesSessionBean implements SessionBean {
             ItemBL itemBL = new ItemBL();
             return itemBL.getAllItems(entityId);
         } catch (Exception e) {
-            log.error("WS - getAllItems", e);
+            LOG.error("WS - getAllItems", e);
             throw new SessionInternalError("Error getting all items");
         }
     }
@@ -1158,15 +1185,15 @@ public class WebServicesSessionBean implements SessionBean {
     		}
     		
     		if (result == null) {
-    			log.info("Data retrieved but resultset is null");
+    			LOG.info("Data retrieved but resultset is null");
     		} else {
-    			log.info("Data retrieved. Result size = " + result.length);
+    			LOG.info("Data retrieved. Result size = " + result.length);
     		}
 
     		// Log the last value returned if there was any. This happens always,
     		// unless the returned array is empty.
     		if (result!= null && result.length > 0) {
-    			log.info("Registering transition list event");
+    			LOG.info("Registering transition list event");
     			evLog.audit(callerId, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
     						EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
     						result[0].getId().toString(), null);
@@ -1248,7 +1275,7 @@ public class WebServicesSessionBean implements SessionBean {
                 throw new SessionInternalError("Invalid status code");
             }
         } catch (ValidatorException e) {
-            log.error("validating ws", e);
+            LOG.error("validating ws", e);
             throw new SessionInternalError("Invalid parameter");
         }
     }
@@ -1318,7 +1345,7 @@ public class WebServicesSessionBean implements SessionBean {
                 }
             }
         } catch (ValidatorException e) {
-            log.error("validating ws", e);
+            LOG.error("validating ws", e);
             throw new SessionInternalError("Invalid parameter");
         }
     }
@@ -1355,7 +1382,7 @@ public class WebServicesSessionBean implements SessionBean {
                 throw new SessionInternalError(valid.getText());
             }
         } catch (ValidatorException e) {
-            log.error("validating ws", e);
+            LOG.error("validating ws", e);
             throw new SessionInternalError("Invalid parameter");
         }
     }
@@ -1388,7 +1415,6 @@ public class WebServicesSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext arg0) throws EJBException,
             RemoteException {
-        log = Logger.getLogger(WebServicesSessionBean.class);
         context = arg0;
     }
 
@@ -1399,7 +1425,7 @@ public class WebServicesSessionBean implements SessionBean {
             invoiceId = invoice == null ? null : invoice.getId();
             return invoice;
         } catch (Exception e){
-            log.error("WS - create invoice:", e);
+            LOG.error("WS - create invoice:", e);
             throw new SessionInternalError("Error while generating a new invoice");
         }
 	}
@@ -1419,7 +1445,7 @@ public class WebServicesSessionBean implements SessionBean {
 		throws SessionInternalError {
 
 		if (invoice.getBalance() == null || invoice.getBalance() <= 0){
-			log.warn("Can not pay invoice: " + invoice.getId() + ", balance: " + invoice.getBalance());
+			LOG.warn("Can not pay invoice: " + invoice.getId() + ", balance: " + invoice.getBalance());
 			return null;
 		}
 
@@ -1440,7 +1466,7 @@ public class WebServicesSessionBean implements SessionBean {
 		    
 		    return paymentDto;
 	    } catch (Exception e){
-            log.error("WS - make payment:", e);
+            LOG.error("WS - make payment:", e);
             throw new SessionInternalError("Error while making payment for invoice: " + invoice.getId());
 	    }
 	}
@@ -1464,7 +1490,7 @@ public class WebServicesSessionBean implements SessionBean {
                 result = paymentDto.getCreditCard();
             }
         } catch (Exception e) {
-            log.error("WS - finding a credit card", e);
+            LOG.error("WS - finding a credit card", e);
             throw new SessionInternalError("Error finding a credit card for user: " + userId);
         }
 
@@ -1493,12 +1519,12 @@ public class WebServicesSessionBean implements SessionBean {
             // call the creation
             OrderBL orderBL = new OrderBL();
             orderBL.setDTO(dto);
-            log.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
+            LOG.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
             orderBL.recalculate(entityId);
             return orderBL.create(entityId, executorId, dto);
             
         } catch(Exception e) {
-            log.debug("Exception:", e);
+            LOG.debug("Exception:", e);
             throw new SessionInternalError("error creating purchase order");
         }
     }
@@ -1508,10 +1534,10 @@ public class WebServicesSessionBean implements SessionBean {
     	try {
 			invoice = new InvoiceBL(invoiceId).getEntity();
 		} catch (NamingException e) {
-			log.error("WS: findInvoice error: ", e);
+			LOG.error("WS: findInvoice error: ", e);
 			throw new SessionInternalError("Configuration problems");
 		} catch (FinderException e) {
-			log.error("WS: findInvoice error: ", e);
+			LOG.error("WS: findInvoice error: ", e);
 			throw new SessionInternalError("Unknown invoice : " + invoiceId);
 		}
 		return invoice;

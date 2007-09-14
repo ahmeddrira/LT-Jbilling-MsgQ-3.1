@@ -102,6 +102,14 @@ public interface CustomerSQL {
         "  and c.id = urm.user_id " +        "  and urm.role_id = " + Constants.TYPE_CUSTOMER +
         "  and cu.user_id = c.id " +
         "  and ( cu.parent_id is null or cu.invoice_child = 1)";
+    
+    static final String listCustomersCCFiler = 
+        "and c.id in ( " +
+        "   select ma.user_id " +
+        "     from user_credit_card_map ma, credit_card cc " +
+        "    where cc.id = ma.credit_card_id " +
+        "      and cc.cc_number_plain like ? " +
+        ")";
 
     // sub-accounts: all the customers belonigng to another customer
     static final String listSubaccounts = 

@@ -463,6 +463,14 @@ public class AxisAPI implements JbillingAPI {
 		invokeAxisCall(WebServicesConstants.UPDATE_USER_CONTACT,new Object[]{userId,typeId,
 			contact});
 	}
+    
+    public Integer[] getUsersByCreditCard(String number)
+            throws JbillingAPIException {
+        int[] ret = (int[]) invokeAxisCall(
+                WebServicesConstants.GET_USERS_BY_CCNUMBER,new Object[]{number});
+        Integer[] userIds = convertToIntegerArray(ret);
+        return userIds;
+    }
 	
 	private Integer[] convertToIntegerArray(int[] array){
 		Integer[] ret = new Integer[array.length];

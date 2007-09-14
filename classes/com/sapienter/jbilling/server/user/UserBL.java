@@ -1269,4 +1269,17 @@ public class UserBL extends ResultList
         }   
     }
 
+    public CachedRowSet getByCCNumber(Integer entityId, String number) {
+        try {
+            prepareStatement(UserSQL.findByCreditCard);
+            cachedResults.setString(1, number);
+            cachedResults.setInt(2, entityId.intValue());
+            execute();
+            conn.close();
+            return cachedResults;
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
+        }   
+    }
+
 }

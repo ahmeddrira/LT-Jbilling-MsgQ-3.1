@@ -103,4 +103,15 @@ public interface UserSQL {
         "   AND cf.content = ?" +
         "   AND a.deleted = 0" +
         " ORDER BY 1";
+    
+    static final String findByCreditCard = 
+        "SELECT a.id " +
+        "  FROM base_user a, user_credit_card_map m, credit_card c " + 
+        " WHERE c.cc_number_plain = ? " +
+        "   AND a.id = m.user_id " +
+        "   AND c.id = m.credit_card_id " +
+        "   AND a.entity_id = ?" +
+        "   AND a.deleted = 0" +
+        "   AND c.deleted = 0" +
+        " ORDER BY 1";
 }

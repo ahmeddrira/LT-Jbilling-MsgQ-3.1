@@ -513,9 +513,10 @@ public class BillingProcessTest extends TestCase {
             
             assertNotNull("The payment processing did not run", run.getPaymentFinished());
             // we know that the only one invoice will be payed in full
-            assertEquals("One invoice in the grand total", new Integer(1), process.getGrandTotal().getInvoiceGenerated());
-            assertEquals("Total invoiced is paid", ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced(),
-                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid());
+            assertEquals("Invoices in the grand total", new Integer(1001), process.getGrandTotal().getInvoiceGenerated());
+            assertEquals("Total invoiced is consitent", ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced(),
+                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid() + 
+                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalNotPaid());
             InvoiceDTO invoice = remoteInvoice.getInvoice(NEW_INVOICE);
             assertEquals("Invoice is paid", new Integer(0), invoice.getToProcess());
             

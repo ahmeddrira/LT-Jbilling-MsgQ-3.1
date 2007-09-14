@@ -282,12 +282,10 @@ public class WSTest  extends TestCase {
             } catch (Exception e) {
             }
             // try to get the deleted order
-            try {
-                System.out.println("Getting deleted order ");
-                retOrder = api.getOrder(ret);
-                fail("Order " + ret + " should have been deleted");
-            } catch (Exception e) {
-            }
+            System.out.println("Getting deleted order ");
+            retOrder = api.getOrder(ret);
+            assertEquals("Order " + ret + " should have been deleted", 
+                    1, retOrder.getDeleted().intValue());
            
             /*
              * Get by user and period

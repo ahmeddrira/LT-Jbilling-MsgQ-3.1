@@ -840,8 +840,7 @@ public class WebServicesSessionBean implements SessionBean {
             // now get the order
             OrderBL bl = new OrderBL(orderId);
             if (bl.getEntity().getDeleted().equals(new Integer(1))) {
-                throw new FinderException("order " + orderId + " is marked" +
-                        " as deleted");
+                log.debug("Returning deleted order " + orderId);
             }
             return bl.getWS(languageId);
         } catch (Exception e) {

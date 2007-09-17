@@ -286,6 +286,15 @@ public class EJBAPI implements JbillingAPI {
         }
     }
 
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
+            throws JbillingAPIException {
+        try {
+            return session.getUserTransitionsAfterId(id);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public UserWS getUserWS(Integer userId) throws JbillingAPIException {
         try {
             return session.getUserWS(userId);

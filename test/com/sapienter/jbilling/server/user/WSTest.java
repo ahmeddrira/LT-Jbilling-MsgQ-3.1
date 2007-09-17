@@ -319,6 +319,9 @@ public class WSTest extends TestCase {
             assertEquals(ret[1].getUserId().intValue(), 2);
             assertEquals(ret[1].getFromStatusId().intValue(), 2);
             assertEquals(ret[1].getToStatusId().intValue(), 1);
+            
+            // save an ID for later
+            Integer myId = ret[4].getId();
 
             System.out.println("Getting first partial list of user transitions");
             ret =  api.getUserTransitions(new Date(2000 - 1900,0,0), 
@@ -340,6 +343,12 @@ public class WSTest extends TestCase {
             assertEquals(ret[0].getUserId().intValue(), 2);
             assertEquals(ret[0].getFromStatusId().intValue(), 2);
             assertEquals(ret[0].getToStatusId().intValue(), 1);
+            
+            System.out.println("Getting list after id");
+            ret = api.getUserTransitionsAfterId(myId);
+            if (ret == null)
+                fail("Transition list should not be empty!");
+            assertEquals("Only one transition after id " + myId, 1,ret.length);
             
         } catch (Exception e) {
             e.printStackTrace();

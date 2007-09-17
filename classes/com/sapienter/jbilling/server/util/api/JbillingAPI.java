@@ -130,6 +130,9 @@ public interface JbillingAPI {
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
             throws JbillingAPIException;
 
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
+            throws JbillingAPIException;
+
     public Integer authenticate(String username, String password)
             throws JbillingAPIException;
 }

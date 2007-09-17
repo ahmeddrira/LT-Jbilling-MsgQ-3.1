@@ -403,6 +403,14 @@ public class AxisAPI implements JbillingAPI {
 				new Object[]{from,to});
 		return response;
 	}
+    
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
+            throws JbillingAPIException {
+        UserTransitionResponseWS[] response = (UserTransitionResponseWS[])
+            invokeAxisCall(WebServicesConstants.GET_USER_TRANSITIONS_AFTER_ID,
+                new Object[]{id});
+         return response;
+    }
 
 	public UserWS getUserWS(Integer userId) throws JbillingAPIException {
 		UserWS user = (UserWS) invokeAxisCall(WebServicesConstants.GET_USER,

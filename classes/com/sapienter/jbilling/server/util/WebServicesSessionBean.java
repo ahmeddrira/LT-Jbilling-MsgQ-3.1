@@ -1203,7 +1203,49 @@ public class WebServicesSessionBean implements SessionBean {
     	}
     	return result;
     }
-    
+
+    /**
+     * @ejb.interface-method view-type="both"
+     * @return UserTransitionResponseWS[] an array of objects containing the result
+     * of the extraction, or <code>null</code> if there is no data thas satisfies
+     * the extraction parameters.
+     */
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) 
+            throws SessionInternalError {
+        
+        UserTransitionResponseWS[] result = null;
+        Integer last = null;
+        // Obtain the current entity and language Ids
+        
+        try {
+            UserBL user = new UserBL();
+            user.setRoot(context.getCallerPrincipal().getName());
+            Integer entityId  = user.getEntity().getEntity().getId();
+            Integer callerId  = user.getEntity().getUserId();
+            EventLogger evLog = EventLogger.getInstance();
+            
+            result = user.getUserTransitionsById(id, null);
+            
+            if (result == null) {
+                LOG.info("Data retrieved but resultset is null");
+            } else {
+                LOG.info("Data retrieved. Result size = " + result.length);
+            }
+
+            // Log the last value returned if there was any. This happens always,
+            // unless the returned array is empty.
+            if (result!= null && result.length > 0) {
+                LOG.info("Registering transition list event");
+                evLog.audit(callerId, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
+                            EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
+                            result[0].getId().toString(), null);
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError("Error accessing database [" + e.getLocalizedMessage() + "]", this.getClass(), e);
+        }
+        return result;
+    }
+
     private Integer zero2null(Integer var) {
         if (var != null && var.intValue() == 0) {
             return null;

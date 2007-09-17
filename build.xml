@@ -430,7 +430,7 @@
   	  <echo>Ready. Start-up JBoss and run 'ant test'</echo>
   </target>
 	
-  <target name="test-ws">
+  <target name="test-ws" depends="jar_api">
       <javac debug="on" destdir="${build.test.dir}"
              srcdir="${source.test.dir}"
       		 includes="**/WSTest*.java">

@@ -48,6 +48,7 @@ public class WebServicesConstants {
 	public final static String GET_ORDER_BY_PERIOD = "getOrderByPeriod";
 	public final static String GET_PAYMENT = "getPayment";
 	public final static String GET_USER_TRANSITIONS = "getUserTransitions";
+    public final static String GET_USER_TRANSITIONS_AFTER_ID = "getUserTransitionsAfterId";
 	public final static String GET_USER = "getUserWS";
 	public final static String GET_USER_ID = "getUserId";
 	public final static String GET_USERS_BY_CUSTOM_FIELD = "getUsersByCustomField";

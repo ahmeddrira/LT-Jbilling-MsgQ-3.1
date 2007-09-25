@@ -1245,8 +1245,8 @@ public class UserBL extends ResultList
             } else {
                 prepareStatement(UserSQL.findNotInStatus);
             }
-            cachedResults.setInt(1, entityId.intValue());
-            cachedResults.setInt(2, statusId.intValue());
+            cachedResults.setInt(1, statusId.intValue());
+            cachedResults.setInt(2, entityId.intValue());
             execute();
             conn.close();
             return cachedResults;

@@ -228,9 +228,11 @@ public class WSTest extends TestCase {
             
             System.out.println("Updating credit card");
             cc.setName("Updated ccName");
+            cc.setNumber(null);
             api.updateCreditCard(newUserId,cc);
             retUser = api.getUserWS(newUserId);
-            assertEquals("updated cc name", ccName, retCc.getName());
+            assertEquals("updated cc name", "Updated ccName", retUser.getCreditCard().getName());
+            assertNotNull("cc number still there", retUser.getCreditCard().getNumber());
 
             // try to update cc of user from different company
             System.out.println("Attempting to update cc of a user from " 

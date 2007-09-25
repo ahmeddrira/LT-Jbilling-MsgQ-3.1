@@ -718,7 +718,8 @@ public class WebServicesSessionBean implements SessionBean {
     public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
             throws SessionInternalError {
         try {
-            if (creditCard != null && !CreditCardBL.validate(creditCard)) {
+            if (creditCard != null && (creditCard.getName() == null || 
+                    creditCard.getExpiry() == null)) {
                 LOG.debug("WS - updateCreditCard: " 
                         + "credit card validation error.");
                 throw new SessionInternalError("Missing cc data.");

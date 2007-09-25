@@ -591,7 +591,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             UserBL userBL = new UserBL();
             userBL.set(user);
             // if it starts with a *, it is passing a masked cc, which means no update
-            if (dto != null && dto.getNumber().charAt(0) != '*') { // it is providing a new cc
+            if (dto != null && (dto.getNumber() == null || dto.getNumber().charAt(0) != '*')) { // it is providing a new cc
                 if (!userBL.getEntity().getCreditCard().isEmpty()) {
                     CreditCardBL ccBL = new CreditCardBL((CreditCardEntityLocal)
                             userBL.getEntity().getCreditCard().iterator().next());

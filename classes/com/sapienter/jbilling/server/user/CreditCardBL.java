@@ -114,19 +114,19 @@ public class CreditCardBL extends ResultList
     public void update(Integer executorId, CreditCardDTO dto) 
             throws SessionInternalError {
         if (executorId != null) {
-            // always mask. Getting the preference is too much trouble
-            String maskedNumb = creditCard.getNumber() == null ? null :
-                creditCard.getNumber().substring(creditCard.getNumber().length()-4);
-
             eLogger.audit(executorId, Constants.TABLE_CREDIT_CARD, 
                     creditCard.getId(),
                     EventLogger.MODULE_CREDIT_CARD_MAINTENANCE, 
                     EventLogger.ROW_UPDATED, null,  
-                    maskedNumb, null);
+                    null, creditCard.getExpiry());
         }
         creditCard.setExpiry(dto.getExpiry());
         creditCard.setName(dto.getName());
-        creditCard.setNumber(dto.getNumber());
+        // the number can be null, because calls from the API would do this
+        // to leave the number unchanged (was returned masked)
+        if (dto.getNumber() != null) {
+            creditCard.setNumber(dto.getNumber());
+        }
         creditCard.setDeleted(new Integer(0));
     }
     

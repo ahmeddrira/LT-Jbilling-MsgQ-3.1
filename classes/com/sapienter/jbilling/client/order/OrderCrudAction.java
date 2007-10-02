@@ -123,13 +123,17 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 			addError("order.error.notifyWithoutDate", "order.prompt.notify");
 			return null;
 		}
+
+        // this is the original order, needed now for validations
+        OrderDTOEx orderDTO = (OrderDTOEx) session.getAttribute(
+                Constants.SESSION_ORDER_DTO);
         
         // validate the dates if there is a date of expiration
         if (summary.getActiveUntil() != null) {
 
         	Date start = summary.getActiveSince() != null ?
                     summary.getActiveSince() : 
-                    Calendar.getInstance().getTime();
+                    orderDTO.getCreateDate();
             start = Util.truncateDate(start);
             // it has to be grater than the starting date
             if (!summary.getActiveUntil().after(start)) {
@@ -173,10 +177,6 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
             }
         }
 
-        // validate next billable day
-        OrderDTOEx orderDTO = (OrderDTOEx) session.getAttribute(
-                Constants.SESSION_ORDER_DTO);
-        
         // if a date was submitted, check that it is >= old date or
         // greater than today if old date is null.
         if (summary.getNextBillableDay() != null) {

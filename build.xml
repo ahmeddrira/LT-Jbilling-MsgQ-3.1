@@ -1,7 +1,7 @@
 <project name="bop" default="deploy-local" basedir=".">
 
 	<property file="build.properties"/>
-	<property file="{${source.descriptor.dir}/resources/jbilling.properties"/>
+	<property file="${jboss.conf.dir}/jbilling.properties"/>
 
     <path id="compile.classpath">
     	<fileset dir="${jboss.client.dir}">
@@ -14,7 +14,7 @@
     	     <include name="*.jar"/>
         </fileset>
     </path>
-
+	
     <path id="test.classpath">
         <pathelement location="${junit.dir}/junit.jar"/>
         <pathelement location="${build.deploy.dir}/jbilling_api.jar"/>
@@ -416,13 +416,11 @@
     <target name="dclean" depends="purge,deploy-local, jar_api, prepare-test">
     </target>
     
-
+	
   <target name="prepare-test">
-	  <!-- The test expect a particular set of data
-  	  <echo>Copying the jbilling.properties file</echo>
-	  <copy tofile="${jboss.server.dir}/conf/jbilling.properties" overwrite="true" 
-            file="${source.descriptor.dir}/resources/jbilling.properties.sample"/>
-       -->
+  	  <echo>Copying the binary rules</echo>
+	  <copy todir="${base_dir}/rules"
+            file="${source.rules.dir}/ItemsRules.pkg"/>
   	  <echo>Copying the development base</echo>
 	  <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
 	  	 <fileset dir="${basedir}/sql" includes="localDB.*" />
@@ -447,6 +445,9 @@
 
           <classpath refid="test.classpath"/>
           <formatter type="brief" usefile="false"/>
+      	<!--
+    	  <test name="com.sapienter.jbilling.server.user.WSTestQuick"/>
+	  	 -->
       	  <test name="com.sapienter.jbilling.server.order.WSTest"/>
     	  <test name="com.sapienter.jbilling.server.user.WSTest"/>
 	  	  <test name="com.sapienter.jbilling.server.payment.WSTest"/>
@@ -624,6 +625,7 @@
 	            </fileset>
 		</ftp>
 	</target>
+	
 	
 	<!-- JSPC target to precompile JSP's 
 	     This is only used to generate the binary image for a release,

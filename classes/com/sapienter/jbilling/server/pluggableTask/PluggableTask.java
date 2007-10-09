@@ -24,9 +24,16 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Properties;
 
+import org.apache.log4j.Logger;
+import org.drools.RuleBase;
+import org.drools.agent.RuleAgent;
+
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
@@ -35,6 +42,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterD
 public abstract class PluggableTask {
     protected HashMap<String, Object> parameters = null;
     Integer entityId = null;
+    private static final Logger LOG = Logger.getLogger(PluggableTask.class);
 
     public void initializeParamters(PluggableTaskDTO task) 
             throws PluggableTaskException {
@@ -65,4 +73,29 @@ public abstract class PluggableTask {
             parameters.put(parameter.getName(), value);
         }
     }
+    
+    /**
+     * Any pluggable task can get a rule base that takes the task's 
+     * parameters as the configuration for the rule agent.
+     * @return
+     * @throws IOException
+     * @throws Exception
+     */
+    protected RuleBase readRule() throws IOException, Exception {
+        Properties rulesProperties = new Properties();
+        
+        for (String key: parameters.keySet()) {
+            rulesProperties.setProperty(key, (String) parameters.get(key));
+            LOG.debug("adding parameter " + key + " value " + 
+                    rulesProperties.getProperty(key));
+        }
+        if (parameters.size() == 0) {
+            String defaultDir = Util.getSysProp("base_dir") + "rules";
+            rulesProperties.setProperty("dir", defaultDir);
+            LOG.debug("No task parameters, using directory default:" + defaultDir);
+        }
+        RuleAgent agent = RuleAgent.newRuleAgent(rulesProperties);     
+        return agent.getRuleBase(); 
+    }
+    
 }

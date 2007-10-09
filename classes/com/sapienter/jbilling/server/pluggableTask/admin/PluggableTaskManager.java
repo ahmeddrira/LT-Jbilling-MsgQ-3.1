@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 
-public class PluggableTaskManager {
+public class PluggableTaskManager<T> {
 
     private static final Logger LOG = Logger.getLogger(PluggableTaskManager.class);
     private Vector<PluggableTaskDTO> classes = null;
@@ -56,7 +56,7 @@ public class PluggableTaskManager {
         } 
     }
 
-    public Object getNextClass() throws PluggableTaskException {
+    public T getNextClass() throws PluggableTaskException {
         if (it != null && it.hasNext()) {
             PluggableTaskDTO aRule = (PluggableTaskDTO) it.next();
 
@@ -80,7 +80,7 @@ public class PluggableTaskManager {
                 Class taskInterface = Class.forName(interfaceName);
 
                 if (taskInterface.isAssignableFrom(task)) {
-                    Object thisTask = task.newInstance();
+                    T thisTask = (T) task.newInstance();
                     ((PluggableTask) thisTask).initializeParamters(aRule);
                     return thisTask;
 

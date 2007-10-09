@@ -59,11 +59,17 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         for (OrderLineDTOEx line : order.getRawOrderLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() == null) { 
-                BigDecimal amount = new BigDecimal(
+                BigDecimal amount;
+                
+                if (!line.getTotalReadOnly()) {
+                    amount = new BigDecimal(
                         line.getQuantity().toString());
-                amount = amount.multiply(new BigDecimal(
+                    amount = amount.multiply(new BigDecimal(
                         line.getPrice().toString()));
-                line.setAmount(new Float(amount.floatValue()));
+                    line.setAmount(new Float(amount.floatValue()));
+                } else {
+                    amount = new BigDecimal(line.getAmount().toString());
+                }
                 if (line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
                     taxNonPerTotal = taxNonPerTotal.add(amount);
                 } else {
@@ -79,12 +85,17 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
             if (line.getItem() != null && 
                     line.getItem().getPercentage() != null &&
                     !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
-                BigDecimal amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), 
-                        Constants.BIGDECIMAL_ROUND);
-                amount = amount.multiply(new BigDecimal(
-                        line.getPrice().toString()));
-                amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
-                line.setAmount(new Float(amount.floatValue()));
+                BigDecimal amount;
+                if (!line.getTotalReadOnly()) {
+                    amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), 
+                            Constants.BIGDECIMAL_ROUND);
+                    amount = amount.multiply(new BigDecimal(
+                            line.getPrice().toString()));
+                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
+                    line.setAmount(new Float(amount.floatValue()));
+                } else {
+                    amount = new BigDecimal(line.getAmount().toString());
+                }
                 nonTaxPerTotal = nonTaxPerTotal.add(amount);
                 LOG.debug("adding no tax percentage line. Total =" + nonTaxPerTotal);
             }
@@ -96,12 +107,17 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
             if (line.getItem() != null && 
                     line.getItem().getPercentage() != null &&
                     line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
-                BigDecimal amount = allNonTaxes.divide(new BigDecimal("100"), 
-                        BigDecimal.ROUND_HALF_EVEN);
-                amount = amount.multiply(new BigDecimal(
-                        line.getPrice().toString()));
-                amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
-                line.setAmount(new Float(amount.floatValue()));
+                BigDecimal amount;
+                if (!line.getTotalReadOnly()) {
+                    amount = allNonTaxes.divide(new BigDecimal("100"), 
+                            BigDecimal.ROUND_HALF_EVEN);
+                    amount = amount.multiply(new BigDecimal(
+                            line.getPrice().toString()));
+                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
+                    line.setAmount(new Float(amount.floatValue()));
+                } else {
+                    amount = new BigDecimal(line.getAmount().toString());
+                }
                 taxPerTotal = taxPerTotal.add(amount);
                 LOG.debug("adding tax percentage line. Total =" + taxPerTotal);
             }

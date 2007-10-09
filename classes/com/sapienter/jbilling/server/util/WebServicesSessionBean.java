@@ -65,6 +65,8 @@ import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -797,9 +799,8 @@ public class WebServicesSessionBean implements SessionBean {
 
     private void processItemLine(OrderWS order, Integer languageId,
             Integer entityId) 
-        throws SessionInternalError {
-        for (int f = 0 ; f < order.getOrderLines().length; f++) {
-            OrderLineWS line = order.getOrderLines()[f];
+        throws SessionInternalError, PluggableTaskException, TaskException {
+        for (OrderLineWS line : order.getOrderLines()) {
             // get the related item
             ItemSessionBean itemSession = new ItemSessionBean();
             
@@ -820,7 +821,7 @@ public class WebServicesSessionBean implements SessionBean {
             }
         }
     }
-
+    
     /**
      * @ejb:interface-method view-type="both"
      */
@@ -832,11 +833,11 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
-            Integer entityId = bl.getEntity().getEntity().getId(); 
+            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer languageId = bl.getEntity().getLanguageIdField();
             
             // see if the related items should provide info
-            processItemLine(order, bl.getEntity().getLanguageIdField(),
-                    entityId);
+            processItemLine(order, languageId, entityId);
 
             // make a dto out of the ws
             NewOrderDTO dto = new NewOrderDTO(order);
@@ -1548,13 +1549,13 @@ public class WebServicesSessionBean implements SessionBean {
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
             Integer entityId = bl.getEntity().getEntity().getId();
+            Integer languageId = bl.getEntity().getLanguageIdField();
             
             // we'll need the langauge later
             bl.set(order.getUserId());
             
             // see if the related items should provide info
-            processItemLine(order, bl.getEntity().getLanguageIdField(),
-                    entityId);
+            processItemLine(order, languageId, entityId);
             
             // make a dto out of the ws
             NewOrderDTO dto = new NewOrderDTO(order);
@@ -1563,7 +1564,9 @@ public class WebServicesSessionBean implements SessionBean {
             OrderBL orderBL = new OrderBL();
             orderBL.setDTO(dto);
             LOG.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
+            // apply order total tasks
             orderBL.recalculate(entityId);
+            
             return orderBL.create(entityId, executorId, dto);
             
         } catch(Exception e) {

@@ -30,10 +30,9 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -97,7 +96,7 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
         ItemBL item;
         try {
             item = new ItemBL(itemId);
-        } catch (FinderException e) {
+        } catch (SessionInternalError e) {
             throw new TaskException ("Can not find item!");
         } catch (Exception e) {
             throw new TaskException(e);

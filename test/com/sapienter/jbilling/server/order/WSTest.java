@@ -62,7 +62,7 @@ public class WSTest  extends TestCase {
             newOrder.setCurrencyId(new Integer(1));
             
             // now add some lines
-            OrderLineWS lines[] = new OrderLineWS[4];
+            OrderLineWS lines[] = new OrderLineWS[3];
             OrderLineWS line;
             
             line = new OrderLineWS();
@@ -90,14 +90,6 @@ public class WSTest  extends TestCase {
             line.setItemId(new Integer(3));
             line.setUseItem(new Boolean(true));
             lines[2] = line;
-
-            // this is a discount (10%)
-            line = new OrderLineWS();
-            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            line.setQuantity(new Integer(1));
-            line.setItemId(new Integer(14));
-            line.setUseItem(new Boolean(true));
-            lines[3] = line;
 
             newOrder.setOrderLines(lines);
             
@@ -127,7 +119,8 @@ public class WSTest  extends TestCase {
             //retOrder
             
             /*
-             * get order line
+             * get order line. The new order should include a new discount
+             * order line that comes from the rules.
              */
             // try getting one that doesn't belong to us
             try {
@@ -378,7 +371,7 @@ public class WSTest  extends TestCase {
     
     public void testCreatedOrderIsCorrect() throws Exception {
     	final int USER_ID = GANDALF_USER_ID;
-    	final int LINES = 3;
+    	final int LINES = 2;
     	
     	OrderWS requestOrder = createMockOrder(USER_ID, LINES, 567);
     	assertEquals(LINES, requestOrder.getOrderLines().length);

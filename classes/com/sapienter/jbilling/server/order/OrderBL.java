@@ -25,7 +25,6 @@ Contributor(s): ______________________________________.
  */
 package com.sapienter.jbilling.server.order;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -60,8 +59,8 @@ import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocalHome;
 import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PromotionBL;
+import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -223,46 +222,23 @@ public class OrderBL extends ResultList
         newOrder = mOrder;
     }
 
-    public void addItem(ItemDTOEx item, Integer quantity)
-        throws SessionInternalError {
+    public void addItem(Integer itemID, Integer quantity, Integer language, 
+            Integer userId, Integer entityId, Integer currencyId) {
 
-        // check if the item is already in the order
-        OrderLineDTOEx line =
-            (OrderLineDTOEx) newOrder.getOrderLine(item.getId());
-
-        BigDecimal additionAmount;
-        if (item.getPercentage() == null) {
-            additionAmount = new BigDecimal(item.getPrice().toString());
-            additionAmount = additionAmount.multiply(
-                    new BigDecimal(quantity.toString()));
-        } else {
-            additionAmount = new BigDecimal(item.getPercentage().toString());
-        }
-
-        if (line == null) { // not yet there
-            Boolean editable = lookUpEditable(item.getOrderLineTypeId());
-
-            line = new OrderLineDTOEx(null, item.getId(), item.getDescription(), 
-                    new Float(additionAmount.floatValue()), quantity,
-                    (item.getPercentage() == null) ? item.getPrice() :
-                        item.getPercentage(), 
-                    new Integer(0), null, new Integer(0), 
-                    item.getOrderLineTypeId(), editable);          
-            line.setItem(item);
-            newOrder.setOrderLine(item.getId(), line);
-
-        } else {
-            // the item is there, I just have to update the quantity
-            line.setQuantity(
-                new Integer(
-                    line.getQuantity().intValue() + quantity.intValue()));
-            // and also the total amount for this order line
-            BigDecimal dec = new BigDecimal(line.getAmount().toString());
-            dec = dec.add(additionAmount);
-            line.setAmount(
-                new Float(dec.floatValue()));
-
-        }
+            try {
+                PluggableTaskManager<IItemPurchaseManager> taskManager =
+                    new PluggableTaskManager<IItemPurchaseManager>(entityId,
+                    Constants.PLUGGABLE_TASK_ITEM_MANAGER);
+                IItemPurchaseManager myTask = taskManager.getNextClass();
+                
+                while(myTask != null) {
+                    myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, newOrder);
+                    myTask = taskManager.getNextClass();
+                }
+            } catch (Exception e) {
+                // do not change this error text, it is used to identify the error
+                throw new SessionInternalError("Item Manager task error", OrderBL.class, e);
+            }
 
     }
 
@@ -307,7 +283,7 @@ public class OrderBL extends ResultList
 			throw new SessionInternalError("Problems executing order processing task.");
         }
     }
-
+    
     public Integer create(Integer entityId, Integer userAgentId,
             NewOrderDTO orderDto) throws SessionInternalError {
         Integer newOrderId = null;

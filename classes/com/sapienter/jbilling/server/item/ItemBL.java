@@ -60,10 +60,13 @@ public class ItemBL {
     private String priceCurrencySymbol = null;
     
     public ItemBL(Integer itemId) 
-            throws NamingException, FinderException {
-        init();
-
-        set(itemId);
+            throws SessionInternalError {
+        try {
+            init();
+            set(itemId);
+        } catch (Exception e) {
+            throw new SessionInternalError("Setting item", ItemBL.class, e);
+        } 
     }
     
     public ItemBL() throws NamingException {

@@ -288,7 +288,7 @@ public class InvoiceBL extends ResultList
                     if (item.getEntity().getPercentage() != null) {
                         lineToAdd.setIsPercentage(new Integer(1));
                     }
-                } catch (FinderException e) {
+                } catch (SessionInternalError e) {
                     log.error("Could not find item to create invoice line " + 
                             lineToAdd.getItemId());
                 }

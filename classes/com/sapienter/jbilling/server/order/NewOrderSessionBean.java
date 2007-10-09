@@ -80,21 +80,15 @@ public class NewOrderSessionBean implements SessionBean {
     */
     public NewOrderDTO addItem(Integer itemID, Integer quantity, 
             Integer userId, Integer entityId) 
-            throws SessionInternalError, FinderException {
+            throws SessionInternalError {
 
-        try {
             Logger log = Logger.getLogger(NewOrderSessionBean.class);
             log.debug("Adding item " + itemID + " q:" + quantity);
 
-            ItemBL itemBL = new ItemBL(itemID);
-            ItemDTOEx newItem = itemBL.getDTO(language, userId, entityId, 
+            newOrder.addItem(itemID, quantity, language, userId, entityId, 
                     newOrderDto.getCurrencyId());
-            newOrder.addItem(newItem, quantity);
 
             return newOrder.getNewOrderDTO();
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        } 
 
     }
 

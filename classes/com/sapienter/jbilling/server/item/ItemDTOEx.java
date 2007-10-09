@@ -21,7 +21,10 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.item;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.entity.ItemDTO;
 
@@ -30,6 +33,8 @@ import com.sapienter.jbilling.server.entity.ItemDTO;
  * @jboss-net.xml-schema urn="sapienter:ItemDTOEx"
  */
 public final class ItemDTOEx extends ItemDTO implements Serializable {
+    private static final Logger LOG = Logger.getLogger(ItemDTOEx.class);
+    
     private String description = null;
     private Integer[] types = null;
     private String promoCode = null;
@@ -79,6 +84,17 @@ public final class ItemDTOEx extends ItemDTO implements Serializable {
      */
     public Integer[] getTypes() {
         return types;
+    }
+
+    /*
+     * Rules only work on collections of strings (oparator contains)
+     */
+    public Collection<String> getStrTypes() {
+        Vector<String> retValue = new Vector<String>();
+        for (Integer i: types) {
+            retValue.add(i.toString());
+        }
+        return retValue;
     }
 
     /**

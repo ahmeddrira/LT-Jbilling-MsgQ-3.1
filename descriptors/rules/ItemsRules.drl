@@ -1,0 +1,18 @@
+#created on: 24-Sep-2007
+package ItemsRules
+
+#imports
+import com.sapienter.jbilling.server.item.ItemDTOEx
+import com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager
+
+#globals
+global com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager order;
+
+rule "Lemon and Coffee discount"
+	when
+	    exists ItemDTOEx(id == "2") # Lemonade
+	    exists ItemDTOEx(id == "3") # Coffee
+	then
+	    insert(order.addItem(14).getItem()); # 10% discount
+end
+

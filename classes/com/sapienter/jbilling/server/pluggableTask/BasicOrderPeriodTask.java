@@ -46,7 +46,6 @@ public class BasicOrderPeriodTask
     
     public BasicOrderPeriodTask() {
         viewLimit = null;
-        Logger log = Logger.getLogger(BasicOrderPeriodTask.class);
     }
 
     /**

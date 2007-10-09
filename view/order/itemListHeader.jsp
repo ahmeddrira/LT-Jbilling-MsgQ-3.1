@@ -28,4 +28,4 @@ Contributor(s): ______________________________________.
 
 <p class="title"><bean:message key="order.item.select"/></p>
 <p class="instr"><bean:message key="order.item.instr"/></p>
-
+<html:errors/>

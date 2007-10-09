@@ -2257,6 +2257,7 @@ Contributor(s): ______________________________________
     <ListField Id="21" ListId="4" TitleKey="user.prompt.username" ColumnName="u.user_name" Ordenable="0" Searchable="1" DataType="string"/>
     <ListField Id="22" ListId="4" TitleKey="contact.list.organization" ColumnName="co.organization_name" Ordenable="0" Searchable="1" DataType="string"/>
     <ListField Id="23" ListId="4" TitleKey="payment.date" ColumnName="p.create_datetime" Ordenable="0" Searchable="1" DataType="date"/>
+    <ListField Id="24" ListId="1" TitleKey="creditcard.list.filter" ColumnName="CUSTOM_CC" Ordenable="0" Searchable="1" DataType="string"/>
     <ListField Id="10" ListId="2" TitleKey="invoice.create_date" ColumnName="i.create_datetime" Ordenable="0" Searchable="1" DataType="date"/>
     <ListField Id="11" ListId="2" TitleKey="contact.list.organization" ColumnName="co.organization_name" Ordenable="0" Searchable="1" DataType="string"/>
     <MenuOption Id="1" Link="/order/list.jsp" LevelField="1"/>
@@ -2271,7 +2272,7 @@ Contributor(s): ______________________________________
     <MenuOption Id="10" Link="/user/editContact.jsp" LevelField="3" ParentId="8"/>
     <MenuOption Id="11" Link="/userAccount.do" LevelField="1"/>
     <MenuOption Id="12" Link="/user/edit.jsp" LevelField="2" ParentId="11"/>
-    <MenuOption Id="13" Link="/user/editContact.jsp" LevelField="2" ParentId="11"/>
+    <MenuOption Id="13" Link="/contactEdit.do?action=setup" LevelField="2" ParentId="11"/>
     <MenuOption Id="14" Link="/logout.do" LevelField="1"/>
     <MenuOption Id="15" Link="/item/list.jsp" LevelField="1"/>
     <MenuOption Id="16" Link="/item/listType.jsp" LevelField="2" ParentId="15"/>
@@ -2920,6 +2921,9 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="24" CategoryId="6" ClassName="com.sapienter.jbilling.server.user.tasks.PaymentACHCommerceTask" MinParameters="5"/>
     <PluggableTaskType Id="25" CategoryId="12" ClassName="com.sapienter.jbilling.server.payment.tasks.NoAsyncParameters" MinParameters="0"/>
     <PluggableTaskType Id="26" CategoryId="12" ClassName="com.sapienter.jbilling.server.payment.tasks.RouterAsyncParameters" MinParameters="0"/>
+    <PluggableTaskType Id="27" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.BasicItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="29" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
@@ -2932,6 +2936,7 @@ Contributor(s): ______________________________________
     <PluggableTaskTypeCategory Id="10" Description="processor alarm task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.ProcessorAlarm"/>
     <PluggableTaskTypeCategory Id="11" Description="subscription status manager" InterfaceName="com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager"/>
     <PluggableTaskTypeCategory Id="12" Description="async processor parameters" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
+    <PluggableTaskTypeCategory Id="13" Description="item purchase manager" InterfaceName="com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager"/>
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

@@ -72,6 +72,7 @@ public class NewOrderDTO extends OrderDTO {
                 Logger.getLogger(NewOrderDTO.class).debug("line " + order.getOrderLines()[f]);
                 OrderLineDTOEx line = new OrderLineDTOEx(order.getOrderLines()[f]);
                 rawOrderLines.add(line); 
+                orderLines.put(line.getItemId(), line);
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -92,7 +93,7 @@ public class NewOrderDTO extends OrderDTO {
     }
 
     // useful for testcases
-    public Hashtable getOrderLinesMap() {
+    public Hashtable<Integer, OrderLineDTOEx> getOrderLinesMap() {
         return orderLines;
     }
 

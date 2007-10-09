@@ -36,6 +36,7 @@ public class OrderLineDTOEx extends OrderLineDTO {
     private Boolean editable = null;
     private ItemDTOEx item = null;
     private String priceStr = null;
+    private Boolean totalReadOnly = null;
 
     /**
      * Constructor for OrderLineDTOEx.
@@ -148,5 +149,16 @@ public class OrderLineDTOEx extends OrderLineDTO {
     
     public String toString() {
         return super.toString() + " priceStr=" + priceStr;
+    }
+
+    public Boolean getTotalReadOnly() {
+        if (totalReadOnly == null) {
+            setTotalReadOnly(false);
+        }
+        return totalReadOnly;
+    }
+
+    public void setTotalReadOnly(Boolean finalTotal) {
+        this.totalReadOnly = finalTotal;
     }
 }

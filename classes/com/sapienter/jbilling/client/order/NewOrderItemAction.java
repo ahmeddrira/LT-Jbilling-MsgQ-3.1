@@ -27,7 +27,6 @@ package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
 
-import javax.ejb.FinderException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -114,38 +113,32 @@ public class NewOrderItemAction extends Action {
                             Constants.SESSION_ENTITY_ID_KEY));
             }
 
-        } catch (FinderException e) {
-            // the item doesn't exists ?!?!
-            // it could be that someone deleted it while this guy was
-            // browsing the list of itmes ...
-            log.warn("The item " + itemID + " wasn't found in the database");
-            errors.add(
-                ActionErrors.GLOBAL_ERROR,
-                new ActionError("order.item.notfound"));
         } catch (SessionInternalError e) {
             // this has been already logged ...
             log.error("Exception: ", e);
             errors.add(
                 ActionErrors.GLOBAL_ERROR,
                 new ActionError("all.internal"));
-
         } catch (Exception e) {
             log.error("Error at the AddItemAction", e);
-            errors.add(
-                ActionErrors.GLOBAL_ERROR,
-                new ActionError("all.internal"));
+            if (e.getCause().getMessage().equals("Item Manager task error")) {
+                errors.add(ActionErrors.GLOBAL_ERROR,
+                        new ActionError("order.error.task"));
+            } else {
+                errors.add(ActionErrors.GLOBAL_ERROR,
+                    new ActionError("all.internal"));
+            }
         }
 
         if (!errors.isEmpty()) {
             saveErrors(request, errors);
-        }
-
+            summary = new NewOrderDTO();
+        } 
         // add the order DTO to the http session for the summary
-        // this could be null.
-
         session.setAttribute(Constants.SESSION_ORDER_SUMMARY, summary);
         log.debug("The bean " + Constants.SESSION_ORDER_SUMMARY
-                + " is now in the session [" + summary + "]");
+                + " is now in the session [" + 
+                session.getAttribute(Constants.SESSION_ORDER_SUMMARY) + "]");
 
         // go back to the new order page, so the user can keep adding items 
         return (mapping.findForward("showOrderLIst"));

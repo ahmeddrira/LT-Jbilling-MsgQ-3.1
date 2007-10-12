@@ -29,6 +29,8 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
@@ -59,6 +61,8 @@ import com.sapienter.jbilling.server.util.Constants;
  * @jboss:remove-table remove="false"
  */
 public abstract class CreditCardEntityBean implements EntityBean {
+    
+    private static final Logger LOG = Logger.getLogger(CreditCardEntityBean.class);
 
     /**
      * @ejb:create-method view-type="local"
@@ -181,6 +185,15 @@ public abstract class CreditCardEntityBean implements EntityBean {
     public void setName(String name){
     	String crypted = JBCrypto.getCreditCardCrypto().encrypt(name);
     	setNameCrypt(crypted);
+        // validate that the saved name is retrivable and valid
+        LOG.debug("Credit card named saved as " + crypted);
+        try {
+            if (!getName().equals(name)) {
+                LOG.error("The credit card name " + name + " was wrongly encrypted to " + crypted);
+            }
+        } catch (Exception e) {
+            LOG.error("The credit card name " + name + " was wrongly encrypted to " + crypted);
+        }
     }
 
     /**

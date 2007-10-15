@@ -31,7 +31,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import org.jboss.security.Base64Utils;
+import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.server.util.Util;
 
 public final class JBCryptoImpl extends JBCrypto {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
@@ -39,6 +41,8 @@ public final class JBCryptoImpl extends JBCrypto {
 	private static SecretKeyFactory ourKeyFactory;
 	private static Cipher ourCipher;
 	private static final PBEParameterSpec ourPBEParameters;
+    
+    private static final Logger LOG = Logger.getLogger(JBCryptoImpl.class);
 
 	private final SecretKey mySecretKey;
 
@@ -50,13 +54,13 @@ public final class JBCryptoImpl extends JBCrypto {
 
 	public String decrypt(String cryptedText) {
 		Cipher cipher = getCipher();
-		byte[] crypted = Base64Utils.fromb64(cryptedText);
+		byte[] crypted = Util.stringToBinary(cryptedText);
 		byte[] result;
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, mySecretKey, ourPBEParameters);
 			result = cipher.doFinal(crypted);
 		} catch (GeneralSecurityException e) {
-			throw new IllegalArgumentException("Can not decryot:" + cryptedText, e);
+			throw new IllegalArgumentException("Can not decrypt:" + cryptedText, e);
 		}
 		return new String(result, UTF8);
 	}
@@ -71,7 +75,8 @@ public final class JBCryptoImpl extends JBCrypto {
 		} catch (GeneralSecurityException e) {
 			throw new IllegalArgumentException("Can not encrypt :" + text, e);
 		}
-		return Base64Utils.tob64(crypted);
+        String cryptedText = Util.binaryToString(crypted); 
+		return cryptedText;
 	}
 	
 	private static SecretKeyFactory getSecretKeyFactory() {

@@ -31,7 +31,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import org.apache.log4j.Logger;
+import org.jboss.security.Base64Utils;
 
 import com.sapienter.jbilling.server.util.Util;
 
@@ -42,7 +42,7 @@ public final class JBCryptoImpl extends JBCrypto {
 	private static Cipher ourCipher;
 	private static final PBEParameterSpec ourPBEParameters;
     
-    private static final Logger LOG = Logger.getLogger(JBCryptoImpl.class);
+    //private static final Logger LOG = Logger.getLogger(JBCryptoImpl.class);
 
 	private final SecretKey mySecretKey;
 
@@ -54,7 +54,8 @@ public final class JBCryptoImpl extends JBCrypto {
 
 	public String decrypt(String cryptedText) {
 		Cipher cipher = getCipher();
-		byte[] crypted = Util.stringToBinary(cryptedText);
+		byte[] crypted = useHexForBinary ? Util.stringToBinary(cryptedText) :
+            Base64Utils.fromb64(cryptedText);
 		byte[] result;
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, mySecretKey, ourPBEParameters);
@@ -75,7 +76,8 @@ public final class JBCryptoImpl extends JBCrypto {
 		} catch (GeneralSecurityException e) {
 			throw new IllegalArgumentException("Can not encrypt :" + text, e);
 		}
-        String cryptedText = Util.binaryToString(crypted); 
+        String cryptedText = useHexForBinary ? Util.binaryToString(crypted) :
+            Base64Utils.tob64(crypted);
 		return cryptedText;
 	}
 	

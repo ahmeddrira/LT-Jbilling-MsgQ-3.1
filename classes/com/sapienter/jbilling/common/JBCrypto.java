@@ -19,6 +19,7 @@ Contributor(s): ______________________________________.
 */
 package com.sapienter.jbilling.common;
 
+
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +34,7 @@ public abstract class JBCrypto {
 	public static final String PROP_CREDIT_CARDS_CRYPTO_PASSWORD = "credit_card_password";
 	public static final String PROP_DIGEST_ALL_PASSWORDS = "password_encrypt_all";
 	public static final int MIN_UNDIGESTED_ROLE = CommonConstants.TYPE_PARTNER;
+    protected boolean useHexForBinary = true;
 	
 	private static JBCrypto ourCreditCardCrypto;
 	
@@ -45,6 +47,10 @@ public abstract class JBCrypto {
 		}
 		return ourCreditCardCrypto;
 	}
+    
+    public void setUseHexForBinary(boolean flag) {
+        useHexForBinary = flag;
+    }
 	
 	public static JBCrypto getPasswordCrypto(Integer role){
 		boolean digestAll = Boolean.parseBoolean(
@@ -54,7 +60,7 @@ public abstract class JBCrypto {
 				ONE_WAY : DUMMY;
 	}
 	
-	public static String digest(String input){
+	public String digest(String input){
 		MessageDigest md5;
 		try {
 			md5 = MessageDigest.getInstance("MD5");
@@ -64,7 +70,8 @@ public abstract class JBCrypto {
 		}
 
 		byte[] hash = md5.digest(input.getBytes(UTF8));
-		return Base64Utils.tob64(hash);
+		return useHexForBinary ? com.sapienter.jbilling.server.util.Util.binaryToString(hash) :
+            Base64Utils.tob64(hash);
 	}
 	
 	private static JBCrypto loadCreditCardCrypto(){

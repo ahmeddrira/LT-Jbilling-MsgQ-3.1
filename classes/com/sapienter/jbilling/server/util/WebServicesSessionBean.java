@@ -1531,7 +1531,11 @@ public class WebServicesSessionBean implements SessionBean {
                     // find it
                 PaymentDTOEx paymentDto = PaymentBL.findPaymentInstrument(
                         entityId, userId);
-                result = paymentDto.getCreditCard();
+                // it might have a credit card, but it might not be valid or 
+                // just not found by the plug-in
+                if (paymentDto != null) {
+                    result = paymentDto.getCreditCard();
+                }
             }
         } catch (Exception e) {
             LOG.error("WS - finding a credit card", e);

@@ -144,7 +144,7 @@ public class WSTest extends TestCase {
             assertNotNull("Didn't get updated user", retUser);
             // The password should be the same as in the first step, no update happened.
             assertEquals("Password ", retUser.getPassword(),
-            		"pgdu8KCGZJ/0xwo1RdgSe");
+            		"33aa7e0850c4234ff03beb205b9ea728");
             assertEquals("Contact name", retUser.getContact().getFirstName(),
                     newUser.getContact().getFirstName());
             assertEquals("Credit card updated", "4111111111111152",
@@ -180,7 +180,7 @@ public class WSTest extends TestCase {
                     updatedUser.getContact().getLastName());
             assertEquals("Credit card should stay the same", "4111111111111152",
                     updatedUser.getCreditCard().getNumber());
-            assertEquals("Password should stay the same", "pgdu8KCGZJ/0xwo1RdgSe",
+            assertEquals("Password should stay the same", "33aa7e0850c4234ff03beb205b9ea728",
                     updatedUser.getPassword());
             
             System.out.println("Update result:" + updatedUser);

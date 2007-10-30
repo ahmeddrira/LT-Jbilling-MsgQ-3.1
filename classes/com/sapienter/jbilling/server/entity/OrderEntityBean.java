@@ -63,6 +63,15 @@ import com.sapienter.jbilling.server.util.Constants;
  *                       AND a.statusId = ?2
  *                       AND a.deleted = 0 "
  *             result-type-mapping="Local"
+ *             
+ * @ejb:finder signature="Collection findByUserSubscriptions(java.lang.Integer userId)"
+ *             query="SELECT OBJECT(a) 
+ *                      FROM purchase_order a 
+ *                     WHERE a.user.userId = ?1
+ *                       AND a.statusId = 1
+ *                       AND a.period.id <> 1
+ *                       AND a.deleted = 0 "
+ *             result-type-mapping="Local"
  *
  *
  * @jboss:table-name "purchase_order"

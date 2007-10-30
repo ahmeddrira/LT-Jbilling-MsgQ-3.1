@@ -44,6 +44,9 @@ import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.ItemPriceDTO;
+import com.sapienter.jbilling.server.item.tasks.IPricing;
+import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -55,9 +58,10 @@ public class ItemBL {
     private ItemPriceEntityLocalHome itemPriceHome = null;
     private ItemUserPriceEntityLocalHome itemUserPriceHome = null;
     private ItemEntityLocal item = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(ItemBL.class);
     private EventLogger eLogger = null;
     private String priceCurrencySymbol = null;
+    private Vector<PricingField> pricingFields = null;
     
     public ItemBL(Integer itemId) 
             throws SessionInternalError {
@@ -85,7 +89,6 @@ public class ItemBL {
     }
     
     private void init() throws NamingException {
-        log = Logger.getLogger(ItemBL.class);     
         eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         itemHome = (ItemEntityLocalHome) EJBFactory.lookUpLocalHome(
@@ -156,7 +159,7 @@ public class ItemBL {
     private void updateCurrencies(ItemDTOEx dto) 
             throws CreateException, RemoveException, NamingException,
 				FinderException {
-    	log.debug("updating prices. prices " + (dto.getPrices() != null) + 
+    	LOG.debug("updating prices. prices " + (dto.getPrices() != null) + 
     			" price = " + dto.getPrice());
     	// may be there's just one simple price
     	if (dto.getPrices() == null) {
@@ -173,7 +176,7 @@ public class ItemBL {
     			prices.add(price);
     			dto.setPrices(prices);
     		} else {
-    			log.warn("updatedCurrencies was called, but this " +
+    			LOG.warn("updatedCurrencies was called, but this " +
     					"item has no price");
         		return;
     		}
@@ -402,6 +405,21 @@ public class ItemBL {
             retValue = getPriceByCurrency(currencyId, entityId);
         }
         
+        // run a plug-in with external logic (rules), if available
+        try {
+            PluggableTaskManager<IPricing> taskManager =
+                new PluggableTaskManager<IPricing>(entityId,
+                Constants.PLUGGABLE_TASK_ITEM_PRICING);
+            IPricing myTask = taskManager.getNextClass();
+            
+            while(myTask != null) {
+                retValue = myTask.getPrice(item.getId(), userId, currencyId, pricingFields, retValue);
+                myTask = taskManager.getNextClass();
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError("Item pricing task error", OrderBL.class, e);
+        }
+        
         return retValue;
     }
     
@@ -512,4 +530,7 @@ public class ItemBL {
         return items;
     }
 
+    public void setPricingFields(Vector<PricingField> fields) {
+        pricingFields = fields;
+    }
 }

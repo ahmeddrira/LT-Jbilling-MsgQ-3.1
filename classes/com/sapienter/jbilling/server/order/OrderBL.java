@@ -939,6 +939,11 @@ public class OrderBL extends ResultList
             throw new SessionInternalError(e);
         } 
     }
+    
+    public Collection<OrderEntityLocal> getActiveRecurringByUser(Integer userId) 
+            throws FinderException {
+        return orderHome.findByUserSubscriptions(userId);
+    }
 
     public OrderPeriodDTOEx[] getPeriods(Integer entityId, Integer languageId) {
         OrderPeriodDTOEx retValue[] = null;

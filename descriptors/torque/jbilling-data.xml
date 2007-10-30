@@ -2924,6 +2924,7 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="27" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.BasicItemManager" MinParameters="0"/>
     <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
     <PluggableTaskType Id="29" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="30" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask" MinParameters="0"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
@@ -2937,6 +2938,7 @@ Contributor(s): ______________________________________
     <PluggableTaskTypeCategory Id="11" Description="subscription status manager" InterfaceName="com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager"/>
     <PluggableTaskTypeCategory Id="12" Description="async processor parameters" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
     <PluggableTaskTypeCategory Id="13" Description="item purchase manager" InterfaceName="com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager"/>
+    <PluggableTaskTypeCategory Id="14" Description="item pricing (rating)" InterfaceName="com.sapienter.jbilling.server.item.tasks.IPricing"/>
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

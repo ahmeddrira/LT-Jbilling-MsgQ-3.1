@@ -1,0 +1,19 @@
+package PricingRules
+#imports
+import com.sapienter.jbilling.server.user.ContactDTOEx
+import com.sapienter.jbilling.server.item.PricingField
+import com.sapienter.jbilling.server.user.UserDTOEx
+import com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager
+
+#globals
+global com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager manager
+
+
+rule "BC lemonade price"
+	dialect "java"
+	when
+	PricingManager( itemId == "2" )
+	ContactDTOEx( city == "Rivendel" )
+	then
+	manager.setByPercentage(50);
+end

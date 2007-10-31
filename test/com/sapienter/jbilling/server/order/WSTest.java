@@ -130,6 +130,15 @@ public class WSTest  extends TestCase {
             } catch (Exception e) {
             }
             System.out.println("Getting created order line");
+            
+            // make sure that item 2 has a special price
+            for (OrderLineWS item2line: retOrder.getOrderLines()) {
+                if (item2line.getItemId() == 2) {
+                    assertEquals("Special price for Item 2", 30F, item2line.getPrice());
+                    break;
+                }
+            }
+            
             boolean found = false;
             OrderLineWS retOrderLine = null;
             OrderLineWS normalOrderLine = null;
@@ -140,7 +149,7 @@ public class WSTest  extends TestCase {
 	            if (retOrderLine.getItemId().equals(new Integer(14))) {
 	                assertEquals("created line item id", retOrderLine.getItemId(), 
 	                        new Integer(14));
-	                assertEquals("total of discount", new Float(-4.5), retOrderLine.getAmount());
+	                assertEquals("total of discount", new Float(-5.5), retOrderLine.getAmount());
 	                found = true;
 	            } else {
 	            	normalOrderLine = retOrderLine;
@@ -219,9 +228,9 @@ public class WSTest  extends TestCase {
             	retOrderLine = retOrder.getOrderLines()[i];
 	            if (retOrderLine.getItemId().equals(new Integer(14))) {
 	            	// the is one less line for 15
-	            	// but one extra item for 20
-	            	// difference is 5 and 10% of that is 0.5  thus 4.5 + 0.5 = 5
-	                assertEquals("total of discount", new Float(-5.0), retOrderLine.getAmount());
+	            	// but one extra item for 30
+	            	// difference is 15 and 10% of that is 1.5  thus 5.5 + 1.5 = 7
+	                assertEquals("total of discount", new Float(-7.0), retOrderLine.getAmount());
 	                break;
 	            } 
             }

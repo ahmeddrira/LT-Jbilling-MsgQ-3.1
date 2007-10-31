@@ -59,11 +59,13 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         }
 
         try {
-            UserDTOEx user = DTOFactory.getUserDTOEx(userId); 
-            rulesMemoryContext.add(user);
-            ContactBL contact = new ContactBL();
-            contact.set(userId);
-            rulesMemoryContext.add(contact.getDTO());
+            if (userId != null) {
+                UserDTOEx user = DTOFactory.getUserDTOEx(userId); 
+                rulesMemoryContext.add(user);
+                ContactBL contact = new ContactBL();
+                contact.set(userId);
+                rulesMemoryContext.add(contact.getDTO());
+            }
             rulesMemoryContext.add(manager);
         } catch (Exception e) {
             throw new TaskException(e);

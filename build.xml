@@ -419,8 +419,9 @@
 	
   <target name="prepare-test">
   	  <echo>Copying the binary rules</echo>
-	  <copy todir="${base_dir}/rules"
-            file="${source.rules.dir}/ItemsRules.pkg"/>
+	  <copy todir="${base_dir}/rules">
+         <fileset dir="${source.rules.dir}" includes="*.pkg"/>
+	  </copy>
   	  <echo>Copying the development base</echo>
 	  <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
 	  	 <fileset dir="${basedir}/sql" includes="localDB.*" />

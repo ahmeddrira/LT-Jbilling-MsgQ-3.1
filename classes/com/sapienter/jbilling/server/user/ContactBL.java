@@ -80,8 +80,8 @@ public class ContactBL {
         // id the entity
         UserBL user;
         try {
-            user = new UserBL(userId);
-            entityId = user.getEntity().getEntity().getId();
+            user = new UserBL();
+            entityId = user.getEntityId(userId);
         } catch (Exception e) {
             log.error("Finding the entity", e);
         } 

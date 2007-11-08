@@ -114,4 +114,9 @@ public interface UserSQL {
         "   AND a.deleted = 0" +
         "   AND c.deleted = 0" +
         " ORDER BY 1";
+    
+    static final String getEntityId = 
+        "SELECT entity_id " +
+        "  FROM base_user " +
+        " WHERE id = ?";
 }

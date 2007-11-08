@@ -1282,4 +1282,21 @@ public class UserBL extends ResultList
         }   
     }
 
+    /**
+     * Only needed due to the locking of entity beans.
+     * Remove when using JPA
+     * @param userId
+     * @return
+     * @throws SQLException
+     * @throws NamingException
+     */
+    public Integer getEntityId(Integer userId) throws SQLException, NamingException {
+        LOG.debug("getting entity id for user " + userId);
+        prepareStatement(UserSQL.getEntityId);
+        cachedResults.setInt(1, userId);
+        execute();
+        conn.close();
+        cachedResults.next();
+        return cachedResults.getInt(1);
+    }
 }

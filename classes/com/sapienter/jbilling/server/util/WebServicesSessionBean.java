@@ -190,7 +190,7 @@ public class WebServicesSessionBean implements SessionBean {
             
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId = bl.getEntity().getEntity().getId(); 
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId()); 
 
             InvoiceBL invoiceBl = new InvoiceBL();
             return invoiceBl.getInvoicesByCreateDateArray(entityId, dSince, dUntil);
@@ -244,7 +244,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId = bl.getEntity().getEntity().getId(); 
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId()); 
             LOG.info("WS - Creating user " + newUser);
             
             if (!bl.exists(newUser.getUserName(), entityId)) {
@@ -254,7 +254,7 @@ public class WebServicesSessionBean implements SessionBean {
                 Integer userId = bl.create(dto);
                 if (newUser.getContact() != null) {
                     cBl.createPrimaryForUser(new ContactDTOEx(
-                            newUser.getContact()), userId);
+                            newUser.getContact()), userId, entityId);
                 }
                 
                 if (newUser.getCreditCard() != null) {
@@ -337,7 +337,7 @@ public class WebServicesSessionBean implements SessionBean {
             
             // get the entity
             bl.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             Integer executorId =   bl.getEntity().getUserId();
             LOG.info("WS - Updating user " + user);
             
@@ -439,7 +439,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             bl.set(username, entityId);
             return bl.getEntity().getUserId();
         } catch (Exception e) {
@@ -460,7 +460,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             return getUsersByStatus(statusId, entityId, true);
         } catch (Exception e) {
             LOG.error("WS - getUsersInStatus", e);
@@ -479,7 +479,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             return getUsersByStatus(statusId, entityId, false);
         } catch (Exception e) {
             LOG.error("WS - getUsersNotInStatus", e);
@@ -498,7 +498,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
 
             CachedRowSet users = bl.getByCustomField(entityId, typeId, value);
             LOG.debug("got collection. Now converting");
@@ -528,7 +528,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
 
             CachedRowSet users = bl.getByCCNumber(entityId, number);
             LOG.debug("getUsersByCreditCard - got collection. Now converting");
@@ -645,7 +645,7 @@ public class WebServicesSessionBean implements SessionBean {
             // the caller will tell us what entity is this
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             
             // prepare the DTO for the authentication call
             UserDTOEx user = new UserDTOEx();
@@ -757,8 +757,8 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             Integer userId = order.getUserId();
             CreditCardDTO cc = getCreditCard(userId);
-            UserBL user = new UserBL(userId);
-            Integer entityId = user.getEntity().getEntity().getId();
+            UserBL user = new UserBL();
+            Integer entityId = user.getEntityId(userId);
             if (cc != null) {
                 CreditCardBL ccBl = new CreditCardBL();
                 // calling for the DTOEx of order seems an overkill to just get
@@ -833,7 +833,7 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             Integer languageId = bl.getEntity().getLanguageIdField();
             
             // see if the related items should provide info
@@ -1113,7 +1113,7 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer languageId = bl.getEntity().getLanguageIdField();
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             dto.setEntityId(entityId);
             
             // call the creation
@@ -1136,7 +1136,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL userBL = new UserBL();
             userBL.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId = userBL.getEntity().getEntity().getId(); 
+            Integer entityId = userBL.getEntityId(userBL.getEntity().getUserId()); 
             ItemBL itemBL = new ItemBL();
             return itemBL.getAllItems(entityId);
         } catch (Exception e) {
@@ -1172,8 +1172,8 @@ public class WebServicesSessionBean implements SessionBean {
     	try {
     		UserBL user = new UserBL();
     		user.setRoot(context.getCallerPrincipal().getName());
-    		Integer entityId  = user.getEntity().getEntity().getId();
     		Integer callerId  = user.getEntity().getUserId();
+            Integer entityId  = user.getEntityId(callerId);
     		EventLogger evLog = EventLogger.getInstance();
     		
     		if (from == null) {
@@ -1181,9 +1181,9 @@ public class WebServicesSessionBean implements SessionBean {
     		}
 
     		if (last != null) {
-    			result = user.getUserTransitionsById(last, to);
+    			result = user.getUserTransitionsById(entityId, last, to);
     		} else {
-    			result = user.getUserTransitionsByDate(from, to);
+    			result = user.getUserTransitionsByDate(entityId, from, to);
     		}
     		
     		if (result == null) {
@@ -1216,17 +1216,16 @@ public class WebServicesSessionBean implements SessionBean {
             throws SessionInternalError {
         
         UserTransitionResponseWS[] result = null;
-        Integer last = null;
         // Obtain the current entity and language Ids
         
         try {
             UserBL user = new UserBL();
             user.setRoot(context.getCallerPrincipal().getName());
-            Integer entityId  = user.getEntity().getEntity().getId();
             Integer callerId  = user.getEntity().getUserId();
+            Integer entityId = user.getEntityId(callerId);
             EventLogger evLog = EventLogger.getInstance();
             
-            result = user.getUserTransitionsById(id, null);
+            result = user.getUserTransitionsById(entityId, id, null);
             
             if (result == null) {
                 LOG.info("Data retrieved but resultset is null");
@@ -1479,7 +1478,7 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
-            bl.getEntity().getEntity().getId();
+            bl.getEntityId(bl.getEntity().getUserId());
         } catch (Exception e) {
             throw new SessionInternalError("Error identifiying the caller");
         }
@@ -1526,7 +1525,7 @@ public class WebServicesSessionBean implements SessionBean {
 		CreditCardDTO result = null;
         try {
             UserBL user = new UserBL(userId);
-            Integer entityId = user.getEntity().getEntity().getId();
+            Integer entityId = user.getEntityId(userId);
             if (user.hasCreditCard()) {
                     // find it
                 PaymentDTOEx paymentDto = PaymentBL.findPaymentInstrument(
@@ -1552,7 +1551,7 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
-            Integer entityId = bl.getEntity().getEntity().getId();
+            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             Integer languageId = bl.getEntity().getLanguageIdField();
             
             // we'll need the langauge later

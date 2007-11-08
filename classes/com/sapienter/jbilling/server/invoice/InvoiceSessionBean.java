@@ -101,8 +101,8 @@ public class InvoiceSessionBean implements SessionBean {
             throws SessionInternalError {
         try {
             InvoiceBL invoice = new InvoiceBL();
-            UserBL user = new UserBL(userId);
-            if (user.getEntity().getEntity().getId().equals(entityId)) {
+            UserBL user = new UserBL();
+            if (user.getEntityId(userId).equals(entityId)) {
                 invoice.create(userId, newInvoice, null);
                 invoice.createLines(newInvoice);
             } else {

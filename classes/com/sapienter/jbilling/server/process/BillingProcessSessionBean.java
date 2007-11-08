@@ -545,7 +545,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     process, user.getEntity(), isReview, onlyRecurring);
             if (newInvoices == null) {
                 NoNewInvoiceEvent event = new NoNewInvoiceEvent(
-                        user.getEntity().getEntity().getId(), userId, 
+                        user.getEntityId(userId), userId, 
                         process.getBillingDate(), 
                         user.getEntity().getSubscriptionStatus().getId());
                 EventManager.process(event);

@@ -205,8 +205,8 @@ public class ContactBL {
     public Vector<ContactDTOEx> getAll(Integer userId) 
             throws NamingException, FinderException {
         Vector<ContactDTOEx> retValue = new Vector<ContactDTOEx>();
-        UserBL user = new UserBL(userId);
-        entityId = user.getEntity().getEntity().getId();
+        UserBL user = new UserBL();
+        entityId = user.getEntityId(userId);
         for (Iterator it = user.getEntity().getEntity().getContactTypes().
                 iterator(); it.hasNext(); ) {
             ContactTypeEntityLocal type = (ContactTypeEntityLocal) it.next();
@@ -271,14 +271,12 @@ public class ContactBL {
                     ContactFieldEntityLocalHome.JNDI_NAME);
     }
     
-    public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId) 
+    public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) 
             throws SessionInternalError {
         // find which type id is the primary for this entity
         try {
             Integer retValue;
-            UserBL user = new UserBL(userId);
-            ContactTypeEntityLocal type = contactTypeHome.findPrimary(
-                    user.getEntity().getEntity().getId());
+            ContactTypeEntityLocal type = contactTypeHome.findPrimary(entityId);
             retValue =  createForUser(dto, userId, type.getId());
             // this is the primary contact, the only one with a user_id
             // denormilized for performance

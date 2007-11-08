@@ -916,7 +916,8 @@ public class UserBL extends ResultList
     }
 
     
-    public UserTransitionResponseWS[] getUserTransitionsById (Integer last, Date to) 
+    public UserTransitionResponseWS[] getUserTransitionsById(Integer entityId, 
+            Integer last, Date to) 
     		throws SQLException, NamingException {
     	
     	UserTransitionResponseWS[] result = null;
@@ -933,7 +934,7 @@ public class UserBL extends ResultList
     	int pos = 2;
     	LOG.info("Getting transaction list by Id. query --> " + query);
     	prepareStatement(query);
-    	cachedResults.setInt(1, getEntity().getEntity().getId());
+    	cachedResults.setInt(1, entityId);
 
     	if (last.intValue() > 0) {
     		cachedResults.setInt(pos, last);
@@ -976,7 +977,8 @@ public class UserBL extends ResultList
     }
 
 
-    public UserTransitionResponseWS[] getUserTransitionsByDate (Date from, Date to)
+    public UserTransitionResponseWS[] getUserTransitionsByDate(Integer entityId, 
+            Date from, Date to)
     		throws SQLException, NamingException {
     	
     	UserTransitionResponseWS[] result = null;
@@ -991,7 +993,7 @@ public class UserBL extends ResultList
     	LOG.info("Getting transaction list by date. query --> " + query);
 
     	prepareStatement(query);
-    	cachedResults.setInt(1, getEntity().getEntity().getId());
+    	cachedResults.setInt(1, entityId);
     	cachedResults.setDate(2, new java.sql.Date(from.getTime()));
     	if (toDate != null) {
     		cachedResults.setDate(3, toDate);
@@ -1290,13 +1292,17 @@ public class UserBL extends ResultList
      * @throws SQLException
      * @throws NamingException
      */
-    public Integer getEntityId(Integer userId) throws SQLException, NamingException {
+    public Integer getEntityId(Integer userId) {
         LOG.debug("getting entity id for user " + userId);
-        prepareStatement(UserSQL.getEntityId);
-        cachedResults.setInt(1, userId);
-        execute();
-        conn.close();
-        cachedResults.next();
-        return cachedResults.getInt(1);
+        try {
+            prepareStatement(UserSQL.getEntityId);
+            cachedResults.setInt(1, userId);
+            execute();
+            conn.close();
+            cachedResults.next();
+            return cachedResults.getInt(1);
+        } catch (Exception e) {
+            throw new SessionInternalError("Error finding entity_id of a user", UserBL.class, e);
+        }
     }
 }

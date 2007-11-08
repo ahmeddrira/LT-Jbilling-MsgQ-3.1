@@ -151,8 +151,8 @@ public class InvoiceBL extends ResultList
             entityId = process.getEntityId();
         } else {
         	// this is a manual invoice, there's no billing process
-        	user = new UserBL(userId);
-            entityId = user.getEntity().getEntity().getId();
+        	user = new UserBL();
+            entityId = user.getEntityId(userId);
         }
         
         // verify if this entity is using the 'continuous invoice date' preference

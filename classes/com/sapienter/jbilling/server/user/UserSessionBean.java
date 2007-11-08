@@ -188,7 +188,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                         contact = cBl.getDTO();
                         log.debug("Using parent's contact " + contact.getId());
                     }
-                    cBl.createPrimaryForUser(contact, userId);
+                    cBl.createPrimaryForUser(contact, userId, newUser.getEntityId());
                 } else {
                     // means that the partner doens't exist
                     userId = new Integer(-1);

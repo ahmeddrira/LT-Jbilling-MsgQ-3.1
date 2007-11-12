@@ -34,12 +34,11 @@ import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.ContactEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.TableEntityLocal;
-import com.sapienter.jbilling.interfaces.TableEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
 
 
@@ -81,12 +80,7 @@ public abstract class ContactMapEntityBean implements EntityBean {
             newId = new Integer( generator.getNextSequenceNumber(
                     Constants.TABLE_CONTACT_MAP));
 
-            TableEntityLocalHome tableHome = (TableEntityLocalHome)
-                    EJBFactory.lookUpLocalHome(
-                    TableEntityLocalHome.class,
-                    TableEntityLocalHome.JNDI_NAME);
-            TableEntityLocal table = tableHome.findByTableName(tableName);
-            setTableId(table.getId());
+            setTableId(Util.getTableId(tableName));
         } catch (Exception e) {
             throw new CreateException(
                     "Problems generating the primary key "

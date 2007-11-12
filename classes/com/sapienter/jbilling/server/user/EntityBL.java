@@ -32,6 +32,8 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
+import sun.jdbc.rowset.CachedRowSet;
+
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
@@ -139,5 +141,14 @@ public class EntityBL extends ResultList
         Integer[] retValue = new Integer[list.size()];
         list.toArray(retValue);
         return retValue;
+    }
+    
+    public CachedRowSet getTables() 
+            throws SQLException, NamingException {
+        prepareStatement(EntitySQL.getTables);
+        execute();
+        conn.close();
+        
+        return cachedResults;
     }
 }

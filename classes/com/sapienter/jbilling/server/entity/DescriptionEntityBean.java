@@ -33,10 +33,8 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
-import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.DescriptionEntityPK;
-import com.sapienter.jbilling.interfaces.TableEntityLocal;
-import com.sapienter.jbilling.interfaces.TableEntityLocalHome;
 
 /**
  * @ejb:bean name="DescriptionEntity" 
@@ -83,24 +81,13 @@ public abstract class DescriptionEntityBean implements EntityBean {
     public DescriptionEntityPK ejbCreate(String tableName, Integer foreignId, 
             String pColumn, Integer languageId, String content) 
             throws CreateException {
-        Integer tableId = null;
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false); 
-            TableEntityLocalHome tableHome =
-                    (TableEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    TableEntityLocalHome.class,
-                    TableEntityLocalHome.JNDI_NAME);
-            TableEntityLocal table = tableHome.findByTableName(tableName);
-            tableId = table.getId();
-        } catch (Exception e) {
-        }
-        setTableId(tableId);
+        setTableId(Util.getTableId(tableName));
         setForeignId(foreignId);
         setPsudoColumn(pColumn);
         setLanguageId(languageId);
         setContent(content);
 
-        return new DescriptionEntityPK(tableId, foreignId, pColumn, 
+        return new DescriptionEntityPK(Util.getTableId(tableName), foreignId, pColumn, 
                 languageId);
     }
     

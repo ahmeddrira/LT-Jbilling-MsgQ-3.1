@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.client.item.CurrencyArrayWrap;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.list.ListSession;
 import com.sapienter.jbilling.server.list.ListSessionHome;
 
@@ -69,5 +70,7 @@ public class TriggerHelperServlet extends HttpServlet {
             throw new ServletException(e);
         }
         
+        // request a table to force the load
+        Util.getTableId("entity");
     }
 }

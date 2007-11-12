@@ -27,8 +27,6 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
-import org.apache.log4j.Logger;
-
 
 /**
  * @ejb:bean name="TableEntity" 
@@ -45,19 +43,12 @@ import org.apache.log4j.Logger;
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
  *
- * @ejb:finder signature="TableEntityLocal findByTableName(java.lang.String x)"
- *             query="SELECT OBJECT(a) 
- *                      FROM jbilling_table a 
- *                     WHERE a.name = ?1"
- *             result-type-mapping="Local"
- *
  * @jboss:table-name "jbilling_table"
  * @jboss:create-table create="false"
  * @jboss:remove-table remove="false"
  */
 public abstract class TableEntityBean implements EntityBean {
 
-    private Logger log = null;
     // CMP field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
@@ -142,7 +133,6 @@ public abstract class TableEntityBean implements EntityBean {
      */
     public void setEntityContext(EntityContext arg0)
             throws EJBException, RemoteException {
-        log = Logger.getLogger(TableEntityBean.class);
     }
 
     /**

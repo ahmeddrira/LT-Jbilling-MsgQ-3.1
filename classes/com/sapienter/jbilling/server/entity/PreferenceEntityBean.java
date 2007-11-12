@@ -29,11 +29,11 @@ import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.PreferenceTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.PreferenceTypeEntityLocalHome;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.TableEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -89,11 +89,7 @@ public abstract class PreferenceEntityBean implements EntityBean {
             newId = new Integer(generator.getNextSequenceNumber(
                     Constants.TABLE_PREFERENCE));
 
-            TableEntityLocalHome tableHome = 
-                    (TableEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    TableEntityLocalHome.class, 
-                    TableEntityLocalHome.JNDI_NAME);
-            tableId = tableHome.findByTableName(table).getId();
+            tableId = Util.getTableId(table);
         } catch (Exception e) {
             throw new CreateException(
                     "Problems generating the primary key "

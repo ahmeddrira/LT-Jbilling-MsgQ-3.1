@@ -22,13 +22,20 @@ package com.sapienter.jbilling.common;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+
+import sun.jdbc.rowset.CachedRowSet;
+
+import com.sapienter.jbilling.server.user.EntityBL;
 
 /**
  * Client miscelaneous utility functions
  */
 public class Util {
+    private static HashMap<String,Integer> tables = null;
+    private static final Logger LOG = Logger.getLogger(Util.class);
     /**
      * Creates a date object with the given parameters only if they belong to a
      * valid day, so February 30th would be returning null.
@@ -217,4 +224,39 @@ public class Util {
         }
     }
 
+    /**
+     * Gets a boolean system property. It returns true by default, and on 
+     * any error.
+     * @param key
+     * @return
+     */
+    public static boolean getSysPropBooleanTrue(String key) {
+        boolean retValue = true;
+        try {
+            retValue = Boolean.parseBoolean(SystemProperties.getSystemProperties().get(key, "true"));
+        } catch (Exception e) {
+            Logger.getLogger(Util.class).warn("Exception getting system property " + key);
+        }
+        
+        return retValue;
+    }
+
+    public static Integer getTableId(String tableName) {
+        if (tables == null) {
+            LOG.debug("Loading cache of tables...");
+            tables = new HashMap<String, Integer>();
+            try {
+                EntityBL bl = new EntityBL();
+                CachedRowSet rows = bl.getTables();
+                while(rows.next()) {
+                    tables.put(rows.getString(1), rows.getInt(2));
+                }
+                rows.close();
+            } catch (Exception e) {
+                throw new SessionInternalError("Error loading tables", Util.class,e);
+            } 
+        } 
+        
+        return tables.get(tableName);
+    }
 }

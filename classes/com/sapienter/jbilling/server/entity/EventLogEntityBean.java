@@ -33,10 +33,9 @@ import javax.ejb.RemoveException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.TableEntityLocal;
-import com.sapienter.jbilling.interfaces.TableEntityLocalHome;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -99,29 +98,13 @@ public abstract class EventLogEntityBean implements EntityBean {
         setModuleId(module);
         setMessageId(message);
         setCreateDateTime(Calendar.getInstance().getTime());
+        setTableId(Util.getTableId(table));
 
         return newId;                 
     }
 
     public void ejbPostCreate(Integer entity, Integer foreignId, 
             Integer level, Integer module, Integer message, String table) {
-        log.debug("post creating event log table = " + table);
-
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            TableEntityLocalHome tableHome =
-                    (TableEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    TableEntityLocalHome.class,
-                    TableEntityLocalHome.JNDI_NAME);
-
-            TableEntityLocal tableRow = tableHome.findByTableName(table);
-            setTable(tableRow);
-            log.debug("post creating 2 event log table = " + table);
-            
-        } catch (Exception e) {
-            log.error("Cant update table relationship:" + table, e);
-        }
-                 
     }
     
     // CMP field accessors -----------------------------------------------------
@@ -244,17 +227,13 @@ public abstract class EventLogEntityBean implements EntityBean {
     public abstract void setUser(UserEntityLocal user);
 
     /**
-      * @ejb:interface-method view-type="local"
-      * @ejb.relation name="event-table"
-      *               role-name="event-belongs_to-table"
-      *               target-ejb="TableEntity"
-      *               target-role-name="table-has-events"
-      *               target-multiple="yes"
-      * @jboss.relation related-pk-field="id"  
-      *                 fk-column="table_id"            
-      */
-     public abstract TableEntityLocal getTable();
-     public abstract void setTable(TableEntityLocal table);
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="table_id"
+     * @jboss.method-attributes read-only="true"
+     */
+     public abstract Integer getTableId();
+     public abstract void setTableId(Integer tableId);
     
     // EJB callbacks ----------------------------------------------------
     

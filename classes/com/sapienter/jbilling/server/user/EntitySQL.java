@@ -35,4 +35,11 @@ public interface EntitySQL {
         "select id" +
         "  from entity" +
         " order by 1";
+    
+    // another query that should not exist. Please remove when entities
+    // are replaced by JPAs
+    static final String getTables = 
+        "select name, id " +
+        "  from jbilling_table";
+        
 }

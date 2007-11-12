@@ -97,7 +97,8 @@ public class SequenceSessionBean implements javax.ejb.SessionBean {
 			    // add an entry to the sequence table
 			    entry = new Entry();
 			    try {
-			        entry.sequence = _sequenceHome.findByTableName(name);
+			        entry.sequence = _sequenceHome.findByPrimaryKey(
+                            com.sapienter.jbilling.common.Util.getTableId(name));
 			        entry.current = entry.sequence.getValueAndIncrementingBy(_blockSize);
                     entry.last = entry.sequence.getIndex();
 			        log.debug("Init: " + name + " got last_id = " + entry.last +

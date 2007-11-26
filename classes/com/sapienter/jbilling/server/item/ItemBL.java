@@ -417,7 +417,7 @@ public class ItemBL {
                 myTask = taskManager.getNextClass();
             }
         } catch (Exception e) {
-            throw new SessionInternalError("Item pricing task error", OrderBL.class, e);
+            throw new SessionInternalError("Item pricing task error", ItemBL.class, e);
         }
         
         return retValue;

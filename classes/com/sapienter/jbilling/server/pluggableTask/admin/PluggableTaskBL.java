@@ -21,15 +21,15 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
 import javax.ejb.FinderException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.EventLogger;
 
-public class PluggableTaskBL {
+public class PluggableTaskBL<T> {
     private static final Logger LOG = Logger.getLogger(PluggableTaskBL.class);     
     private EventLogger eLogger = null;
 
@@ -48,13 +48,9 @@ public class PluggableTaskBL {
     }
     
     private void init() {
-        try {
-            eLogger = EventLogger.getInstance();        
-            das = new PluggableTaskDAS();
-            dasParameter = new PluggableTaskParameterDAS();
-        } catch (NamingException e) {
-            throw new SessionInternalError("Constructing " + e.getMessage());
-        }
+        eLogger = EventLogger.getInstance();        
+        das = new PluggableTaskDAS();
+        dasParameter = new PluggableTaskParameterDAS();
     }
 
     public void set(Integer id) throws FinderException {
@@ -84,6 +80,9 @@ public class PluggableTaskBL {
         PluggableTaskDTO task = das.find(taskId);
         dto.setTask(task);
         task.getParameters().add(dasParameter.save(dto));
+
+        // clear the rules cache (just in case this plug-in was ruled based)
+        PluggableTask.invalidateRuleCache(taskId);
     }
     
     public void update(Integer executorId, PluggableTaskDTO dto) {
@@ -99,6 +98,8 @@ public class PluggableTaskBL {
         eLogger.audit(executorId, Constants.TABLE_PLUGGABLE_TASK, 
                 dto.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_UPDATED, null, null, null);
+        // clear the rules cache (just in case this plug-in was ruled based)
+        PluggableTask.invalidateRuleCache(dto.getId());
     }
     
     public void delete(Integer executor) {
@@ -106,6 +107,8 @@ public class PluggableTaskBL {
                 pluggableTask.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);
         das.delete(pluggableTask);
+        // clear the rules cache (just in case this plug-in was ruled based)
+        PluggableTask.invalidateRuleCache(pluggableTask.getId());
     }
 
     public void deleteParameter(Integer executor, Integer id) {
@@ -114,6 +117,8 @@ public class PluggableTaskBL {
                 EventLogger.ROW_DELETED, null, null, null);
         PluggableTaskParameterDTO toDelete = dasParameter.find(id);
         toDelete.getTask().getParameters().remove(toDelete);
+        // clear the rules cache (just in case this plug-in was ruled based)
+        PluggableTask.invalidateRuleCache(toDelete.getTask().getId());
         dasParameter.delete(toDelete);
     }
 
@@ -131,5 +136,43 @@ public class PluggableTaskBL {
             throws FinderException {
         dto.expandValue();
         dasParameter.save(dto);
+        // clear the rules cache (just in case this plug-in was ruled based)
+        PluggableTask.invalidateRuleCache(dto.getTask().getId());
     }
+    
+    public T instantiateTask()
+            throws PluggableTaskException {
+
+        PluggableTaskDTO localTask = getDTO();
+        String fqn = localTask.getType().getClassName();
+        T result;
+        try {
+            Class taskClazz = Class.forName(fqn);
+                    //.asSubclass(result.getClass());
+            result = (T) taskClazz.newInstance();
+        } catch (ClassCastException e) {
+            throw new PluggableTaskException("Task id: " + pluggableTask.getId()
+                    + ": implementation class does not implements PaymentTask:"
+                    + fqn, e);
+        } catch (InstantiationException e) {
+            throw new PluggableTaskException("Task id: " + pluggableTask.getId()
+                    + ": Can not instantiate : " + fqn, e);
+        } catch (IllegalAccessException e) {
+            throw new PluggableTaskException("Task id: " + pluggableTask.getId()
+                    + ": Can not find public constructor for : " + fqn, e);
+        } catch (ClassNotFoundException e) {
+            throw new PluggableTaskException("Task id: " + pluggableTask.getId()
+                    + ": Unknown class: " + fqn, e);
+        }
+
+        if (result instanceof PluggableTask) {
+            PluggableTask pluggable = (PluggableTask) result;
+            pluggable.initializeParamters(localTask);
+        } else {
+            throw new PluggableTaskException("Plug-in has to extend PluggableTask " + 
+                    pluggableTask.getId());
+        }
+        return result;
+    }
+ 
 }

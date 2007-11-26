@@ -25,13 +25,32 @@ import com.sapienter.jbilling.common.SessionInternalError;
 
 public class PricingField {
     private final String name;
-    private final String strValue;
-    private final Date dateValue;
+    private String strValue;
+    private Date dateValue;
     private final Type type;
-    private final Float floatValue;
-    private final Integer intValue;
+    private Float floatValue;
+    private Integer intValue;
+    private Integer position = 1;
     
-    private enum Type {STRING, INTEGER, FLOAT, DATE};
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
+    
+    public Integer getPosition() {
+        return position;
+    }
+    
+    public enum Type {STRING, INTEGER, FLOAT, DATE};
+    
+    public PricingField(PricingField field) {
+        this.name = field.getName();
+        this.strValue = field.getStrValue();
+        this.dateValue = field.getDateValue();
+        this.type = field.getType();
+        this.floatValue = field.getFloatValue();
+        this.intValue = field.getIntValue();
+        this.position = field.getPosition();
+    }
     
     public PricingField(String name, String strValue) {
         this.name = name;
@@ -104,5 +123,39 @@ public class PricingField {
             return dateValue;
         
         throw new SessionInternalError("There is no value");
+    }
+    
+    public static Type mapType(String myType) {
+        if (myType.equalsIgnoreCase("string")) {
+            return Type.STRING;
+        } else if (myType.equalsIgnoreCase("integer")) {
+            return Type.INTEGER;
+        } else if (myType.equalsIgnoreCase("float")) {
+            return Type.FLOAT;
+        } else if (myType.equalsIgnoreCase("date")) {
+            return Type.DATE;
+        } else {
+            return null;
+        }
+    }
+    
+    public String toString() {
+        return "name: " + name + " type: " + type + " value: " + getValue();
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
+    }
+
+    public void setFloatValue(Float floatValue) {
+        this.floatValue = floatValue;
+    }
+
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
+    }
+
+    public void setStrValue(String strValue) {
+        this.strValue = strValue;
     }
 }

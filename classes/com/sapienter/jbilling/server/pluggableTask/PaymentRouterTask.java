@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -142,41 +141,15 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 
 	private PaymentTask instantiateTask(Integer taskId)
 			throws PluggableTaskException {
-		PluggableTaskBL taskLoader;
+		PluggableTaskBL<PaymentTask> taskLoader;
 		try {
-			taskLoader = new PluggableTaskBL(taskId);
+			taskLoader = new PluggableTaskBL<PaymentTask>(taskId);
+            return taskLoader.instantiateTask();
 		} catch (FinderException e) {
 			throw new PluggableTaskException("Task can not be found: id: "
 					+ taskId, e);
 		}
 
-		PluggableTaskDTO localTask = taskLoader.getDTO();
-		String fqn = localTask.getType().getClassName();
-		PaymentTask result;
-		try {
-			Class<? extends PaymentTask> taskClazz = Class.forName(fqn)
-					.asSubclass(PaymentTask.class);
-			result = taskClazz.newInstance();
-		} catch (ClassCastException e) {
-			throw new PluggableTaskException("Task id: " + taskId
-					+ ": implementation class does not implements PaymentTask:"
-					+ fqn, e);
-		} catch (InstantiationException e) {
-			throw new PluggableTaskException("Task id: " + taskId
-					+ ": Can not instantiate : " + fqn, e);
-		} catch (IllegalAccessException e) {
-			throw new PluggableTaskException("Task id: " + taskId
-					+ ": Can not find public constructor for : " + fqn, e);
-		} catch (ClassNotFoundException e) {
-			throw new PluggableTaskException("Task id: " + taskId
-					+ ": Unknown class: " + fqn, e);
-		}
-
-		if (result instanceof PluggableTask) {
-			PluggableTask pluggable = (PluggableTask) result;
-			pluggable.initializeParamters(localTask);
-		}
-		return result;
 	}
 	
 	private Integer intValueOf(Object object) {

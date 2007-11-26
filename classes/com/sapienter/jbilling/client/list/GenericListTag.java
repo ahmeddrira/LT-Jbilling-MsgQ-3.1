@@ -121,7 +121,7 @@ public class GenericListTag extends ListTagBase {
                     type.equals(Constants.LIST_TYPE_PAYMENT)) {
                 isPaged = true;
             }
-            Vector listColumns = new Vector();
+            Vector<String> listColumns = new Vector<String>();
             // *** EDIT HERE *** to add another list
             if (type.equals(Constants.LIST_TYPE_ITEM_TYPE)) {
                 listColumns.add("item.type.prompt.id");
@@ -253,7 +253,7 @@ public class GenericListTag extends ListTagBase {
         }
         
         ActionErrors errors = new ActionErrors();
-        Hashtable parameters = new Hashtable();
+        Hashtable<String, Integer> parameters = new Hashtable<String, Integer>();
         
         try {
             // I need the type no matter what

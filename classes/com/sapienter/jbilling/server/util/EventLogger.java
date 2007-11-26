@@ -82,6 +82,7 @@ public class EventLogger {
     public static final Integer MODULE_PAYMENT_MAINTENANCE = new Integer(10);
     public static final Integer MODULE_TASK_MAINTENANCE = new Integer(11);
     public static final Integer MODULE_WEBSERVICES = new Integer(12);
+    public static final Integer MODULE_MEDIATION = new Integer(13);
 
     
     // levels of logging    
@@ -108,9 +109,13 @@ public class EventLogger {
 
     }
     
-    public static EventLogger getInstance() throws NamingException{
+    public static EventLogger getInstance() {
         if (theInstance == null) {
-            theInstance = new EventLogger();
+            try {
+                theInstance = new EventLogger();
+            } catch (NamingException e) {
+                throw new SessionInternalError("Creating event logger", EventLogger.class, e);
+            }
         }
         
         return theInstance;

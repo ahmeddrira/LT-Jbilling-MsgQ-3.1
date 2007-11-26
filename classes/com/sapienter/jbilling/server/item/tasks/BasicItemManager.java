@@ -20,9 +20,12 @@ Contributor(s): ______________________________________.
 package com.sapienter.jbilling.server.item.tasks;
 
 import java.math.BigDecimal;
+import java.util.Vector;
 
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineDTOEx;
@@ -36,7 +39,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
     
     public void addItem(Integer itemID, Integer quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            NewOrderDTO newOrder) throws TaskException {
+            NewOrderDTO newOrder, Vector<Record> records) throws TaskException {
 
         // check if the item is already in the order
         OrderLineDTOEx line = (OrderLineDTOEx) newOrder.getOrderLine(itemID);
@@ -44,7 +47,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         OrderLineDTOEx myLine = new OrderLineDTOEx();
         myLine.setItemId(itemID);
         myLine.setQuantity(quantity);
-        populateOrderLine(language, userId, entityId, currencyId, myLine);
+        populateOrderLine(language, userId, entityId, currencyId, myLine, records);
         if (line == null) { // not yet there
             newOrder.setOrderLine(itemID, myLine);
             latestLine = myLine;
@@ -69,42 +72,50 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
      * @param line
      */
     public void populateOrderLine(Integer language, Integer userId, 
-            Integer entityId, Integer currencyId, OrderLineDTOEx line) {
+            Integer entityId, Integer currencyId, OrderLineDTOEx line, 
+            Vector<Record> records) {
         ItemBL itemBL = new ItemBL(line.getItemId());
+        if (records != null) {
+            Vector<PricingField> fields = new Vector<PricingField>();
+            for (Record record : records) {
+                fields.addAll(record.getFields());
+            }
+            itemBL.setPricingFields(fields);
+        }        
         item = itemBL.getDTO(language, userId, entityId, 
                 currencyId);
 
-            Boolean editable = OrderBL.lookUpEditable(item.getOrderLineTypeId());
+        Boolean editable = OrderBL.lookUpEditable(item.getOrderLineTypeId());
 
-            if (line.getDescription() == null) {
-                line.setDescription(item.getDescription());
+        if (line.getDescription() == null) {
+            line.setDescription(item.getDescription());
+        }
+        if (line.getQuantity() == null) {
+            line.setQuantity(1);
+        }
+        if (line.getPrice() == null) {
+            line.setPrice((item.getPercentage() == null) ? item.getPrice() :
+                item.getPercentage());
+        }
+        if (line.getAmount() == null) {
+            BigDecimal additionAmount = null;
+            // normal price, multiply by quantity
+            if (item.getPercentage() == null) {
+                additionAmount = new BigDecimal(line.getPrice().toString());
+                additionAmount = additionAmount.multiply(
+                        new BigDecimal(line.getQuantity().toString()));
+            } else {
+                // percentage ignores the quantity
+                additionAmount = new BigDecimal(item.getPercentage().toString());
             }
-            if (line.getQuantity() == null) {
-                line.setQuantity(1);
-            }
-            if (line.getPrice() == null) {
-                line.setPrice((item.getPercentage() == null) ? item.getPrice() :
-                    item.getPercentage());
-            }
-            if (line.getAmount() == null) {
-                BigDecimal additionAmount = null;
-                // normal price, multiply by quantity
-                if (item.getPercentage() == null) {
-                    additionAmount = new BigDecimal(line.getPrice().toString());
-                    additionAmount = additionAmount.multiply(
-                            new BigDecimal(line.getQuantity().toString()));
-                } else {
-                    // percentage ignores the quantity
-                    additionAmount = new BigDecimal(item.getPercentage().toString());
-                }
-                line.setAmount(new Float(additionAmount.floatValue()));
-            }
-            line.setItemPrice(0);
-            line.setCreateDate(null);
-            line.setDeleted(0);
-            line.setTypeId(item.getOrderLineTypeId());
-            line.setEditable(editable);
-            line.setItem(item);
+            line.setAmount(new Float(additionAmount.floatValue()));
+        }
+        line.setItemPrice(0);
+        line.setCreateDate(null);
+        line.setDeleted(0);
+        line.setTypeId(item.getOrderLineTypeId());
+        line.setEditable(editable);
+        line.setItem(item);
     }
 
     public OrderLineDTOEx getLatestLine() {

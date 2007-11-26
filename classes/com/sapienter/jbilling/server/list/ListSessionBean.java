@@ -215,15 +215,17 @@ public class ListSessionBean implements javax.ejb.SessionBean {
     */
     public ListDTO getDtoList(String type, Hashtable parameters) 
             throws SessionInternalError {
-        ListDTO retValue = null;
+        ListDTO retValue;
         
+        Integer entityId = (Integer) parameters.get("entityId");
         try {
             if (type.equals(Constants.LIST_TYPE_ITEM_ORDER)) {
                 ItemListBL list = new ItemListBL();
-                Integer entityId = (Integer) parameters.get("entityId");
                 Integer languageId = (Integer) parameters.get("languageId");
                 Integer userId = (Integer) parameters.get("userId");
                 retValue = list.getOrderList(entityId, languageId, userId); 
+            } else {
+                throw new SessionInternalError("dto list type " + type + " is not supported");
             }
         } catch (Exception e) {
             log.error("Exception retreiving list " + type, e);

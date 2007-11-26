@@ -30,6 +30,8 @@ import javax.ejb.EJBException;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocalHome;
@@ -80,6 +82,8 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 
 public abstract class OrderEntityBean implements javax.ejb.EntityBean {
+    
+    private static final Logger LOG = Logger.getLogger(OrderEntityBean.class);
     /**
      * @ejb:create-method view-type="local"
      */
@@ -137,6 +141,7 @@ public abstract class OrderEntityBean implements javax.ejb.EntityBean {
             setUser(userBl.getEntity());
         } catch (Exception e) {
             // can't do much ...
+            LOG.debug("Error post creating the order ", e);
         }
     }
 

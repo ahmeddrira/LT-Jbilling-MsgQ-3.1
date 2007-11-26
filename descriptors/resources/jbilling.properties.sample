@@ -33,6 +33,24 @@ force_https=false
 process.time=
 #   frequency: the number of minutes between runs
 process.frequency=720
+# if the daily batch includes running the billing process
+process.run_billing=true
+# if the daily batch includes running the ageing process
+process.run_ageing=true
+# if the daily batch includes running the partner process
+process.run_partner=true
+# if the daily batch includes running the order expiration notification process
+process.run_order_expire=true
+# if the daily batch includes running the invoice reminder notificationprocess
+process.run_invoice_reminder=true
+# if the daily batch includes running the overdue penalties process
+process.run_penalty=true
+# if the daily batch includes running the list statistic collection process
+process.run_list=true
+# if the daily batch includes running the credit card expiration notification process
+process.run_cc_expire=true
+# if the daily batch includes running the mediation process
+process.run_mediation=true
 # if the credit cards are stored encrypted or not
 credit_card_secure=true
 # a key used for the encryption of credit cards
@@ -44,3 +62,5 @@ credit_card_password=a_long_secret_key
 password_encrypt_all=true
 # the password that the user account is set to when a user is locked out (too many login retries)
 lockout_password=totalSecret
+# if the rules base have to be cached or not. Cache for production, leave false for development
+cache_rules=true

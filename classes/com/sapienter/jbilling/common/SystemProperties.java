@@ -33,14 +33,13 @@ import org.apache.log4j.Logger;
 public class SystemProperties {
     private static SystemProperties ref;
     private Properties prop = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(SystemProperties.class);
 
 
     private SystemProperties() throws IOException {
-        log = Logger.getLogger(SystemProperties.class);
         prop = new Properties();
         prop.load(SystemProperties.class.getResourceAsStream("/jbilling.properties"));
-        log.debug("System properties loaded");
+        LOG.debug("System properties loaded");
     }
 
     public static SystemProperties getSystemProperties() 
@@ -62,6 +61,11 @@ public class SystemProperties {
 
         return retValue;
     }
+    
+    public String get(String key, String defaultValue) {
+        return prop.getProperty(key, defaultValue);
+    }
+    
 
     public Object clone()
 	    throws CloneNotSupportedException {

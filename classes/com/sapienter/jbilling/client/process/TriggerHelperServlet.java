@@ -41,12 +41,16 @@ import com.sapienter.jbilling.server.list.ListSessionHome;
  *
  */
 public class TriggerHelperServlet extends HttpServlet {
-	
+
+    private static final Logger LOG = Logger.getLogger(TriggerHelperServlet.class);
+
 	public void init(ServletConfig config) throws ServletException {
 		
 		super.init(config);
         
-        Logger log = Logger.getLogger(TriggerHelperServlet.class);
+        
+        // validate that the java version is correct
+        validateJava();
 		
         // this initializes the cron service, that takes care of 
         // periodically run the billing and other batch process
@@ -54,7 +58,7 @@ public class TriggerHelperServlet extends HttpServlet {
         
         // initialize the currencies, which are in application scope
         ServletContext context = config.getServletContext();
-        log.debug("Loadding application currency symbols");
+        LOG.debug("Loadding application currency symbols");
         try {
             JNDILookup EJBFactory = JNDILookup.getFactory(false);            
             ListSessionHome listHome =
@@ -72,5 +76,21 @@ public class TriggerHelperServlet extends HttpServlet {
         
         // request a table to force the load
         Util.getTableId("entity");
+    }
+    
+    private void validateJava() {
+        Float version = Float.valueOf(System.getProperty("java.version").substring(0, 3));
+        if (version < 1.6F) {
+            // can't run!
+           LOG.fatal("*********************************************************");
+           LOG.fatal("You need Java version 1.6 or higher to run jbilling. " +
+                "Your current version is " + version);
+           LOG.fatal("*********************************************************"); 
+           System.exit(1);
+        }
+        
+        if (!System.getProperty("java.vendor").matches(".*Sun.*")) {
+            LOG.warn("Your java vendor is not Sun. Results are unpredicatble");
+        }
     }
 }

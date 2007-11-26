@@ -57,6 +57,8 @@ import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.list.ListSession;
 import com.sapienter.jbilling.server.list.ListSessionHome;
+import com.sapienter.jbilling.server.mediation.MediationSession;
+import com.sapienter.jbilling.server.mediation.MediationSessionHome;
 
 /**
  * @author Emil
@@ -64,7 +66,7 @@ import com.sapienter.jbilling.server.list.ListSessionHome;
  */
 public class Trigger implements Job{
 	
-    private static Logger log = null;
+    private static final Logger LOG = Logger.getLogger(Trigger.class);
     
     /**
      * Initialize tool Trigger. Load properties from jbilling.properties and set up Quartz job/trigger
@@ -82,8 +84,6 @@ public class Trigger implements Job{
      *
      */
     public static void Initialize() {
-    	log = Logger.getLogger(Trigger.class);
-    	
     	// Load properties from jbilling.properties
     	String time = null;
     	String frequency = null;
@@ -98,7 +98,7 @@ public class Trigger implements Job{
     	// both null or empty, log one message and return
     	if( (time == null || time.length() == 0) && (frequency==null || frequency.length() == 0) )
     	{
-    		log.info("No schedule information found.");
+    		LOG.info("No schedule information found.");
     		return;
     	}
     	
@@ -115,8 +115,8 @@ public class Trigger implements Job{
     		try {
     			interval = Integer.parseInt(frequency);
     		} catch(NumberFormatException e) {
-    			log.debug(e);
-				log.info("Error:" + e.getMessage() + " Schedule does not start.");
+    			LOG.debug(e);
+				LOG.info("Error:" + e.getMessage() + " Schedule does not start.");
 				
 				// Leave
 				return;
@@ -128,18 +128,18 @@ public class Trigger implements Job{
     		try {
     			interval = Integer.parseInt(frequency);
     			if(interval == 0) {
-    				log.info("The frequency can not be zero when time is specified.");
+    				LOG.info("The frequency can not be zero when time is specified.");
     				return;
     			}
 				startTime = df.parse(time);
 			} catch (ParseException e) {
-				log.debug(e);
-				log.info("Error:" + e.getMessage() + " Schedule does not start.");
+				LOG.debug(e);
+				LOG.info("Error:" + e.getMessage() + " Schedule does not start.");
 				// Leave
 				return;
 			} catch(NumberFormatException e) {
-				log.debug(e);
-				log.info("Error:" + e.getMessage() + " Schedule does not start.");
+				LOG.debug(e);
+				LOG.info("Error:" + e.getMessage() + " Schedule does not start.");
 				//Leave
 				return;
 			}			
@@ -164,7 +164,7 @@ public class Trigger implements Job{
 			
 			sched.start();
 		} catch (SchedulerException e) {
-			log.debug(e);
+			LOG.debug(e);
 		}
     }
     
@@ -202,6 +202,11 @@ public class Trigger implements Job{
 						ListSessionHome.class,
 						ListSessionHome.JNDI_NAME);
 			ListSession remoteList = listHome.create();
+            MediationSessionHome mediationHome =
+                (MediationSessionHome) JNDILookup.getFactory(true).lookUpHome(
+                        MediationSessionHome.class,
+                        MediationSessionHome.JNDI_NAME);
+            MediationSession remoteMediation = mediationHome.create();
 
 			// determine the date for this run
 			Date today = Calendar.getInstance().getTime();
@@ -219,76 +224,92 @@ public class Trigger implements Job{
 			}
 
 			// run the billing process
-			log.info("Running trigger for " + today);
-			log.info("Starting billing process at " + 
-					Calendar.getInstance().getTime());
-			remoteBillingProcess.trigger(today);
-			log.info("Ended billing process at " + 
-					Calendar.getInstance().getTime());
+            if (Util.getSysPropBooleanTrue("process.run_billing")) {
+    			LOG.info("Running trigger for " + today);
+    			LOG.info("Starting billing process at " + 
+    					Calendar.getInstance().getTime());
+    			remoteBillingProcess.trigger(today);
+    			LOG.info("Ended billing process at " + 
+    					Calendar.getInstance().getTime());
+            }
 
 			// now the ageing process
 			if (firstOfToday) {
-				log.info("Starting ageing process at " + 
-						Calendar.getInstance().getTime());
-				remoteBillingProcess.reviewUsersStatus(today);
-				log.info("Ended ageing process at " + 
-						Calendar.getInstance().getTime());
+                if (Util.getSysPropBooleanTrue("process.run_ageing")) {
+    				LOG.info("Starting ageing process at " + 
+    						Calendar.getInstance().getTime());
+    				remoteBillingProcess.reviewUsersStatus(today);
+    				LOG.info("Ended ageing process at " + 
+    						Calendar.getInstance().getTime());
+                }
 
-
-				// now the partner payout process
-				log.info("Starting partner process at " + 
-						Calendar.getInstance().getTime());
-				remoteUser.processPayouts(today);
-				log.info("Ended partner process at " + 
-						Calendar.getInstance().getTime());
-
-
-				// finally the orders about to expire notification
-				log.info("Starting order notification at " + 
-						Calendar.getInstance().getTime());
-				remoteOrder.reviewNotifications(today);
-				log.info("Ended order notification at " + 
-						Calendar.getInstance().getTime());
-
-
-				// the invoice reminders
-				log.info("Starting invoice reminders at " + 
-						Calendar.getInstance().getTime());
-				remoteInvoice.sendReminders(today);
-				log.info("Ended invoice reminders at " + 
-						Calendar.getInstance().getTime());
-
-
-				// the invoice penalties
-				log.info("Starting invoice penalties at " + 
-						Calendar.getInstance().getTime());
-				remoteInvoice.processOverdue(today);
-				log.info("Ended invoice penalties at " + 
-						Calendar.getInstance().getTime());
-
-				// update the listing statistics
-				log.info("Starting list stats at " + 
-						Calendar.getInstance().getTime());
-				remoteList.updateStatistics();
-				log.info("Ended list stats at " + 
-						Calendar.getInstance().getTime());
-
-				// send credit card expiration emails
-				log.info("Starting credit card expiration at " + 
-						Calendar.getInstance().getTime());
-				remoteUser.notifyCreditCardExpiration(today);
-				log.info("Ended credit card expiration at " + 
-						Calendar.getInstance().getTime());
+                if (Util.getSysPropBooleanTrue("process.run_partner")) {
+                    // now the partner payout process
+                    LOG.info("Starting partner process at "
+                            + Calendar.getInstance().getTime());
+                    remoteUser.processPayouts(today);
+                    LOG.info("Ended partner process at "
+                            + Calendar.getInstance().getTime());
+                }		
+                
+                if (Util.getSysPropBooleanTrue("process.run_order_expire")) {
+                    // finally the orders about to expire notification
+                    LOG.info("Starting order notification at "
+                            + Calendar.getInstance().getTime());
+                    remoteOrder.reviewNotifications(today);
+                    LOG.info("Ended order notification at "
+                            + Calendar.getInstance().getTime());
+                }                
+                if (Util.getSysPropBooleanTrue("process.run_invoice_reminder")) {
+                    // the invoice reminders
+                    LOG.info("Starting invoice reminders at "
+                            + Calendar.getInstance().getTime());
+                    remoteInvoice.sendReminders(today);
+                    LOG.info("Ended invoice reminders at "
+                            + Calendar.getInstance().getTime());
+                }                
+                if (Util.getSysPropBooleanTrue("process.run_penalty")) {
+                    // the invoice penalties
+                    LOG.info("Starting invoice penalties at "
+                            + Calendar.getInstance().getTime());
+                    remoteInvoice.processOverdue(today);
+                    LOG.info("Ended invoice penalties at "
+                            + Calendar.getInstance().getTime());
+                }                
+                if (Util.getSysPropBooleanTrue("process.run_list")) {
+                    // update the listing statistics
+                    LOG.info("Starting list stats at "
+                            + Calendar.getInstance().getTime());
+                    remoteList.updateStatistics();
+                    LOG.info("Ended list stats at "
+                            + Calendar.getInstance().getTime());
+                }                
+                if (Util.getSysPropBooleanTrue("process.run_cc_expire")) {
+                    // send credit card expiration emails
+                    LOG.info("Starting credit card expiration at "
+                            + Calendar.getInstance().getTime());
+                    remoteUser.notifyCreditCardExpiration(today);
+                    LOG.info("Ended credit card expiration at "
+                            + Calendar.getInstance().getTime());
+                }                
+                if (Util.getSysPropBooleanTrue("process.run_mediation")) {
+                    // send credit card expiration emails
+                    LOG.info("Starting mediation at "
+                            + Calendar.getInstance().getTime());
+                    remoteMediation.trigger();
+                    LOG.info("Ended mediation at "
+                            + Calendar.getInstance().getTime());
+                }                
 			}
 
 		} catch (RemoteException e) {
-			log.debug(e);
+			LOG.debug(e);
 		} catch (NamingException e) {
-			log.debug(e);
+			LOG.debug(e);
 		} catch (CreateException e) {
-			log.debug(e);
+			LOG.debug(e);
 		} catch (SessionInternalError e) {
-			log.debug(e);
+			LOG.debug(e);
 		}
 		
 	}

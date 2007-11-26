@@ -313,6 +313,7 @@ Contributor(s): ______________________________________
     <EventLogModule Id="10"/>
     <EventLogModule Id="11"/>
     <EventLogModule Id="12"/>
+    <EventLogModule Id="13"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Manual invoice deletion"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Invoice maintenance"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Pluggable tasks maintenance"/>
@@ -1856,6 +1857,8 @@ Contributor(s): ______________________________________
     <JbillingTable Id="3" Name="language" NextId="2"/>
     <JbillingTable Id="80" Name="payment_invoice" NextId="1"/>
     <JbillingTable Id="81" Name="subscriber_status" NextId="7"/>
+    <JbillingTable Id="82" Name="mediation_cfg" NextId="1"/>
+    <JbillingTable Id="83" Name="mediation_process" NextId="1"/>
     <JbillingTableColumn TableId="0" Id="0" Name="id"/>
     <JbillingTableColumn TableId="0" Id="1" Name="titleKey"/>
     <JbillingTableColumn TableId="0" Id="2" Name="instructionsKey"/>
@@ -2354,6 +2357,8 @@ Contributor(s): ______________________________________
     <MenuOption Id="92" Link="/invoice/batchDownload.jsp" LevelField="2" ParentId="35"/>
     <MenuOption Id="93" Link="/task.do?action=setup" LevelField="2" ParentId="4"/>
     <MenuOption Id="94" Link="/invoice/logo.jsp" LevelField="2" ParentId="35"/>
+    <MenuOption Id="95" Link="/mediation/process.jsp" LevelField="2" ParentId="37"/>
+    <MenuOption Id="96" Link="/mediation/configuration.do?action=setup" LevelField="2" ParentId="4"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>
     <NotificationMessageType Id="3" Sections="2"/>
@@ -2541,6 +2546,8 @@ Contributor(s): ______________________________________
     <Permission Id="140" TypeId="5" ForeignId="21"/>
     <Permission Id="141" TypeId="5" ForeignId="22"/>
     <Permission Id="142" TypeId="5" ForeignId="23"/>
+    <Permission Id="143" TypeId="1" ForeignId="95"/>
+    <Permission Id="144" TypeId="1" ForeignId="96"/>
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2886,6 +2893,8 @@ Contributor(s): ______________________________________
     <PermissionRoleMap PermissionId="141" RoleId="3"/>
     <PermissionRoleMap PermissionId="142" RoleId="2"/>
     <PermissionRoleMap PermissionId="142" RoleId="3"/>
+    <PermissionRoleMap PermissionId="143" RoleId="2"/>
+    <PermissionRoleMap PermissionId="144" RoleId="2"/>
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>
@@ -2925,6 +2934,9 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
     <PluggableTaskType Id="29" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
     <PluggableTaskType Id="30" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask" MinParameters="0"/>
+    <PluggableTaskType Id="31" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.SeparatorFileReader" MinParameters="2"/>
+    <PluggableTaskType Id="32" CategoryId="16" ClassName="com.sapienter.jbilling.server.mediation.task.RulesMediationTask" MinParameters="0"/>
+    <PluggableTaskType Id="33" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.FixedFileReader" MinParameters="2"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
@@ -2939,6 +2951,8 @@ Contributor(s): ______________________________________
     <PluggableTaskTypeCategory Id="12" Description="async processor parameters" InterfaceName="com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters"/>
     <PluggableTaskTypeCategory Id="13" Description="item purchase manager" InterfaceName="com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager"/>
     <PluggableTaskTypeCategory Id="14" Description="item pricing (rating)" InterfaceName="com.sapienter.jbilling.server.item.tasks.IPricing"/>
+    <PluggableTaskTypeCategory Id="15" Description="Mediation Reader" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationReader"/>
+    <PluggableTaskTypeCategory Id="16" Description="Mediation Processor" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationProcess"/>
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

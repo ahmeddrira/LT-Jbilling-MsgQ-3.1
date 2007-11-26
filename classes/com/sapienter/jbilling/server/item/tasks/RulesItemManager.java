@@ -23,14 +23,11 @@ package com.sapienter.jbilling.server.item.tasks;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import org.drools.FactHandle;
 import org.drools.RuleBase;
-import org.drools.StatefulSession;
 import org.drools.StatelessSession;
 
 import com.sapienter.jbilling.common.Constants;
@@ -38,6 +35,7 @@ import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineDTOEx;
@@ -52,12 +50,13 @@ import com.sapienter.jbilling.server.util.DTOFactory;
 public class RulesItemManager extends BasicItemManager implements OrderProcessingTask {
 
     private OrderManager helperOrder = null;
-    private Hashtable<Object,FactHandle> handlers = null;
-    
+    private Vector<Record> records;
     public void addItem(Integer itemID, Integer quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            NewOrderDTO order) throws TaskException {
-        super.addItem(itemID, quantity, language, userId, entityId, currencyId, order);
+            NewOrderDTO order, Vector<Record> records) throws TaskException {
+        super.addItem(itemID, quantity, language, userId, entityId, currencyId, 
+                order, records);
+        this.records = records;
         helperOrder = new OrderManager(order, language, userId, entityId, currencyId);
         processRules(order);
     }
@@ -71,7 +70,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        StatefulSession session = ruleBase.newStatefulSession();
+        session = ruleBase.newStatefulSession();
         Vector<Object> rulesMemoryContext = new Vector<Object>();
         for (OrderLineDTOEx line: newOrder.getOrderLinesMap().values()) {
             rulesMemoryContext.add(line.getItem());
@@ -106,17 +105,6 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         session.executeWithResults(context);
     }
     
-    private void executeStatefulRules(StatefulSession session, Vector context) {
-        handlers = new Hashtable<Object,FactHandle>();
-        for (Object o: context) {
-            handlers.put(o, session.insert(o));
-        }
-        helperOrder.setHandles(handlers);
-        helperOrder.setSession(session);
-
-        session.fireAllRules();
-    }
-    
     public void doProcessing(NewOrderDTO order) throws TaskException {
         try {
             UserBL user = new UserBL(order.getUserId());
@@ -133,14 +121,12 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         parent.doProcessing(order);
     }
     
-    public static class OrderManager {
+    public class OrderManager {
         private NewOrderDTO order = null;
         private Integer language = null;
         private Integer userId = null;
         private Integer entityId = null;
         private Integer currencyId = null;
-        private StatefulSession session = null;
-        private Hashtable<Object,FactHandle>  handles = null;
         
         public OrderManager(NewOrderDTO order, Integer language,
                 Integer userId, Integer entityId, Integer currencyId) {
@@ -162,13 +148,10 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         public OrderLineDTOEx addItem(Integer itemID, Integer quantity) 
                 throws TaskException {
             BasicItemManager helper = new BasicItemManager();
-            if (order.getOrderLine(itemID) != null) {
-                session.retract(handles.get(order.getOrderLine(itemID)));
-            }
-            helper.addItem(itemID, quantity, language, userId, entityId, currencyId, order);
+            OrderLineDTOEx oldLine = order.getOrderLine(itemID); 
+            helper.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
             OrderLineDTOEx retValue =  helper.getLatestLine();
-            handles.put(retValue, session.insert(retValue));
-            session.fireAllRules(); // might lead to infinite recurring loop
+            updateObject(oldLine, retValue);
             return retValue;
         }
         
@@ -189,10 +172,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         }
         
         public void removeItem(Integer itemId) {
-            FactHandle h = handles.get(order.getOrderLine(itemId));
-            if (h != null) {
-                session.retract(h);
-            }
+            removeObject(order.getOrderLine(itemId));
             order.removeOrderLine(itemId);
         }
         
@@ -224,14 +204,6 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             updateLine.setAmount(result.floatValue());
             
             return updateLine;
-        }
-
-        public void setHandles(Hashtable<Object, FactHandle> handles) {
-            this.handles = handles;
-        }
-
-        public void setSession(StatefulSession session) {
-            this.session = session;
         }
     }
     

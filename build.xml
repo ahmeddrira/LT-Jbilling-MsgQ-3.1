@@ -456,7 +456,26 @@
 	  	  <test name="com.sapienter.jbilling.server.invoice.WSTest" />
       </junit>
   </target>
-  
+
+  <target name="test-mediation">
+  	  <mkdir dir="${base_dir}/mediation"/>
+	  <copy file="${source.mediation.descriptor.dir}/asterisk.xml" 
+	  	    todir="${base_dir}/mediation"/>
+	  <copy file="${source.mediation.descriptor.dir}/mediation.dtd" 
+	  	    todir="${base_dir}/mediation"/>
+	  <copy file="${source.mediation.descriptor.dir}/asterisk-sample1.csv" 
+	  	    todir="${base_dir}/mediation"/>
+	  <javac debug="on" destdir="${build.test.dir}"
+	         srcdir="${source.test.dir}/com/sapienter/jbilling/server/mediation">
+	     <classpath refid="run.classpath"/>
+	  </javac>
+	  <junit printsummary="off" haltonfailure="true">
+          <classpath refid="run.classpath"/>
+		  <formatter type="brief" usefile="false"/>
+		  <test name="com.sapienter.jbilling.server.mediation.MediationTest"/>
+	  </junit>
+  </target>
+
   <target name="test-process">
        <javac debug="on" destdir="${build.test.dir}"
               srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
@@ -470,7 +489,7 @@
 	   </junit>
   </target>
   
-	<target name="test" depends="test-ws, test-process">
+	<target name="test" depends="test-ws, test-mediation, test-process">
 	</target>
 
   <!--

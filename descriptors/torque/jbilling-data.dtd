@@ -87,7 +87,11 @@
     Role|
     UserCreditCardMap|
     UserRoleMap|
-    UserStatus)*>
+    UserStatus|
+    SubscriptionStatus|
+    MediationCfg|
+    MediationProcess|
+    MediationOrderMap)*>
 <!ATTLIST dataset
     name CDATA #REQUIRED
 >
@@ -943,5 +947,20 @@
 <!ATTLIST UserStatus
     Id CDATA #REQUIRED
     CanLogin CDATA #REQUIRED
+>
+
+<!ELEMENT SubscriptionStatus EMPTY>
+<!ATTLIST SubscriptionStatus
+    Id CDATA #REQUIRED
+>
+
+<!ELEMENT MediationCfg EMPTY>
+<!ATTLIST MediationCfg
+    Id CDATA #REQUIRED
+>
+
+<!ELEMENT MediationProcess EMPTY>
+<!ATTLIST MediationProcess
+    Id CDATA #REQUIRED
 >
 

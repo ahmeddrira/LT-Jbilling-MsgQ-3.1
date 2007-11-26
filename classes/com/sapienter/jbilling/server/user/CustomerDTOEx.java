@@ -49,10 +49,10 @@ public class CustomerDTOEx extends CustomerDTO {
     public CustomerDTOEx(Integer id, Integer referralFeePaid, 
             String notes, Integer deliveryMethodId, Integer autoPaymentType,
             Integer dueDateUnitId, Integer dueDateValue, Integer isParent, 
-            Integer excludeAging, Integer invoiceChild ) {
+            Integer excludeAging, Integer invoiceChild, Integer currentOrderId ) {
         super(id, referralFeePaid, notes, deliveryMethodId, autoPaymentType,
                 dueDateUnitId, dueDateValue, null, isParent, excludeAging,
-                invoiceChild);
+                invoiceChild, currentOrderId);
     }
 
     /**

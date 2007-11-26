@@ -24,16 +24,16 @@ import java.io.Serializable;
 import java.util.Vector;
 
 public class ListDTO implements Serializable {
-    private Vector lines = null;
+    private Vector<Object[]> lines = null;
     private Integer types[] = null;
     
     public ListDTO() {
-        lines = new Vector();
+        lines = new Vector<Object[]>();
     }
     /**
      * @return
      */
-    public Vector getLines() {
+    public Vector<Object[]> getLines() {
         return lines;
     }
 
@@ -47,7 +47,7 @@ public class ListDTO implements Serializable {
     /**
      * @param vector
      */
-    public void setLines(Vector vector) {
+    public void setLines(Vector<Object[]> vector) {
         lines = vector;
     }
 

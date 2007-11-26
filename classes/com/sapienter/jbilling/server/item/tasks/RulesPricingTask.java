@@ -55,7 +55,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         session.setGlobal("manager", manager);
         
         if (fields != null && !fields.isEmpty()) {
-            rulesMemoryContext.add(fields);
+            rulesMemoryContext.addAll(fields);
         }
 
         try {

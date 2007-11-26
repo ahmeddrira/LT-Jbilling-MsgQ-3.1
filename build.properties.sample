@@ -8,6 +8,7 @@ source.descriptor.dir=${source.dir}/descriptors
 source.sql.dir=${source.dir}/sql
 source.web.descriptor.dir=${source.descriptor.dir}/web
 source.resources.descriptor.dir=${source.descriptor.dir}/resources
+source.mediation.descriptor.dir=${source.descriptor.dir}/mediation
 source.jboss.descriptor.dir=${source.descriptor.dir}/jboss
 source.torque.descriptor.dir=${source.descriptor.dir}/torque
 source.server.package.dir=com/sapienter/jbilling/server

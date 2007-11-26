@@ -35,6 +35,7 @@ import javax.naming.NamingException;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
@@ -150,5 +151,21 @@ public class EntityBL extends ResultList
         conn.close();
         
         return cachedResults;
+    }
+    
+    public Integer getRootUser(Integer entityId) {
+        try {
+            prepareStatement(EntitySQL.findRoot);
+            cachedResults.setInt(1, entityId);
+
+            execute();
+            conn.close();
+            
+            cachedResults.next();
+            return cachedResults.getInt(1);
+        } catch (Exception e) {
+            throw new SessionInternalError("Finding root user for entity " + 
+                    entity.getId(), EntityBL.class, e);
+        } 
     }
 }

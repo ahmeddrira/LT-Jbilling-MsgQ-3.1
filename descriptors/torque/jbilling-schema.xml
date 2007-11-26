@@ -310,6 +310,7 @@
         <column name="is_parent" type="SMALLINT"/>
         <column default="0" name="exclude_aging" required="true" type="SMALLINT"/>
         <column name="invoice_child" type="SMALLINT"/>
+        <column name="current_order_id" type="INTEGER"/>
         <index name="customer_i_2">
 	        <index-column name="user_id"/>
         </index>
@@ -1264,5 +1265,38 @@
     </table>
     <table name="subscriber_status">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+    </table>
+    <table name="mediation_cfg">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="entity_id" type="INTEGER" required="true"/>
+        <column name="create_datetime" required="true" type="TIMESTAMP"/>
+        <column name="name" size="50" type="VARCHAR" required="true"/>
+        <column name="order_value" type="INTEGER" required="true"/>
+        <column name="pluggable_task_id" type="INTEGER" required="true"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <foreign-key foreignTable="pluggable_task">
+            <reference foreign="id" local="pluggable_task_id"/>
+        </foreign-key>
+    </table>
+    <table name="mediation_process">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="configuration_id" type="INTEGER" required="true"/>
+        <column name="start_datetime" required="true" type="TIMESTAMP"/>
+        <column name="end_datetime" required="true" type="TIMESTAMP"/>
+        <column name="orders_affected" type="INTEGER" required="true"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <foreign-key foreignTable="pluggable_task">
+            <reference foreign="id" local="configuration_id"/>
+        </foreign-key>
+    </table>
+    <table name="mediation_order_map">
+        <column name="mediation_process_id" type="INTEGER" required="true"/>
+        <column name="order_id" type="INTEGER" required="true"/>
+        <foreign-key foreignTable="mediation_process">
+            <reference foreign="id" local="mediation_process_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="purchase_order">
+            <reference foreign="id" local="order_id"/>
+        </foreign-key>
     </table>
 </database>

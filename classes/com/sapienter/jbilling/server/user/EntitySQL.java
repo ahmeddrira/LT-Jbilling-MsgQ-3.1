@@ -41,5 +41,12 @@ public interface EntitySQL {
     static final String getTables = 
         "select name, id " +
         "  from jbilling_table";
-        
+ 
+    static final String findRoot = 
+        "select id " +
+        "  from base_user b, user_role_map m" +
+        " where entity_id = ? " +
+        "   and m.user_id = b.id " +
+        "   and m.role_id = 2 " +
+        " order by 1";
 }

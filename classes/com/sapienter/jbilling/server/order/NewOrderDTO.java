@@ -20,17 +20,21 @@ Contributor(s): ______________________________________.
 
 package com.sapienter.jbilling.server.order;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
 import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.DTOFactory;
 
 /**
  * @author emilc
@@ -57,6 +61,21 @@ public class NewOrderDTO extends OrderDTO {
         rawOrderLines = new ArrayList<OrderLineDTOEx>();
     }
     
+    public NewOrderDTO(OrderDTO order, OrderEntityLocal orderRow) {
+        super(order);
+        orderLines = new Hashtable<Integer, OrderLineDTOEx>();
+        orderTotal = new Float(0.0F);
+        rawOrderLines = new ArrayList<OrderLineDTOEx>();
+        userId = orderRow.getUser().getUserId();
+        period = orderRow.getPeriod().getId();
+        // add the lines
+        for(OrderLineEntityLocal line: (Collection <OrderLineEntityLocal>)orderRow.getOrderLines()) {
+            OrderLineDTOEx myLine = DTOFactory.getOrderLineDTOEx(line);
+            rawOrderLines.add(myLine);
+            orderLines.put(myLine.getItemId(), myLine);
+        }
+        
+    }
     public NewOrderDTO(OrderWS order) 
         throws SessionInternalError {
         super(order);

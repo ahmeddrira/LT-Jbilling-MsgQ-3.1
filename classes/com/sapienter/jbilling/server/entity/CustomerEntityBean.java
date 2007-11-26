@@ -229,6 +229,17 @@ public abstract class CustomerEntityBean implements EntityBean {
      */
     public abstract void setInvoiceChild(Integer flag);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="current_order_id"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getCurrentOrderId();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setCurrentOrderId(Integer orderId);
     // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"

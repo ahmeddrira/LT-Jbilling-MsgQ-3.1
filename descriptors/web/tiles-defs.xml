@@ -347,4 +347,16 @@
     </definition>
     <definition name="system.task.edit" extends="main"><put name="featureTitle" value="bar.system.task" /><put name="body" value="/system/taskEdit.jsp" />
     </definition>
+    <!-- 
+           Mediation screens
+     -->
+    <definition name="mediation.process.list" extends="main">
+    	<put name="featureTitle" value="mediation.process.list.bar" />
+    	<put name="body" value="/mediation/processList.jsp" />
+    </definition>
+    <definition name="mediation.configuration" extends="main">
+    	<put name="featureTitle" value="mediation.configuration.bar" />
+    	<put name="body" value="/mediation/configurationEdit.jsp" />
+    </definition>
+
 </tiles-definitions>

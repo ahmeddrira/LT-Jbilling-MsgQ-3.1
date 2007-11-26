@@ -132,7 +132,17 @@ where deleted = 0
   and status_id <= 4
   and bu.id = urm.user_id
   and urm.role_id = 5
-group by entity_id;
+group by entity_id
+order by 2;
+#number of invoices
+select count(*), entity_id
+  from base_user bu, invoice i
+ where i.user_id = bu.id
+   and i.deleted = 0
+   and bu.deleted = 0
+   and i.create_timestamp between '2007-10-01' and '2007-10-31'
+   group by entity_id
+   order by 2;
 
 #find out the totals by payment method to recreate a billing_process_total_pm record
 iselect sum(p.amount), method_id 

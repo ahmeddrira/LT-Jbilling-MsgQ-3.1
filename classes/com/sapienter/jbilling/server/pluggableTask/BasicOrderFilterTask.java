@@ -27,9 +27,6 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -244,9 +241,6 @@ public class BasicOrderFilterTask
                     e.getMessage());
         } catch (SessionInternalError e) {
             log.fatal("Internal exception ", e);
-            throw new TaskException(e);
-        } catch (NamingException e) {
-            log.fatal("Problems with the event logger", e);
             throw new TaskException(e);
         } 
         

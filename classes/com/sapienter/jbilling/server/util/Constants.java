@@ -119,6 +119,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_ACH = "ach";
     public static final String TABLE_LIST_ENTITY = "list_entity";
     public static final String TABLE_LIST_FIELD_ENTITY = "list_field_entity";
+    public static final String TABLE_MEDIATION_CFG = "mediation_cfg";
      
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);
@@ -153,6 +154,7 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_ASYNC_PAYMENT_PARAMS = new Integer(12);
     public static final Integer PLUGGABLE_TASK_ITEM_MANAGER = new Integer(13);
     public static final Integer PLUGGABLE_TASK_ITEM_PRICING = new Integer(14);
+    public static final Integer PLUGGABLE_TASK_MEDIATION_PROCESS = new Integer(16);
     
     // pluggable task types (belongs to a category)
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);

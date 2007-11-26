@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -62,6 +63,7 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.PromotionBL;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
@@ -175,6 +177,23 @@ public class OrderBL extends ResultList
         order = newOrder;
     }
 
+    public void setUserCurrent(Integer userId) {
+        try {
+            UserBL user = new UserBL(userId);
+            Integer orderId = user.getEntity().getCustomer().getCurrentOrderId();
+            if (orderId != null) {
+                set(orderId);
+                // deleted does not count
+                if (order.getDeleted().equals(1)) {
+                    order = null;
+                }
+            } else {
+                order = null;
+            }
+        } catch (FinderException e) {
+            throw new SessionInternalError("Can not find for current order", OrderBL.class, e);
+        }
+    }
 
     public NewOrderDTO getNewOrderDTO() {
         return newOrder;
@@ -223,7 +242,7 @@ public class OrderBL extends ResultList
     }
 
     public void addItem(Integer itemID, Integer quantity, Integer language, 
-            Integer userId, Integer entityId, Integer currencyId) {
+            Integer userId, Integer entityId, Integer currencyId, Vector<Record> records) {
 
             try {
                 PluggableTaskManager<IItemPurchaseManager> taskManager =
@@ -232,7 +251,7 @@ public class OrderBL extends ResultList
                 IItemPurchaseManager myTask = taskManager.getNextClass();
                 
                 while(myTask != null) {
-                    myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, newOrder);
+                    myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, newOrder, records);
                     myTask = taskManager.getNextClass();
                 }
             } catch (Exception e) {
@@ -242,6 +261,11 @@ public class OrderBL extends ResultList
 
     }
 
+    public void addItem(Integer itemID, Integer quantity, Integer language, 
+            Integer userId, Integer entityId, Integer currencyId) {
+        addItem(itemID, quantity, language, userId, entityId, currencyId, null);
+    }
+    
     public void deleteItem(Integer itemID) {
         newOrder.removeOrderLine(itemID);
     }
@@ -1029,5 +1053,55 @@ public class OrderBL extends ResultList
             line.setPrice(dto.getPrice());
             line.setQuantity(dto.getQuantity());
         }
+    }
+    
+    public void updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId, 
+            Vector<OrderLineDTOEx> lines, Vector<Record> records) {
+        
+        try {
+            EntityBL entity = new EntityBL(entityId);
+            NewOrderDTO currentOrder;
+            setUserCurrent(userId);
+            UserBL user = new UserBL(userId);
+            Integer language = user.getEntity().getLanguageIdField();
+            
+            
+            if (order == null || 
+                    order.getStatusId().equals(Constants.ORDER_STATUS_FINISHED)) {
+                // create a new one
+                currentOrder = new NewOrderDTO();
+                currentOrder.setCurrencyId(currencyId);
+                // notes
+                ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+                        entity.getLocale());
+                currentOrder.setNotes(bundle.getString("order.current.notes"));
+
+                currentOrder.setPeriod(Constants.ORDER_PERIOD_ONCE);
+                currentOrder.setUserId(userId);
+                setDTO(currentOrder);
+                for (OrderLineDTOEx line: lines) {
+                    addItem(line.getItemId(), line.getQuantity(), language, userId, 
+                            entityId, currencyId, records);
+                }
+
+                // create the order and update the customer record
+                user.getEntity().getCustomer().setCurrentOrderId(create(
+                        entityId, executorId, currentOrder));
+                
+                
+            } else {
+                // update an existing order
+                currentOrder = new NewOrderDTO(getDTO(), order);
+                setDTO(currentOrder);
+                for (OrderLineDTOEx line: lines) {
+                    addItem(line.getItemId(), line.getQuantity(), language, userId, 
+                            entityId, currencyId, records);
+                }
+                update(executorId, currentOrder);
+            }
+            
+        } catch (Exception e) {
+            throw new SessionInternalError("Updating current order", OrderBL.class, e);
+        } 
     }
 }

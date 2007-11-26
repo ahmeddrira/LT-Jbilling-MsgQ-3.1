@@ -52,7 +52,7 @@ import com.sapienter.jbilling.server.util.DTOFactory;
  **/
 public class OrderSessionBean implements SessionBean {
     
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(OrderSessionBean.class);
     private SessionContext context = null;
 
     /**
@@ -126,12 +126,12 @@ public class OrderSessionBean implements SessionBean {
             String rootUser, boolean process) 
             throws SessionInternalError {
         try {
-            log.debug("bkp 1");
+            LOG.debug("bkp 1");
             // get the info from the caller
             UserBL bl = new UserBL();
             bl.setRoot(rootUser);
             Integer executorId = bl.getEntity().getUserId();
-            log.debug("bkp 2");
+            LOG.debug("bkp 2");
             // make a dto out of the ws
             NewOrderDTO dto = new NewOrderDTO(order);
             
@@ -141,11 +141,11 @@ public class OrderSessionBean implements SessionBean {
                 orderBL.fillInLines(dto, entityId);
                 orderBL.recalculate(entityId);
             }
-            log.debug("bkp 4");
+            LOG.debug("bkp 4");
             return orderBL.create(entityId, executorId, dto);
             
         } catch(Exception e) {
-            log.debug("Exception:", e);
+            LOG.debug("Exception:", e);
             throw new SessionInternalError(e);
         }
 
@@ -262,7 +262,6 @@ public class OrderSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext aContext)
             throws EJBException {
-        log = Logger.getLogger(OrderSessionBean.class);
         context = aContext;
     }
 

@@ -2357,7 +2357,7 @@ Contributor(s): ______________________________________
     <MenuOption Id="92" Link="/invoice/batchDownload.jsp" LevelField="2" ParentId="35"/>
     <MenuOption Id="93" Link="/task.do?action=setup" LevelField="2" ParentId="4"/>
     <MenuOption Id="94" Link="/invoice/logo.jsp" LevelField="2" ParentId="35"/>
-    <MenuOption Id="95" Link="/mediation/process.jsp" LevelField="2" ParentId="37"/>
+    <MenuOption Id="95" Link="/mediation/processList.do" LevelField="2" ParentId="37"/>
     <MenuOption Id="96" Link="/mediation/configuration.do?action=setup" LevelField="2" ParentId="4"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>

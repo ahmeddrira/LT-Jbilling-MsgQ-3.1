@@ -29,7 +29,7 @@ Contributor(s): ______________________________________.
 <p class="title"> <bean:message key="mediation.process.list.title"/> </p>
 <p class="instr"> <bean:message key="mediation.process.list.instr"/> </p>
 
-<logic:present name="mediation_process_list">
+<logic:notEmpty name="mediation_process_list" scope="session">
 <table class="list">
 	<tr class="listH">
 		<td><bean:message key="mediation.process.list.id"/></td>
@@ -78,8 +78,8 @@ Contributor(s): ______________________________________.
 		</tr>
 	</logic:iterate>
 </table>
-</logic:present>
+</logic:notEmpty>
 
-<logic:notPresent name="mediation_process_list">
+<logic:empty name="mediation_process_list" scope="session">
    <bean:message key="mediation.process.list.empty"/>
-</logic:notPresent>
+</logic:empty>

@@ -67,6 +67,8 @@ public class RulesMediationTask extends PluggableTask implements
         
         manager = new ProcessManager(configurationName);
         session.setGlobal("mediationManager", manager);
+        // the manager needs to be also an object in the working memory
+        rulesMemoryContext.add(manager);
         // then execute the rules
         executeStatefulRules(session, rulesMemoryContext);
         

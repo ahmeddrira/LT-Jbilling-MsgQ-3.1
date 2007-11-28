@@ -489,7 +489,7 @@
 	   </junit>
   </target>
   
-	<target name="test" depends="test-ws, test-mediation, test-process">
+	<target name="test" depends="test-ws, test-process, test-mediation">
 	</target>
 
   <!--

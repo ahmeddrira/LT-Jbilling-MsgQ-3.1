@@ -526,7 +526,7 @@ public final class EntitySignup {
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK, pluggableTaskColumns, pluggableTaskData, false);
         processTable(table);
-        int firstPT = table.nextId - pluggableTaskData.length - 1;
+        int firstPT = table.nextId - pluggableTaskData.length;
         
         updateBettyTablesRows(table.index, table.nextId);
         

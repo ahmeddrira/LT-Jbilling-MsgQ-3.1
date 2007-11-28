@@ -2937,7 +2937,7 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="30" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
     <PluggableTaskType Id="31" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask" MinParameters="0"/>
     <PluggableTaskType Id="32" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.SeparatorFileReader" MinParameters="2"/>
-    <PluggableTaskType Id="32" CategoryId="16" ClassName="com.sapienter.jbilling.server.mediation.task.RulesMediationTask" MinParameters="0"/>
+    <PluggableTaskType Id="33" CategoryId="16" ClassName="com.sapienter.jbilling.server.mediation.task.RulesMediationTask" MinParameters="0"/>
     <PluggableTaskType Id="34" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.FixedFileReader" MinParameters="2"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

@@ -2923,7 +2923,6 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="16" CategoryId="2" ClassName="com.sapienter.jbilling.server.pluggableTask.OrderFilterAnticipatedTask" MinParameters="0"/>
     <PluggableTaskType Id="9" CategoryId="7" ClassName="com.sapienter.jbilling.server.pluggableTask.BasicEmailNotificationTask" MinParameters="6"/>
     <PluggableTaskType Id="17" CategoryId="5" ClassName="com.sapienter.jbilling.server.pluggableTask.OrderPeriodAnticipateTask" MinParameters="0"/>
-    <PluggableTaskType Id="18" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentBitMoversTask" MinParameters="0"/>
     <PluggableTaskType Id="19" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask" MinParameters="1"/>
     <PluggableTaskType Id="20" CategoryId="10" ClassName="com.sapienter.jbilling.server.pluggableTask.ProcessorEmailAlarmTask" MinParameters="3"/>
     <PluggableTaskType Id="21" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentFakeTask" MinParameters="0"/>
@@ -2932,13 +2931,14 @@ Contributor(s): ______________________________________
     <PluggableTaskType Id="24" CategoryId="6" ClassName="com.sapienter.jbilling.server.user.tasks.PaymentACHCommerceTask" MinParameters="5"/>
     <PluggableTaskType Id="25" CategoryId="12" ClassName="com.sapienter.jbilling.server.payment.tasks.NoAsyncParameters" MinParameters="0"/>
     <PluggableTaskType Id="26" CategoryId="12" ClassName="com.sapienter.jbilling.server.payment.tasks.RouterAsyncParameters" MinParameters="0"/>
-    <PluggableTaskType Id="27" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.BasicItemManager" MinParameters="0"/>
-    <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
-    <PluggableTaskType Id="29" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
-    <PluggableTaskType Id="30" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask" MinParameters="0"/>
-    <PluggableTaskType Id="31" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.SeparatorFileReader" MinParameters="2"/>
+    <PluggableTaskType Id="27" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask" MinParameters="1"/>
+    <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.BasicItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="29" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="30" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="31" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask" MinParameters="0"/>
+    <PluggableTaskType Id="32" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.SeparatorFileReader" MinParameters="2"/>
     <PluggableTaskType Id="32" CategoryId="16" ClassName="com.sapienter.jbilling.server.mediation.task.RulesMediationTask" MinParameters="0"/>
-    <PluggableTaskType Id="33" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.FixedFileReader" MinParameters="2"/>
+    <PluggableTaskType Id="34" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.FixedFileReader" MinParameters="2"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

@@ -1,21 +1,21 @@
 /*
-The contents of this file are subject to the Jbilling Public License
-Version 1.1 (the "License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.jbilling.com/JPL/
+    jbilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2007 Sapienter Billing Software Corp. and Emiliano Conde
 
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-License for the specific language governing rights and limitations
-under the License.
+    This file is part of jbilling.
 
-The Original Code is jbilling.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-The Initial Developer of the Original Code is Emiliano Conde.
-Portions created by Sapienter Billing Software Corp. are Copyright 
-(C) Sapienter Billing Software Corp. All Rights Reserved.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-Contributor(s): ______________________________________.
+    You should have received a copy of the GNU General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package com.sapienter.jbilling.server.customer;
@@ -32,13 +32,18 @@ public interface CustomerSQL {
         "select c.id, c.id, a.organization_name, a.last_name, a.first_name, " +
 		"       c.user_name " +
     	"from contact a, contact_map b, base_user c, jbilling_table d, " +
-        "     contact_type ct, user_role_map urm " +    	"where a.id = b.contact_id" +    	"  and b.foreign_id = c.id" +    	"  and b.table_id = d.id" +
+        "     contact_type ct, user_role_map urm " +
+    	"where a.id = b.contact_id" +
+    	"  and b.foreign_id = c.id" +
+    	"  and b.table_id = d.id" +
         "  and b.type_id = ct.id " +
-        "  and ct.is_primary = 1 " +    	"  and d.name = 'base_user'" +
+        "  and ct.is_primary = 1 " +
+    	"  and d.name = 'base_user'" +
     	"  and c.deleted = 0 " +
     	"  and a.deleted = 0 " +
         "  and c.id = urm.user_id " +
-        "  and urm.role_id in (2,3,4) " + // no customers or internals    	"  and c.entity_id = ? " +
+        "  and urm.role_id in (2,3,4) " + // no customers or internals
+    	"  and c.entity_id = ? " +
         " order by 3,4,5";
 
 
@@ -99,7 +104,8 @@ public interface CustomerSQL {
         "  and c.deleted = 0 " +
         "  and a.deleted = 0 " +
         "  and c.status_id != 8 " +
-        "  and c.id = urm.user_id " +        "  and urm.role_id = " + Constants.TYPE_CUSTOMER +
+        "  and c.id = urm.user_id " +
+        "  and urm.role_id = " + Constants.TYPE_CUSTOMER +
         "  and cu.user_id = c.id " +
         "  and ( cu.parent_id is null or cu.invoice_child = 1)";
     

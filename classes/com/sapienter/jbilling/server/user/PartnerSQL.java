@@ -1,21 +1,21 @@
 /*
-The contents of this file are subject to the Jbilling Public License
-Version 1.1 (the "License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.jbilling.com/JPL/
+    jbilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2007 Sapienter Billing Software Corp. and Emiliano Conde
 
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-License for the specific language governing rights and limitations
-under the License.
+    This file is part of jbilling.
 
-The Original Code is jbilling.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-The Initial Developer of the Original Code is Emiliano Conde.
-Portions created by Sapienter Billing Software Corp. are Copyright 
-(C) Sapienter Billing Software Corp. All Rights Reserved.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-Contributor(s): ______________________________________.
+    You should have received a copy of the GNU General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -33,16 +33,21 @@ import com.sapienter.jbilling.server.util.Constants;
 public interface PartnerSQL {
     // I would do this with an entity finder if ESQL would support dates!
     static final String duePayout = 
-            "select p.id " +            "  from " + Constants.TABLE_PARTNER + " p, " + 
-                        Constants.TABLE_BASE_USER + " bu " +            " where p.user_id = bu.id " +
-            "   and bu.status_id = " + UserDTOEx.STATUS_ACTIVE +            "   and next_payout_date <= ? " +
+            "select p.id " +
+            "  from " + Constants.TABLE_PARTNER + " p, " + 
+                        Constants.TABLE_BASE_USER + " bu " +
+            " where p.user_id = bu.id " +
+            "   and bu.status_id = " + UserDTOEx.STATUS_ACTIVE +
+            "   and next_payout_date <= ? " +
             " order by 1 desc";
     
     static final String lastPayout =
             "select max(pp.id) " +
             "  from " + Constants.TABLE_PARTNER_PAYOUT + " pp, " +
                         Constants.TABLE_PAYMENT + " pa " +
-            " where partner_id = ? " +            "   and pp.payment_id = pa.id " +            "   and pa.result_id in (" + Constants.RESULT_OK + "," +
+            " where partner_id = ? " +
+            "   and pp.payment_id = pa.id " +
+            "   and pa.result_id in (" + Constants.RESULT_OK + "," +
                                          Constants.RESULT_ENTERED + ")";
             
     // this query is a real pity that is not doable with esql because of the
@@ -58,7 +63,8 @@ public interface PartnerSQL {
             "   and pa.result_id in (" + Constants.RESULT_OK + "," +
                                          Constants.RESULT_ENTERED + ")" +
             "   and pa.create_datetime >= ? " +
-            "   and pa.create_datetime < ? " +            "   and pa.deleted = 0";
+            "   and pa.create_datetime < ? " +
+            "   and pa.deleted = 0";
 
     static final String list = 
             "select bu.id, pa.id, bu.user_name, pa.next_payout_date, pa.due_payout " +

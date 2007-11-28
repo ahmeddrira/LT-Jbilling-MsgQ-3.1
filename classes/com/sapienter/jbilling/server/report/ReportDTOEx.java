@@ -1,21 +1,21 @@
 /*
-The contents of this file are subject to the Jbilling Public License
-Version 1.1 (the "License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.jbilling.com/JPL/
+    jbilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2007 Sapienter Billing Software Corp. and Emiliano Conde
 
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-License for the specific language governing rights and limitations
-under the License.
+    This file is part of jbilling.
 
-The Original Code is jbilling.
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-The Initial Developer of the Original Code is Emiliano Conde.
-Portions created by Sapienter Billing Software Corp. are Copyright 
-(C) Sapienter Billing Software Corp. All Rights Reserved.
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-Contributor(s): ______________________________________.
+    You should have received a copy of the GNU General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package com.sapienter.jbilling.server.report;
@@ -194,7 +194,8 @@ public class ReportDTOEx extends ReportDTO {
                 if (isAgregated.booleanValue()) {
                     if (!field.isAgregated() && 
                             field.getIsShown().intValue() == 1) {
-                        log.debug("Field " + field.getColumn() + " is not " +                                "agregated for an agregated report");
+                        log.debug("Field " + field.getColumn() + " is not " +
+                                "agregated for an agregated report");
                         addError(ERROR_AGREGATE, f);
                         retValue = false;
                         break;
@@ -207,7 +208,8 @@ public class ReportDTOEx extends ReportDTO {
                     int val = field.getOrderPosition().intValue();
                     fieldsOrdered++;
                     if (val > ordenableFields.intValue() || val < 1) {
-                        log.debug("Field " + field.getColumn() + " order " +                                "position is out of bounds:" + val);   
+                        log.debug("Field " + field.getColumn() + " order " +
+                                "position is out of bounds:" + val);   
                         addError(ERROR_ORDER_RANGE, f);
                         retValue = false;
                         break;
@@ -279,7 +281,8 @@ public class ReportDTOEx extends ReportDTO {
                     }
                 } else {
                     if (!field.isAgregated()) {
-                        log.debug("Can't add a non agregated field " +                                field.getColumn() + " to this report");
+                        log.debug("Can't add a non agregated field " +
+                                field.getColumn() + " to this report");
                         throw new SessionInternalError("Non agregated field" +
                                 " added to agregated report");
                     }

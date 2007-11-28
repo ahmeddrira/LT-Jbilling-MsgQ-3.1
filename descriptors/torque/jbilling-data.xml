@@ -1768,6 +1768,8 @@ Contributor(s): ______________________________________
     <InternationalDescription TableId="18" ForeignId="3" PsudoColumn="description" LanguageId="2" Content="Penalidade"/>
     <InternationalDescription TableId="52" ForeignId="20" PsudoColumn="description" LanguageId="2" Content="Senha esquecida"/>
     <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="2" Content="Plug-ins"/>
+    <InternationalDescription TableId="63" ForeignId="95" PsudoColumn="display" LanguageId="1" Content="Mediation"/>
+    <InternationalDescription TableId="63" ForeignId="96" PsudoColumn="display" LanguageId="1" Content="Mediation"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>

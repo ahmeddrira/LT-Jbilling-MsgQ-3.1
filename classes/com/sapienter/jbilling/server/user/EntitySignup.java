@@ -360,12 +360,13 @@ public final class EntitySignup {
             "i_currency_id",
             "d_create_datetime",
             "d_last_status_change",
-            "i_language_id"
+            "i_language_id",
+            "i_subscriber_status"
         };
         String userData[][] = { 
             { String.valueOf(newEntityId), user.getUserName(), 
                 getDBPassword(user), "0", "1", "1", now, null, 
-                languageId.toString() },  //1
+                languageId.toString(), "1" },  //1
         };
         table = addTable(Constants.TABLE_BASE_USER, userColumns, userData, false);
         processTable(table);
@@ -520,10 +521,12 @@ public final class EntitySignup {
             { String.valueOf(newEntityId), "12","2" }, // Paper invoice (for download PDF).
             { String.valueOf(newEntityId), "23","1" }, // Subscriber status manager
             { String.valueOf(newEntityId), "25","1" }, // Async payment processing (no parameters)
+            { String.valueOf(newEntityId), "28","1" }, // BasicItemManager
+            { String.valueOf(newEntityId), "33","1" }, // RulesMediationTask
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK, pluggableTaskColumns, pluggableTaskData, false);
         processTable(table);
-        int lastCommonPT = table.nextId - 1;
+        int firstPT = table.nextId - pluggableTaskData.length - 1;
         
         updateBettyTablesRows(table.index, table.nextId);
         
@@ -540,31 +543,31 @@ public final class EntitySignup {
         };
         // paper invoice
         String pluggableTaskParameterData[][] = {
-            { String.valueOf(lastCommonPT - 2), "design", null, "simple_invoice_b2b", null},
+            { String.valueOf(firstPT + 9), "design", null, "simple_invoice_b2b", null},
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK_PARAMETER, pluggableTaskParameterColumns, 
                 pluggableTaskParameterData, false);
         processTable(table);
         
         // fake payment processor
-        addTaskParameter(table,lastCommonPT - 11, "all", null, "yes", null);
+        addTaskParameter(table, firstPT, "all", null, "yes", null);
         
         // email parameters. They are all optional
-		addTaskParameter(table, lastCommonPT - 4, "smtp_server", null, 
+		addTaskParameter(table, firstPT + 7, "smtp_server", null, 
     			null, null);
-		addTaskParameter(table, lastCommonPT - 4, "from", null, 
+		addTaskParameter(table, firstPT + 7, "from", null, 
     			contact.getEmail(), null);
-		addTaskParameter(table, lastCommonPT - 4, "username", null, 
+		addTaskParameter(table, firstPT + 7, "username", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 4, "password", null, 
+		addTaskParameter(table, firstPT + 7, "password", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 4, "port", null, 
+		addTaskParameter(table, firstPT + 7, "port", null, 
                 null, null);
-		addTaskParameter(table, lastCommonPT - 4, "reply_to", null, 
+		addTaskParameter(table, firstPT + 7, "reply_to", null, 
                 null, null);
-        addTaskParameter(table, lastCommonPT - 4, "bcc_to", null, 
+        addTaskParameter(table, firstPT + 7, "bcc_to", null, 
                 null, null);
-        addTaskParameter(table, lastCommonPT - 4, "from_name", null, 
+        addTaskParameter(table, firstPT + 7, "from_name", null, 
                 contact.getOrganizationName(), null);
         
         updateBettyTablesRows(table.index, table.nextId);

@@ -72,6 +72,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         }
         session = ruleBase.newStatefulSession();
         Vector<Object> rulesMemoryContext = new Vector<Object>();
+        rulesMemoryContext.add(helperOrder);
         for (OrderLineDTOEx line: newOrder.getOrderLinesMap().values()) {
             rulesMemoryContext.add(line.getItem());
             rulesMemoryContext.add(line);

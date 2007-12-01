@@ -191,3 +191,34 @@ where exists (
     from international_description
    where table_id = id
 );
+
+# show events history of a customer
+select user_id, 'User', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+where entity_id = 1
+  and table_id = 10
+  and foreign_id = 34285
+union
+select user_id, 'oRder', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+where entity_id = 1
+  and table_id = 21
+  and foreign_id in (
+  select id
+   from purchase_order
+  where user_id = 34285 )
+union
+select user_id, 'inVoice', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+where entity_id = 1
+  and table_id = 39
+  and foreign_id in (
+  select id
+   from invoice
+  where user_id = 34285 )
+union
+select user_id, 'payMent', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+where entity_id = 1
+  and table_id = 42
+  and foreign_id in (
+  select id
+   from payment
+  where user_id = 34285 )
+order by create_datetime;

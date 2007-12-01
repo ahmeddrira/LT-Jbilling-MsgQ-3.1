@@ -506,23 +506,23 @@ public final class EntitySignup {
         
         //PLUGGABLE_TASK
         String pluggableTaskColumns[] =
-        { "i_id", "i_entity_id", "i_type_id", "i_processing_order" };
+        { "i_id", "i_entity_id", "i_type_id", "i_processing_order", "i_optlock" };
         String pluggableTaskData[][] =
         { 
-            { String.valueOf(newEntityId), "21","1" }, // Fake payment processor
-            { String.valueOf(newEntityId), "1", "1" }, // BasicLineTotalTask
-            { String.valueOf(newEntityId), "3", "1" }, // CalculateDueDate
-            { String.valueOf(newEntityId), "4", "2" }, // BasicCompositionTask
-            { String.valueOf(newEntityId), "5", "1" }, // BasicOrderFilterTask
-            { String.valueOf(newEntityId), "6", "1" }, // BasicInvoiceFilterTask
-            { String.valueOf(newEntityId), "7", "1" }, // BasicOrderPeriodTask
-            { String.valueOf(newEntityId), "9", "1" }, // BasicEmailNotificationTask
-            { String.valueOf(newEntityId), "10","1" }, // BasicPaymentInfoTask cc info fetcher
-            { String.valueOf(newEntityId), "12","2" }, // Paper invoice (for download PDF).
-            { String.valueOf(newEntityId), "23","1" }, // Subscriber status manager
-            { String.valueOf(newEntityId), "25","1" }, // Async payment processing (no parameters)
-            { String.valueOf(newEntityId), "28","1" }, // BasicItemManager
-            { String.valueOf(newEntityId), "33","1" }, // RulesMediationTask
+            { String.valueOf(newEntityId), "21","1","1" }, // Fake payment processor
+            { String.valueOf(newEntityId), "1", "1","1" }, // BasicLineTotalTask
+            { String.valueOf(newEntityId), "3", "1","1" }, // CalculateDueDate
+            { String.valueOf(newEntityId), "4", "2","1" }, // BasicCompositionTask
+            { String.valueOf(newEntityId), "5", "1","1" }, // BasicOrderFilterTask
+            { String.valueOf(newEntityId), "6", "1","1" }, // BasicInvoiceFilterTask
+            { String.valueOf(newEntityId), "7", "1","1" }, // BasicOrderPeriodTask
+            { String.valueOf(newEntityId), "9", "1","1" }, // BasicEmailNotificationTask
+            { String.valueOf(newEntityId), "10","1","1" }, // BasicPaymentInfoTask cc info fetcher
+            { String.valueOf(newEntityId), "12","2","1" }, // Paper invoice (for download PDF).
+            { String.valueOf(newEntityId), "23","1","1" }, // Subscriber status manager
+            { String.valueOf(newEntityId), "25","1","1" }, // Async payment processing (no parameters)
+            { String.valueOf(newEntityId), "28","1","1" }, // BasicItemManager
+            { String.valueOf(newEntityId), "33","1","1" }, // RulesMediationTask
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK, pluggableTaskColumns, pluggableTaskData, false);
         processTable(table);
@@ -539,11 +539,12 @@ public final class EntitySignup {
             "s_name",
             "i_int_value",
             "s_str_value",
-            "f_float_value" 
+            "f_float_value", 
+            "i_optlock"
         };
         // paper invoice
         String pluggableTaskParameterData[][] = {
-            { String.valueOf(firstPT + 9), "design", null, "simple_invoice_b2b", null},
+            { String.valueOf(firstPT + 9), "design", null, "simple_invoice_b2b", null,"1" },
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK_PARAMETER, pluggableTaskParameterColumns, 
                 pluggableTaskParameterData, false);
@@ -819,8 +820,8 @@ public final class EntitySignup {
 			throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(
 				"insert into pluggable_task_parameter " +
-				"(id, task_id, name, int_value, str_value, float_value)" +
-				" values(?, ?, ?, ?, ?, ?)");
+				"(id, task_id, name, int_value, str_value, float_value, optlock)" +
+				" values(?, ?, ?, ?, ?, ?, 1)");
 		stmt.setInt(1, ptTable.nextId);
 		stmt.setInt(2, taskId);
 		stmt.setString(3, desc);

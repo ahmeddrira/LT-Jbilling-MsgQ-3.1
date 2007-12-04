@@ -138,7 +138,7 @@ public abstract class PluggableTask {
     protected void removeObject(Object o) {
         FactHandle h = handlers.get(o);
         if (h != null) {
-            session.retract(h);
+            session.modifyRetract(h);
         }
     }
     
@@ -147,8 +147,10 @@ public abstract class PluggableTask {
         if (old != null) { 
             removeObject(old);
         }
-        handlers.put(newO, session.insert(newO));
-        session.fireAllRules(); // could it lead to infinite recurring loop?
+        FactHandle h = session.insert(newO);
+        handlers.put(newO, h);
+        session.modifyInsert(h, newO);
+//        session.fireAllRules(); // could it lead to infinite recurring loop?
     }
 
 }

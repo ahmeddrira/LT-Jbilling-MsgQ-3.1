@@ -28,7 +28,6 @@ package com.sapienter.jbilling.server.order;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -918,23 +917,24 @@ public class OrderBL extends ResultList
         return retValue;
     }
     
-    public Integer[] getManyWS(Integer userId, Integer number, 
-            Integer languageId) 
-            throws NamingException, FinderException {
-        // find the order records first
-        UserBL user = new UserBL(userId);
-        Collection orders = user.getEntity().getOrders();
-        Vector ordersVector = new Vector(orders); // needed to use sort
-        Collections.sort(ordersVector, new OrderEntityComparator());
-        Collections.reverse(ordersVector);
-        // now convert the entities to WS objects
-        Integer retValue[] = new Integer[ordersVector.size() > 
+    public Integer[] getListIds(Integer userId, Integer number, 
+            Integer entityId) 
+            throws Exception {
+        // use the list of orders as if this was a customer asking
+        CachedRowSet result = getList(entityId, Constants.TYPE_CUSTOMER, userId);
+        Vector<Integer> allRows = new Vector<Integer>();
+        while (result.next()) {
+            allRows.add(new Integer(result.getInt(1)));
+        }
+        result.close();
+        
+        // now convert to an array that is no bigger than the expected
+        Integer retValue[] = new Integer[allRows.size() > 
                                          number.intValue() ? number.intValue() :
-                                             ordersVector.size()];
-        for (int f = 0; f < ordersVector.size() && f < number.intValue(); 
+                                             allRows.size()];
+        for (int f = 0; f < allRows.size() && f < number.intValue(); 
                 f++) {
-            order = (OrderEntityLocal) ordersVector.get(f);
-            retValue[f] = order.getId();
+            retValue[f] = allRows.get(f);
         }
         
         return retValue;

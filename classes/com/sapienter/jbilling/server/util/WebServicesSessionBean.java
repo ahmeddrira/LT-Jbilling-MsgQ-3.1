@@ -984,10 +984,9 @@ public class WebServicesSessionBean implements SessionBean {
         try {
             UserBL userbl = new UserBL();
             userbl.setRoot(context.getCallerPrincipal().getName());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
             
             OrderBL order = new OrderBL();
-            return order.getManyWS(userId, number, languageId);
+            return order.getListIds(userId, number, userbl.getEntityId(userId));
         } catch (Exception e) {
             LOG.error("WS - getLastOrders", e);
             throw new SessionInternalError("Error getting last orders");

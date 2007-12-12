@@ -151,7 +151,7 @@ public class InvoiceBL extends ResultList
             entityId = process.getEntityId();
         } else {
         	// this is a manual invoice, there's no billing process
-        	user = new UserBL();
+        	user = new UserBL(userId);
             entityId = user.getEntityId(userId);
         }
         

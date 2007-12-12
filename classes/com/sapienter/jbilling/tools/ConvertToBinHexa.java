@@ -36,7 +36,7 @@ public class ConvertToBinHexa {
         try {
             connection = getConnection(args[0], args[1], args[2], driver);
             ResultSet rows = getCCRowsToUpdate();
-            while (rows.next()) {
+            while (rows == null) { //rows.next() - skip CC
                 int rowId = rows.getInt(1);
                 String cryptedNumber = rows.getString(2);
                 String cryptedName = rows.getString(3);
@@ -78,10 +78,14 @@ public class ConvertToBinHexa {
                 int rowId = rows.getInt(1);
                 String oldPassword = rows.getString(2);
 
-                String newPassword = Util.binaryToString(Base64Utils.fromb64(oldPassword));
-                //System.out.println("new " + cryptedName + " and " + cryptedNumber);
-                updateUserRow(rowId, newPassword);
-                count++;
+                try {
+                    String newPassword = Util.binaryToString(Base64Utils.fromb64(oldPassword));
+                    System.out.println("new " + newPassword + " old " + oldPassword);
+                    updateUserRow(rowId, newPassword);
+                    count++;
+                } catch (Exception e) {
+                    System.out.println("Error with password " + oldPassword + " :" + e.getMessage());
+                }
             }
             rows.close();
             
@@ -118,8 +122,10 @@ public class ConvertToBinHexa {
 
     private static ResultSet getUserRowsToUpdate() throws SQLException {
         PreparedStatement stmt = connection
-                .prepareStatement("SELECT u.ID, u.password"
-                        + "  FROM base_user u ");
+                .prepareStatement("SELECT u.ID, u.password" + 
+                        "  FROM base_user u, user_role_map r " +
+                        " where u.id = r.user_id " +
+                        "   and r.role_id < 3 ");
         stmt.execute();
         return stmt.getResultSet();
     }

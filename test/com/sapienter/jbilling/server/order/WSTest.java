@@ -258,7 +258,7 @@ public class WSTest  extends TestCase {
             System.out.println("Getting last 5 ... ");
             Integer[] list = api.getLastOrders(new Integer(2), new Integer(5));
             assertNotNull("Missing list", list);
-            assertTrue("No more than five", list.length <= 5);
+            assertTrue("No more than five", list.length <= 5 && list.length > 0);
             
             // the first in the list is the last one created
             retOrder = api.getOrder(new Integer(list[0]));

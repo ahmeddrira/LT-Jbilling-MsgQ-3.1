@@ -301,6 +301,8 @@
     <EventLogMessage Id="19"/>
     <EventLogMessage Id="20"/>
     <EventLogMessage Id="21"/>
+    <EventLogMessage Id="22"/>
+    <EventLogMessage Id="23"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -2995,6 +2997,7 @@
     <PreferenceType Id="38" IntDefValue="1"/>
     <PreferenceType Id="39" IntDefValue="0"/>
     <PreferenceType Id="40" IntDefValue="0"/>
+    <PreferenceType Id="41" IntDefValue="0"/>
     <Report Id="1" Titlekey="report.general_orders.title" Instructionskey="report.general_orders.instr" TablesList=" base_user, purchase_order, order_period, order_billing_type, international_description id, jbilling_table bt, international_description id2, jbilling_table bt2, contact_map cm, contact , jbilling_table bt3" WhereStr=" bt3.name = 'base_user' and bt3.id = cm.table_id and cm.foreign_id = base_user.id and contact.id = cm.contact_id and base_user.id = purchase_order.user_id and bt.name = 'order_period' and bt2.name = 'order_billing_type' and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = order_period.id and id2.foreign_id = order_billing_type.id and purchase_order.period_id = order_period.id and purchase_order.billing_type_id = order_billing_type.id and id.language_id = id2.language_id" IdColumn="1" Link="/orderMaintain.do?action=view"/>
     <Report Id="2" Titlekey="report.general_invoices.title" Instructionskey="report.general_invoices.instr" TablesList="base_user, invoice, currency" WhereStr="base_user.id = invoice.user_id and invoice.currency_id = currency.id" IdColumn="1" Link="/invoiceMaintain.do"/>
     <Report Id="3" Titlekey="report.general_payments.title" Instructionskey="report.general_payments.instr" TablesList="base_user, payment, payment_method, payment_result, international_description id, jbilling_table bt, international_description id2, jbilling_table bt2" WhereStr="base_user.id = payment.user_id and bt.name = 'payment_method' and bt2.name = 'payment_result' and id.table_id = bt.id and id2.table_id = bt2.id and id.foreign_id = payment_method.id and id2.foreign_id = payment_result.id and payment.method_id = payment_method.id and payment.result_id = payment_result.id and id.language_id = id2.language_id" IdColumn="1" Link="/paymentMaintain.do?action=view"/>

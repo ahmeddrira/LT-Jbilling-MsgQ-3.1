@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -95,7 +94,7 @@ public class OrderBL extends ResultList
     private OrderLineTypeEntityLocalHome orderLineTypeHome = null;
     private OrderPeriodEntityLocalHome orderPeriodHome = null;
     
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(OrderBL.class);
     private EventLogger eLogger = null;
 
     public OrderBL(Integer orderId) 
@@ -125,7 +124,6 @@ public class OrderBL extends ResultList
 
 
     private void init() throws NamingException {
-        log = Logger.getLogger(OrderBL.class);     
         eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         orderHome = (OrderEntityLocalHome) 
@@ -233,7 +231,7 @@ public class OrderBL extends ResultList
             order.getNotificationStep(), order.getDueDateUnitId(),
             order.getDueDateValue(), order.getDfFm(),
             order.getAnticipatePeriods(), order.getOwnInvoice(),
-            order.getNotesInInvoice(), order.getNotes());
+            order.getNotesInInvoice(), order.getNotes(), order.getIsCurrent());
     }
 
     public void setDTO(NewOrderDTO mOrder) {
@@ -316,6 +314,8 @@ public class OrderBL extends ResultList
             // confusion
             if (orderDto.getPeriod().equals(Constants.ORDER_PERIOD_ONCE)) {
                 orderDto.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+                // one time orders can not be the main subscription
+                orderDto.setIsCurrent(new Integer(0));
             }
             /*
              * First create the order record
@@ -334,6 +334,9 @@ public class OrderBL extends ResultList
             order.setOwnInvoice(orderDto.getOwnInvoice());
             order.setNotes(orderDto.getNotes());
             order.setNotesInInvoice(orderDto.getNotesInInvoice());
+            if (orderDto.getIsCurrent() != null && orderDto.getIsCurrent().intValue() == 1) {
+                setMainSubscription(userAgentId);
+            }
 
             // get the collection of lines to update the fk of the table
             newOrderId = order.getId();
@@ -383,6 +386,12 @@ public class OrderBL extends ResultList
         order.setOwnInvoice(dto.getOwnInvoice());
         order.setNotes(dto.getNotes());
         order.setNotesInInvoice(dto.getNotesInInvoice());
+        if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 1) {
+            setMainSubscription(executorId);
+        }
+        if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 0) {
+            unsetMainSubscription(executorId);
+        }
         // this one needs more to get updated
         updateNextBillableDay(executorId, dto.getNextBillableDay());
         OrderLineEntityLocal oldLine = null;
@@ -423,20 +432,39 @@ public class OrderBL extends ResultList
     			}
     		}
     	   	if (newLine != null && !oldLine.getItemId().equals(newLine.getItemId())) {
-    	   		eLogger.audit(executorId, 
-    	   				Constants.TABLE_ORDER_LINE,
-    	   				newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
-    	   				EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
-    	   				oldLine.getDescription(),
-    	   				null);
+                if (executorId != null) {
+        	   		eLogger.audit(executorId, 
+        	   				Constants.TABLE_ORDER_LINE,
+        	   				newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
+        	   				EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
+        	   				oldLine.getDescription(),
+        	   				null);
+                } else {
+                    // it is the mediation process
+                    eLogger.auditBySystem(order.getUser().getEntity().getId(), 
+                            Constants.TABLE_ORDER_LINE,
+                            newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
+                            EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
+                            oldLine.getDescription(),
+                            null);
+                }
     	   	}
     	}
 
-        eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                order.getId(),
-                EventLogger.MODULE_ORDER_MAINTENANCE, 
-                EventLogger.ROW_UPDATED, null,  
-                null, null);
+        if (executorId != null) {
+            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
+                    order.getId(),
+                    EventLogger.MODULE_ORDER_MAINTENANCE, 
+                    EventLogger.ROW_UPDATED, null,  
+                    null, null);
+        } else {
+            eLogger.auditBySystem(order.getUser().getEntity().getId(), 
+                    Constants.TABLE_PUCHASE_ORDER, 
+                    order.getId(),
+                    EventLogger.MODULE_ORDER_MAINTENANCE, 
+                    EventLogger.ROW_UPDATED, null,  
+                    null, null);
+        }
         
     }
     
@@ -1056,52 +1084,104 @@ public class OrderBL extends ResultList
     }
     
     public void updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId, 
-            Vector<OrderLineDTOEx> lines, Vector<Record> records) {
+            Vector<OrderLineDTOEx> lines, Vector<Record> records, Date eventDate) {
         
         try {
-            EntityBL entity = new EntityBL(entityId);
             NewOrderDTO currentOrder;
             setUserCurrent(userId);
             UserBL user = new UserBL(userId);
             Integer language = user.getEntity().getLanguageIdField();
+            CurrentOrder co = new CurrentOrder(userId, eventDate);
             
-            
-            if (order == null || 
-                    order.getStatusId().equals(Constants.ORDER_STATUS_FINISHED)) {
-                // create a new one
-                currentOrder = new NewOrderDTO();
-                currentOrder.setCurrencyId(currencyId);
-                // notes
-                ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
-                        entity.getLocale());
-                currentOrder.setNotes(bundle.getString("order.current.notes"));
-
-                currentOrder.setPeriod(Constants.ORDER_PERIOD_ONCE);
-                currentOrder.setUserId(userId);
-                setDTO(currentOrder);
-                for (OrderLineDTOEx line: lines) {
-                    addItem(line.getItemId(), line.getQuantity(), language, userId, 
-                            entityId, currencyId, records);
-                }
-
-                // create the order and update the customer record
-                user.getEntity().getCustomer().setCurrentOrderId(create(
-                        entityId, executorId, currentOrder));
-                
-                
-            } else {
-                // update an existing order
-                currentOrder = new NewOrderDTO(getDTO(), order);
-                setDTO(currentOrder);
-                for (OrderLineDTOEx line: lines) {
-                    addItem(line.getItemId(), line.getQuantity(), language, userId, 
-                            entityId, currencyId, records);
-                }
-                update(executorId, currentOrder);
+            Integer currentOrderId = co.getCurrent();
+            if (currentOrderId == null) {
+                // this is almost an error, put them in a new order?
+                currentOrderId = co.create(eventDate, currencyId, entityId);
+                LOG.warn("Created current one-time order without a suitable main " +
+                        "subscription order:" + currentOrderId);
             }
-            
-        } catch (Exception e) {
+            // update an existing order
+            set(currentOrderId);
+            currentOrder = new NewOrderDTO(getDTO(), order);
+            setDTO(currentOrder);
+            for (OrderLineDTOEx line: lines) {
+                addItem(line.getItemId(), line.getQuantity(), language, userId, 
+                        entityId, currencyId, records);
+            }
+            update(executorId, currentOrder);
+        } catch (FinderException e) {
             throw new SessionInternalError("Updating current order", OrderBL.class, e);
-        } 
+        } catch (CreateException e) {
+            throw new SessionInternalError("Updating current order", OrderBL.class, e);
+        }
     }
+    
+    /**
+     * @param userId
+     * @param eventDate
+     * @return
+     */
+    private Integer getCurrent(Integer userId, Date eventDate) {
+        return null;
+    }
+    
+    /**
+     * The order has to be set and made persitent with an ID
+     * @param isNew
+     */
+    private void setMainSubscription(Integer executorId) {
+        // set the field
+        order.setIsCurrent(1);
+        // there can only be one main subscription order
+        Integer oldCurrent = order.getUser().getCustomer().getCurrentOrderId();
+        if (oldCurrent == null || !oldCurrent.equals(order.getId())) {
+            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
+                    order.getId(),
+                    EventLogger.MODULE_ORDER_MAINTENANCE, 
+                    EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, oldCurrent,  
+                    null, null);
+            // this is the new subscription order
+            order.getUser().getCustomer().setCurrentOrderId(order.getId());
+            // if there was an old one
+            if (oldCurrent != null) {
+                // update so it does not have the 'is subscription' flag on
+                try {
+                    OrderEntityLocal old = orderHome.findByPrimaryKey(oldCurrent);
+                    old.setIsCurrent(new Integer(0));
+                } catch (FinderException e) {
+                    LOG.error("Can not find order to set 'is_current' off " + oldCurrent);
+                }
+            }
+        }
+    }
+    
+    private void unsetMainSubscription(Integer executorId) {
+        if (order.getIsCurrent() == null) {
+            order.setIsCurrent(0);
+        }
+        // it is removing the main subscription
+        if (order.getIsCurrent().intValue() == 1) {
+            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
+                    order.getId(),
+                    EventLogger.MODULE_ORDER_MAINTENANCE, 
+                    EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, null,  
+                    null, null);
+            // this is the new subscription order
+            order.getUser().getCustomer().setCurrentOrderId(null);
+            order.setIsCurrent(0);
+        }
+    }
+    
+    public CachedRowSet getOneTimersByDate(Integer userId, Date activeSince) 
+            throws SQLException, Exception{
+                
+        prepareStatement(OrderSQL.getCurrent);
+        cachedResults.setInt(1,userId.intValue());
+        cachedResults.setDate(2,new java.sql.Date(activeSince.getTime()));
+        
+        execute();
+        conn.close();
+        return cachedResults;
+    }
+
 }

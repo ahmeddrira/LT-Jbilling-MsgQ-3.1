@@ -61,8 +61,11 @@ public class EventLogger {
     public static final Integer ORDER_STATUS_CHANGE = new Integer(13);
     public static final Integer ORDER_LINE_UPDATED = new Integer(17);
     public static final Integer ORDER_NEXT_BILL_DATE_UPDATED = new Integer(18);
+    public static final Integer ORDER_MAIN_SUBSCRIPTION_UPDATED = new Integer(22);
     // invoice related message
     public static final Integer INVOICE_ORDER_APPLIED = new Integer(16);
+    // mediation
+    public static final Integer CURRENT_ORDER_FINISHED = new Integer(23);
     // others
     public static final Integer ROW_DELETED = new Integer(7);
     public static final Integer ROW_UPDATED= new Integer(9); // field not specified
@@ -92,7 +95,6 @@ public class EventLogger {
     public static final Integer LEVEL_ERROR = new Integer(4);
     public static final Integer LEVEL_FATAL = new Integer(5);
     
-    private static EventLogger theInstance = null;
     private EventLogEntityLocalHome eventLogHome = null;
     private Logger log = null;
     
@@ -110,15 +112,11 @@ public class EventLogger {
     }
     
     public static EventLogger getInstance() {
-        if (theInstance == null) {
-            try {
-                theInstance = new EventLogger();
-            } catch (NamingException e) {
-                throw new SessionInternalError("Creating event logger", EventLogger.class, e);
-            }
+        try {
+            return new EventLogger();
+        } catch (NamingException e) {
+            throw new SessionInternalError("Creating event logger", EventLogger.class, e);
         }
-        
-        return theInstance;
     }
     
     public void log(Integer level, Integer entity, Integer rowId, Integer module, 

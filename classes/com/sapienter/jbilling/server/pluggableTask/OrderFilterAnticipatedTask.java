@@ -30,12 +30,10 @@ import javax.ejb.FinderException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 
 /**
@@ -44,13 +42,13 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
  */
 public class OrderFilterAnticipatedTask extends BasicOrderFilterTask {
     
+    private static final Logger LOG = Logger.getLogger(OrderFilterAnticipatedTask.class);
+    
     public boolean isApplicable(OrderEntityLocal order, 
             BillingProcessEntityLocal process) throws TaskException {
         // by default, keep it in null 
         billingUntil = null;
-        log = Logger.getLogger(OrderFilterAnticipatedTask.class);
         try {
-            int pref;
             PreferenceBL preference = new PreferenceBL();
             try {
                 preference.set(process.getEntityId(), 
@@ -59,11 +57,11 @@ public class OrderFilterAnticipatedTask extends BasicOrderFilterTask {
                 // I like the default
             }
             if (preference.getInt() == 0 ) {
-                log.warn("OrderAnticipated task is called, but this " +
+                LOG.warn("OrderAnticipated task is called, but this " +
                         "entity has the preference off");
             } else if (order.getAnticipatePeriods() != null && 
                     order.getAnticipatePeriods().intValue() > 0) {
-                log.debug("Using anticipated order. Org billingUntil = " +
+                LOG.debug("Using anticipated order. Org billingUntil = " +
                         billingUntil + " ant periods " + 
                         order.getAnticipatePeriods());
                 // calculate an extended end of billing process
@@ -77,7 +75,7 @@ public class OrderFilterAnticipatedTask extends BasicOrderFilterTask {
                 billingUntil = cal.getTime();
             }
         } catch (Exception e) {
-            log.error("Exception:", e);
+            LOG.error("Exception:", e);
             throw new TaskException(e);
         }
         

@@ -73,7 +73,7 @@ public class OrderWS extends OrderDTO implements Serializable {
         super(id, billingTypeId, notify, activeSince, activeUntil, createDate,
                 nextBillableDay, createdBy, statusId, deleted, currencyId,
 				lastNotified, notifStep, dueDateUnitId, dueDateValue, null, 
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     /**

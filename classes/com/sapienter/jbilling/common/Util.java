@@ -150,6 +150,7 @@ public class Util {
     }
 
     static public Date truncateDate(Date arg) {
+        if (arg == null) return null;
         GregorianCalendar cal = new GregorianCalendar();
         
         cal.setTime(arg);

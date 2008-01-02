@@ -179,6 +179,7 @@
 <form-property name="chbx_own_invoice" type="java.lang.Boolean" />
 <form-property name="notes" type="java.lang.String" />
 <form-property name="chbx_notes" type="java.lang.Boolean" />
+<form-property name="chbx_iscurrent" type="java.lang.Boolean" />
 </form-bean>
 <form-bean name="creditCard" type="com.sapienter.jbilling.client.util.DynaForm">
 <form-property name="number" type="java.lang.String" />

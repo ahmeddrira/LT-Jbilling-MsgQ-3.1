@@ -48,7 +48,7 @@ import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 public class BasicOrderFilterTask 
         extends PluggableTask implements OrderFilterTask {
 
-    protected Logger log = null;
+    private static final Logger LOG =  Logger.getLogger(BasicOrderFilterTask.class);
     protected Date billingUntil = null;
     
     public BasicOrderFilterTask() {
@@ -62,11 +62,10 @@ public class BasicOrderFilterTask
             BillingProcessEntityLocal process) throws TaskException {
 
         boolean retValue = true;
-        log = Logger.getLogger(BasicOrderFilterTask.class);
         
         GregorianCalendar cal = new GregorianCalendar();
 
-        log.debug("running isApplicable for order " + order.getId() + 
+        LOG.debug("running isApplicable for order " + order.getId() + 
                 " billingUntil = " + billingUntil);
         // some set up to simplify the code
         Date activeUntil = null;
@@ -141,7 +140,7 @@ public class BasicOrderFilterTask
                         if (activeUntil != null && //may be it's immortal ;)
                                 order.getNextBillableDay().compareTo(activeUntil) >= 0) {
                             // this situation shouldn't have happened
-                            log.warn("Order " + order.getId() + " should've been" +
+                            LOG.warn("Order " + order.getId() + " should've been" +
                                 " flagged out in the previous process");
                             eLog.warning(process.getEntityId(), order.getId(), 
                                     EventLogger.MODULE_BILLING_PROCESS,
@@ -163,7 +162,7 @@ public class BasicOrderFilterTask
                 if (order.getNextBillableDay() != null) {
                     // now check if there's any more time to bill as far as this
                     // process goes
-                    log.debug("order " + order.getId() + " nbd = " + 
+                    LOG.debug("order " + order.getId() + " nbd = " + 
                             order.getNextBillableDay() + " bu = " + billingUntil);
                     if (order.getNextBillableDay().compareTo(billingUntil) >= 0) {
                         retValue = false;
@@ -178,9 +177,9 @@ public class BasicOrderFilterTask
                     if (activeUntil != null && order.getNextBillableDay().
                                 compareTo(activeUntil) >= 0) { 
                         retValue = false;
-                        log.warn("Order " + order.getId() + " was set to be" +
+                        LOG.warn("Order " + order.getId() + " was set to be" +
                                 " processed but the next billable date is " +
-                                "after the active unitl");
+                                "after the active until");
                         eLog.warning(process.getEntityId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_EXPIRED,
@@ -198,7 +197,7 @@ public class BasicOrderFilterTask
                             EventLogger.MODULE_BILLING_PROCESS,
                             EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
                             Constants.TABLE_PUCHASE_ORDER);
-                    log.warn("Found expired order " + order.getId() + 
+                    LOG.warn("Found expired order " + order.getId() + 
                             " without nbp but with to_process=1");
                 }
             
@@ -229,7 +228,7 @@ public class BasicOrderFilterTask
                                  EventLogger.BILLING_PROCESS_EXPIRED,
                                 Constants.TABLE_PUCHASE_ORDER);
             
-                        log.warn("Order with time yet to be billed not included!");
+                        LOG.warn("Order with time yet to be billed not included!");
                     }
                 }
                         
@@ -238,15 +237,15 @@ public class BasicOrderFilterTask
                     "is not supported:" + order.getBillingTypeId());
             }
         } catch (NumberFormatException e) {
-            log.fatal("Exception converting types", e);
+            LOG.fatal("Exception converting types", e);
             throw new TaskException("Exception with type conversions: " +
                     e.getMessage());
         } catch (SessionInternalError e) {
-            log.fatal("Internal exception ", e);
+            LOG.fatal("Internal exception ", e);
             throw new TaskException(e);
         } 
         
-        log.debug("Order " + order.getId() + " filter:" + retValue); 
+        LOG.debug("Order " + order.getId() + " filter:" + retValue); 
         
         return retValue;
 

@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
+import java.util.Date;
 import java.util.Vector;
 
 import com.sapienter.jbilling.server.mediation.Record;
@@ -33,4 +34,6 @@ public interface IMediationProcess {
     Integer getUserId();
     
     Integer getCurrencyId();
+    
+    Date getEventDate();
 }

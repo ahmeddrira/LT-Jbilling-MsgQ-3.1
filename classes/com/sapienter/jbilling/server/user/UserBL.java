@@ -1294,6 +1294,9 @@ public class UserBL extends ResultList
      */
     public Integer getEntityId(Integer userId) {
         LOG.debug("getting entity id for user " + userId);
+        if (userId == null) {
+            userId = user.getUserId();
+        }
         try {
             prepareStatement(UserSQL.getEntityId);
             cachedResults.setInt(1, userId);

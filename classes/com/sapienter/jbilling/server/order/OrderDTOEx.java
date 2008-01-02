@@ -72,7 +72,7 @@ public class OrderDTOEx extends OrderDTO {
         super(id, billingTypeId, notify, activeSince, activeUntil, createDate,
                 nextBillableDay, createdBy, statusId, deleted, 
                 currencyId, lastNotified, notifStep, dueDateUnitId, dueDateValue,
-                null, null, null, null, null);
+                null, null, null, null, null,null);
 
         orderLines = new Vector();
         invoices = new Vector();

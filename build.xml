@@ -458,6 +458,8 @@
   </target>
 
   <target name="test-mediation">
+	  <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
+	  	    todir="${build.test.dir}"/>
   	  <mkdir dir="${base_dir}/mediation"/>
 	  <copy file="${source.mediation.descriptor.dir}/asterisk.xml" 
 	  	    todir="${base_dir}/mediation"/>

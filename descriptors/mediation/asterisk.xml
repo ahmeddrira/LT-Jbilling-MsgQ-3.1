@@ -4,6 +4,7 @@
     <field>
     	<name>accountcode</name>
     	<type>string</type>
+    	<isKey/>
     </field>
     <field>
     	<name>src</name>
@@ -68,6 +69,5 @@
     <field>
     	<name>userfield</name>
     	<type>string</type>
-    	<isKey/>
     </field>
 </format>

@@ -44,6 +44,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 	private static final String FIELD_GROUP_UNTIL = "until";
 	private static final String FIELD_GROUP_SINCE = "since";
 	private static final String FIELD_NOTIFY = "chbx_notify";
+    private static final String FIELD_IS_CURRENT = "chbx_iscurrent";
 	private static final String FIELD_PERIOD = "period";
 
 	private final NewOrderSession myNewOrderSession;
@@ -72,6 +73,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
         myForm.set(FIELD_NOTES, dto.getNotes());
         myForm.set(FIELD_ANTICIPATE_PERIODS, getStringOrNull(dto.getAnticipatePeriods()));
         myForm.set(FIELD_BILLING_TYPE, dto.getBillingTypeId());
+        myForm.set(FIELD_IS_CURRENT, isIntegerTrue(dto.getIsCurrent()));
         if (dto.getPromoCode() != null) {
             myForm.set(FIELD_PROMO_CODE, dto.getPromoCode());
         }
@@ -105,6 +107,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
         summary.setDfFm(fromCheckBox(FIELD_DF_FM));
         summary.setOwnInvoice(fromCheckBox(FIELD_OWN_INVOICE));
         summary.setNotesInInvoice(fromCheckBox(FIELD_ADD_NOTES_IN_INVOICE));
+        summary.setIsCurrent(fromCheckBox(FIELD_IS_CURRENT));
         summary.setNotes((String) myForm.get(FIELD_NOTES));
 
         summary.setAnticipatePeriods(getIntegerFieldValue(FIELD_ANTICIPATE_PERIODS));

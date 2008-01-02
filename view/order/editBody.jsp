@@ -261,6 +261,23 @@
 				<html:checkbox property="chbx_notes"/>
 			</td>
 		</tr>
+
+		<jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_CURRENT_ORDER%>'
+				beanName="preference"/> 
+		<logic:equal name="preference" value="1">
+	 	<tr class="form">
+			<td>
+				 <jbilling:help page="orders" anchor="current">
+					 <img border="0" src="/billing/graphics/help.gif"/>
+				 </jbilling:help>
+			</td>
+			<td class="form_prompt"><bean:message key="order.prompt.isCurrent"/></td>
+			<td>
+				<html:checkbox property="chbx_iscurrent"/>
+			</td>
+		</tr>
+		</logic:equal>
+		
 	 	
 		<tr class="form">
 		   <td></td>

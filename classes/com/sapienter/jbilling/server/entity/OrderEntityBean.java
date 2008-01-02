@@ -378,6 +378,18 @@ public abstract class OrderEntityBean implements javax.ejb.EntityBean {
      */
     public abstract void setNotes(String notes);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="is_current"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getIsCurrent();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setIsCurrent(Integer flag);
+
    // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"

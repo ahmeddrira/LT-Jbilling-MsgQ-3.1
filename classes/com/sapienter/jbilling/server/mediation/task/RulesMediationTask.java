@@ -19,8 +19,12 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.drools.RuleBase;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -36,8 +40,8 @@ public class RulesMediationTask extends PluggableTask implements
         IMediationProcess {
 
     private Vector<Record> records = null;
-    ProcessManager manager = null;
-    
+    private ProcessManager manager = null;
+    private static final Logger LOG = Logger.getLogger(RulesMediationTask.class);
     
     public Integer getUserId() {
         return manager.getUserId();
@@ -45,6 +49,10 @@ public class RulesMediationTask extends PluggableTask implements
     
     public Integer getCurrencyId() {
         return manager.getCurrencyId();
+    }
+    
+    public Date getEventDate() {
+        return manager.getEventDate();
     }
     
     public Vector<OrderLineDTOEx> process(Vector<Record> records, String configurationName) 
@@ -80,6 +88,7 @@ public class RulesMediationTask extends PluggableTask implements
         private Integer userId = null;
         private Integer currencyId = null;
         private final String configurationName;
+        private Date eventDate = null;
         
         public ProcessManager(String configurationName) {
             this.configurationName = configurationName;
@@ -156,6 +165,25 @@ public class RulesMediationTask extends PluggableTask implements
 
         public void updateField(PricingField toUpdate) throws TaskException {
             updateObject(toUpdate, toUpdate);
+        }
+        
+        public void setEventDate(Date date) {
+            eventDate = date;
+        }
+
+        public void setEventDate(String date, String format) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+
+            try {
+                eventDate = dateFormat.parse(date);
+            } catch (ParseException e) {
+                eventDate = null;
+                LOG.warn("Exception parsing a string date to set the event date", e);
+            }
+        }
+        
+        public Date getEventDate() {
+            return eventDate;
         }
     }
 }

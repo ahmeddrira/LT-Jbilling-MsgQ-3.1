@@ -358,6 +358,7 @@ public class DTOFactory {
         retValue.setOwnInvoice(order.getOwnInvoice());
         retValue.setNotes(order.getNotes());
         retValue.setNotesInInvoice(order.getNotesInInvoice());
+        retValue.setIsCurrent(order.getIsCurrent());
         
         // add the lines
         BigDecimal orderTotal = new BigDecimal("0"); // the total will be calculated for display

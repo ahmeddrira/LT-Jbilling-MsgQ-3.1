@@ -333,7 +333,7 @@ public class MediationSessionBean implements SessionBean {
             OrderBL order = new OrderBL();
             order.setUserCurrent(userId);
             order.updateCurrent(entityId, executorId, userId, currencyId, lines,
-                    thisGroup);
+                    thisGroup, processTask.getEventDate());
             process.setOrdersAffected(process.getOrdersAffected() + 1);
             
             // relate this order with this process

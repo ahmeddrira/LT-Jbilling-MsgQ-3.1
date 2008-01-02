@@ -353,6 +353,34 @@
 			</logic:notPresent>			
 		</td>
 	</tr>
+
+	<jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_CURRENT_ORDER%>'
+			beanName="preference"/> 
+	<logic:equal name="preference" value="1">
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="order.prompt.isCurrent"/></td>
+		<td class="infodata">
+			<logic:equal name='<%=Constants.SESSION_ORDER_DTO%>' 
+				         property="isCurrent" 
+				         scope="session"
+				         value="1">
+					<bean:message key="all.prompt.yes"/>
+			</logic:equal>
+			<logic:equal name='<%=Constants.SESSION_ORDER_DTO%>' 
+				         property="isCurrent" 
+				         scope="session"
+				         value="0">
+					<bean:message key="all.prompt.no"/>
+			</logic:equal>
+			<logic:notPresent name='<%=Constants.SESSION_ORDER_DTO%>' 
+				         property="isCurrent" 
+				         scope="session">
+					<bean:message key="all.prompt.no"/>
+			</logic:notPresent>			
+		</td>
+	</tr>
+	</logic:equal>
+	
 	</logic:notEqual>
 
 </table>	

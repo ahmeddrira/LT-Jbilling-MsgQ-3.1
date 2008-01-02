@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.order;
 
+import com.sapienter.jbilling.server.util.Constants;
+
 /**
  * @author Emil
  */
@@ -89,4 +91,11 @@ public interface OrderSQL {
         "   and period_id = ? " +
         "   and deleted = 0";
 
+    static final String getCurrent = 
+        "select id " +
+        "  from purchase_order " +
+        " where user_id = ? " +
+        "   and period_id = " + Constants.ORDER_PERIOD_ONCE +
+        "   and active_since = ? " +
+        "   and deleted = 0";
 }

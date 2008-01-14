@@ -153,7 +153,7 @@ public class InvoiceSessionBean implements SessionBean {
 
     /**
      * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="NotSupported"
+     * @ejb.transaction type="Required"
      */
     public void processOverdue(Date today) throws SessionInternalError {
         try {

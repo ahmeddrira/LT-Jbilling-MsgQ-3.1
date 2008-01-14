@@ -444,14 +444,6 @@ public abstract class UserEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="user-events"
-     *               role-name="user-has-events"
-     */
-    public abstract Collection getEvents();
-    public abstract void setEvents(Collection events);
-
-    /**
-     * @ejb:interface-method view-type="local"
      * @ejb.relation name="role-user"
      *               role-name="user-has-roles"
      * @jboss.relation related-pk-field="id"  

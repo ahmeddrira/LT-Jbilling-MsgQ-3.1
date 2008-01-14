@@ -72,9 +72,9 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class InvoiceBL extends ResultList 
         implements Serializable, InvoiceSQL {

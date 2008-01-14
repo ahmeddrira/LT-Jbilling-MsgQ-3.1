@@ -28,15 +28,12 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
-import javax.persistence.EntityTransaction;
-import javax.persistence.OptimisticLockException;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
-import com.sapienter.jbilling.server.util.db.DBUtil;
 
 /**
  *
@@ -52,8 +49,8 @@ import com.sapienter.jbilling.server.util.db.DBUtil;
  *           jndi-name="com/sapienter/jbilling/server/pluggableTask/PluggableTaskSession"
  * 
  * Even when using JPA, container transactions are required. This is because
- * the security code uses entity beans and the collections of those have to be
- * in a transaction. When all is migrated to JPA, try using "Never" 
+ * transactional demarcation is taked from the application server.
+ *  
  * @ejb.transaction type="Required"
  * @jboss.security-proxy name="com.sapienter.jbilling.server.pluggableTask.TaskMethodSecurity"
  **/
@@ -92,113 +89,59 @@ public class PluggableTaskSessionBean implements SessionBean {
      */
     public PluggableTaskDTO[] getAllDTOs(Integer entityId) 
             throws SessionInternalError {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            if (!tx.isActive()) tx.begin();
             
-            PluggableTaskDAS das = new PluggableTaskDAS();
-            Collection tasks = das.findAllByEntity(entityId);
-            PluggableTaskDTO[] retValue = 
-                new PluggableTaskDTO[tasks.size()];
-            retValue = (PluggableTaskDTO[]) tasks.toArray(retValue);
-            
-            if (tx.isActive()) tx.commit();
-
-            return retValue;
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception getting all dtos", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        PluggableTaskDAS das = new PluggableTaskDAS();
+        Collection tasks = das.findAllByEntity(entityId);
+        PluggableTaskDTO[] retValue = 
+            new PluggableTaskDTO[tasks.size()];
+        retValue = (PluggableTaskDTO[]) tasks.toArray(retValue);
+        
+        return retValue;
     }
 
     /**
      * @ejb:interface-method view-type="remote"
      */
     public void create(Integer executorId, PluggableTaskDTO dto) {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
             
-            PluggableTaskBL bl = new PluggableTaskBL();
-            bl.create(dto);
-            
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception creating tasks", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.create(dto);
+        
     }
 
     /**
      * @ejb:interface-method view-type="remote"
      */
     public void createParameter(Integer executorId, Integer taskId, PluggableTaskParameterDTO dto) {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
             
-            PluggableTaskBL bl = new PluggableTaskBL();
-            bl.createParameter(taskId, dto);
-            
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception creating parameter", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.createParameter(taskId, dto);
     }
 
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="RequiresNew"
      */
     public void update(Integer executorId, PluggableTaskDTO dto) {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
             
-            PluggableTaskBL bl = new PluggableTaskBL();
-            bl.update(executorId, dto);
-            
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception updating task", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.update(executorId, dto);
+        
     }
     
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="RequiresNew"
      */
     public PluggableTaskDTO[] updateAll(Integer executorId, PluggableTaskDTO dto[]) {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
 
-            PluggableTaskBL bl = new PluggableTaskBL();
-            for (int f = 0; f < dto.length; f++) {
-                bl.update(executorId, dto[f]);
-                dto[f] = bl.getDTO(); // replace with the new version
-            }
-            //PluggableTaskDTO[] retValue = getAllDTOs(dto[0].getEntityId());
-            
-            tx.commit();
-            
-            return dto;
-        } catch (OptimisticLockException e1) {
-            throw (e1);
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception updating all task", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
+        PluggableTaskBL bl = new PluggableTaskBL();
+        for (int f = 0; f < dto.length; f++) {
+            bl.update(executorId, dto[f]);
+            dto[f] = bl.getDTO(); // replace with the new version
         }
+        
+        return dto;
     }
 
     /**
@@ -206,61 +149,36 @@ public class PluggableTaskSessionBean implements SessionBean {
      */
     public void delete(Integer executorId, Integer id) 
             throws FinderException {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
 
-            PluggableTaskBL bl = new PluggableTaskBL(id);
-            bl.delete(executorId);
-            
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception deleting task", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        PluggableTaskBL bl = new PluggableTaskBL(id);
+        bl.delete(executorId);
+        
     }
 
     /**
      * @ejb:interface-method view-type="remote"
      */
     public void deleteParameter(Integer executorId, Integer id) {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
 
-            PluggableTaskBL bl = new PluggableTaskBL();
-            bl.deleteParameter(executorId, id);
-            
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception deleting parameter", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        PluggableTaskBL bl = new PluggableTaskBL();
+        bl.deleteParameter(executorId, id);
+        
     }
 
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="RequiresNew"
      */
     public void updateParameters(Integer executorId, PluggableTaskDTO dto) 
             throws SessionInternalError {
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
 
-            PluggableTaskBL bl = new PluggableTaskBL();           
+        PluggableTaskBL bl = new PluggableTaskBL();           
+        try {
             bl.updateParameters(dto);
-            
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception updating parameters", PluggableTaskSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
+        } catch (FinderException e) {
+            throw new SessionInternalError("Not found?", PluggableTaskSessionBean.class, e);
         }
+        
     }
 
     // EJB Callbacks -------------------------------------------------

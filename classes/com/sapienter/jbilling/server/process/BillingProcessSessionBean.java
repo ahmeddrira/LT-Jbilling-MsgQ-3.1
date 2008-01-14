@@ -71,8 +71,8 @@ import com.sapienter.jbilling.server.system.event.EventProcessor;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  *
@@ -680,7 +680,7 @@ public class BillingProcessSessionBean implements SessionBean {
     
     /**
      * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="NotSupported"
+     * @ejb.transaction type="Required"
      */
     public void trigger(Date pToday) 
             throws SessionInternalError {

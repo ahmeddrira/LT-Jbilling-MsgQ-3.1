@@ -33,7 +33,7 @@ import com.sapienter.jbilling.interfaces.ItemTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemTypeEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DescriptionBL;
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class ItemTypeBL {
     private JNDILookup EJBFactory = null;

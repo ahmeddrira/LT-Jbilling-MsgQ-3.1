@@ -21,7 +21,7 @@ package com.sapienter.jbilling.server.pluggableTask.admin;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import org.hibernate.Query;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
@@ -52,35 +52,30 @@ public class PluggableTaskDAS extends AbstractDAS<PluggableTaskDTO> {
         super();
     }
     
-    public PluggableTaskDTO find(Integer id) {
-        PluggableTaskDTO entity = em.find(PluggableTaskDTO.class, id);
-        //PluggableTaskDTO entity = new PluggableTaskDTO();
-        //em.load(entity, id);
-
-        return entity;
-    }
-    
     public List<PluggableTaskDTO> findAllByEntity(Integer entityId) {
-        Query query = em.createQuery(findAllByEntitySQL);
+        Query query = getSession().createQuery(findAllByEntitySQL);
         query.setParameter("entity", entityId);
-        return query.getResultList();
-        //return query.list();
+        query.setCacheable(true);
+        //return query.getResultList();
+        return query.list();
     }
     
     public PluggableTaskDTO findByEntityType(Integer entityId, Integer typeId) {
-        Query query = em.createQuery(findByEntityTypeSQL);
+        Query query = getSession().createQuery(findByEntityTypeSQL);
+        query.setCacheable(true);
         query.setParameter("entity", entityId);
         query.setParameter("type", typeId);
-        return (PluggableTaskDTO) query.getSingleResult();
-        //return (PluggableTaskDTO) query.uniqueResult();
+        //return (PluggableTaskDTO) query.getSingleResult();
+        return (PluggableTaskDTO) query.uniqueResult();
     }
 
     public List<PluggableTaskDTO> findByEntityCategory(Integer entityId, Integer categoryId) {
-        Query query = em.createQuery(findByEntityCategorySQL);
+        Query query = getSession().createQuery(findByEntityCategorySQL);
+        query.setCacheable(true);
         query.setParameter("entity", entityId);
         query.setParameter("category", categoryId);
-        return query.getResultList();
-        //return query.list();
+        //return query.getResultList();
+        return query.list();
     }
 
 }

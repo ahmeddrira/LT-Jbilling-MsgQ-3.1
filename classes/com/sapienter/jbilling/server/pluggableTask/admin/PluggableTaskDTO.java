@@ -39,6 +39,8 @@ import javax.persistence.Version;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 
 @Entity
@@ -71,7 +73,8 @@ public class PluggableTaskDTO implements java.io.Serializable {
     private PluggableTaskTypeDTO type;
     
     @OneToMany(mappedBy="task", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @Fetch( FetchMode.JOIN)
+    //  no cache for the parameters, they might change too often
     private Collection<PluggableTaskParameterDTO> parameters;
     
     @Version

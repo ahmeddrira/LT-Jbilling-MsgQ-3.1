@@ -32,7 +32,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class ItemUserPriceBL {
     private JNDILookup EJBFactory = null;

@@ -21,14 +21,10 @@ package com.sapienter.jbilling.server.mediation.db;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 /*
  * Only needed because Order is not JPA, but an entity. Once that table is
  * migrated to JPA, this class will not be necessary (but the table stays)
@@ -36,7 +32,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @IdClass(MapPK.class)
 @Table(name = "mediation_order_map")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+// no cache, this is only a temp class until the order is JPAed
 public class MediationOrderMap implements Serializable {
 
     @Id

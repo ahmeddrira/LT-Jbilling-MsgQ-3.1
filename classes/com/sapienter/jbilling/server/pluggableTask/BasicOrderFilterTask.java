@@ -36,8 +36,8 @@ import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  * Verifies if the order should be included in a porcess considering its

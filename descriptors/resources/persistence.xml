@@ -4,7 +4,7 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
    version="1.0">
 
-   <persistence-unit name="jbilling" transaction-type="RESOURCE_LOCAL">
+   <persistence-unit name="jbilling-jdbc" transaction-type="RESOURCE_LOCAL">
        <!-- This is required to be spec compliant, Hibernate however supports
             auto-detection even in JSE.
        <class>hello.Message</class>
@@ -49,17 +49,13 @@
    <persistence-unit name="jbilling-jta" transaction-type="JTA">
        <!-- The provider only needs to be set if you use several JPA providers
        <provider>org.hibernate.ejb.HibernatePersistence</provider>
-            
-            This is required to be spec compliant, Hibernate however supports
-            auto-detection even in JSE.
-       <class>hello.Message</class>
         -->
 
-       <jta-data-source>java:/ApplicationDS</jta-data-source>
+      <jta-data-source>java:/ApplicationDS</jta-data-source>
 
       <properties>
           <!-- Scan for annotated classes and Hibernate mapping XML files -->
-          <property name="hibernate.archive.autodetection" value="class, hbm"/>
+          <property name="hibernate.archive.autodetection" value="class"/>
           <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
           
           <!--  Cache settings -->
@@ -67,25 +63,18 @@
                    value="org.hibernate.cache.EhCacheProvider"/>
           <property name="SecondLevelCacheEnabled"
                    value="true"/>
-          <property name="QueryCacheEnabled"
+          <property name="hibernate.cache.use_query_cache"
                    value="true"/>
                    
-          <!--  Use the application server datasource and transactions 
-          <property name="hibernate.connection.provider_class"           
-          		   value="org.hibernate.connection.DatasourceConnectionProvider"/>
-          <property name="hibernate.connection.datasource"
-                   value="java:/ApplicationDS"/>
-          -->
-          
+		  <!-- Data source and transaction settings -->          
           <property name="hibernate.transaction.factory_class"           
-                   value="org.hibernate.transaction.JTATransactionFactory"/>
+                   value="org.hibernate.transaction.CMTTransactionFactory"/>
           <property name="hibernate.transaction.manager_lookup_class"    
                    value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
-          <property name="hibernate.transaction.flush_before_completion" 
-                    value="true"/>
-          <property name="hibernate.transaction.auto_close_session"      
-                   value="true"/>
 
+          <!--  Debugger helpers -->
+          <property name="hibernate.format_sql" value="true"/>
+          <property name="hibernate.use_sql_comments" value="true"/>
       </properties>
    </persistence-unit>
 

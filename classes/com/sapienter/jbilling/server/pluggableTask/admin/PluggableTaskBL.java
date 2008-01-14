@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class PluggableTaskBL<T> {
     private static final Logger LOG = Logger.getLogger(PluggableTaskBL.class);     

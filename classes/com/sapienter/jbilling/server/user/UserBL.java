@@ -81,8 +81,8 @@ import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidato
 import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 
 public class UserBL extends ResultList

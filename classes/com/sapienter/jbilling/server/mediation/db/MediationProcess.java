@@ -35,9 +35,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @TableGenerator(
         name="mediation_process_GEN",
@@ -48,7 +45,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize=10
         )
 @Table(name = "mediation_process")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+// no cache. This table is not read repeatedly
 public class MediationProcess implements Serializable {
     //private static final Logger LOG = Logger.getLogger(MediationProcess.class);
    

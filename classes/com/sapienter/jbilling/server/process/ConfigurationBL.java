@@ -31,7 +31,7 @@ import com.sapienter.jbilling.interfaces.BillingProcessConfigurationEntityLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessConfigurationEntityLocalHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class ConfigurationBL {
     private JNDILookup EJBFactory = null;

@@ -19,28 +19,165 @@
 */
 package com.sapienter.jbilling.server.util.db;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Example;
+import org.hibernate.ejb.HibernateEntityManager;
+import org.hibernate.ejb.HibernateEntityManagerFactory;
 
 
 public abstract class AbstractDAS<T> {
 
-    protected EntityManager em = DBUtil.getEntityManager();;
+    private static final Logger LOG = Logger.getLogger(AbstractDAS.class);
+    private static SessionFactory sessionFactory;
+    private EntityManager em = null;
+    private Class<T> persistentClass;
+    //  use "jbilling-jta" for JTA or "jbilling-jdbc" for jdbc
+    private static final EntityManagerFactory emf =
+        Persistence.createEntityManagerFactory("jbilling-jta"); 
+    // if querys will be run cached or not
+    private boolean queriesCached = false;
+
     
-    /*
-    private Session em;
-    */
+    // Create the initial SessionFactory from the default configuration files
+    static {
+        try {
+            LOG.debug("Initializing Hibernate");
+
+            sessionFactory = ((HibernateEntityManagerFactory) emf).getSessionFactory();
+
+            LOG.debug("Hibernate initialized");
+        } catch (Throwable ex) {
+            // We have to catch Throwable, otherwise we will miss
+            // NoClassDefFoundError and other subclasses of Error
+            LOG.error("Building SessionFactory failed.", ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+    
+    public AbstractDAS() {
+        this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
+                                .getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
     
     public T save(T newEntity) {
-        T retValue = em.merge(newEntity);
-        //em.flush();
+        //T retValue = em.merge(newEntity);
+        T retValue = (T) getSession().merge(newEntity);
         return retValue;
     }
     
     public void delete(T entity) {
-        em.remove(entity);
-        //em.delete(entity);
+        //em.remove(entity);
+        getSession().delete(entity);
     }
 
-    public abstract T find(Integer id);
+    protected Session getSession() {
+        Session mySession = null;
+        if (em != null) {
+            mySession = ((HibernateEntityManager) em).getSession();
+        } else {
+            mySession = sessionFactory.getCurrentSession();
+        }
+        // just make sure queries only return objects, never single columns
+        // OR, modifications in the persitance context are not relevant to the result
+        mySession.setFlushMode(FlushMode.COMMIT);
+        return mySession;
+    }
     
+    public Class<T> getPersistentClass() {
+        return persistentClass;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T find(Integer id) {
+        T entity = (T) getSession().load(getPersistentClass(), id);
+
+        return entity;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<T> findAll() {
+        return findByCriteria();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<T> findByExample(T exampleInstance, String... excludeProperty) {
+        Criteria crit = getSession().createCriteria(getPersistentClass());
+        Example example =  Example.create(exampleInstance);
+        for (String exclude : excludeProperty) {
+            example.excludeProperty(exclude);
+        }
+        crit.add(example);
+        crit.setCacheable(queriesCached);
+        return crit.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public T findByExampleSingle(T exampleInstance, String... excludeProperty) {
+        Criteria crit = getSession().createCriteria(getPersistentClass());
+        Example example =  Example.create(exampleInstance);
+        for (String exclude : excludeProperty) {
+            example.excludeProperty(exclude);
+        }
+        crit.add(example);
+        crit.setCacheable(queriesCached);
+        return (T) crit.uniqueResult();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public T makePersistent(T entity) {
+        getSession().saveOrUpdate(entity);
+        return entity;
+    }
+
+    public void makeTransient(T entity) {
+        getSession().delete(entity);
+    }
+
+    public void flush() {
+        getSession().flush();
+    }
+
+    public void clear() {
+        getSession().clear();
+    }
+
+    /**
+     * Use this inside subclasses as a convenience method.
+     */
+    @SuppressWarnings("unchecked")
+    protected List<T> findByCriteria(Criterion... criterion) {
+        Criteria crit = getSession().createCriteria(getPersistentClass());
+        for (Criterion c : criterion) {
+            crit.add(c);
+        }
+        crit.setCacheable(queriesCached);
+        return crit.list();
+   }
+
+    @SuppressWarnings("unchecked")
+    protected T findByCriteriaSingle(Criterion... criterion) {
+        Criteria crit = getSession().createCriteria(getPersistentClass());
+        for (Criterion c : criterion) {
+            crit.add(c);
+        }
+        crit.setCacheable(queriesCached);
+        return (T) crit.uniqueResult();
+   }
+
+    protected void useCache() {
+        queriesCached = true;
+    }
 }

@@ -33,7 +33,7 @@ import com.sapienter.jbilling.interfaces.AchEntityLocal;
 import com.sapienter.jbilling.interfaces.AchEntityLocalHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class AchBL {
     private JNDILookup EJBFactory = null;

@@ -31,6 +31,7 @@ import java.util.Random;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -211,7 +212,7 @@ public class WSTest extends TestCase {
             System.out.println("Creating credit card");
             String ccName = "New ccName";
             String ccNumber = "4012888888881881";
-            Date ccExpiry = Calendar.getInstance().getTime();
+            Date ccExpiry = Util.truncateDate(Calendar.getInstance().getTime());
 
             CreditCardDTO cc = new CreditCardDTO();
             cc.setName(ccName);

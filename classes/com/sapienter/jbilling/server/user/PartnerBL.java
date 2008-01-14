@@ -68,8 +68,8 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  * @author Emil

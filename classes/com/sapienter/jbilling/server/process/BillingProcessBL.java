@@ -75,8 +75,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class BillingProcessBL extends ResultList 
         implements ProcessSQL {
@@ -285,6 +285,7 @@ public class BillingProcessBL extends ResultList
             // either this is the case an generating this invoice doesn't make
             // sense, or some business rules in the tasks have to be changed
             // (probably with a personalized task for this entity)
+            LOG.warn("Exception in generate invoice ", e);
         }
         
         return retValue;

@@ -31,7 +31,6 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.EntityTransaction;
 
 import org.apache.log4j.Logger;
 
@@ -55,8 +54,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
-import com.sapienter.jbilling.server.util.db.DBUtil;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
 *
@@ -77,17 +75,16 @@ public class MediationSessionBean implements SessionBean {
 
     /**
      * @ejb:interface-method view-type="both"
+     * @ejb.transaction type="Required"
      */
     public void trigger() {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         MediationProcessDAS processDAS = new MediationProcessDAS();
         Vector<String> errorMessages = new Vector<String>();
-        EntityTransaction tx = DBUtil.getTransaction();
 
         LOG.debug("Running mediation trigger.");
         
         try {
-            tx.begin();
             EntityBL entityBL = new EntityBL();
             
             // loop over all the entities
@@ -154,14 +151,10 @@ public class MediationSessionBean implements SessionBean {
                     }
                 }
             }
-            tx.commit();
         } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
             throw new SessionInternalError("Exception in mediation trigger", 
                     MediationSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        } 
         
         if (!errorMessages.isEmpty()) {
             StringBuffer buf = new StringBuffer("Wrong configuration of reader plugin\n");
@@ -174,80 +167,48 @@ public class MediationSessionBean implements SessionBean {
     
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
      */
     public List<MediationProcess> getAll(Integer entityId) {
         MediationProcessDAS processDAS = new MediationProcessDAS();
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
-            List<MediationProcess> result = processDAS.findAllByEntity(entityId);
+        List<MediationProcess> result = processDAS.findAllByEntity(entityId);
             
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception in mediation trigger", 
-                    MediationSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        return result;
         
     }
 
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
      */
     public List<MediationConfiguration> getAllConfigurations(Integer entityId) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
-            List<MediationConfiguration> result = cfgDAS.findAllByEntity(entityId);
+        List<MediationConfiguration> result = cfgDAS.findAllByEntity(entityId);
             
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception in getting mediation configuration " +
-                    "for entity " + entityId, MediationSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
-        
+        return result;
     }
 
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
      */
     public void createConfiguration(MediationConfiguration cfg) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
 
-            cfg.setCreateDatetime(Calendar.getInstance().getTime());
-            cfgDAS.save(cfg);
+        cfg.setCreateDatetime(Calendar.getInstance().getTime());
+        cfgDAS.save(cfg);
             
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception in creating mediation configuration " +
-                     cfg, MediationSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
     }
     
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
      */
     public List updateAllConfiguration(Integer executorId, List<MediationConfiguration> configurations) 
             throws InvalidArgumentException {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
-        EntityTransaction tx = DBUtil.getTransaction();
         Vector<MediationConfiguration> retValue = new Vector<MediationConfiguration>();
         try {
-            tx.begin();
 
             for (MediationConfiguration cfg: configurations) {
                 // if the configuration is new, the task needs to be loaded
@@ -264,21 +225,15 @@ public class MediationSessionBean implements SessionBean {
                 }
                 retValue.add(cfgDAS.save(cfg));
             }
-            tx.commit();
             return retValue;
         } catch (EntityNotFoundException e1) {
-            if (tx.isActive()) tx.rollback();
             throw new InvalidArgumentException("Wrong data saving mediation configuration", 1, e1);
         } catch (InvalidArgumentException e2) {    
-            if (tx.isActive()) tx.rollback();
             throw new InvalidArgumentException(e2);
         } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
             throw new SessionInternalError("Exception updating mediation configurations ",
                     MediationSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        } 
         /*
         eLogger.audit(executorId, Constants.TABLE_MEDIATION_CFG, 
                 cfg.getId(), EventLogger.MODULE_MEDIATION,
@@ -289,25 +244,15 @@ public class MediationSessionBean implements SessionBean {
 
     /**
      * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
      */
     public void delete(Integer executorId, Integer cfgId) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
-        EntityTransaction tx = DBUtil.getTransaction();
-        try {
-            tx.begin();
             
-            cfgDAS.delete(cfgDAS.find(cfgId));
-            tx.commit();
-            eLogger.audit(executorId, Constants.TABLE_MEDIATION_CFG, 
-                    cfgId, EventLogger.MODULE_MEDIATION,
-                    EventLogger.ROW_DELETED, null, null, null);
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw new SessionInternalError("Exception updating mediation configurations ",
-                    MediationSessionBean.class, e);
-        } finally {
-            DBUtil.finishSession();
-        }
+        cfgDAS.delete(cfgDAS.find(cfgId));
+        eLogger.audit(executorId, Constants.TABLE_MEDIATION_CFG, 
+                cfgId, EventLogger.MODULE_MEDIATION,
+                EventLogger.ROW_DELETED, null, null, null);
     }
     
     private void normalizeRecordGroup(IMediationProcess processTask, Integer executorId,

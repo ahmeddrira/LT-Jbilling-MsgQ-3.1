@@ -79,6 +79,7 @@ import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  * @author Emil

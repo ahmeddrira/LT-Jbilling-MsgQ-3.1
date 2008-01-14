@@ -58,8 +58,8 @@ import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocalHome;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  * @author Emil

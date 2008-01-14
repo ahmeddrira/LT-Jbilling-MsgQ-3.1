@@ -55,6 +55,7 @@ public class PluggableTaskTypeDTO implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="category_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     private PluggableTaskTypeCategoryDTO category;
 
     // Custom field accessors --------------------------------------------------

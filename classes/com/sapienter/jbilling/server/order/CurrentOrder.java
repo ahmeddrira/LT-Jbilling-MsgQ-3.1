@@ -35,8 +35,8 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class CurrentOrder {
     private final Date eventDate;

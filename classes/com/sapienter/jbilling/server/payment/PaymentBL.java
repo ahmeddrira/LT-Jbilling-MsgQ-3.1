@@ -76,7 +76,7 @@ import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class PaymentBL extends ResultList 
         implements PaymentSQL {

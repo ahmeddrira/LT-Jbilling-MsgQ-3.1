@@ -26,10 +26,11 @@ public class PluggableTaskParameterDAS extends AbstractDAS<PluggableTaskParamete
     // QUERIES
 
     // END OF QUERIES
-    
+    /*
     public PluggableTaskParameterDTO find(Integer id) {
 
         PluggableTaskParameterDTO entity = em.find(PluggableTaskParameterDTO.class, id);
         return entity;
-    }    
+    } 
+    */   
 }

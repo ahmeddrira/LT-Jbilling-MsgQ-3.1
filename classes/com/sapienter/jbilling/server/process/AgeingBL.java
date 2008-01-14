@@ -66,8 +66,8 @@ import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.EventLogger;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  * @author Emil

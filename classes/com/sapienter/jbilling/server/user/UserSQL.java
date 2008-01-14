@@ -24,7 +24,7 @@
  */
 package com.sapienter.jbilling.server.user;
 
-import com.sapienter.jbilling.server.util.EventLogger;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
  * @author Emil

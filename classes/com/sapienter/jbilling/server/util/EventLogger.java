@@ -18,25 +18,22 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.server.util;
+package com.sapienter.jbilling.server.util.audit;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
-import javax.ejb.CreateException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.EventLogEntityLocal;
-import com.sapienter.jbilling.interfaces.EventLogEntityLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
-import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.audit.db.EventLogMessageDAS;
+import com.sapienter.jbilling.server.util.audit.db.EventLogModuleDAS;
+import com.sapienter.jbilling.server.util.db.generated.CompanyDAS;
+import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
+import com.sapienter.jbilling.server.util.db.generated.UserDAS;
 
 public class EventLogger {
     
@@ -95,37 +92,33 @@ public class EventLogger {
     public static final Integer LEVEL_ERROR = new Integer(4);
     public static final Integer LEVEL_FATAL = new Integer(5);
     
-    private EventLogEntityLocalHome eventLogHome = null;
-    private Logger log = null;
+    private EventLogDAS eventLogDAS = null;
+    private EventLogMessageDAS eventLogMessageDAS = null;
+    private EventLogModuleDAS eventLogModuleDAS = null;
+    
+    private static final Logger LOG = Logger.getLogger(EventLogger.class);
     
     /*
      * The constructor is private, no one should instantiate this class
      */
-    private EventLogger() throws NamingException{
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        eventLogHome =
-                (EventLogEntityLocalHome) EJBFactory.lookUpLocalHome(
-                EventLogEntityLocalHome.class,
-                EventLogEntityLocalHome.JNDI_NAME);            
-        log = Logger.getLogger(EventLogger.class);
-
+    private EventLogger() {
+        eventLogDAS = new EventLogDAS();
+        eventLogMessageDAS = new EventLogMessageDAS();
+        eventLogModuleDAS = new EventLogModuleDAS();
     }
     
     public static EventLogger getInstance() {
-        try {
-            return new EventLogger();
-        } catch (NamingException e) {
-            throw new SessionInternalError("Creating event logger", EventLogger.class, e);
-        }
+        return new EventLogger();
     }
     
     public void log(Integer level, Integer entity, Integer rowId, Integer module, 
             Integer message, String table)  {
-        try {
-            eventLogHome.create(entity, rowId, level, module, message, table);
-        } catch (CreateException e) {
-            throw new SessionInternalError(e);
-        }            
+        JbillingTableDAS tableDas = new JbillingTableDAS();
+        CompanyDAS company = new CompanyDAS();
+        EventLogDTO dto = new EventLogDTO(null, tableDas.findByName(table), null, 
+                eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
+                company.find(entity), rowId, level, null, null, null);
+        eventLogDAS.save(dto);
     }
     
     public void debug(Integer entity, Integer rowId, Integer module, 
@@ -160,28 +153,15 @@ public class EventLogger {
     public void audit(Integer userExecutingId, String table, Integer rowId,
             Integer module, Integer message, Integer oldInt, String oldStr,
             Date oldDate) {
-        try {
-            /*
-             * Logging was switched from the db to file because of
-             * transaction locks and performance.
-             * Still, transactions where rearranged and inserts should not
-             * have a performance issue.
-            log.info("Audit row->" + "userExecutingId:" + userExecutingId + 
-                    " table:" + table + " rowId:" + rowId + " module: " + module + 
-                    " message:" + message + " oldInt:" + oldInt + " oldStr:" + 
-                    oldStr + " oldDate:" + oldDate);
-            */
-            UserEntityLocal user = UserBL.getUserEntity(userExecutingId);
-                    
-            EventLogEntityLocal event = eventLogHome.create(user.getEntity().getId(),
-                    rowId, LEVEL_INFO, module, message, table);
-            event.setUser(user);
-            event.setOldDate(oldDate);
-            event.setOldNum(oldInt);
-            event.setOldStr(oldStr);
-        } catch (Exception e) {
-            log.error("Can't create an eventLog audit record.", e);
-        }
+
+        JbillingTableDAS tableDas = new JbillingTableDAS();
+        UserDAS user= new UserDAS();
+        
+        EventLogDTO dto = new EventLogDTO(null, tableDas.findByName(table), user.find(userExecutingId), 
+                eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
+                user.find(userExecutingId).getCompany(), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
+        eventLogDAS.save(dto);
+
     }   
 
 
@@ -192,25 +172,13 @@ public class EventLogger {
     public void auditBySystem(Integer entityId, String table, Integer rowId,
             Integer module, Integer message, Integer oldInt, String oldStr,
             Date oldDate) {
-        try {
-            /*
-             * Logging was switched from the db to file because of
-             * transaction locks and performance.
-             * Still, transactions where rearranged and inserts should not
-             * have a performance issue.
-            log.info("Audit row->" + "entityId:" + entityId + 
-                    " table:" + table + " rowId:" + rowId + " module: " + module + 
-                    " message:" + message + " oldInt:" + oldInt + " oldStr:" + 
-                    oldStr + " oldDate:" + oldDate);
-             */
-            EventLogEntityLocal event = eventLogHome.create(entityId,
-                    rowId, LEVEL_INFO, module, message, table);
-            event.setOldDate(oldDate);
-            event.setOldNum(oldInt);
-            event.setOldStr(oldStr);
-        } catch (Exception e) {
-            log.error("Can't create an eventLog audit record.", e);
-        }
+        JbillingTableDAS tableDas = new JbillingTableDAS();
+        CompanyDAS company = new CompanyDAS();
+        EventLogDTO dto = new EventLogDTO(null, tableDas.findByName(table), null, 
+                eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
+                company.find(entityId), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
+        eventLogDAS.save(dto);
+
     }
     
     /**
@@ -223,27 +191,6 @@ public class EventLogger {
     public Integer getLastTransitionEvent(Integer entityId) 
     		throws SQLException, NamingException {
     	
-    	/*
-    	 * Extract the last id logged (the one with higher id) and return it.
-    	 * 
-    	 * TODO: this is a potential performance problem: the query above extracts
-    	 * all logged events and sorts them in descending order (so that the newest
-    	 * log event is on top of the list). A better solution would be to extract
-    	 * only the last event in the db, or limit the extraction based on a date,
-    	 * or put the last id somewhere else.
-    	 */
-    	CachedRowSet cachedResults = new CachedRowSet();
-    	Integer result = new Integer(0);
-    	JNDILookup jndi = JNDILookup.getFactory();
-    	Connection conn = jndi.lookUpDataSource().getConnection();
-    	cachedResults.setCommand(EventLoggerSQL.searchLog);
-    	cachedResults.setInt(1, entityId);
-    	cachedResults.execute(conn);
-    	
-    	if (cachedResults.next()) {
-    		result = Integer.valueOf(cachedResults.getInt(1));
-    	}
-		conn.close();
-		return new Integer(result);
+    	return eventLogDAS.getLastTransitionEvent(entityId);
     }
 }

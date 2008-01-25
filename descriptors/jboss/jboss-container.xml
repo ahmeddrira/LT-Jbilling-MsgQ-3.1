@@ -45,7 +45,7 @@
 	   <container-pool-conf>
 		  <MaximumSize>100</MaximumSize>
 	   </container-pool-conf>
-	   <commit-option>C</commit-option>
+	   <commit-option>A</commit-option>
 	</container-configuration>
 
     <container-configuration extends="Standard Stateless SessionBean">

@@ -32,6 +32,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.order.db.PurchaseOrder;
+
 @Entity
 @Table(name="order_period"
     ,schema="public"

@@ -37,6 +37,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.order.db.PurchaseOrder;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 
 @Entity

@@ -35,6 +35,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+
 @Entity
 @Table(name="billing_process"
     ,schema="public"
@@ -50,7 +52,7 @@ public class BillingProcess  implements java.io.Serializable {
      private int periodValue;
      private int isReview;
      private int retriesToDo;
-     private Set<OrderProcess> orderProcesses = new HashSet<OrderProcess>(0);
+     private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
      private Set<Invoice> invoices = new HashSet<Invoice>(0);
      private Set<ProcessRun> processRuns = new HashSet<ProcessRun>(0);
 
@@ -67,7 +69,7 @@ public class BillingProcess  implements java.io.Serializable {
         this.isReview = isReview;
         this.retriesToDo = retriesToDo;
     }
-    public BillingProcess(int id, PeriodUnit periodUnit, PaperInvoiceBatch paperInvoiceBatch, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo, Set<OrderProcess> orderProcesses, Set<Invoice> invoices, Set<ProcessRun> processRuns) {
+    public BillingProcess(int id, PeriodUnit periodUnit, PaperInvoiceBatch paperInvoiceBatch, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo, Set<OrderProcessDTO> orderProcesses, Set<Invoice> invoices, Set<ProcessRun> processRuns) {
        this.id = id;
        this.periodUnit = periodUnit;
        this.paperInvoiceBatch = paperInvoiceBatch;
@@ -155,11 +157,11 @@ public class BillingProcess  implements java.io.Serializable {
         this.retriesToDo = retriesToDo;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="billingProcess")
-    public Set<OrderProcess> getOrderProcesses() {
+    public Set<OrderProcessDTO> getOrderProcesses() {
         return this.orderProcesses;
     }
     
-    public void setOrderProcesses(Set<OrderProcess> orderProcesses) {
+    public void setOrderProcesses(Set<OrderProcessDTO> orderProcesses) {
         this.orderProcesses = orderProcesses;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="billingProcess")

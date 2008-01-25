@@ -33,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.order.db.PurchaseOrder;
+
 @Entity
 @Table(name="currency"
     ,schema="public"

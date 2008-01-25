@@ -108,6 +108,15 @@
             overflowToDisk="false"
      />                       
 
+     <!-- Level 1: objects that might change ocassionaly (nonstrict_read_write)-->
+     <cache name="com.sapienter.jbilling.server.order.db.OrderProcessDTO"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="600"
+            timeToLiveSeconds="1200"
+            overflowToDisk="false"
+     />                       
+
      <!-- Query cache regions -->
      <cache name="org.hibernate.cache.StandardQueryCache"
             maxElementsInMemory="5000"

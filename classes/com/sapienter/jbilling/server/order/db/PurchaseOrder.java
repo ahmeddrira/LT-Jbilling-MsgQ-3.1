@@ -17,12 +17,13 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.order.db;
 
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.sapienter.jbilling.server.util.db.generated.BaseUser;
+import com.sapienter.jbilling.server.util.db.generated.Currency;
+import com.sapienter.jbilling.server.util.db.generated.OrderBillingType;
+import com.sapienter.jbilling.server.util.db.generated.OrderLine;
+import com.sapienter.jbilling.server.util.db.generated.OrderPeriod;
+import com.sapienter.jbilling.server.util.db.generated.OrderStatus;
 
 @Entity
 @Table(name="purchase_order"
@@ -64,7 +75,7 @@ public class PurchaseOrder  implements java.io.Serializable {
      private Short ownInvoice;
      private String notes;
      private Short notesInInvoice;
-     private Set<OrderProcess> orderProcesses = new HashSet<OrderProcess>(0);
+     private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
      private Set<OrderLine> orderLines = new HashSet<OrderLine>(0);
 
     public PurchaseOrder() {
@@ -80,7 +91,7 @@ public class PurchaseOrder  implements java.io.Serializable {
         this.createDatetime = createDatetime;
         this.deleted = deleted;
     }
-    public PurchaseOrder(int id, BaseUser baseUserByUserId, BaseUser baseUserByCreatedBy, Currency currency, OrderStatus orderStatus, OrderPeriod orderPeriod, OrderBillingType orderBillingType, Date activeSince, Date activeUntil, Date createDatetime, Date nextBillableDay, short deleted, Short notify, Date lastNotified, Integer notificationStep, Integer dueDateUnitId, Integer dueDateValue, Short dfFm, Integer anticipatePeriods, Short ownInvoice, String notes, Short notesInInvoice, Set<OrderProcess> orderProcesses, Set<OrderLine> orderLines) {
+    public PurchaseOrder(int id, BaseUser baseUserByUserId, BaseUser baseUserByCreatedBy, Currency currency, OrderStatus orderStatus, OrderPeriod orderPeriod, OrderBillingType orderBillingType, Date activeSince, Date activeUntil, Date createDatetime, Date nextBillableDay, short deleted, Short notify, Date lastNotified, Integer notificationStep, Integer dueDateUnitId, Integer dueDateValue, Short dfFm, Integer anticipatePeriods, Short ownInvoice, String notes, Short notesInInvoice, Set<OrderProcessDTO> orderProcesses, Set<OrderLine> orderLines) {
        this.id = id;
        this.baseUserByUserId = baseUserByUserId;
        this.baseUserByCreatedBy = baseUserByCreatedBy;
@@ -107,8 +118,7 @@ public class PurchaseOrder  implements java.io.Serializable {
        this.orderLines = orderLines;
     }
    
-     @Id 
-    
+    @Id 
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -306,15 +316,22 @@ public class PurchaseOrder  implements java.io.Serializable {
     public void setNotesInInvoice(Short notesInInvoice) {
         this.notesInInvoice = notesInInvoice;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
-    public Set<OrderProcess> getOrderProcesses() {
+    
+    /*
+     * There might potentially hundreds of process records, but they are not read by the app.
+     * They are only taken for display, and then all are needed
+     */
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
+    @Fetch ( FetchMode.SUBSELECT)
+    public Set<OrderProcessDTO> getOrderProcesses() {
         return this.orderProcesses;
     }
     
-    public void setOrderProcesses(Set<OrderProcess> orderProcesses) {
+    public void setOrderProcesses(Set<OrderProcessDTO> orderProcesses) {
         this.orderProcesses = orderProcesses;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     public Set<OrderLine> getOrderLines() {
         return this.orderLines;
     }

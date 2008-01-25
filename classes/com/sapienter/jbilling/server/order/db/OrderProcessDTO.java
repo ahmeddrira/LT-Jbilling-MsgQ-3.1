@@ -17,25 +17,40 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.order.db;
 
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.sapienter.jbilling.server.util.db.generated.BillingProcess;
 
 @Entity
-@Table(name="order_process"
-    ,schema="public"
-)
-public class OrderProcess  implements java.io.Serializable {
+@TableGenerator(
+        name="order_process_GEN",
+        table="jbilling_table",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="order_process",
+        allocationSize=10
+        )
+@Table(name="order_process")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class OrderProcessDTO  implements java.io.Serializable {
 
 
      private int id;
@@ -47,16 +62,18 @@ public class OrderProcess  implements java.io.Serializable {
      private Date periodEnd;
      private int isReview;
      private Integer origin;
+     private Integer versionNum;
 
-    public OrderProcess() {
+
+    public OrderProcessDTO() {
     }
 
 	
-    public OrderProcess(int id, int isReview) {
+    public OrderProcessDTO(int id, int isReview) {
         this.id = id;
         this.isReview = isReview;
     }
-    public OrderProcess(int id, BillingProcess billingProcess, PurchaseOrder purchaseOrder, Integer invoiceId, Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
+    public OrderProcessDTO(int id, BillingProcess billingProcess, PurchaseOrder purchaseOrder, Integer invoiceId, Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
        this.id = id;
        this.billingProcess = billingProcess;
        this.purchaseOrder = purchaseOrder;
@@ -68,8 +85,7 @@ public class OrderProcess  implements java.io.Serializable {
        this.origin = origin;
     }
    
-     @Id 
-    
+    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="order_process_GEN")
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -78,7 +94,8 @@ public class OrderProcess  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="billing_process_id")
     public BillingProcess getBillingProcess() {
         return this.billingProcess;
@@ -87,7 +104,8 @@ public class OrderProcess  implements java.io.Serializable {
     public void setBillingProcess(BillingProcess billingProcess) {
         this.billingProcess = billingProcess;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="order_id")
     public PurchaseOrder getPurchaseOrder() {
         return this.purchaseOrder;
@@ -114,7 +132,7 @@ public class OrderProcess  implements java.io.Serializable {
     public void setPeriodsIncluded(Integer periodsIncluded) {
         this.periodsIncluded = periodsIncluded;
     }
-    @Temporal(TemporalType.DATE)
+    
     @Column(name="period_start", length=13)
     public Date getPeriodStart() {
         return this.periodStart;
@@ -123,7 +141,7 @@ public class OrderProcess  implements java.io.Serializable {
     public void setPeriodStart(Date periodStart) {
         this.periodStart = periodStart;
     }
-    @Temporal(TemporalType.DATE)
+    
     @Column(name="period_end", length=13)
     public Date getPeriodEnd() {
         return this.periodEnd;
@@ -151,9 +169,15 @@ public class OrderProcess  implements java.io.Serializable {
         this.origin = origin;
     }
 
+    @Version
+    @Column(name="OPTLOCK")
+	public Integer getVersionNum() {
+		return versionNum;
+	}
 
-
-
+	protected void setVersionNum(Integer versionNum) {
+		this.versionNum = versionNum;
+	}
 }
 
 

@@ -38,6 +38,8 @@ taglib.home.dir=${libs.client.dir}/WEB-INF
 struts.home.tag.dir=${libs.client.dir}/WEB-INF
 #the next directory is needed to run xdoclet
 xdoclet.home.dir=${libs.dir}/xdoclet
+hibernate.tools.dir=U:/bop/tools/hibernate/tools
+
 
 # the rest of the API libs are only used when getting a fresh
 # jboss. They point to the 'source' of each lib, so they can be

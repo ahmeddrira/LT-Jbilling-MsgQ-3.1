@@ -65,6 +65,8 @@ import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
 import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
@@ -93,6 +95,7 @@ public class OrderBL extends ResultList
     private OrderLineEntityLocalHome orderLineHome = null;
     private OrderLineTypeEntityLocalHome orderLineTypeHome = null;
     private OrderPeriodEntityLocalHome orderPeriodHome = null;
+    private OrderDAS orderDas = null;
     
     private static final Logger LOG = Logger.getLogger(OrderBL.class);
     private EventLogger eLogger = null;
@@ -142,7 +145,8 @@ public class OrderBL extends ResultList
                 (OrderPeriodEntityLocalHome) EJBFactory.lookUpLocalHome(
                 OrderPeriodEntityLocalHome.class,
                 OrderPeriodEntityLocalHome.JNDI_NAME);
-        
+    
+        orderDas = new OrderDAS();
     }
 
     public OrderEntityLocal getEntity() {
@@ -480,6 +484,20 @@ public class OrderBL extends ResultList
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
                     EventLogger.ORDER_NEXT_BILL_DATE_UPDATED, null,  
                     null, order.getNextBillableDay());
+            // update the period of the latest invoice as well
+            OrderProcessDTO process = null;
+            if (order.getNextBillableDay() != null) {
+            	process = orderDas.findProcessByEndDate(order.getId(), 
+            		order.getNextBillableDay());
+            }
+            if (process != null) {
+            	LOG.debug("Updating process id " + process.getId());
+            	process.setPeriodEnd(newDate);
+            	
+            } else {
+            	LOG.debug("Did not find any process for order " + order.getId() +  
+            			" and date " + order.getNextBillableDay());
+            }
             // do the actual update
             order.setNextBillableDay(newDate);
         } else {

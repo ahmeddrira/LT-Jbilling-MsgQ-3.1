@@ -764,6 +764,9 @@
         <column name="period_end" type="DATE"/>
         <column name="is_review" required="true" type="INTEGER"/>
         <column name="origin" type="INTEGER"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        
+        
         <index name="ix_uq_order_process_or_in">
         	<index-column name="order_id"/>
         	<index-column name="invoice_id"/>

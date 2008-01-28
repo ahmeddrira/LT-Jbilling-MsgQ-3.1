@@ -411,7 +411,7 @@ public class DTOFactory {
             retValue.getPeriods().add(new OrderProcessDTO(orderProcess.getId(),
                     orderProcess.getPeriodStart(), orderProcess.getPeriodEnd(),
                     orderProcess.getPeriodsIncluded(), new Integer(0),
-                    orderProcess.getOrigin()));
+                    orderProcess.getOrigin(), new Integer(1)));
 
             // process
             BillingProcessEntityLocal process = 

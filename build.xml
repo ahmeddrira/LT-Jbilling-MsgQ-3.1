@@ -723,15 +723,16 @@
 	</target>
 	
 	<!-- Hibernate tools tasks -->
-	<taskdef name="hibernatetool"
-	             classname="org.hibernate.tool.ant.HibernateToolTask"
-	             classpathref="hibernate.classpath"/>
 
     <!-- Create the entity classes for the JPA migration -->
     <target name="entityGeneration" 
         description="Generates the entity classes based on a JDBC schema">
 
     	<delete dir="${source.classes.dir}/com/sapienter/jbilling/server/util/db/generated"/>
+     
+		<taskdef name="hibernatetool"
+	             classname="org.hibernate.tool.ant.HibernateToolTask"
+	             classpathref="hibernate.classpath"/>
 
         <hibernatetool destdir="${source.classes.dir}/">
         	<jdbcconfiguration 
@@ -750,6 +751,9 @@
     <target name="schemaexport" depends="compile"
 	        description="Exports DDL to file in build directory">
 
+			<taskdef name="hibernatetool"
+	             classname="org.hibernate.tool.ant.HibernateToolTask"
+	             classpathref="hibernate.classpath"/>
 	        <hibernatetool destdir="${build.dir}">
 	            <classpath path="${build.classes.dir}"/>
 	            <jpaconfiguration persistenceunit="caveatemptor"/>

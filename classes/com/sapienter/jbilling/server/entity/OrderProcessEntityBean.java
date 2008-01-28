@@ -88,6 +88,7 @@ public abstract class OrderProcessEntityBean implements EntityBean {
         setPeriodStart(start);
         setPeriodEnd(end);
         setIsReview(isReview);
+        setOptlock(1);
         
         return newId;
     }
@@ -160,6 +161,15 @@ public abstract class OrderProcessEntityBean implements EntityBean {
      * @param flag
      */
     public abstract void setOrigin(Integer code);
+    
+    /**
+     * @ejb:persistent-field
+     * @jboss:column-name name="optlock"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getOptlock();
+    public abstract void setOptlock(Integer code);
+
 
     //  CMR field accessors -----------------------------------------------------
     /**

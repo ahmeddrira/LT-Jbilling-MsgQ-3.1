@@ -371,6 +371,8 @@
         <column name="old_num" type="INTEGER"/>
         <column name="old_str" size="1000" type="VARCHAR"/>
         <column name="old_date" type="TIMESTAMP"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        
         <index name="ix_el_main">
         	<index-column name="module_id"/>
         	<index-column name="message_id"/>

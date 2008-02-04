@@ -31,6 +31,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.user.db.BaseUser;
+
 @Entity
 @Table(name="report_user"
     ,schema="public"

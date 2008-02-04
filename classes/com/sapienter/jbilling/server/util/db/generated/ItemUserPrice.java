@@ -28,6 +28,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.BaseUser;
+
 @Entity
 @Table(name="item_user_price"
     ,schema="public"

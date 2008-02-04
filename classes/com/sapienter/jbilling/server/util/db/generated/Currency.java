@@ -34,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.sapienter.jbilling.server.order.db.PurchaseOrder;
+import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
 @Table(name="currency"

@@ -76,6 +76,8 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
 import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
 import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
@@ -95,6 +97,7 @@ public class UserBL extends ResultList
     private EventLogger eLogger = null;
     private Integer mainRole = null;
     private CustomerEntityLocalHome customerHome = null;
+    private UserDAS das = null;
     
     public UserBL(Integer userId) throws FinderException {
         init();
@@ -154,6 +157,8 @@ public class UserBL extends ResultList
             subscirptionStatusHome = (SubscriptionStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
                     SubscriptionStatusEntityLocalHome.class,
                     SubscriptionStatusEntityLocalHome.JNDI_NAME);
+            
+            das = new UserDAS();
         } catch (NamingException e) {
             throw new SessionInternalError("init UserBL", this.getClass(), e);
         }
@@ -1297,15 +1302,8 @@ public class UserBL extends ResultList
         if (userId == null) {
             userId = user.getUserId();
         }
-        try {
-            prepareStatement(UserSQL.getEntityId);
-            cachedResults.setInt(1, userId);
-            execute();
-            conn.close();
-            cachedResults.next();
-            return cachedResults.getInt(1);
-        } catch (Exception e) {
-            throw new SessionInternalError("Error finding entity_id of a user", UserBL.class, e);
-        }
+       	BaseUser user = das.find(userId);
+       	return user.getCompany().getId();
+        		
     }
 }

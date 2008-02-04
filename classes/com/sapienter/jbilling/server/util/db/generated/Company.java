@@ -40,6 +40,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.user.db.BaseUser;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 
 @Entity

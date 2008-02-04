@@ -30,6 +30,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.BaseUser;
+
 @Entity
 @Table(name="subscriber_status"
     ,schema="public"

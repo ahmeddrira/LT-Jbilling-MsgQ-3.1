@@ -32,6 +32,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.BaseUser;
+
 @Entity
 @Table(name="role"
     ,schema="public"

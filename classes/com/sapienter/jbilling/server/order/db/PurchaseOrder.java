@@ -39,7 +39,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.sapienter.jbilling.server.util.db.generated.BaseUser;
+import com.sapienter.jbilling.server.user.db.BaseUser;
 import com.sapienter.jbilling.server.util.db.generated.Currency;
 import com.sapienter.jbilling.server.util.db.generated.OrderBillingType;
 import com.sapienter.jbilling.server.util.db.generated.OrderLine;

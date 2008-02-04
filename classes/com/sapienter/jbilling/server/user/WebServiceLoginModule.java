@@ -1,9 +1,5 @@
 package com.sapienter.jbilling.server.user;
 
-import java.security.acl.Group;
-
-import javax.security.auth.login.LoginException;
-
 import org.apache.log4j.Logger;
 import org.jboss.security.auth.spi.DatabaseServerLoginModule;
 

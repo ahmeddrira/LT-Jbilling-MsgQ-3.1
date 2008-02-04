@@ -27,13 +27,13 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogMessageDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogModuleDAS;
 import com.sapienter.jbilling.server.util.db.generated.CompanyDAS;
 import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
-import com.sapienter.jbilling.server.util.db.generated.UserDAS;
 
 public class EventLogger {
     

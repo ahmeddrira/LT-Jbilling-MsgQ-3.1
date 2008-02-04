@@ -78,6 +78,8 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
@@ -440,11 +442,10 @@ public class WebServicesSessionBean implements SessionBean {
         // find which entity are we talking here
         String root = context.getCallerPrincipal().getName();
         try {
-            UserBL bl = new UserBL();
-            bl.setRoot(root);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-            bl.set(username, entityId);
-            return bl.getEntity().getUserId();
+        	UserDAS das = new UserDAS();
+        	BaseUser rootUser = das.findRoot(root);
+        	return das.findByUserName(username, rootUser.getCompany().getId()).getId();
+        	
         } catch (Exception e) {
             LOG.error("WS - getUserId", e);
             throw new SessionInternalError("Error getting user id");

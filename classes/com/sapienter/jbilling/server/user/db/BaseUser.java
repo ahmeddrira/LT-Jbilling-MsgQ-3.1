@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.user.db;
 
 
 import java.util.Date;
@@ -39,6 +39,28 @@ import javax.persistence.TemporalType;
 
 import com.sapienter.jbilling.server.order.db.PurchaseOrder;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.db.generated.Ach;
+import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import com.sapienter.jbilling.server.util.db.generated.Currency;
+import com.sapienter.jbilling.server.util.db.generated.Customer;
+import com.sapienter.jbilling.server.util.db.generated.Invoice;
+import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
+import com.sapienter.jbilling.server.util.db.generated.Language;
+import com.sapienter.jbilling.server.util.db.generated.NotificationMessageArch;
+import com.sapienter.jbilling.server.util.db.generated.Partner;
+import com.sapienter.jbilling.server.util.db.generated.Payment;
+import com.sapienter.jbilling.server.util.db.generated.PermissionUser;
+import com.sapienter.jbilling.server.util.db.generated.Promotion;
+import com.sapienter.jbilling.server.util.db.generated.ReportUser;
+import com.sapienter.jbilling.server.util.db.generated.Role;
+import com.sapienter.jbilling.server.util.db.generated.SubscriberStatus;
+import com.sapienter.jbilling.server.util.db.generated.UserStatus;
+
+/*
+ * TODO: This class is not fully done for JPA. It is not replacing UserEntity.
+ * When it does, rename it (UserDTO) and add the generator.
+ */
 
 @Entity
 @Table(name="base_user")
@@ -47,12 +69,12 @@ public class BaseUser  implements java.io.Serializable {
 
      private int id;
      private Currency currency;
-     private Company entity;
+     private Company company;
      private SubscriberStatus subscriberStatus;
      private UserStatus userStatus;
      private Language language;
      private String password;
-     private short deleted;
+     private int deleted;
      private Date createDatetime;
      private Date lastStatusChange;
      private Date lastLogin;
@@ -88,7 +110,7 @@ public class BaseUser  implements java.io.Serializable {
     public BaseUser(int id, Currency currency, Company entity, SubscriberStatus subscriberStatus, UserStatus userStatus, Language language, String password, short deleted, Date createDatetime, Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<Payment> payments, Set<Ach> achs, Set<PermissionUser> permissionUsers, Set<ReportUser> reportUsers, Set<Partner> partnersForRelatedClerk, Set<Customer> customers, Set<Partner> partnersForUserId, Set<PurchaseOrder> purchaseOrdersForCreatedBy, Set<PurchaseOrder> purchaseOrdersForUserId, Set<CreditCard> creditCards, Set<NotificationMessageArch> notificationMessageArchs, Set<Role> roles, Set<Promotion> promotions, Set<EventLogDTO> eventLogs, Set<Invoice> invoices, Set<ItemUserPrice> itemUserPrices) {
        this.id = id;
        this.currency = currency;
-       this.entity = entity;
+       this.company = entity;
        this.subscriberStatus = subscriberStatus;
        this.userStatus = userStatus;
        this.language = language;
@@ -140,11 +162,11 @@ public class BaseUser  implements java.io.Serializable {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
     public Company getCompany() {
-        return this.entity;
+        return this.company;
     }
     
     public void setCompany(Company entity) {
-        this.entity = entity;
+        this.company = entity;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="subscriber_status")
@@ -184,11 +206,11 @@ public class BaseUser  implements java.io.Serializable {
     }
     
     @Column(name="deleted", nullable=false)
-    public short getDeleted() {
+    public int getDeleted() {
         return this.deleted;
     }
     
-    public void setDeleted(short deleted) {
+    public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
     @Temporal(TemporalType.TIMESTAMP)

@@ -90,6 +90,8 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
  *           transaction-type="Container"
  *           view-type="both"
  *           jndi-name="com/sapienter/jbilling/server/util/WebServicesSession"
+ *           
+ * @ejb.transaction type="Required"
  *
  * @ejb:permission role-name = "2" view-type = "remote"
  *           

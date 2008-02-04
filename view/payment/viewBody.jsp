@@ -287,6 +287,14 @@
 		</tr>
 		</logic:present>
 		
+		<logic:equal name="dto" property="isPreauth" value="1">
+		<tr class="infoB">
+			<td class="infoprompt"><bean:message key="payment.isPreauth"/></td>
+			<td class="infodata"><bean:message key="all.prompt.yes"/></td>
+		</tr>
+		</logic:equal>
+		
+		
 		<%-- the authorization has to be made available to the page that will show it --%>
 		<logic:present name="dto" property="authorization">
 			<bean:define id="authorizationDto"  name="dto" property="authorization" toScope="request"/>

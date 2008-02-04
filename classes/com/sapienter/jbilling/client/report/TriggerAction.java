@@ -193,6 +193,7 @@ public class TriggerAction extends Action {
      */
     void setFieldValues(ReportDTOEx report, String mode, HttpSession session) {
         if (mode.equals("customer")) {
+        	// add some additional where conditions
             if (report.getId().equals(ReportDTOEx.REPORT_ORDER) || 
                     report.getId().equals(ReportDTOEx.REPORT_INVOICE) ||
                     report.getId().equals(ReportDTOEx.REPORT_PAYMENT) ||
@@ -215,6 +216,15 @@ public class TriggerAction extends Action {
                 Field id = report.getField("payment", "id");
                 id.setOrderPosition(new Integer(1));
             } 
+            // remove columns not needed
+            if (report.getId().equals(ReportDTOEx.REPORT_PAYMENT)) {
+            	Field field = report.getField("base_user", "user_name");
+            	field.setIsShown(0);
+            	field = report.getField("payment", "result_id");
+            	field.setIsShown(0);
+            	field = report.getField("payment", "method_id");
+            	field.setIsShown(0);
+            }
                 
         } else if (mode.equals("partner")) {
             if (report.getId().equals(ReportDTOEx.REPORT_PARTNER)) {

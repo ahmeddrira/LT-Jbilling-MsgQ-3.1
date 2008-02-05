@@ -35,9 +35,7 @@ import javax.persistence.Table;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="role"
-    ,schema="public"
-)
+@Table(name="role")
 public class Role  implements java.io.Serializable {
 
 

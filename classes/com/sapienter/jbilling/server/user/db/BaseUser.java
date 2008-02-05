@@ -331,7 +331,7 @@ public class BaseUser  implements java.io.Serializable {
         this.purchaseOrdersForUserId = purchaseOrdersForUserId;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="user_credit_card_map", schema="public", joinColumns = { 
+    @JoinTable(name="user_credit_card_map",  joinColumns = { 
         @JoinColumn(name="user_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="credit_card_id", updatable=false) })
     public Set<CreditCard> getCreditCards() {
@@ -350,7 +350,7 @@ public class BaseUser  implements java.io.Serializable {
         this.notificationMessageArchs = notificationMessageArchs;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="user_role_map", schema="public", joinColumns = { 
+    @JoinTable(name="user_role_map", joinColumns = { 
         @JoinColumn(name="user_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="role_id", updatable=false) })
     public Set<Role> getRoles() {
@@ -361,7 +361,7 @@ public class BaseUser  implements java.io.Serializable {
         this.roles = roles;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="promotion_user_map", schema="public", joinColumns = { 
+    @JoinTable(name="promotion_user_map",  joinColumns = { 
         @JoinColumn(name="user_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="promotion_id", updatable=false) })
     public Set<Promotion> getPromotions() {

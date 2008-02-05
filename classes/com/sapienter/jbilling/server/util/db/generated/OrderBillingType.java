@@ -33,9 +33,7 @@ import javax.persistence.Table;
 import com.sapienter.jbilling.server.order.db.PurchaseOrder;
 
 @Entity
-@Table(name="order_billing_type"
-    ,schema="public"
-)
+@Table(name="order_billing_type")
 public class OrderBillingType  implements java.io.Serializable {
 
 

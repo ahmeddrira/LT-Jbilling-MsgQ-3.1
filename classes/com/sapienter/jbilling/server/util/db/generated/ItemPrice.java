@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="item_price"
-    ,schema="public"
-)
+@Table(name="item_price")
 public class ItemPrice  implements java.io.Serializable {
 
 

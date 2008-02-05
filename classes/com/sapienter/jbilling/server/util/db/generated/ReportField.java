@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="report_field"
-    ,schema="public"
-)
+@Table(name="report_field")
 public class ReportField  implements java.io.Serializable {
 
 

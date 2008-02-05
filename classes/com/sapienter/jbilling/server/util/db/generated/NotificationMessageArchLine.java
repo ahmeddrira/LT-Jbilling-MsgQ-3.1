@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="notification_message_arch_line"
-    ,schema="public"
-)
+@Table(name="notification_message_arch_line")
 public class NotificationMessageArchLine  implements java.io.Serializable {
 
 

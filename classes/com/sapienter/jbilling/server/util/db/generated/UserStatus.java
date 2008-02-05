@@ -33,9 +33,7 @@ import javax.persistence.Table;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="user_status"
-    ,schema="public"
-)
+@Table(name="user_status")
 public class UserStatus  implements java.io.Serializable {
 
 

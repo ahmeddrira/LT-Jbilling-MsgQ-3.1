@@ -31,9 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="order_line_type"
-    ,schema="public"
-)
+@Table(name="order_line_type")
 public class OrderLineType  implements java.io.Serializable {
 
 

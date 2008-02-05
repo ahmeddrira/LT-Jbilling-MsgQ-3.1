@@ -31,9 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="preference_type"
-    ,schema="public"
-)
+@Table(name="preference_type")
 public class PreferenceType  implements java.io.Serializable {
 
 

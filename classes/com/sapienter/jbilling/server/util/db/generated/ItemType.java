@@ -34,9 +34,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="item_type"
-    ,schema="public"
-)
+@Table(name="item_type")
 public class ItemType  implements java.io.Serializable {
 
 
@@ -101,7 +99,7 @@ public class ItemType  implements java.io.Serializable {
         this.orderLineTypeId = orderLineTypeId;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="item_type_map", schema="public", joinColumns = { 
+    @JoinTable(name="item_type_map", joinColumns = { 
         @JoinColumn(name="type_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="item_id", updatable=false) })
     public Set<Item> getItems() {

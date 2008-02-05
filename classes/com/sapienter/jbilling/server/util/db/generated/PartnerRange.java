@@ -26,9 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="partner_range"
-    ,schema="public"
-)
+@Table(name="partner_range")
 public class PartnerRange  implements java.io.Serializable {
 
 

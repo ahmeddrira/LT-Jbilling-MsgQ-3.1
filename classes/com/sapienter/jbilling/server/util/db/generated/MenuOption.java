@@ -33,9 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="menu_option"
-    ,schema="public"
-)
+@Table(name="menu_option")
 public class MenuOption  implements java.io.Serializable {
 
 

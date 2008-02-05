@@ -33,9 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="list_field"
-    ,schema="public"
-)
+@Table(name="list_field")
 public class ListField  implements java.io.Serializable {
 
 

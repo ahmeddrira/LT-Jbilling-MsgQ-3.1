@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="invoice_line"
-    ,schema="public"
-)
+@Table(name="invoice_line")
 public class InvoiceLine  implements java.io.Serializable {
 
 

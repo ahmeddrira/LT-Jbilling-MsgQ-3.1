@@ -31,9 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="betty_table_column"
-    ,schema="public"
-)
+@Table(name="betty_table_column")
 public class BettyTableColumn  implements java.io.Serializable {
 
 

@@ -38,9 +38,7 @@ import javax.persistence.TemporalType;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 
 @Entity
-@Table(name="billing_process"
-    ,schema="public"
-)
+@Table(name="billing_process")
 public class BillingProcess  implements java.io.Serializable {
 
 

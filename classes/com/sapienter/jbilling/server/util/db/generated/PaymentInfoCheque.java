@@ -32,9 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="payment_info_cheque"
-    ,schema="public"
-)
+@Table(name="payment_info_cheque")
 public class PaymentInfoCheque  implements java.io.Serializable {
 
 

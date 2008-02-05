@@ -32,9 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="list_field_entity"
-    ,schema="public"
-)
+@Table(name="list_field_entity")
 public class ListFieldEntity  implements java.io.Serializable {
 
 

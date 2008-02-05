@@ -32,9 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="currency_exchange"
-    ,schema="public"
-)
+@Table(name="currency_exchange")
 public class CurrencyExchange  implements java.io.Serializable {
 
 

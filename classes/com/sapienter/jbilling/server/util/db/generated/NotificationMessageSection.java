@@ -33,9 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="notification_message_section"
-    ,schema="public"
-)
+@Table(name="notification_message_section")
 public class NotificationMessageSection  implements java.io.Serializable {
 
 

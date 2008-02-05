@@ -35,9 +35,7 @@ import javax.persistence.Table;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="ach"
-    ,schema="public"
-)
+@Table(name="ach")
 public class Ach  implements java.io.Serializable {
 
 

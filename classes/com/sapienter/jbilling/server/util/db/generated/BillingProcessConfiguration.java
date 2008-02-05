@@ -32,9 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="billing_process_configuration"
-    ,schema="public"
-)
+@Table(name="billing_process_configuration")
 public class BillingProcessConfiguration  implements java.io.Serializable {
 
 

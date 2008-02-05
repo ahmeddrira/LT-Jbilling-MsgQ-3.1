@@ -67,7 +67,7 @@ public class Role  implements java.io.Serializable {
         this.id = id;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="user_role_map", schema="public", joinColumns = { 
+    @JoinTable(name="user_role_map", joinColumns = { 
         @JoinColumn(name="role_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="user_id", updatable=false) })
     public Set<BaseUser> getBaseUsers() {
@@ -78,7 +78,7 @@ public class Role  implements java.io.Serializable {
         this.baseUsers = baseUsers;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="permission_role_map", schema="public", joinColumns = { 
+    @JoinTable(name="permission_role_map", joinColumns = { 
         @JoinColumn(name="role_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="permission_id", updatable=false) })
     public Set<Permission> getPermissions() {

@@ -31,9 +31,7 @@ import javax.persistence.Table;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="permission_user"
-    ,schema="public"
-)
+@Table(name="permission_user")
 public class PermissionUser  implements java.io.Serializable {
 
 

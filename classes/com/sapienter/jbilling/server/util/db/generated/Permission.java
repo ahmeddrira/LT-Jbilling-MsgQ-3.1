@@ -35,9 +35,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="permission"
-    ,schema="public"
-)
+@Table(name="permission")
 public class Permission  implements java.io.Serializable {
 
 
@@ -100,7 +98,7 @@ public class Permission  implements java.io.Serializable {
         this.permissionUsers = permissionUsers;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="permission_role_map", schema="public", joinColumns = { 
+    @JoinTable(name="permission_role_map", joinColumns = { 
         @JoinColumn(name="permission_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="role_id", updatable=false) })
     public Set<Role> getRoles() {

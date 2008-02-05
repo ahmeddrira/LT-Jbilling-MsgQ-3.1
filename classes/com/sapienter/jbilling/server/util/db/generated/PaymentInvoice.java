@@ -33,7 +33,6 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name="payment_invoice"
-    ,schema="public"
     , uniqueConstraints = @UniqueConstraint(columnNames="id") 
 )
 public class PaymentInvoice  implements java.io.Serializable {

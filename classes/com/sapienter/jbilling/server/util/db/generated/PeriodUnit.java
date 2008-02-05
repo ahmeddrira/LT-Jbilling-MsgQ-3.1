@@ -31,9 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="period_unit"
-    ,schema="public"
-)
+@Table(name="period_unit")
 public class PeriodUnit  implements java.io.Serializable {
 
 

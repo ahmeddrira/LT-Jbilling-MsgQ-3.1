@@ -47,9 +47,7 @@ import com.sapienter.jbilling.server.util.db.generated.OrderPeriod;
 import com.sapienter.jbilling.server.util.db.generated.OrderStatus;
 
 @Entity
-@Table(name="purchase_order"
-    ,schema="public"
-)
+@Table(name="purchase_order")
 public class PurchaseOrder  implements java.io.Serializable {
 
 

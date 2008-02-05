@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ageing_entity_step"
-    ,schema="public"
-)
+@Table(name="ageing_entity_step")
 public class AgeingEntityStep  implements java.io.Serializable {
 
 

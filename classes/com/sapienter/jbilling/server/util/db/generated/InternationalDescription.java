@@ -31,9 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="international_description"
-    ,schema="public"
-)
+@Table(name="international_description")
 public class InternationalDescription  implements java.io.Serializable {
 
 

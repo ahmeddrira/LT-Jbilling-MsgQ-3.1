@@ -37,9 +37,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="list_entity"
-    ,schema="public"
-    , uniqueConstraints = @UniqueConstraint(columnNames={"list_id", "entity_id"}) 
+@Table(name="list_entity" , uniqueConstraints = @UniqueConstraint(columnNames={"list_id", "entity_id"}) 
 )
 public class ListEntity  implements java.io.Serializable {
 

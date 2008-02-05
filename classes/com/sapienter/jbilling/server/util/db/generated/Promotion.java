@@ -39,9 +39,7 @@ import javax.persistence.TemporalType;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="promotion"
-    ,schema="public"
-)
+@Table(name="promotion")
 public class Promotion  implements java.io.Serializable {
 
 
@@ -139,7 +137,7 @@ public class Promotion  implements java.io.Serializable {
         this.until = until;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="promotion_user_map", schema="public", joinColumns = { 
+    @JoinTable(name="promotion_user_map", joinColumns = { 
         @JoinColumn(name="promotion_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="user_id", updatable=false) })
     public Set<BaseUser> getBaseUsers() {

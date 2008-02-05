@@ -39,9 +39,7 @@ import javax.persistence.TemporalType;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="credit_card"
-    ,schema="public"
-)
+@Table(name="credit_card")
 public class CreditCard  implements java.io.Serializable {
 
 
@@ -162,7 +160,7 @@ public class CreditCard  implements java.io.Serializable {
         this.payments = payments;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="user_credit_card_map", schema="public", joinColumns = { 
+    @JoinTable(name="user_credit_card_map", joinColumns = { 
         @JoinColumn(name="credit_card_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="user_id", updatable=false) })
     public Set<BaseUser> getBaseUsers() {

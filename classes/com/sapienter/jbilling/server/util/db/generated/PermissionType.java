@@ -31,9 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="permission_type"
-    ,schema="public"
-)
+@Table(name="permission_type")
 public class PermissionType  implements java.io.Serializable {
 
 

@@ -31,9 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="payment_result"
-    ,schema="public"
-)
+@Table(name="payment_result")
 public class PaymentResult  implements java.io.Serializable {
 
 

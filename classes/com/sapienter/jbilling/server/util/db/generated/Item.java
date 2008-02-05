@@ -35,9 +35,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="item"
-    ,schema="public"
-)
+@Table(name="item")
 public class Item  implements java.io.Serializable {
 
 
@@ -150,7 +148,7 @@ public class Item  implements java.io.Serializable {
         this.promotions = promotions;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="item_type_map", schema="public", joinColumns = { 
+    @JoinTable(name="item_type_map", joinColumns = { 
         @JoinColumn(name="item_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="type_id", updatable=false) })
     public Set<ItemType> getItemTypes() {

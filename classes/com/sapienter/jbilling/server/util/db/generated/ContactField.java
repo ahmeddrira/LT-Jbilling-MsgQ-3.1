@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="contact_field"
-    ,schema="public"
-)
+@Table(name="contact_field")
 public class ContactField  implements java.io.Serializable {
 
 

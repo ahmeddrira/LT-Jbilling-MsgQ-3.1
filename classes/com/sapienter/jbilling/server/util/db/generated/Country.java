@@ -26,9 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="country"
-    ,schema="public"
-)
+@Table(name="country")
 public class Country  implements java.io.Serializable {
 
 

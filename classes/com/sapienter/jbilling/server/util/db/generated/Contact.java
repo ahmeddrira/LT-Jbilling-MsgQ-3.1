@@ -36,7 +36,6 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name="contact"
-    ,schema="public"
     , uniqueConstraints = @UniqueConstraint(columnNames="user_id") 
 )
 public class Contact  implements java.io.Serializable {

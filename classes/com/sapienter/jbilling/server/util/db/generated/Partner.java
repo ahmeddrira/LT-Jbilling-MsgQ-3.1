@@ -38,9 +38,7 @@ import javax.persistence.TemporalType;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="partner"
-    ,schema="public"
-)
+@Table(name="partner")
 public class Partner  implements java.io.Serializable {
 
 

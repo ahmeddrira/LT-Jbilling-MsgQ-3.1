@@ -32,9 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="partner_payout"
-    ,schema="public"
-)
+@Table(name="partner_payout")
 public class PartnerPayout  implements java.io.Serializable {
 
 

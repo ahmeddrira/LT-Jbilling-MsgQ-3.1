@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="preference"
-    ,schema="public"
-)
+@Table(name="preference")
 public class Preference  implements java.io.Serializable {
 
 

@@ -34,9 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="payment_method"
-    ,schema="public"
-)
+@Table(name="payment_method")
 public class PaymentMethod  implements java.io.Serializable {
 
 
@@ -78,7 +76,7 @@ public class PaymentMethod  implements java.io.Serializable {
         this.payments = payments;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="entity_payment_method_map", schema="public", joinColumns = { 
+    @JoinTable(name="entity_payment_method_map", joinColumns = { 
         @JoinColumn(name="payment_method_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) })
     public Set<Company> getEntities() {

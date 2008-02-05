@@ -34,9 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="report"
-    ,schema="public"
-)
+@Table(name="report")
 public class Report  implements java.io.Serializable {
 
 
@@ -141,7 +139,7 @@ public class Report  implements java.io.Serializable {
         this.link = link;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="report_entity_map", schema="public", joinColumns = { 
+    @JoinTable(name="report_entity_map", joinColumns = { 
         @JoinColumn(name="report_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) })
     public Set<Company> getEntities() {
@@ -160,7 +158,7 @@ public class Report  implements java.io.Serializable {
         this.reportFields = reportFields;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="report_type_map", schema="public", joinColumns = { 
+    @JoinTable(name="report_type_map", joinColumns = { 
         @JoinColumn(name="report_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="type_id", updatable=false) })
     public Set<ReportType> getReportTypes() {

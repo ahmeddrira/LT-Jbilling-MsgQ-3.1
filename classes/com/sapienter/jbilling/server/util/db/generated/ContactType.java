@@ -33,9 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="contact_type"
-    ,schema="public"
-)
+@Table(name="contact_type")
 public class ContactType  implements java.io.Serializable {
 
 

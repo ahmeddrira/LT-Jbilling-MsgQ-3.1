@@ -33,9 +33,7 @@ import javax.persistence.Table;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="language"
-    ,schema="public"
-)
+@Table(name="language")
 public class Language  implements java.io.Serializable {
 
 

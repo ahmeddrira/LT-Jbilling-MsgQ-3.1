@@ -33,9 +33,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="report_type"
-    ,schema="public"
-)
+@Table(name="report_type")
 public class ReportType  implements java.io.Serializable {
 
 
@@ -77,7 +75,7 @@ public class ReportType  implements java.io.Serializable {
         this.showable = showable;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="report_type_map", schema="public", joinColumns = { 
+    @JoinTable(name="report_type_map", joinColumns = { 
         @JoinColumn(name="type_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="report_id", updatable=false) })
     public Set<Report> getReports() {

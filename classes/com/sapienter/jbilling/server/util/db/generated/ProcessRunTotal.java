@@ -29,9 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="process_run_total"
-    ,schema="public"
-)
+@Table(name="process_run_total")
 public class ProcessRunTotal  implements java.io.Serializable {
 
 

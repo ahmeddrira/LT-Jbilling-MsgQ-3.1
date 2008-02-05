@@ -37,9 +37,7 @@ import com.sapienter.jbilling.server.order.db.PurchaseOrder;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="currency"
-    ,schema="public"
-)
+@Table(name="currency")
 public class Currency  implements java.io.Serializable {
 
 
@@ -173,7 +171,7 @@ public class Currency  implements java.io.Serializable {
         this.currencyExchanges = currencyExchanges;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="currency_entity_map", schema="public", joinColumns = { 
+    @JoinTable(name="currency_entity_map", joinColumns = { 
         @JoinColumn(name="currency_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) })
     public Set<Company> getEntities_1() {

@@ -32,9 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="payment_authorization"
-    ,schema="public"
-)
+@Table(name="payment_authorization")
 public class PaymentAuthorization  implements java.io.Serializable {
 
 

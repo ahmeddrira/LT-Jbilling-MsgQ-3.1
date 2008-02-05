@@ -34,9 +34,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="paper_invoice_batch"
-    ,schema="public"
-)
+@Table(name="paper_invoice_batch")
 public class PaperInvoiceBatch  implements java.io.Serializable {
 
 

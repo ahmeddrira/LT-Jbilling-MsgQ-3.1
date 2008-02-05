@@ -34,9 +34,7 @@ import javax.persistence.TemporalType;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="report_user"
-    ,schema="public"
-)
+@Table(name="report_user")
 public class ReportUser  implements java.io.Serializable {
 
 

@@ -36,9 +36,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="process_run"
-    ,schema="public"
-)
+@Table(name="process_run")
 public class ProcessRun  implements java.io.Serializable {
 
 

@@ -38,9 +38,7 @@ import javax.persistence.TemporalType;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity
-@Table(name="notification_message_arch"
-    ,schema="public"
-)
+@Table(name="notification_message_arch")
 public class NotificationMessageArch  implements java.io.Serializable {
 
 

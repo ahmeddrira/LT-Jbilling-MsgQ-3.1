@@ -172,7 +172,7 @@ public class Company  implements java.io.Serializable {
         this.ageingEntitySteps = ageingEntitySteps;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="entity_payment_method_map", schema="public", joinColumns = { 
+    @JoinTable(name="entity_payment_method_map", joinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="payment_method_id", updatable=false) })
     public Set<PaymentMethod> getPaymentMethods() {
@@ -242,7 +242,7 @@ public class Company  implements java.io.Serializable {
         this.notificationMessages = notificationMessages;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="report_entity_map", schema="public", joinColumns = { 
+    @JoinTable(name="report_entity_map",joinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="report_id", updatable=false) })
     public Set<Report> getReports() {
@@ -261,7 +261,7 @@ public class Company  implements java.io.Serializable {
         this.contactFieldTypes = contactFieldTypes;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="currency_entity_map", schema="public", joinColumns = { 
+    @JoinTable(name="currency_entity_map", joinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="currency_id", updatable=false) })
     public Set<Currency> getCurrencies() {
@@ -288,7 +288,7 @@ public class Company  implements java.io.Serializable {
         this.billingProcessConfigurations = billingProcessConfigurations;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="entity_delivery_method_map", schema="public", joinColumns = { 
+    @JoinTable(name="entity_delivery_method_map", joinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="method_id", updatable=false) })
     public Set<InvoiceDeliveryMethod> getInvoiceDeliveryMethods() {

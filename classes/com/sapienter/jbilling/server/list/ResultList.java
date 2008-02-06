@@ -55,10 +55,8 @@ import com.sapienter.jbilling.common.JNDILookup;
 public class ResultList {
 	protected CachedRowSet cachedResults;
 	protected Connection conn = null;
-    protected Logger log = null;
 	
 	protected ResultList() {
-        log = Logger.getLogger(ResultList.class);
     }
 	
 	protected void prepareStatement(String SQL) throws SQLException, NamingException {

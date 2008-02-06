@@ -36,6 +36,8 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
+import org.apache.log4j.Logger;
+
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
@@ -51,6 +53,9 @@ import com.sapienter.jbilling.server.list.ResultList;
  */
 public final class ItemListBL extends ResultList 
         implements ItemSQL, Serializable { 
+	
+    private static final Logger LOG = Logger.getLogger(ItemListBL.class);
+
 
 	public CachedRowSet getList(Integer entityID) 
             throws SQLException, Exception{
@@ -104,7 +109,7 @@ public final class ItemListBL extends ResultList
             throws FinderException, NamingException, SessionInternalError {
         ListDTO result = new ListDTO();
 
-        log.debug("Runing item list for a new order");
+        LOG.debug("Runing item list for a new order");
         JNDILookup EJBFactory = JNDILookup.getFactory(false);
         EntityEntityLocalHome entityHome =
                 (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(

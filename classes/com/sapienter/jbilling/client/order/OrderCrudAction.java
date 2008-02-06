@@ -134,9 +134,14 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
         // validate the dates if there is a date of expiration
         if (summary.getActiveUntil() != null) {
 
-        	Date start = summary.getActiveSince() != null ?
-                    summary.getActiveSince() : 
-                    orderDTO.getCreateDate();
+        	Date start = summary.getActiveSince();
+        	if (start == null) {
+        		if (orderDTO != null) {
+        			start = orderDTO.getCreateDate();
+        		} else {
+        			start = Calendar.getInstance().getTime();
+        		}
+        	}
             start = Util.truncateDate(start);
             // it has to be grater than the starting date
             if (!summary.getActiveUntil().after(start)) {

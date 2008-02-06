@@ -286,8 +286,7 @@ public class OrderBL extends ResultList
      * entity. The NewOrderDTO of this session is then modified.
      */
     public void recalculate(Integer entityId) throws SessionInternalError {
-        log = Logger.getLogger(OrderBL.class);
-        log.debug("Processing and order for reviewing." + newOrder.getOrderLinesMap().size());
+        LOG.debug("Processing and order for reviewing." + newOrder.getOrderLinesMap().size());
 
         try {
             PluggableTaskManager taskManager = new PluggableTaskManager(
@@ -300,11 +299,11 @@ public class OrderBL extends ResultList
             }
 
         } catch (PluggableTaskException e) {
-            log.fatal("Problems handling order processing task.", e);
+            LOG.fatal("Problems handling order processing task.", e);
             throw new SessionInternalError("Problems handling order " +
                     "processing task.");
         } catch (TaskException e) {
-			log.fatal("Problems excecuting order processing task.", e);
+			LOG.fatal("Problems excecuting order processing task.", e);
 			throw new SessionInternalError("Problems executing order processing task.");
         }
     }
@@ -349,7 +348,7 @@ public class OrderBL extends ResultList
             // update any promotion involved
             updatePromotion(entityId, orderDto.getPromoCode());
         } catch (Exception e) {
-            log.fatal("Create exception creating order entity bean", e);
+            LOG.fatal("Create exception creating order entity bean", e);
             throw new SessionInternalError(e);
         } 
         
@@ -366,6 +365,20 @@ public class OrderBL extends ResultList
                     order.getId(), dto.getActiveUntil(), 
                     order.getActiveUntil());
             EventManager.process(event);
+            // update the period of the latest invoice as well
+            OrderProcessDTO process = null;
+            if (order.getActiveUntil() != null) {
+            	process = orderDas.findProcessByEndDate(order.getId(), 
+            		order.getActiveUntil());
+            }
+            if (process != null) {
+            	LOG.debug("Updating process id " + process.getId());
+            	process.setPeriodEnd(dto.getActiveUntil());
+            	
+            } else {
+            	LOG.debug("Did not find any process for order " + order.getId() +  
+            			" and date " + order.getActiveUntil());
+            }
             // update it
             order.setActiveUntil(dto.getActiveUntil());
         }
@@ -401,12 +414,12 @@ public class OrderBL extends ResultList
         OrderLineEntityLocal oldLine = null;
     	int nonDeletedLines = 0;
         // Determine if the item of the order changes and, if it is,
-        // log a subscription change event.
-        log.info("Order lines: " + order.getOrderLines().size() + "  --> new Order: "+
+        // LOG a subscription change event.
+        LOG.info("Order lines: " + order.getOrderLines().size() + "  --> new Order: "+
         		dto.getNumberOfLines().intValue());
         if (dto.getNumberOfLines().intValue() == 1 &&
         	order.getOrderLines().size() >= 1) {
-        	// This event needs to log the old item id and description, so
+        	// This event needs to LOG the old item id and description, so
         	// it can only happen when updating orders with only one line.
         	
         	for (Iterator i = order.getOrderLines().iterator(); i.hasNext();) {
@@ -498,10 +511,11 @@ public class OrderBL extends ResultList
             	LOG.debug("Did not find any process for order " + order.getId() +  
             			" and date " + order.getNextBillableDay());
             }
+
             // do the actual update
             order.setNextBillableDay(newDate);
         } else {
-            log.info("order " + order.getId() + 
+            LOG.info("order " + order.getId() + 
                     " next billable day not updated from " + 
                     order.getNextBillableDay() + " to " + newDate);
         }
@@ -542,7 +556,7 @@ public class OrderBL extends ResultList
             if (promotion.isPresent(entityId, code)) {
                 promotion.getEntity().getUsers().add(order.getUser());
             } else {
-                log.error("Can't find promotion entity = " + entityId +
+                LOG.error("Can't find promotion entity = " + entityId +
                         " code " + code);
             }
         }
@@ -561,7 +575,7 @@ public class OrderBL extends ResultList
     static public Boolean lookUpEditable(Integer type)
         throws SessionInternalError {
         Boolean editable = null;
-        Logger log = Logger.getLogger(OrderBL.class);
+        Logger LOG = Logger.getLogger(OrderBL.class);
 
         try {
 
@@ -575,7 +589,7 @@ public class OrderBL extends ResultList
                 orderLineTypeHome.findByPrimaryKey(type);
             editable = new Boolean(typeBean.getEditable().intValue() == 1);
         } catch (Exception e) {
-            log.fatal(
+            LOG.fatal(
                 "Exception looking up the editable flag of an order "
                     + "line type. Type = "
                     + type,
@@ -794,7 +808,7 @@ public class OrderBL extends ResultList
             }
             
             if (!config) {
-                log.warn("Preference missing to send a notification for " +
+                LOG.warn("Preference missing to send a notification for " +
                         "entity " + ent.getId());
                 continue;
             }
@@ -839,13 +853,13 @@ public class OrderBL extends ResultList
                 if (activeUntil.compareTo(today) >= 0 &&
                         activeUntil.compareTo(cal.getTime()) <= 0) {
                 	/*/ ok
-                    log.debug("Selecting order " + orderId + " today = " + 
+                    LOG.debug("Selecting order " + orderId + " today = " + 
                             today + " active unitl = " + activeUntil + 
                             " days = " + days);
                     */
                 } else {
                     /*
-                    log.debug("Skipping order " + orderId + " today = " + 
+                    LOG.debug("Skipping order " + orderId + " today = " + 
                             today + " active unitl = " + activeUntil + 
                             " days = " + days);
                             */
@@ -881,7 +895,7 @@ public class OrderBL extends ResultList
                     }
 
 		    	} catch (NotificationNotFoundException e) {
-		    		log.warn("Without a message to send, this entity can't" +
+		    		LOG.warn("Without a message to send, this entity can't" +
 		    				" notify about orders. Skipping");
 		    		break;
 		    	}

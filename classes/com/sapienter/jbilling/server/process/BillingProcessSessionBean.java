@@ -67,7 +67,6 @@ import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
-import com.sapienter.jbilling.server.system.event.EventProcessor;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -544,11 +543,13 @@ public class BillingProcessSessionBean implements SessionBean {
             InvoiceEntityLocal newInvoices[] = processBL.generateInvoice(
                     process, user.getEntity(), isReview, onlyRecurring);
             if (newInvoices == null) {
-                NoNewInvoiceEvent event = new NoNewInvoiceEvent(
-                        user.getEntityId(userId), userId, 
-                        process.getBillingDate(), 
-                        user.getEntity().getSubscriptionStatus().getId());
-                EventManager.process(event);
+            	if (!isReview) {
+	                NoNewInvoiceEvent event = new NoNewInvoiceEvent(
+	                        user.getEntityId(userId), userId, 
+	                        process.getBillingDate(), 
+	                        user.getEntity().getSubscriptionStatus().getId());
+	                EventManager.process(event);
+            	}
                 return new Integer[0];
             }
             retValue = new Integer[newInvoices.length];

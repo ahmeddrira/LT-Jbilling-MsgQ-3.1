@@ -153,17 +153,18 @@ public abstract class AbstractFileReader extends AbstractReader {
                 switch (PricingField.mapType(field.getType())) {
                     case STRING:
                         record.addField(new PricingField(field.getName(), 
-                                tokens[tkIdx++]));
+                                tokens[tkIdx++]), field.getIsKey());
                         break;
                     case INTEGER:
                         if (field.getDurationFormat() != null && field.getDurationFormat().length() > 0) {
                             // requires hour/minute conversion
                             record.addField(new PricingField(field.getName(), 
-                                    convertDuration(tokens[tkIdx++], field.getDurationFormat())));
+                                    convertDuration(tokens[tkIdx++], field.getDurationFormat())),
+                                    	field.getIsKey());
                         } else {
                             try {
                                 record.addField(new PricingField(field.getName(), 
-                                        Integer.valueOf(tokens[tkIdx++].trim())));
+                                        Integer.valueOf(tokens[tkIdx++].trim())), field.getIsKey());
                             } catch (NumberFormatException e) {
                                 throw new SessionInternalError("Converting to integer " + field + 
                                         " line " + line, AbstractFileReader.class, e);
@@ -173,7 +174,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                     case DATE:
                         try {
                             record.addField(new PricingField(field.getName(), 
-                                    dateFormat.parse(tokens[tkIdx++])));
+                                    dateFormat.parse(tokens[tkIdx++])), field.getIsKey());
                         } catch (ParseException e) {
                             throw new SessionInternalError("Using format: " + dateFormat + "[" +
                                     parameters.get("date_format") + "]", 
@@ -182,7 +183,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                         break;
                     case FLOAT:
                         record.addField(new PricingField(field.getName(), 
-                                Float.valueOf(tokens[tkIdx++].trim())));
+                                Float.valueOf(tokens[tkIdx++].trim())), field.getIsKey());
                         break;
                 }
             }

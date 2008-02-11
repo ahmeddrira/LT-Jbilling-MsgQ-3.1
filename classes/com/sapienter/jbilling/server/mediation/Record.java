@@ -26,17 +26,22 @@ import com.sapienter.jbilling.server.item.PricingField;
 public class Record {
     private Vector<PricingField> fields = null;
     private int position;
+    private StringBuffer key = null;
     
     public Record() {
         fields = new Vector<PricingField>();
+        key = new StringBuffer(100);
     }
     
     public int getPosition() {
         return position;
     }
     
-    public void addField(PricingField field) {
+    public void addField(PricingField field, boolean isKey) {
         fields.add(field);
+        if (isKey) {
+        	key.append(field.getValue().toString());
+        }
     }
 
     public void setPosition(int position) {
@@ -49,11 +54,16 @@ public class Record {
     public Vector<PricingField> getFields() {
         return fields;
     }
+    
+    public String getKey() {
+    	return key.toString();
+    }
  
     public String toString() {
         StringBuffer sb = new StringBuffer();
         
         sb.append("record=position: " + position + "\n");
+        sb.append("key=" + getKey() + "\n");
         for (PricingField field: fields) {
             sb.append("field: " + field + "\n");
         }

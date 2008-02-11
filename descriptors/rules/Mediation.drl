@@ -1,0 +1,70 @@
+package Mediation
+import com.sapienter.jbilling.server.item.PricingField
+import com.sapienter.jbilling.server.mediation.task.RulesMediationTask.ProcessManager
+
+global com.sapienter.jbilling.server.mediation.task.RulesMediationTask.ProcessManager mediationManager;
+
+function int convert_to_minutes(Integer seconds) {
+	return ((int)  Math.ceil(seconds / 60)) + 1;
+}
+
+
+
+rule 'user setter'
+when 
+    $field : PricingField( name == "userfield")
+    ProcessManager()
+then 
+   mediationManager.setUserFromUsername($field.getStrValue());
+
+end
+
+rule 'line creation'
+when 
+    $field : PricingField( name == "duration")
+    ProcessManager()
+then
+    mediationManager.addLine(1, $field.getIntValue());
+
+end
+
+rule 'field padding'
+when 
+   $field : PricingField( name == "src", eval(strValue.length() == 10) )
+    ProcessManager()
+then
+   $field.setStrValue(  "0111" + $field.getStrValue() );
+
+end
+
+
+
+rule 'da - user setter'
+when 
+    #ProcessManager( configurationName == "Dialaway test")
+    $field : PricingField( name == "CDR")
+then 
+   mediationManager.setUserFromId($field.getIntValue() - 61425);
+   #System.out.println("Setting for id " + $field.getIntValue() );
+
+end
+
+rule 'da - line creation'
+when 
+    #ProcessManager( configurationName == "Dialaway test")
+    $field : PricingField( name == "Call Duration")
+then
+    mediationManager.addLine(24, convert_to_minutes($field.getIntValue()));
+    System.out.println("Seconds " + $field.getIntValue() + " minutes " + convert_to_minutes($field.getIntValue()));
+
+end
+
+rule 'date setter'
+when 
+    $field : PricingField( name == "start")
+    ProcessManager()
+then 
+   mediationManager.setEventDate($field.getDateValue());
+
+end
+

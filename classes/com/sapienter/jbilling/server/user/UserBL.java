@@ -392,17 +392,17 @@ public class UserBL extends ResultList
     }    
         
     
-    public boolean validateUserNamePassword(UserDTOEx LOGgingUser, 
+    public boolean validateUserNamePassword(UserDTOEx loggingUser, 
            UserDTOEx db) throws FinderException, NamingException {
         
         // the user status is not part of this check, as a customer that
         // can't LOGin to the entity's service still has to be able to
         // LOGin to sapienter to pay
         if (db.getDeleted().intValue() == 0 && 
-                LOGgingUser.getEntityId().equals(db.getEntityId())) {
+                loggingUser.getEntityId().equals(db.getEntityId())) {
         	
         	String dbPassword = db.getPassword();
-        	String notCryptedLoggingPassword = LOGgingUser.getPassword();
+        	String notCryptedLoggingPassword = loggingUser.getPassword();
         	
         	//using service specific for DB-user, LOGging one may not have its role set
         	JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());

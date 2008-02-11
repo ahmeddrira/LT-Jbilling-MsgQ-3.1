@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.util.db;
 
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
@@ -100,12 +101,33 @@ public abstract class AbstractDAS<T> {
         return persistentClass;
     }
 
+    /**
+     * This will load a proxy. If the row does not exist, it still returns an
+     * object (not null) and  it will NOT throw an
+     * exception (until the other fields are accessed).
+     * Use this by default, if the row is missing, it is an error.
+     * @param id
+     * @return
+     */
     @SuppressWarnings("unchecked")
-    public T find(Integer id) {
+    public T find(Serializable id) {
         T entity = (T) getSession().load(getPersistentClass(), id);
 
         return entity;
     }
+    
+    /**
+     * This will hit the DB. If the row does not exist, it will NOT throw an
+     * exception but it WILL return NULL
+     * @param id
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public T findNow(Serializable id) {
+        T entity = (T) getSession().get(getPersistentClass(), id);
+
+        return entity;
+    }    
 
     @SuppressWarnings("unchecked")
     public List<T> findAll() {
@@ -179,5 +201,15 @@ public abstract class AbstractDAS<T> {
 
     protected void useCache() {
         queriesCached = true;
+    }
+    
+    /**
+     * Makes this DTO now attached to the session and part of the persistent context.
+     * This WILL trigger an update, which is usually fine since the reason to reattach
+     * is to modify the object.
+     * @param dto
+     */
+    public void reattach(T dto) {
+    	getSession().update(dto);
     }
 }

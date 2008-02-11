@@ -42,6 +42,8 @@ import com.sapienter.jbilling.server.mediation.db.MediationMapDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationOrderMap;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationProcessDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -72,6 +74,8 @@ public class MediationSessionBean implements SessionBean {
     
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
     private static final EventLogger eLogger = EventLogger.getInstance();
+    
+    private MediationSessionLocalHome myLocalHome = null;
 
     /**
      * @ejb:interface-method view-type="both"
@@ -81,6 +85,12 @@ public class MediationSessionBean implements SessionBean {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         MediationProcessDAS processDAS = new MediationProcessDAS();
         Vector<String> errorMessages = new Vector<String>();
+        MediationSessionLocal local = null;
+        try {
+			local = myLocalHome.create();
+		} catch (CreateException e1) {
+			throw new SessionInternalError("Getting local view", MediationSessionBean.class, e1);
+		}
 
         LOG.debug("Running mediation trigger.");
         
@@ -113,12 +123,9 @@ public class MediationSessionBean implements SessionBean {
 
                     if (reader.validate(errorMessages)) {
                         // there is going to be records processed from this configuration
-                        // create a new process row
-                        MediationProcess process = new MediationProcess();
-                        process.setConfiguration(cfg);
-                        process.setStartDatetime(Calendar.getInstance().getTime());
-                        process.setOrdersAffected(0);
-                        process = processDAS.save(process);
+                        // create a new process row. This happends in its own transactions
+                    	// so it needs to be brought to the persistant context here again
+                        MediationProcess process = local.createProcessRecord(cfg);
                         
                         int lastPosition = 0;
                         Vector<Record> thisGroup = new Vector<Record>();
@@ -127,7 +134,7 @@ public class MediationSessionBean implements SessionBean {
                                 // end of this group
                                 // call the rules to get the records normalized
                                 // plus the user id, item id and quantity
-                                normalizeRecordGroup(processTask, executorId, process, 
+                                local.normalizeRecordGroup(processTask, executorId, process, 
                                         thisGroup, entityId, cfg);
                                 // start again
                                 thisGroup.clear();
@@ -139,11 +146,12 @@ public class MediationSessionBean implements SessionBean {
                         
                         // send the last record/s as well
                         if (thisGroup.size() > 0) {
-                            normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
+                            local.normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
                         }
                         
                         // save the information about this just ran mediation process in
                         // the mediation_process table
+                        processDAS.reattach(process);
                         process.setEndDatetime(Calendar.getInstance().getTime());
                     } else {
                         LOG.error("skipping invalid reader " + cfg.getPluggableTask() + 
@@ -163,6 +171,21 @@ public class MediationSessionBean implements SessionBean {
             }
             throw new SessionInternalError(buf.toString());
         }
+    }
+    
+    /**
+     * Needs to be in its own transaction, so it gets created right away
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="RequiresNew"
+     */
+    public MediationProcess createProcessRecord(MediationConfiguration cfg) {
+    	MediationProcessDAS processDAS = new MediationProcessDAS();
+        MediationProcess process = new MediationProcess();
+        process.setConfiguration(cfg);
+        process.setStartDatetime(Calendar.getInstance().getTime());
+        process.setOrdersAffected(0);
+        process = processDAS.save(process);
+        return process;
     }
     
     /**
@@ -254,11 +277,45 @@ public class MediationSessionBean implements SessionBean {
                 cfgId, EventLogger.MODULE_MEDIATION,
                 EventLogger.ROW_DELETED, null, null, null);
     }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="RequiresNew"
+     */
+    public boolean isBeenProcessed(
+            MediationProcess process, Vector<Record> thisGroup) {
+    	// validate that this group has not been already processed
+    	MediationRecordDAS recordDas = new MediationRecordDAS();
+    	String key = thisGroup.get(0).getKey();
+    	if (recordDas.findNow(key) != null) {
+    		LOG.debug("Detected duplicated of record: " + key);
+    		return true;
+    	}
+    	MediationRecordDTO dbRecord = new MediationRecordDTO(
+    			thisGroup.get(0).getKey(), // the keys are all the same withing a group
+    			Calendar.getInstance().getTime(), process);
+    	recordDas.save(dbRecord);
+    	return false;
+    }
     
-    private void normalizeRecordGroup(IMediationProcess processTask, Integer executorId,
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="RequiresNew"
+     */
+    public void normalizeRecordGroup(IMediationProcess processTask, Integer executorId,
             MediationProcess process, Vector<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg) 
             throws TaskException, FinderException, NamingException {
+    	// validate that this group has not been already processed
+        MediationSessionLocal local = null;
+        try {
+			local = myLocalHome.create();
+		} catch (CreateException e1) {
+			throw new SessionInternalError("Getting local view", MediationSessionBean.class, e1);
+		}
+		// this runs in its own transaction
+		if (local.isBeenProcessed(process, thisGroup)) return;
+		
         LOG.debug("Normalizing record ...");
         Vector<OrderLineDTOEx> lines = processTask.process(thisGroup, cfg.getName());
         Integer userId = processTask.getUserId();
@@ -266,7 +323,9 @@ public class MediationSessionBean implements SessionBean {
         if (userId == null || lines == null || lines.size() == 0) {
             LOG.debug("No results from mediation process task " + thisGroup);
         } else {
-        
+        	// this process came from a different transaction (persistent context)
+        	MediationProcessDAS  processDAS = new MediationProcessDAS();
+        	processDAS.reattach(process);
             // determine the currency for this event
             Integer currencyId = processTask.getCurrencyId();
             if (currencyId == null) {
@@ -289,6 +348,10 @@ public class MediationSessionBean implements SessionBean {
             mapDas.save(map);
         }
 
+        // mark the record as done
+        MediationRecordDAS recordDAS = new MediationRecordDAS();
+        MediationRecordDTO record = recordDAS.find(thisGroup.get(0).getKey());
+        record.setFinished(Calendar.getInstance().getTime());
     }
     /*
      * EJB 2.1 required methods ...
@@ -302,8 +365,10 @@ public class MediationSessionBean implements SessionBean {
     public void ejbRemove() throws EJBException, RemoteException {
     }
 
-    public void setSessionContext(SessionContext arg0) throws EJBException,
+    public void setSessionContext(SessionContext ctx) throws EJBException,
             RemoteException {
+    	// needed to make calls with new transactional boundries
+    	myLocalHome = (MediationSessionLocalHome) ctx.getEJBLocalHome();
     }
 
     /**

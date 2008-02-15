@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.util.db;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
@@ -36,6 +37,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.hibernate.ejb.HibernateEntityManagerFactory;
+
+import com.sapienter.jbilling.common.SessionInternalError;
 
 
 public abstract class AbstractDAS<T> {
@@ -212,4 +215,26 @@ public abstract class AbstractDAS<T> {
     public void reattach(T dto) {
     	getSession().update(dto);
     }
+    
+    protected void touch(List<T> list, String methodName) {
+    	
+//    	// find any getter, but not the id or we'll get stuck with the proxy
+//    	for (Method myMethod: persistentClass.getDeclaredMethods()) {
+//    		if (myMethod.getName().startsWith("get") && !myMethod.getName().equals("getId")) {
+//    			toCall = myMethod;
+//    			break;
+//    		}
+//    	}
+    	
+    	try {
+        	Method toCall = persistentClass.getMethod(methodName, null);
+			for(int f=0; list.size() < f; f++) {
+				toCall.invoke(list.get(f), null);
+			}
+		} catch (Exception e) {
+			throw new SessionInternalError("Error invoking method when touching proxy object", 
+					AbstractDAS.class, e);
+			
+		} 
+	}
 }

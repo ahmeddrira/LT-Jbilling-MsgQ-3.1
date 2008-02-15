@@ -195,7 +195,7 @@ public class MediationSessionBean implements SessionBean {
     public List<MediationProcess> getAll(Integer entityId) {
         MediationProcessDAS processDAS = new MediationProcessDAS();
         List<MediationProcess> result = processDAS.findAllByEntity(entityId);
-            
+        processDAS.touch(result);    
         return result;
         
     }

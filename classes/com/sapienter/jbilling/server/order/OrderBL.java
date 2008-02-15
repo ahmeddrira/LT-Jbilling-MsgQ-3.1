@@ -1140,6 +1140,9 @@ public class OrderBL extends ResultList
                 addItem(line.getItemId(), line.getQuantity(), language, userId, 
                         entityId, currencyId, records);
             }
+            // execute the line total calculation tasks
+            recalculate(entityId);
+            // update the DB record
             update(executorId, currentOrder);
         } catch (FinderException e) {
             throw new SessionInternalError("Updating current order", OrderBL.class, e);

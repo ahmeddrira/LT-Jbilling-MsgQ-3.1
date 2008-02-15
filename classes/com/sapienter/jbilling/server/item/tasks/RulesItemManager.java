@@ -27,6 +27,8 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import org.apache.log4j.Logger;
+import org.drools.FactHandle;
 import org.drools.RuleBase;
 import org.drools.StatelessSession;
 
@@ -48,6 +50,8 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.DTOFactory;
 
 public class RulesItemManager extends BasicItemManager implements OrderProcessingTask {
+
+    private static final Logger LOG = Logger.getLogger(RulesItemManager.class);
 
     private OrderManager helperOrder = null;
     private Vector<Record> records;
@@ -148,13 +152,28 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         
         public OrderLineDTOEx addItem(Integer itemID, Integer quantity) 
                 throws TaskException {
+        	LOG.debug("Adding item " + itemID + " q: " + quantity);
+        			
             BasicItemManager helper = new BasicItemManager();
-            OrderLineDTOEx oldLine = order.getOrderLine(itemID); 
+            OrderLineDTOEx oldLine = order.getOrderLine(itemID);
+            FactHandle h = null;
+            if (oldLine != null) { 
+            	h = handlers.get(oldLine);
+            }
             helper.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
             OrderLineDTOEx retValue =  helper.getLatestLine();
-            updateObject(oldLine, retValue);
+            if (h != null) {
+            	LOG.debug("updating");
+            	session.update(h, retValue);
+            } else {
+            	LOG.debug("inserting");
+            	handlers.put(retValue, session.insert(retValue));
+            }
+            
+            LOG.debug("Now order line is " + retValue + " hash: " + retValue.hashCode());
             return retValue;
         }
+        
         
         /*
         public OrderLineDTOEx addItem(OrderLineDTOEx line) throws TaskException {

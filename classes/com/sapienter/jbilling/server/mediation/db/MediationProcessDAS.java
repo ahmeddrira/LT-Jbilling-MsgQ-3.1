@@ -22,4 +22,10 @@ public class MediationProcessDAS extends AbstractDAS<MediationProcess> {
         return query.list();
     }
 
+    public void touch(List<MediationProcess> list) {
+    	super.touch(list, "getOrdersAffected");
+    	for(MediationProcess proc: list) {
+    		proc.getConfiguration().getCreateDatetime();
+    	}
+    }
 }

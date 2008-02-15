@@ -161,4 +161,5 @@ public class OrderLineDTOEx extends OrderLineDTO {
     public void setTotalReadOnly(Boolean finalTotal) {
         this.totalReadOnly = finalTotal;
     }
+    
 }

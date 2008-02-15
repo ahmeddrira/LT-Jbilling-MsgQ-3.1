@@ -129,6 +129,7 @@ public abstract class PluggableTask {
     protected void executeStatefulRules(StatefulSession session, Vector context) {
         handlers = new Hashtable<Object,FactHandle>();
         for (Object o: context) {
+        	LOG.debug("inserting object " + o + "hash " + o.hashCode());
             handlers.put(o, session.insert(o));
         }
 
@@ -138,19 +139,20 @@ public abstract class PluggableTask {
     protected void removeObject(Object o) {
         FactHandle h = handlers.get(o);
         if (h != null) {
-            session.modifyRetract(h);
+        	LOG.debug("removing object " + o + " hash " + o.hashCode());
+            session.retract(h);
+            handlers.remove(o);
         }
     }
     
-    public void updateObject(Object old, Object newO)
+    /*
+    public void updateObject(Object oldO, Object newO)
             throws TaskException {
-        if (old != null) { 
-            removeObject(old);
-        }
-        FactHandle h = session.insert(newO);
-        handlers.put(newO, h);
-        session.modifyInsert(h, newO);
+    	removeObject(oldO);
+    	LOG.debug("inserting object " + newO + "hash " + newO.hashCode());
+    	handlers.put(newO, session.insert(newO));
 //        session.fireAllRules(); // could it lead to infinite recurring loop?
     }
+    */
 
 }

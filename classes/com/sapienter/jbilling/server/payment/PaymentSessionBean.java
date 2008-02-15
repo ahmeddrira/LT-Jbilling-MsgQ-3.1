@@ -140,7 +140,7 @@ public class PaymentSessionBean implements SessionBean {
                 if (result != null && result.equals(Constants.RESULT_OK)) {
                     retValue = dto.getMethodId();
                 }
-            }
+            } // TO DO: else generate an 'payment failed event' (or new type of event).
             
         } catch (Exception e) {
             LOG.fatal("Problems generating payment.", e);

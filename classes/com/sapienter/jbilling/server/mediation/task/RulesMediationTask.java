@@ -35,6 +35,7 @@ import com.sapienter.jbilling.server.order.OrderLineDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 
 public class RulesMediationTask extends PluggableTask implements
         IMediationProcess {
@@ -151,22 +152,18 @@ public class RulesMediationTask extends PluggableTask implements
         }
         
         public void setUserFromId(Integer userId) throws TaskException {
-            try {
-                UserBL user = new UserBL(userId);
-                this.userId = userId;
-            } catch (Exception e) {
-                throw new TaskException(e);
-            } 
+        	UserDAS das = new UserDAS();
+        	if (das.findNow(userId) != null) {
+        		this.userId = userId;
+        	} else {
+        		throw new TaskException("User id " + userId + " does not exist");
+        	}
         }
         
         public void setCurrencyId(Integer currencyId) {
             this.currencyId = currencyId;
         }
 
-        public void updateField(PricingField toUpdate) throws TaskException {
-            updateObject(toUpdate, toUpdate);
-        }
-        
         public void setEventDate(Date date) {
             eventDate = date;
         }

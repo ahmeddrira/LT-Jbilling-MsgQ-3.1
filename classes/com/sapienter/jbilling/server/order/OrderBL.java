@@ -347,6 +347,12 @@ public class OrderBL extends ResultList
             
             // update any promotion involved
             updatePromotion(entityId, orderDto.getPromoCode());
+            
+            // add a log row for convenience
+            eLogger.auditBySystem(entityId, 
+            		Constants.TABLE_PUCHASE_ORDER, order.getId(),
+            		EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+
         } catch (Exception e) {
             LOG.fatal("Create exception creating order entity bean", e);
             throw new SessionInternalError(e);

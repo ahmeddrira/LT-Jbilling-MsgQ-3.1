@@ -25,8 +25,6 @@ import java.util.Date;
 
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
@@ -59,11 +57,14 @@ public class EventLogger {
     public static final Integer ORDER_LINE_UPDATED = new Integer(17);
     public static final Integer ORDER_NEXT_BILL_DATE_UPDATED = new Integer(18);
     public static final Integer ORDER_MAIN_SUBSCRIPTION_UPDATED = new Integer(22);
+    // payment
+    public static final Integer PAYMENT_INSTRUMENT_NOT_FOUND = new Integer(24);
     // invoice related message
     public static final Integer INVOICE_ORDER_APPLIED = new Integer(16);
     // mediation
     public static final Integer CURRENT_ORDER_FINISHED = new Integer(23);
     // others
+    public static final Integer ROW_CREATED = new Integer(25);
     public static final Integer ROW_DELETED = new Integer(7);
     public static final Integer ROW_UPDATED= new Integer(9); // field not specified
     public static final Integer USER_TRANSITIONS_LIST = new Integer(19);
@@ -96,12 +97,9 @@ public class EventLogger {
     private EventLogMessageDAS eventLogMessageDAS = null;
     private EventLogModuleDAS eventLogModuleDAS = null;
     
-    private static final Logger LOG = Logger.getLogger(EventLogger.class);
+    //private static final Logger LOG = Logger.getLogger(EventLogger.class);
     
-    /*
-     * The constructor is private, no one should instantiate this class
-     */
-    private EventLogger() {
+    public EventLogger() {
         eventLogDAS = new EventLogDAS();
         eventLogMessageDAS = new EventLogMessageDAS();
         eventLogModuleDAS = new EventLogModuleDAS();

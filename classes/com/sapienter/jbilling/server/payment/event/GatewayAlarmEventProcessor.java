@@ -56,7 +56,7 @@ public class GatewayAlarmEventProcessor extends EventProcessor<ProcessorAlarm> {
 		String paymentProcessor = paymentEvent.getPaymentProcessor();
 		if (paymentProcessor == null){
 			LOG.warn("Payment event without payment processor id : " + event);
-			paymentProcessor = "";
+			return;
 		}
 		alarm.init(paymentProcessor, event.getEntityId());
 		if (event instanceof PaymentFailedEvent){

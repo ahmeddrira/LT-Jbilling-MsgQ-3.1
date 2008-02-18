@@ -75,6 +75,7 @@ import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
@@ -163,8 +164,7 @@ public class PaymentBL extends ResultList
     
     public void create(PaymentDTOEx dto) 
             throws CreateException, NamingException, FinderException {
-        // create the record, there's no need for an event to be logged 
-        // since the timestamp and the user are already in the payment row
+        // create the record
         payment = paymentHome.create(dto.getAmount(),
                 dto.getMethodId(), dto.getUserId(), 
                 dto.getAttempt(), dto.getResultId(), dto.getCurrencyId());
@@ -215,6 +215,11 @@ public class PaymentBL extends ResultList
         }
         
         dto.setId(payment.getId());
+        // add a log row for convenience
+        UserDAS user = new UserDAS();
+        eLogger.auditBySystem(user.find(dto.getUserId()).getCompany().getId(), 
+        		Constants.TABLE_PAYMENT, dto.getId(),
+        		EventLogger.MODULE_PAYMENT_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
     }
     
     void createMap(InvoiceEntityLocal invoice, Float amount) 

@@ -71,6 +71,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
@@ -261,6 +262,12 @@ public class InvoiceBL extends ResultList
         ContactBL contact = new ContactBL();
         contact.set(userId);
         contact.createForInvoice(contact.getDTO(), invoice.getId());
+        
+        // add a log row for convenience
+        eLogger.auditBySystem(entityId, 
+        		Constants.TABLE_INVOICE, invoice.getId(),
+        		EventLogger.MODULE_INVOICE_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+
     }
     
     public void createLines(NewInvoiceDTO newInvoice) 

@@ -106,6 +106,7 @@ public class CurrentOrder {
                                 + " but status is finished");
                     } else {
                         orderFound = true;
+                        LOG.debug("Found existing one-time order");
                         break;
                     }
                 }
@@ -124,6 +125,7 @@ public class CurrentOrder {
                 create(newOrderDate, currencyId, entityId);
                 
                 orderFound = true;
+                LOG.debug("Created new one-time order");
             }
             // non present -> create new one with correct date
             // some present & none found -> try next date
@@ -132,7 +134,9 @@ public class CurrentOrder {
         } while (!orderFound);  
         
         // the result is in 'order'
-        return order.getEntity().getId();
+        Integer retValue = order.getEntity().getId();
+        LOG.debug("Returning " + retValue);
+        return retValue;
     }
     
     /**

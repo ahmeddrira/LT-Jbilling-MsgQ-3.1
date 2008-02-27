@@ -129,8 +129,13 @@ public abstract class PluggableTask {
     protected void executeStatefulRules(StatefulSession session, Vector context) {
         handlers = new Hashtable<Object,FactHandle>();
         for (Object o: context) {
-        	LOG.debug("inserting object " + o + "hash " + o.hashCode());
-            handlers.put(o, session.insert(o));
+        	if (o != null) {
+            	LOG.debug("inserting object " + o);
+        		handlers.put(o, session.insert(o));
+        	} else {
+        		LOG.warn("Attempted to insert a NULL object into the working memeory");
+        	}
+        	
         }
 
         session.fireAllRules();

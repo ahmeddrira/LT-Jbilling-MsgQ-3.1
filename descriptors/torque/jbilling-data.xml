@@ -4170,6 +4170,7 @@
     <ReportField Id="1704" ReportId="23" PositionNumber="2" TableName="po" ColumnName="status_id" TitleKey="subscriptionTransition.orderStatusId" IsGrouped="0" IsShown="1" DataType="integer" OperatorValue="=" Functionable="1" Selectable="1" Ordenable="1" Operatorable="1" Whereable="1"/>
     <ReportField Id="1705" ReportId="23" PositionNumber="3" TableName="id4" ColumnName="content" TitleKey="subscriptionTransition.orderStatus" IsGrouped="0" IsShown="1" DataType="string" OperatorValue="=" Functionable="1" Selectable="1" Ordenable="0" Operatorable="0" Whereable="0"/>
     <ReportField Id="1708" ReportId="3" PositionNumber="15" TableName="payment" ColumnName="is_preauth" TitleKey="payment.isPreauth" IsGrouped="0" IsShown="1" DataType="integer" Functionable="1" Selectable="1" Ordenable="1" Operatorable="1" Whereable="1"/>
+    <ReportField Id="1709" ReportId="20" PositionNumber="6" TableName="payment" ColumnName="amount" TitleKey="payment.amount" IsGrouped="0" IsShown="1" DataType="float" Functionable="0" Selectable="0" Ordenable="0" Operatorable="1" Whereable="1"/>
     <ReportType Id="1" Showable="1"/>
     <ReportType Id="2" Showable="1"/>
     <ReportType Id="3" Showable="1"/>

@@ -372,19 +372,7 @@ public class OrderBL extends ResultList
                     order.getActiveUntil());
             EventManager.process(event);
             // update the period of the latest invoice as well
-            OrderProcessDTO process = null;
-            if (order.getActiveUntil() != null) {
-            	process = orderDas.findProcessByEndDate(order.getId(), 
-            		order.getActiveUntil());
-            }
-            if (process != null) {
-            	LOG.debug("Updating process id " + process.getId());
-            	process.setPeriodEnd(dto.getActiveUntil());
-            	
-            } else {
-            	LOG.debug("Did not find any process for order " + order.getId() +  
-            			" and date " + order.getActiveUntil());
-            }
+            updateEndOfOrderProcess(dto.getActiveUntil());
             // update it
             order.setActiveUntil(dto.getActiveUntil());
         }
@@ -491,6 +479,26 @@ public class OrderBL extends ResultList
         
     }
     
+    private void updateEndOfOrderProcess(Date newDate) {
+        OrderProcessDTO process = null;
+        if (newDate == null) {
+        	LOG.debug("Attempting to update an order process end date to null. Skipping");
+        	return;
+        }
+        if (order.getActiveUntil() != null) {
+        	process = orderDas.findProcessByEndDate(order.getId(), 
+        		order.getActiveUntil());
+        }
+        if (process != null) {
+        	LOG.debug("Updating process id " + process.getId());
+        	process.setPeriodEnd(newDate);
+        	
+        } else {
+        	LOG.debug("Did not find any process for order " + order.getId() +  
+        			" and date " + order.getActiveUntil());
+        }
+    }
+    
     private void updateNextBillableDay(Integer executorId, Date newDate) {
         if (newDate == null) return;
         // only if the new date is in the future
@@ -504,20 +512,7 @@ public class OrderBL extends ResultList
                     EventLogger.ORDER_NEXT_BILL_DATE_UPDATED, null,  
                     null, order.getNextBillableDay());
             // update the period of the latest invoice as well
-            OrderProcessDTO process = null;
-            if (order.getNextBillableDay() != null) {
-            	process = orderDas.findProcessByEndDate(order.getId(), 
-            		order.getNextBillableDay());
-            }
-            if (process != null) {
-            	LOG.debug("Updating process id " + process.getId());
-            	process.setPeriodEnd(newDate);
-            	
-            } else {
-            	LOG.debug("Did not find any process for order " + order.getId() +  
-            			" and date " + order.getNextBillableDay());
-            }
-
+            updateEndOfOrderProcess(newDate);
             // do the actual update
             order.setNextBillableDay(newDate);
         } else {

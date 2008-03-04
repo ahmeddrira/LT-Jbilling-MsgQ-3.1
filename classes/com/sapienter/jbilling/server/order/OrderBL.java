@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
@@ -371,8 +372,12 @@ public class OrderBL extends ResultList
                     order.getId(), dto.getActiveUntil(), 
                     order.getActiveUntil());
             EventManager.process(event);
-            // update the period of the latest invoice as well
-            updateEndOfOrderProcess(dto.getActiveUntil());
+            // update the period of the latest invoice as well. This is needed
+            // because it is the way to extend a subscription when the
+            // order status is finished. Then the next_invoice_date is null.
+            if (order.getStatusId().equals(CommonConstants.ORDER_STATUS_FINISHED)) {
+            	updateEndOfOrderProcess(dto.getActiveUntil());
+            }
             // update it
             order.setActiveUntil(dto.getActiveUntil());
         }

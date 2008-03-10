@@ -89,7 +89,6 @@ public class PluggableTaskBL<T> {
         if (dto == null || dto.getId() == null) {
             throw new SessionInternalError("task to update can't be null");
         }
-        LOG.debug("Updating task " + dto.getId());
         for (PluggableTaskParameterDTO param: dto.getParameters()) {
             param.expandValue();
         }

@@ -57,6 +57,18 @@ public class PluggableTaskTypeDTO implements Serializable {
     @JoinColumn(name="category_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     private PluggableTaskTypeCategoryDTO category;
+    
+    
+    public PluggableTaskTypeDTO() {
+       // default
+    }
+    // method useful to get a detached copy 
+    public PluggableTaskTypeDTO(PluggableTaskTypeDTO otherDto) {
+    	Id = otherDto.getId();
+    	className = otherDto.getClassName();
+    	minParameters = otherDto.getMinParameters();
+    	category = otherDto.getCategory();
+    }
 
     // Custom field accessors --------------------------------------------------
     private DescriptionEntityLocal getDescriptionObject(

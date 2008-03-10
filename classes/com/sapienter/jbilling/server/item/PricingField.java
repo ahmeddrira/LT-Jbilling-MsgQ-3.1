@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.item;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -90,6 +91,12 @@ public class PricingField {
 
     public Date getDateValue() {
         return dateValue;
+    }
+    
+    public Calendar getCalendarValue() {
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(dateValue);
+    	return cal;
     }
 
     public Float getFloatValue() {

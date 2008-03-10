@@ -11,6 +11,7 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionHome;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeDTO;
 
 public class TaskAction extends CrudAction {
 
@@ -34,6 +35,11 @@ public class TaskAction extends CrudAction {
     public void setup() {
         try {
             PluggableTaskDTO[] dtos = taskSession.getAllDTOs(entityId);
+            for (PluggableTaskDTO dto: dtos) {
+            	// make sure that each task has its own copy of a type
+            	// otherwise they share types and updating get messy
+            	dto.setType(new PluggableTaskTypeDTO(dto.getType()));
+            }
             myForm.set("tasks", dtos);
         } catch (RemoteException e) {
             throw new SessionInternalError("setup task action", TaskAction.class, e);

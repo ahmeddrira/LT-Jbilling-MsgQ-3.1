@@ -1,5 +1,6 @@
 package com.sapienter.jbilling.server.mediation;
 
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -9,6 +10,7 @@ import junit.framework.TestCase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
@@ -29,13 +31,13 @@ public class MediationTest extends TestCase {
 
     }
 
-    public void testTrigger() {
+    public void XXtestTrigger() {
         try {
             remoteMediation.trigger();
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
             assertEquals("There should be one process after running the mediation process", 1, all.size());
-            assertEquals("The process has to be created four orders", new Integer(4), 
+            assertEquals("The process has to be created five orders", new Integer(5), 
                     all.get(0).getOrdersAffected());
 
             List allCfg = remoteMediation.getAllConfigurations(1);
@@ -73,12 +75,27 @@ public class MediationTest extends TestCase {
             
             assertTrue("The one time order for 10/15 is missing", foundFirst);
             assertTrue("The one time order for 11/15 is missing", foundSecond);
+            
+            // verify that the two events with different prices add up well
+            OrderWS order = api.getOrder(1077);
+            int total = 0;
+            for (OrderLineWS line: order.getOrderLines()) {
+            	total += line.getAmount();
+            }
+            assertEquals("Total of mixed price order", 6400, total);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
         }
     }
     
-   
+   public void testQuick() {
+	   try {
+		remoteMediation.trigger();
+	} catch (RemoteException e) {
+        e.printStackTrace();
+        fail("Exception!" + e.getMessage());
+	}
+   }
 
 }

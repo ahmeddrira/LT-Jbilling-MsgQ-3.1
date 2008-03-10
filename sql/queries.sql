@@ -193,12 +193,94 @@ where exists (
 );
 
 # show events history of a customer
-select user_id, 'User', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+select user_id, 'User', foreign_id, create_datetime, 
+   case when module_id=1 then 'Billing Process' 
+        when module_id=2 then 'User Maintenance'
+        when module_id=3 then 'Item Maintenance'
+        when module_id=4 then 'Item Type Maintenance'
+        when module_id=5 then 'Item User Price Maintenance'
+        when module_id=6 then 'Promotion Maintenance'
+        when module_id=7 then 'Order Maintenance'
+        when module_id=8 then 'Credit Card Maintenance'
+        when module_id=9 then 'Invoice Maintenance'
+        when module_id=10 then 'Payment Maintenance'
+        when module_id=11 then 'Task Maintenance'
+        when module_id=12 then 'Web services'
+        when module_id=13 then 'Mediation'
+    end,
+    case when message_id=1 then 'Unbillend period'
+         when message_id=2 then 'Not active yet' 
+         when message_id=3 then 'One period needed' 
+         when message_id=4 then 'Recently billed' 
+         when message_id=5 then 'Wrong flag on' 
+         when message_id=6 then 'Expired' 
+         when message_id=10 then 'Review not approved' 
+         when message_id=11 then 'Review not generated' 
+         when message_id=8 then 'Password change' 
+         when message_id=12 then 'Status change' 
+         when message_id=14 then 'Not further step' 
+         when message_id=15 then 'Cant pay partner' 
+         when message_id=20 then 'Subscription status change' 
+         when message_id=21 then 'Account locked' 
+         when message_id=13 then 'Order status change' 
+         when message_id=17 then 'Order line updated' 
+         when message_id=18 then 'Next invoice date updated' 
+         when message_id=22 then 'Main subscription updated' 
+         when message_id=24 then 'Payment instrument missing' 
+         when message_id=16 then 'Invoice order applied' 
+         when message_id=23 then 'Current order finished' 
+         when message_id=25 then 'Row created' 
+         when message_id=7 then 'Row deleted' 
+         when message_id=9 then 'Row updated' 
+         when message_id=19 then 'User transitions list' 
+    end, 
+old_num , old_str,old_date from event_log
 where entity_id = 1
   and table_id = 10
   and foreign_id = 34285
 union
-select user_id, 'oRder', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+select user_id, 'oRder', foreign_id, create_datetime,  
+case when module_id=1 then 'Billing Process' 
+        when module_id=2 then 'User Maintenance'
+        when module_id=3 then 'Item Maintenance'
+        when module_id=4 then 'Item Type Maintenance'
+        when module_id=5 then 'Item User Price Maintenance'
+        when module_id=6 then 'Promotion Maintenance'
+        when module_id=7 then 'Order Maintenance'
+        when module_id=8 then 'Credit Card Maintenance'
+        when module_id=9 then 'Invoice Maintenance'
+        when module_id=10 then 'Payment Maintenance'
+        when module_id=11 then 'Task Maintenance'
+        when module_id=12 then 'Web services'
+        when module_id=13 then 'Mediation'
+    end,
+    case when message_id=1 then 'Unbillend period'
+         when message_id=2 then 'Not active yet' 
+         when message_id=3 then 'One period needed' 
+         when message_id=4 then 'Recently billed' 
+         when message_id=5 then 'Wrong flag on' 
+         when message_id=6 then 'Expired' 
+         when message_id=10 then 'Review not approved' 
+         when message_id=11 then 'Review not generated' 
+         when message_id=8 then 'Password change' 
+         when message_id=12 then 'Status change' 
+         when message_id=14 then 'Not further step' 
+         when message_id=15 then 'Cant pay partner' 
+         when message_id=20 then 'Subscription status change' 
+         when message_id=21 then 'Account locked' 
+         when message_id=13 then 'Order status change' 
+         when message_id=17 then 'Order line updated' 
+         when message_id=18 then 'Next invoice date updated' 
+         when message_id=22 then 'Main subscription updated' 
+         when message_id=24 then 'Payment instrument missing' 
+         when message_id=16 then 'Invoice order applied' 
+         when message_id=23 then 'Current order finished' 
+         when message_id=25 then 'Row created' 
+         when message_id=7 then 'Row deleted' 
+         when message_id=9 then 'Row updated' 
+         when message_id=19 then 'User transitions list' 
+    end, 
+ old_num , old_str,old_date from event_log
 where entity_id = 1
   and table_id = 21
   and foreign_id in (
@@ -206,7 +288,48 @@ where entity_id = 1
    from purchase_order
   where user_id = 34285 )
 union
-select user_id, 'inVoice', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+select user_id, 'inVoice', foreign_id, create_datetime,  
+case when module_id=1 then 'Billing Process' 
+        when module_id=2 then 'User Maintenance'
+        when module_id=3 then 'Item Maintenance'
+        when module_id=4 then 'Item Type Maintenance'
+        when module_id=5 then 'Item User Price Maintenance'
+        when module_id=6 then 'Promotion Maintenance'
+        when module_id=7 then 'Order Maintenance'
+        when module_id=8 then 'Credit Card Maintenance'
+        when module_id=9 then 'Invoice Maintenance'
+        when module_id=10 then 'Payment Maintenance'
+        when module_id=11 then 'Task Maintenance'
+        when module_id=12 then 'Web services'
+        when module_id=13 then 'Mediation'
+    end,
+     case when message_id=1 then 'Unbillend period'
+         when message_id=2 then 'Not active yet' 
+         when message_id=3 then 'One period needed' 
+         when message_id=4 then 'Recently billed' 
+         when message_id=5 then 'Wrong flag on' 
+         when message_id=6 then 'Expired' 
+         when message_id=10 then 'Review not approved' 
+         when message_id=11 then 'Review not generated' 
+         when message_id=8 then 'Password change' 
+         when message_id=12 then 'Status change' 
+         when message_id=14 then 'Not further step' 
+         when message_id=15 then 'Cant pay partner' 
+         when message_id=20 then 'Subscription status change' 
+         when message_id=21 then 'Account locked' 
+         when message_id=13 then 'Order status change' 
+         when message_id=17 then 'Order line updated' 
+         when message_id=18 then 'Next invoice date updated' 
+         when message_id=22 then 'Main subscription updated' 
+         when message_id=24 then 'Payment instrument missing' 
+         when message_id=16 then 'Invoice order applied' 
+         when message_id=23 then 'Current order finished' 
+         when message_id=25 then 'Row created' 
+         when message_id=7 then 'Row deleted' 
+         when message_id=9 then 'Row updated' 
+         when message_id=19 then 'User transitions list' 
+    end, 
+ old_num , old_str,old_date from event_log
 where entity_id = 1
   and table_id = 39
   and foreign_id in (
@@ -214,7 +337,48 @@ where entity_id = 1
    from invoice
   where user_id = 34285 )
 union
-select user_id, 'payMent', foreign_id, create_datetime,  module_id , message_id , old_num , old_str,old_date from event_log
+select user_id, 'payMent', foreign_id, create_datetime,  
+case when module_id=1 then 'Billing Process' 
+        when module_id=2 then 'User Maintenance'
+        when module_id=3 then 'Item Maintenance'
+        when module_id=4 then 'Item Type Maintenance'
+        when module_id=5 then 'Item User Price Maintenance'
+        when module_id=6 then 'Promotion Maintenance'
+        when module_id=7 then 'Order Maintenance'
+        when module_id=8 then 'Credit Card Maintenance'
+        when module_id=9 then 'Invoice Maintenance'
+        when module_id=10 then 'Payment Maintenance'
+        when module_id=11 then 'Task Maintenance'
+        when module_id=12 then 'Web services'
+        when module_id=13 then 'Mediation'
+    end,
+    case when message_id=1 then 'Unbillend period'
+         when message_id=2 then 'Not active yet' 
+         when message_id=3 then 'One period needed' 
+         when message_id=4 then 'Recently billed' 
+         when message_id=5 then 'Wrong flag on' 
+         when message_id=6 then 'Expired' 
+         when message_id=10 then 'Review not approved' 
+         when message_id=11 then 'Review not generated' 
+         when message_id=8 then 'Password change' 
+         when message_id=12 then 'Status change' 
+         when message_id=14 then 'Not further step' 
+         when message_id=15 then 'Cant pay partner' 
+         when message_id=20 then 'Subscription status change' 
+         when message_id=21 then 'Account locked' 
+         when message_id=13 then 'Order status change' 
+         when message_id=17 then 'Order line updated' 
+         when message_id=18 then 'Next invoice date updated' 
+         when message_id=22 then 'Main subscription updated' 
+         when message_id=24 then 'Payment instrument missing' 
+         when message_id=16 then 'Invoice order applied' 
+         when message_id=23 then 'Current order finished' 
+         when message_id=25 then 'Row created' 
+         when message_id=7 then 'Row deleted' 
+         when message_id=9 then 'Row updated' 
+         when message_id=19 then 'User transitions list' 
+    end, 
+ old_num , old_str,old_date from event_log
 where entity_id = 1
   and table_id = 42
   and foreign_id in (

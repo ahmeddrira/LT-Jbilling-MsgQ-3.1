@@ -2936,7 +2936,7 @@
     <PluggableTaskType Id="27" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask" MinParameters="1"/>
     <PluggableTaskType Id="28" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.BasicItemManager" MinParameters="0"/>
     <PluggableTaskType Id="29" CategoryId="13" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
-    <PluggableTaskType Id="30" CategoryId="1" ClassName="com.sapienter.jbilling.server.item.tasks.RulesItemManager" MinParameters="0"/>
+    <PluggableTaskType Id="30" CategoryId="1" ClassName="com.sapienter.jbilling.server.order.task.RulesLineTotalTask" MinParameters="0"/>
     <PluggableTaskType Id="31" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask" MinParameters="0"/>
     <PluggableTaskType Id="32" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.SeparatorFileReader" MinParameters="2"/>
     <PluggableTaskType Id="33" CategoryId="16" ClassName="com.sapienter.jbilling.server.mediation.task.RulesMediationTask" MinParameters="0"/>

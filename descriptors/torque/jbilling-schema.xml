@@ -1306,7 +1306,7 @@
         </foreign-key>
     </table>
     <table name="mediation_record">
-        <column name="id_key" primaryKey="true" type="varchar" size="100" required="true"/>
+        <column name="id_key" primaryKey="true" type="VARCHAR" size="100" required="true"/>
         <column name="start_datetime" required="true" type="TIMESTAMP"/>
         <column name="end_datetime" required="false" type="TIMESTAMP"/>
         <column name="mediation_process_id" type="INTEGER" required="true"/>

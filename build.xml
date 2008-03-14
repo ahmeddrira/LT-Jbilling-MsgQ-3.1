@@ -430,6 +430,7 @@
 	
   <target name="prepare-test">
   	  <echo>Copying the binary rules</echo>
+	  <delete dir="${base_dir}/rules"/>
 	  <copy todir="${base_dir}/rules">
          <fileset dir="${source.rules.dir}" includes="*.pkg"/>
 	  </copy>

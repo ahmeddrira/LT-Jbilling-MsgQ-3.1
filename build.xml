@@ -710,12 +710,12 @@
 	 	<!-- Compile the jsp to .java files -->
 	 	<jasper2 
 	    	validateXml="false" 
-	      	uriroot = "${source.dir}\build\"
-	     	outputDir = "${source.dir}\build\jsp-classes\"/>
+	      	uriroot = "${source.dir}/build"
+	     	outputDir = "${source.dir}/build/jsp-classes"/>
 			
 		  
 		<!-- Compile the intermediate jsp's-->
-		<javac srcdir="${source.dir}\build\jsp-classes\"  destdir="${source.dir}\build\jsp-classes\" > 
+		<javac srcdir="${source.dir}/build/jsp-classes"  destdir="${source.dir}/build/jsp-classes" > 
 			<classpath refid="jspc.classpath" /> 
 			<classpath refid="compile.classpath" />
 		</javac> 

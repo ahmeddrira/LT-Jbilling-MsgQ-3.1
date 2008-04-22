@@ -28,4 +28,5 @@ public interface OrderPeriodTask {
     Date calculateStart(OrderEntityLocal order) throws TaskException;
     Date calculateEnd(OrderEntityLocal order, 
             Date processDate, int maxPeriods) throws TaskException;
+    public int getPeriods(); // how many periods got included in between those two dates
 }

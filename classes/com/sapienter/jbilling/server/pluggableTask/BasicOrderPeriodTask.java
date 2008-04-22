@@ -41,7 +41,8 @@ public class BasicOrderPeriodTask
     implements OrderPeriodTask {
     
     protected Date viewLimit = null;
-    protected Logger log = null;
+    private static final Logger LOG = Logger.getLogger(BasicOrderPeriodTask.class);
+    private int periods = 0;
 
     
     public BasicOrderPeriodTask() {
@@ -105,16 +106,14 @@ public class BasicOrderPeriodTask
 
         if (order.getPeriod().getId().compareTo(
                 Constants.ORDER_PERIOD_ONCE) == 0) {
+        	periods = 1;
             return null;
         }                    
 
-        int periodsIn = 0;
+        periods = 0;
         Date endOfPeriod = null;
         Date startOfBillingPeriod = calculateStart(order);
         GregorianCalendar cal = new GregorianCalendar();
-        if (log == null) {
-            log = Logger.getLogger(BasicOrderPeriodTask.class);
-        }
         try {
             // calculate the how far we can see in the future
             // get the period of time from the process configuration
@@ -125,7 +124,7 @@ public class BasicOrderPeriodTask
             
             cal.setTime(startOfBillingPeriod);
         
-            log.debug("Calculating ebp for order " + order.getId() + " sbp:" +
+            LOG.debug("Calculating ebp for order " + order.getId() + " sbp:" +
                     startOfBillingPeriod + " process date: " + processDate +
                     " viewLimit:" + viewLimit);
             
@@ -143,16 +142,18 @@ public class BasicOrderPeriodTask
                 while (cal.getTime().compareTo(viewLimit) < 0 &&
                         (order.getActiveUntil() == null ||
                          cal.getTime().compareTo(order.getActiveUntil()) <= 0) &&
-                         periodsIn <= maxPeriods) {
+                         periods <= maxPeriods) {
                     // I assign the end period before adding another period
                     endOfPeriod = cal.getTime();
                     cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()),
                             order.getPeriod().getValue().intValue());
-                    periodsIn++;
-                    log.debug("post paid, now testing:" + cal.getTime() +
+                    periods++;
+                    LOG.debug("post paid, now testing:" + cal.getTime() +
                             "(eop) = " + endOfPeriod + " compare " + 
                             cal.getTime().compareTo(viewLimit));
                 }
+                // for post-paid, the last period is not making it in
+                periods--;
             } else if (order.getBillingTypeId().compareTo(
                     Constants.ORDER_BILLING_PRE_PAID) == 0) {
                 /* here the end of the period will be after the start of the billing
@@ -168,11 +169,11 @@ public class BasicOrderPeriodTask
                 while (cal.getTime().compareTo(viewLimit) < 0 &&
                         (order.getActiveUntil() == null ||
                          cal.getTime().compareTo(order.getActiveUntil()) < 0) &&
-                         periodsIn < maxPeriods) {
+                         periods < maxPeriods) {
                     cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()),
                             order.getPeriod().getValue().intValue());
-                    periodsIn++;
-                    log.debug("pre paid, now testing:" + cal.getTime() +
+                    periods++;
+                    LOG.debug("pre paid, now testing:" + cal.getTime() +
                             "(eop) = " + endOfPeriod + " compare " + 
                             cal.getTime().compareTo(viewLimit));          
                 }
@@ -186,6 +187,8 @@ public class BasicOrderPeriodTask
         } catch (Exception e) {
             throw new TaskException(e);
         }
+        
+        endOfPeriod = verifyEndOfMonthDay(order, endOfPeriod);
         
         if (endOfPeriod == null) {
             throw new TaskException("Error calculating for order " +
@@ -202,7 +205,7 @@ public class BasicOrderPeriodTask
                 " start period. Shouldn't this order be excluded?");
         } 
         
-        log.debug("ebp:" + endOfPeriod);
+        LOG.debug("ebp:" + endOfPeriod);
         
         return endOfPeriod;
     }
@@ -219,5 +222,60 @@ public class BasicOrderPeriodTask
                 periodValue.intValue());
         return cal.getTime();
 
+    }
+    /*
+     * 
+	// Last day of the month validation
+	// If the current date is the last day of a month, the next date
+	// might have to as well.
+	*/
+    private Date verifyEndOfMonthDay(OrderEntityLocal order, Date date) throws TaskException {
+    	if (date == null || order == null) return null;
+    	
+    	GregorianCalendar current = new GregorianCalendar();
+    	// this makes only sense when the order is on monthly periods
+    	if (order.getPeriod().getUnitId().equals(Constants.PERIOD_UNIT_MONTH)) {
+    		// the current next invoice date has to be the last day of that month, and not a 31
+        	current.setTime(calculateStart(order));
+        	if (current.get(Calendar.DAY_OF_MONTH) == current.getActualMaximum(Calendar.DAY_OF_MONTH) &&
+        			current.get(Calendar.DAY_OF_MONTH) < 31) {
+        		// set the end date propsed
+        		GregorianCalendar edp = new GregorianCalendar();
+        		edp.setTime(date);
+        		// the proposed end date should not be the end of the month
+        		if (edp.get(Calendar.DAY_OF_MONTH) != edp.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+        			// set the first invoicabe day
+        			GregorianCalendar firstDate = new GregorianCalendar();
+        			firstDate.setTime(order.getActiveSince() == null ? order.getCreateDate() : order.getActiveSince());
+        			if (firstDate.get(Calendar.DAY_OF_MONTH) > edp.get(Calendar.DAY_OF_MONTH)) {
+        				LOG.debug("Order " + order.getId() + ".Adjusting next invoice date " +
+        						"because end of the month from " + 
+        						edp.get(Calendar.DAY_OF_MONTH) + " to " + firstDate.get(Calendar.DAY_OF_MONTH));
+        				edp.set(Calendar.DAY_OF_MONTH, firstDate.get(Calendar.DAY_OF_MONTH));
+        				return edp.getTime();	
+        			} else {
+        				// the first date of invoice has to be grater than the day being proposed, otherwise
+        				// there isn't anything to fix (the fix is to increas the edp by a few days)
+        				return date;
+        			}
+        		} else {
+        			// if the proposed end date is the end of the month, it can't be corrected, since
+        			// the correction means adding days.
+        			return date;
+        		}
+        	} else { 
+        		// if the last next billing date is the 31, adding a month can't be problematic
+        		// if the last next billing date is not the last day of the month, it can't come from
+        		// a higher end date
+        		return date;
+        	}
+    	} else {
+    		return date;
+    	}
+    	
+    }
+    
+    public int getPeriods() {
+    	return periods;
     }
 }

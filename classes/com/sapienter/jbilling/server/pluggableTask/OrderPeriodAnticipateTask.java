@@ -40,7 +40,9 @@ import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
  */
 public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
     
-    
+
+	private static final Logger LOG = Logger.getLogger(OrderPeriodAnticipateTask.class);
+	
     public Date calculateStart(OrderEntityLocal order) throws TaskException {
         return super.calculateStart(order);
     }
@@ -49,7 +51,6 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
             int maxPeriods) 
             throws TaskException {
         viewLimit = null;
-        log = Logger.getLogger(OrderPeriodAnticipateTask.class);
 
         if (order.getAnticipatePeriods() != null &&
                 order.getAnticipatePeriods().intValue() > 0) {
@@ -63,7 +64,7 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
                     cal.add(MapPeriodToCalendar.map(periodUnitId),
                             periodValue.intValue());
                 }
-                log.debug("Ant periods:" + order.getAnticipatePeriods() + " " +
+                LOG.debug("Ant periods:" + order.getAnticipatePeriods() + " " +
                         "view limit: " + cal.getTime());
                 // now add the months that this order is getting anticipated
                 cal.add(GregorianCalendar.MONTH,

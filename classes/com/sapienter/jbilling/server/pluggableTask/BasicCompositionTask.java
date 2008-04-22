@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -116,7 +117,9 @@ public class BasicCompositionTask extends PluggableTask
                         try {
                             desc = composeDescription(userId,  order, 
                                     orderLine.getDescription(), period,
-                                    (Date) invoiceDTO.getStarts().get(orderIndex));
+                                    (Date) invoiceDTO.getStarts().get(orderIndex),
+                                    (Date) invoiceDTO.getEnds().get(orderIndex),
+                                    periods);
                         } catch (SessionInternalError e) {
                             throw new TaskException(e);
                         }
@@ -219,7 +222,7 @@ public class BasicCompositionTask extends PluggableTask
     
     private String composeDescription(Integer userId,
             OrderEntityLocal order, String desc,
-            int period, Date start) throws SessionInternalError{
+            int period, Date start, Date end, int periods) throws SessionInternalError{
         StringBuffer retValue = new StringBuffer();
         
         retValue.append(desc);
@@ -227,15 +230,21 @@ public class BasicCompositionTask extends PluggableTask
         if (!order.getPeriod().getId().equals(Constants.ORDER_PERIOD_ONCE)) {
             Integer orderValueId = order.getPeriod().getValue();
             // calculate the dates from/to
-            Calendar cal = Calendar.getInstance();
+            GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(start);
             if (period > 1) {
                 cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()), 
                         (period - 1) * orderValueId.intValue());
             }
             Date from = cal.getTime();
-            cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()), 
-                    1 * orderValueId.intValue());
+            // calculate the end date
+            if (period < periods) {
+	            cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()), 
+	                    1 * orderValueId.intValue());
+            } else {
+            	// for the last period, take it from the calculated end date
+            	cal.setTime(end);
+            }
             // take one day from the end date, so both dates are in the range
             cal.add(Calendar.DAY_OF_MONTH, -1);
             Date to = cal.getTime();

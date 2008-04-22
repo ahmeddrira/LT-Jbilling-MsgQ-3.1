@@ -86,7 +86,7 @@ public class BillingProcessBL extends ResultList
     private BillingProcessEntityLocal billingProcess = null;
     private BillingProcessRunEntityLocalHome processRunHome = null;
     private BillingProcessRunEntityLocal processRun = null; 
-    private final Logger LOG = Logger.getLogger(BillingProcessBL.class);
+    private static final Logger LOG = Logger.getLogger(BillingProcessBL.class);
     private EventLogger eLogger = null;
     
     public BillingProcessBL(Integer billingProcessId) 
@@ -760,8 +760,7 @@ public class BillingProcessBL extends ResultList
                     end);
         }
                         
-        int periods = calculateBillablePeriods(order, start, 
-                end);
+        int periods = optask.getPeriods();
         // add this order to the invoice being created
         newInvoice.addOrder(order, start, end, periods);
                         
@@ -841,30 +840,6 @@ public class BillingProcessBL extends ResultList
         return cal.getTime(); 
     }
         
-    static public int calculateBillablePeriods(OrderEntityLocal order, 
-            Date startOfBillingPeriod, Date endOfBillingPeriod) 
-            throws SessionInternalError {
-        
-        if(order.getPeriod().getId().compareTo(
-                Constants.ORDER_PERIOD_ONCE) == 0) {
-            // this method is used to calculate the amount to charge,
-            // therefore even for one timers a 1 is needed (a 0 would 
-            // generate 0$ invoices).
-            return 1;
-        }
-        
-        GregorianCalendar cal = new GregorianCalendar(); 
-
-        int periods = 0;
-        cal.setTime(startOfBillingPeriod);
-        while(cal.getTime().compareTo(endOfBillingPeriod) < 0) {
-            cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()), 
-                    order.getPeriod().getValue().intValue());
-            periods++;
-        }
-        return periods;
-    }
-    
     static public void updateNextBillableDay(OrderEntityLocal order,
             Date end) throws SessionInternalError{
         // if this order won't be process ever again, the 

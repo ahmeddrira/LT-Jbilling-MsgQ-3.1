@@ -72,10 +72,15 @@ public class ProcessPaymentMDB implements MessageDrivenBean, MessageListener {
 
             String type = message.getStringProperty("type"); 
             if (type.equals("payment")) {
+            	LOG.debug("Now processing asynch payment:" +
+            			" processId: " + myMessage.getInt("processId") +
+            			" runId:" + myMessage.getInt("runId") +
+            			" invoiceId:" + myMessage.getInt("invoiceId"));
                 process.processPayment(
                         (myMessage.getInt("processId") == -1) ? null : myMessage.getInt("processId"),
                         (myMessage.getInt("runId") == -1) ? null : myMessage.getInt("runId"),
                         (myMessage.getInt("invoiceId") == -1) ? null : myMessage.getInt("invoiceId"));
+                LOG.debug("Done");
             } else if (type.equals("ender")) {
                 BillingProcessRunBL run = new BillingProcessRunBL(myMessage.getInt("runId"));
                 run.getEntity().setPaymentFinished(Calendar.getInstance().getTime());

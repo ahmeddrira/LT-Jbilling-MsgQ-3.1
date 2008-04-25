@@ -53,6 +53,7 @@ import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.PartnerBL;
+import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -117,6 +118,7 @@ public class PaymentSessionBean implements SessionBean {
     public Integer generatePayment(InvoiceEntityLocal invoice) 
             throws SessionInternalError {
         
+    	LOG.debug("Generating payment for invoice " + invoice.getId());
         // go fetch the entity for this invoice
     	Integer userId = invoice.getUser().getUserId();
     	UserDAS userDas = new UserDAS();
@@ -145,10 +147,12 @@ public class PaymentSessionBean implements SessionBean {
             // entered manually by a user), the payment date is sysdate
             dto.setPaymentDate(Calendar.getInstance().getTime());
 
+            LOG.debug("Prepared payment " + dto);
             // it could be that the user doesn't have a payment 
             // instrument (cc) in the db, or that is invalid (expired).
             if (!noInstrument) {
                 Integer result = processAndUpdateInvoice(dto, invoice);
+                LOG.debug("After processing. Result=" + result);
                 if (result != null && result.equals(Constants.RESULT_OK)) {
                     retValue = dto.getMethodId();
                 }
@@ -169,6 +173,7 @@ public class PaymentSessionBean implements SessionBean {
                 "Problems generating payment.");
         } 
         
+        LOG.debug("Done. Returning:" + retValue);
         return retValue;
     }
     
@@ -551,28 +556,56 @@ public class PaymentSessionBean implements SessionBean {
      * @ejb.transaction type="RequiresNew"
      */
     public Boolean processPaypalPayment(Integer invoiceId, String entityEmail,
-            Float amount, String currency) 
+            Float amount, String currency, Integer paramUserId, String userEmail) 
             throws SessionInternalError {
+    	
+    	if (userEmail == null && invoiceId == null && paramUserId == null) {
+    		LOG.debug("Too much null, returned");
+    		return false;
+    	}
         try {
             boolean ret = false;
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            InvoiceBL invoice = null;
+            Integer entityId = null;
+            Integer userId = null;
+            CurrencyBL curr = null;
+            if (invoiceId != null) {
+            	invoice = new InvoiceBL(invoiceId);
+            	entityId = invoice.getEntity().getUser().getEntity().getId();
+            	userId = invoice.getEntity().getUser().getUserId();
+                curr = new CurrencyBL(
+                        invoice.getEntity().getCurrencyId());
+            } else {
+            	UserBL user = new UserBL();
+            	// identify the user some other way
+            	if (paramUserId != null) {
+            		// easy
+            		userId = paramUserId;
+            	} else {
+            		// find a user by the email address
+            		userId = user.getByEmail(userEmail);
+            		if (userId == null) {
+            			LOG.debug("Could not find a user for email " + userEmail);
+            			return false;
+            		}
+            	}
+            	user = new UserBL(userId);
+            	entityId = user.getEntityId(userId);
+            	curr = new CurrencyBL(user.getCurrencyId());
+            }
             
             // validate the entity
-            Integer entityId = invoice.getEntity().getUser().getEntity().
-                    getId();
             PreferenceBL pref = new PreferenceBL();
             pref.set(entityId, Constants.PREFERENCE_PAYPAL_ACCOUNT);
             String paypalAccount = pref.getString();
             if (paypalAccount != null && paypalAccount.equals(entityEmail)) {
                 // now the currency
-                CurrencyBL curr = new CurrencyBL(
-                        invoice.getEntity().getCurrencyId());
                 if (curr.getEntity().getCode().equals(currency)) {
                     // all good, make the payment
                     PaymentDTOEx payment = new PaymentDTOEx();
                     payment.setAmount(amount);
                     payment.setMethodId(Constants.PAYMENT_METHOD_PAYPAL);
-                    payment.setUserId(invoice.getEntity().getUser().getUserId());
+                    payment.setUserId(userId);
                     payment.setCurrencyId(curr.getEntity().getId());
                     payment.setCreateDateTime(Calendar.getInstance().getTime());
                     payment.setPaymentDate(Calendar.getInstance().getTime());
@@ -593,6 +626,11 @@ public class PaymentSessionBean implements SessionBean {
                     NotificationSessionLocal notificationSess = 
                             notificationHome.create();
                     notificationSess.notify(payment.getUserId(), message);
+                    
+                    // link to unpaid invoices
+                    // TODO avoid sending two emails
+                    PaymentBL bl = new PaymentBL();
+                    bl.linkPaymentsWithInvoice(userId);
                     
                 } else {
                     LOG.debug("wrong currency " + currency);

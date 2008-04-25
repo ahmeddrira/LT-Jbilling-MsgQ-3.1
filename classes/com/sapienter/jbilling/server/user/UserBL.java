@@ -1289,6 +1289,25 @@ public class UserBL extends ResultList
         }   
     }
 
+    public Integer getByEmail(String email) {
+        try {
+        	Integer retValue = null;
+            prepareStatement(UserSQL.findByEmail);
+            // this is being use for paypal subscriptions. It only has an email
+            // so there is not way to limit by entity_id
+            cachedResults.setString(1, email);
+            execute();
+            if (cachedResults.next()) {
+                retValue = cachedResults.getInt(1);
+            } 
+            cachedResults.close();
+            conn.close();
+            return retValue;
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
+        }   
+    }
+
     /**
      * Only needed due to the locking of entity beans.
      * Remove when using JPA

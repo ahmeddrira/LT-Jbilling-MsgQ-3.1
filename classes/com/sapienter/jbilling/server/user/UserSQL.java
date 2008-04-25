@@ -24,6 +24,7 @@
  */
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
@@ -114,7 +115,18 @@ public interface UserSQL {
         "   AND a.deleted = 0" +
         "   AND c.deleted = 0" +
         " ORDER BY 1";
-    
+
+    static final String findByEmail = 
+        "SELECT a.id " +
+        "  FROM base_user a, user_role_map m, contact c " + 
+        " WHERE m.role_id = " + Constants.TYPE_CUSTOMER +
+        "   AND a.id = m.user_id " +
+        "   AND a.id = c.user_id " +
+        "   AND c.email = ?" +
+        "   AND a.deleted = 0" +
+        "   AND c.deleted = 0" +
+        " ORDER BY 1";
+
     static final String getEntityId = 
         "SELECT entity_id " +
         "  FROM base_user " +

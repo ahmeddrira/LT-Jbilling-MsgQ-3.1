@@ -60,17 +60,18 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.event.AbstractPaymentEvent;
-import com.sapienter.jbilling.server.payment.event.PaymentProcessorUnavailableEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
+import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
@@ -767,5 +768,42 @@ public class PaymentBL extends ResultList
         dto.setCurrencyId(map.getPayment().getCurrencyId());
         return dto;
     }
-    
+
+    /**
+     * Checks first if the configuration is for automatic linking.
+     * Looks for any invoice with balance, and then links it with any payment with balance.
+     * @return
+     */
+    public boolean linkPaymentsWithInvoice(Integer userId) {
+    	LOG.debug("Attempting to link payments to invoices. User " + userId);
+    	boolean retValue = false;
+    	try {
+			UserBL user = new UserBL(userId);
+			Integer entityId = user.getEntityId(userId);
+			ConfigurationBL conf = new ConfigurationBL(entityId);
+			if (conf.getEntity().getAutoPaymentApplication() != null &&
+					conf.getEntity().getAutoPaymentApplication().intValue() == 1) {
+				// now find an invoice
+				InvoiceBL invBl = new InvoiceBL();
+				Integer invoiceId = null;
+				CachedRowSet set = invBl.getPayableInvoicesByUser(userId);
+				if (set.next()) {
+					invoiceId = set.getInt(1);
+					invBl.set(invoiceId);
+					automaticPaymentApplication(invBl.getEntity());
+					LOG.debug("done");
+				} else {
+					set.close();
+					LOG.debug("Can't find any invoice to pay");
+				}
+				
+			} else {
+				LOG.debug("Configuration set to not link payments");
+			}
+		} catch (Exception e) {
+			throw new SessionInternalError("Linking payments to invoices", PaymentBL.class, e);
+		}
+    	return retValue;
+    }
 }
+

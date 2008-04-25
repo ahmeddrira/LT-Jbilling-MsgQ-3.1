@@ -49,18 +49,24 @@ import com.sapienter.jbilling.interfaces.PaymentSessionHome;
  *
  */
 public class ExternalCallbackServlet extends HttpServlet {
+    private static final Logger LOG = Logger.getLogger(ExternalCallbackServlet.class);
     public void doPost(HttpServletRequest request, 
             HttpServletResponse response) 
             throws ServletException, IOException {
-        Logger log = Logger.getLogger(ExternalCallbackServlet.class);
         try {
-            log.debug("callback received");
+            LOG.debug("callback received");
             
             if (request.getParameter("caller") == null ||
                     !request.getParameter("caller").equals("paypal")) {
-                log.debug("caller not supported");
+                LOG.debug("caller not supported");
                 return;
             }
+            
+            if (!verifyTransactionType(request.getParameter("txn_type"))) {
+            	LOG.debug("transaction is type " +request.getParameter("txn_type") + " ignoring");
+            	return;
+            }
+            
             // go over the parameters, making my string for the validation
             // call to paypal
             String validationStr = "cmd=_notify-validate";
@@ -68,13 +74,13 @@ public class ExternalCallbackServlet extends HttpServlet {
             while (parameters.hasMoreElements()) {
                 String parameter = (String) parameters.nextElement();
                 String value = request.getParameter(parameter);
-                log.debug("parameter : " + parameter + 
+                LOG.debug("parameter : " + parameter + 
                         " value : " + value);
                 validationStr = validationStr + "&" + parameter + "=" + 
                     URLEncoder.encode(value);
             }
             
-            log.debug("About to call paypal for validation.  Request" + validationStr);
+            LOG.debug("About to call paypal for validation.  Request" + validationStr);
             URL u = new URL("https://www.paypal.com/cgi-bin/webscr");
             URLConnection uc = u.openConnection();
             uc.setDoOutput(true);
@@ -89,20 +95,21 @@ public class ExternalCallbackServlet extends HttpServlet {
             in.close();
     
             //check notification validation
-            log.debug("Validation result is " + res);
+            LOG.debug("Validation result is " + res);
             if(res.equals("VERIFIED")) {
-                log.debug("ok");
-                boolean ok = true;
+            //if(res.equals("INVALID")) { // only for testing
+                LOG.debug("ok");
                 String invoiceNumber = request.getParameter("invoice");
                 String paymentStatus = request.getParameter("payment_status");
                 String paymentAmount = request.getParameter("mc_gross");
                 String paymentCurrency = request.getParameter("mc_currency");
                 String receiverEmail = request.getParameter("receiver_email");
+                String userEmail = request.getParameter("payer_email");
+                String userIdStr = request.getParameter("custom");
                 
                 if (paymentStatus == null || !paymentStatus.equalsIgnoreCase(
                         "completed")) {
-                    ok = false;
-                    log.debug("payment status is " + paymentStatus + " Rejecting");
+                    LOG.debug("payment status is " + paymentStatus + " Rejecting");
                 } else { 
                     try {
                     
@@ -113,27 +120,56 @@ public class ExternalCallbackServlet extends HttpServlet {
                                 PaymentSessionHome.JNDI_NAME);
         
                         PaymentSession paymentSession = paymentHome.create();
-                        Integer invoiceId = Integer.valueOf(invoiceNumber);
+                        Integer invoiceId = getInt(invoiceNumber);
                         Float amount = Float.valueOf(paymentAmount);
+                        Integer userId = getInt(userIdStr);
                         Boolean result = paymentSession.processPaypalPayment(
-                                invoiceId, receiverEmail, amount, paymentCurrency);
+                                invoiceId, receiverEmail, amount, paymentCurrency,
+                                userId, userEmail);
                         
-                        log.debug("Finished callback with result " + result);
+                        LOG.debug("Finished callback with result " + result);
                     } catch (Exception e) {
-                        log.error("Exception processing a paypal callback ", e);
+                        LOG.error("Exception processing a paypal callback ", e);
                     }
                    
                 }
             }
             else if(res.equals("INVALID")) {
-                log.debug("invalid");
+                LOG.debug("invalid");
             }
             else {
-                log.debug("error");
+                LOG.debug("error");
             }
-            log.debug("done callback");
+            LOG.debug("done callback");
         } catch (Exception e) {
-            log.error("Error processing external callback", e);
+            LOG.error("Error processing external callback", e);
         }
+    }
+    
+    private Integer getInt(String str) {
+    	Integer retValue = null;
+    	if (str != null && str.length() > 0) {
+        	try {
+        		retValue = Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				LOG.debug("Invalid int field." + str + " - " + e.getMessage());
+			}
+        }
+    	return retValue;
+    }
+    
+    private boolean verifyTransactionType(String type) {
+    	if (type == null || type.length() == 0) {
+    		return true;
+    	} else {
+    		if (type.equals("subscr_signup") ||
+    				type.equals("subscr_cancel") ||
+    				type.equals("subscr_failed") ||
+    				type.equals("subscr_eot") ||
+    				type.equals("subscr_modify")) {
+    			return false;
+    		}
+    		return true;
+    	}
     }
 }

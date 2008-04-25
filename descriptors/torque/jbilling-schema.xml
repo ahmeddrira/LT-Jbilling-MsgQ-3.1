@@ -1291,7 +1291,7 @@
         <column name="end_datetime" required="false" type="TIMESTAMP"/>
         <column name="orders_affected" type="INTEGER" required="true"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="pluggable_task">
+        <foreign-key foreignTable="mediation_cfg">
             <reference foreign="id" local="configuration_id"/>
         </foreign-key>
     </table>

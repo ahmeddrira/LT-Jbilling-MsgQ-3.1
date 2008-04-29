@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.user.event;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
+import com.sapienter.jbilling.server.payment.event.PaymentProcessorUnavailableEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.Event;
@@ -45,6 +46,9 @@ public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscripti
         if (event instanceof PaymentFailedEvent) {
             PaymentFailedEvent pfEvent = (PaymentFailedEvent) event;
             task.paymentFailed(pfEvent.getEntityId(), pfEvent.getPayment());
+        } else if (event instanceof PaymentProcessorUnavailableEvent) {
+			PaymentProcessorUnavailableEvent puEvent = (PaymentProcessorUnavailableEvent) event;
+			task.paymentFailed(puEvent.getEntityId(), puEvent.getPayment());
         } else if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent psEvent = (PaymentSuccessfulEvent) event;
             task.paymentSuccessful(psEvent.getEntityId(), psEvent.getPayment());

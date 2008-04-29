@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
-import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.GatewayAlarmEventProcessor;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
@@ -66,6 +65,7 @@ public final class EventManager {
         // PaymentProcessorUnavailable
         subscriptions.put(PaymentProcessorUnavailableEvent.class,
                 new Class[] { 
+        			SubscriptionStatusEventProcessor.class,
         			GatewayAlarmEventProcessor.class,
         		} );
         // NewActiveUntil (orders)

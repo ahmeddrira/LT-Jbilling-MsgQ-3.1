@@ -2942,6 +2942,7 @@
     <PluggableTaskType Id="33" CategoryId="16" ClassName="com.sapienter.jbilling.server.mediation.task.RulesMediationTask" MinParameters="0"/>
     <PluggableTaskType Id="34" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.FixedFileReader" MinParameters="2"/>
     <PluggableTaskType Id="35" CategoryId="8" ClassName="com.sapienter.jbilling.server.user.tasks.PaymentInfoNoValidateTask" MinParameters="0"/>
+    <PluggableTaskType Id="36" CategoryId="7" ClassName="com.sapienter.jbilling.server.notification.task.TestNotificationTask" MinParameters="0"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

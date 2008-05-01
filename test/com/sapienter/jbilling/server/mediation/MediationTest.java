@@ -31,13 +31,13 @@ public class MediationTest extends TestCase {
 
     }
 
-    public void XXtestTrigger() {
+    public void testTrigger() {
         try {
             remoteMediation.trigger();
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
             assertEquals("There should be one process after running the mediation process", 1, all.size());
-            assertEquals("The process has to be created five orders", new Integer(5), 
+            assertEquals("The process has to touch seven orders", new Integer(7), 
                     all.get(0).getOrdersAffected());
 
             List allCfg = remoteMediation.getAllConfigurations(1);
@@ -66,6 +66,7 @@ public class MediationTest extends TestCase {
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()),Util.truncateDate(d1015))) {
                     foundFirst = true;
+                    assertEquals("Quantity of should be the combiend of all events", 1300, (int)order.getOrderLines()[0].getQuantity());
                 } 
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()),Util.truncateDate(d1115))) {
@@ -77,7 +78,7 @@ public class MediationTest extends TestCase {
             assertTrue("The one time order for 11/15 is missing", foundSecond);
             
             // verify that the two events with different prices add up well
-            OrderWS order = api.getOrder(1077);
+            OrderWS order = api.getOrder(1088);
             int total = 0;
             for (OrderLineWS line: order.getOrderLines()) {
             	total += line.getAmount();

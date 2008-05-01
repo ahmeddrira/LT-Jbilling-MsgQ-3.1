@@ -139,6 +139,7 @@ public abstract class PluggableTask {
         }
 
         session.fireAllRules();
+        session.dispose();
     }
 
     protected void removeObject(Object o) {

@@ -8,12 +8,23 @@ import com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager
 #globals
 global com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager manager
 
+rule '604 -  512'
+when
+    exists(PricingField( name == "src", eval(strValue.substring(0,3).equals("604"))))
+    exists(PricingField( name == "dst", eval(strValue.substring(0,3).equals("512"))))
+    PricingManager( itemId == "1" )
+then
+   manager.setPrice(7);
+end
 
-rule "BC lemonade price"
+rule "special for item 2"
 	dialect "java"
 	when
 	PricingManager( itemId == "2" )
-	ContactDTOEx( city == "Rivendel" )
+	PricingManager( userId == "2" )
 	then
-	manager.setByPercentage(50);
+	manager.setPrice(30);
 end
+
+
+

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item.tasks;
 import java.math.BigDecimal;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.drools.RuleBase;
 import org.drools.StatelessSession;
 
@@ -35,7 +36,7 @@ import com.sapienter.jbilling.server.util.DTOFactory;
 
 public class RulesPricingTask extends PluggableTask implements IPricing {
     
-   // private static final Logger LOG = Logger.getLogger(RulesPricingTask.class);
+    private static final Logger LOG = Logger.getLogger(RulesPricingTask.class);
 
     public Float getPrice(Integer itemId, Integer userId, Integer currencyId,
             Vector<PricingField> fields, Float defaultPrice) 
@@ -71,6 +72,9 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
             throw new TaskException(e);
         }
         // then execute the rules
+        for (Object o: rulesMemoryContext) {
+        	LOG.debug("in memory context=" + o);
+        }
         session.executeWithResults(rulesMemoryContext);
 
         return new Float(manager.getPrice());
@@ -95,6 +99,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         }
         
         public void setPrice(double defaultPrice) {
+        	LOG.debug("Setting price of item " + itemId + " to " + defaultPrice);
             this.price = new BigDecimal(defaultPrice);
         }
         
@@ -119,6 +124,11 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         }
         public Integer getUserId() {
             return userId;
+        }
+        
+        public String toString() {
+        	return "PricingManages=currencyId: " + currencyId + " itemId: " + itemId + 
+        			" price " + price + " userId " + userId;
         }
         
     }

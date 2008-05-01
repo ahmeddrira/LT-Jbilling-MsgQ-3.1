@@ -70,6 +70,7 @@ public class NewOrderDTO extends OrderDTO {
         period = orderRow.getPeriod().getId();
         // add the lines
         for(OrderLineEntityLocal line: (Collection <OrderLineEntityLocal>)orderRow.getOrderLines()) {
+        	if (line.getDeleted().intValue() == 1) continue;
             OrderLineDTOEx myLine = DTOFactory.getOrderLineDTOEx(line);
             rawOrderLines.add(myLine);
             orderLines.put(myLine.getItemId(), myLine);

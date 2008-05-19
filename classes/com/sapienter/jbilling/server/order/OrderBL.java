@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -49,25 +49,26 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderLineTypeEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderLineTypeEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocalHome;
-import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.PromotionBL;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.order.db.OrderBillingTypeDAS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDAS;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineTypeDAS;
+import com.sapienter.jbilling.server.order.db.OrderLineTypeDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
 import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
@@ -75,28 +76,31 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.util.db.generated.CompanyDAS;
 
 /**
  * @author Emil
  */
 public class OrderBL extends ResultList 
         implements OrderSQL {
-    private NewOrderDTO newOrder = null;
     private JNDILookup EJBFactory = null;
-    private OrderEntityLocalHome orderHome = null;
-    private OrderEntityLocal order = null;
-    private OrderLineEntityLocalHome orderLineHome = null;
-    private OrderLineTypeEntityLocalHome orderLineTypeHome = null;
-    private OrderPeriodEntityLocalHome orderPeriodHome = null;
+    private OrderDTO order = null;
+    private OrderLineDAS orderLineDAS = null;
+    private OrderPeriodDAS orderPeriodDAS = null;
     private OrderDAS orderDas = null;
+    private OrderBillingTypeDAS orderBillingTypeDas = null;
+    private OrderStatusDAS orderStatusDAS = null;
     
     private static final Logger LOG = Logger.getLogger(OrderBL.class);
     private EventLogger eLogger = null;
@@ -111,7 +115,7 @@ public class OrderBL extends ResultList
         init();
     }
     
-    public OrderBL (OrderEntityLocal order) {
+    public OrderBL (OrderDTO order) {
         try {
             init();
         } catch (NamingException e) {
@@ -121,61 +125,30 @@ public class OrderBL extends ResultList
     }
     
     
-    public OrderBL(NewOrderDTO order) throws NamingException {
-        newOrder = order;
-        init();
-    }
-
-
     private void init() throws NamingException {
-        eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
-        orderHome = (OrderEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                OrderEntityLocalHome.class,
-                OrderEntityLocalHome.JNDI_NAME);
-        orderLineHome = (OrderLineEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderLineEntityLocalHome.class,
-                OrderLineEntityLocalHome.JNDI_NAME);
-
-        orderLineTypeHome = (OrderLineTypeEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                OrderLineTypeEntityLocalHome.class,
-                OrderLineTypeEntityLocalHome.JNDI_NAME);
-        orderPeriodHome =
-                (OrderPeriodEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderPeriodEntityLocalHome.class,
-                OrderPeriodEntityLocalHome.JNDI_NAME);
-    
+        eLogger = EventLogger.getInstance();        
+        orderLineDAS = new OrderLineDAS();
+        orderPeriodDAS = new OrderPeriodDAS();
         orderDas = new OrderDAS();
+        orderBillingTypeDas = new OrderBillingTypeDAS();
+        orderStatusDAS = new OrderStatusDAS();
     }
 
-    public OrderEntityLocal getEntity() {
+    public OrderDTO getEntity() {
         return order;
     }
     
-    public OrderEntityLocalHome getHome() {
-        return orderHome;
-    }
-    
-    public OrderPeriodDTOEx getPeriod(Integer language, Integer id) 
+    public OrderPeriodDTO getPeriod(Integer language, Integer id) 
             throws FinderException {
-        OrderPeriodEntityLocal period = orderPeriodHome.findByPrimaryKey(id);
-        OrderPeriodDTOEx dto = new OrderPeriodDTOEx();
-        dto.setDescription(period.getDescription(language));
-        dto.setEntityId(period.getEntityId());
-        dto.setId(period.getId());
-        dto.setUnitId(period.getUnitId());
-        dto.setValue(period.getValue());
-        
-        return dto;
+        return(orderPeriodDAS.find(id));
     }
 
-    public void set(Integer id) throws FinderException {
-        order = orderHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+    	order = orderDas.find(id);
     }
     
-    public void set(OrderEntityLocal newOrder) {
+    public void set(OrderDTO newOrder) {
         order = newOrder;
     }
 
@@ -186,7 +159,7 @@ public class OrderBL extends ResultList
             if (orderId != null) {
                 set(orderId);
                 // deleted does not count
-                if (order.getDeleted().equals(1)) {
+                if (order.getDeleted() == 1) {
                     order = null;
                 }
             } else {
@@ -197,50 +170,34 @@ public class OrderBL extends ResultList
         }
     }
 
-    public NewOrderDTO getNewOrderDTO() {
-        return newOrder;
-    }
-    
     public OrderWS getWS(Integer languageId) 
             throws FinderException, NamingException {
-        OrderWS retValue = new OrderWS(getDTO());
+        OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(), order.getNotify(), 
+        		order.getActiveSince(), order.getActiveUntil(), order.getCreateDate(), 
+        		order.getNextBillableDay(), order.getCreatedBy(), order.getStatusId(), order.getDeleted(), 
+        		order.getCurrencyId(), order.getLastNotified(), order.getNotificationStep(), 
+        		order.getDueDateUnitId(), order.getDueDateValue(), order.getAnticipatePeriods(),
+        		order.getDfFm(), order.getIsCurrent(), order.getNotes(), order.getNotesInInvoice(),
+        		order.getOwnInvoice(), order.getOrderPeriod().getId(), order.getBaseUserByUserId().getId(),
+        		order.getVersionNum());
         
-        retValue.setPeriod(order.getPeriod().getId());
-        retValue.setPeriodStr(order.getPeriod().getDescription(languageId));
-        retValue.setBillingTypeStr(DTOFactory.getBillingTypeString(
-                order.getBillingTypeId(), languageId));
-        retValue.setUserId(order.getUser().getUserId());
+        retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
+        retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
         
         Vector<OrderLineWS> lines = new Vector<OrderLineWS>();
-        for (Iterator it = order.getOrderLines().iterator(); it.hasNext();) {
-            OrderLineEntityLocal line = (OrderLineEntityLocal) it.next();
-            if (line.getDeleted().intValue() == 0) {
-                OrderLineWS lineWS = new OrderLineWS(DTOFactory.getOrderLineDTOEx(line));
-                lineWS.setTypeId(line.getType().getId());
-                lines.add(lineWS);
+        for (Iterator it = order.getLines().iterator(); it.hasNext();) {
+            OrderLineDTO line = (OrderLineDTO) it.next();
+            if (line.getDeleted() == 0) {
+                lines.add(getOrderLineWS(line.getId()));
             }
         }
         retValue.setOrderLines(new OrderLineWS[lines.size()]);
         lines.toArray(retValue.getOrderLines());
-        
         return retValue;
     }
     
     public OrderDTO getDTO() {
-        return new OrderDTO(order.getId(), order.getBillingTypeId(), 
-        	order.getNotify(),
-            order.getActiveSince(), order.getActiveUntil(), 
-            order.getCreateDate(), order.getNextBillableDay(),
-            order.getCreatedBy(), order.getStatusId(), order.getDeleted(),
-            order.getCurrencyId(), order.getLastNotified(),
-            order.getNotificationStep(), order.getDueDateUnitId(),
-            order.getDueDateValue(), order.getDfFm(),
-            order.getAnticipatePeriods(), order.getOwnInvoice(),
-            order.getNotesInInvoice(), order.getNotes(), order.getIsCurrent());
-    }
-
-    public void setDTO(NewOrderDTO mOrder) {
-        newOrder = mOrder;
+    	return order;
     }
 
     public void addItem(Integer itemID, Integer quantity, Integer language, 
@@ -253,7 +210,7 @@ public class OrderBL extends ResultList
                 IItemPurchaseManager myTask = taskManager.getNextClass();
                 
                 while(myTask != null) {
-                    myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, newOrder, records);
+                    myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
                     myTask = taskManager.getNextClass();
                 }
             } catch (Exception e) {
@@ -269,33 +226,40 @@ public class OrderBL extends ResultList
     }
     
     public void deleteItem(Integer itemID) {
-        newOrder.removeOrderLine(itemID);
+        order.removeLine(itemID);
     }
     
-    public void delete() {
-        for (Iterator it = order.getOrderLines().iterator(); it.hasNext();) {
-            OrderLineEntityLocal line = (OrderLineEntityLocal) it.next();
-            line.setDeleted(new Integer(1));
+    public void delete(Integer executorId) {
+        for (OrderLineDTO line: order.getLines()) {
+            line.setDeleted(1);
         }
+        order.setDeleted(1);
         
-        order.setDeleted(new Integer(1));
+        eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
+                order.getId(),
+                EventLogger.MODULE_ORDER_MAINTENANCE, 
+                EventLogger.ROW_DELETED, null,  
+                null, null);
+
     }
 
     /**
      * Method recalculate.
      * Goes over the processing tasks configured in the database for this
-     * entity. The NewOrderDTO of this session is then modified.
+     * entity. The order entity is then modified.
      */
     public void recalculate(Integer entityId) throws SessionInternalError {
-        LOG.debug("Processing and order for reviewing." + newOrder.getOrderLinesMap().size());
-
+        LOG.debug("Processing and order for reviewing." + order.getLines().size());
+        // make sure the user is there
+        UserDAS user = new UserDAS();
+        order.setBaseUserByUserId(user.find(order.getBaseUserByUserId().getId()));
         try {
             PluggableTaskManager taskManager = new PluggableTaskManager(
                     entityId, Constants.PLUGGABLE_TASK_PROCESSING_ORDERS);
             OrderProcessingTask task = 
                     (OrderProcessingTask) taskManager.getNextClass();
             while (task != null) {
-                task.doProcessing(newOrder);
+                task.doProcessing(order);
                 task = (OrderProcessingTask) taskManager.getNextClass();
             }
 
@@ -310,42 +274,32 @@ public class OrderBL extends ResultList
     }
     
     public Integer create(Integer entityId, Integer userAgentId,
-            NewOrderDTO orderDto) throws SessionInternalError {
-        Integer newOrderId = null;
-
+            OrderDTO orderDto) throws SessionInternalError {
         try {
             // if the order is a one-timer, force pre-paid to avoid any
             // confusion
-            if (orderDto.getPeriod().equals(Constants.ORDER_PERIOD_ONCE)) {
-                orderDto.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            if (orderDto.getOrderPeriod().getId() == Constants.ORDER_PERIOD_ONCE) {
+                orderDto.setOrderBillingType(orderBillingTypeDas.find(Constants.ORDER_BILLING_PRE_PAID));
                 // one time orders can not be the main subscription
-                orderDto.setIsCurrent(new Integer(0));
+                orderDto.setIsCurrent(0);
             }
-            /*
-             * First create the order record
-             */
-            // create the record 
-            order = orderHome.create(entityId, orderDto.getPeriod(),
-                    userAgentId, orderDto.getUserId(),
-                    orderDto.getBillingTypeId(), orderDto.getCurrencyId());
-            order.setActiveUntil(orderDto.getActiveUntil());
-            order.setActiveSince(orderDto.getActiveSince());
-            order.setNotify(orderDto.getNotify());
-            order.setDueDateUnitId(orderDto.getDueDateUnitId());
-            order.setDueDateValue(orderDto.getDueDateValue());
-            order.setDfFm(orderDto.getDfFm());
-            order.setAnticipatePeriods(orderDto.getAnticipatePeriods());
-            order.setOwnInvoice(orderDto.getOwnInvoice());
-            order.setNotes(orderDto.getNotes());
-            order.setNotesInInvoice(orderDto.getNotesInInvoice());
-            if (orderDto.getIsCurrent() != null && orderDto.getIsCurrent().intValue() == 1) {
+            UserDAS user = new UserDAS();
+            if (userAgentId != null) {
+            	orderDto.setBaseUserByCreatedBy(user.find(userAgentId));
+            }
+            
+            // create the record
+            orderDto.setBaseUserByUserId(user.find(orderDto.getBaseUserByUserId().getId()));
+            orderDto.setOrderPeriod(orderPeriodDAS.find(orderDto.getOrderPeriod().getId()));
+            order = orderDas.save(orderDto);
+            // link the lines to the new order
+            for (OrderLineDTO line: order.getLines()) {
+            	line.setPurchaseOrder(order);
+            }
+            
+            if (order.getIsCurrent() != null && order.getIsCurrent().intValue() == 1) {
                 setMainSubscription(userAgentId);
             }
-
-            // get the collection of lines to update the fk of the table
-            newOrderId = order.getId();
-            createLines(orderDto);
-            
             // update any promotion involved
             updatePromotion(entityId, orderDto.getPromoCode());
             
@@ -355,14 +309,13 @@ public class OrderBL extends ResultList
             		EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
 
         } catch (Exception e) {
-            LOG.fatal("Create exception creating order entity bean", e);
-            throw new SessionInternalError(e);
+            throw new SessionInternalError("Create exception creating order entity bean", OrderBL.class, e);
         } 
         
-        return newOrderId;
+        return order.getId();
     }
 
-    public void update(Integer executorId, NewOrderDTO dto) 
+    public void update(Integer executorId, OrderDTO dto) 
             throws FinderException, CreateException {
         // update first the order own fields
         if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
@@ -375,7 +328,7 @@ public class OrderBL extends ResultList
             // update the period of the latest invoice as well. This is needed
             // because it is the way to extend a subscription when the
             // order status is finished. Then the next_invoice_date is null.
-            if (order.getStatusId().equals(CommonConstants.ORDER_STATUS_FINISHED)) {
+            if (order.getOrderStatus().getId() == CommonConstants.ORDER_STATUS_FINISHED) {
             	updateEndOfOrderProcess(dto.getActiveUntil());
             }
             // update it
@@ -387,13 +340,12 @@ public class OrderBL extends ResultList
         }
         setStatus(executorId, dto.getStatusId());
         
-        OrderPeriodEntityLocal period = orderPeriodHome.findByPrimaryKey(
-                dto.getPeriod());
-        if (order.getPeriod().getId().compareTo(period.getId()) != 0) {
-            audit(executorId, order.getPeriod().getId());
-            order.setPeriod(period);
+        if (order.getOrderPeriod().getId() != dto.getOrderPeriod().getId()) {
+            audit(executorId, order.getOrderPeriod().getId());
+            order.setOrderPeriod(dto.getOrderPeriod());
         }
-        order.setBillingTypeId(dto.getBillingTypeId());
+        // this should not be necessary any more, since the order is a pojo...
+        order.setOrderBillingType(dto.getOrderBillingType());
         order.setNotify(dto.getNotify());
         order.setDueDateUnitId(dto.getDueDateUnitId());
         order.setDueDateValue(dto.getDueDateValue());
@@ -410,20 +362,24 @@ public class OrderBL extends ResultList
         }
         // this one needs more to get updated
         updateNextBillableDay(executorId, dto.getNextBillableDay());
-        OrderLineEntityLocal oldLine = null;
+        
+        /*
+         *  now proces the order lines
+         */
+        OrderLineDTO oldLine = null;
     	int nonDeletedLines = 0;
         // Determine if the item of the order changes and, if it is,
         // LOG a subscription change event.
-        LOG.info("Order lines: " + order.getOrderLines().size() + "  --> new Order: "+
-        		dto.getNumberOfLines().intValue());
-        if (dto.getNumberOfLines().intValue() == 1 &&
-        	order.getOrderLines().size() >= 1) {
+        LOG.info("Order lines: " + order.getLines().size() + "  --> new Order: "+
+        		dto.getLines().size());
+        if (dto.getLines().size() == 1 &&
+        	order.getLines().size() >= 1) {
         	// This event needs to LOG the old item id and description, so
         	// it can only happen when updating orders with only one line.
         	
-        	for (Iterator i = order.getOrderLines().iterator(); i.hasNext();) {
+        	for (Iterator i = order.getLines().iterator(); i.hasNext();) {
         		// Check which order is not deleted.
-        		OrderLineEntityLocal temp = (OrderLineEntityLocal)i.next();
+        		OrderLineDTO temp = (OrderLineDTO)i.next();
         		if (temp.getDeleted() == 0) {
         			oldLine = temp;
         			nonDeletedLines++;
@@ -432,17 +388,18 @@ public class OrderBL extends ResultList
         }
         
         // now update this order's lines
-        // first, mark all the lines as deleted
-        for (Iterator it = order.getOrderLines().iterator(); it.hasNext();) {
-            OrderLineEntityLocal line = (OrderLineEntityLocal) it.next();
-            line.setDeleted(new Integer(1));
-        }  
-        createLines(dto);
+        order.getLines().clear();
+        order.getLines().addAll(dto.getLines());
+        order = orderDas.save(order);
+        for (OrderLineDTO line : order.getLines()) {
+            // link them all, just in case there's a new one
+        	line.setPurchaseOrder(order);
+        }
  
         if (oldLine != null && nonDeletedLines == 1) {
-    		OrderLineEntityLocal newLine = null;
-    		for (Iterator i = order.getOrderLines().iterator(); i.hasNext();) {
-    			OrderLineEntityLocal temp = (OrderLineEntityLocal)i.next();
+    		OrderLineDTO newLine = null;
+    		for (Iterator i = order.getLines().iterator(); i.hasNext();) {
+    			OrderLineDTO temp = (OrderLineDTO)i.next();
     			if (temp.getDeleted() == 0) {
     				newLine = temp;
     			}
@@ -457,7 +414,7 @@ public class OrderBL extends ResultList
         	   				null);
                 } else {
                     // it is the mediation process
-                    eLogger.auditBySystem(order.getUser().getEntity().getId(), 
+                    eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
                             Constants.TABLE_ORDER_LINE,
                             newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
                             EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
@@ -474,7 +431,7 @@ public class OrderBL extends ResultList
                     EventLogger.ROW_UPDATED, null,  
                     null, null);
         } else {
-            eLogger.auditBySystem(order.getUser().getEntity().getId(), 
+            eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
                     Constants.TABLE_PUCHASE_ORDER, 
                     order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
@@ -527,40 +484,18 @@ public class OrderBL extends ResultList
         }
     }
     
-    private void createLines(NewOrderDTO orderDto) 
-            throws FinderException, CreateException {
-        Collection orderLines = order.getOrderLines();
-
-        /*
-         * now go over the order lines
-         */
-        for (OrderLineDTOEx line : orderDto.getRawOrderLines()) {
-            // get the type id bean for the relationship
-            OrderLineTypeEntityLocal lineType =
-                orderLineTypeHome.findByPrimaryKey(line.getTypeId());
-
-            // first, create the line record
-            OrderLineEntityLocal newOrderLine =
-                orderLineHome.create(
-                    line.getItemId(),
-                    lineType,
-                    line.getDescription(),
-                    line.getAmount(),
-                    line.getQuantity(),
-                    line.getPrice(),
-                    line.getItemPrice(),
-                    new Integer(0));
-            // then update the order fk column
-            orderLines.add(newOrderLine);
-        }
-    }       
-    
     private void updatePromotion(Integer entityId, String code) 
             throws NamingException {
         if (code != null && code.length() > 0) {
             PromotionBL promotion = new PromotionBL();
             if (promotion.isPresent(entityId, code)) {
-                promotion.getEntity().getUsers().add(order.getUser());
+            	UserBL user;
+				try {
+					user = new UserBL(order.getBaseUserByUserId().getId());
+				} catch (Exception e) {
+					throw new SessionInternalError(e);
+				}				
+                promotion.getEntity().getUsers().add(user.getEntity());
             } else {
                 LOG.error("Can't find promotion entity = " + entityId +
                         " code " + code);
@@ -584,15 +519,9 @@ public class OrderBL extends ResultList
         Logger LOG = Logger.getLogger(OrderBL.class);
 
         try {
+        	OrderLineTypeDAS das = new OrderLineTypeDAS();
+            OrderLineTypeDTO typeBean = das.find(type);
 
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            OrderLineTypeEntityLocalHome orderLineTypeHome =
-                (OrderLineTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    OrderLineTypeEntityLocalHome.class,
-                    OrderLineTypeEntityLocalHome.JNDI_NAME);
-
-            OrderLineTypeEntityLocal typeBean =
-                orderLineTypeHome.findByPrimaryKey(type);
             editable = new Boolean(typeBean.getEditable().intValue() == 1);
         } catch (Exception e) {
             LOG.fatal(
@@ -676,7 +605,7 @@ public class OrderBL extends ResultList
                     EventLogger.ORDER_STATUS_CHANGE, 
                     order.getStatusId(), null, null);
         } else {
-            eLogger.auditBySystem(order.getUser().getEntity().getId(), 
+            eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
                     Constants.TABLE_PUCHASE_ORDER, 
                     order.getId(), 
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
@@ -697,22 +626,19 @@ public class OrderBL extends ResultList
      * in the item. 
      * @param dto
      */
-    public void fillInLines(NewOrderDTO dto, Integer entityId) 
+    public void fillInLines(OrderDTO dto, Integer entityId) 
             throws NamingException, FinderException, SessionInternalError {
         /*
          * now go over the order lines
          */
-        Hashtable lines = dto.getOrderLinesMap();
-        Collection values = lines.values();
         ItemBL itemBl = new ItemBL();
-        for (Iterator i = values.iterator(); i.hasNext();) {
-            OrderLineDTOEx line = (OrderLineDTOEx) i.next();
+        for (OrderLineDTO line: dto.getLines()) {
             itemBl.set(line.getItemId());
             Integer languageId = itemBl.getEntity().getEntity().
                     getLanguageId();
             // this is needed for the basic pluggable task to work
-            line.setItem(itemBl.getDTO(languageId, dto.getUserId(), 
-                    entityId, dto.getCurrencyId()));
+            ItemDAS itemDas = new ItemDAS();
+            line.setItem(itemDas.find(line.getItemId()));
             if (line.getPrice() == null) {
                 line.setPrice(itemBl.getPrice(dto.getUserId(), 
                         dto.getCurrencyId(), entityId));
@@ -760,7 +686,7 @@ public class OrderBL extends ResultList
     public static boolean validate(OrderLineWS dto) {
         boolean retValue = true;
         
-        if (dto.getTypeId() == null || dto.getAmount() == null || 
+        if (dto.getTypeId() == null ||  
                 dto.getDescription() == null || dto.getQuantity() == null) {
             retValue = false;
         }
@@ -873,13 +799,11 @@ public class OrderBL extends ResultList
                 }
 
 		    	set(new Integer(orderId));
-		    	UserBL user = new UserBL(order.getUser());
+		    	UserBL user = new UserBL(order.getBaseUserByUserId().getId());
 		    	try {
 		    		NotificationBL notification = new NotificationBL();
                     ContactBL contact = new ContactBL();
                     contact.set(user.getEntity().getUserId());
-                    OrderDTOEx dto = DTOFactory.getOrderDTOEx(
-                            new Integer(orderId), new Integer(1));
 		    		MessageDTO message = notification.getOrderNotification(
 		    				ent.getId(), 
                             new Integer(currentStep), 
@@ -887,7 +811,7 @@ public class OrderBL extends ResultList
 							order.getActiveSince(),
 							order.getActiveUntil(),
                             user.getEntity().getUserId(),
-                            dto.getTotal(), order.getCurrencyId());
+                            order.getTotal().floatValue(), order.getCurrencyId());
                     // update the order record only if the message is sent 
                     if (notificationSess.notify(user.getEntity(), message).
                             booleanValue()) {
@@ -920,16 +844,16 @@ public class OrderBL extends ResultList
         TimePeriod retValue = new TimePeriod();
         if (order.getDueDateValue() == null) {
             // let's go see the customer
-            if (order.getUser().getCustomer().getDueDateValue() == null) {
+        	
+            if (order.getBaseUserByUserId().getCustomer().getDueDateValue() == null) {
                 // still unset, let's go to the entity
                 ConfigurationBL config = new ConfigurationBL(
-                        order.getUser().getEntity().getId());
+                        order.getBaseUserByUserId().getCompany().getId());
                 retValue.setUnitId(config.getEntity().getDueDateUnitId());
                 retValue.setValue(config.getEntity().getDueDateValue());
             } else {
-                retValue.setUnitId(order.getUser().getCustomer().
-                        getDueDateUnitId());
-                retValue.setValue(order.getUser().getCustomer().getDueDateValue());
+                retValue.setUnitId(order.getBaseUserByUserId().getCustomer().getDueDateUnitId());
+                retValue.setValue(order.getBaseUserByUserId().getCustomer().getDueDateValue());
             }
         } else {
             retValue.setUnitId(order.getDueDateUnitId());
@@ -969,7 +893,7 @@ public class OrderBL extends ResultList
     }
     
     public Date getInvoicingDate() {
-        Date retValue;;
+        Date retValue;
         if (order.getNextBillableDay() != null) {
             retValue = order.getNextBillableDay();
         } else {
@@ -1030,91 +954,117 @@ public class OrderBL extends ResultList
         } 
     }
     
-    public Collection<OrderEntityLocal> getActiveRecurringByUser(Integer userId) 
+    public Collection<OrderDTO> getActiveRecurringByUser(Integer userId) 
             throws FinderException {
-        return orderHome.findByUserSubscriptions(userId);
+        return orderDas.findByUserSubscriptions(userId);
     }
 
-    public OrderPeriodDTOEx[] getPeriods(Integer entityId, Integer languageId) {
-        OrderPeriodDTOEx retValue[] = null;
-        try {
-            Collection periods = orderPeriodHome.findByEntity(entityId);
-            retValue = new OrderPeriodDTOEx[periods.size()];
-            int f = 0;
-            for (Iterator it = periods.iterator(); it.hasNext(); f++) {
-                OrderPeriodEntityLocal period = 
-                    (OrderPeriodEntityLocal) it.next();
-                retValue[f] = new OrderPeriodDTOEx();
-                retValue[f].setId(period.getId());
-                retValue[f].setEntityId(period.getEntityId());
-                retValue[f].setUnitId(period.getUnitId());
-                retValue[f].setValue(period.getValue());
-                retValue[f].setDescription(period.getDescription(languageId));
-            }
-        } catch (FinderException e) {
-            retValue = new OrderPeriodDTOEx[0];
-        }
-        
+    public OrderPeriodDTO[] getPeriods(Integer entityId, Integer languageId) {
+        OrderPeriodDTO retValue[] = null;
+    	CompanyDAS companyDas = new CompanyDAS();
+    	Company company = companyDas.find(entityId);
+    	
+		Set<OrderPeriodDTO> periods = company.getOrderPeriods();
+		if (periods == null || periods.size() == 0) {
+			return new OrderPeriodDTO[0];
+		}
+		
+		retValue = new OrderPeriodDTO[periods.size()];
+		int i = 0;
+		for (OrderPeriodDTO period: periods) {
+			period.setDescription(period.getDescription(languageId));
+			retValue[i++] = period;
+		}
         return retValue;
     }
     
-    public void updatePeriods(Integer languageId, OrderPeriodDTOEx periods[]) 
-            throws FinderException {
-        for (int f = 0; f < periods.length; f++) {
-            OrderPeriodEntityLocal period = orderPeriodHome.findByPrimaryKey(
-                    periods[f].getId());
-            period.setUnitId(periods[f].getUnitId());
-            period.setValue(periods[f].getValue());
-            period.setDescription(periods[f].getDescription(), languageId);
+    public void updatePeriods(Integer languageId, OrderPeriodDTO periods[]) {
+        for (OrderPeriodDTO period : periods) {
+        	orderPeriodDAS.save(period).setDescription(
+        			period.getDescription(), languageId);
+        	period.getCompany().getOrderPeriods().add(period);
         }
     }
     
-    public void addPeriod(Integer entitytId, Integer languageId) 
+    public void addPeriod(Integer entityId, Integer languageId) 
             throws CreateException {
-        orderPeriodHome.create(entitytId, new Integer(1), new Integer(1), " ",
-                languageId);
+    	OrderPeriodDTO newPeriod = new OrderPeriodDTO();
+    	CompanyDAS companyDas = new CompanyDAS();
+    	newPeriod.setCompany(companyDas.find(entityId));
+    	PeriodUnitDAS periodDas = new PeriodUnitDAS();
+    	newPeriod.setPeriodUnit(periodDas.find(1));
+    	newPeriod.setValue(1);
+    	newPeriod = orderPeriodDAS.save(newPeriod);
+    	newPeriod.setDescription(" ", languageId);
     }
     
     public boolean deletePeriod(Integer periodId) 
             throws FinderException, RemoveException{
-        OrderPeriodEntityLocal period = orderPeriodHome.findByPrimaryKey(
+        OrderPeriodDTO period = orderPeriodDAS.find(
                 periodId);
-        if (period.getOrders().size() > 0) {
+        if (period.getPurchaseOrders().size() > 0) {
             return false;
         } else {
-            period.remove();
+            orderPeriodDAS.delete(period);
             return true;
         }
     }
     
     public OrderLineWS getOrderLineWS(Integer id) 
             throws FinderException {
-        OrderLineEntityLocal line = orderLineHome.findByPrimaryKey(id);
-        OrderLineWS retValue = new OrderLineWS(line.getId(),line.getItemId(), 
-                line.getDescription(), line.getAmount(), line.getQuantity(), 
-                line.getPrice(), line.getItemPrice(), line.getCreateDate(), 
-                line.getDeleted(), line.getType().getId(), 
-                new Boolean(line.getEditable()));
+        OrderLineDTO line = orderLineDAS.findNow(id);
+        if (line == null) {
+        	LOG.warn("Order line " + id + " not found");
+        	return null;
+        }
+        OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
+        		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), line.getCreateDatetime(),
+        		line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(), 
+        		line.getPurchaseOrder().getId(), null, line.getVersionNum());
         return retValue;
     }
     
-    public OrderLineEntityLocal getOrderLine(Integer id)
-            throws FinderException {
-        return orderLineHome.findByPrimaryKey(id);
+    public OrderLineDTO getOrderLine(Integer id) {
+        OrderLineDTO line = orderLineDAS.findNow(id);
+        if (line == null) {
+        	throw new SessionInternalError("Order line " + id + " not found");
+        }
+        return line;
+    }
+    
+    public OrderLineDTO getOrderLine(OrderLineWS ws) {
+    	OrderLineDTO dto = new OrderLineDTO();
+    	dto.setId(ws.getId());
+    	dto.setAmount(ws.getAmount());
+    	dto.setCreateDatetime(ws.getCreateDatetime());
+    	dto.setDeleted(ws.getDeleted());
+    	dto.setDescription(ws.getDescription());
+    	dto.setEditable(ws.getEditable());
+    	dto.setItem(new ItemDAS().find(ws.getItemId()));
+    	dto.setItemDto(ws.getItemDto());
+    	dto.setItemId(ws.getItemId());
+    	dto.setItemPrice(ws.getItemPrice());
+    	dto.setOrderLineType(new OrderLineTypeDAS().find(ws.getTypeId()));
+    	dto.setPrice(ws.getPrice());
+    	dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
+    	dto.setQuantity(ws.getQuantity());
+    	dto.setVersionNum(ws.getVersionNum());
+    	return dto;
     }
     
     public void updateOrderLine(OrderLineWS dto) 
             throws FinderException, RemoveException {
-        OrderLineEntityLocal line = orderLineHome.findByPrimaryKey(dto.getId());
+        OrderLineDTO line = getOrderLine(dto.getId());
         if (dto.getQuantity() != null && dto.getQuantity().intValue() == 0) {
             // deletes the order line if the quantity is 0
-            line.remove();
+        	orderLineDAS.delete(line);
             
         } else {
             line.setAmount(dto.getAmount());
             line.setDeleted(dto.getDeleted());
             line.setDescription(dto.getDescription());
-            line.setItemId(dto.getItemId());
+            ItemDAS item = new ItemDAS();
+            line.setItem(item.find(dto.getItemId()));
             line.setItemPrice(dto.getItemPrice());
             line.setPrice(dto.getPrice());
             line.setQuantity(dto.getQuantity());
@@ -1122,11 +1072,9 @@ public class OrderBL extends ResultList
     }
     
     public void updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId, 
-            Vector<OrderLineDTOEx> lines, Vector<Record> records, Date eventDate) {
+            Vector<OrderLineDTO> lines, Vector<Record> records, Date eventDate) {
         
         try {
-            NewOrderDTO currentOrder;
-            setUserCurrent(userId);
             UserBL user = new UserBL(userId);
             Integer language = user.getEntity().getLanguageIdField();
             CurrentOrder co = new CurrentOrder(userId, eventDate);
@@ -1139,31 +1087,21 @@ public class OrderBL extends ResultList
                         "subscription order:" + currentOrderId);
             }
             // update an existing order
-            set(currentOrderId);
-            currentOrder = new NewOrderDTO(getDTO(), order);
-            setDTO(currentOrder);
-            for (OrderLineDTOEx line: lines) {
+            order = orderDas.findNow(currentOrderId);
+            LOG.debug("current order= - order=" + order);
+            for (OrderLineDTO line: lines) {
                 addItem(line.getItemId(), line.getQuantity(), language, userId, 
                         entityId, currencyId, records);
             }
-            // execute the line total calculation tasks
-            recalculate(entityId);
-            // update the DB record
-            update(executorId, currentOrder);
-        } catch (FinderException e) {
+            
+            //link the new lines to this order
+            for (OrderLineDTO line: order.getLines()) {
+            	line.setPurchaseOrder(order);
+            }
+            //order = orderDas.save(order);
+        } catch (Exception e) {
             throw new SessionInternalError("Updating current order", OrderBL.class, e);
-        } catch (CreateException e) {
-            throw new SessionInternalError("Updating current order", OrderBL.class, e);
-        }
-    }
-    
-    /**
-     * @param userId
-     * @param eventDate
-     * @return
-     */
-    private Integer getCurrent(Integer userId, Date eventDate) {
-        return null;
+        } 
     }
     
     /**
@@ -1186,11 +1124,11 @@ public class OrderBL extends ResultList
             // if there was an old one
             if (oldCurrent != null) {
                 // update so it does not have the 'is subscription' flag on
-                try {
-                    OrderEntityLocal old = orderHome.findByPrimaryKey(oldCurrent);
-                    old.setIsCurrent(new Integer(0));
-                } catch (FinderException e) {
-                    LOG.error("Can not find order to set 'is_current' off " + oldCurrent);
+                OrderDTO old = orderDas.findNow(oldCurrent);
+                if (old == null) {
+                	LOG.error("Can not find order to set 'is_current' off " + oldCurrent);	
+                } else {
+                	old.setIsCurrent(new Integer(0));
                 }
             }
         }
@@ -1225,4 +1163,52 @@ public class OrderBL extends ResultList
         return cachedResults;
     }
 
+    public void addRelationships(Integer userId, Integer periodId, Integer currencyId) {
+    	if (periodId != null) {
+	        OrderPeriodDTO period = orderPeriodDAS.find(periodId);
+	        order.setOrderPeriod(period);
+    	}
+    	if (userId != null) {
+    		UserDAS das = new UserDAS();
+    		order.setBaseUserByUserId(das.find(userId));
+    	}
+    	if (currencyId != null) {
+    		CurrencyDAS das = new CurrencyDAS();
+    		order.setCurrency(das.find(currencyId));
+    	}
+    }
+    
+    public OrderDTO getDTO(OrderWS other) {
+    	OrderDTO retValue = new OrderDTO();
+    	retValue.setId(other.getId());
+    	
+    	retValue.setBaseUserByUserId(new UserDAS().find(other.getUserId()));
+    	retValue.setBaseUserByCreatedBy(new UserDAS().find(other.getCreatedBy()));
+    	retValue.setCurrency(new CurrencyDAS().find(other.getCurrencyId()));
+    	retValue.setOrderStatus(new OrderStatusDAS().find(other.getStatusId())); 
+    	retValue.setOrderPeriod(new OrderPeriodDAS().find(other.getPeriod()));
+    	retValue.setOrderBillingType(new OrderBillingTypeDAS().find(other.getBillingTypeId()));
+    	retValue.setActiveSince(other.getActiveSince());
+    	retValue.setActiveUntil(other.getActiveUntil());
+    	retValue.setCreateDate(other.getCreateDate());
+    	retValue.setNextBillableDay(other.getNextBillableDay());
+    	retValue.setDeleted(other.getDeleted());
+    	retValue.setNotify(other.getNotify());
+    	retValue.setLastNotified(other.getLastNotified());
+    	retValue.setNotificationStep(other.getNotificationStep());
+    	retValue.setDueDateUnitId(other.getDueDateUnitId());
+    	retValue.setDueDateValue(other.getDueDateValue());
+    	retValue.setDfFm(other.getDfFm());
+    	retValue.setAnticipatePeriods(other.getAnticipatePeriods());
+    	retValue.setOwnInvoice(other.getOwnInvoice());
+    	retValue.setNotes(other.getNotes());
+    	retValue.setNotesInInvoice(other.getNotesInInvoice());
+    	for (OrderLineWS line: other.getOrderLines()) {
+    		retValue.getLines().add(getOrderLine(line));
+    	}
+    	retValue.setIsCurrent(other.getIsCurrent());
+    	retValue.setVersionNum(other.getVersionNum());
+    	
+    	return retValue;
+    }
 }

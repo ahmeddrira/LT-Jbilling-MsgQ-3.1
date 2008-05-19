@@ -727,6 +727,7 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column name="description" size="1000" type="VARCHAR"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
         <index name="ix_order_line_order_id">
         	<index-column name="order_id"/>
         </index>
@@ -749,6 +750,7 @@
         <column name="entity_id" type="INTEGER"/>
         <column name="value" type="INTEGER"/>
         <column name="unit_id" type="INTEGER"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
@@ -780,9 +782,6 @@
         <index name="ix_order_process_in">
         	<index-column name="invoice_id"/>
         </index>
-        <foreign-key foreignTable="billing_process">
-            <reference foreign="id" local="billing_process_id"/>
-        </foreign-key>
         <foreign-key foreignTable="purchase_order">
             <reference foreign="id" local="order_id"/>
         </foreign-key>
@@ -1126,6 +1125,8 @@
         <column name="notes" size="200" type="VARCHAR"/>
         <column name="notes_in_invoice" type="SMALLINT"/>
         <column name="is_current" type="SMALLINT"/>
+        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        
         <index name="purchase_order_i_user">
         	<index-column name="user_id"/>
         	<index-column name="deleted"/>

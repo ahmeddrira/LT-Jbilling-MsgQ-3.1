@@ -31,7 +31,7 @@ import javax.ejb.FinderException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -44,7 +44,7 @@ public class OrderFilterAnticipatedTask extends BasicOrderFilterTask {
     
     private static final Logger LOG = Logger.getLogger(OrderFilterAnticipatedTask.class);
     
-    public boolean isApplicable(OrderEntityLocal order, 
+    public boolean isApplicable(OrderDTO order, 
             BillingProcessEntityLocal process) throws TaskException {
         // by default, keep it in null 
         billingUntil = null;

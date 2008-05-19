@@ -31,6 +31,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+
 @Entity
 @Table(name="payment_invoice"
     , uniqueConstraints = @UniqueConstraint(columnNames="id") 

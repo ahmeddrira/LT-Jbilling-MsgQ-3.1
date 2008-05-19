@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.util.db;
 
 
 import javax.persistence.AttributeOverride;
@@ -25,28 +25,28 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="international_description")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class InternationalDescription  implements java.io.Serializable {
 
 
      private InternationalDescriptionId id;
-     private JbillingTable jbillingTable;
-     private Language language;
      private String content;
+     // OPTLOCK: it makes no sense in this entity. The optimistic locking id done at the
+     // parent level (the entity that delegates the column to this one).
+     // OR, the content is simple readonly
 
     public InternationalDescription() {
     }
 
-    public InternationalDescription(InternationalDescriptionId id, JbillingTable jbillingTable, Language language, String content) {
+    public InternationalDescription(InternationalDescriptionId id, String content) {
        this.id = id;
-       this.jbillingTable = jbillingTable;
-       this.language = language;
        this.content = content;
     }
    
@@ -64,24 +64,6 @@ public class InternationalDescription  implements java.io.Serializable {
     public void setId(InternationalDescriptionId id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="table_id", nullable=false, insertable=false, updatable=false)
-    public JbillingTable getJbillingTable() {
-        return this.jbillingTable;
-    }
-    
-    public void setJbillingTable(JbillingTable jbillingTable) {
-        this.jbillingTable = jbillingTable;
-    }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="language_id", nullable=false, insertable=false, updatable=false)
-    public Language getLanguage() {
-        return this.language;
-    }
-    
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
     
     @Column(name="content", nullable=false, length=5000)
     public String getContent() {
@@ -91,10 +73,6 @@ public class InternationalDescription  implements java.io.Serializable {
     public void setContent(String content) {
         this.content = content;
     }
-
-
-
-
 }
 
 

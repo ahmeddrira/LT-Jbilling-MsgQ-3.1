@@ -25,27 +25,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 import org.drools.FactHandle;
 import org.drools.RuleBase;
-import org.drools.StatelessSession;
 
 import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.BasicLineTotalTask;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.DTOFactory;
 
@@ -57,7 +51,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
     private Vector<Record> records;
     public void addItem(Integer itemID, Integer quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            NewOrderDTO order, Vector<Record> records) throws TaskException {
+            OrderDTO order, Vector<Record> records) throws TaskException {
         super.addItem(itemID, quantity, language, userId, entityId, currencyId, 
                 order, records);
         this.records = records;
@@ -65,7 +59,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         processRules(order);
     }
 
-    private void processRules(NewOrderDTO newOrder) throws TaskException {
+    private void processRules(OrderDTO newOrder) throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules
         RuleBase ruleBase;
@@ -77,14 +71,16 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         session = ruleBase.newStatefulSession();
         Vector<Object> rulesMemoryContext = new Vector<Object>();
         rulesMemoryContext.add(helperOrder);
-        for (OrderLineDTOEx line: newOrder.getOrderLinesMap().values()) {
+        for (OrderLineDTO line: newOrder.getLines()) {
             if (line.getItem() != null) {
-            	rulesMemoryContext.add(line.getItem());
+            	ItemBL item = new ItemBL(line.getItemId());
+            	rulesMemoryContext.add(item.getDTO(helperOrder.getLanguage(), helperOrder.getUserId(), 
+            			helperOrder.getEntityId(), helperOrder.getCurrencyId()));
             }
             rulesMemoryContext.add(line);
         }
         try {
-            Integer userId = newOrder.getUserId();
+            Integer userId = newOrder.getBaseUserByUserId().getId();
             UserDTOEx user = DTOFactory.getUserDTOEx(userId); 
             rulesMemoryContext.add(user);
             ContactBL contact = new ContactBL();
@@ -93,8 +89,8 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             
             // Add the subscriptions
             OrderBL order = new OrderBL();
-            for(OrderEntityLocal myOrder: order.getActiveRecurringByUser(userId)) {
-                for (OrderLineEntityLocal myLine: (Collection<OrderLineEntityLocal>)myOrder.getOrderLines()) {
+            for(OrderDTO myOrder: order.getActiveRecurringByUser(userId)) {
+                for (OrderLineDTO myLine: (Collection<OrderLineDTO>)myOrder.getLines()) {
                     rulesMemoryContext.add(new Subscription(myLine));
                 }
             }
@@ -108,19 +104,17 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         executeStatefulRules(session, rulesMemoryContext);
     }
     
+    /*
     private void executeStatelessRules(StatelessSession session, Vector context) {
         session.executeWithResults(context);
     }
+    */
     
-    public void doProcessing(NewOrderDTO order) throws TaskException {
-        try {
-            UserBL user = new UserBL(order.getUserId());
-            helperOrder = new OrderManager(order, user.getEntity().getLanguageIdField(), 
-                    user.getEntity().getUserId(), user.getEntity().getEntity().getId(), 
-                    user.getCurrencyId());
-        } catch (FinderException e) {
-            throw new TaskException(e);
-        }
+    public void doProcessing(OrderDTO order) throws TaskException {
+        helperOrder = new OrderManager(order, order.getBaseUserByUserId().getLanguage().getId(), 
+        		order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity().getId(), 
+        		order.getBaseUserByUserId().getCurrency().getId());
+
         processRules(order);
         
         // cant extend two classes
@@ -129,13 +123,13 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
     }
     
     public class OrderManager {
-        private NewOrderDTO order = null;
+        private OrderDTO order = null;
         private Integer language = null;
         private Integer userId = null;
         private Integer entityId = null;
         private Integer currencyId = null;
         
-        public OrderManager(NewOrderDTO order, Integer language,
+        public OrderManager(OrderDTO order, Integer language,
                 Integer userId, Integer entityId, Integer currencyId) {
             this.order = order;
             this.language = language;
@@ -144,26 +138,26 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             this.currencyId = currencyId;
         }
 
-        public NewOrderDTO getOrder() {
+        public OrderDTO getOrder() {
             return order;
         }
 
-        public void setOrder(NewOrderDTO order) {
+        public void setOrder(OrderDTO order) {
             this.order = order;
         }
         
-        public OrderLineDTOEx addItem(Integer itemID, Integer quantity) 
+        public OrderLineDTO addItem(Integer itemID, Integer quantity) 
                 throws TaskException {
         	LOG.debug("Adding item " + itemID + " q: " + quantity);
         			
             BasicItemManager helper = new BasicItemManager();
-            OrderLineDTOEx oldLine = order.getOrderLine(itemID);
+            OrderLineDTO oldLine = order.getLine(itemID);
             FactHandle h = null;
             if (oldLine != null) { 
             	h = handlers.get(oldLine);
             }
             helper.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
-            OrderLineDTOEx retValue =  helper.getLatestLine();
+            OrderLineDTO retValue =  helper.getLatestLine();
             if (h != null) {
             	LOG.debug("updating");
             	session.update(h, retValue);
@@ -178,7 +172,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         
         
         /*
-        public OrderLineDTOEx addItem(OrderLineDTOEx line) throws TaskException {
+        public OrderLineDTO addItem(OrderLineDTO line) throws TaskException {
             BasicItemManager helper = new BasicItemManager();
             if (line.getItemId() == null) {
                 throw new TaskException("The item id is mandatory to add an item to an order");
@@ -189,13 +183,13 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         }
         */
         
-        public OrderLineDTOEx addItem(Integer itemId) throws TaskException {
+        public OrderLineDTO addItem(Integer itemId) throws TaskException {
             return addItem(itemId, 1);
         }
         
         public void removeItem(Integer itemId) {
-            removeObject(order.getOrderLine(itemId));
-            order.removeOrderLine(itemId);
+            removeObject(order.getLine(itemId));
+            order.removeLine(itemId);
         }
         
         /**
@@ -206,9 +200,9 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
          * @return
          * @throws TaskException
          */
-        public OrderLineDTOEx percentageIncrease(Integer itemId, Integer itemBase) 
+        public OrderLineDTO percentageIncrease(Integer itemId, Integer itemBase) 
                 throws TaskException {
-            OrderLineDTOEx updateLine = order.getOrderLine(itemId);
+            OrderLineDTO updateLine = order.getLine(itemId);
             if (updateLine == null) {
                 // no luck, create a new one
                 updateLine = addItem(itemId);
@@ -227,6 +221,22 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             
             return updateLine;
         }
+
+		public Integer getCurrencyId() {
+			return currencyId;
+		}
+
+		public Integer getEntityId() {
+			return entityId;
+		}
+
+		public Integer getLanguage() {
+			return language;
+		}
+
+		public Integer getUserId() {
+			return userId;
+		}
     }
     
     public static class Subscription {
@@ -236,10 +246,10 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         private final Date activeUntil;
         private final Integer quantity;
         
-        protected Subscription(OrderLineEntityLocal line) {
-            periodId = line.getOrder().getPeriod().getId();
-            activeSince = line.getOrder().getActiveSince();
-            activeUntil = line.getOrder().getActiveUntil();
+        protected Subscription(OrderLineDTO line) {
+            periodId = line.getPurchaseOrder().getOrderPeriod().getId();
+            activeSince = line.getPurchaseOrder().getActiveSince();
+            activeUntil = line.getPurchaseOrder().getActiveUntil();
             itemId = line.getItemId();
             quantity = line.getQuantity();
         }

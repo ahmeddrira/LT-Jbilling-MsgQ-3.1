@@ -42,7 +42,7 @@ public abstract class WSMethodBaseSecurityProxy extends MethodBaseSecurityProxy 
         String user = context.getCallerPrincipal().getName();
         UserBL bl = new UserBL();
         if (callerId == null || !bl.validateUserBelongs(user, callerId)) {
-            throw new SecurityException("Unauthorize access to user " + 
+            throw new SecurityException("Unauthorize access by" + user + " to user " + 
                     callerId);
         }
     }

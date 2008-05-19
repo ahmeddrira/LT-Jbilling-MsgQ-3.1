@@ -32,18 +32,22 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.BaseUser;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class CurrentOrder {
     private final Date eventDate;
     private final Integer userId;
     private final UserBL user;
     private static final Logger LOG = Logger.getLogger(CurrentOrder.class);
-    private OrderBL order;
+    private OrderBL order = null;
     private final EventLogger eLogger = EventLogger.getInstance();
 
     
@@ -73,8 +77,7 @@ public class CurrentOrder {
         }
         try {
             order = new OrderBL(subscriptionId);
-            UserBL user = new UserBL(order.getEntity().getUser());
-            entityId = user.getEntityId(null);
+            entityId = order.getEntity().getBaseUserByUserId().getCompany().getId();
             currencyId = order.getEntity().getCurrencyId();
         } catch (Exception e) {
             throw new SessionInternalError("Error looking for main subscription order", 
@@ -154,8 +157,8 @@ public class CurrentOrder {
         Date actualEventDate = eventDate;
         cal.setTime(actualEventDate);
         for(int f = 0; f < futurePeriods; f++) {
-            cal.add(MapPeriodToCalendar.map(order.getEntity().getPeriod().getUnitId()), 
-                    order.getEntity().getPeriod().getValue());
+            cal.add(MapPeriodToCalendar.map(order.getEntity().getOrderPeriod().getPeriodUnit().getId()), 
+                    order.getEntity().getOrderPeriod().getValue());
         }
         actualEventDate = cal.getTime();
                 
@@ -172,8 +175,8 @@ public class CurrentOrder {
         cal.setTime(startingTime);
         while (cal.getTime().before(actualEventDate)) {
             newOrderDate = cal.getTime();
-            cal.add(MapPeriodToCalendar.map(order.getEntity().getPeriod().getUnitId()), 
-                    order.getEntity().getPeriod().getValue());
+            cal.add(MapPeriodToCalendar.map(order.getEntity().getOrderPeriod().getPeriodUnit().getId()), 
+                    order.getEntity().getOrderPeriod().getValue());
         }
         
         // is the found date beyond the time frame of the main order?
@@ -189,8 +192,8 @@ public class CurrentOrder {
     }
     
     public Integer create(Date activeSince, Integer currencyId, Integer entityId) {
-        NewOrderDTO currentOrder = new NewOrderDTO();
-        currentOrder.setCurrencyId(currencyId);
+        OrderDTO currentOrder = new OrderDTO();
+        currentOrder.setCurrency(new CurrencyDTO(currencyId));
         // notes
         try {
             EntityBL entity = new EntityBL(entityId);
@@ -202,8 +205,6 @@ public class CurrentOrder {
                     CurrentOrder.class, e);
         } 
 
-        currentOrder.setPeriod(Constants.ORDER_PERIOD_ONCE);
-        currentOrder.setUserId(userId);
         currentOrder.setActiveSince(activeSince);
         
         // create the order
@@ -215,7 +216,8 @@ public class CurrentOrder {
                         CurrentOrder.class, e);
             }
         }
-        order.setDTO(currentOrder);
+        order.set(currentOrder);
+        order.addRelationships(userId, Constants.ORDER_PERIOD_ONCE, currencyId);
         return order.create(entityId, null, currentOrder);
     }
 }

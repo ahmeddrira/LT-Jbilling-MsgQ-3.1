@@ -1,5 +1,5 @@
 #created on: 24-Sep-2007
-package ItemsRules
+package ItemsRules3
 
 #imports
 import com.sapienter.jbilling.server.item.ItemDTOEx
@@ -13,6 +13,6 @@ rule "Lemon and Coffee discount"
 	    exists ItemDTOEx(id == "2") # Lemonade
 	    exists ItemDTOEx(id == "3") # Coffee
 	then
-	    order.addItem(14).getItem(); # 10% discount
+	    order.addItem(14); # 10% discount
 end
 

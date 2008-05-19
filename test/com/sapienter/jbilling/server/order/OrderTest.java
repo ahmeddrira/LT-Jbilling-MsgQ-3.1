@@ -30,6 +30,7 @@ import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.entity.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessTest;
 
 public class OrderTest extends TestCase {
@@ -68,7 +69,7 @@ public class OrderTest extends TestCase {
                     OrderSessionHome.class,
                     OrderSessionHome.JNDI_NAME);
             OrderSession remoteSession = customerHome.create();
-            OrderDTOEx order = remoteSession.getOrderEx(new Integer(11),
+            OrderDTO order = remoteSession.getOrderEx(new Integer(11),
                     new Integer(1));
             
             assertNotNull(order);

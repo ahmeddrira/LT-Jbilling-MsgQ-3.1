@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.process.db;
 
 
 import java.util.Date;
@@ -35,15 +35,19 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.util.db.generated.PaperInvoiceBatch;
+import com.sapienter.jbilling.server.util.db.generated.ProcessRun;
 
 @Entity
 @Table(name="billing_process")
-public class BillingProcess  implements java.io.Serializable {
+public class BillingProcessDTO  implements java.io.Serializable {
 
 
      private int id;
-     private PeriodUnit periodUnit;
+     private PeriodUnitDTO periodUnitDTO;
      private PaperInvoiceBatch paperInvoiceBatch;
      private Company entity;
      private Date billingDate;
@@ -54,22 +58,22 @@ public class BillingProcess  implements java.io.Serializable {
      private Set<Invoice> invoices = new HashSet<Invoice>(0);
      private Set<ProcessRun> processRuns = new HashSet<ProcessRun>(0);
 
-    public BillingProcess() {
+    public BillingProcessDTO() {
     }
 
 	
-    public BillingProcess(int id, PeriodUnit periodUnit, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo) {
+    public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo) {
         this.id = id;
-        this.periodUnit = periodUnit;
+        this.periodUnitDTO = periodUnitDTO;
         this.entity = entity;
         this.billingDate = billingDate;
         this.periodValue = periodValue;
         this.isReview = isReview;
         this.retriesToDo = retriesToDo;
     }
-    public BillingProcess(int id, PeriodUnit periodUnit, PaperInvoiceBatch paperInvoiceBatch, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo, Set<OrderProcessDTO> orderProcesses, Set<Invoice> invoices, Set<ProcessRun> processRuns) {
+    public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO, PaperInvoiceBatch paperInvoiceBatch, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo, Set<OrderProcessDTO> orderProcesses, Set<Invoice> invoices, Set<ProcessRun> processRuns) {
        this.id = id;
-       this.periodUnit = periodUnit;
+       this.periodUnitDTO = periodUnitDTO;
        this.paperInvoiceBatch = paperInvoiceBatch;
        this.entity = entity;
        this.billingDate = billingDate;
@@ -93,12 +97,12 @@ public class BillingProcess  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="period_unit_id", nullable=false)
-    public PeriodUnit getPeriodUnit() {
-        return this.periodUnit;
+    public PeriodUnitDTO getPeriodUnit() {
+        return this.periodUnitDTO;
     }
     
-    public void setPeriodUnit(PeriodUnit periodUnit) {
-        this.periodUnit = periodUnit;
+    public void setPeriodUnit(PeriodUnitDTO periodUnitDTO) {
+        this.periodUnitDTO = periodUnitDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="paper_invoice_batch_id")

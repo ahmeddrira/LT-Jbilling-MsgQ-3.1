@@ -41,7 +41,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.Resources;
 
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 
 /**
  * A great pain to make this work. Finally, the solution was the scope
@@ -71,7 +71,7 @@ public class NewOrderDTOForm extends ActionForm {
     // called by the html:text tag, to show (an apparently also set ??)
     // the values of each line
     public Object getOrderLine(String itemId) {
-        return (OrderLineDTOEx) orderLines.get(Integer.valueOf(itemId));
+        return (OrderLineDTO) orderLines.get(Integer.valueOf(itemId));
     }
 
     // apparently never called
@@ -109,7 +109,7 @@ public class NewOrderDTOForm extends ActionForm {
         try {
             int lineNumber = 1;
             for (Iterator i = lines.iterator(); i.hasNext(); lineNumber++) {
-                OrderLineDTOEx line = (OrderLineDTOEx) i.next();
+                OrderLineDTO line = (OrderLineDTO) i.next();
                 // only editable lines get validated
                 if (line.getEditable().booleanValue()) { 
                     validator = Resources.initValidator("orderReviewForm",

@@ -31,7 +31,7 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -56,7 +56,7 @@ public class RulesMediationTask extends PluggableTask implements
         return manager.getEventDate();
     }
     
-    public Vector<OrderLineDTOEx> process(Vector<Record> records, String configurationName) 
+    public Vector<OrderLineDTO> process(Vector<Record> records, String configurationName) 
             throws TaskException {
         RuleBase ruleBase;
         try {
@@ -85,7 +85,7 @@ public class RulesMediationTask extends PluggableTask implements
     }
     
     public class ProcessManager {
-        private Vector <OrderLineDTOEx> lines = null;
+        private Vector <OrderLineDTO> lines = null;
         private Integer userId = null;
         private Integer currencyId = null;
         private final String configurationName;
@@ -93,7 +93,7 @@ public class RulesMediationTask extends PluggableTask implements
         
         public ProcessManager(String configurationName) {
             this.configurationName = configurationName;
-            lines = new Vector<OrderLineDTOEx>();
+            lines = new Vector<OrderLineDTO>();
         }
         
         public String getConfigurationName() {
@@ -104,12 +104,12 @@ public class RulesMediationTask extends PluggableTask implements
             return records.size();
         }
         
-        public Vector<OrderLineDTOEx> getLines() {
+        public Vector<OrderLineDTO> getLines() {
             return lines;
         }
         
         public void addLine(Integer itemId, Integer quantity) {
-            OrderLineDTOEx line =  new OrderLineDTOEx();
+            OrderLineDTO line =  new OrderLineDTO();
             line.setItemId(itemId);
             line.setQuantity(quantity);
             lines.add(line);

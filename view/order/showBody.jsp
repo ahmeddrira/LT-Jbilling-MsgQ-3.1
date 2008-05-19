@@ -400,7 +400,7 @@
 		<logic:iterate name='<%=Constants.SESSION_ORDER_DTO%>' 
 						   scope="session"
 						   id="line"
-						   property="orderLines"
+						   property="lines"
 						   indexId="index">
 			<c:choose>
 				<c:when test="${flag == 1}">

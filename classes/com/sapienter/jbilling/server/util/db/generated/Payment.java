@@ -36,6 +36,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
 @Table(name="payment")
@@ -44,7 +45,7 @@ public class Payment  implements java.io.Serializable {
 
      private int id;
      private BaseUser baseUser;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private PaymentMethod paymentMethod;
      private Payment payment;
      private CreditCard creditCard;
@@ -70,9 +71,9 @@ public class Payment  implements java.io.Serializable {
     }
 
 	
-    public Payment(int id, Currency currency, PaymentMethod paymentMethod, double amount, Date createDatetime, short deleted, short isRefund, short isPreauth) {
+    public Payment(int id, CurrencyDTO currencyDTO, PaymentMethod paymentMethod, double amount, Date createDatetime, short deleted, short isRefund, short isPreauth) {
         this.id = id;
-        this.currency = currency;
+        this.currencyDTO = currencyDTO;
         this.paymentMethod = paymentMethod;
         this.amount = amount;
         this.createDatetime = createDatetime;
@@ -80,10 +81,10 @@ public class Payment  implements java.io.Serializable {
         this.isRefund = isRefund;
         this.isPreauth = isPreauth;
     }
-    public Payment(int id, BaseUser baseUser, Currency currency, PaymentMethod paymentMethod, Payment payment, CreditCard creditCard, PaymentResult paymentResult, Ach ach, Integer attempt, double amount, Date createDatetime, Date paymentDate, short deleted, short isRefund, Integer payoutId, Double balance, Date updateDatetime, short isPreauth, Set<PaymentInvoice> paymentInvoices, Set<PaymentAuthorization> paymentAuthorizations, Set<Payment> payments, Set<PartnerPayout> partnerPayouts, Set<PaymentInfoCheque> paymentInfoCheques) {
+    public Payment(int id, BaseUser baseUser, CurrencyDTO currencyDTO, PaymentMethod paymentMethod, Payment payment, CreditCard creditCard, PaymentResult paymentResult, Ach ach, Integer attempt, double amount, Date createDatetime, Date paymentDate, short deleted, short isRefund, Integer payoutId, Double balance, Date updateDatetime, short isPreauth, Set<PaymentInvoice> paymentInvoices, Set<PaymentAuthorization> paymentAuthorizations, Set<Payment> payments, Set<PartnerPayout> partnerPayouts, Set<PaymentInfoCheque> paymentInfoCheques) {
        this.id = id;
        this.baseUser = baseUser;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.paymentMethod = paymentMethod;
        this.payment = payment;
        this.creditCard = creditCard;
@@ -127,12 +128,12 @@ public class Payment  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id", nullable=false)
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="method_id", nullable=false)

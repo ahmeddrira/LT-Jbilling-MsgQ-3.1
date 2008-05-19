@@ -51,20 +51,21 @@ import com.sapienter.jbilling.interfaces.BillingProcessRunTotalEntityLocal;
 import com.sapienter.jbilling.interfaces.CustomerEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderProcessEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentSessionLocal;
 import com.sapienter.jbilling.interfaces.PaymentSessionLocalHome;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.TimePeriod;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask;
@@ -73,6 +74,7 @@ import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
+import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -223,7 +225,7 @@ public class BillingProcessBL extends ResultList
             if (flag == null || flag.intValue() == 0) {
                 // there is a parent, the invoice should go to her
                 userId = order.getEntity().getUser().getCustomer().getParent().
-                        getUser().getUserId(); // yes, I like CRM!
+                        getBaseUser().getUserId(); // yes, I like CRM!
             } else {
                 // the child gets its own invoices
                 userId = order.getEntity().getUser().getUserId();
@@ -326,11 +328,6 @@ public class BillingProcessBL extends ResultList
         /*
          * Go through the orders first
          */
-        // find the order home interface
-        OrderEntityLocalHome orderHome =
-                (OrderEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderEntityLocalHome.class,
-                OrderEntityLocalHome.JNDI_NAME);
 
         boolean includedOrders = false;
         
@@ -350,12 +347,13 @@ public class BillingProcessBL extends ResultList
         do {
             try {
                 // get the orders that might be processable for this user
-                Collection orders = orderHome.findByUser_Status(userId,
+            	OrderDAS orderDas = new OrderDAS();
+                Collection<OrderDTO> orders = orderDas.findByUser_Status(userId,
                         Constants.ORDER_STATUS_ACTIVE);
 
                 // go through each of them, and update the DTO if it applies
                 for (Iterator ordersIt = orders.iterator(); ordersIt.hasNext();) {
-                    OrderEntityLocal order = (OrderEntityLocal) ordersIt.next();
+                    OrderDTO order = (OrderDTO) ordersIt.next();
                     LOG.debug("Processing order :" + order.getId());
                     // apply any order processing filter pluggable task
                     try {
@@ -380,8 +378,7 @@ public class BillingProcessBL extends ResultList
                             LOG.debug("Order processable");
 
                             if (onlyRecurring) {
-                                if (!order.getPeriod().getId().equals(
-                                        Constants.ORDER_PERIOD_ONCE)) {
+                                if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
                                     includedOrders = true;
                                     LOG.debug("It is not one-timer. " +
                                             "Generating invoice");
@@ -411,8 +408,7 @@ public class BillingProcessBL extends ResultList
                                     thisInvoice.setDate(process.getBillingDate());
                                 } else {
                                     thisInvoice.setDate(orderBl.getInvoicingDate(),
-                                            !order.getPeriod().getId().equals(
-                                                Constants.ORDER_PERIOD_ONCE));
+                                            order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
                                 }
                                 thisInvoice.setIsReview(isReview ? new Integer(
                                         1) : new Integer(0));
@@ -423,8 +419,7 @@ public class BillingProcessBL extends ResultList
                                         + dueDatePeriod);
                                 if (!useProcessDateForInvoice) {
                                     thisInvoice.setDate(orderBl.getInvoicingDate(),
-                                            !order.getPeriod().getId().equals(
-                                                Constants.ORDER_PERIOD_ONCE));
+                                            order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
                                 }
                             }
                             addOrderToInvoice(entityId, order, thisInvoice, 
@@ -666,7 +661,7 @@ public class BillingProcessBL extends ResultList
         // anymore
         for (int f=0; f < newInvoice.getOrders().size(); f++) {
                         
-            OrderEntityLocal order = (OrderEntityLocal) 
+            OrderDTO order = (OrderDTO) 
                     newInvoice.getOrders().get(f);           
                     
             LOG.debug(" ... order " + order.getId());
@@ -687,23 +682,22 @@ public class BillingProcessBL extends ResultList
                         
             // create the period and update the order-invoice relationship
             try {
-                OrderProcessEntityLocalHome orderProcessHome =
-                        (OrderProcessEntityLocalHome) EJBFactory.lookUpLocalHome(
-                        OrderProcessEntityLocalHome.class,
-                        OrderProcessEntityLocalHome.JNDI_NAME);
                     
-                OrderProcessEntityLocal orderProcess = orderProcessHome.create(
-                        startOfBillingPeriod, endOfBillingPeriod, 
-                        newInvoice.getIsReview());
-                            
-                orderProcess.setOrder(order);
-                LOG.debug("created order process id " + orderProcess.getId() +
-                        " for order " + order.getId());
-                    
-                orderProcess.setInvoice(invoice);
-                orderProcess.setProcess(process);
+                OrderProcessDAS das = new OrderProcessDAS();
+                OrderProcessDTO orderProcess = new OrderProcessDTO();
+                orderProcess.setPeriodStart(startOfBillingPeriod);
+                orderProcess.setPeriodEnd(endOfBillingPeriod);
+                orderProcess.setIsReview(newInvoice.getIsReview());
+                orderProcess.setPurchaseOrder(order);
+                InvoiceDAS invDas = new InvoiceDAS();
+                orderProcess.setInvoice(invDas.find(invoice.getId()));
+                BillingProcessDAS proDas = new BillingProcessDAS();
+                orderProcess.setBillingProcess(process != null ? proDas.find(process.getId()) : null);
                 orderProcess.setPeriodsIncluded(periods);
                 orderProcess.setOrigin(origin);
+                orderProcess = das.save(orderProcess);
+                LOG.debug("created order process id " + orderProcess.getId() +
+                        " for order " + order.getId());
                     
             } catch (Exception  e) {
                 throw new SessionInternalError(e);
@@ -736,7 +730,7 @@ public class BillingProcessBL extends ResultList
         }
     }
     
-    private void addOrderToInvoice(Integer entityId, OrderEntityLocal order,
+    private void addOrderToInvoice(Integer entityId, OrderDTO order,
             NewInvoiceDTO newInvoice, Date processDate, int maxPeriods) 
             throws CreateException, SessionInternalError, TaskException,
                 PluggableTaskException {
@@ -798,14 +792,13 @@ public class BillingProcessBL extends ResultList
     }
     
  
-    static void updateStatusFinished(OrderEntityLocal order, 
+    static void updateStatusFinished(OrderDTO order, 
             Date startOfBillingPeriod,
             Date endOfBillingPeriod) 
             throws SessionInternalError{
 
         // all one timers are done
-        if (order.getPeriod().getId().compareTo(
-                Constants.ORDER_PERIOD_ONCE) == 0) {
+        if (order.getOrderPeriod().getId() == Constants.ORDER_PERIOD_ONCE) {
             OrderBL orderBL = new OrderBL(order);
             orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
         } else { // recursive orders get more complicated
@@ -840,7 +833,7 @@ public class BillingProcessBL extends ResultList
         return cal.getTime(); 
     }
         
-    static public void updateNextBillableDay(OrderEntityLocal order,
+    static public void updateNextBillableDay(OrderDTO order,
             Date end) throws SessionInternalError{
         // if this order won't be process ever again, the 
         // it shouldn't have a next billable day        
@@ -1109,6 +1102,14 @@ public class BillingProcessBL extends ResultList
             // delete the review
             LOG.debug("Removing review id = " + review.getId() + " from " +
                     " entity " + entityId);
+            // this is needed while the order process is JPA, but the billing process is Entity
+            OrderProcessDAS processDas = new OrderProcessDAS();
+            com.sapienter.jbilling.server.process.db.BillingProcessDTO processDto = new BillingProcessDAS().find(review.getId());
+            for (OrderProcessDTO orderDto : processDto.getOrderProcesses()) {
+            	processDas.delete(orderDto);
+            }
+            processDto.getOrderProcesses().clear();
+            // otherwise this line would cascade de delete
             review.remove();
         } catch (FinderException e) {
             // there's no review for this entity, nothing to purge/check then

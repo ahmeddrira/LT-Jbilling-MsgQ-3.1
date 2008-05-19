@@ -33,6 +33,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+
 @Entity
 @Table(name="paper_invoice_batch")
 public class PaperInvoiceBatch  implements java.io.Serializable {
@@ -42,7 +45,7 @@ public class PaperInvoiceBatch  implements java.io.Serializable {
      private int totalInvoices;
      private Date deliveryDate;
      private short isSelfManaged;
-     private Set<BillingProcess> billingProcesses = new HashSet<BillingProcess>(0);
+     private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
      private Set<Invoice> invoices = new HashSet<Invoice>(0);
 
     public PaperInvoiceBatch() {
@@ -54,7 +57,7 @@ public class PaperInvoiceBatch  implements java.io.Serializable {
         this.totalInvoices = totalInvoices;
         this.isSelfManaged = isSelfManaged;
     }
-    public PaperInvoiceBatch(int id, int totalInvoices, Date deliveryDate, short isSelfManaged, Set<BillingProcess> billingProcesses, Set<Invoice> invoices) {
+    public PaperInvoiceBatch(int id, int totalInvoices, Date deliveryDate, short isSelfManaged, Set<BillingProcessDTO> billingProcesses, Set<Invoice> invoices) {
        this.id = id;
        this.totalInvoices = totalInvoices;
        this.deliveryDate = deliveryDate;
@@ -101,11 +104,11 @@ public class PaperInvoiceBatch  implements java.io.Serializable {
         this.isSelfManaged = isSelfManaged;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="paperInvoiceBatch")
-    public Set<BillingProcess> getBillingProcesses() {
+    public Set<BillingProcessDTO> getBillingProcesses() {
         return this.billingProcesses;
     }
     
-    public void setBillingProcesses(Set<BillingProcess> billingProcesses) {
+    public void setBillingProcesses(Set<BillingProcessDTO> billingProcesses) {
         this.billingProcesses = billingProcesses;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="paperInvoiceBatch")

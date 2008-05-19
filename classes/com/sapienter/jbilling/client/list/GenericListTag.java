@@ -41,7 +41,7 @@ import com.sapienter.jbilling.server.list.ListDTO;
 import com.sapienter.jbilling.server.list.ListSession;
 import com.sapienter.jbilling.server.list.ListSessionHome;
 import com.sapienter.jbilling.server.list.PagedListDTO;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -342,7 +342,7 @@ public class GenericListTag extends ListTagBase {
                     parameters.put("userId", userId);
                 } else if (type.equals(Constants.LIST_TYPE_INVOICE_ORDER)) {
                     // I need the id of the user of the order selected
-                    OrderDTOEx order = (OrderDTOEx) session.getAttribute(
+                    OrderDTO order = (OrderDTO) session.getAttribute(
                             Constants.SESSION_ORDER_DTO);
                     if (order == null) {
                         throw new SessionInternalError("an order dto has to be " +

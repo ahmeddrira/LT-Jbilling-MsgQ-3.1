@@ -35,7 +35,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
 @Table(name="partner")
@@ -43,10 +45,10 @@ public class Partner  implements java.io.Serializable {
 
 
      private int id;
-     private PeriodUnit periodUnit;
+     private PeriodUnitDTO periodUnitDTO;
      private BaseUser baseUserByUserId;
      private BaseUser baseUserByRelatedClerk;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private double balance;
      private double totalPayments;
      private double totalRefunds;
@@ -65,9 +67,9 @@ public class Partner  implements java.io.Serializable {
     }
 
 	
-    public Partner(int id, PeriodUnit periodUnit, double balance, double totalPayments, double totalRefunds, double totalPayouts, short oneTime, int periodValue, Date nextPayoutDate, short automaticProcess) {
+    public Partner(int id, PeriodUnitDTO periodUnitDTO, double balance, double totalPayments, double totalRefunds, double totalPayouts, short oneTime, int periodValue, Date nextPayoutDate, short automaticProcess) {
         this.id = id;
-        this.periodUnit = periodUnit;
+        this.periodUnitDTO = periodUnitDTO;
         this.balance = balance;
         this.totalPayments = totalPayments;
         this.totalRefunds = totalRefunds;
@@ -77,12 +79,12 @@ public class Partner  implements java.io.Serializable {
         this.nextPayoutDate = nextPayoutDate;
         this.automaticProcess = automaticProcess;
     }
-    public Partner(int id, PeriodUnit periodUnit, BaseUser baseUserByUserId, BaseUser baseUserByRelatedClerk, Currency currency, double balance, double totalPayments, double totalRefunds, double totalPayouts, Double percentageRate, Double referralFee, short oneTime, int periodValue, Date nextPayoutDate, Double duePayout, short automaticProcess, Set<PartnerPayout> partnerPayouts, Set<Customer> customers) {
+    public Partner(int id, PeriodUnitDTO periodUnitDTO, BaseUser baseUserByUserId, BaseUser baseUserByRelatedClerk, CurrencyDTO currencyDTO, double balance, double totalPayments, double totalRefunds, double totalPayouts, Double percentageRate, Double referralFee, short oneTime, int periodValue, Date nextPayoutDate, Double duePayout, short automaticProcess, Set<PartnerPayout> partnerPayouts, Set<Customer> customers) {
        this.id = id;
-       this.periodUnit = periodUnit;
+       this.periodUnitDTO = periodUnitDTO;
        this.baseUserByUserId = baseUserByUserId;
        this.baseUserByRelatedClerk = baseUserByRelatedClerk;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.balance = balance;
        this.totalPayments = totalPayments;
        this.totalRefunds = totalRefunds;
@@ -110,12 +112,12 @@ public class Partner  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="period_unit_id", nullable=false)
-    public PeriodUnit getPeriodUnit() {
-        return this.periodUnit;
+    public PeriodUnitDTO getPeriodUnit() {
+        return this.periodUnitDTO;
     }
     
-    public void setPeriodUnit(PeriodUnit periodUnit) {
-        this.periodUnit = periodUnit;
+    public void setPeriodUnit(PeriodUnitDTO periodUnitDTO) {
+        this.periodUnitDTO = periodUnitDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
@@ -137,12 +139,12 @@ public class Partner  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="fee_currency_id")
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
     
     @Column(name="balance", nullable=false, precision=17, scale=17)

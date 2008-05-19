@@ -74,7 +74,7 @@ public class PluggableTaskDTO implements java.io.Serializable {
     
     @OneToMany(mappedBy="task", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     @Fetch( FetchMode.JOIN)
-    //  no cache for the parameters, they might change too often
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Collection<PluggableTaskParameterDTO> parameters;
     
     @Version

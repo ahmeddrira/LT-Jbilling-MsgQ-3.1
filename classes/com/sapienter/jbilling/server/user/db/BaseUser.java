@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.user.db;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,18 +34,20 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-import com.sapienter.jbilling.server.order.db.PurchaseOrder;
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.Company;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
-import com.sapienter.jbilling.server.util.db.generated.Currency;
 import com.sapienter.jbilling.server.util.db.generated.Customer;
-import com.sapienter.jbilling.server.util.db.generated.Invoice;
 import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
 import com.sapienter.jbilling.server.util.db.generated.Language;
 import com.sapienter.jbilling.server.util.db.generated.NotificationMessageArch;
@@ -68,7 +71,7 @@ public class BaseUser  implements java.io.Serializable {
 
 
      private int id;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private Company company;
      private SubscriberStatus subscriberStatus;
      private UserStatus userStatus;
@@ -85,10 +88,10 @@ public class BaseUser  implements java.io.Serializable {
      private Set<PermissionUser> permissionUsers = new HashSet<PermissionUser>(0);
      private Set<ReportUser> reportUsers = new HashSet<ReportUser>(0);
      private Set<Partner> partnersForRelatedClerk = new HashSet<Partner>(0);
-     private Set<Customer> customers = new HashSet<Customer>(0);
+     private Customer customer;
      private Set<Partner> partnersForUserId = new HashSet<Partner>(0);
-     private Set<PurchaseOrder> purchaseOrdersForCreatedBy = new HashSet<PurchaseOrder>(0);
-     private Set<PurchaseOrder> purchaseOrdersForUserId = new HashSet<PurchaseOrder>(0);
+     private Set<OrderDTO> purchaseOrdersForCreatedBy = new HashSet<OrderDTO>(0);
+     private Set<OrderDTO> purchaseOrdersForUserId = new HashSet<OrderDTO>(0);
      private Set<CreditCard> creditCards = new HashSet<CreditCard>(0);
      private Set<NotificationMessageArch> notificationMessageArchs = new HashSet<NotificationMessageArch>(0);
      private Set<Role> roles = new HashSet<Role>(0);
@@ -107,9 +110,17 @@ public class BaseUser  implements java.io.Serializable {
         this.createDatetime = createDatetime;
         this.failedAttempts = failedAttempts;
     }
-    public BaseUser(int id, Currency currency, Company entity, SubscriberStatus subscriberStatus, UserStatus userStatus, Language language, String password, short deleted, Date createDatetime, Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<Payment> payments, Set<Ach> achs, Set<PermissionUser> permissionUsers, Set<ReportUser> reportUsers, Set<Partner> partnersForRelatedClerk, Set<Customer> customers, Set<Partner> partnersForUserId, Set<PurchaseOrder> purchaseOrdersForCreatedBy, Set<PurchaseOrder> purchaseOrdersForUserId, Set<CreditCard> creditCards, Set<NotificationMessageArch> notificationMessageArchs, Set<Role> roles, Set<Promotion> promotions, Set<EventLogDTO> eventLogs, Set<Invoice> invoices, Set<ItemUserPrice> itemUserPrices) {
+    public BaseUser(int id, CurrencyDTO currencyDTO, Company entity, SubscriberStatus subscriberStatus, 
+    		UserStatus userStatus, Language language, String password, short deleted, Date createDatetime, 
+    		Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<Payment> payments, 
+    		Set<Ach> achs, Set<PermissionUser> permissionUsers, Set<ReportUser> reportUsers,
+    		Set<Partner> partnersForRelatedClerk, Customer customer, Set<Partner> partnersForUserId,
+    		Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId, 
+    		Set<CreditCard> creditCards, Set<NotificationMessageArch> notificationMessageArchs, Set<Role> roles, 
+    		Set<Promotion> promotions, Set<EventLogDTO> eventLogs, Set<Invoice> invoices, 
+    		Set<ItemUserPrice> itemUserPrices) {
        this.id = id;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.company = entity;
        this.subscriberStatus = subscriberStatus;
        this.userStatus = userStatus;
@@ -126,7 +137,7 @@ public class BaseUser  implements java.io.Serializable {
        this.permissionUsers = permissionUsers;
        this.reportUsers = reportUsers;
        this.partnersForRelatedClerk = partnersForRelatedClerk;
-       this.customers = customers;
+       this.customer = customer;
        this.partnersForUserId = partnersForUserId;
        this.purchaseOrdersForCreatedBy = purchaseOrdersForCreatedBy;
        this.purchaseOrdersForUserId = purchaseOrdersForUserId;
@@ -151,12 +162,12 @@ public class BaseUser  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id")
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
     
     @ManyToOne(fetch=FetchType.LAZY)
@@ -298,14 +309,15 @@ public class BaseUser  implements java.io.Serializable {
     public void setPartnersForRelatedClerk(Set<Partner> partnersForRelatedClerk) {
         this.partnersForRelatedClerk = partnersForRelatedClerk;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
-    public Set<Customer> getCustomers() {
-        return this.customers;
+    
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
+    public Customer getCustomer() {
+        return this.customer;
+    }
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
     
-    public void setCustomers(Set<Customer> customers) {
-        this.customers = customers;
-    }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUserByUserId")
     public Set<Partner> getPartnersForUserId() {
         return this.partnersForUserId;
@@ -315,19 +327,19 @@ public class BaseUser  implements java.io.Serializable {
         this.partnersForUserId = partnersForUserId;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUserByCreatedBy")
-    public Set<PurchaseOrder> getPurchaseOrdersForCreatedBy() {
+    public Set<OrderDTO> getPurchaseOrdersForCreatedBy() {
         return this.purchaseOrdersForCreatedBy;
     }
     
-    public void setPurchaseOrdersForCreatedBy(Set<PurchaseOrder> purchaseOrdersForCreatedBy) {
+    public void setPurchaseOrdersForCreatedBy(Set<OrderDTO> purchaseOrdersForCreatedBy) {
         this.purchaseOrdersForCreatedBy = purchaseOrdersForCreatedBy;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUserByUserId")
-    public Set<PurchaseOrder> getPurchaseOrdersForUserId() {
+    public Set<OrderDTO> getPurchaseOrdersForUserId() {
         return this.purchaseOrdersForUserId;
     }
     
-    public void setPurchaseOrdersForUserId(Set<PurchaseOrder> purchaseOrdersForUserId) {
+    public void setPurchaseOrdersForUserId(Set<OrderDTO> purchaseOrdersForUserId) {
         this.purchaseOrdersForUserId = purchaseOrdersForUserId;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -387,7 +399,8 @@ public class BaseUser  implements java.io.Serializable {
     public void setInvoices(Set<Invoice> invoices) {
         this.invoices = invoices;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
     public Set<ItemUserPrice> getItemUserPrices() {
         return this.itemUserPrices;
     }
@@ -396,9 +409,36 @@ public class BaseUser  implements java.io.Serializable {
         this.itemUserPrices = itemUserPrices;
     }
 
+	/*
+	 * Conveniant methods to ease migration from entity beans
+	 */
+    @Transient
+    public Company getEntity() {
+    	return getCompany();
+    }
 
+    @Transient
+    public Integer getUserId() {
+    	return id;
+    }
 
-
+    public String toString() {
+    	return "[user = " +
+        "id=" + id +
+        ",currencyDTO=" + currencyDTO +
+        ",company=" + company +
+        ",subscriberStatus=" + subscriberStatus +
+        ",userStatus=" + userStatus +
+        ",language=" + language +
+        ",password=" + password +
+        ",deleted=" + deleted +
+        ",createDatetime=" + createDatetime +
+        ",lastStatusChange=" + lastStatusChange +
+        ",lastLogin=" + lastLogin +
+        ",userName=" + userName +
+        ",failedAttempts=" + failedAttempts +
+    	"]";
+    }
 }
 
 

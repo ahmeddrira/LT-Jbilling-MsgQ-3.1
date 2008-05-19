@@ -45,7 +45,8 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.user.db.BaseUser;
 
 /**
  * @author Emil
@@ -60,7 +61,7 @@ public class NewOrderItemAction extends Action {
 
         Logger log = Logger.getLogger(NewOrderItemAction.class);
         ActionErrors errors = new ActionErrors();
-        NewOrderDTO summary = null;
+        OrderDTO summary = null;
 
         // get the item id and quantity from the form
         Integer itemID, quantity;
@@ -86,11 +87,13 @@ public class NewOrderItemAction extends Action {
                         NewOrderSessionHome.class,
                         NewOrderSessionHome.JNDI_NAME);
 
-                summary = (NewOrderDTO) session.getAttribute(
+                summary = (OrderDTO) session.getAttribute(
                         Constants.SESSION_ORDER_SUMMARY);   
                         
-                summary.setUserId((Integer) session.getAttribute(
+                BaseUser user = new BaseUser();
+                user.setId((Integer) session.getAttribute(
                         Constants.SESSION_USER_ID));
+                summary.setBaseUserByCreatedBy(user);
                 remoteSession = newOrderHome.create(summary,
                 	   (Integer) session.getAttribute(Constants.SESSION_LANGUAGE));
 
@@ -132,14 +135,15 @@ public class NewOrderItemAction extends Action {
 
         if (!errors.isEmpty()) {
             saveErrors(request, errors);
-            summary = new NewOrderDTO();
+            summary = new OrderDTO();
         } 
         // add the order DTO to the http session for the summary
         session.setAttribute(Constants.SESSION_ORDER_SUMMARY, summary);
+        /*
         log.debug("The bean " + Constants.SESSION_ORDER_SUMMARY
                 + " is now in the session [" + 
                 session.getAttribute(Constants.SESSION_ORDER_SUMMARY) + "]");
-
+                */
         // go back to the new order page, so the user can keep adding items 
         return (mapping.findForward("showOrderLIst"));
     }

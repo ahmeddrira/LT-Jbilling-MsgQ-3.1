@@ -46,9 +46,8 @@ import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
-import com.sapienter.jbilling.server.entity.OrderDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -336,9 +335,10 @@ public class BillingProcessTest extends TestCase {
             // get the review
             reviewDto2 = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
+            
             // since the last one was disapproved, a new one has to be created
-            assertFalse("11 - New review run", reviewDto.getId().intValue() == 
-                    reviewDto2.getId().intValue());
+            assertNotSame("11 - New review run", reviewDto.getId(), 
+                    reviewDto2.getId());
 
             // status of the review should now be generated
             configDto = remoteBillingProcess.
@@ -476,7 +476,7 @@ public class BillingProcessTest extends TestCase {
                 float orderTotal = 0F;
                 Vector<OrderDTO> orders = invoice.getOrders();
                 for (OrderDTO order: orders) {
-                    OrderDTOEx orderDto = remoteOrder.getOrderEx(order.getId(),
+                    OrderDTO orderDto = remoteOrder.getOrderEx(order.getId(),
                             languageId);
                     orderTotal += orderDto.getTotal().floatValue();
                 }
@@ -615,7 +615,7 @@ public class BillingProcessTest extends TestCase {
                     languageId);
             
             for (int f = 0; f < orders.length; f++) {
-                OrderDTOEx order = remoteOrder.getOrderEx(
+                OrderDTO order = remoteOrder.getOrderEx(
                         new Integer(orders[f]), languageId);
                 Date from = parseDate(dateRanges[f][0]);
                 Date to = parseDate(dateRanges[f][1]);
@@ -646,7 +646,7 @@ public class BillingProcessTest extends TestCase {
         
         try {
             for (int f = 0; f < orders.length; f++) {
-                OrderDTOEx order = remoteOrder.getOrderEx(
+                OrderDTO order = remoteOrder.getOrderEx(
                         new Integer(orders[f]), languageId);
                 
                 assertTrue("1 - Order " + order.getId(),order.getPeriods().isEmpty());

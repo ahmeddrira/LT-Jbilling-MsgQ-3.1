@@ -43,6 +43,9 @@ import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -394,11 +397,17 @@ public abstract class InvoiceEntityBean implements EntityBean {
     // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="invoices-period"
-     *               role-name="invoice-bills-orders"
      */
-    public abstract Collection getOrders();
-    public abstract void setOrders(Collection orders);
+    public Collection<OrderProcessDTO> getOrders() {
+    	InvoiceDAS das = new InvoiceDAS();
+    	Invoice dto = das.find(getId());
+    	return dto.getOrderProcesses();
+    }
+    /*
+    public void setOrders(Collection<OrderDTO> orders) {
+    	
+    }
+    */
 
     /**
      * @ejb:interface-method view-type="local"

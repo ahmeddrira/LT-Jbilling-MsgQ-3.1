@@ -559,6 +559,20 @@ public class WSTest extends TestCase {
         return newOrder;
     }
     
+    public void testPendingUnsubscription() {
+    	try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+    		OrderWS order = api.getLatestOrder(1055);
+    		order.setActiveUntil(new Date(2008 - 1900, 11 - 1, 1)); // sorry 
+    		api.updateOrder(order);
+    		assertEquals("User 1055 should be now in pending unsubscription", 
+    				UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION, api.getUserWS(1055).getSubscriberStatusId());
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
+    
     // name changed so it is not called in normal test runs
     public void XXtestLoad() {
         try {
@@ -569,9 +583,9 @@ public class WSTest extends TestCase {
                 OrderWS newOrder = getOrder();
                 // change the quantities for viarety
                 newOrder.getOrderLines()[0].setQuantity(rnd.nextInt(100) + 1);
-                newOrder.getOrderLines()[0].setUseItem(true);
-                newOrder.getOrderLines()[1].setQuantity(rnd.nextInt(100) + 1);
-                newOrder.getOrderLines()[1].setUseItem(true);
+                //newOrder.getLines().first().setUseItem(true);
+                newOrder.getOrderLines()[newOrder.getOrderLines().length - 1].setQuantity(rnd.nextInt(100) + 1);
+                //newOrder.getLines().last().setUseItem(true);
                 newOrder.setUserId(newUser.getUserId());
                 api.createOrder(newOrder);
             }

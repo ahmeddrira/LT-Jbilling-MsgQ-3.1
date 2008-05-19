@@ -37,7 +37,8 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.sapienter.jbilling.server.util.db.generated.BillingProcess;
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 
 @Entity
 @TableGenerator(
@@ -54,9 +55,9 @@ public class OrderProcessDTO  implements java.io.Serializable {
 
 
      private int id;
-     private BillingProcess billingProcess;
-     private PurchaseOrder purchaseOrder;
-     private Integer invoiceId;
+     private BillingProcessDTO billingProcessDTO;
+     private OrderDTO orderDTO;
+     private Invoice invoiceDTO;
      private Integer periodsIncluded;
      private Date periodStart;
      private Date periodEnd;
@@ -73,11 +74,12 @@ public class OrderProcessDTO  implements java.io.Serializable {
         this.id = id;
         this.isReview = isReview;
     }
-    public OrderProcessDTO(int id, BillingProcess billingProcess, PurchaseOrder purchaseOrder, Integer invoiceId, Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
+    public OrderProcessDTO(int id, BillingProcessDTO billingProcessDTO, OrderDTO orderDTO, Invoice invoice, 
+    		Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
        this.id = id;
-       this.billingProcess = billingProcess;
-       this.purchaseOrder = purchaseOrder;
-       this.invoiceId = invoiceId;
+       this.billingProcessDTO = billingProcessDTO;
+       this.orderDTO = orderDTO;
+       this.invoiceDTO = invoice;
        this.periodsIncluded = periodsIncluded;
        this.periodStart = periodStart;
        this.periodEnd = periodEnd;
@@ -97,31 +99,32 @@ public class OrderProcessDTO  implements java.io.Serializable {
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="billing_process_id")
-    public BillingProcess getBillingProcess() {
-        return this.billingProcess;
+    public BillingProcessDTO getBillingProcess() {
+        return this.billingProcessDTO;
     }
     
-    public void setBillingProcess(BillingProcess billingProcess) {
-        this.billingProcess = billingProcess;
+    public void setBillingProcess(BillingProcessDTO billingProcessDTO) {
+        this.billingProcessDTO = billingProcessDTO;
     }
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="order_id")
-    public PurchaseOrder getPurchaseOrder() {
-        return this.purchaseOrder;
+    public OrderDTO getPurchaseOrder() {
+        return this.orderDTO;
     }
     
-    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
+    public void setPurchaseOrder(OrderDTO orderDTO) {
+        this.orderDTO = orderDTO;
     }
     
-    @Column(name="invoice_id")
-    public Integer getInvoiceId() {
-        return this.invoiceId;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="invoice_id")
+    public Invoice getInvoice() {
+        return this.invoiceDTO;
     }
     
-    public void setInvoiceId(Integer invoiceId) {
-        this.invoiceId = invoiceId;
+    public void setInvoice(Invoice invoice) {
+        this.invoiceDTO = invoice;
     }
     
     @Column(name="periods_included")
@@ -174,10 +177,10 @@ public class OrderProcessDTO  implements java.io.Serializable {
 	public Integer getVersionNum() {
 		return versionNum;
 	}
-
 	protected void setVersionNum(Integer versionNum) {
 		this.versionNum = versionNum;
 	}
+	
 }
 
 

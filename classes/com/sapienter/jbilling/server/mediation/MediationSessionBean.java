@@ -47,7 +47,7 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
@@ -317,7 +317,7 @@ public class MediationSessionBean implements SessionBean {
 		if (local.isBeenProcessed(process, thisGroup)) return;
 		
         LOG.debug("Normalizing record ...");
-        Vector<OrderLineDTOEx> lines = processTask.process(thisGroup, cfg.getName());
+        Vector<OrderLineDTO> lines = processTask.process(thisGroup, cfg.getName());
         Integer userId = processTask.getUserId();
         
         if (userId == null || lines == null || lines.size() == 0) {

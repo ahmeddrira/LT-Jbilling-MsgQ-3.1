@@ -23,9 +23,10 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.math.BigDecimal;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -42,21 +43,20 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
     public static final String PARAMETER_RATE = "rate";
     public static final String PARAMETER_DESCRIPTION = "description";
 
-    /**
-     * 
-     * @see com.sapienter.jbilling.server.order.OrderProcessingTask#doProcessing(com.sapienter.betty.server.order.NewOrderDTO)
-     */
-    public void doProcessing(NewOrderDTO order) throws TaskException {
-        BigDecimal orderTotal = new BigDecimal(order.getOrderTotal().toString());
+    public void doProcessing(OrderDTO order) throws TaskException {
+        BigDecimal orderTotal = order.getTotal();
         BigDecimal taxRate = new BigDecimal(parameters.get(PARAMETER_RATE).toString());
         
         BigDecimal gstTax = orderTotal.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(taxRate);
         
-        OrderLineDTOEx taxLine = new OrderLineDTOEx();
+        OrderLineDTO taxLine = new OrderLineDTO();
         taxLine.setAmount(new Float(gstTax.floatValue()));
         taxLine.setDeleted(new Integer(0));
         taxLine.setDescription((String) parameters.get(PARAMETER_DESCRIPTION));
         taxLine.setTypeId(Constants.ORDER_LINE_TYPE_TAX);
+        Item item = new Item();
+        item.setId(0);
+        taxLine.setItem(item);
         try {
 
             taxLine.setEditable(
@@ -64,9 +64,9 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
         } catch (SessionInternalError e) {
             throw new TaskException("Error in GSTTaxTask. Bad order_line_type");
         }
-        order.setOrderLine(new Integer(0), taxLine);
+        order.getLines().add(taxLine);
 
-        order.setOrderTotal(new Float(orderTotal.add(gstTax).floatValue()));
+        order.setTotal(orderTotal.add(gstTax));
     }
 
 }

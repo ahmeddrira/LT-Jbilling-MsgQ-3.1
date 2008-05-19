@@ -32,8 +32,8 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -58,7 +58,7 @@ public class BasicOrderFilterTask
     /* (non-Javadoc)
      * @see com.sapienter.jbilling.server.pluggableTask.OrderFilterTask#isApplicable(com.sapienter.betty.interfaces.OrderEntityLocal)
      */
-    public boolean isApplicable(OrderEntityLocal order, 
+    public boolean isApplicable(OrderDTO order, 
             BillingProcessEntityLocal process) throws TaskException {
 
         boolean retValue = true;
@@ -104,13 +104,13 @@ public class BasicOrderFilterTask
                             Constants.TABLE_PUCHASE_ORDER);
                     retValue = false;
                 // One time only orders don't need to check for periods                     
-                } else if (!order.getPeriod().getId().equals(
+                } else if (!order.getPeriodId().equals(
                         Constants.ORDER_PERIOD_ONCE)) {
                     // check that there's at least one period since this order
                     // started, otherwise it's too early to bill
                     cal.setTime(activeSince);
-                    cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()),
-                             order.getPeriod().getValue().intValue());
+                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
+                             order.getOrderPeriod().getValue().intValue());
                     Date firstBillingDate = cal.getTime();
                     if (!firstBillingDate.before(billingUntil)) {
                         eLog.info(process.getEntityId(), order.getId(), 
@@ -125,8 +125,8 @@ public class BasicOrderFilterTask
                 // there must be at least one period after the last paid day
                 if (retValue && order.getNextBillableDay() != null) {
                     cal.setTime(order.getNextBillableDay());
-                    cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()),
-                             order.getPeriod().getValue().intValue());
+                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
+                             order.getOrderPeriod().getValue().intValue());
                     Date endOfNextPeriod = cal.getTime();                
                     if (endOfNextPeriod.after(process.getBillingDate())) {
                         eLog.info(process.getEntityId(), order.getId(), 

@@ -82,7 +82,7 @@ public class NewOrderTest extends TestCase {
             // let's test the addition of more units to an existing line
             thisOrder = nOrderS.addItem(new Integer(2), new Integer(3), userId, entityId);
             assertEquals(
-                ((OrderLineDTOEx) (thisOrder
+                ((OrderLineDTO) (thisOrder
                     .getOrderLinesMap()
                     .get(new Integer(2))))
                     .getQuantity()
@@ -96,13 +96,13 @@ public class NewOrderTest extends TestCase {
 
             // now make a modification and test that it recalculates
             // a line total well
-            OrderLineDTOEx thisLine =
-                (OrderLineDTOEx) thisOrder.getOrderLine("10");
+            OrderLineDTO thisLine =
+                (OrderLineDTO) thisOrder.getOrderLine("10");
             assertNotNull(thisLine); // it has to be there
             thisLine.setQuantity(new Integer(10));
             thisLine.setPrice(new Float(10));
             thisOrder = nOrderS.recalculate(thisOrder, new Integer(1));
-            thisLine = (OrderLineDTOEx) thisOrder.getOrderLine("10");
+            thisLine = (OrderLineDTO) thisOrder.getOrderLine("10");
             assertTrue(thisLine.getAmount().floatValue() == 10F * 10F);
 
             // finally, try to create the order and see

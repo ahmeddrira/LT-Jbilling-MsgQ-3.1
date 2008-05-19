@@ -34,12 +34,12 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -292,16 +292,16 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                 
                 if (arg != null) {
                     OrderBL bl = new OrderBL();
-                    OrderLineEntityLocal line = bl.getOrderLine(arg);
-                    validate(line.getOrder().getUser().getUserId());
+                    OrderLineDTO line = bl.getOrderLine(arg);
+                    validate(line.getPurchaseOrder().getUser().getUserId());
                 }
             } else if(m.getName().equals("updateOrderLine")) {
                 OrderLineWS arg = (OrderLineWS) args[0];
                 
                 if (arg != null) {
                     OrderBL bl = new OrderBL();
-                    OrderLineEntityLocal line = bl.getOrderLine(arg.getId());
-                    validate(line.getOrder().getUser().getUserId());
+                    OrderLineDTO line = bl.getOrderLine(arg.getId());
+                    validate(line.getPurchaseOrder().getUser().getUserId());
                 }
                 
             } else if (m.getName().equals("getLatestOrder") || 

@@ -30,7 +30,7 @@ import java.util.Date;
 
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.entity.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 
 /**

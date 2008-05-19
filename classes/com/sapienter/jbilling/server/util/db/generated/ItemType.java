@@ -33,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.item.db.Item;
+
 @Entity
 @Table(name="item_type")
 public class ItemType  implements java.io.Serializable {

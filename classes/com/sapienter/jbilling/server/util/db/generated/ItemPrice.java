@@ -28,13 +28,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+
 @Entity
 @Table(name="item_price")
 public class ItemPrice  implements java.io.Serializable {
 
 
      private int id;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private Item item;
      private double price;
 
@@ -46,9 +49,9 @@ public class ItemPrice  implements java.io.Serializable {
         this.id = id;
         this.price = price;
     }
-    public ItemPrice(int id, Currency currency, Item item, double price) {
+    public ItemPrice(int id, CurrencyDTO currencyDTO, Item item, double price) {
        this.id = id;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.item = item;
        this.price = price;
     }
@@ -65,12 +68,12 @@ public class ItemPrice  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id")
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="item_id")

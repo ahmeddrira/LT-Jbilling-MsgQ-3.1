@@ -34,6 +34,9 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -180,7 +183,7 @@ public abstract class BillingProcessEntityBean implements EntityBean {
     public abstract void setRetriesToDo(Integer number);
 
     // CMR fields -------------------------------------------------------------
-    /**
+    /*
      * This realtionship will give access to the order entities and to the
      * order process information (period billed). It gives access to the
      * invoices too , but this is inderectly and is better to use getInvoices.
@@ -188,12 +191,20 @@ public abstract class BillingProcessEntityBean implements EntityBean {
      * Subsequent runs will go over only invoices, not orders. Thus, the
      * relationship is between the process and the orders, instead of the run
      * and the orders.
-     * @ejb:interface-method view-type="local"
-     * @ejb.relation name="process-orders"
-     *               role-name="process-generates-invoices"
      */
-    public abstract Collection getOrderProcesses();
-    public abstract void setOrderProcesses(Collection processes);
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public Collection<OrderProcessDTO> getOrderProcesses() {
+    	BillingProcessDAS das = new BillingProcessDAS();
+    	BillingProcessDTO dto = das.find(getId());
+    	return dto.getOrderProcesses();
+    }
+    /*
+    public void setOrderProcesses(Collection<OrderProcessDTO> processes) {
+    	
+    }
+    */
 
     /**
      * @ejb:interface-method view-type="local"

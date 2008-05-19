@@ -32,6 +32,7 @@ import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
@@ -41,8 +42,8 @@ import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.OrderDTO;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.user.db.BaseUser;
 
 public class MaintainAction extends Action {
 
@@ -51,7 +52,7 @@ public class MaintainAction extends Action {
             throws IOException, ServletException {
         
         Logger log = Logger.getLogger(MaintainAction.class);
-        NewOrderDTO summary;
+        OrderDTO summary;
         NewOrderSession remoteSession;
         HttpSession session = request.getSession(false);
         Integer languageId = (Integer) session.getAttribute(
@@ -85,8 +86,10 @@ public class MaintainAction extends Action {
                     OrderSession remoteOrder = orderHome.create();
                     Integer orderId = ((OrderDTO) session.getAttribute(
                             Constants.SESSION_ORDER_DTO)).getId();
+                    Integer userId = (Integer) session.getAttribute(
+                            Constants.SESSION_LOGGED_USER_ID);
                     if (statusStr.equals("delete")) {
-                        remoteOrder.delete(orderId);
+                        remoteOrder.delete(orderId, userId);
                         session.removeAttribute(Constants.SESSION_LIST_KEY + 
                                 Constants.LIST_TYPE_ORDER);
                         return mapping.findForward("list");
@@ -95,9 +98,7 @@ public class MaintainAction extends Action {
                         // in one call
                         session.setAttribute(Constants.SESSION_ORDER_DTO, 
                                 remoteOrder.setStatus(orderId, 
-                                Integer.valueOf(statusStr), 
-                                (Integer) session.getAttribute(
-                                    Constants.SESSION_LOGGED_USER_ID), 
+                                Integer.valueOf(statusStr), userId, 
                                 languageId));
                     }
                 }  
@@ -131,11 +132,15 @@ public class MaintainAction extends Action {
                     NewOrderSessionHome.class,
                     NewOrderSessionHome.JNDI_NAME);
 
-            summary = (NewOrderDTO) session.getAttribute(
+            summary = (OrderDTO) session.getAttribute(
                     Constants.SESSION_ORDER_SUMMARY);   
                         
-            summary.setUserId((Integer) session.getAttribute( //TODO this is known to have thrown a Null pointer exception
+            BaseUser user = new BaseUser();
+            user.setId((Integer) session.getAttribute( //TODO this is known to have thrown a Null pointer exception
                     Constants.SESSION_USER_ID));
+            summary.setBaseUserByUserId(user);
+            //summary.setBillingTypeId((Integer) ((DynaValidatorForm)form).get("billingType"));
+
             remoteSession = newOrderHome.create(summary,
                    (Integer) session.getAttribute(Constants.SESSION_LANGUAGE));
 

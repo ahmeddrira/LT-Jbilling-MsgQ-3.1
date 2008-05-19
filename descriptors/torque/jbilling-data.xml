@@ -303,6 +303,8 @@
     <EventLogMessage Id="21"/>
     <EventLogMessage Id="22"/>
     <EventLogMessage Id="23"/>
+    <EventLogMessage Id="24"/>
+    <EventLogMessage Id="25"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>

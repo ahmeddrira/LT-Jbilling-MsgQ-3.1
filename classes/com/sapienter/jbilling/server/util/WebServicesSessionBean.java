@@ -55,11 +55,11 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -765,12 +765,11 @@ public class WebServicesSessionBean implements SessionBean {
             Integer entityId = user.getEntityId(userId);
             if (cc != null) {
                 CreditCardBL ccBl = new CreditCardBL();
-                // calling for the DTOEx of order seems an overkill to just get
-                // the total. However, in a new order most related objects won't 
-                // be there (process, invoices, etc).
-                OrderDTOEx newOrder = DTOFactory.getOrderDTOEx(orderId, 1);
+                OrderDAS das = new OrderDAS();
+                OrderDTO dbOrder = das.find(orderId);
+
                 retValue = ccBl.validatePreAuthorization(entityId, userId, cc,
-                        newOrder.getTotal(), newOrder.getCurrencyId());
+                        dbOrder.getTotal().floatValue(), dbOrder.getCurrencyId());
             }
         } catch(Exception e) {
             LOG.debug("Exception:", e);
@@ -811,7 +810,9 @@ public class WebServicesSessionBean implements SessionBean {
             ItemDTOEx item = itemSession.get(line.getItemId(), 
                     languageId, order.getUserId(), order.getCurrencyId(),
                     entityId);
-            line.setItem(item);
+            
+            //ItemDAS itemDas = new ItemDAS();
+            //line.setItem(itemDas.find(line.getItemId()));
             if (line.getUseItem().booleanValue()) {
                 if (item.getPrice() == null) {
                 	line.setPrice(item.getPercentage());
@@ -843,16 +844,15 @@ public class WebServicesSessionBean implements SessionBean {
             // see if the related items should provide info
             processItemLine(order, languageId, entityId);
 
-            // make a dto out of the ws
-            NewOrderDTO dto = new NewOrderDTO(order);
-            
-            // call the update
-            OrderBL orderBL = new OrderBL(dto.getId());
-            orderBL.setDTO(dto);
+            // do some transformation from WS to DTO :(
+            OrderBL orderBL = new OrderBL();
+            OrderDTO dto = orderBL.getDTO(order);
+            // recalculate
+            orderBL.set(dto);
             orderBL.recalculate(entityId);
+            // update
+            orderBL.set(order.getId());
             orderBL.update(executorId, dto);
-            
-            
         } catch(Exception e) {
             LOG.error("WS - updateOrder", e);
             throw new SessionInternalError("Error updating order");
@@ -865,14 +865,20 @@ public class WebServicesSessionBean implements SessionBean {
     public OrderWS getOrder(Integer orderId) 
             throws SessionInternalError {
         try {
+        	LOG.debug("order requested " + orderId);
             // get the info from the caller
             UserBL userbl = new UserBL();
             userbl.setRoot(context.getCallerPrincipal().getName());
             Integer languageId = userbl.getEntity().getLanguageIdField();
             
-            // now get the order
-            OrderBL bl = new OrderBL(orderId);
-            if (bl.getEntity().getDeleted().equals(new Integer(1))) {
+            // now get the order. Avoid the proxy since this is for the client
+            OrderDAS das = new OrderDAS();
+            OrderDTO order = das.findNow(orderId);
+            if (order == null) { // not found
+            	return null;
+            }
+            OrderBL bl = new OrderBL(order);
+            if (order.getDeleted() == 1 ) {
                 LOG.debug("Returning deleted order " + orderId);
             }
             return bl.getWS(languageId);
@@ -916,11 +922,7 @@ public class WebServicesSessionBean implements SessionBean {
             OrderBL bl = new OrderBL();
             OrderLineWS retValue = null;
             
-            try {
-                retValue = bl.getOrderLineWS(orderLineId);
-            } catch (FinderException e) {
-                // ok, so a null goes back
-            }
+            retValue = bl.getOrderLineWS(orderLineId);
             
             return retValue; 
         } catch (Exception e) {
@@ -936,10 +938,10 @@ public class WebServicesSessionBean implements SessionBean {
     public void updateOrderLine(OrderLineWS line) 
             throws SessionInternalError {
         try {
-            LOG.debug("WS - updateOrderLine " + line);
             // now get the order
             OrderBL bl = new OrderBL();
             bl.updateOrderLine(line);
+//            LOG.debug("WS - updateOrderLine " + line); // cant be earlier - no session
         } catch (Exception e) {
             LOG.error("WS - updateOrderLine", e);
             throw new SessionInternalError("Error updating order line");
@@ -1003,9 +1005,11 @@ public class WebServicesSessionBean implements SessionBean {
     public void deleteOrder(Integer id) 
             throws SessionInternalError {
         try {
+            UserBL userbl = new UserBL();
+            userbl.setRoot(context.getCallerPrincipal().getName());
             // now get the order
             OrderBL bl = new OrderBL(id);
-            bl.delete();
+            bl.delete(userbl.getEntity().getUserId());
         } catch (Exception e) {
             LOG.error("WS - deleteOrder", e);
             throw new SessionInternalError("Error deleting order");
@@ -1024,6 +1028,8 @@ public class WebServicesSessionBean implements SessionBean {
             throws SessionInternalError {
         validatePayment(payment);
         try {
+        	//TODO Validate that the user ID of the payment is the same as the
+        	// owner of the invoice
             payment.setIsRefund(new Integer(0));
             PaymentSessionBean session = new PaymentSessionBean();
             return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
@@ -1563,18 +1569,15 @@ public class WebServicesSessionBean implements SessionBean {
             // see if the related items should provide info
             processItemLine(order, languageId, entityId);
             
-            // make a dto out of the ws
-            NewOrderDTO dto = new NewOrderDTO(order);
-            
             // call the creation
             OrderBL orderBL = new OrderBL();
-            orderBL.setDTO(dto);
-            LOG.debug("Order has " + dto.getOrderLinesMap().size() + " lines");
-            // apply order total tasks
+            OrderDTO dto = orderBL.getDTO(order);
+            LOG.debug("Order has " + order.getOrderLines().length + " lines");
+
+            orderBL.set(dto);
             orderBL.recalculate(entityId);
             
-            return orderBL.create(entityId, executorId, dto);
-            
+            return orderBL.create(entityId, executorId, new OrderDTO(dto));
         } catch(Exception e) {
             LOG.debug("Exception:", e);
             throw new SessionInternalError("error creating purchase order");

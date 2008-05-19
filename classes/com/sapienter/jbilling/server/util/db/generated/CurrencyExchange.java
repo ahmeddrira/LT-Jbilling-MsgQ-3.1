@@ -31,13 +31,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+
 @Entity
 @Table(name="currency_exchange")
 public class CurrencyExchange  implements java.io.Serializable {
 
 
      private int id;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private Integer entityId;
      private double rate;
      private Date createDatetime;
@@ -51,9 +53,9 @@ public class CurrencyExchange  implements java.io.Serializable {
         this.rate = rate;
         this.createDatetime = createDatetime;
     }
-    public CurrencyExchange(int id, Currency currency, Integer entityId, double rate, Date createDatetime) {
+    public CurrencyExchange(int id, CurrencyDTO currencyDTO, Integer entityId, double rate, Date createDatetime) {
        this.id = id;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.entityId = entityId;
        this.rate = rate;
        this.createDatetime = createDatetime;
@@ -71,12 +73,12 @@ public class CurrencyExchange  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id")
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
     
     @Column(name="entity_id")

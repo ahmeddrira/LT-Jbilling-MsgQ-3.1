@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.util.db.generated;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +44,6 @@ public class Language  implements java.io.Serializable {
      private Set<NotificationMessage> notificationMessages = new HashSet<NotificationMessage>(0);
      private Set<Company> entities = new HashSet<Company>(0);
      private Set<BaseUser> baseUsers = new HashSet<BaseUser>(0);
-     private Set<InternationalDescription> internationalDescriptions = new HashSet<InternationalDescription>(0);
 
     public Language() {
     }
@@ -54,14 +54,13 @@ public class Language  implements java.io.Serializable {
         this.code = code;
         this.description = description;
     }
-    public Language(int id, String code, String description, Set<NotificationMessage> notificationMessages, Set<Company> entities, Set<BaseUser> baseUsers, Set<InternationalDescription> internationalDescriptions) {
+    public Language(int id, String code, String description, Set<NotificationMessage> notificationMessages, Set<Company> entities, Set<BaseUser> baseUsers) {
        this.id = id;
        this.code = code;
        this.description = description;
        this.notificationMessages = notificationMessages;
        this.entities = entities;
        this.baseUsers = baseUsers;
-       this.internationalDescriptions = internationalDescriptions;
     }
    
      @Id 
@@ -116,18 +115,6 @@ public class Language  implements java.io.Serializable {
     public void setBaseUsers(Set<BaseUser> baseUsers) {
         this.baseUsers = baseUsers;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="language")
-    public Set<InternationalDescription> getInternationalDescriptions() {
-        return this.internationalDescriptions;
-    }
-    
-    public void setInternationalDescriptions(Set<InternationalDescription> internationalDescriptions) {
-        this.internationalDescriptions = internationalDescriptions;
-    }
-
-
-
-
 }
 
 

@@ -30,7 +30,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 
@@ -43,11 +43,11 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
 
 	private static final Logger LOG = Logger.getLogger(OrderPeriodAnticipateTask.class);
 	
-    public Date calculateStart(OrderEntityLocal order) throws TaskException {
+    public Date calculateStart(OrderDTO order) throws TaskException {
         return super.calculateStart(order);
     }
     
-    public Date calculateEnd(OrderEntityLocal order, Date processDate,
+    public Date calculateEnd(OrderDTO order, Date processDate,
             int maxPeriods) 
             throws TaskException {
         viewLimit = null;
@@ -55,12 +55,12 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
         if (order.getAnticipatePeriods() != null &&
                 order.getAnticipatePeriods().intValue() > 0) {
             try {
-                Integer periodUnitId = order.getPeriod().getUnitId();
-                Integer periodValue = order.getPeriod().getValue();
+                Integer periodUnitId = order.getOrderPeriod().getUnitId();
+                Integer periodValue = order.getOrderPeriod().getValue();
                 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(processDate);
-                if (!order.getPeriod().getId().equals(Constants.ORDER_PERIOD_ONCE)) {
+                if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
                     cal.add(MapPeriodToCalendar.map(periodUnitId),
                             periodValue.intValue());
                 }

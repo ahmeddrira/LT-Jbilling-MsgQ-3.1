@@ -35,13 +35,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+
 @Entity
 @Table(name="process_run")
 public class ProcessRun  implements java.io.Serializable {
 
 
      private int id;
-     private BillingProcess billingProcess;
+     private BillingProcessDTO billingProcessDTO;
      private Date runDate;
      private Date started;
      private Date finished;
@@ -58,9 +60,9 @@ public class ProcessRun  implements java.io.Serializable {
         this.runDate = runDate;
         this.started = started;
     }
-    public ProcessRun(int id, BillingProcess billingProcess, Date runDate, Date started, Date finished, Integer invoicesGenerated, Date paymentFinished, Set<ProcessRunTotal> processRunTotals) {
+    public ProcessRun(int id, BillingProcessDTO billingProcessDTO, Date runDate, Date started, Date finished, Integer invoicesGenerated, Date paymentFinished, Set<ProcessRunTotal> processRunTotals) {
        this.id = id;
-       this.billingProcess = billingProcess;
+       this.billingProcessDTO = billingProcessDTO;
        this.runDate = runDate;
        this.started = started;
        this.finished = finished;
@@ -81,12 +83,12 @@ public class ProcessRun  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="process_id")
-    public BillingProcess getBillingProcess() {
-        return this.billingProcess;
+    public BillingProcessDTO getBillingProcess() {
+        return this.billingProcessDTO;
     }
     
-    public void setBillingProcess(BillingProcess billingProcess) {
-        this.billingProcess = billingProcess;
+    public void setBillingProcess(BillingProcessDTO billingProcessDTO) {
+        this.billingProcessDTO = billingProcessDTO;
     }
     @Temporal(TemporalType.DATE)
     @Column(name="run_date", nullable=false, length=13)

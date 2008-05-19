@@ -54,7 +54,6 @@ import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
 import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
@@ -63,6 +62,8 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
@@ -186,11 +187,12 @@ public class AgeingBL {
         // see if this new status is suspended
         if (couldLogin && status.getCanLogin().intValue() == 0) {
             // all the current orders have to be suspended
+            OrderDAS orderDas = new OrderDAS();
             OrderBL order = new OrderBL();
-            for (Iterator it = order.getHome().findByUser_Status(userId, 
+            for (Iterator it = orderDas.findByUser_Status(userId, 
                     Constants.ORDER_STATUS_ACTIVE).iterator(); 
                     it.hasNext();) {
-                OrderEntityLocal orderRow = (OrderEntityLocal) it.next();
+                OrderDTO orderRow = (OrderDTO) it.next();
                 order.set(orderRow);
                 order.setStatus(executorId, 
                         Constants.ORDER_STATUS_SUSPENDED_AGEING);
@@ -198,11 +200,12 @@ public class AgeingBL {
         } else if (!couldLogin && status.getCanLogin().intValue() == 1) {
             // the oposite, it is getting out of the ageing process
             // all the suspended orders have to be reactivated
+            OrderDAS orderDas = new OrderDAS();
             OrderBL order = new OrderBL();
-            for (Iterator it = order.getHome().findByUser_Status(userId, 
+            for (Iterator it = orderDas.findByUser_Status(userId, 
                     Constants.ORDER_STATUS_SUSPENDED_AGEING).iterator(); 
                     it.hasNext();) {
-                OrderEntityLocal orderRow = (OrderEntityLocal) it.next();
+                OrderDTO orderRow = (OrderDTO) it.next();
                 order.set(orderRow);
                 order.setStatus(executorId, Constants.ORDER_STATUS_ACTIVE);
             }               

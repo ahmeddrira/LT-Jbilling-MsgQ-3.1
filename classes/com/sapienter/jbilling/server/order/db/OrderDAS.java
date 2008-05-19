@@ -20,11 +20,16 @@
 package com.sapienter.jbilling.server.order.db;
 
 import java.util.Date;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
-public class OrderDAS extends AbstractDAS<PurchaseOrder> {
+public class OrderDAS extends AbstractDAS<OrderDTO> {
 	public OrderProcessDTO findProcessByEndDate(Integer id, Date myDate) {
 		return (OrderProcessDTO) getSession().createFilter(find(id).getOrderProcesses(), 
 				"where this.periodEnd = :endDate").setDate("endDate", 
@@ -32,4 +37,34 @@ public class OrderDAS extends AbstractDAS<PurchaseOrder> {
 		
 	}
 
+	/**
+	 * Finds active recurring orders for a given user
+	 * @param userId
+	 * @return
+	 */
+	public List<OrderDTO> findByUserSubscriptions(Integer userId) {
+		// I need to access an association, so I can't use the parent helper class
+		Criteria criteria = getSession().createCriteria(OrderDTO.class)
+				.createAlias("orderStatus", "s")
+					.add(Restrictions.ne("s.id", Constants.ORDER_STATUS_ACTIVE))
+				.add(Restrictions.eq("deleted", 0))
+				.createAlias("baseUserByUserId", "u")
+					.add(Restrictions.eq("u.id", userId))
+				.createAlias("orderPeriod", "p")
+					.add(Restrictions.ne("p.id", Constants.ORDER_PERIOD_ONCE));
+		
+		return criteria.list();
+	}
+	
+	public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {
+		// I need to access an association, so I can't use the parent helper class
+		Criteria criteria = getSession().createCriteria(OrderDTO.class)
+				.add(Restrictions.eq("deleted", 0))
+				.createAlias("baseUserByUserId", "u")
+					.add(Restrictions.eq("u.id", userId))
+				.createAlias("orderStatus", "s")
+					.add(Restrictions.eq("s.id", statusId));
+		
+		return criteria.list();
+	}
 }

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.util.db.generated;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,7 +51,6 @@ public class JbillingTable  implements java.io.Serializable {
      private Set<ContactMap> contactMaps = new HashSet<ContactMap>(0);
      private Set<BettyTableColumn> bettyTableColumns = new HashSet<BettyTableColumn>(0);
      private Set<Preference> preferences = new HashSet<Preference>(0);
-     private Set<InternationalDescription> internationalDescriptions = new HashSet<InternationalDescription>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
 
     public JbillingTable() {
@@ -62,14 +62,13 @@ public class JbillingTable  implements java.io.Serializable {
         this.name = name;
         this.nextId = nextId;
     }
-    public JbillingTable(int id, String name, int nextId, Set<ContactMap> contactMaps, Set<BettyTableColumn> bettyTableColumns, Set<Preference> preferences, Set<InternationalDescription> internationalDescriptions, Set<EventLogDTO> eventLogs) {
+    public JbillingTable(int id, String name, int nextId, Set<ContactMap> contactMaps, Set<BettyTableColumn> bettyTableColumns, Set<Preference> preferences, Set<EventLogDTO> eventLogs) {
        this.id = id;
        this.name = name;
        this.nextId = nextId;
        this.contactMaps = contactMaps;
        this.bettyTableColumns = bettyTableColumns;
        this.preferences = preferences;
-       this.internationalDescriptions = internationalDescriptions;
        this.eventLogs = eventLogs;
     }
    
@@ -116,7 +115,8 @@ public class JbillingTable  implements java.io.Serializable {
     public void setBettyTableColumns(Set<BettyTableColumn> bettyTableColumns) {
         this.bettyTableColumns = bettyTableColumns;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
     public Set<Preference> getPreferences() {
         return this.preferences;
     }
@@ -124,26 +124,14 @@ public class JbillingTable  implements java.io.Serializable {
     public void setPreferences(Set<Preference> preferences) {
         this.preferences = preferences;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
-    public Set<InternationalDescription> getInternationalDescriptions() {
-        return this.internationalDescriptions;
-    }
     
-    public void setInternationalDescriptions(Set<InternationalDescription> internationalDescriptions) {
-        this.internationalDescriptions = internationalDescriptions;
-    }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
     public Set<EventLogDTO> getEventLogs() {
         return this.eventLogs;
     }
-    
     public void setEventLogs(Set<EventLogDTO> eventLogs) {
         this.eventLogs = eventLogs;
     }
-
-
-
-
 }
 
 

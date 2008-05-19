@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.util;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,17 +41,6 @@ import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
 import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
 import com.sapienter.jbilling.interfaces.MenuOptionEntityLocal;
 import com.sapienter.jbilling.interfaces.MenuOptionEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderBillingTypeEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderBillingTypeEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderPeriodEntityLocalHome;
-import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderStatusEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderStatusEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportFieldEntityLocal;
@@ -63,17 +51,9 @@ import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.OrderLineDTO;
-import com.sapienter.jbilling.server.entity.OrderProcessDTO;
 import com.sapienter.jbilling.server.entity.ReportUserDTO;
-import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
-import com.sapienter.jbilling.server.order.OrderLineComparator;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
-import com.sapienter.jbilling.server.process.OrderProcessIdComparator;
 import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.FieldComparator;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
@@ -290,215 +270,6 @@ public class DTOFactory {
                 process.getRetriesToDo());
     }
     
-    /*
-    public static OrderDTO getOrderDTO(Integer orderId)
-        throws CreateException, NamingException, FinderException {
-
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        OrderEntityLocalHome orderHome =
-                (OrderEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderEntityLocalHome.class,
-                OrderEntityLocalHome.JNDI_NAME);
-
-        OrderEntityLocal order = orderHome.findByPrimaryKey(orderId);
-        return new OrderDTO(orderId, order.getBillingTypeId(), 
-        		order.getNotify(),
-                order.getActiveSince(), order.getActiveUntil(), 
-                order.getCreateDate(), order.getNextBillableDay(),
-                order.getCreatedBy(), order.getStatusId(), order.getDeleted(),
-                order.getCurrencyId(), order.getLastNotified(),
-                order.getNotificationStep(), order.getDueDateUnitId(),
-                order.getDueDateValue(), order.getDfFm(), 
-                order.getAnticipatePeriods(), order.getOwnInvoice());
-
-    }
-    */
-    
-    public static OrderLineDTOEx getOrderLineDTOEx(OrderLineEntityLocal line) {
-        return new OrderLineDTOEx(line.getId(),
-                line.getItemId(), line.getDescription(),
-                line.getAmount(), line.getQuantity(),
-                line.getPrice(), line.getItemPrice(),
-                line.getCreateDate(), line.getDeleted(),
-                line.getType().getId(), new Boolean(line.getType().
-                    getEditable().intValue() == 1));
-    }
-    
-    public static OrderDTOEx getOrderDTOEx(Integer orderId, Integer languageId)
-            throws CreateException, NamingException, FinderException,
-                SessionInternalError {
-        OrderDTOEx retValue;
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        OrderEntityLocalHome orderHome =
-                (OrderEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderEntityLocalHome.class,
-                OrderEntityLocalHome.JNDI_NAME);
-
-        OrderEntityLocal order = orderHome.findByPrimaryKey(orderId);
-        retValue = new OrderDTOEx(orderId, order.getBillingTypeId(), 
-        		order.getNotify(),
-                order.getActiveSince(), order.getActiveUntil(), 
-                order.getCreateDate(), order.getNextBillableDay(),
-                order.getCreatedBy(), order.getStatusId(), order.getDeleted(),
-                order.getCurrencyId(), order.getLastNotified(),
-                order.getNotificationStep(), order.getDueDateUnitId(),
-                order.getDueDateValue());
-        retValue.setUser(new UserDTO(order.getUser().getUserId(),
-                order.getUser().getUserName(), order.getUser().getPassword(),
-                order.getUser().getDeleted(), 
-                order.getUser().getLanguageIdField(), 
-                order.getUser().getCurrencyId(), 
-                order.getUser().getCreateDateTime(),
-                order.getUser().getLastStatusChange(),
-                order.getUser().getLastLogin(),
-                order.getUser().getFailedAttmepts()));
-        retValue.setPeriodId(order.getPeriod().getId());
-        retValue.setDfFm(order.getDfFm());
-        retValue.setAnticipatePeriods(order.getAnticipatePeriods());
-        retValue.setOwnInvoice(order.getOwnInvoice());
-        retValue.setNotes(order.getNotes());
-        retValue.setNotesInInvoice(order.getNotesInInvoice());
-        retValue.setIsCurrent(order.getIsCurrent());
-        
-        // add the lines
-        BigDecimal orderTotal = new BigDecimal("0"); // the total will be calculated for display
-        Integer entityId = order.getUser().getEntity().getId();
-        for (Iterator lines = order.getOrderLines().iterator(); 
-                lines.hasNext();) {
-            OrderLineEntityLocal line = (OrderLineEntityLocal) lines.next();
-            if (line.getDeleted().equals(new Integer(0))) {
-                OrderLineDTOEx lineDto = getOrderLineDTOEx(line);
-                orderTotal = orderTotal.add(new BigDecimal(line.getAmount().toString()));
-                if (line.getItemId() != null) {
-                    // the language is not important
-                    ItemBL itemBL = new ItemBL(line.getItemId());
-                    lineDto.setItem(itemBL.getDTO(languageId, 
-                            retValue.getUser().getUserId(), entityId, 
-                            order.getCurrencyId())); 
-                    if (lineDto.getItem().getPromoCode() != null) {
-                        retValue.setPromoCode(lineDto.getItem().getPromoCode());
-                    }
-                }
-                retValue.getOrderLines().add(lineDto);
-            }
-        }
-        
-        Collections.sort(retValue.getOrderLines(), new OrderLineComparator());
-        
-        // add the invoices, periods and processes
-        // make sure they are in order, so when they are displayed they
-        // make some sense ;)
-        Collection processes = order.getProcesses();
-        Vector processesArray = new Vector(processes);
-        Collections.sort(processesArray, new OrderProcessIdComparator());
-        
-        for (Iterator it = processesArray.iterator(); 
-                it.hasNext();) {
-            OrderProcessEntityLocal orderProcess = 
-                    (OrderProcessEntityLocal) it.next();
-                    
-            // exclude those process/invoices that belong to a review
-            if (orderProcess.getIsReview().intValue() == 1) {
-                continue;
-            }
-            
-            // invoices
-            InvoiceEntityLocal invoice = orderProcess.getInvoice();
-            InvoiceBL invoiceBl = new InvoiceBL(invoice);
-            retValue.getInvoices().add(invoiceBl.getDTO());
-                    
-            // period
-            retValue.getPeriods().add(new OrderProcessDTO(orderProcess.getId(),
-                    orderProcess.getPeriodStart(), orderProcess.getPeriodEnd(),
-                    orderProcess.getPeriodsIncluded(), new Integer(0),
-                    orderProcess.getOrigin(), new Integer(1)));
-
-            // process
-            BillingProcessEntityLocal process = 
-                    (BillingProcessEntityLocal) orderProcess.getProcess();
-            // since and invoice now can be generated without a billing process
-            // (online from the gui), this can be null
-            if (process != null) {
-                retValue.getProcesses().add(new BillingProcessDTO(process.getId(),
-                        process.getEntityId(), process.getBillingDate(), 
-                        process.getPeriodUnitId(),
-                        process.getPeriodValue(), process.getIsReview(),
-                        process.getRetriesToDo()));
-            } else {
-                retValue.getProcesses().add(null);
-            }
-        }
-        
-        // set the human readable strings
-        retValue.setPeriodStr(getPeriodString(retValue.getPeriodId(),
-                languageId));
-        retValue.setBillingTypeStr(getBillingTypeString(
-                retValue.getBillingTypeId(), languageId));
-        // the status would benefit from a cmr ...
-        OrderStatusEntityLocalHome orderStatusHome =
-                (OrderStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderStatusEntityLocalHome.class,
-                OrderStatusEntityLocalHome.JNDI_NAME);
-        OrderStatusEntityLocal orderStatus = orderStatusHome.findByPrimaryKey(
-                order.getStatusId());
-        retValue.setStatusStr(orderStatus.getDescription(languageId));
-        retValue.setTotal(new Float(orderTotal.floatValue()));
-        retValue.setTimeUnitStr(Util.getPeriodUnitStr(
-                retValue.getDueDateUnitId(), languageId));
-        
-        // we need the currency symbol to show
-        CurrencyBL currencyBL = new CurrencyBL(order.getCurrencyId());
-        retValue.setCurrencySymbol(currencyBL.getEntity().getSymbol());
-        retValue.setCurrencyName(currencyBL.getEntity().getDescription(
-                languageId));
-        
-        return retValue;
-    }
-    
-    public static String getPeriodString(Integer periodId, Integer languageId) 
-            throws NamingException, FinderException {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        OrderPeriodEntityLocalHome orderHome =
-                (OrderPeriodEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderPeriodEntityLocalHome.class,
-                OrderPeriodEntityLocalHome.JNDI_NAME);
-
-        OrderPeriodEntityLocal period = orderHome.findByPrimaryKey(periodId);
-        
-        return period.getDescription(languageId);
-    }
-    
-    public static String getBillingTypeString(Integer typeId, 
-            Integer languageId) throws NamingException, FinderException {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        OrderBillingTypeEntityLocalHome orderHome =
-                (OrderBillingTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderBillingTypeEntityLocalHome.class,
-                OrderBillingTypeEntityLocalHome.JNDI_NAME);
-
-        OrderBillingTypeEntityLocal period = 
-                orderHome.findByPrimaryKey(typeId);
-
-        return period.getDescription(languageId);
-    }
-    
-    
-    public static OrderLineDTO getOrderLineDTO(Integer lineId) 
-            throws CreateException, NamingException, FinderException {    
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        OrderLineEntityLocalHome orderHome =
-                (OrderLineEntityLocalHome) EJBFactory.lookUpLocalHome(
-                OrderLineEntityLocalHome.class,
-                OrderLineEntityLocalHome.JNDI_NAME);
-
-         OrderLineEntityLocal orderLine = orderHome.findByPrimaryKey(lineId);
-         return new OrderLineDTO(lineId, orderLine.getItemId(), 
-                orderLine.getDescription(), orderLine.getAmount(),
-                orderLine.getQuantity(), orderLine.getPrice(), 
-                orderLine.getItemPrice(), orderLine.getCreateDate(),
-                orderLine.getDeleted());
-        
-    }
     
     public static Vector invoiceEJB2DTO(Collection invoices) {
         Vector dtos = new Vector();

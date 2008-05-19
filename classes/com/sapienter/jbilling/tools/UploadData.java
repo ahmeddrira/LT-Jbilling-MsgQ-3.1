@@ -45,8 +45,8 @@ import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.CustomerDTOEx;
@@ -377,13 +377,13 @@ public class UploadData {
                 }
 				
 				if (processOrders.booleanValue() && newUserId != null) {
-					NewOrderDTO summary = new NewOrderDTO();
+					OrderDTO summary = new OrderDTO();
                     String ext = fields[period].trim();
                     System.out.print("[" + ext + "]");
 					Integer periodId = Integer.valueOf((String) prop.get(
 							"order_period_" + ext));
-		            summary.setPeriod(periodId);
-		            summary.setUserId(newUserId);
+		            //summary.setPeriodId(periodId);
+		            //summary.setUserId(newUserId);
                     if (active_since >= 0) {
     		            summary.setActiveSince(Util.parseDate(
     		            		fields[active_since].trim()));
@@ -393,17 +393,17 @@ public class UploadData {
     		            		fields[active_until].trim()));
                     }
 		            // this makes it prepaid (2 is pospaid)
-		            summary.setBillingTypeId(new Integer(1));
+		            //summary.setBillingTypeId(new Integer(1));
 		            NewOrderSession nOrderS = nOrderHome.create(summary, 
 		            		languageId);
 		            // add the item (quantity = 1)
 		            Integer itemId = Integer.valueOf((String) prop.getProperty(
         					"item_id"));
-		            NewOrderDTO thisOrder = nOrderS.addItem(
+		            OrderDTO thisOrder = nOrderS.addItem(
 		            		itemId, new Integer(1), newUserId,entityId);
 		            // to edit the total I need to get the line ..
-		            OrderLineDTOEx thisLine = (OrderLineDTOEx) thisOrder.
-							getOrderLine(itemId.toString());
+		            OrderLineDTO thisLine = (OrderLineDTO) thisOrder.
+							getLine(itemId);
 		            Float price = new Float(0);
 		            if (fields[total] != null && fields[total].length() > 0) {
 		            	price = Float.valueOf(fields[total]);

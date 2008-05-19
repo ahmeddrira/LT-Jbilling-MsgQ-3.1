@@ -51,8 +51,6 @@ import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
@@ -62,6 +60,9 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentInvoiceMapDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
@@ -327,13 +328,10 @@ public class InvoiceBL extends ResultList
             throw new SessionInternalError("An invoice has to be set before " +
                     "delete");
         }
-        // start by updateing purchase_order.next_billable_day if applicatble
+        // start by updating purchase_order.next_billable_day if applicatble
         // for each of the orders included in this invoice
-        Iterator it = invoice.getOrders().iterator();
-        while (it.hasNext()) {
-            OrderProcessEntityLocal orderProcess = (OrderProcessEntityLocal)
-                    it.next();
-            OrderEntityLocal order = orderProcess.getOrder();
+        for(OrderProcessDTO orderProcess : (Collection<OrderProcessDTO>) invoice.getOrders()) {
+            OrderDTO order = orderProcess.getPurchaseOrder();
             if (order.getNextBillableDay() == null) {
                 // the next billable day doesn't need updating
                 if (order.getStatusId().equals(
@@ -359,13 +357,13 @@ public class InvoiceBL extends ResultList
         
         // go over the order process records again just to delete them
         // we are done with this order, delete the process row
-        it = invoice.getOrders().iterator();
-        while (it.hasNext()) {
-            OrderProcessEntityLocal orderProcess = (OrderProcessEntityLocal)
-                    it.next();
-            orderProcess.remove();
-            it = invoice.getOrders().iterator();
+        for(OrderProcessDTO orderProcess : (Collection<OrderProcessDTO>) invoice.getOrders()) {
+            OrderDTO order = orderProcess.getPurchaseOrder();
+            OrderProcessDAS das = new OrderProcessDAS();
+            order.getOrderProcesses().remove(orderProcess);
+            das.delete(orderProcess);
         }
+        invoice.getOrders().clear();
         
         // get rid of the contact associated with this invoice
         try {
@@ -379,7 +377,7 @@ public class InvoiceBL extends ResultList
 
         // remove the payment link/s
         PaymentBL payment = new PaymentBL();
-        it = invoice.getPaymentMap().iterator();
+        Iterator it = invoice.getPaymentMap().iterator();
         while (it.hasNext()) {
             PaymentInvoiceMapEntityLocal map = (PaymentInvoiceMapEntityLocal)
                     it.next();
@@ -458,7 +456,7 @@ public class InvoiceBL extends ResultList
             userId = order.getEntity().getUser().getUserId();
         } else {
             userId = order.getEntity().getUser().getCustomer().getParent().
-                    getUser().getUserId();
+                    getBaseUser().getUserId();
         }
         cachedResults.setInt(1, userId.intValue());
         execute();
@@ -884,10 +882,11 @@ public class InvoiceBL extends ResultList
             OrderBL bl = new OrderBL();
             for (Iterator it = invoice.getOrders().iterator(); 
                     it.hasNext(); ) {
-                OrderEntityLocal order = ((OrderProcessEntityLocal) 
-                        it.next()).getOrder();
+                OrderDTO order = ((OrderProcessDTO) 
+                        it.next()).getPurchaseOrder();
                 
                 bl.set(order);
+                order.touch();
                 invoiceDTO.getOrders().add(bl.getDTO());
             }
         } catch (NamingException e1) {

@@ -22,11 +22,11 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.util.Date;
 
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 
 public interface OrderPeriodTask {
-    Date calculateStart(OrderEntityLocal order) throws TaskException;
-    Date calculateEnd(OrderEntityLocal order, 
+    Date calculateStart(OrderDTO order) throws TaskException;
+    Date calculateEnd(OrderDTO order, 
             Date processDate, int maxPeriods) throws TaskException;
     public int getPeriods(); // how many periods got included in between those two dates
 }

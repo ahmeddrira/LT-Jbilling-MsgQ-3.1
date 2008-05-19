@@ -20,7 +20,7 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 
 /**
  * Defines the methods for those tasks that will be configured in the
@@ -33,5 +33,5 @@ import com.sapienter.jbilling.server.order.NewOrderDTO;
 
 
 public interface OrderProcessingTask {
-    public void doProcessing(NewOrderDTO order) throws TaskException;
+    public void doProcessing(OrderDTO order) throws TaskException;
 }

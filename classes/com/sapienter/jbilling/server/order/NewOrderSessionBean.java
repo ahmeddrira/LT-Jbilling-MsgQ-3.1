@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.order;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
-import javax.ejb.FinderException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
@@ -30,10 +29,9 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.item.CurrencyBL;
-import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 /**
  *
@@ -54,6 +52,8 @@ import com.sapienter.jbilling.server.user.UserBL;
 
 public class NewOrderSessionBean implements SessionBean {
 
+    private static final Logger LOG = Logger.getLogger(NewOrderSessionBean.class);
+
     // -------------------------------------------------------------------------
     // Static
     // -------------------------------------------------------------------------
@@ -63,9 +63,8 @@ public class NewOrderSessionBean implements SessionBean {
     // -------------------------------------------------------------------------
 
     private SessionContext mContext;
-    private transient OrderBL newOrder = null;
     private Integer language = null;
-    private NewOrderDTO newOrderDto = null;
+    private OrderDTO order;
 
     // -------------------------------------------------------------------------
     // Methods
@@ -78,59 +77,60 @@ public class NewOrderSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public NewOrderDTO addItem(Integer itemID, Integer quantity, 
+    public OrderDTO addItem(Integer itemID, Integer quantity, 
             Integer userId, Integer entityId) 
             throws SessionInternalError {
 
-            Logger log = Logger.getLogger(NewOrderSessionBean.class);
-            log.debug("Adding item " + itemID + " q:" + quantity);
+            LOG.debug("Adding item " + itemID + " q:" + quantity);
 
-            newOrder.addItem(itemID, quantity, language, userId, entityId, 
-                    newOrderDto.getCurrencyId());
-
-            return newOrder.getNewOrderDTO();
+            OrderBL bl = new OrderBL(order);
+            bl.addItem(itemID, quantity, language, userId, entityId, 
+                    order.getCurrencyId());
+            return order;
 
     }
 
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public NewOrderDTO deleteItem(Integer itemID) throws SessionInternalError {
+    public OrderDTO deleteItem(Integer itemID) throws SessionInternalError {
         Logger log = Logger.getLogger(NewOrderSessionBean.class);
         log.debug("Deleting item " + itemID);
 
-        newOrder.deleteItem(itemID);
+        new OrderBL(order).deleteItem(itemID);
 
-        return newOrder.getNewOrderDTO();
+        return order;
 
     }
 
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public NewOrderDTO recalculate(NewOrderDTO modifiedOrder, Integer entityId) 
-            throws SessionInternalError {
+    public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId) 
+            throws NamingException {
         
-        newOrder.setDTO(modifiedOrder);
-        newOrder.recalculate(entityId);
-        return newOrder.getNewOrderDTO();
+        OrderBL bl = new OrderBL();
+        bl.set(modifiedOrder);
+        bl.recalculate(entityId);
+        return bl.getDTO();
     }
     
     /**
     * @ejb:interface-method view-type="remote"
     */
     public Integer createUpdate(Integer entityId, Integer executorId, 
-            NewOrderDTO order) throws SessionInternalError {
+            OrderDTO order) throws SessionInternalError {
         Integer retValue = null;
         if (language == null) {
             throw new SessionInternalError("The language has to be set.");
         }    
         try {
+        	OrderBL bl = new OrderBL();
             if (order.getId() == null) {
-                retValue = newOrder.create(entityId, executorId, order);
+                retValue = bl.create(entityId, executorId, new OrderDTO(order));
             } else {
-                newOrder.set(order.getId());
-                newOrder.update(executorId, order);
+                bl.set(order.getId());
+                bl.update(executorId, order);
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -148,22 +148,16 @@ public class NewOrderSessionBean implements SessionBean {
     *
     * @ejb:create-method view-type="remote"
     */
-    public void ejbCreate(NewOrderDTO bean, Integer languageId) 
+    public void ejbCreate(OrderDTO bean, Integer languageId) 
             throws CreateException {
         
         try {
-            newOrderDto = bean;
-            newOrder = new OrderBL(bean);
+        	order = bean;
             setLanguage(languageId);
-            // initialize the currency
-            UserBL user = new UserBL(newOrderDto.getUserId());
-            newOrderDto.setCurrencyId(user.getCurrencyId());
-            CurrencyBL currency = new CurrencyBL(newOrderDto.getCurrencyId());
-            newOrderDto.setCurrencySymbol(currency.getEntity().getSymbol());
-            
+            UserBL user = new UserBL(order.getBaseUserByUserId().getId());
+            order.setCurrency(new CurrencyDAS().find(user.getCurrencyId()));
         } catch (Exception e) {
-            Logger.getLogger(NewOrderSessionBean.class).debug(
-                    "creation of bean", e);
+            LOG.debug("creation of bean", e);
             throw new CreateException(e.toString());
         }
     }
@@ -187,7 +181,7 @@ public class NewOrderSessionBean implements SessionBean {
     }
 
     public void ejbActivate() throws EJBException {
-        try { newOrder = new OrderBL(newOrderDto); } catch (Exception e) {}
+        //try { newOrder = new OrderBL(newOrderDto); } catch (Exception e) {}
 //        log = Logger.getLogger(NewOrderSessionBean.class);
     }
 

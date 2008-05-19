@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.util.db;
 
 
 import java.util.HashSet;
@@ -32,13 +32,23 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.sapienter.jbilling.server.order.db.PurchaseOrder;
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.util.db.generated.CurrencyExchange;
+import com.sapienter.jbilling.server.util.db.generated.ItemPrice;
+import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
+import com.sapienter.jbilling.server.util.db.generated.Partner;
+import com.sapienter.jbilling.server.util.db.generated.Payment;
+import com.sapienter.jbilling.server.util.db.generated.ProcessRunTotal;
 
 @Entity
 @Table(name="currency")
-public class Currency  implements java.io.Serializable {
+public class CurrencyDTO extends AbstractDescription  implements java.io.Serializable {
 
 
      private int id;
@@ -47,7 +57,7 @@ public class Currency  implements java.io.Serializable {
      private String countryCode;
      private Set<Company> entities = new HashSet<Company>(0);
      private Set<BaseUser> baseUsers = new HashSet<BaseUser>(0);
-     private Set<PurchaseOrder> purchaseOrders = new HashSet<PurchaseOrder>(0);
+     private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
      private Set<Partner> partners = new HashSet<Partner>(0);
      private Set<Payment> payments = new HashSet<Payment>(0);
      private Set<CurrencyExchange> currencyExchanges = new HashSet<CurrencyExchange>(0);
@@ -57,24 +67,28 @@ public class Currency  implements java.io.Serializable {
      private Set<ProcessRunTotal> processRunTotals = new HashSet<ProcessRunTotal>(0);
      private Set<ItemUserPrice> itemUserPrices = new HashSet<ItemUserPrice>(0);
 
-    public Currency() {
+    public CurrencyDTO() {
     }
 
+    // for stubs
+    public CurrencyDTO(Integer id) {
+    	this.id = id;
+    }
 	
-    public Currency(int id, String symbol, String code, String countryCode) {
+    public CurrencyDTO(int id, String symbol, String code, String countryCode) {
         this.id = id;
         this.symbol = symbol;
         this.code = code;
         this.countryCode = countryCode;
     }
-    public Currency(int id, String symbol, String code, String countryCode, Set<Company> entities, Set<BaseUser> baseUsers, Set<PurchaseOrder> purchaseOrders, Set<Partner> partners, Set<Payment> payments, Set<CurrencyExchange> currencyExchanges, Set<Company> entities_1, Set<Invoice> invoices, Set<ItemPrice> itemPrices, Set<ProcessRunTotal> processRunTotals, Set<ItemUserPrice> itemUserPrices) {
+    public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<Company> entities, Set<BaseUser> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<Payment> payments, Set<CurrencyExchange> currencyExchanges, Set<Company> entities_1, Set<Invoice> invoices, Set<ItemPrice> itemPrices, Set<ProcessRunTotal> processRunTotals, Set<ItemUserPrice> itemUserPrices) {
        this.id = id;
        this.symbol = symbol;
        this.code = code;
        this.countryCode = countryCode;
        this.entities = entities;
        this.baseUsers = baseUsers;
-       this.purchaseOrders = purchaseOrders;
+       this.orderDTOs = orderDTOs;
        this.partners = partners;
        this.payments = payments;
        this.currencyExchanges = currencyExchanges;
@@ -84,9 +98,13 @@ public class Currency  implements java.io.Serializable {
        this.processRunTotals = processRunTotals;
        this.itemUserPrices = itemUserPrices;
     }
-   
-     @Id 
-    
+ 
+    @Transient
+    protected String getTable() {
+    	return Constants.TABLE_CURRENCY;
+    }
+
+    @Id 
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -139,12 +157,12 @@ public class Currency  implements java.io.Serializable {
         this.baseUsers = baseUsers;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
-    public Set<PurchaseOrder> getPurchaseOrders() {
-        return this.purchaseOrders;
+    public Set<OrderDTO> getPurchaseOrders() {
+        return this.orderDTOs;
     }
     
-    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
-        this.purchaseOrders = purchaseOrders;
+    public void setPurchaseOrders(Set<OrderDTO> orderDTOs) {
+        this.orderDTOs = orderDTOs;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<Partner> getPartners() {

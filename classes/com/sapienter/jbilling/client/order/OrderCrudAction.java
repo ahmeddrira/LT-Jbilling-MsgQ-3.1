@@ -20,12 +20,12 @@ import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.item.PromotionDTOEx;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
-import com.sapienter.jbilling.server.order.OrderPeriodDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 
-public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
+public class OrderCrudAction extends CrudActionBase<OrderDTO> {
 	private static final String FORM_ORDER = "order";
 
 	private static final String FORWARD_EDIT = "order_edit";
@@ -57,7 +57,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 	
 	@Override
 	protected ForwardAndMessage doSetup() throws RemoteException {
-        OrderDTOEx dto = (OrderDTOEx) session.getAttribute(
+        OrderDTO dto = (OrderDTO) session.getAttribute(
                 Constants.SESSION_ORDER_DTO);
         
         myForm.set(FIELD_PERIOD, dto.getPeriodId());
@@ -88,19 +88,23 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 	}
 	
 	@Override
-	protected NewOrderDTO doEditFormToDTO() throws RemoteException {
+	protected OrderDTO doEditFormToDTO() throws RemoteException {
         // this is kind of a wierd case. The dto in the session is all
         // it is required to edit.
 
-		NewOrderDTO summary = (NewOrderDTO) session.getAttribute(
+		OrderDTO summary = (OrderDTO) session.getAttribute(
                 Constants.SESSION_ORDER_SUMMARY);
         
-		summary.setPeriod((Integer) myForm.get(FIELD_PERIOD));
+		OrderPeriodDTO period = new OrderPeriodDTO();
+		period.setId((Integer) myForm.get(FIELD_PERIOD));
+		summary.setOrderPeriod(period);
         summary.setActiveSince(parseDate(FIELD_GROUP_SINCE, "order.prompt.activeSince"));
         summary.setActiveUntil(parseDate(FIELD_GROUP_UNTIL, "order.prompt.activeUntil"));
         summary.setNextBillableDay(parseDate(FIELD_GROUP_NEXT_BILLABLE, "order.prompt.nextBillableDay"));
 
-        summary.setBillingTypeId((Integer) myForm.get(FIELD_BILLING_TYPE));
+        OrderBillingTypeDTO type = new OrderBillingTypeDTO();
+        type.setId((Integer) myForm.get(FIELD_BILLING_TYPE));
+        summary.setOrderBillingType(type);
         summary.setPromoCode((String) myForm.get(FIELD_PROMO_CODE));
         
         summary.setNotify(fromCheckBox(FIELD_NOTIFY));
@@ -111,7 +115,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
         summary.setNotes((String) myForm.get(FIELD_NOTES));
 
         summary.setAnticipatePeriods(getIntegerFieldValue(FIELD_ANTICIPATE_PERIODS));
-        summary.setPeriodStr(getOptionDescription(summary.getPeriod(), Constants.PAGE_ORDER_PERIODS));
+        summary.setPeriodStr(getOptionDescription(summary.getPeriodId(), Constants.PAGE_ORDER_PERIODS));
         summary.setBillingTypeStr(getOptionDescription(summary.getBillingTypeId(), Constants.PAGE_BILLING_TYPE));
         summary.setDueDateUnitId((Integer) myForm.get(FIELD_DUE_DATE_UNIT_ID));
         summary.setDueDateValue(getIntegerFieldValue(FIELD_DUE_DATE_VALUE));
@@ -128,7 +132,7 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 		}
 
         // this is the original order, needed now for validations
-        OrderDTOEx orderDTO = (OrderDTOEx) session.getAttribute(
+        OrderDTO orderDTO = (OrderDTO) session.getAttribute(
                 Constants.SESSION_ORDER_DTO);
         
         // validate the dates if there is a date of expiration
@@ -150,12 +154,12 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
             }
             
             // only if it is a recurring order
-            if (!summary.getPeriod().equals(new Integer(1))) {
+            if (!summary.getPeriodId().equals(com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE)) {
                 // the whole period has to be a multiple of the period unit
                 // This is true, until there is support for prorating.
                 JNDILookup EJBFactory = null;
                 OrderSessionHome orderHome;
-                OrderPeriodDTOEx period;
+                OrderPeriodDTO myPeriod;
                 try {
                     EJBFactory = JNDILookup.getFactory(false);
                     orderHome = (OrderSessionHome) EJBFactory.lookUpHome(
@@ -163,8 +167,8 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
                             OrderSessionHome.JNDI_NAME);
         
                     OrderSession orderSession = orderHome.create();
-                    period = orderSession.getPeriod(
-                            languageId, summary.getPeriod());
+                    myPeriod = orderSession.getPeriod(
+                            languageId, summary.getPeriodId());
                 } catch (Exception e) {
                     throw new SessionInternalError("Validating date periods", 
                             OrderCrudAction.class, e);
@@ -173,8 +177,8 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
                 GregorianCalendar toTest = new GregorianCalendar();
                 toTest.setTime(start);
                 while (toTest.getTime().before(summary.getActiveUntil())) {
-                    toTest.add(MapPeriodToCalendar.map(period.getUnitId()),
-                            period.getValue().intValue());
+                    toTest.add(MapPeriodToCalendar.map(myPeriod.getUnitId()),
+                    		myPeriod.getValue().intValue());
                 }
                 if (!toTest.getTime().equals(summary.getActiveUntil())) {
                     LOG.debug("Fraction of a period:" + toTest.getTime() +
@@ -259,12 +263,12 @@ public class OrderCrudAction extends CrudActionBase<NewOrderDTO> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(NewOrderDTO dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(OrderDTO dto) throws RemoteException {
 		return new ForwardAndMessage(FORWARD_ITEMS);
 	}
 	
 	@Override
-	protected ForwardAndMessage doCreate(NewOrderDTO dto) throws RemoteException {
+	protected ForwardAndMessage doCreate(OrderDTO dto) throws RemoteException {
 		return new ForwardAndMessage(FORWARD_ITEMS);
 	}
 	

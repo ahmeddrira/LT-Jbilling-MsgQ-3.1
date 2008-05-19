@@ -36,7 +36,7 @@
 			<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' property="numberOfLines"/></td>
 		</tr>
 
-		<logic:iterate id="orderLine" name='<%=Constants.SESSION_ORDER_SUMMARY%>' property="orderLines" >
+		<logic:iterate id="orderLine" name='<%=Constants.SESSION_ORDER_SUMMARY%>' property="lines" >
 			<logic:equal name="orderLine" property="typeId" value="1" >
 				<c:choose>
 					<c:when test="${colorFlag == 1}">

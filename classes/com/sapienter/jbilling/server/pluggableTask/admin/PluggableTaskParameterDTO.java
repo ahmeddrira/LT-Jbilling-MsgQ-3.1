@@ -42,6 +42,8 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -53,7 +55,7 @@ import org.apache.log4j.Logger;
         allocationSize=10
         )
 @Table(name = "pluggable_task_parameter")
-// no cache, it might change too often
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PluggableTaskParameterDTO implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(PluggableTaskParameterDTO.class);

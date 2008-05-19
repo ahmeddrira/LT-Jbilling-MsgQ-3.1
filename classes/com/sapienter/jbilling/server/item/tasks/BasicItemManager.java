@@ -26,30 +26,30 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
 public class BasicItemManager extends PluggableTask implements IItemPurchaseManager {
 
     protected ItemDTOEx item = null;
-    private OrderLineDTOEx latestLine = null;
+    private OrderLineDTO latestLine = null;
     
     public void addItem(Integer itemID, Integer quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            NewOrderDTO newOrder, Vector<Record> records) throws TaskException {
+            OrderDTO newOrder, Vector<Record> records) throws TaskException {
 
         // check if the item is already in the order
-        OrderLineDTOEx line = (OrderLineDTOEx) newOrder.getOrderLine(itemID);
+        OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
-        OrderLineDTOEx myLine = new OrderLineDTOEx();
+        OrderLineDTO myLine = new OrderLineDTO();
         myLine.setItemId(itemID);
         myLine.setQuantity(quantity);
         populateOrderLine(language, userId, entityId, currencyId, myLine, records);
         if (line == null) { // not yet there
-            newOrder.setOrderLine(itemID, myLine);
+            newOrder.getLines().add(myLine);
             latestLine = myLine;
         } else {
             // the item is there, I just have to update the quantity
@@ -72,7 +72,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
      * @param line
      */
     public void populateOrderLine(Integer language, Integer userId, 
-            Integer entityId, Integer currencyId, OrderLineDTOEx line, 
+            Integer entityId, Integer currencyId, OrderLineDTO line, 
             Vector<Record> records) {
         ItemBL itemBL = new ItemBL(line.getItemId());
         if (records != null) {
@@ -111,14 +111,14 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             line.setAmount(new Float(additionAmount.floatValue()));
         }
         line.setItemPrice(0);
-        line.setCreateDate(null);
+        line.setCreateDatetime(null);
         line.setDeleted(0);
         line.setTypeId(item.getOrderLineTypeId());
         line.setEditable(editable);
-        line.setItem(item);
+        line.setItemDto(item);
     }
 
-    public OrderLineDTOEx getLatestLine() {
+    public OrderLineDTO getLatestLine() {
         return latestLine;
     }
 }

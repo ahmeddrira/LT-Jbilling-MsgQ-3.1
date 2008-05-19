@@ -56,8 +56,6 @@ import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
 import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.PermissionEntityLocal;
 import com.sapienter.jbilling.interfaces.PermissionUserEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
@@ -74,6 +72,8 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.user.db.BaseUser;
@@ -758,7 +758,7 @@ public class UserBL extends ResultList
         }
         // orders
         for (Iterator it = user.getOrders().iterator(); it.hasNext();) {
-            OrderEntityLocal order =  (OrderEntityLocal) it.next();
+            OrderDTO order =  (OrderDTO) it.next();
             order.setDeleted(deleted);
         }
         // permisions
@@ -1224,8 +1224,8 @@ public class UserBL extends ResultList
             Integer id = invoice.getLastByUser(user.getUserId());
             if (id != null) {
                 invoice = new InvoiceBL(id);
-                for(OrderProcessEntityLocal period: 
-                    (Collection<OrderProcessEntityLocal>)invoice.getEntity().getOrders()) {
+                for(OrderProcessDTO period: 
+                    (Collection<OrderProcessDTO>)invoice.getEntity().getOrders()) {
                     
                     LOG.debug("testing from " + period.getPeriodStart() +
                             " tp " + period.getPeriodEnd() + " for " + forDate);

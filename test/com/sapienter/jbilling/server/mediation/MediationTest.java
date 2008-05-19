@@ -78,7 +78,7 @@ public class MediationTest extends TestCase {
             assertTrue("The one time order for 11/15 is missing", foundSecond);
             
             // verify that the two events with different prices add up well
-            OrderWS order = api.getOrder(1088);
+            OrderWS order = api.getOrder(10763);
             int total = 0;
             for (OrderLineWS line: order.getOrderLines()) {
             	total += line.getAmount();

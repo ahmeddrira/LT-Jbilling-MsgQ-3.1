@@ -369,9 +369,12 @@ public class GatewayBL {
             orderLines.toArray(lines);
             log.debug("line2=" + lines.length);
             order.setOrderLines(lines);
-            
+
+            /*
             Integer newOrderId = orderSession.create(order, entityId, 
                     rootUserName, process.intValue() == 1);
+                    */
+            Integer newOrderId = null; // TODO. refactor previous line
             RetValue ret = new RetValue("r_order_id", newOrderId.toString());
             resultFields.add(ret);
             

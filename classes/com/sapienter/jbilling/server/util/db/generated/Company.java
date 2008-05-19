@@ -40,8 +40,12 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
 @Table(name="entity")
@@ -50,15 +54,15 @@ public class Company  implements java.io.Serializable {
 
 
      private int id;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private Language language;
      private String externalId;
      private String description;
      private Date createDatetime;
      private Set<AgeingEntityStep> ageingEntitySteps = new HashSet<AgeingEntityStep>(0);
      private Set<PaymentMethod> paymentMethods = new HashSet<PaymentMethod>(0);
-     private Set<OrderPeriod> orderPeriods = new HashSet<OrderPeriod>(0);
-     private Set<BillingProcess> billingProcesses = new HashSet<BillingProcess>(0);
+     private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);
+     private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
      private Set<BaseUser> baseUsers = new HashSet<BaseUser>(0);
      private Set<ContactType> contactTypes = new HashSet<ContactType>(0);
      private Set<Item> items = new HashSet<Item>(0);
@@ -66,7 +70,7 @@ public class Company  implements java.io.Serializable {
      private Set<NotificationMessage> notificationMessages = new HashSet<NotificationMessage>(0);
      private Set<Report> reports = new HashSet<Report>(0);
      private Set<ContactFieldType> contactFieldTypes = new HashSet<ContactFieldType>(0);
-     private Set<Currency> currencies = new HashSet<Currency>(0);
+     private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
      private Set<ItemType> itemTypes = new HashSet<ItemType>(0);
      private Set<BillingProcessConfiguration> billingProcessConfigurations = new HashSet<BillingProcessConfiguration>(0);
      private Set<InvoiceDeliveryMethod> invoiceDeliveryMethods = new HashSet<InvoiceDeliveryMethod>(0);
@@ -76,23 +80,23 @@ public class Company  implements java.io.Serializable {
     }
 
 	
-    public Company(int id, Currency currency, Language language, String description, Date createDatetime) {
+    public Company(int id, CurrencyDTO currencyDTO, Language language, String description, Date createDatetime) {
         this.id = id;
-        this.currency = currency;
+        this.currencyDTO = currencyDTO;
         this.language = language;
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public Company(int id, Currency currency, Language language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriod> orderPeriods, Set<BillingProcess> billingProcesses, Set<BaseUser> baseUsers, Set<ContactType> contactTypes, Set<Item> items, Set<EventLogDTO> eventLogs, Set<NotificationMessage> notificationMessages, Set<Report> reports, Set<ContactFieldType> contactFieldTypes, Set<Currency> currencies, Set<ItemType> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntity> listEntities) {
+    public Company(int id, CurrencyDTO currencyDTO, Language language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<BaseUser> baseUsers, Set<ContactType> contactTypes, Set<Item> items, Set<EventLogDTO> eventLogs, Set<NotificationMessage> notificationMessages, Set<Report> reports, Set<ContactFieldType> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemType> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntity> listEntities) {
        this.id = id;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.language = language;
        this.externalId = externalId;
        this.description = description;
        this.createDatetime = createDatetime;
        this.ageingEntitySteps = ageingEntitySteps;
        this.paymentMethods = paymentMethods;
-       this.orderPeriods = orderPeriods;
+       this.orderPeriodDTOs = orderPeriodDTOs;
        this.billingProcesses = billingProcesses;
        this.baseUsers = baseUsers;
        this.contactTypes = contactTypes;
@@ -101,7 +105,7 @@ public class Company  implements java.io.Serializable {
        this.notificationMessages = notificationMessages;
        this.reports = reports;
        this.contactFieldTypes = contactFieldTypes;
-       this.currencies = currencies;
+       this.currencyDTOs = currencyDTOs;
        this.itemTypes = itemTypes;
        this.billingProcessConfigurations = billingProcessConfigurations;
        this.invoiceDeliveryMethods = invoiceDeliveryMethods;
@@ -120,12 +124,12 @@ public class Company  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id", nullable=false)
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="language_id", nullable=false)
@@ -182,20 +186,21 @@ public class Company  implements java.io.Serializable {
     public void setPaymentMethods(Set<PaymentMethod> paymentMethods) {
         this.paymentMethods = paymentMethods;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
-    public Set<OrderPeriod> getOrderPeriods() {
-        return this.orderPeriods;
-    }
     
-    public void setOrderPeriods(Set<OrderPeriod> orderPeriods) {
-        this.orderPeriods = orderPeriods;
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="company")
+    public Set<OrderPeriodDTO> getOrderPeriods() {
+        return this.orderPeriodDTOs;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
-    public Set<BillingProcess> getBillingProcesses() {
+    public void setOrderPeriods(Set<OrderPeriodDTO> orderPeriodDTOs) {
+        this.orderPeriodDTOs = orderPeriodDTOs;
+    }
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+    public Set<BillingProcessDTO> getBillingProcesses() {
         return this.billingProcesses;
     }
     
-    public void setBillingProcesses(Set<BillingProcess> billingProcesses) {
+    public void setBillingProcesses(Set<BillingProcessDTO> billingProcesses) {
         this.billingProcesses = billingProcesses;
     }
     
@@ -264,12 +269,12 @@ public class Company  implements java.io.Serializable {
     @JoinTable(name="currency_entity_map", joinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="currency_id", updatable=false) })
-    public Set<Currency> getCurrencies() {
-        return this.currencies;
+    public Set<CurrencyDTO> getCurrencies() {
+        return this.currencyDTOs;
     }
     
-    public void setCurrencies(Set<Currency> currencies) {
-        this.currencies = currencies;
+    public void setCurrencies(Set<CurrencyDTO> currencyDTOs) {
+        this.currencyDTOs = currencyDTOs;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
     public Set<ItemType> getItemTypes() {

@@ -34,11 +34,12 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 
 /**
  * Now this just takes the period from the request and puts it
- * in the NewOrderDTO that is already in the session
+ * in the OrderDTO that is already in the session
  * @author emilc
  *
  */
@@ -53,8 +54,8 @@ public class PeriodSelectionAction extends Action {
         Logger log = Logger.getLogger(ReviewOrderAction.class);
 
         HttpSession session = request.getSession(false);
-        NewOrderDTO summary =
-            (NewOrderDTO) session.getAttribute(Constants.SESSION_ORDER_SUMMARY);
+        OrderDTO summary =
+            (OrderDTO) session.getAttribute(Constants.SESSION_ORDER_SUMMARY);
 
 		
         Integer period =
@@ -62,7 +63,9 @@ public class PeriodSelectionAction extends Action {
                 (String)request.getParameter(Constants.REQUEST_ORDER_PERIOD));
         log.debug("got period =" + period);        
         
-        summary.setPeriod(period);
+        OrderPeriodDTO dto = new OrderPeriodDTO();
+        dto.setId(period);
+        summary.setOrderPeriod(dto);
         
 
         return mapping.findForward("showOrderItems");

@@ -27,6 +27,7 @@ package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
@@ -57,9 +58,8 @@ import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 
 /**
  * @author Emil
@@ -76,7 +76,7 @@ public class ReviewOrderAction extends Action {
         ActionErrors errors = new ActionErrors();
         ActionMessages messages = new ActionMessages();
         session = request.getSession(false);
-        NewOrderDTO newOrder = (NewOrderDTO) session.getAttribute(
+        OrderDTO newOrder = (OrderDTO) session.getAttribute(
                 Constants.SESSION_ORDER_SUMMARY);
         String forward = null;
 
@@ -106,16 +106,13 @@ public class ReviewOrderAction extends Action {
                             Constants.SESSION_ENTITY_ID_KEY));
                 // initializing the wraping form to allow displaying and
                 // updating the dto
-                ((NewOrderDTOForm) form).setOrderLines(
-                    newOrder.getOrderLinesMap());
+                Hashtable hashlines = new Hashtable();
+                ((NewOrderDTOForm) form).setOrderLines(hashlines);
                 // the price has to be formated i18n
-                for(Iterator it = newOrder.getOrderLinesMap().keySet().iterator();
-                        it.hasNext();) {
-                    Integer key = (Integer) it.next();
-                    OrderLineDTOEx line = (OrderLineDTOEx) newOrder.
-                            getOrderLinesMap().get(key);
+                for(OrderLineDTO line : newOrder.getLines()) {
                     line.setPriceStr(FormHelper.float2string(
                             line.getPrice(), session));
+                    hashlines.put(line.getItemId(), line);
                 }
                 
                 log.debug("The form has been set");
@@ -140,11 +137,7 @@ public class ReviewOrderAction extends Action {
                 if (request.getParameter("recalc") != null) {
                     log.debug("recaclculate!");
                     // the price has to be formated i18n
-                    for(Iterator it = newOrder.getOrderLinesMap().keySet().iterator();
-                            it.hasNext();) {
-                        Integer key = (Integer) it.next();
-                        OrderLineDTOEx line = (OrderLineDTOEx) newOrder.
-                                getOrderLinesMap().get(key);
+                    for(OrderLineDTO line : newOrder.getLines()) {
                         if (!line.getEditable().booleanValue()) //probalby a tax
                             continue;
                         line.setPrice(FormHelper.string2float(
@@ -209,28 +202,28 @@ public class ReviewOrderAction extends Action {
                             Constants.SESSION_LIST_ID_SELECTED)
                         : Integer.valueOf(request.getParameter("id"));
                 
-                OrderDTOEx orderDto = putOrderInSession(orderId, request);
+                OrderDTO orderDto = putOrderInSession(orderId, request);
                         
                 NewOrderDTOForm dto = new NewOrderDTOForm();
-                NewOrderDTO nDto = new NewOrderDTO();
-                for (Iterator it = orderDto.getOrderLines().iterator();
+                for (Iterator it = orderDto.getLines().iterator();
                         it.hasNext();) {
-                    OrderLineDTOEx line = (OrderLineDTOEx) it.next();
+                    OrderLineDTO line = (OrderLineDTO) it.next();
                     // gst and other 'automatic' lines dont have item id ...
                     if (line.getItemId() != null) {
                         dto.setOrderLine(line.getItemId().toString(), line); 
-                        nDto.setOrderLine(line.getItemId(), line);
                     } 
                 }
+                /*
                 nDto.setActiveSince(orderDto.getActiveSince());
                 nDto.setActiveUntil(orderDto.getActiveUntil());
                 nDto.setUserId(orderDto.getUser().getUserId());
                 nDto.setPeriod(orderDto.getPeriodId());
                 nDto.setId(orderDto.getId()); // this will later trigger an update instead of a create
                 nDto.setBillingTypeId(orderDto.getBillingTypeId());
+                */
                 
                 session.setAttribute("orderDTOForm", dto);
-                session.setAttribute(Constants.SESSION_ORDER_SUMMARY, nDto);
+                session.setAttribute(Constants.SESSION_ORDER_SUMMARY, orderDto);
                 
                 // the user has to be also in the session
                 session.setAttribute(Constants.SESSION_USER_ID, 
@@ -272,7 +265,7 @@ public class ReviewOrderAction extends Action {
 
     }
     
-    private OrderDTOEx putOrderInSession(Integer orderId,
+    private OrderDTO putOrderInSession(Integer orderId,
             HttpServletRequest request) 
             throws SessionInternalError, NamingException, RemoteException,
                 CreateException {
@@ -285,7 +278,7 @@ public class ReviewOrderAction extends Action {
                 
         OrderSession order = orderHome.create();
 
-        OrderDTOEx orderDto = order.getOrderEx(orderId,
+        OrderDTO orderDto = order.getOrderEx(orderId,
                 (Integer) session.getAttribute(
                     Constants.SESSION_LANGUAGE));
         // I'll need this information later

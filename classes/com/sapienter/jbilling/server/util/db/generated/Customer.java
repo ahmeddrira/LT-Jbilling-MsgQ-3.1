@@ -20,12 +20,18 @@
 package com.sapienter.jbilling.server.util.db.generated;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.sapienter.jbilling.server.user.db.BaseUser;
@@ -39,16 +45,17 @@ public class Customer  implements java.io.Serializable {
      private BaseUser baseUser;
      private InvoiceDeliveryMethod invoiceDeliveryMethod;
      private Partner partner;
-     private Short referralFeePaid;
+     private Integer referralFeePaid;
      private String notes;
      private Integer autoPaymentType;
      private Integer dueDateUnitId;
      private Integer dueDateValue;
-     private Short dfFm;
-     private Integer parentId;
-     private Short isParent;
+     private Integer dfFm;
+     private Customer parent;
+     private Set<Customer> children = new HashSet<Customer>(0);
+     private Integer isParent;
      private short excludeAging;
-     private Short invoiceChild;
+     private Integer invoiceChild;
      private Integer currentOrderId;
 
     public Customer() {
@@ -60,7 +67,9 @@ public class Customer  implements java.io.Serializable {
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
         this.excludeAging = excludeAging;
     }
-    public Customer(int id, BaseUser baseUser, InvoiceDeliveryMethod invoiceDeliveryMethod, Partner partner, Short referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, Integer dueDateValue, Short dfFm, Integer parentId, Short isParent, short excludeAging, Short invoiceChild, Integer currentOrderId) {
+    public Customer(int id, BaseUser baseUser, InvoiceDeliveryMethod invoiceDeliveryMethod, Partner partner, 
+    		Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, 
+    		Integer dueDateValue, Integer dfFm, Customer parent, Integer isParent, short excludeAging, Integer invoiceChild, Integer currentOrderId) {
        this.id = id;
        this.baseUser = baseUser;
        this.invoiceDeliveryMethod = invoiceDeliveryMethod;
@@ -71,7 +80,7 @@ public class Customer  implements java.io.Serializable {
        this.dueDateUnitId = dueDateUnitId;
        this.dueDateValue = dueDateValue;
        this.dfFm = dfFm;
-       this.parentId = parentId;
+       this.parent = parent;
        this.isParent = isParent;
        this.excludeAging = excludeAging;
        this.invoiceChild = invoiceChild;
@@ -88,7 +97,8 @@ public class Customer  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
     public BaseUser getBaseUser() {
         return this.baseUser;
@@ -117,11 +127,11 @@ public class Customer  implements java.io.Serializable {
     }
     
     @Column(name="referral_fee_paid")
-    public Short getReferralFeePaid() {
+    public Integer getReferralFeePaid() {
         return this.referralFeePaid;
     }
     
-    public void setReferralFeePaid(Short referralFeePaid) {
+    public void setReferralFeePaid(Integer referralFeePaid) {
         this.referralFeePaid = referralFeePaid;
     }
     
@@ -162,29 +172,40 @@ public class Customer  implements java.io.Serializable {
     }
     
     @Column(name="df_fm")
-    public Short getDfFm() {
+    public Integer getDfFm() {
         return this.dfFm;
     }
     
-    public void setDfFm(Short dfFm) {
+    public void setDfFm(Integer dfFm) {
         this.dfFm = dfFm;
     }
-    
-    @Column(name="parent_id")
-    public Integer getParentId() {
-        return this.parentId;
+
+    /*
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="parent_id")
+    public Set<Customer> getChildren() {
+    	return children;
     }
-    
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
+    public void setChildren(Set<Customer> children) {
+    	this.children = children;
     }
-    
+    */
+
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @JoinColumn(name="parent_id")
+    public Customer getParent() {
+        return this.parent;
+    }
+    public void setParent(Customer parent) {
+        this.parent = parent;
+    }
+
     @Column(name="is_parent")
-    public Short getIsParent() {
+    public Integer getIsParent() {
         return this.isParent;
     }
     
-    public void setIsParent(Short isParent) {
+    public void setIsParent(Integer isParent) {
         this.isParent = isParent;
     }
     
@@ -198,11 +219,11 @@ public class Customer  implements java.io.Serializable {
     }
     
     @Column(name="invoice_child")
-    public Short getInvoiceChild() {
+    public Integer getInvoiceChild() {
         return this.invoiceChild;
     }
     
-    public void setInvoiceChild(Short invoiceChild) {
+    public void setInvoiceChild(Integer invoiceChild) {
         this.invoiceChild = invoiceChild;
     }
     

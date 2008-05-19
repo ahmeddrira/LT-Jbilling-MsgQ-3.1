@@ -38,12 +38,12 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
-import com.sapienter.jbilling.interfaces.OrderLineEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -78,7 +78,7 @@ public class BasicCompositionTask extends PluggableTask
         Logger log = Logger.getLogger(BasicCompositionTask.class);
         
         for (int orderIndex=0; orderIndex < invoiceDTO.getOrders().size(); orderIndex++) {
-            OrderEntityLocal order = (OrderEntityLocal) invoiceDTO.
+            OrderDTO order = (OrderDTO) invoiceDTO.
                     getOrders().get(orderIndex);
             // check if this order has notes that should make it into the invoice
             if (order.getNotesInInvoice() != null &&
@@ -95,12 +95,12 @@ public class BasicCompositionTask extends PluggableTask
             
             // now go over the lines of this order, and generate the invoice
             // lines from them, excluding the tax ones.
-            Iterator orderLines = order.getOrderLines().iterator();
+            Iterator orderLines = order.getLines().iterator();
             while (orderLines.hasNext()) {
-                OrderLineEntityLocal orderLine = 
-                        (OrderLineEntityLocal) orderLines.next();
+                OrderLineDTO orderLine = 
+                        (OrderLineDTO) orderLines.next();
                 // skip deleted lines
-                if (orderLine.getDeleted().intValue() == 1) {
+                if (orderLine.getDeleted() == 1) {
                     continue;
                 }
                 for (int period = 1; period <= periods; period++) {
@@ -111,8 +111,8 @@ public class BasicCompositionTask extends PluggableTask
                     // interests, then recalculate taxes, etc...
                     // now the whole orders is just copied. 
                     InvoiceLineDTOEx invoiceLine = null;
-                    if (orderLine.getType().getId().equals(
-                            Constants.ORDER_LINE_TYPE_ITEM)) {
+                    if (orderLine.getOrderLineType().getId() == 
+                            Constants.ORDER_LINE_TYPE_ITEM) {
                         String desc;
                         try {
                             desc = composeDescription(userId,  order, 
@@ -124,7 +124,7 @@ public class BasicCompositionTask extends PluggableTask
                             throw new TaskException(e);
                         }
                         Integer type;
-                        if (userId.equals(order.getUser().getUserId())) {
+                        if (userId.equals(order.getUser().getId())) {
                             type = Constants.INVOICE_LINE_TYPE_ITEM;
                         } else {
                             type = Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT;
@@ -133,10 +133,10 @@ public class BasicCompositionTask extends PluggableTask
                                 orderLine.getAmount(), 
                                 orderLine.getPrice(), orderLine.getQuantity(),
                                 type, new Integer(0), orderLine.getItemId(),
-                                order.getUser().getUserId(), null);
+                                order.getUser().getId(), null);
                         
-                    } else if (orderLine.getType().getId().equals(
-                            Constants.ORDER_LINE_TYPE_TAX)){
+                    } else if (orderLine.getOrderLineType().getId() ==
+                            Constants.ORDER_LINE_TYPE_TAX){
                         // tax lines have to be consolidated
                         int taxLine = taxLinePresent(invoiceDTO.getResultLines(), 
                                 orderLine.getDescription());
@@ -156,16 +156,16 @@ public class BasicCompositionTask extends PluggableTask
                                 orderLine.getPrice(), 
                                 null, Constants.INVOICE_LINE_TYPE_TAX, 
                                 new Integer(0), orderLine.getItemId(),
-                                order.getUser().getUserId(), null);
-                    } else if (orderLine.getType().getId().equals(
-                            Constants.ORDER_LINE_TYPE_PENALTY)){
+                                order.getUser().getId(), null);
+                    } else if (orderLine.getOrderLineType().getId() ==
+                            Constants.ORDER_LINE_TYPE_PENALTY) {
                         invoiceLine = new InvoiceLineDTOEx(null, 
                                 orderLine.getDescription(),
                                 orderLine.getAmount(),
                                 null, null,
                                 Constants.INVOICE_LINE_TYPE_PENALTY, 
                                 new Integer(0), orderLine.getItemId(),
-                                order.getUser().getUserId(), null);
+                                order.getUser().getId(), null);
                     }
                     
                     // for the invoice to make sense when it is displayed,
@@ -221,25 +221,25 @@ public class BasicCompositionTask extends PluggableTask
     }
     
     private String composeDescription(Integer userId,
-            OrderEntityLocal order, String desc,
+            OrderDTO order, String desc,
             int period, Date start, Date end, int periods) throws SessionInternalError{
         StringBuffer retValue = new StringBuffer();
         
         retValue.append(desc);
         
-        if (!order.getPeriod().getId().equals(Constants.ORDER_PERIOD_ONCE)) {
-            Integer orderValueId = order.getPeriod().getValue();
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            Integer orderValueId = order.getOrderPeriod().getValue();
             // calculate the dates from/to
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(start);
             if (period > 1) {
-                cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()), 
+                cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getPeriodUnit().getId()), 
                         (period - 1) * orderValueId.intValue());
             }
             Date from = cal.getTime();
             // calculate the end date
             if (period < periods) {
-	            cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()), 
+	            cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getPeriodUnit().getId()), 
 	                    1 * orderValueId.intValue());
             } else {
             	// for the last period, take it from the calculated end date
@@ -252,7 +252,7 @@ public class BasicCompositionTask extends PluggableTask
             // now add this to the line
             if (locale == null) {
                 try {
-                    UserBL user = new UserBL(order.getUser());
+                    UserBL user = new UserBL(order.getBaseUserByUserId().getId());
                     locale = user.getLocale();
                 } catch (Exception e) {
                     throw new SessionInternalError(e);
@@ -291,7 +291,7 @@ public class BasicCompositionTask extends PluggableTask
             // get the string from the i18n file
             if (locale == null) {
                 try {
-                    UserBL user = new UserBL(order.getUser());
+                    UserBL user = new UserBL(order.getBaseUserByUserId().getId());
                     locale = user.getLocale();
                 } catch (Exception e) {
                     throw new SessionInternalError(e);

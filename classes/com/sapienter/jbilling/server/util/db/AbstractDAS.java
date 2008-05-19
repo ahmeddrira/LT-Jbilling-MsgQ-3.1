@@ -76,6 +76,11 @@ public abstract class AbstractDAS<T> {
     }
 
     
+    /**
+     * Merges the entity, creating or updating as necessary
+     * @param newEntity
+     * @return
+     */
     public T save(T newEntity) {
         //T retValue = em.merge(newEntity);
         T retValue = (T) getSession().merge(newEntity);
@@ -114,6 +119,7 @@ public abstract class AbstractDAS<T> {
      */
     @SuppressWarnings("unchecked")
     public T find(Serializable id) {
+    	if (id == null) return null;
         T entity = (T) getSession().load(getPersistentClass(), id);
 
         return entity;

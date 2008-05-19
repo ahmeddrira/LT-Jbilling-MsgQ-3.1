@@ -27,13 +27,14 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.OrderDTO;
-import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.util.DTOFactory;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 
 /**
  *
@@ -53,7 +54,7 @@ import com.sapienter.jbilling.server.util.DTOFactory;
 public class OrderSessionBean implements SessionBean {
     
     private static final Logger LOG = Logger.getLogger(OrderSessionBean.class);
-    private SessionContext context = null;
+    //private SessionContext context = null;
 
     /**
     * Create the Session Bean
@@ -82,8 +83,10 @@ public class OrderSessionBean implements SessionBean {
     */
     public OrderDTO getOrder(Integer orderId) throws SessionInternalError {
         try {
-            OrderBL order = new OrderBL(orderId);
-            return order.getDTO();
+        	OrderDAS das = new OrderDAS();
+        	OrderDTO order = das.find(orderId);
+        	order.touch();
+        	return order;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -92,10 +95,14 @@ public class OrderSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public OrderDTOEx getOrderEx(Integer orderId, Integer languageId) 
+    public OrderDTO getOrderEx(Integer orderId, Integer languageId) 
             throws SessionInternalError {
         try {
-            return DTOFactory.getOrderDTOEx(orderId, languageId);
+        	OrderDAS das = new OrderDAS();
+        	OrderDTO order = das.find(orderId);
+        	order.addExtraFields(languageId);
+        	order.touch();
+        	return order;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -104,13 +111,16 @@ public class OrderSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public OrderDTOEx setStatus(Integer orderId, Integer statusId, 
+    public OrderDTO setStatus(Integer orderId, Integer statusId, 
             Integer executorId, Integer languageId) 
             throws SessionInternalError {
         try {
             OrderBL order = new OrderBL(orderId);
             order.setStatus(executorId, statusId);
-            return DTOFactory.getOrderDTOEx(orderId, languageId);
+            OrderDTO dto = order.getDTO();
+            dto.addExtraFields(languageId);
+            dto.touch();
+            return dto;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -121,7 +131,6 @@ public class OrderSessionBean implements SessionBean {
      * the same as the web service but without the 
      * security check
      * @ejb:interface-method view-type="remote"
-     */
     public Integer create(OrderWS order, Integer entityId,
             String rootUser, boolean process) 
             throws SessionInternalError {
@@ -150,17 +159,18 @@ public class OrderSessionBean implements SessionBean {
         }
 
     }
+     */
 
 
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public void delete(Integer id) 
+    public void delete(Integer id, Integer executorId) 
             throws SessionInternalError {
         try {
             // now get the order
             OrderBL bl = new OrderBL(id);
-            bl.delete();
+            bl.delete(executorId);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -170,7 +180,7 @@ public class OrderSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public OrderPeriodDTOEx[] getPeriods(Integer entityId, Integer languageId) 
+    public OrderPeriodDTO[] getPeriods(Integer entityId, Integer languageId) 
             throws SessionInternalError {
         try {
             // now get the order
@@ -184,12 +194,15 @@ public class OrderSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public OrderPeriodDTOEx getPeriod(Integer languageId, Integer id) 
+    public OrderPeriodDTO getPeriod(Integer languageId, Integer id) 
             throws SessionInternalError {
         try {
             // now get the order
             OrderBL bl = new OrderBL();
-            return bl.getPeriod(languageId, id);
+            OrderPeriodDTO dto =  bl.getPeriod(languageId, id);
+            dto.touch();
+            
+            return dto;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -198,15 +211,14 @@ public class OrderSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public void setPeriods(Integer languageId, OrderPeriodDTOEx[] periods) 
+    public void setPeriods(Integer languageId, OrderPeriodDTO[] periods) 
             throws SessionInternalError {
         try {
-            // now get the order
-            OrderBL bl = new OrderBL();
-            bl.updatePeriods(languageId, periods);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
+			OrderBL bl = new OrderBL();
+			bl.updatePeriods(languageId, periods);
+		} catch (NamingException e) {
+			throw new SessionInternalError(e);
+		}
     }
 
     /**
@@ -262,7 +274,7 @@ public class OrderSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext aContext)
             throws EJBException {
-        context = aContext;
+        //context = aContext;
     }
 
 }

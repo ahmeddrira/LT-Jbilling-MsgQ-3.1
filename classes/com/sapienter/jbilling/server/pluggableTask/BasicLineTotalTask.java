@@ -24,8 +24,8 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.order.NewOrderDTO;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -36,13 +36,9 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public class BasicLineTotalTask extends PluggableTask implements OrderProcessingTask {
 
-    private final Logger LOG = Logger.getLogger(BasicLineTotalTask.class);
+    private static final Logger LOG = Logger.getLogger(BasicLineTotalTask.class);
 
-    /**
-     * 
-     * @see com.sapienter.jbilling.server.order.OrderProcessingTask#doProcessing(com.sapienter.betty.server.order.NewOrderDTO)
-     */
-    public void doProcessing(NewOrderDTO order) 
+    public void doProcessing(OrderDTO order) 
         throws TaskException {
         // calculations are done with 10 decimals. 
         // The final total is the rounded to 2 decimals.
@@ -56,7 +52,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
-        for (OrderLineDTOEx line : order.getRawOrderLines()) {
+        for (OrderLineDTO line : order.getLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() == null) { 
                 BigDecimal amount;
@@ -81,7 +77,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         }
         
         // step two non tax percetage items
-        for (OrderLineDTOEx line : order.getRawOrderLines()) {
+        for (OrderLineDTO line : order.getLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() != null &&
                     !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
@@ -103,7 +99,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         
         // step three: tax percetage items
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
-        for (OrderLineDTOEx line : order.getRawOrderLines()) {
+        for (OrderLineDTO line : order.getLines()) {
             if (line.getItem() != null && 
                     line.getItem().getPercentage() != null &&
                     line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
@@ -126,7 +122,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         orderTotal = taxNonPerTotal.add(taxPerTotal).add(nonTaxPerTotal)
                 .add(nonTaxNonPerTotal);
         orderTotal = orderTotal.setScale(2, Constants.BIGDECIMAL_ROUND);
-        order.setOrderTotal(new Float(orderTotal.floatValue()));
+        order.setTotal(orderTotal);
     }
 
 }

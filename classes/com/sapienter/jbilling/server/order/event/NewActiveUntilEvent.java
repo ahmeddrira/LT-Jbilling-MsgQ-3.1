@@ -24,7 +24,7 @@ public class NewActiveUntilEvent implements Event {
             
             this.entityId = order.getEntity().getUser().getEntity().getId();
             this.userId = order.getEntity().getUser().getUserId();
-            this.orderType = order.getEntity().getPeriod().getId();
+            this.orderType = order.getEntity().getOrderPeriod().getId();
             this.statusId = order.getEntity().getStatusId();
         } catch (Exception e) {
             LOG.error("Handling order in event", e);

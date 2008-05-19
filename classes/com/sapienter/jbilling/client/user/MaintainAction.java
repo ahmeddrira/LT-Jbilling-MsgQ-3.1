@@ -45,10 +45,10 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.entity.UserDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.CustomerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.entity.UserDTO;
 
 public class MaintainAction extends Action {
 
@@ -282,7 +282,7 @@ public class MaintainAction extends Action {
                             new ActionMessage("user.edit.done"));
                 }
             } else if (action.equals("order")) {
-                NewOrderDTO summary = new NewOrderDTO(); 
+                OrderDTO summary = new OrderDTO(); 
                 session.setAttribute(Constants.SESSION_ORDER_SUMMARY, 
                         summary);
                 session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,

@@ -126,7 +126,7 @@
 				            scope="session"
 				            filter="false"/>
 				<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' 
-				            property="orderTotal" 
+				            property="total" 
 				            scope="session"
 				            formatKey="format.money"/>
 	        </td>

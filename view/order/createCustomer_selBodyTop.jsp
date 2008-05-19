@@ -18,7 +18,7 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
-<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants,com.sapienter.jbilling.server.order.NewOrderDTO;"%>
+<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants,com.sapienter.jbilling.server.order.db.OrderDTO;"%>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
@@ -52,7 +52,7 @@
 	
 <%
  // I need to create the NewOrderDTO ... can't do it with struts tags :(
- NewOrderDTO summary = new NewOrderDTO(); 
+ OrderDTO summary = new OrderDTO(); 
  pageContext.setAttribute(Constants.SESSION_ORDER_SUMMARY, summary,
  		PageContext.SESSION_SCOPE);
 %>             

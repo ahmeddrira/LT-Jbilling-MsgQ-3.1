@@ -483,7 +483,11 @@
 	         srcdir="${source.test.dir}/com/sapienter/jbilling/server/mediation">
 	     <classpath refid="run.classpath"/>
 	  </javac>
-	  <junit printsummary="off" haltonfailure="true">
+	  <junit printsummary="off" haltonfailure="true" fork="yes">
+	      <jvmarg value="-Djava.security.manager" />
+          <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
+          <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
+	  
           <classpath refid="run.classpath"/>
 		  <formatter type="brief" usefile="false"/>
 		  <test name="com.sapienter.jbilling.server.mediation.MediationTest"/>

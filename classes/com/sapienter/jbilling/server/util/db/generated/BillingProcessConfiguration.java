@@ -31,13 +31,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+
 @Entity
 @Table(name="billing_process_configuration")
 public class BillingProcessConfiguration  implements java.io.Serializable {
 
 
      private int id;
-     private PeriodUnit periodUnit;
+     private PeriodUnitDTO periodUnitDTO;
      private Company entity;
      private Date nextRunDate;
      private short generateReport;
@@ -59,9 +61,9 @@ public class BillingProcessConfiguration  implements java.io.Serializable {
     }
 
 	
-    public BillingProcessConfiguration(int id, PeriodUnit periodUnit, Date nextRunDate, short generateReport, int reviewStatus, int periodValue, int dueDateUnitId, int dueDateValue, short onlyRecurring, short invoiceDateProcess, short autoPayment, int maximumPeriods, int autoPaymentApplication) {
+    public BillingProcessConfiguration(int id, PeriodUnitDTO periodUnitDTO, Date nextRunDate, short generateReport, int reviewStatus, int periodValue, int dueDateUnitId, int dueDateValue, short onlyRecurring, short invoiceDateProcess, short autoPayment, int maximumPeriods, int autoPaymentApplication) {
         this.id = id;
-        this.periodUnit = periodUnit;
+        this.periodUnitDTO = periodUnitDTO;
         this.nextRunDate = nextRunDate;
         this.generateReport = generateReport;
         this.reviewStatus = reviewStatus;
@@ -74,9 +76,9 @@ public class BillingProcessConfiguration  implements java.io.Serializable {
         this.maximumPeriods = maximumPeriods;
         this.autoPaymentApplication = autoPaymentApplication;
     }
-    public BillingProcessConfiguration(int id, PeriodUnit periodUnit, Company entity, Date nextRunDate, short generateReport, Integer retries, Integer daysForRetry, Integer daysForReport, int reviewStatus, int periodValue, int dueDateUnitId, int dueDateValue, Short dfFm, short onlyRecurring, short invoiceDateProcess, short autoPayment, int maximumPeriods, int autoPaymentApplication) {
+    public BillingProcessConfiguration(int id, PeriodUnitDTO periodUnitDTO, Company entity, Date nextRunDate, short generateReport, Integer retries, Integer daysForRetry, Integer daysForReport, int reviewStatus, int periodValue, int dueDateUnitId, int dueDateValue, Short dfFm, short onlyRecurring, short invoiceDateProcess, short autoPayment, int maximumPeriods, int autoPaymentApplication) {
        this.id = id;
-       this.periodUnit = periodUnit;
+       this.periodUnitDTO = periodUnitDTO;
        this.entity = entity;
        this.nextRunDate = nextRunDate;
        this.generateReport = generateReport;
@@ -107,12 +109,12 @@ public class BillingProcessConfiguration  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="period_unit_id", nullable=false)
-    public PeriodUnit getPeriodUnit() {
-        return this.periodUnit;
+    public PeriodUnitDTO getPeriodUnit() {
+        return this.periodUnitDTO;
     }
     
-    public void setPeriodUnit(PeriodUnit periodUnit) {
-        this.periodUnit = periodUnit;
+    public void setPeriodUnit(PeriodUnitDTO periodUnitDTO) {
+        this.periodUnitDTO = periodUnitDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")

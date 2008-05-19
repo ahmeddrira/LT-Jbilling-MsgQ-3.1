@@ -39,6 +39,22 @@
             timeToLiveSeconds="600"
             overflowToDisk="false"
      />                       
+     <!-- Level 1: objects that might change ocassionaly (nonstrict_read_write) More strict-->
+     <cache name="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO"
+            maxElementsInMemory="1000"
+            eternal="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+     />                       
+     <!-- Level 1: objects that might change ocassionaly (nonstrict_read_write) More strict-->
+     <cache name="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO.parameters"
+            maxElementsInMemory="1000"
+            eternal="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+     />                       
      <!-- Level 3: objects that do not change at all: purely static data -->
      <cache name="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeCategoryDTO"
             maxElementsInMemory="100"
@@ -117,6 +133,49 @@
             overflowToDisk="false"
      />                       
 
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.order.db.OrderPeriodDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO"
+            maxElementsInMemory="100"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.util.db.InternationalDescription"
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.order.db.OrderStatusDTO"
+            maxElementsInMemory="100"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.order.db.OrderLineTypeDTO"
+            maxElementsInMemory="100"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
      <!-- Query cache regions -->
      <cache name="org.hibernate.cache.StandardQueryCache"
             maxElementsInMemory="5000"

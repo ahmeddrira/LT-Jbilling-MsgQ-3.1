@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -57,11 +57,10 @@ public class BasicOrderPeriodTask
      * @param order
      * @return
      */
-     public Date calculateStart(OrderEntityLocal order) throws TaskException {
+     public Date calculateStart(OrderDTO order) throws TaskException {
         Date retValue = null;
 
-        if (order.getPeriod().getId().compareTo(
-                Constants.ORDER_PERIOD_ONCE) == 0) {
+        if (order.getOrderPeriod().getId() == Constants.ORDER_PERIOD_ONCE) {
             // this should be irrelevant, and could be either the order date
             // or this process date ...
             return null;
@@ -101,11 +100,10 @@ public class BasicOrderPeriodTask
      * @return
      * @throws SessionInternalError
      */
-    public Date calculateEnd(OrderEntityLocal order, 
+    public Date calculateEnd(OrderDTO order, 
             Date processDate, int maxPeriods) throws TaskException {
 
-        if (order.getPeriod().getId().compareTo(
-                Constants.ORDER_PERIOD_ONCE) == 0) {
+        if (order.getOrderPeriod().getId() ==  Constants.ORDER_PERIOD_ONCE) {
         	periods = 1;
             return null;
         }                    
@@ -145,8 +143,8 @@ public class BasicOrderPeriodTask
                          periods <= maxPeriods) {
                     // I assign the end period before adding another period
                     endOfPeriod = cal.getTime();
-                    cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()),
-                            order.getPeriod().getValue().intValue());
+                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
+                            order.getOrderPeriod().getValue().intValue());
                     periods++;
                     LOG.debug("post paid, now testing:" + cal.getTime() +
                             "(eop) = " + endOfPeriod + " compare " + 
@@ -170,8 +168,8 @@ public class BasicOrderPeriodTask
                         (order.getActiveUntil() == null ||
                          cal.getTime().compareTo(order.getActiveUntil()) < 0) &&
                          periods < maxPeriods) {
-                    cal.add(MapPeriodToCalendar.map(order.getPeriod().getUnitId()),
-                            order.getPeriod().getValue().intValue());
+                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
+                            order.getOrderPeriod().getValue().intValue());
                     periods++;
                     LOG.debug("pre paid, now testing:" + cal.getTime() +
                             "(eop) = " + endOfPeriod + " compare " + 
@@ -229,12 +227,12 @@ public class BasicOrderPeriodTask
 	// If the current date is the last day of a month, the next date
 	// might have to as well.
 	*/
-    private Date verifyEndOfMonthDay(OrderEntityLocal order, Date date) throws TaskException {
+    private Date verifyEndOfMonthDay(OrderDTO order, Date date) throws TaskException {
     	if (date == null || order == null) return null;
     	
     	GregorianCalendar current = new GregorianCalendar();
     	// this makes only sense when the order is on monthly periods
-    	if (order.getPeriod().getUnitId().equals(Constants.PERIOD_UNIT_MONTH)) {
+    	if (order.getOrderPeriod().getUnitId().equals(Constants.PERIOD_UNIT_MONTH)) {
     		// the current next invoice date has to be the last day of that month, and not a 31
         	current.setTime(calculateStart(order));
         	if (current.get(Calendar.DAY_OF_MONTH) == current.getActualMaximum(Calendar.DAY_OF_MONTH) &&

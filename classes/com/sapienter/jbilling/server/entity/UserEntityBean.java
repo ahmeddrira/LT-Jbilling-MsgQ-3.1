@@ -45,6 +45,9 @@ import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocal;
 import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocalHome;
 import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
 import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -385,13 +388,20 @@ public abstract class UserEntityBean implements EntityBean {
      */
      public abstract void setSubscriptionStatus(SubscriptionStatusEntityLocal status);
 
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.relation name="user-orders"
-     *               role-name="user-has-orders"
-     */
-    public abstract Collection getOrders();
-    public abstract void setOrders(Collection orders);
+     /**
+      * @ejb:interface-method view-type="local"
+      */
+    public Collection<OrderDTO> getOrders() {
+    	UserDAS das = new UserDAS();
+    	BaseUser user = das.find(getUserId());
+    	return user.getPurchaseOrdersForUserId();
+    	
+    }
+    /*
+    public void setOrders(Collection<OrderDTO> orders) {
+    	
+    }
+    */
 
     /**
      * @ejb:interface-method view-type="local"

@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.process.db;
 
 
 import java.util.HashSet;
@@ -30,28 +30,32 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.util.db.generated.BillingProcessConfiguration;
+import com.sapienter.jbilling.server.util.db.generated.Partner;
+
 @Entity
 @Table(name="period_unit")
-public class PeriodUnit  implements java.io.Serializable {
+public class PeriodUnitDTO  implements java.io.Serializable {
 
 
      private int id;
      private Set<Partner> partners = new HashSet<Partner>(0);
-     private Set<OrderPeriod> orderPeriods = new HashSet<OrderPeriod>(0);
-     private Set<BillingProcess> billingProcesses = new HashSet<BillingProcess>(0);
+     private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);
+     private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
      private Set<BillingProcessConfiguration> billingProcessConfigurations = new HashSet<BillingProcessConfiguration>(0);
 
-    public PeriodUnit() {
+    public PeriodUnitDTO() {
     }
 
 	
-    public PeriodUnit(int id) {
+    public PeriodUnitDTO(int id) {
         this.id = id;
     }
-    public PeriodUnit(int id, Set<Partner> partners, Set<OrderPeriod> orderPeriods, Set<BillingProcess> billingProcesses, Set<BillingProcessConfiguration> billingProcessConfigurations) {
+    public PeriodUnitDTO(int id, Set<Partner> partners, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<BillingProcessConfiguration> billingProcessConfigurations) {
        this.id = id;
        this.partners = partners;
-       this.orderPeriods = orderPeriods;
+       this.orderPeriodDTOs = orderPeriodDTOs;
        this.billingProcesses = billingProcesses;
        this.billingProcessConfigurations = billingProcessConfigurations;
     }
@@ -75,19 +79,19 @@ public class PeriodUnit  implements java.io.Serializable {
         this.partners = partners;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="periodUnit")
-    public Set<OrderPeriod> getOrderPeriods() {
-        return this.orderPeriods;
+    public Set<OrderPeriodDTO> getOrderPeriods() {
+        return this.orderPeriodDTOs;
     }
     
-    public void setOrderPeriods(Set<OrderPeriod> orderPeriods) {
-        this.orderPeriods = orderPeriods;
+    public void setOrderPeriods(Set<OrderPeriodDTO> orderPeriodDTOs) {
+        this.orderPeriodDTOs = orderPeriodDTOs;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="periodUnit")
-    public Set<BillingProcess> getBillingProcesses() {
+    public Set<BillingProcessDTO> getBillingProcesses() {
         return this.billingProcesses;
     }
     
-    public void setBillingProcesses(Set<BillingProcess> billingProcesses) {
+    public void setBillingProcesses(Set<BillingProcessDTO> billingProcesses) {
         this.billingProcesses = billingProcesses;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="periodUnit")

@@ -33,9 +33,9 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.OrderEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.order.TimePeriod;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 
 public class NewInvoiceDTO extends InvoiceDTO {
 	private Vector orders= null;
@@ -87,7 +87,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         }
     }
     
-    public void addOrder(OrderEntityLocal order, Date start, Date end,
+    public void addOrder(OrderDTO order, Date start, Date end,
             int periods) throws SessionInternalError {
     	Logger.getLogger(NewInvoiceDTO.class).debug("Adding order " + 
                 order.getId() + " to new invoice");

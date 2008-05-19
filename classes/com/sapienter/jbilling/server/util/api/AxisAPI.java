@@ -505,6 +505,7 @@ public class AxisAPI implements JbillingAPI {
 			LOG.debug("Got back " + ret + " from web service call");
 			return ret;
 		}catch(Throwable t){
+			//t.printStackTrace();
 			throw new JbillingAPIException("Error during invocation of web service " 
 				+ operationName + " using parameters " + getParametersInfo(params) +
 				". Underlying error message is " + t.getMessage());

@@ -36,10 +36,13 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.OrderLineDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.BaseUser;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Util;
 
@@ -103,12 +106,18 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
         }
         
         // create the order 
-        NewOrderDTO summary = new NewOrderDTO();
-        summary.setPeriod(Constants.ORDER_PERIOD_ONCE);
-        summary.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        OrderDTO summary = new OrderDTO();
+        OrderPeriodDTO period = new OrderPeriodDTO();
+        period.setId(Constants.ORDER_PERIOD_ONCE);
+        summary.setOrderPeriod(period);
+        OrderBillingTypeDTO type = new OrderBillingTypeDTO();
+        type.setId(Constants.ORDER_BILLING_PRE_PAID);
+        summary.setOrderBillingType(type);
         summary.setCreateDate(Calendar.getInstance().getTime());
         summary.setCurrencyId(currencyId);
-        summary.setUserId(userId);
+        BaseUser user = new BaseUser();
+        user.setId(userId);
+        summary.setBaseUserByUserId(user);
         
         try {
             
@@ -150,15 +159,15 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
             fee = new Float(Util.round(fee.floatValue(), 2));
             
             // now add the item to the po
-            OrderLineDTOEx line = new OrderLineDTOEx();
+            OrderLineDTO line = new OrderLineDTO();
             line.setAmount(fee);
             // compose the description
             // The text of this line has to be i18n
             // find the locale if not there yet
             Locale locale;
             try {
-                UserBL user = new UserBL(invoice.getUser());
-                locale = user.getLocale();
+                UserBL userBl = new UserBL(invoice.getUser());
+                locale = userBl.getLocale();
             } catch (Exception e) {
                 log.debug("Exception finding locale to add delegated invoice " +
                         "line", e);
@@ -180,10 +189,11 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
                     delLine.toString());
             line.setItemId(itemId);
             line.setTypeId(Constants.ORDER_LINE_TYPE_PENALTY);
-            summary.setOrderLine(itemId, line);
+            summary.getLines().add(line);
             
             // create the db record
             OrderBL order = new OrderBL();
+            order.set(summary);
             order.create(entityId, new Integer(1), summary);
             
             // and update this invoice so it's not picked up again

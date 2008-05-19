@@ -193,6 +193,7 @@ where exists (
 );
 
 # show events history of a customer
+\set userId 12345
 select user_id, 'User', foreign_id, create_datetime, 
    case when module_id=1 then 'Billing Process' 
         when module_id=2 then 'User Maintenance'
@@ -237,7 +238,7 @@ select user_id, 'User', foreign_id, create_datetime,
 old_num , old_str,old_date from event_log
 where entity_id = 1
   and table_id = 10
-  and foreign_id = 34285
+  and foreign_id = :userId
 union
 select user_id, 'oRder', foreign_id, create_datetime,  
 case when module_id=1 then 'Billing Process' 
@@ -286,7 +287,7 @@ where entity_id = 1
   and foreign_id in (
   select id
    from purchase_order
-  where user_id = 34285 )
+  where user_id = :userId )
 union
 select user_id, 'inVoice', foreign_id, create_datetime,  
 case when module_id=1 then 'Billing Process' 
@@ -335,7 +336,7 @@ where entity_id = 1
   and foreign_id in (
   select id
    from invoice
-  where user_id = 34285 )
+  where user_id = :userId )
 union
 select user_id, 'payMent', foreign_id, create_datetime,  
 case when module_id=1 then 'Billing Process' 
@@ -384,5 +385,5 @@ where entity_id = 1
   and foreign_id in (
   select id
    from payment
-  where user_id = 34285 )
+  where user_id = :userId )
 order by create_datetime;

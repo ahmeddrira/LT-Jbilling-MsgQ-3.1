@@ -27,7 +27,7 @@ package com.sapienter.jbilling.server.process;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.interfaces.OrderProcessEntityLocal;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 
 /**
  * @author Emil
@@ -38,10 +38,12 @@ public class OrderProcessIdComparator implements Comparator {
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1) {
-        OrderProcessEntityLocal perA = (OrderProcessEntityLocal) arg0;
-        OrderProcessEntityLocal perB = (OrderProcessEntityLocal) arg1;
+        OrderProcessDTO perA = (OrderProcessDTO) arg0;
+        OrderProcessDTO perB = (OrderProcessDTO) arg1;
         
-        return perA.getId().compareTo(perB.getId());
+        if (perA.getId() == perB.getId()) return 0;
+        if (perA.getId() < perB.getId()) return -1;
+        else return 1;
     }
 
 }

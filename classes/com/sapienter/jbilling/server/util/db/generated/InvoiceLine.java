@@ -28,6 +28,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.item.db.Item;
+
 @Entity
 @Table(name="invoice_line")
 public class InvoiceLine  implements java.io.Serializable {

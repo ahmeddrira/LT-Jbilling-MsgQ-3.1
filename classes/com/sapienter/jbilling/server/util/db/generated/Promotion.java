@@ -36,6 +36,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
 @Entity

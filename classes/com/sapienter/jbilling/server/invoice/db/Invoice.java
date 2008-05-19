@@ -17,12 +17,13 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.invoice.db;
 
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
+import com.sapienter.jbilling.server.util.db.generated.PaperInvoiceBatch;
+import com.sapienter.jbilling.server.util.db.generated.PaymentInvoice;
 
 @Entity
 @Table(name="invoice")
@@ -43,9 +53,9 @@ public class Invoice  implements java.io.Serializable {
 
 
      private int id;
-     private BillingProcess billingProcess;
+     private BillingProcessDTO billingProcessDTO;
      private BaseUser baseUser;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private Invoice invoice;
      private PaperInvoiceBatch paperInvoiceBatch;
      private Date createDatetime;
@@ -66,14 +76,15 @@ public class Invoice  implements java.io.Serializable {
      private Set<PaymentInvoice> paymentInvoices = new HashSet<PaymentInvoice>(0);
      private Set<InvoiceLine> invoiceLines = new HashSet<InvoiceLine>(0);
      private Set<Invoice> invoices = new HashSet<Invoice>(0);
+     private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
 
     public Invoice() {
     }
 
 	
-    public Invoice(int id, Currency currency, Date createDatetime, Date dueDate, double total, int paymentAttempts, short toProcess, double carriedBalance, short inProcessPayment, int isReview, short deleted, Date createTimestamp) {
+    public Invoice(int id, CurrencyDTO currencyDTO, Date createDatetime, Date dueDate, double total, int paymentAttempts, short toProcess, double carriedBalance, short inProcessPayment, int isReview, short deleted, Date createTimestamp) {
         this.id = id;
-        this.currency = currency;
+        this.currencyDTO = currencyDTO;
         this.createDatetime = createDatetime;
         this.dueDate = dueDate;
         this.total = total;
@@ -85,11 +96,11 @@ public class Invoice  implements java.io.Serializable {
         this.deleted = deleted;
         this.createTimestamp = createTimestamp;
     }
-    public Invoice(int id, BillingProcess billingProcess, BaseUser baseUser, Currency currency, Invoice invoice, PaperInvoiceBatch paperInvoiceBatch, Date createDatetime, Date dueDate, double total, int paymentAttempts, short toProcess, Double balance, double carriedBalance, short inProcessPayment, int isReview, short deleted, String customerNotes, String publicNumber, Date lastReminder, Integer overdueStep, Date createTimestamp, Set<PaymentInvoice> paymentInvoices, Set<InvoiceLine> invoiceLines, Set<Invoice> invoices) {
+    public Invoice(int id, BillingProcessDTO billingProcessDTO, BaseUser baseUser, CurrencyDTO currencyDTO, Invoice invoice, PaperInvoiceBatch paperInvoiceBatch, Date createDatetime, Date dueDate, double total, int paymentAttempts, short toProcess, Double balance, double carriedBalance, short inProcessPayment, int isReview, short deleted, String customerNotes, String publicNumber, Date lastReminder, Integer overdueStep, Date createTimestamp, Set<PaymentInvoice> paymentInvoices, Set<InvoiceLine> invoiceLines, Set<Invoice> invoices) {
        this.id = id;
-       this.billingProcess = billingProcess;
+       this.billingProcessDTO = billingProcessDTO;
        this.baseUser = baseUser;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.invoice = invoice;
        this.paperInvoiceBatch = paperInvoiceBatch;
        this.createDatetime = createDatetime;
@@ -124,12 +135,12 @@ public class Invoice  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="billing_process_id")
-    public BillingProcess getBillingProcess() {
-        return this.billingProcess;
+    public BillingProcessDTO getBillingProcess() {
+        return this.billingProcessDTO;
     }
     
-    public void setBillingProcess(BillingProcess billingProcess) {
-        this.billingProcess = billingProcess;
+    public void setBillingProcess(BillingProcessDTO billingProcessDTO) {
+        this.billingProcessDTO = billingProcessDTO;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
@@ -142,14 +153,15 @@ public class Invoice  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id", nullable=false)
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="delegated_invoice_id")
     public Invoice getInvoice() {
         return this.invoice;
@@ -327,9 +339,15 @@ public class Invoice  implements java.io.Serializable {
         this.invoices = invoices;
     }
 
-
-
-
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="invoice")
+    @Fetch ( FetchMode.SUBSELECT)
+    public Set<OrderProcessDTO> getOrderProcesses() {
+        return this.orderProcesses;
+    }
+    
+    public void setOrderProcesses(Set<OrderProcessDTO> orderProcesses) {
+        this.orderProcesses = orderProcesses;
+    }
 }
 
 

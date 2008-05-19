@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.item.db;
 
 
 import java.util.HashSet;
@@ -33,6 +33,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
+import com.sapienter.jbilling.server.util.db.generated.ItemPrice;
+import com.sapienter.jbilling.server.util.db.generated.ItemType;
+import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
+import com.sapienter.jbilling.server.util.db.generated.Promotion;
 
 @Entity
 @Table(name="item")
@@ -45,7 +54,7 @@ public class Item  implements java.io.Serializable {
      private Double percentage;
      private short priceManual;
      private short deleted;
-     private Set<OrderLine> orderLines = new HashSet<OrderLine>(0);
+     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
      private Set<Promotion> promotions = new HashSet<Promotion>(0);
      private Set<ItemType> itemTypes = new HashSet<ItemType>(0);
      private Set<InvoiceLine> invoiceLines = new HashSet<InvoiceLine>(0);
@@ -61,14 +70,14 @@ public class Item  implements java.io.Serializable {
         this.priceManual = priceManual;
         this.deleted = deleted;
     }
-    public Item(int id, Company entity, String internalNumber, Double percentage, short priceManual, short deleted, Set<OrderLine> orderLines, Set<Promotion> promotions, Set<ItemType> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPrice> itemUserPrices, Set<ItemPrice> itemPrices) {
+    public Item(int id, Company entity, String internalNumber, Double percentage, short priceManual, short deleted, Set<OrderLineDTO> orderLineDTOs, Set<Promotion> promotions, Set<ItemType> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPrice> itemUserPrices, Set<ItemPrice> itemPrices) {
        this.id = id;
        this.entity = entity;
        this.internalNumber = internalNumber;
        this.percentage = percentage;
        this.priceManual = priceManual;
        this.deleted = deleted;
-       this.orderLines = orderLines;
+       this.orderLineDTOs = orderLineDTOs;
        this.promotions = promotions;
        this.itemTypes = itemTypes;
        this.invoiceLines = invoiceLines;
@@ -132,12 +141,12 @@ public class Item  implements java.io.Serializable {
         this.deleted = deleted;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")
-    public Set<OrderLine> getOrderLines() {
-        return this.orderLines;
+    public Set<OrderLineDTO> getOrderLines() {
+        return this.orderLineDTOs;
     }
     
-    public void setOrderLines(Set<OrderLine> orderLines) {
-        this.orderLines = orderLines;
+    public void setOrderLines(Set<OrderLineDTO> orderLineDTOs) {
+        this.orderLineDTOs = orderLineDTOs;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")
     public Set<Promotion> getPromotions() {
@@ -183,9 +192,10 @@ public class Item  implements java.io.Serializable {
         this.itemPrices = itemPrices;
     }
 
-
-
-
+    @Transient
+    public String getNumber() {
+    	return getInternalNumber();
+    }
 }
 
 

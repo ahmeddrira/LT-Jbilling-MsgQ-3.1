@@ -28,6 +28,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+
 @Entity
 @Table(name="process_run_total")
 public class ProcessRunTotal  implements java.io.Serializable {
@@ -35,7 +37,7 @@ public class ProcessRunTotal  implements java.io.Serializable {
 
      private int id;
      private ProcessRun processRun;
-     private Currency currency;
+     private CurrencyDTO currencyDTO;
      private Double totalInvoiced;
      private Double totalPaid;
      private Double totalNotPaid;
@@ -44,14 +46,14 @@ public class ProcessRunTotal  implements java.io.Serializable {
     }
 
 	
-    public ProcessRunTotal(int id, Currency currency) {
+    public ProcessRunTotal(int id, CurrencyDTO currencyDTO) {
         this.id = id;
-        this.currency = currency;
+        this.currencyDTO = currencyDTO;
     }
-    public ProcessRunTotal(int id, ProcessRun processRun, Currency currency, Double totalInvoiced, Double totalPaid, Double totalNotPaid) {
+    public ProcessRunTotal(int id, ProcessRun processRun, CurrencyDTO currencyDTO, Double totalInvoiced, Double totalPaid, Double totalNotPaid) {
        this.id = id;
        this.processRun = processRun;
-       this.currency = currency;
+       this.currencyDTO = currencyDTO;
        this.totalInvoiced = totalInvoiced;
        this.totalPaid = totalPaid;
        this.totalNotPaid = totalNotPaid;
@@ -78,12 +80,12 @@ public class ProcessRunTotal  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="currency_id", nullable=false)
-    public Currency getCurrency() {
-        return this.currency;
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
     }
     
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
     }
     
     @Column(name="total_invoiced", precision=17, scale=17)

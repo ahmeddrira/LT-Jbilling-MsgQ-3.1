@@ -110,13 +110,13 @@ public class WSTest  extends TestCase {
                 fail("Order 5 belongs to entity 2");
             } catch (Exception e) {
             }
-            System.out.println("Getting created order");
+            System.out.println("Getting created order " + ret);
             OrderWS retOrder = api.getOrder(ret);
+            //System.out.println("Got:" + retOrder);
             assertEquals("created order billing type", retOrder.getBillingTypeId(),
                     newOrder.getBillingTypeId());
             assertEquals("created order billing period", retOrder.getPeriod(),
                     newOrder.getPeriod());
-            //retOrder
             
             /*
              * get order line. The new order should include a new discount
@@ -172,7 +172,7 @@ public class WSTest  extends TestCase {
             } catch (Exception e) {
             }
             retOrderLine.setId(lineId);
-            System.out.println("Update order line");
+            System.out.println("Update order line " + lineId);
             api.updateOrderLine(retOrderLine);
             retOrderLine = api.getOrderLine(retOrderLine.getId());
             assertEquals("updated quantity", retOrderLine.getQuantity(),
@@ -215,8 +215,7 @@ public class WSTest  extends TestCase {
             System.out.println("Getting updated order ");
             retOrder = api.getOrder(ret);
             assertNotNull("Didn't get updated order", retOrder);
-            assertEquals("Active since", retOrder.getActiveSince(),
-                    cal.getTime()); 
+            assertTrue("Active since", retOrder.getActiveSince().compareTo(cal.getTime()) == 0);
             assertEquals("Status id", new Integer(2), retOrder.getStatusId());
             assertEquals("Modified line description", "Modified description",
             		retOrder.getOrderLines()[1].getDescription());
@@ -287,7 +286,7 @@ public class WSTest  extends TestCase {
             System.out.println("Getting deleted order ");
             retOrder = api.getOrder(ret);
             assertEquals("Order " + ret + " should have been deleted", 
-                    1, retOrder.getDeleted().intValue());
+                    1, retOrder.getDeleted());
            
             /*
              * Get by user and period
@@ -554,6 +553,7 @@ public class WSTest  extends TestCase {
             initialCount = order.getOrderLines().length;
             lines = new ArrayList<OrderLineWS>();
             Collections.addAll(lines, order.getOrderLines());
+            line.setItemId(1); // to add another line, you need a different item
             lines.add(line);
             aLines = new OrderLineWS[lines.size()];
             System.out.println("lines now " + aLines.length);

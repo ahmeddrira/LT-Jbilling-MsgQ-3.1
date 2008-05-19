@@ -47,7 +47,7 @@ import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
-import com.sapienter.jbilling.server.order.OrderDTOEx;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 
 public class MaintainAction extends Action {
@@ -75,7 +75,7 @@ public class MaintainAction extends Action {
             
             if (action.equals("newInvoice") || 
                     action.equals("applyToInvoice")) {
-                OrderDTOEx order = (OrderDTOEx) session.getAttribute(
+                OrderDTO order = (OrderDTO) session.getAttribute(
                         Constants.SESSION_ORDER_DTO);
                 if (!order.getStatusId().equals(
                         Constants.ORDER_STATUS_ACTIVE)) {
@@ -142,7 +142,7 @@ public class MaintainAction extends Action {
                 // an invoice is being generated from the gui, directly from
                 // an order.
                 // I need an order first
-                OrderDTOEx order = (OrderDTOEx) session.getAttribute(
+                OrderDTO order = (OrderDTO) session.getAttribute(
                         Constants.SESSION_ORDER_DTO);
                 if (order == null) {
                     throw new SessionInternalError("an order dto has to be " +
@@ -180,7 +180,7 @@ public class MaintainAction extends Action {
                     forward = "order_view";
                 }
             } else if (action.equals("applyToInvoice")) {
-                OrderDTOEx order = (OrderDTOEx) session.getAttribute(
+                OrderDTO order = (OrderDTO) session.getAttribute(
                         Constants.SESSION_ORDER_DTO);
                 InvoiceDTO invoice = (InvoiceDTO) session.getAttribute(
                         Constants.SESSION_INVOICE_DTO);

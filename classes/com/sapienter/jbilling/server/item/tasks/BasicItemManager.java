@@ -25,6 +25,7 @@ import java.util.Vector;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -45,7 +46,9 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
         OrderLineDTO myLine = new OrderLineDTO();
-        myLine.setItemId(itemID);
+        Item item = new Item();
+        item.setId(itemID);
+        myLine.setItem(item);
         myLine.setQuantity(quantity);
         populateOrderLine(language, userId, entityId, currencyId, myLine, records);
         if (line == null) { // not yet there

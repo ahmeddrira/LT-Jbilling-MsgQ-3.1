@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 
+import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -53,8 +55,9 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
         for (OrderLineDTO line : order.getLines()) {
-            if (line.getItem() != null && 
-                    line.getItem().getPercentage() == null) { 
+        	Item item = new ItemDAS().find(line.getItemId()); // the line might be dettached
+            if (item != null && 
+                    item.getPercentage() == null) { 
                 BigDecimal amount;
                 
                 if (!line.getTotalReadOnly()) {
@@ -78,8 +81,9 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         
         // step two non tax percetage items
         for (OrderLineDTO line : order.getLines()) {
-            if (line.getItem() != null && 
-                    line.getItem().getPercentage() != null &&
+        	Item item = new ItemDAS().find(line.getItemId());
+            if (item != null && 
+                    item.getPercentage() != null &&
                     !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
                 BigDecimal amount;
                 if (!line.getTotalReadOnly()) {
@@ -100,8 +104,9 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step three: tax percetage items
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
         for (OrderLineDTO line : order.getLines()) {
-            if (line.getItem() != null && 
-                    line.getItem().getPercentage() != null &&
+        	Item item = new ItemDAS().find(line.getItemId());
+            if (item != null && 
+                    item.getPercentage() != null &&
                     line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
                 BigDecimal amount;
                 if (!line.getTotalReadOnly()) {

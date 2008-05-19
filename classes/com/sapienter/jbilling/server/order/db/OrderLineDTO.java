@@ -234,7 +234,7 @@ public class OrderLineDTO implements Serializable, Comparable {
 	 */
     @Transient
     public Integer getItemId() {
-    	return getItem().getId();
+    	return (getItem() == null) ? null : getItem().getId();
     }
     public void setItemId(Integer itemId) {
     	//Item item = new Item();

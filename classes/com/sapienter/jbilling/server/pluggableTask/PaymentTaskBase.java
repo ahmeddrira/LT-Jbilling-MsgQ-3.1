@@ -90,4 +90,11 @@ public abstract class PaymentTaskBase extends PluggableTask implements PaymentTa
 	
 	protected static final Result NOT_APPLICABLE = new Result(null, true);
 
+	protected String getString(String str) {
+		if (str == null) {
+			return "";
+		} else {
+			return str;
+		}
+	}
 }

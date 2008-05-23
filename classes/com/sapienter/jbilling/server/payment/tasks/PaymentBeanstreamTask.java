@@ -284,8 +284,6 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 			throws PluggableTaskException {
 
 		int ch;
-		int TIMEOUT = Integer.valueOf(
-				(String) parameters.get(PARAMATER_TIMEOUT)).intValue();
 		StringBuffer responseText = new StringBuffer();
 
 		try {
@@ -296,7 +294,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 			URLConnection conn = url.openConnection();
 
 			// Set the connection timeout
-			conn.setConnectTimeout(TIMEOUT);
+			conn.setConnectTimeout(getTimeoutSeconds() * 1000);
 
 			// Set the DoOutput flag to true because we intend
 			// to use the URL connection for output

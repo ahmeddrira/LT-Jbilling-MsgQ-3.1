@@ -25,9 +25,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.persistence.CascadeType;
@@ -52,7 +51,6 @@ import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OrderBy;
-import org.hibernate.annotations.Sort;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
@@ -101,7 +99,7 @@ public class OrderDTO  implements java.io.Serializable {
      private String notes;
      private Integer notesInInvoice;
      private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
-     private SortedSet<OrderLineDTO> lines = new TreeSet<OrderLineDTO>();
+     private List<OrderLineDTO> lines = new Vector<OrderLineDTO>(0);
      private Integer isCurrent;
      private Integer versionNum;
      // other non-persitent fields
@@ -168,7 +166,7 @@ public class OrderDTO  implements java.io.Serializable {
     		Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep, 
     		Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods, 
     		Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses, 
-    		SortedSet<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
+    		List<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
        this.id = id;
        this.baseUserByUserId = baseUserByUserId;
        this.baseUserByCreatedBy = baseUserByCreatedBy;
@@ -415,15 +413,11 @@ public class OrderDTO  implements java.io.Serializable {
     		value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN
     		)
     @Fetch (FetchMode.SUBSELECT)
-    @Sort(
-    		type = org.hibernate.annotations.SortType.COMPARATOR,
-    		comparator = com.sapienter.jbilling.server.order.OrderLineComparator.class
-    		)
-    public SortedSet<OrderLineDTO> getLines() {
+    public List<OrderLineDTO> getLines() {
         return this.lines;
     }
     
-    public void setLines(SortedSet<OrderLineDTO> orderLineDTOs) {
+    public void setLines(List<OrderLineDTO> orderLineDTOs) {
         this.lines = orderLineDTOs;
     }
 
@@ -504,7 +498,7 @@ public class OrderDTO  implements java.io.Serializable {
     	}
     	BigDecimal result = new BigDecimal(0);
     	for (OrderLineDTO line: lines) {
-    		if (line.getAmount() != null) {
+    		if (line.getDeleted() == 0 && line.getAmount() != null) {
     			result = result.add(new BigDecimal(line.getAmount().toString()));
     		}
     	}

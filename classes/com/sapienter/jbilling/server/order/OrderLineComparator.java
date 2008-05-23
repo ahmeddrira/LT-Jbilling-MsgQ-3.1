@@ -33,12 +33,12 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
  * @author Emil
  *
  */
-public class OrderLineComparator implements Comparator, Serializable {
+public class OrderLineComparator implements Comparator<OrderLineDTO>, Serializable {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object o1, Object o2) {
+    public int compare(OrderLineDTO o1, OrderLineDTO o2) {
         int retValue = 0;
         OrderLineDTO perA = (OrderLineDTO) o1;
         OrderLineDTO perB = (OrderLineDTO) o2;

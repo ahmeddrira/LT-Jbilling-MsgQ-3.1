@@ -312,9 +312,9 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
     
     public String toString() {
-        return "id=" + id +
+        return "OrderLine:[id=" + id +
         " orderLineType=" + ((orderLineTypeDTO == null) ? "null" : orderLineTypeDTO.getId()) +
-        " item=" +  item +
+        " item=" +  item.getId() +
         " order id=" + ((orderDTO == null) ? "null" : orderDTO.getId()) +
         " amount=" +  amount +
         " quantity=" +  quantity +
@@ -324,7 +324,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         " deleted=" + deleted  +
         " description=" + description + 
         " versionNum=" + versionNum  +
-        " editable=" + editable;
+        " editable=" + editable + "]";
 
     }
 }

@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.order;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.ejb.CreateException;
@@ -102,6 +103,8 @@ public class OrderSessionBean implements SessionBean {
         	OrderDTO order = das.find(orderId);
         	order.addExtraFields(languageId);
         	order.touch();
+        	Collections.sort(order.getLines(), new OrderLineComparator());
+        	//LOG.debug("returning order " + order);
         	return order;
         } catch (Exception e) {
             throw new SessionInternalError(e);

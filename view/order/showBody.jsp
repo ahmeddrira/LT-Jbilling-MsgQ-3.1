@@ -402,6 +402,7 @@
 						   id="line"
 						   property="lines"
 						   indexId="index">
+	        <logic:equal name="line" property="deleted" value="0">
 			<c:choose>
 				<c:when test="${flag == 1}">
 					<tr class="listB">
@@ -449,6 +450,7 @@
 					<bean:write name="line" property="amount" formatKey="format.money"/>
 				</td>
 			</tr>
+			</logic:equal>
 		</logic:iterate>	
 		<tr class="listH">
 			<td></td><td></td><td></td><td></td><td></td>

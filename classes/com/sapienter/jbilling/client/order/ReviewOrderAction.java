@@ -110,9 +110,11 @@ public class ReviewOrderAction extends Action {
                 ((NewOrderDTOForm) form).setOrderLines(hashlines);
                 // the price has to be formated i18n
                 for(OrderLineDTO line : newOrder.getLines()) {
-                    line.setPriceStr(FormHelper.float2string(
-                            line.getPrice(), session));
-                    hashlines.put(line.getItemId(), line);
+                	if (line.getDeleted() == 0) {
+	                    line.setPriceStr(FormHelper.float2string(
+	                            line.getPrice(), session));
+	                    hashlines.put(line.getItemId(), line);
+                	}
                 }
                 
                 log.debug("The form has been set");
@@ -209,18 +211,10 @@ public class ReviewOrderAction extends Action {
                         it.hasNext();) {
                     OrderLineDTO line = (OrderLineDTO) it.next();
                     // gst and other 'automatic' lines dont have item id ...
-                    if (line.getItemId() != null) {
+                    if (line.getItemId() != null && line.getDeleted() == 0) {
                         dto.setOrderLine(line.getItemId().toString(), line); 
                     } 
                 }
-                /*
-                nDto.setActiveSince(orderDto.getActiveSince());
-                nDto.setActiveUntil(orderDto.getActiveUntil());
-                nDto.setUserId(orderDto.getUser().getUserId());
-                nDto.setPeriod(orderDto.getPeriodId());
-                nDto.setId(orderDto.getId()); // this will later trigger an update instead of a create
-                nDto.setBillingTypeId(orderDto.getBillingTypeId());
-                */
                 
                 session.setAttribute("orderDTOForm", dto);
                 session.setAttribute(Constants.SESSION_ORDER_SUMMARY, orderDto);

@@ -613,7 +613,7 @@ public class OrderDTO  implements java.io.Serializable {
 	@Transient
 	public OrderLineDTO getLine(Integer itemId) {
 		for (OrderLineDTO line : lines) {
-			if (line.getItem() != null && line.getItem().getId() == itemId) {
+			if (line.getDeleted() == 0 && line.getItem() != null && line.getItem().getId() == itemId) {
 				return line;
 			}
 		}
@@ -636,7 +636,13 @@ public class OrderDTO  implements java.io.Serializable {
 	
 	@Transient
 	public int getNumberOfLines() {
-		return lines.size();
+		int count = 0;
+		for (OrderLineDTO line: getLines()) {
+			if (line.getDeleted() == 0) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	

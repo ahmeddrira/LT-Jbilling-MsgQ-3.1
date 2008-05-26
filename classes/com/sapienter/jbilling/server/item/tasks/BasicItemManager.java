@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -119,6 +120,9 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         line.setTypeId(item.getOrderLineTypeId());
         line.setEditable(editable);
         line.setItemDto(item);
+        
+        // also add the JPA item (no proxy, or the gui will complain)
+        line.setItem(new ItemDAS().findNow(line.getItemId()));
     }
 
     public OrderLineDTO getLatestLine() {

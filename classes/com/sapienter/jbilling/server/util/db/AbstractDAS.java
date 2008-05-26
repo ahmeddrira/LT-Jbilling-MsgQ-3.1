@@ -133,6 +133,7 @@ public abstract class AbstractDAS<T> {
      */
     @SuppressWarnings("unchecked")
     public T findNow(Serializable id) {
+    	if (id == null) return null;
         T entity = (T) getSession().get(getPersistentClass(), id);
 
         return entity;

@@ -55,6 +55,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
         for (OrderLineDTO line : order.getLines()) {
+        	if (line.getDeleted() == 1) continue;
         	Item item = new ItemDAS().find(line.getItemId()); // the line might be dettached
             if (item != null && 
                     item.getPercentage() == null) { 
@@ -81,6 +82,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         
         // step two non tax percetage items
         for (OrderLineDTO line : order.getLines()) {
+        	if (line.getDeleted() == 1) continue;
         	Item item = new ItemDAS().find(line.getItemId());
             if (item != null && 
                     item.getPercentage() != null &&
@@ -104,6 +106,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step three: tax percetage items
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
         for (OrderLineDTO line : order.getLines()) {
+        	if (line.getDeleted() == 1) continue;
         	Item item = new ItemDAS().find(line.getItemId());
             if (item != null && 
                     item.getPercentage() != null &&

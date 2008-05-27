@@ -48,8 +48,6 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 
 	private static final String PARAMATER_PASSWORD = "password";
 
-	private static final String PARAMATER_TIMEOUT = "timeout";
-
 	// Optional parameters
 	private static final String PARAMATER_CAV_ENABLED = "cav_enabled";
 

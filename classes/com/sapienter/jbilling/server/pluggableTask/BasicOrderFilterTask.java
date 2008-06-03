@@ -96,7 +96,7 @@ public class BasicOrderFilterTask
                 
                 // check if it is too early        
                 if(activeSince.
-                        after(process.getBillingDate())) {
+                        after(billingUntil)) {
                     // didn't start yet
                     eLog.info(process.getEntityId(), order.getId(), 
                             EventLogger.MODULE_BILLING_PROCESS,
@@ -111,7 +111,7 @@ public class BasicOrderFilterTask
                     cal.setTime(activeSince);
                     cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
                              order.getOrderPeriod().getValue().intValue());
-                    Date firstBillingDate = cal.getTime();
+                    Date firstBillingDate = thisOrActiveUntil(cal.getTime(), activeUntil);
                     if (!firstBillingDate.before(billingUntil)) {
                         eLog.info(process.getEntityId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
@@ -127,8 +127,8 @@ public class BasicOrderFilterTask
                     cal.setTime(order.getNextBillableDay());
                     cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
                              order.getOrderPeriod().getValue().intValue());
-                    Date endOfNextPeriod = cal.getTime();                
-                    if (endOfNextPeriod.after(process.getBillingDate())) {
+                    Date endOfNextPeriod = thisOrActiveUntil(cal.getTime(), activeUntil);                
+                    if (endOfNextPeriod.after(billingUntil)) {
                         eLog.info(process.getEntityId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_RECENTLY_BILLED,
@@ -251,4 +251,8 @@ public class BasicOrderFilterTask
 
     }
 
+    private Date thisOrActiveUntil(Date thisDate, Date activeUntil) {
+    	if (activeUntil == null) return thisDate;
+    	return activeUntil.before(thisDate) ? activeUntil : thisDate;
+    }
 }

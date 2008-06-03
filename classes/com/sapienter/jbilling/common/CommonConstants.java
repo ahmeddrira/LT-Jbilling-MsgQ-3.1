@@ -121,6 +121,7 @@ public interface CommonConstants {
     public static Integer PREFERENCE_FAILED_LOGINS_LOCKOUT = new Integer(39);
     public static Integer PREFERENCE_PASSWORD_EXPIRATION = new Integer(40);
     public static Integer PREFERENCE_USE_CURRENT_ORDER = new Integer(41);
+    public static Integer PREFERENCE_USE_PRO_RATING = new Integer(42);
 
     // order status, in synch with db
     public static final Integer ORDER_STATUS_ACTIVE = new Integer(1);

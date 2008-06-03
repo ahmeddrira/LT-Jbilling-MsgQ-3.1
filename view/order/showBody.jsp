@@ -90,6 +90,7 @@
 				                    scope="session"/>
 		</td>
 	</tr>
+	
 	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.activeSince"/></td>
 		<td class="infodata">
@@ -382,6 +383,21 @@
 	</logic:equal>
 	
 	</logic:notEqual>
+	
+	<jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_PRO_RATING%>'
+			beanName="preference"/> 
+	<logic:equal name="preference" value="1">
+	<tr class="infoA">
+		<td class="infoprompt"><bean:message key="order.prompt.cycleStart"/></td>
+		<td class="infodata">
+			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
+				                    property="cycleStarts" 
+				                    scope="session"
+				                    formatKey="format.date"/>
+		</td>
+	</tr>
+	</logic:equal>
+	
 
 </table>	
 

@@ -43,12 +43,8 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
 
 	private static final Logger LOG = Logger.getLogger(OrderPeriodAnticipateTask.class);
 	
-    public Date calculateStart(OrderDTO order) throws TaskException {
-        return super.calculateStart(order);
-    }
-    
     public Date calculateEnd(OrderDTO order, Date processDate,
-            int maxPeriods) 
+            int maxPeriods, Date periodStarts) 
             throws TaskException {
         viewLimit = null;
 
@@ -75,6 +71,6 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
             } 
         } 
         
-        return super.calculateEnd(order, processDate, maxPeriods);
+        return super.calculateEnd(order, processDate, maxPeriods, periodStarts);
     }
 }

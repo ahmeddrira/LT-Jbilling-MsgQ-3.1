@@ -127,7 +127,7 @@ public class NewOrderSessionBean implements SessionBean {
         try {
         	OrderBL bl = new OrderBL();
             if (order.getId() == null) {
-                retValue = bl.create(entityId, executorId, new OrderDTO(order));
+                retValue = bl.create(entityId, executorId, order);
             } else {
                 bl.set(order.getId());
                 bl.update(executorId, order);

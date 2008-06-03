@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
@@ -32,9 +33,12 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
+import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class BasicOrderPeriodTask
     extends PluggableTask
@@ -42,7 +46,7 @@ public class BasicOrderPeriodTask
     
     protected Date viewLimit = null;
     private static final Logger LOG = Logger.getLogger(BasicOrderPeriodTask.class);
-    private int periods = 0;
+    private Vector<PeriodOfTime> periods = new Vector<PeriodOfTime>();
 
     
     public BasicOrderPeriodTask() {
@@ -101,16 +105,15 @@ public class BasicOrderPeriodTask
      * @throws SessionInternalError
      */
     public Date calculateEnd(OrderDTO order, 
-            Date processDate, int maxPeriods) throws TaskException {
+            Date processDate, int maxPeriods, Date startOfBillingPeriod) throws TaskException {
 
         if (order.getOrderPeriod().getId() ==  Constants.ORDER_PERIOD_ONCE) {
-        	periods = 1;
+        	periods.add(new PeriodOfTime(null, null, 0, 1));
             return null;
         }                    
 
-        periods = 0;
         Date endOfPeriod = null;
-        Date startOfBillingPeriod = calculateStart(order);
+        final Date firstBillableDate = calculateStart(order);
         GregorianCalendar cal = new GregorianCalendar();
         try {
             // calculate the how far we can see in the future
@@ -137,21 +140,34 @@ public class BasicOrderPeriodTask
                 // to the closest muliple period that doesn't go beyond the 
                 // visibility date
                 
-                while (cal.getTime().compareTo(viewLimit) < 0 &&
-                        (order.getActiveUntil() == null ||
-                         cal.getTime().compareTo(order.getActiveUntil()) <= 0) &&
-                         periods <= maxPeriods) {
-                    // I assign the end period before adding another period
-                    endOfPeriod = cal.getTime();
-                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
-                            order.getOrderPeriod().getValue().intValue());
-                    periods++;
-                    LOG.debug("post paid, now testing:" + cal.getTime() +
-                            "(eop) = " + endOfPeriod + " compare " + 
-                            cal.getTime().compareTo(viewLimit));
-                }
+                while (cal.getTime().compareTo(viewLimit) < 0
+						&& (order.getActiveUntil() == null || cal.getTime()
+								.compareTo(order.getActiveUntil()) < 0)
+						&& periods.size() <= maxPeriods) {
+                	Date cycleStarts = cal.getTime();
+					cal.add(MapPeriodToCalendar.map(order.getOrderPeriod()
+							.getUnitId()), order.getOrderPeriod().getValue()
+							.intValue());
+					Date cycleEnds = cal.getTime();
+					if (cal.getTime().after(firstBillableDate)
+							&& !cal.getTime().after(viewLimit)) {
+						// calculate the days for this cycle
+						PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
+						// not crete this period
+						PeriodOfTime pt = new PeriodOfTime(
+								(periods.size() == 0) ? firstBillableDate
+										: endOfPeriod, cal.getTime(), cycle
+										.getDaysInPeriod(), periods.size() + 1);
+						periods.add(pt);
+						endOfPeriod = cal.getTime();
+						LOG.debug("added period " + pt);
+					}
+					LOG.debug("post paid, now testing:" + cal.getTime()
+							+ "(eop) = " + endOfPeriod + " compare "
+							+ cal.getTime().compareTo(viewLimit));
+				}
                 // for post-paid, the last period is not making it in
-                periods--;
+                // periods.remove(periods.lastElement());
             } else if (order.getBillingTypeId().compareTo(
                     Constants.ORDER_BILLING_PRE_PAID) == 0) {
                 /* here the end of the period will be after the start of the billing
@@ -164,13 +180,22 @@ public class BasicOrderPeriodTask
                 // (or it reaches the expiration).
                 // This then takes all previos periods that should've been billed
                 // by previous processes
+            	Date myStart = firstBillableDate;
                 while (cal.getTime().compareTo(viewLimit) < 0 &&
                         (order.getActiveUntil() == null ||
                          cal.getTime().compareTo(order.getActiveUntil()) < 0) &&
-                         periods < maxPeriods) {
+                         periods.size() < maxPeriods) {
+                	Date cycleStarts = cal.getTime();
                     cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
                             order.getOrderPeriod().getValue().intValue());
-                    periods++;
+                	Date cycleEnds = cal.getTime();
+                    if (cal.getTime().after(firstBillableDate)) {
+						// calculate the days for this cycle
+						PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
+                    	periods.add(new PeriodOfTime(myStart, cal.getTime(),
+								cycle.getDaysInPeriod(), periods.size() + 1));
+                        myStart = cal.getTime();
+                    }
                     LOG.debug("pre paid, now testing:" + cal.getTime() +
                             "(eop) = " + endOfPeriod + " compare " + 
                             cal.getTime().compareTo(viewLimit));          
@@ -195,14 +220,28 @@ public class BasicOrderPeriodTask
                 endOfPeriod.after(order.getActiveUntil())) {
             // make sure this date is not beyond the expiration date
             endOfPeriod = order.getActiveUntil();
-        } else if (startOfBillingPeriod.compareTo(endOfPeriod) == 0) {
-            // may be this won't be a throw, and will be used to check if
-            // this order is fractional or not.
-            throw new TaskException("Calculating the end period for" +
+        } 
+        
+        if (startOfBillingPeriod.compareTo(endOfPeriod) == 0) {
+        	// this order should not be in active status
+        	periods.clear();
+        	order.setOrderStatus(new OrderStatusDAS().find(Constants.ORDER_STATUS_FINISHED));
+        	new EventLogger().error(order.getBaseUserByUserId().getCompany().getId(), order.getId(), 
+                    EventLogger.MODULE_BILLING_PROCESS,
+                    EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
+                    Constants.TABLE_PUCHASE_ORDER);
+        	LOG.warn("Calculating the end period for" +
                 " order " + order.getId() + " ends up being the same as the" +
                 " start period. Shouldn't this order be excluded?");
         } 
         
+        // make sure the last period actually reflects the last adjustments
+        if (periods.size() > 0) {
+	        PeriodOfTime lastOne = periods.lastElement();
+	        periods.remove(periods.lastElement());
+	        periods.add(new PeriodOfTime(lastOne.getStart(), endOfPeriod, lastOne.getDaysInCycle(),
+	        		periods.size() + 1));
+        }
         LOG.debug("ebp:" + endOfPeriod);
         
         return endOfPeriod;
@@ -227,7 +266,7 @@ public class BasicOrderPeriodTask
 	// If the current date is the last day of a month, the next date
 	// might have to as well.
 	*/
-    private Date verifyEndOfMonthDay(OrderDTO order, Date date) throws TaskException {
+    protected Date verifyEndOfMonthDay(OrderDTO order, Date date) throws TaskException {
     	if (date == null || order == null) return null;
     	
     	GregorianCalendar current = new GregorianCalendar();
@@ -272,8 +311,10 @@ public class BasicOrderPeriodTask
     	}
     	
     }
+
+	public Vector<PeriodOfTime> getPeriods() {
+		return periods;
+	}
     
-    public int getPeriods() {
-    	return periods;
-    }
+    
 }

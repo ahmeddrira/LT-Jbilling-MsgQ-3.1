@@ -158,38 +158,44 @@
 <form-property name="create" type="java.lang.String" />
 <form-property name="id" type="java.lang.Integer" />
 </form-bean>
+
 <form-bean name="order" type="com.sapienter.jbilling.client.util.DynaForm">
-<form-property name="period" type="java.lang.Integer" />
-<form-property name="since_year" type="java.lang.String" />
-<form-property name="since_month" type="java.lang.String" />
-<form-property name="since_day" type="java.lang.String" />
-<form-property name="until_year" type="java.lang.String" />
-<form-property name="until_month" type="java.lang.String" />
-<form-property name="until_day" type="java.lang.String" />
-<form-property name="next_billable_year" type="java.lang.String" />
-<form-property name="next_billable_month" type="java.lang.String" />
-<form-property name="next_billable_day" type="java.lang.String" />
-<form-property name="promotion_code" type="java.lang.String" />
-<form-property name="billingType" type="java.lang.Integer" />
-<form-property name="chbx_notify" type="java.lang.Boolean" />
-<form-property name="due_date_unit_id" type="java.lang.Integer" />
-<form-property name="due_date_value" type="java.lang.String" />
-<form-property name="chbx_df_fm" type="java.lang.Boolean" />
-<form-property name="anticipate_periods" type="java.lang.String" />
-<form-property name="chbx_own_invoice" type="java.lang.Boolean" />
-<form-property name="notes" type="java.lang.String" />
-<form-property name="chbx_notes" type="java.lang.Boolean" />
-<form-property name="chbx_iscurrent" type="java.lang.Boolean" />
+	<form-property name="period" type="java.lang.Integer" />
+	<form-property name="cycle_year" type="java.lang.String" />
+	<form-property name="cycle_month" type="java.lang.String" />
+	<form-property name="cycle_day" type="java.lang.String" />
+	<form-property name="since_year" type="java.lang.String" />
+	<form-property name="since_month" type="java.lang.String" />
+	<form-property name="since_day" type="java.lang.String" />
+	<form-property name="until_year" type="java.lang.String" />
+	<form-property name="until_month" type="java.lang.String" />
+	<form-property name="until_day" type="java.lang.String" />
+	<form-property name="next_billable_year" type="java.lang.String" />
+	<form-property name="next_billable_month" type="java.lang.String" />
+	<form-property name="next_billable_day" type="java.lang.String" />
+	<form-property name="promotion_code" type="java.lang.String" />
+	<form-property name="billingType" type="java.lang.Integer" />
+	<form-property name="chbx_notify" type="java.lang.Boolean" />
+	<form-property name="due_date_unit_id" type="java.lang.Integer" />
+	<form-property name="due_date_value" type="java.lang.String" />
+	<form-property name="chbx_df_fm" type="java.lang.Boolean" />
+	<form-property name="anticipate_periods" type="java.lang.String" />
+	<form-property name="chbx_own_invoice" type="java.lang.Boolean" />
+	<form-property name="notes" type="java.lang.String" />
+	<form-property name="chbx_notes" type="java.lang.Boolean" />
+	<form-property name="chbx_iscurrent" type="java.lang.Boolean" />
 </form-bean>
+
 <form-bean name="creditCard" type="com.sapienter.jbilling.client.util.DynaForm">
-<form-property name="number" type="java.lang.String" />
-<form-property name="expiry_year" type="java.lang.String" />
-<form-property name="expiry_month" type="java.lang.String" />
-<form-property name="expiry_day" type="java.lang.String" />
-<form-property name="name" type="java.lang.String" />
-<form-property name="create" type="java.lang.String" />
-<form-property name="chbx_use_this" type="java.lang.Boolean" />
+	<form-property name="number" type="java.lang.String" />
+	<form-property name="expiry_year" type="java.lang.String" />
+	<form-property name="expiry_month" type="java.lang.String" />
+	<form-property name="expiry_day" type="java.lang.String" />
+	<form-property name="name" type="java.lang.String" />
+	<form-property name="create" type="java.lang.String" />
+	<form-property name="chbx_use_this" type="java.lang.Boolean" />
 </form-bean>
+
 <form-bean name="process" type="org.apache.struts.validator.DynaValidatorForm">
 <form-property name="id" type="java.lang.String" />
 </form-bean>

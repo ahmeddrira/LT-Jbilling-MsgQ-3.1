@@ -25,12 +25,14 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 
 /**
@@ -67,5 +69,10 @@ public class CalculateDueDate
         }
        
     }
+    
+    public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
+    	throw new UnsupportedOperationException("Can't call this method");
+    }
+
 
 }

@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.item.tasks;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
@@ -90,7 +89,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             // Add the subscriptions
             OrderBL order = new OrderBL();
             for(OrderDTO myOrder: order.getActiveRecurringByUser(userId)) {
-                for (OrderLineDTO myLine: (Collection<OrderLineDTO>)myOrder.getLines()) {
+                for (OrderLineDTO myLine: myOrder.getLines()) {
                     rulesMemoryContext.add(new Subscription(myLine));
                 }
             }
@@ -254,10 +253,6 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             quantity = line.getQuantity();
         }
         
-        public void setItemId() {
-            
-        }
-
         public Date getActiveSince() {
             return activeSince;
         }

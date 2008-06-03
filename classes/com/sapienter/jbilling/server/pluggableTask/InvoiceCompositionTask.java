@@ -20,8 +20,13 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.math.BigDecimal;
+
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.process.PeriodOfTime;
 
 public interface InvoiceCompositionTask {
-    void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException;
+    public void apply(NewInvoiceDTO invoice, Integer userId) throws TaskException;
+    
+    public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period);
 }

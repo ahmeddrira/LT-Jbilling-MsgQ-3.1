@@ -1108,6 +1108,7 @@
         <column name="billing_type_id" required="true" type="INTEGER"/>
         <column name="active_since" type="DATE"/>
         <column name="active_until" type="DATE"/>
+        <column name="cycle_start" type="DATE"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="next_billable_day" type="DATE"/>
         <column name="created_by" required="false" type="INTEGER"/>

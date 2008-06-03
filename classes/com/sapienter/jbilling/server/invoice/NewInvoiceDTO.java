@@ -36,28 +36,25 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.process.PeriodOfTime;
 
 public class NewInvoiceDTO extends InvoiceDTO {
-	private Vector orders= null;
-    private Vector invoices= null;
-    private Vector resultLines = null;
-    private Vector startPeriods = null;
-    private Vector endPeriods = null;
-    private Vector periodsCount = null;
+	private Vector<OrderDTO> orders= null;
+    private Vector<InvoiceDTO> invoices= null;
+    private Vector<InvoiceLineDTOEx> resultLines = null;
+    private Vector<Vector<PeriodOfTime>> periods = new Vector<Vector<PeriodOfTime>>();
     private Integer entityId = null;
     private Date billingDate = null;
     private TimePeriod dueDatePeriod = null;
     boolean dateIsRecurring;
-    
+
+    private static final Logger LOG = Logger.getLogger(NewInvoiceDTO.class);
 
     public NewInvoiceDTO() {
-        orders = new Vector();
-        invoices = new Vector();
-        resultLines = new Vector();
-        startPeriods = new Vector();
-        endPeriods = new Vector();
-        periodsCount = new Vector();
-        Logger.getLogger(NewInvoiceDTO.class).debug("New invoice object with date = " + billingDate);
+        orders = new Vector<OrderDTO>();
+        invoices = new Vector<InvoiceDTO>();
+        resultLines = new Vector<InvoiceLineDTOEx>();
+        LOG.debug("New invoice object with date = " + billingDate);
     }
     
     public void setDate(Date newDate) {
@@ -87,8 +84,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         }
     }
     
-    public void addOrder(OrderDTO order, Date start, Date end,
-            int periods) throws SessionInternalError {
+    public void addOrder(OrderDTO order, Date start, Date end, Vector<PeriodOfTime> periods) throws SessionInternalError {
     	Logger.getLogger(NewInvoiceDTO.class).debug("Adding order " + 
                 order.getId() + " to new invoice");
         orders.add(order);
@@ -99,9 +95,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
                     + " starts after it ends:" + start + " " +
                     end);
         }        
-        startPeriods.add(start);
-        endPeriods.add(end);
-        periodsCount.add(new Integer(periods));
+        this.periods.add(periods);
     }
     
     public void addInvoice(InvoiceDTO line) {
@@ -112,13 +106,6 @@ public class NewInvoiceDTO extends InvoiceDTO {
     	return orders;
     }
     
-    public Vector getStarts() {
-        return startPeriods;
-    }
-    
-    public Vector getEnds() {
-        return endPeriods;
-    }
     
     public Vector getInvoices() {
     	return invoices;
@@ -190,8 +177,8 @@ public class NewInvoiceDTO extends InvoiceDTO {
     /**
      * @return
      */
-    public Vector getPeriodsCount() {
-        return periodsCount;
+    public Vector<Vector<PeriodOfTime>> getPeriods() {
+        return periods;
     }
 
     /**

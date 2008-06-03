@@ -1577,7 +1577,7 @@ public class WebServicesSessionBean implements SessionBean {
             orderBL.set(dto);
             orderBL.recalculate(entityId);
             
-            return orderBL.create(entityId, executorId, new OrderDTO(dto));
+            return orderBL.create(entityId, executorId, dto);
         } catch(Exception e) {
             LOG.debug("Exception:", e);
             throw new SessionInternalError("error creating purchase order");

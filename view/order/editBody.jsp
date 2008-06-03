@@ -33,7 +33,7 @@
 <jbilling:getOptions generalPeriod="true"/>
 
 <%-- Define if the period will be editable or not --%>
-<bean:define id="jsp_period_editable" value="yes"/>
+<bean:define id="jsp_not_invoiced" value="yes"/>
 <logic:present name='<%=Constants.SESSION_ORDER_DTO%>' 
 			  scope="session"
 			  property="invoices">
@@ -42,7 +42,7 @@
 						   id="invoice"
 						   property="invoices"
 						   length="1">
-       <bean:define id="jsp_period_editable" value="no"/>
+       <bean:define id="jsp_not_invoiced" value="no"/>
    </logic:iterate>
 </logic:present>
 
@@ -56,14 +56,14 @@
 			</td>
 			<td class="form_prompt"><bean:message key="order.prompt.period"/></td>
 			<td>
-				<logic:equal name="jsp_period_editable" value="yes">
+				<logic:equal name="jsp_not_invoiced" value="yes">
 		          <html:select property="period">
 		          <html:options collection='<%=Constants.PAGE_ORDER_PERIODS%>' 
 				             property="code"
 				            labelProperty="description"	/>
 		          </html:select>
 		        </logic:equal>
-				<logic:equal name="jsp_period_editable" value="no">
+				<logic:equal name="jsp_not_invoiced" value="no">
 					<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
 										property="periodStr" 
 										scope="session"/>
@@ -78,14 +78,14 @@
 				</td>
 				<td class="form_prompt"><bean:message key="order.prompt.billingType"/></td>
 				<td>
-				   <logic:equal name="jsp_period_editable" value="yes">
+				   <logic:equal name="jsp_not_invoiced" value="yes">
 		               <html:select property="billingType">
 			               <html:options collection='<%=Constants.PAGE_BILLING_TYPE%>' 
 				             property="code"
 				            labelProperty="description"	/>
 		              </html:select>
 		        </logic:equal>
-				<logic:equal name="jsp_period_editable" value="no">
+				<logic:equal name="jsp_not_invoiced" value="no">
 			         <bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
 				                    property="billingTypeStr" 
 				                    scope="session"/>
@@ -103,6 +103,43 @@
 				<html:text property="promotion_code"/>
 			</td>
 		</tr>
+
+		<jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_PRO_RATING%>'
+				beanName="preference"/> 
+		<logic:equal name="preference" value="1">
+	 	<tr class="form">
+			<td>
+				 <jbilling:help page="orders" anchor="active">
+					 <img border="0" src="/billing/graphics/help.gif"/>
+				 </jbilling:help>
+			</td>
+	 		<td class="form_prompt"><bean:message key="order.prompt.cycleStart"/></td>
+	 		
+	 		<logic:equal name="jsp_not_invoiced" value="yes">
+		 		<td> <table> <tr class="form">
+		 		<jbilling:dateFormat format="mm-dd">
+			 		<td><html:text property="cycle_month" size="2" maxlength="2"/></td>
+			 		<td><html:text property="cycle_day" size="2" maxlength="2"/></td>
+		 		</jbilling:dateFormat>
+		 		<jbilling:dateFormat format="dd-mm">
+			 		<td><html:text property="cycle_day" size="2" maxlength="2"/></td>
+			 		<td><html:text property="cycle_month" size="2" maxlength="2"/></td>
+		 		</jbilling:dateFormat>
+		 		<td><html:text property="cycle_year" size="4" maxlength="4"/></td>
+		 		<td><bean:message key="all.prompt.dateFormat"/></td>
+		 		</tr></table></td>
+	 		</logic:equal>
+			<logic:equal name="jsp_not_invoiced" value="no">
+				<td>
+				<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
+			                property="cycleStarts" 
+				            scope="session"
+				            formatKey="format.date"/>
+				</td>
+	 		</logic:equal>
+	 		
+	 	</tr>
+	 	</logic:equal>
 
 	 	<tr class="form">
 			<td>

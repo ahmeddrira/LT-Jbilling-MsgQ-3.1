@@ -42,6 +42,11 @@ Hypersonic getting started:
   
 PostgreSQL getting started:
 ----------------------------------------
+Ubuntu notes:
+------------
+  - PGDATA is not set, but its value should be /etc/postgresql/8.2/main/pgdata
+  - Example of running pg_ctl:  sudo -u postgres /usr/lib/postgresql/8.2/bin/pg_ctl reload -D /etc/postgresql/8.2/main/pgdata
+
 - To startup/shutdown : pg_ctl start/stop            
 The following shouldn't be necessary since the creation of the tables first drops the tables:
 - To drop a database : dropdb betty

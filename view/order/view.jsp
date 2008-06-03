@@ -71,5 +71,14 @@
 				                    formatKey="format.date"/>
 		</td>
 	</tr>
+	<tr class="infoB">
+		<td class="infoprompt"><bean:message key="order.prompt.cycleStart"/></td>
+		<td class="infodata">
+			<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' 
+				                    property="cycleStarts" 
+				                    scope="session"
+				                    formatKey="format.date"/>
+		</td>
+	</tr>
 	
 </table>

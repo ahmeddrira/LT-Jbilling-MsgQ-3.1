@@ -248,6 +248,14 @@ public class BillingProcessBL extends ResultList
             // put the order in the invoice using all the pluggable taks stuff
             addOrderToInvoice(entityId, order.getEntity(), newInvoice, 
                     processDate, maxPeriods);
+            
+            // this means that the user is trying to generate an invoice from
+            // an order that the configurated tasks have rejected. Therefore
+            // either this is the case an generating this invoice doesn't make
+            // sense, or some business rules in the tasks have to be changed
+            // (probably with a personalized task for this entity)
+            if (newInvoice.getOrders().size() == 0) return null;
+            
             // generate the invoice lines
             composeInvoice(entityId, userId, newInvoice);
             // put the resulting invoice in the database
@@ -320,7 +328,7 @@ public class BillingProcessBL extends ResultList
         // this contains the generated invoices, one per due date
         // found in the applicable purchase orders.
         // The key is the object TimePeriod
-        Hashtable newInvoices = new Hashtable();
+        Hashtable<TimePeriod,NewInvoiceDTO> newInvoices = new Hashtable<TimePeriod,NewInvoiceDTO>();
         InvoiceEntityLocal[] retValue = null;
         
         LOG.debug("In generateInvoice for user " + userId +
@@ -422,10 +430,15 @@ public class BillingProcessBL extends ResultList
                                             order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
                                 }
                             }
-                            addOrderToInvoice(entityId, order, thisInvoice, 
-                                    process.getBillingDate(), maximumPeriods);
-                            // add or replace
-                            newInvoices.put(dueDatePeriod, thisInvoice);
+                            /*
+                             * The order periods plug-in might not add any period. This should not happen
+                             * but if it does, the invoice should not be included
+                             */
+                            if (addOrderToInvoice(entityId, order, thisInvoice, 
+                                    process.getBillingDate(), maximumPeriods)) {
+	                            // add or replace
+	                            newInvoices.put(dueDatePeriod, thisInvoice);
+                            }
                             LOG.debug("After putting period there are "
                                     + newInvoices.size() + " periods.");
 
@@ -484,7 +497,7 @@ public class BillingProcessBL extends ResultList
         
         } while(subAccountsIt != null); // until there are no more subaccounts
 
-        if (!includedOrders) {
+        if (!includedOrders || newInvoices.size() == 0) {
             LOG.debug("No applicable orders. No invoice generated (skipping " +
                     "invoices).");
             return null;
@@ -666,9 +679,9 @@ public class BillingProcessBL extends ResultList
                     
             LOG.debug(" ... order " + order.getId());
             // this will help later
-            Date startOfBillingPeriod = (Date) newInvoice.getStarts().get(f);
-            Date endOfBillingPeriod = (Date) newInvoice.getEnds().get(f);
-            Integer periods = (Integer) newInvoice.getPeriodsCount().get(f);
+            Date startOfBillingPeriod = (Date) newInvoice.getPeriods().get(f).firstElement().getStart();
+            Date endOfBillingPeriod = (Date) newInvoice.getPeriods().get(f).lastElement().getEnd();
+            Integer periods = (Integer) newInvoice.getPeriods().get(f).size();
  
             // We don't update orders if this is just a review
             if (newInvoice.getIsReview().intValue() == 0) {
@@ -730,7 +743,7 @@ public class BillingProcessBL extends ResultList
         }
     }
     
-    private void addOrderToInvoice(Integer entityId, OrderDTO order,
+    private boolean addOrderToInvoice(Integer entityId, OrderDTO order,
             NewInvoiceDTO newInvoice, Date processDate, int maxPeriods) 
             throws CreateException, SessionInternalError, TaskException,
                 PluggableTaskException {
@@ -745,7 +758,11 @@ public class BillingProcessBL extends ResultList
                 "one order period pluggable task configured");
         }
         Date start = optask.calculateStart(order);
-        Date end = optask.calculateEnd(order, processDate, maxPeriods);                         
+        Date end = optask.calculateEnd(order, processDate, maxPeriods, start);                         
+        Vector<PeriodOfTime> periods = optask.getPeriods();
+        // there isn't anything billable from this order
+        if (periods.size() == 0) return false;
+        
         if (start != null && end != null && start.after(end)) {
             // how come it starts after it ends ???
             throw new SessionInternalError("Calculated for " +
@@ -754,7 +771,6 @@ public class BillingProcessBL extends ResultList
                     end);
         }
                         
-        int periods = optask.getPeriods();
         // add this order to the invoice being created
         newInvoice.addOrder(order, start, end, periods);
                         
@@ -788,7 +804,7 @@ public class BillingProcessBL extends ResultList
                         "order = " + order.getId());
             }
         }
-
+        return true;
     }
     
  

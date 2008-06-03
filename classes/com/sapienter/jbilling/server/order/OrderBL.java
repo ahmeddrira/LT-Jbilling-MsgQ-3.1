@@ -179,7 +179,7 @@ public class OrderBL extends ResultList
         		order.getDueDateUnitId(), order.getDueDateValue(), order.getAnticipatePeriods(),
         		order.getDfFm(), order.getIsCurrent(), order.getNotes(), order.getNotesInInvoice(),
         		order.getOwnInvoice(), order.getOrderPeriod().getId(), order.getBaseUserByUserId().getId(),
-        		order.getVersionNum());
+        		order.getVersionNum(), order.getCycleStarts());
         
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
@@ -354,6 +354,7 @@ public class OrderBL extends ResultList
         order.setOwnInvoice(dto.getOwnInvoice());
         order.setNotes(dto.getNotes());
         order.setNotesInInvoice(dto.getNotesInInvoice());
+        order.setCycleStarts(dto.getCycleStarts());
         if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 1) {
             setMainSubscription(executorId);
         }

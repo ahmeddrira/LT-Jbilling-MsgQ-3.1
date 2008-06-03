@@ -55,6 +55,7 @@ public class OrderWS implements Serializable {
     private Integer notesInInvoice;
     private Integer isCurrent;
     private Integer versionNum;
+    private Date cycleStarts;
     
     //
     private String statusStr = null;
@@ -94,7 +95,7 @@ public class OrderWS implements Serializable {
             Integer currencyId, Date lastNotified, Integer notifStep,
             Integer dueDateUnitId, Integer dueDateValue, Integer anticipatePeriods, Integer dfFm,
             Integer isCurrent, String notes, Integer notesInInvoice, Integer ownInvoice,
-            Integer period, Integer userId, Integer version) {
+            Integer period, Integer userId, Integer version, Date cycleStarts) {
     	setId(id);
     	setBillingTypeId(billingTypeId);
     	setNotify(notify);
@@ -119,6 +120,7 @@ public class OrderWS implements Serializable {
     	setPeriod(period);
     	setUserId(userId);
     	setVersionNum(version);
+    	setCycleStarts(cycleStarts);
     }
 
     /**
@@ -398,6 +400,14 @@ public class OrderWS implements Serializable {
 
 	public void setVersionNum(Integer versionNum) {
 		this.versionNum = versionNum;
+	}
+
+	public Date getCycleStarts() {
+		return cycleStarts;
+	}
+
+	public void setCycleStarts(Date cycleStarts) {
+		this.cycleStarts = cycleStarts;
 	}
 
 }

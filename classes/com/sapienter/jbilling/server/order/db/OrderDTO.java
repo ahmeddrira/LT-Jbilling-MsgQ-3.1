@@ -85,6 +85,7 @@ public class OrderDTO  implements java.io.Serializable {
      private OrderBillingTypeDTO orderBillingTypeDTO;
      private Date activeSince;
      private Date activeUntil;
+     private Date cycleStarts;
      private Date createDate;
      private Date nextBillableDay;
      private int deleted;
@@ -149,6 +150,7 @@ public class OrderDTO  implements java.io.Serializable {
     	this.lines.addAll(other.getLines());
     	this.isCurrent = other.getIsCurrent();
     	this.versionNum = other.getVersionNum();
+    	this.cycleStarts = other.getCycleStarts();
     }
     
     public OrderDTO(int id, BaseUser baseUserByCreatedBy, CurrencyDTO currencyDTO, OrderStatusDTO orderStatusDTO, OrderBillingTypeDTO orderBillingTypeDTO, Date createDatetime, Integer deleted) {
@@ -267,6 +269,16 @@ public class OrderDTO  implements java.io.Serializable {
     public void setActiveSince(Date activeSince) {
         this.activeSince = activeSince;
     }
+    
+    @Column(name="cycle_start")
+	public Date getCycleStarts() {
+		return cycleStarts;
+	}
+
+	public void setCycleStarts(Date cycleStarts) {
+		this.cycleStarts = cycleStarts;
+	}
+
     @Column(name="active_until", length=13)
     public Date getActiveUntil() {
         return this.activeUntil;

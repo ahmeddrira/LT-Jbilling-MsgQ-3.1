@@ -18,11 +18,6 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on 17-Apr-2003
- *
- * Copyright Sapienter Enterprise Software
- */
 package com.sapienter.jbilling.server.process;
 
 import java.util.Collection;
@@ -45,7 +40,6 @@ import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
-import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.order.db.OrderDTO;

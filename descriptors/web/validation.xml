@@ -1,7 +1,7 @@
 <!DOCTYPE form-validation PUBLIC "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.0//EN" "http://jakarta.apache.org/commons/dtds/validator_1_0.dtd">
 <!--
-    jbilling - The Enterprise Open Source Billing System
-    Copyright (C) 2003-2007 Sapienter Billing Software Corp. and Emiliano Conde
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2008 Enterprise jBilling Software Ltd. and Emiliano Conde
 
     This file is part of jbilling.
 

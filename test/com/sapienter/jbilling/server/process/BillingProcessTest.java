@@ -482,7 +482,7 @@ public class BillingProcessTest extends TestCase {
                     OrderDTO orderDto = remoteOrder.getOrderEx(order.getId(),
                             languageId);
                     orderTotal += orderDto.getTotal().floatValue();
-                    if (order.getId() >= 103 && order.getId() <= 108 && order.getId() != 113) {
+                    if (order.getId() >= 103 && order.getId() <= 108 || order.getId() == 113) {
                     	isProRated = true;
                     }
                 }

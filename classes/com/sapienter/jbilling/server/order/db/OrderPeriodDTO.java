@@ -56,7 +56,7 @@ import com.sapienter.jbilling.server.util.db.generated.Company;
         allocationSize=10
         )
 @Table(name="order_period")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class OrderPeriodDTO extends AbstractDescription implements java.io.Serializable {
 
 

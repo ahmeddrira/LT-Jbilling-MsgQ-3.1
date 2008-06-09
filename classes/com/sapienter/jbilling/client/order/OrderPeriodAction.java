@@ -154,8 +154,8 @@ public class OrderPeriodAction extends Action {
 					                   new ActionError("all.internal"));
 			        	}
 						saveErrors(request, errors);
-						ret = "refresh";
 					}
+					ret = "refresh";
 				} else {
 					saveErrors(request, errors);
 				}

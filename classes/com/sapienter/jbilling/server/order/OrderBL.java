@@ -342,7 +342,7 @@ public class OrderBL extends ResultList
         
         if (order.getOrderPeriod().getId() != dto.getOrderPeriod().getId()) {
             audit(executorId, order.getOrderPeriod().getId());
-            order.setOrderPeriod(dto.getOrderPeriod());
+            order.setOrderPeriod(orderPeriodDAS.find(dto.getOrderPeriod().getId()));
         }
         // this should not be necessary any more, since the order is a pojo...
         order.setOrderBillingType(dto.getOrderBillingType());

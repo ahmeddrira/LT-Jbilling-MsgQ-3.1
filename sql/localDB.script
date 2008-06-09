@@ -12159,6 +12159,7 @@ INSERT INTO PLUGGABLE_TASK_TYPE VALUES(33,16,'com.sapienter.jbilling.server.medi
 INSERT INTO PLUGGABLE_TASK_TYPE VALUES(34,15,'com.sapienter.jbilling.server.mediation.task.FixedFileReader',1)
 INSERT INTO PLUGGABLE_TASK_TYPE VALUES(36,5,'com.sapienter.jbilling.server.process.task.ProRateOrderPeriodTask',0)
 INSERT INTO PLUGGABLE_TASK_TYPE VALUES(37,4,'com.sapienter.jbilling.server.process.task.DailyProRateCompositionTask',0)
+INSERT INTO PLUGGABLE_TASK_TYPE VALUES(38,6,'com.sapienter.jbilling.server.payment.tasks.PaymentAtlasTask',2)
 INSERT INTO PLUGGABLE_TASK_TYPE_CATEGORY VALUES(1,'order processing task','com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask')
 INSERT INTO PLUGGABLE_TASK_TYPE_CATEGORY VALUES(2,'order_filter task','com.sapienter.jbilling.server.pluggableTask.OrderFilterTask')
 INSERT INTO PLUGGABLE_TASK_TYPE_CATEGORY VALUES(3,'invoice filter task','com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask')

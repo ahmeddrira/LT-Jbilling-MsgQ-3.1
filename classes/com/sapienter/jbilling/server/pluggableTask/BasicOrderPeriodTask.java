@@ -25,9 +25,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -247,17 +244,20 @@ public class BasicOrderPeriodTask
         return endOfPeriod;
     }
 
-    protected Date getViewLimit(Integer entityId, Date processDate) 
-            throws NamingException, FinderException, SessionInternalError {
-        ConfigurationBL config = new ConfigurationBL(entityId);
-        Integer periodUnitId = config.getEntity().getPeriodUnitId();
-        Integer periodValue = config.getEntity().getPeriodValue();
-        Calendar cal = Calendar.getInstance();
-    
-        cal.setTime(processDate);
-        cal.add(MapPeriodToCalendar.map(periodUnitId),
-                periodValue.intValue());
-        return cal.getTime();
+    protected Date getViewLimit(Integer entityId, Date processDate) {
+        try {
+			ConfigurationBL config = new ConfigurationBL(entityId);
+			Integer periodUnitId = config.getEntity().getPeriodUnitId();
+			Integer periodValue = config.getEntity().getPeriodValue();
+			Calendar cal = Calendar.getInstance();
+   
+			cal.setTime(processDate);
+			cal.add(MapPeriodToCalendar.map(periodUnitId),
+			        periodValue.intValue());
+			return cal.getTime();
+		} catch (Exception e) {
+			throw new SessionInternalError("Calculating view limit", BasicOrderPeriodTask.class, e);
+		}
 
     }
     /*

@@ -24,15 +24,12 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 
 /**
  * @author Emil
@@ -46,25 +43,18 @@ public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
     public Date calculateEnd(OrderDTO order, Date processDate,
             int maxPeriods, Date periodStarts) 
             throws TaskException {
-        viewLimit = null;
+        viewLimit = getViewLimit(order.getBaseUserByUserId().getCompany().getId(), processDate);
 
         if (order.getAnticipatePeriods() != null &&
                 order.getAnticipatePeriods().intValue() > 0) {
             try {
-                Integer periodUnitId = order.getOrderPeriod().getUnitId();
-                Integer periodValue = order.getOrderPeriod().getValue();
-                
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(processDate);
-                if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
-                    cal.add(MapPeriodToCalendar.map(periodUnitId),
-                            periodValue.intValue());
-                }
-                LOG.debug("Ant periods:" + order.getAnticipatePeriods() + " " +
-                        "view limit: " + cal.getTime());
+                GregorianCalendar cal = new GregorianCalendar();
+                cal.setTime(viewLimit);
                 // now add the months that this order is getting anticipated
                 cal.add(GregorianCalendar.MONTH,
                         order.getAnticipatePeriods().intValue());
+                LOG.debug("Ant periods:" + order.getAnticipatePeriods() + " " +
+                        "view limit: " + viewLimit + " extended " + cal.getTime());
                 viewLimit = cal.getTime();
             } catch (Exception e) {
                 throw new TaskException(e);

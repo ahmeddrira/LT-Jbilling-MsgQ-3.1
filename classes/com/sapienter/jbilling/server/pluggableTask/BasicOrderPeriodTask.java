@@ -140,7 +140,7 @@ public class BasicOrderPeriodTask
                 while (cal.getTime().compareTo(viewLimit) < 0
 						&& (order.getActiveUntil() == null || cal.getTime()
 								.compareTo(order.getActiveUntil()) < 0)
-						&& periods.size() <= maxPeriods) {
+						&& periods.size() < maxPeriods) {
                 	Date cycleStarts = cal.getTime();
 					cal.add(MapPeriodToCalendar.map(order.getOrderPeriod()
 							.getUnitId()), order.getOrderPeriod().getValue()
@@ -163,8 +163,6 @@ public class BasicOrderPeriodTask
 							+ "(eop) = " + endOfPeriod + " compare "
 							+ cal.getTime().compareTo(viewLimit));
 				}
-                // for post-paid, the last period is not making it in
-                // periods.remove(periods.lastElement());
             } else if (order.getBillingTypeId().compareTo(
                     Constants.ORDER_BILLING_PRE_PAID) == 0) {
                 /* here the end of the period will be after the start of the billing

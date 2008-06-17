@@ -60,6 +60,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -1573,7 +1574,15 @@ public class WebServicesSessionBean implements SessionBean {
             OrderBL orderBL = new OrderBL();
             OrderDTO dto = orderBL.getDTO(order);
             LOG.debug("Order has " + order.getOrderLines().length + " lines");
-
+            
+            // make sure this shows as a new order, not as an update
+            dto.setId(null);
+            dto.setVersionNum(null);
+            for (OrderLineDTO line: dto.getLines()) {
+            	line.setId(0);
+            	line.setVersionNum(null);
+            }
+            
             orderBL.set(dto);
             orderBL.recalculate(entityId);
             

@@ -576,4 +576,20 @@ public class WSTest  extends TestCase {
             fail("Exception: " + e);
         }
     }
+    
+    public void testRecreate() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            // the the latest
+            OrderWS order = api.getLatestOrder(GANDALF_USER_ID);
+            // use it to create another one
+            Integer newOrder = api.createOrder(order);
+            assertTrue("New order newer than original", order.getId().compareTo(newOrder) < 0);
+            // clean up
+            api.deleteOrder(newOrder);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception: " + e);
+        }
+    }
 }

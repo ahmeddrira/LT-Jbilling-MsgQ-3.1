@@ -57,6 +57,7 @@ public class EventLogger {
     public static final Integer ORDER_LINE_UPDATED = new Integer(17);
     public static final Integer ORDER_NEXT_BILL_DATE_UPDATED = new Integer(18);
     public static final Integer ORDER_MAIN_SUBSCRIPTION_UPDATED = new Integer(22);
+    public static final Integer ORDER_CANCEL_AND_CREDIT = new Integer(26);
     // payment
     public static final Integer PAYMENT_INSTRUMENT_NOT_FOUND = new Integer(24);
     // invoice related message

@@ -36,6 +36,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import com.sapienter.jbilling.server.util.db.generated.Company;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
 import com.sapienter.jbilling.server.util.db.generated.ItemPrice;
@@ -45,7 +47,7 @@ import com.sapienter.jbilling.server.util.db.generated.Promotion;
 
 @Entity
 @Table(name="item")
-public class Item  implements java.io.Serializable {
+public class Item extends AbstractDescription {
 
 
      private int id;
@@ -84,9 +86,13 @@ public class Item  implements java.io.Serializable {
        this.itemUserPrices = itemUserPrices;
        this.itemPrices = itemPrices;
     }
-   
-     @Id 
+
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_ITEM;
+    }
     
+    @Id 
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;

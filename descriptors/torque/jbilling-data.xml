@@ -305,6 +305,7 @@
     <EventLogMessage Id="23"/>
     <EventLogMessage Id="24"/>
     <EventLogMessage Id="25"/>
+    <EventLogMessage Id="26"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -2948,6 +2949,7 @@
     <PluggableTaskType Id="37" CategoryId="5" ClassName="com.sapienter.jbilling.server.process.task.ProRateOrderPeriodTask" MinParameters="0"/>
     <PluggableTaskType Id="38" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.DailyProRateCompositionTask" MinParameters="0"/>
     <PluggableTaskType Id="39" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAtlasTask" MinParameters="5"/>
+    <PluggableTaskType Id="40" CategoryId="17" ClassName="com.sapienter.jbilling.server.order.task.RefundOnCancelTask" MinParameters="0"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>
@@ -2964,6 +2966,7 @@
     <PluggableTaskTypeCategory Id="14" Description="item pricing (rating)" InterfaceName="com.sapienter.jbilling.server.item.tasks.IPricing"/>
     <PluggableTaskTypeCategory Id="15" Description="Mediation Reader" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationReader"/>
     <PluggableTaskTypeCategory Id="16" Description="Mediation Processor" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationProcess"/>
+    <PluggableTaskTypeCategory Id="17" Description="Internal events" InterfaceName="com.sapienter.jbilling.server.system.event.task.IInternalEventsTask"/>
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

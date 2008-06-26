@@ -156,6 +156,7 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_ITEM_PRICING = new Integer(14);
     public static final Integer PLUGGABLE_TASK_MEDIATION_READER = new Integer(15);
     public static final Integer PLUGGABLE_TASK_MEDIATION_PROCESS = new Integer(16);
+    public static final Integer PLUGGABLE_TASK_INTERNAL_EVENT = new Integer(17);
     
     // pluggable task types (belongs to a category)
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);

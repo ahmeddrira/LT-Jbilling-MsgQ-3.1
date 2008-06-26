@@ -491,12 +491,13 @@ public final class EntitySignup {
         
         //ORDER_PERIODS
         // puts only monthly now
-        String orderPeriod[] = { "i_id", "i_entity_id", "i_value", "i_unit_id" };
+        String orderPeriod[] = { "i_id", "i_entity_id", "i_value", "i_unit_id", "i_optlock" };
         String orderPeriodData[][] = new String[1][3];
         String orderPeriodIntColumns[][][] = new String [1][1][2];
         orderPeriodData[0][0] = String.valueOf(newEntityId);
         orderPeriodData[0][1] = "1"; 
         orderPeriodData[0][2] = "1"; // month 
+        orderPeriodData[0][3] = "1"; // version 
         orderPeriodIntColumns[0][0][0] = "description";
         orderPeriodIntColumns[0][0][1] = "Monthly"; 
         
@@ -668,7 +669,7 @@ public final class EntitySignup {
         String ageingEntityStepIntColumns[][][] =
         { 
             { { "welcome_message", "<div> <br/> <p style='font-size:19px; font-weight: bold;'>Welcome to " + 
-                contact.getOrganizationName() + " Billing!</p> <br/> <p style='font-size:14px; text-align=left; padding-left: 15;'>From here, you can review your latest invoice and get it paid instantly. You can also view all your previous invoices and payments, and set up the system for automatic payment with your credit card.</p> <p style='font-size:14px; text-align=left; padding-left: 15;'>What would you like to do today? </p> <ul style='font-size:13px; text-align=left; padding-left: 25;'> <li >To submit a credit card payment, follow the link on the left bar.</li> <li >To view a list of your invoices, click on the ‘Invoices’ menu option. The first invoice on the list is your latest invoice. Click on it to see its details.</li> <li>To view a list of your payments, click on the ‘Payments’ menu option. The first payment on the list is your latest payment. Click on it to see its details.</li> <li>To provide a credit card to enable automatic payment, click on the menu option 'Account', and then on 'Edit Credit Card'.</li> </ul> </div>" }, }, // act
+                contact.getOrganizationName() + " Billing!</p> <br/> <p style='font-size:14px; text-align=left; padding-left: 15;'>From here, you can review your latest invoice and get it paid instantly. You can also view all your previous invoices and payments, and set up the system for automatic payment with your credit card.</p> <p style='font-size:14px; text-align=left; padding-left: 15;'>What would you like to do today? </p> <ul style='font-size:13px; text-align=left; padding-left: 25;'> <li >To submit a credit card payment, follow the link on the left bar.</li> <li >To view a list of your invoices, click on the ï¿½Invoicesï¿½ menu option. The first invoice on the list is your latest invoice. Click on it to see its details.</li> <li>To view a list of your payments, click on the ï¿½Paymentsï¿½ menu option. The first payment on the list is your latest payment. Click on it to see its details.</li> <li>To provide a credit card to enable automatic payment, click on the menu option 'Account', and then on 'Edit Credit Card'.</li> </ul> </div>" }, }, // act
         };
         table = addTable(Constants.TABLE_AGEING_ENTITY_STEP, 
                 ageingEntityStepColumns, 
@@ -778,7 +779,7 @@ public final class EntitySignup {
         };
         String lineData[][] = { 
             { String.valueOf(sectionId), "Billing Statement from |company_name|"},
-            { String.valueOf(sectionId + 1), "Dear |first_name| |last_name|,\n\n This is to notify you that your latest invoice (number |number|) is now available. The total amount due is: |total|. You can view it by login in to:\n\n" + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=|company_id|\n\nFor security reasons, your statement is password protected.\nTo login in, you will need your user name: |username| and your account password: |password|\n \n After logging in, please click on the menu option  ‘List’, to see all your invoices.  You can also see your payment history, your current purchase orders, as well as update your payment information and submit online payments.\n\n\nThank you for choosing |company_name|, we appreciate your business,\n\nBilling Department\n|company_name|"},
+            { String.valueOf(sectionId + 1), "Dear |first_name| |last_name|,\n\n This is to notify you that your latest invoice (number |number|) is now available. The total amount due is: |total|. You can view it by login in to:\n\n" + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=|company_id|\n\nFor security reasons, your statement is password protected.\nTo login in, you will need your user name: |username| and your account password: |password|\n \n After logging in, please click on the menu option  ï¿½Listï¿½, to see all your invoices.  You can also see your payment history, your current purchase orders, as well as update your payment information and submit online payments.\n\n\nThank you for choosing |company_name|, we appreciate your business,\n\nBilling Department\n|company_name|"},
             { String.valueOf(sectionId + 2), "You account is now up to date"},
             { String.valueOf(sectionId + 3), "Dear |first_name| |last_name|,\n\n  This email is to notify you that we have received your latest payment and your account no longer has an overdue balance.\n\n  Thank you for keeping your account up to date,\n\n\nBilling Department\n|company_name|"},  
             { String.valueOf(sectionId + 4), "Overdue Balance"},

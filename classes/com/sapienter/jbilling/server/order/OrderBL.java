@@ -71,6 +71,7 @@ import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
 import com.sapienter.jbilling.server.order.event.NewStatusEvent;
+import com.sapienter.jbilling.server.order.event.PeriodCancelledEvent;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -314,25 +315,36 @@ public class OrderBL extends ResultList
         
         return order.getId();
     }
+    
+    public void updateActiveUntil(Integer executorId, Date to, OrderDTO newOrder) {
+        audit(executorId, order.getActiveUntil());
+        // this needs an event
+        NewActiveUntilEvent event = new NewActiveUntilEvent(order.getId(), to, order.getActiveUntil());
+        EventManager.process(event);
+        // update the period of the latest invoice as well. This is needed
+        // because it is the way to extend a subscription when the
+        // order status is finished. Then the next_invoice_date is null.
+        if (order.getOrderStatus().getId() == CommonConstants.ORDER_STATUS_FINISHED) {
+                updateEndOfOrderProcess(to);
+        }
+        
+        // update it
+        order.setActiveUntil(to);
+        
+        // if the new active until is earlier than the next invoice date, we have a 
+        // period already invoice being cancelled
+        if (to != null && order.getNextBillableDay() != null && to.before(order.getNextBillableDay())) {
+            // pass the new order, rather than the existing one. Otherwise, the exsiting gets
+            // and changes overwritten by the data of the new order.
+            EventManager.process(new PeriodCancelledEvent(newOrder, executorId));
+        }
+    }
 
     public void update(Integer executorId, OrderDTO dto) 
             throws FinderException, CreateException {
         // update first the order own fields
         if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
-            audit(executorId, order.getActiveUntil());
-            // this needs an event
-            NewActiveUntilEvent event = new NewActiveUntilEvent(
-                    order.getId(), dto.getActiveUntil(), 
-                    order.getActiveUntil());
-            EventManager.process(event);
-            // update the period of the latest invoice as well. This is needed
-            // because it is the way to extend a subscription when the
-            // order status is finished. Then the next_invoice_date is null.
-            if (order.getOrderStatus().getId() == CommonConstants.ORDER_STATUS_FINISHED) {
-            	updateEndOfOrderProcess(dto.getActiveUntil());
-            }
-            // update it
-            order.setActiveUntil(dto.getActiveUntil());
+            updateActiveUntil(executorId, dto.getActiveUntil(), dto);
         }
         if (!Util.equal(order.getActiveSince(), dto.getActiveSince())) {
             audit(executorId, order.getActiveSince());

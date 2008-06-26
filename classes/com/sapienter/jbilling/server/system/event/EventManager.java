@@ -84,6 +84,10 @@ public final class EventManager {
 
     public static final void process(Event event){
         LOG.debug("processing event " + event);
+        
+        // always call the general event processor
+        new InternalEventProcessor().process(event);
+
         Class processors[] = (Class[]) subscriptions.get(event.getClass());
         if (processors == null) {
             LOG.warn("No processors for class " + event.getClass());
@@ -107,5 +111,6 @@ public final class EventManager {
                         EventManager.class, e);
             }                
         }
+        
     }
 }

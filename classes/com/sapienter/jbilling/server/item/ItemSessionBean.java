@@ -91,10 +91,19 @@ public class ItemSessionBean implements SessionBean {
             throw new SessionInternalError(e);
         }
     }
+    
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public boolean validateDecimals( Integer hasDecimals, Integer itemId ) {
+    	if( itemId == null ) { return true; }
+        ItemBL bl = new ItemBL(itemId);
+        return bl.validateDecimals( hasDecimals );
+    }
 
     /**
-    * @ejb:interface-method view-type="remote"
-    */
+     * @ejb:interface-method view-type="remote"
+     */
     public ItemDTOEx get(Integer id, Integer languageId, Integer userId,
             Integer currencyId, Integer entityId) 
             throws SessionInternalError {
@@ -452,4 +461,5 @@ public class ItemSessionBean implements SessionBean {
 
     public void ejbRemove() throws EJBException {
     }
+   
 }

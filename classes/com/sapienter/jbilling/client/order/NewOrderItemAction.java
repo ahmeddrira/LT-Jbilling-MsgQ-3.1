@@ -45,6 +45,7 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.BaseUser;
 
@@ -52,6 +53,9 @@ import com.sapienter.jbilling.server.user.db.BaseUser;
  * @author Emil
  */
 public class NewOrderItemAction extends Action {
+
+    private static final Logger LOG = Logger.getLogger(NewOrderItemAction.class);
+
     public ActionForward execute(
         ActionMapping mapping,
         ActionForm form,
@@ -59,25 +63,35 @@ public class NewOrderItemAction extends Action {
         HttpServletResponse response)
         throws IOException, ServletException {
 
-        Logger log = Logger.getLogger(NewOrderItemAction.class);
         ActionErrors errors = new ActionErrors();
         OrderDTO summary = null;
 
         // get the item id and quantity from the form
-        Integer itemID, quantity;
+        Integer itemID;
+        Double quantity;
 
         String action = request.getParameter("action");
-
-        itemID = ((OrderAddItemForm) form).getItemID();
-        quantity = ((OrderAddItemForm) form).getQuantity();
-
-        log.debug("Adding item " + itemID + " quant " + quantity);
 
         // check if the ejb session is already there
         HttpSession session = request.getSession(false);
         NewOrderSession remoteSession =
             (NewOrderSession) session.getAttribute(
                 Constants.SESSION_ORDER_SESSION_KEY);
+        
+        itemID = ((OrderAddItemForm) form).getItemID();
+        quantity = ((OrderAddItemForm) form).getQuantity();
+
+        if( quantity == null ){ 
+            // No update on the summary, log errors
+        	errors.add( ActionErrors.GLOBAL_ERROR, new ActionError("errors.invalid", "Quantity"));
+            saveErrors(request, errors);
+            
+            // go back to the new order page, so the user can keep adding items 
+            return (mapping.findForward("showOrderLIst"));
+        }
+
+        LOG.debug("Adding item " + itemID + " quant " + quantity);
+        
         // if not create new one
         try {
             if (remoteSession == null) {
@@ -114,31 +128,36 @@ public class NewOrderItemAction extends Action {
                             Constants.SESSION_USER_ID),
                         (Integer) session.getAttribute(
                             Constants.SESSION_ENTITY_ID_KEY));
-            }
-
+            }        	
         } catch (SessionInternalError e) {
             // this has been already logged ...
-            log.error("Exception: ", e);
+            LOG.error("Exception: ", e);
             errors.add(
                 ActionErrors.GLOBAL_ERROR,
                 new ActionError("all.internal"));
         } catch (Exception e) {
-            log.error("Error at the AddItemAction", e);
-            if (e.getCause().getMessage().equals("Item Manager task error")) {
+            if (e instanceof ItemDecimalsException ){
+            	errors.add(
+            			ActionErrors.GLOBAL_ERROR,
+            			new ActionError("order.error.item.decimals"));
+            } else if (e.getCause().getMessage().equals("Item Manager task error")) {
                 errors.add(ActionErrors.GLOBAL_ERROR,
                         new ActionError("order.error.task"));
+                LOG.error("Error at the AddItemAction", e);
             } else {
                 errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));
+                LOG.error("Error at the AddItemAction", e);
             }
         }
 
         if (!errors.isEmpty()) {
+        	// No update on the summary, log errors
             saveErrors(request, errors);
-            summary = new OrderDTO();
-        } 
-        // add the order DTO to the http session for the summary
-        session.setAttribute(Constants.SESSION_ORDER_SUMMARY, summary);
+        } else {
+        	// add the order DTO to the http session for the summary
+        	session.setAttribute(Constants.SESSION_ORDER_SUMMARY, summary);
+        }
         /*
         log.debug("The bean " + Constants.SESSION_ORDER_SUMMARY
                 + " is now in the session [" + 

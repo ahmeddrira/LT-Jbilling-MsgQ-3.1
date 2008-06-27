@@ -54,12 +54,12 @@
 					<bean:message key="order.summary.deleteItem"/>
 					</html:link>
 				</td>
-				<td><bean:write name="orderLine" property="quantity"/></td>
+				<td><bean:write name="orderLine" property="quantity" formatKey="format.double"/></td>
 				<td><bean:write name="orderLine" property="description"/></td>
 			</tr>
 			</logic:equal>
 			</logic:equal>
-		</logic:iterate>	
+		</logic:iterate>
 
 	</logic:equal> 
 	<logic:notEqual name='<%=Constants.SESSION_ORDER_SUMMARY%>'

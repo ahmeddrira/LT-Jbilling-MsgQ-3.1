@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -137,7 +138,11 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
 
         // do the maths
         OrderBL orderBL = new OrderBL(newOrder);
-        orderBL.recalculate(entityId);
+        try {
+            orderBL.recalculate(entityId);
+        } catch (ItemDecimalsException e) {
+            throw new SessionInternalError("Error when doing credit", RefundOnCancelTask.class, e);
+        }
 
         // save
         Integer newOrderId = orderBL.create(entityId, null, newOrder);

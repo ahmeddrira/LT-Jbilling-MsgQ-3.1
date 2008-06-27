@@ -66,7 +66,7 @@ public class MediationTest extends TestCase {
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()),Util.truncateDate(d1015))) {
                     foundFirst = true;
-                    assertEquals("Quantity of should be the combiend of all events", 1300, (int)order.getOrderLines()[0].getQuantity());
+                    assertEquals("Quantity of should be the combiend of all events", 1300.0, (double)order.getOrderLines()[0].getQuantity());
                 } 
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()),Util.truncateDate(d1115))) {

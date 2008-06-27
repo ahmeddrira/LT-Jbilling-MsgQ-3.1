@@ -339,7 +339,7 @@ public class GatewayBL {
                 line.setDescription(getStringPar(prefix + "description"));
                 line.setItemId(getIntPar(prefix + "item_id"));
                 line.setPrice(getFloatPar(prefix + "price"));
-                line.setQuantity(getIntPar(prefix + "quantity"));
+                line.setQuantity(getDoublePar(prefix + "quantity"));
                 line.setTypeId(getIntPar(prefix + "type_id"));
                 if (!validate("OrderLine", line)) {
                     return;
@@ -750,6 +750,22 @@ public class GatewayBL {
                     subCode = RES_SUB_CODE_ERR_TYPE;
                     text = name + MSG_FLOAT;
                 }
+            }
+        }
+        
+        return retValue;
+    }
+    
+    private Double getDoublePar(String name) {
+    	Double retValue = null;
+        String field = request.getParameter(name);
+        if (field != null) {
+            try {
+                retValue = Double.valueOf(field);
+            } catch (NumberFormatException e) {
+                code = RES_CODE_ERROR;
+                subCode = RES_SUB_CODE_ERR_TYPE;
+                text = name + MSG_FLOAT;
             }
         }
         

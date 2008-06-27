@@ -203,7 +203,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                         break;
                     case FLOAT:
                         record.addField(new PricingField(field.getName(), 
-                                Float.valueOf(tokens[tkIdx++].trim())), field.getIsKey());
+                                Double.valueOf(tokens[tkIdx++].trim())), field.getIsKey());
                         break;
                 }
             }

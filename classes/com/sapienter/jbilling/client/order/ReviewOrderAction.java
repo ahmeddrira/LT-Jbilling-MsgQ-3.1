@@ -58,6 +58,7 @@ import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 
@@ -111,10 +112,10 @@ public class ReviewOrderAction extends Action {
                 // the price has to be formated i18n
                 for(OrderLineDTO line : newOrder.getLines()) {
                 	if (line.getDeleted() == 0) {
-	                    line.setPriceStr(FormHelper.float2string(
-	                            line.getPrice(), session));
-	                    hashlines.put(line.getItemId(), line);
-                	}
+        	            line.setPriceStr(FormHelper.float2string(
+            	                line.getPrice(), session));
+                    	hashlines.put(line.getItemId(), line);
+                    }
                 }
                 
                 log.debug("The form has been set");
@@ -205,7 +206,7 @@ public class ReviewOrderAction extends Action {
                         : Integer.valueOf(request.getParameter("id"));
                 
                 OrderDTO orderDto = putOrderInSession(orderId, request);
-                        
+                
                 NewOrderDTOForm dto = new NewOrderDTOForm();
                 for (Iterator it = orderDto.getLines().iterator();
                         it.hasNext();) {
@@ -246,9 +247,16 @@ public class ReviewOrderAction extends Action {
             }
         } catch (Exception e) {
             log.error("Error processing a new order", e);
-            errors.add(
-                ActionErrors.GLOBAL_ERROR,
-                new ActionError("all.internal"));
+            
+            if( e instanceof ItemDecimalsException ){
+            	errors.add(
+                		ActionErrors.GLOBAL_ERROR,
+                		new ActionError("order.error.item.decimals"));
+            } else {
+	            errors.add(
+	                ActionErrors.GLOBAL_ERROR,
+	                new ActionError("all.internal"));
+            }
             
             forward = "show";
         }

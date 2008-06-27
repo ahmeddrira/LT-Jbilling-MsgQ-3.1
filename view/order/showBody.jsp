@@ -444,7 +444,7 @@
 					<logic:present name="line" property="item">
 					<logic:notPresent name="line" 
 				              property="item.percentage">
-						<bean:write name="line" property="quantity"/>
+						<bean:write name="line" property="quantity" formatKey="format.double"/>
 					</logic:notPresent>			
 					</logic:present>	
 				</td>

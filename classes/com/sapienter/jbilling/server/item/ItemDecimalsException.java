@@ -17,17 +17,27 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.item.tasks;
+package com.sapienter.jbilling.server.item;
 
-import java.util.Vector;
+public class ItemDecimalsException extends Exception {
 
-import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
+	/**
+     * Constructor for ItemDecimalsException.
+     */
+    public ItemDecimalsException() {
+        super();
+    }
 
-public interface IItemPurchaseManager {
-    public void addItem(Integer itemID, Double quantity, Integer language, 
-            Integer userId, Integer entityId, Integer currencyId, OrderDTO order,
-            Vector<Record> records)
-            throws TaskException ;
+    public ItemDecimalsException(Exception e) {
+        super(e);
+    }
+
+    /**
+     * Constructor for ItemDecimalsException.
+     * @param message
+     */
+    public ItemDecimalsException(String message) {
+        super(message);
+    }
+	
 }

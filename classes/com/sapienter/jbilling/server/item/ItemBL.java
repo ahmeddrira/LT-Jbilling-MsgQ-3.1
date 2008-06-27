@@ -45,7 +45,7 @@ import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.ItemPriceDTO;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
-import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -116,7 +116,8 @@ public class ItemBL {
         }
         item = itemHome.create(dto.getEntityId(), dto.getPercentage(), 
                 dto.getPriceManual(), 
-                dto.getDescription(), languageId);
+                dto.getDescription(), languageId,
+                dto.getHasDecimals());
         item.setNumber(dto.getNumber());        
         updateTypes(dto);
         updateCurrencies(dto);
@@ -132,11 +133,12 @@ public class ItemBL {
         eLogger.audit(executorId, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, null);
-
+        
         item.setNumber(dto.getNumber());
         item.setPriceManual(dto.getPriceManual());
         item.setDescription(dto.getDescription(), languageId);
         item.setPercentage(dto.getPercentage());
+        item.setHasDecimals(dto.getHasDecimals());
         
         updateTypes(dto);
         updateCurrencies(dto);
@@ -230,6 +232,15 @@ public class ItemBL {
         }
         
         return retValue;
+    }
+    
+    public boolean validateDecimals( Integer hasDecimals ){
+	    if( hasDecimals == 0 ){
+	        if(new OrderLineDAS().findLinesWithDecimals(item.getId()) > 0) {
+	        	return false;
+	        }
+	    }
+	    return true;
     }
     
     /**
@@ -438,7 +449,8 @@ public class ItemBL {
             currencyId,
             null,
             item.getPercentage(),
-            null);  // to be set right after
+            null, // to be set right after
+            item.getHasDecimals() );  
 
         // add all the prices for each currency
         // if this is a percenteage, we still need an array with empty prices

@@ -400,7 +400,7 @@ public class UploadData {
 		            Integer itemId = Integer.valueOf((String) prop.getProperty(
         					"item_id"));
 		            OrderDTO thisOrder = nOrderS.addItem(
-		            		itemId, new Integer(1), newUserId,entityId);
+		            		itemId, new Double(1), newUserId,entityId);
 		            // to edit the total I need to get the line ..
 		            OrderLineDTO thisLine = (OrderLineDTO) thisOrder.
 							getLine(itemId);

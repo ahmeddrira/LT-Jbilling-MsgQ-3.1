@@ -176,7 +176,7 @@ public class WSTest  extends TestCase {
             api.updateOrderLine(retOrderLine);
             retOrderLine = api.getOrderLine(retOrderLine.getId());
             assertEquals("updated quantity", retOrderLine.getQuantity(),
-                    new Integer(99));
+                    new Double(99.0));
             //delete a line through updating with quantity = 0
             System.out.println("Delete order line");
             retOrderLine.setQuantity(new Integer(0));
@@ -219,7 +219,7 @@ public class WSTest  extends TestCase {
             assertEquals("Status id", new Integer(2), retOrder.getStatusId());
             assertEquals("Modified line description", "Modified description",
             		retOrder.getOrderLines()[1].getDescription());
-            assertEquals("Modified quantity", new Integer(2),
+            assertEquals("Modified quantity", new Double(2.0),
             		retOrder.getOrderLines()[1].getQuantity());
             assertEquals("New billable date", cal.getTimeInMillis(), 
                     retOrder.getNextBillableDay().getTime());
@@ -504,7 +504,7 @@ public class WSTest  extends TestCase {
             nextLine.setItemId(i + 1);
             nextLine.setQuantity(1);
             nextLine.setPrice(linePrice);
-            nextLine.setAmount(nextLine.getQuantity() * linePrice);
+            nextLine.setAmount(nextLine.getQuantity().floatValue() * linePrice);
             
             lines.add(nextLine);
         }
@@ -592,4 +592,5 @@ public class WSTest  extends TestCase {
             fail("Exception: " + e);
         }
     }
+        
 }

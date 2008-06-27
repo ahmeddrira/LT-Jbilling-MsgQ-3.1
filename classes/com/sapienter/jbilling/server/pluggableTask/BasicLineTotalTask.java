@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -40,8 +41,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
 
     private static final Logger LOG = Logger.getLogger(BasicLineTotalTask.class);
 
-    public void doProcessing(OrderDTO order) 
-        throws TaskException {
+    public void doProcessing(OrderDTO order) throws TaskException {
         // calculations are done with 10 decimals. 
         // The final total is the rounded to 2 decimals.
         BigDecimal orderTotal = new BigDecimal("0.0000000000");
@@ -50,7 +50,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         BigDecimal nonTaxPerTotal = new BigDecimal("0.0000000000");
         BigDecimal nonTaxNonPerTotal = new BigDecimal("0.0000000000");
         
-        
+        validateLinesQuantity( order );
         
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
@@ -131,6 +131,18 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 .add(nonTaxNonPerTotal);
         orderTotal = orderTotal.setScale(2, Constants.BIGDECIMAL_ROUND);
         order.setTotal(orderTotal);
+    }
+    
+    public void validateLinesQuantity( OrderDTO order ) throws TaskException {
+    	
+    	for (OrderLineDTO line: order.getLines()) {
+            if (line.getItem() != null && 
+            		(line.getQuantity() % 1) != 0.0 && 
+            		line.getItem().getHasDecimals() == 0 ) {
+            	throw new TaskException(new ItemDecimalsException( "Item does not allow Decimals" ));
+            }
+        }
+    	
     }
 
 }

@@ -32,7 +32,7 @@ import org.apache.struts.validator.ValidatorForm;
  *
  */
 public class OrderAddItemForm extends ValidatorForm implements Serializable {
-    private Integer quantity = null;
+    private Double quantity = null;
     private Integer itemID = null;
     /**
      * Returns the itemID.
@@ -44,9 +44,9 @@ public class OrderAddItemForm extends ValidatorForm implements Serializable {
 
     /**
      * Returns the quantity.
-     * @return Integer
+     * @return Double
      */
-    public Integer getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
@@ -62,7 +62,7 @@ public class OrderAddItemForm extends ValidatorForm implements Serializable {
      * Sets the quantity.
      * @param quantity The quantity to set
      */
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
     

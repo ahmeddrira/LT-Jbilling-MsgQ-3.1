@@ -490,7 +490,7 @@
         <column name="invoice_id" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="amount" required="true" type="DOUBLE"/>
-        <column name="quantity" type="INTEGER"/>
+        <column name="quantity" type="DOUBLE"/>
         <column name="price" type="DOUBLE"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column name="item_id" type="INTEGER"/>
@@ -523,6 +523,7 @@
         <column name="percentage" type="DOUBLE"/>
         <column name="price_manual" required="true" type="SMALLINT"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
+        <column default="0" name="has_decimals" required="true" type="SMALLINT"/>
         <index name="ix_item_ent">
         	<index-column name="entity_id"/>
         	<index-column name="internal_number"/>
@@ -721,7 +722,7 @@
         <column name="item_id" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="amount" required="true" type="DOUBLE"/>
-        <column name="quantity" type="INTEGER"/>
+        <column name="quantity" type="DOUBLE"/>
         <column name="price" type="DOUBLE"/>
         <column name="item_price" type="SMALLINT"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
@@ -730,6 +731,9 @@
         <column name="OPTLOCK" required="false" type="INTEGER"/>
         <index name="ix_order_line_order_id">
         	<index-column name="order_id"/>
+        </index>
+        <index name="ix_order_line_item_id">
+        	<index-column name="item_id"/>
         </index>
         <foreign-key foreignTable="item">
             <reference foreign="id" local="item_id"/>

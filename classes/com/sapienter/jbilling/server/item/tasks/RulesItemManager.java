@@ -48,7 +48,8 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
 
     private OrderManager helperOrder = null;
     private Vector<Record> records;
-    public void addItem(Integer itemID, Integer quantity, Integer language,
+    
+    public void addItem(Integer itemID, Double quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO order, Vector<Record> records) throws TaskException {
         super.addItem(itemID, quantity, language, userId, entityId, currencyId, 
@@ -103,21 +104,18 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         executeStatefulRules(session, rulesMemoryContext);
     }
     
-    /*
-    private void executeStatelessRules(StatelessSession session, Vector context) {
-        session.executeWithResults(context);
-    }
-    */
-    
     public void doProcessing(OrderDTO order) throws TaskException {
         helperOrder = new OrderManager(order, order.getBaseUserByUserId().getLanguage().getId(), 
         		order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity().getId(), 
         		order.getBaseUserByUserId().getCurrency().getId());
 
-        processRules(order);
-        
         // cant extend two classes
         BasicLineTotalTask parent = new BasicLineTotalTask();
+        
+        parent.validateLinesQuantity(order);
+        
+        processRules(order);
+        
         parent.doProcessing(order);
     }
     
@@ -145,7 +143,12 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             this.order = order;
         }
         
-        public OrderLineDTO addItem(Integer itemID, Integer quantity) 
+        public OrderLineDTO addItem( Integer itemID, Integer quantity)
+            	throws TaskException {
+        	return addItem( itemID, new Double(quantity) );
+        }
+        
+        public OrderLineDTO addItem(Integer itemID, Double quantity) 
                 throws TaskException {
         	LOG.debug("Adding item " + itemID + " q: " + quantity);
         			
@@ -166,24 +169,11 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             }
             
             LOG.debug("Now order line is " + retValue + " hash: " + retValue.hashCode());
-            return retValue;
+	        return retValue;
         }
-        
-        
-        /*
-        public OrderLineDTO addItem(OrderLineDTO line) throws TaskException {
-            BasicItemManager helper = new BasicItemManager();
-            if (line.getItemId() == null) {
-                throw new TaskException("The item id is mandatory to add an item to an order");
-            }
-            helper.populateOrderLine(language, userId, entityId, currencyId, line);
-            order.setOrderLine(line.getItemId(), line);
-            return line;
-        }
-        */
         
         public OrderLineDTO addItem(Integer itemId) throws TaskException {
-            return addItem(itemId, 1);
+            return addItem(itemId, 1.0);
         }
         
         public void removeItem(Integer itemId) {
@@ -243,7 +233,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         private final Integer periodId;
         private final Date activeSince;
         private final Date activeUntil;
-        private final Integer quantity;
+        private final Double quantity;
         
         protected Subscription(OrderLineDTO line) {
             periodId = line.getPurchaseOrder().getOrderPeriod().getId();
@@ -269,7 +259,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             return periodId;
         }
 
-        public Integer getQuantity() {
+        public Double getQuantity() {
             return quantity;
         }
     }

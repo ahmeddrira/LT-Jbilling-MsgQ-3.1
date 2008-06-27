@@ -425,6 +425,7 @@
     Percentage CDATA #IMPLIED
     PriceManual CDATA #REQUIRED
     Deleted CDATA #REQUIRED
+    HasDecimals CDATA #REQUIRED
 >
 
 <!ELEMENT ItemPrice EMPTY>

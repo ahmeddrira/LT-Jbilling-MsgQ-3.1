@@ -52,7 +52,7 @@
 			<html:form action="/newOrderItem?action=add">
 			<input type="hidden" name="itemID" value="<bean:write name="rowID"/>" />
 			<td><input class="form_button" type="submit" value="<bean:message key="order.item.add"/>"/></td>
-			<td><html:text property="quantity" size="4" value="1" /></td>
+			<td><html:text property="quantity" size="6" value="1" /></td>
 			</html:form>
 		</tr>
 		</jbilling:genericList>

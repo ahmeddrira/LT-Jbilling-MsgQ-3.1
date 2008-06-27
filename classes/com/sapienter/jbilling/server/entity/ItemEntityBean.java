@@ -72,7 +72,7 @@ public abstract class ItemEntityBean implements EntityBean {
      */
     public Integer ejbCreate(Integer entityId, Float percentage, 
             Integer priceManual, String description, 
-            Integer languageId) 
+            Integer languageId, Integer hasDecimals ) 
             throws CreateException {
         Integer newId;
 
@@ -109,6 +109,11 @@ public abstract class ItemEntityBean implements EntityBean {
         setId(newId);
         setPercentage(percentage);
         setPriceManual(priceManual);
+        if( hasDecimals != null ){
+        	setHasDecimals( hasDecimals );
+        } else {
+        	setHasDecimals(new Integer(0));
+        }
         setDeleted(new Integer(0));
 
         return newId;
@@ -116,7 +121,7 @@ public abstract class ItemEntityBean implements EntityBean {
     
     public void ejbPostCreate(Integer entityId, Float percentage, 
             Integer priceManual, String description, 
-            Integer languageId) {
+            Integer languageId, Integer hasDecimals) {
                 // set the entity
         JNDILookup EJBFactory = null;
         try {
@@ -204,6 +209,18 @@ public abstract class ItemEntityBean implements EntityBean {
       */
      public abstract void setPriceManual(Integer flag);
 
+     /**
+      * @ejb:interface-method view-type="local"
+      * @ejb:persistent-field
+      * @jboss:column-name name="has_decimals"
+     * @jboss.method-attributes read-only="true"
+      */
+     public abstract Integer getHasDecimals();
+    /**
+      * @ejb:interface-method view-type="local"
+      */
+     public abstract void setHasDecimals(Integer flag);
+     
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
@@ -324,7 +341,6 @@ public abstract class ItemEntityBean implements EntityBean {
      */
     public abstract float ejbSelectGetUserPrice(Integer userId, Integer itemId) 
             throws FinderException;
-    
 
     // EJB callbacks -----------------------------------------------------------
     public void setEntityContext(EntityContext context) {

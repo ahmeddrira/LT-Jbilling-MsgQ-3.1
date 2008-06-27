@@ -389,7 +389,7 @@
 		</logic:notPresent>
 		
 			<td class="list"><bean:write name="line" property="description"/></td>
-			<td class="list" align="right"><bean:write name="line" property="quantity"/></td>
+			<td class="list" align="right"><bean:write name="line" property="quantity" formatKey="format.double"/></td>
 			
 			<logic:equal name="line" property="isPercentage" value="0">
 			<td class="list">

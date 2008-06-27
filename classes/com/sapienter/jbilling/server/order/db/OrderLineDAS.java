@@ -19,8 +19,23 @@
 */
 package com.sapienter.jbilling.server.order.db;
 
+import org.hibernate.Query;
+
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
+    public Long findLinesWithDecimals(Integer itemId) {
+
+        final String hql =
+            "select count(*)" + 
+            "  from OrderLineDTO ol " +
+            " where ol.deleted = 0 " + 
+            "   and ol.item.id= :item and (ol.quantity - cast(ol.quantity as integer)) <> 0";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("item", itemId);
+
+        return (Long) query.uniqueResult();
+    }
 
 }

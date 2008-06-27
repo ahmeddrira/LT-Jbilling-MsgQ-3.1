@@ -29,7 +29,7 @@ public class PricingField {
     private String strValue;
     private Date dateValue;
     private final Type type;
-    private Float floatValue;
+    private Double doubleValue;
     private Integer intValue;
     private Integer position = 1;
     
@@ -48,7 +48,7 @@ public class PricingField {
         this.strValue = field.getStrValue();
         this.dateValue = field.getDateValue();
         this.type = field.getType();
-        this.floatValue = field.getFloatValue();
+        this.doubleValue = field.getDoubleValue();
         this.intValue = field.getIntValue();
         this.position = field.getPosition();
     }
@@ -57,35 +57,35 @@ public class PricingField {
         this.name = name;
         this.strValue = strValue;
         type = Type.STRING;
-        floatValue = null;
         intValue = null;
         dateValue = null;
+        doubleValue = null;
     }
 
     public PricingField(String name, Date dateValue) {
         this.name = name;
         this.dateValue = dateValue;
         type = Type.DATE;
-        floatValue = null;
         intValue = null;
         strValue = null;
-    }
-
-    public PricingField(String name, Float floatValue) {
-        this.name = name;
-        this.floatValue = floatValue;
-        type = Type.FLOAT;
-        strValue = null;
-        intValue = null;
-        dateValue = null;
+        doubleValue = null;
     }
 
     public PricingField(String name, Integer intValue) {
         this.name = name;
         this.intValue = intValue;
         type = Type.INTEGER;
-        floatValue = null;
         strValue = null;
+        dateValue = null;
+        doubleValue = null;
+    }
+    
+    public PricingField(String name, Double doubleValue) {
+        this.name = name;
+        this.doubleValue = doubleValue;
+        type = Type.FLOAT;
+        strValue = null;
+        intValue = null;
         dateValue = null;
     }
 
@@ -99,12 +99,17 @@ public class PricingField {
     	return cal;
     }
 
-    public Float getFloatValue() {
-        return floatValue;
+    // This method is only here for backward compatibility
+    public Double getFloatValue() {
+        return getDoubleValue();
     }
 
     public Integer getIntValue() {
         return intValue;
+    }
+    
+    public Double getDoubleValue() {
+        return doubleValue;
     }
 
     public String getName() {
@@ -124,10 +129,10 @@ public class PricingField {
             return strValue;
         if (intValue != null)
             return intValue;
-        if (floatValue != null)
-            return floatValue;
         if (dateValue != null)
             return dateValue;
+        if (doubleValue != null)
+            return doubleValue;
         
         throw new SessionInternalError("There is no value");
     }
@@ -137,7 +142,7 @@ public class PricingField {
             return Type.STRING;
         } else if (myType.equalsIgnoreCase("integer")) {
             return Type.INTEGER;
-        } else if (myType.equalsIgnoreCase("float")) {
+        } else if (myType.equalsIgnoreCase("float") || myType.equalsIgnoreCase("double")) {
             return Type.FLOAT;
         } else if (myType.equalsIgnoreCase("date")) {
             return Type.DATE;
@@ -154,15 +159,15 @@ public class PricingField {
         this.dateValue = dateValue;
     }
 
-    public void setFloatValue(Float floatValue) {
-        this.floatValue = floatValue;
-    }
-
     public void setIntValue(Integer intValue) {
         this.intValue = intValue;
     }
 
     public void setStrValue(String strValue) {
         this.strValue = strValue;
+    }
+    
+    public void setDoubleValue(Double doubleValue) {
+        this.doubleValue = doubleValue;
     }
 }

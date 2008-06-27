@@ -56,6 +56,7 @@ public class Item extends AbstractDescription {
      private Double percentage;
      private short priceManual;
      private short deleted;
+     private short hasDecimals;
      private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
      private Set<Promotion> promotions = new HashSet<Promotion>(0);
      private Set<ItemType> itemTypes = new HashSet<ItemType>(0);
@@ -67,18 +68,20 @@ public class Item extends AbstractDescription {
     }
 
 	
-    public Item(int id, short priceManual, short deleted) {
+    public Item(int id, short priceManual, short deleted, short hasDecimals) {
         this.id = id;
         this.priceManual = priceManual;
         this.deleted = deleted;
+        this.hasDecimals = hasDecimals;
     }
-    public Item(int id, Company entity, String internalNumber, Double percentage, short priceManual, short deleted, Set<OrderLineDTO> orderLineDTOs, Set<Promotion> promotions, Set<ItemType> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPrice> itemUserPrices, Set<ItemPrice> itemPrices) {
+    public Item(int id, Company entity, String internalNumber, Double percentage, short priceManual, short deleted, short hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<Promotion> promotions, Set<ItemType> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPrice> itemUserPrices, Set<ItemPrice> itemPrices) {
        this.id = id;
        this.entity = entity;
        this.internalNumber = internalNumber;
        this.percentage = percentage;
        this.priceManual = priceManual;
        this.deleted = deleted;
+       this.hasDecimals = hasDecimals;
        this.orderLineDTOs = orderLineDTOs;
        this.promotions = promotions;
        this.itemTypes = itemTypes;
@@ -146,6 +149,16 @@ public class Item extends AbstractDescription {
     public void setDeleted(short deleted) {
         this.deleted = deleted;
     }
+    
+    @Column(name="has_decimals", nullable=false)
+    public short getHasDecimals() {
+        return this.hasDecimals;
+    }
+    
+    public void setHasDecimals(short hasDecimals) {
+        this.hasDecimals = hasDecimals;
+    }
+    
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")
     public Set<OrderLineDTO> getOrderLines() {
         return this.orderLineDTOs;

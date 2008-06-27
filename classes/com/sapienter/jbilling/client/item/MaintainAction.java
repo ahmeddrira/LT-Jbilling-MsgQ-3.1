@@ -55,6 +55,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
 	private static final String FIELD_DESCRIPTION = "description";
 	private static final String FIELD_ID = "id";
 	private static final String FIELD_LANGUAGE = "language";
+	private static final String FIELD_HAS_DECIMALS = "chbx_hasDecimals";
 	
 	private static final String FORWARD_EDIT = "item_edit";
 	private static final String FORWARD_LIST = "item_list";
@@ -90,6 +91,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
         dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
         dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));
         dto.setPercentage(string2float((String) myForm.get(FIELD_PERCENTAGE)));
+        dto.setHasDecimals((Boolean) myForm.get(FIELD_HAS_DECIMALS) ? 1 : 0);
 
         // because of the bad idea of using the same bean for item/type/price,
         // the validation has to be manual
@@ -123,6 +125,14 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
         if (!atLeastOnePriceFound && dto.getPercentage() == null) {
             errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("item.error.price"));
         }
+        
+        // If the item has an ID (aka it is not being created)
+        //  Validate the change on "Allow decimal quantity" flag and block it if there is an
+        //   active order with the item
+        if( !myItemSession.validateDecimals( dto.getHasDecimals(), (Integer)myForm.get(FIELD_ID) ) ){
+        	errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("item.error.decimals"));
+        }
+        
         return dto;
 	}
 	
@@ -155,7 +165,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
 	@Override
 	protected ForwardAndMessage doSetup() throws RemoteException {
         // the price is actually irrelevant in this call, since it's going
-        // to be overwirtten by the user's input
+        // to be overwritten by the user's input
         // in this case the currency doesn't matter, it
         ItemDTOEx dto = myItemSession.get(selectedId, languageId, null, null, entityId);
         // the prices have to be localized
@@ -170,6 +180,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
         myForm.set(FIELD_ID, dto.getId());
         myForm.set(FIELD_PRICES, dto.getPrices());
         myForm.set(FIELD_LANGUAGE, languageId);
+        myForm.set(FIELD_HAS_DECIMALS, dto.getHasDecimals().intValue() > 0 );
         if (dto.getPercentage() != null) {
             myForm.set(FIELD_PERCENTAGE, float2string(dto.getPercentage()));
         } else {

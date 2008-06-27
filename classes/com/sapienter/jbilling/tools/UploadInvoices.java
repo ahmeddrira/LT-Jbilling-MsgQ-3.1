@@ -177,7 +177,7 @@ public class UploadInvoices {
                 InvoiceLineDTOEx line = new InvoiceLineDTOEx();
 
                 line.setAmount(Float.valueOf(fields[1].trim()));
-                line.setQuantity(Integer.valueOf(fields[2].trim()));
+                line.setQuantity(Double.valueOf(fields[2].trim()));
                 line.setPrice(Float.valueOf(fields[3].trim()));
                 if (fields[4].trim().length() > 0) {
                     line.setItemId(Integer.valueOf(fields[4].trim()));

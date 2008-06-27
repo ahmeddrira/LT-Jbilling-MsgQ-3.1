@@ -64,7 +64,7 @@ public class OrderLineDTO implements Serializable, Comparable {
      private Item item;
      private OrderDTO orderDTO;
      private Float amount;
-     private Integer quantity;
+     private Double quantity;
      private Float price;
      private Integer itemPrice;
      private Date createDatetime;
@@ -104,7 +104,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.deleted = deleted;
     }
     public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, Item item, OrderDTO orderDTO, float amount, 
-    		Integer quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description) {
+    		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
        this.item = item;
@@ -164,13 +164,17 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.amount = amount;
     }
     
-    @Column(name="quantity")
-    public Integer getQuantity() {
+    @Column(name="quantity", precision=17, scale=17)
+    public Double getQuantity() {
         return this.quantity;
     }
     
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+    @Transient
+    public void setQuantity(Integer quantity) {
+    	setQuantity( new Double(quantity) );
     }
     
     @Column(name="price", precision=17, scale=17)
@@ -262,7 +266,7 @@ public class OrderLineDTO implements Serializable, Comparable {
 	public void setPriceStr(String priceStr) {
 		this.priceStr = priceStr;
 	}
-
+	
     @Transient
 	public Boolean getTotalReadOnly() {
         if (totalReadOnly == null) {
@@ -327,4 +331,5 @@ public class OrderLineDTO implements Serializable, Comparable {
         " editable=" + editable + "]";
 
     }
+    
 }

@@ -1377,7 +1377,7 @@ public class WebServicesSessionBean implements SessionBean {
                                 "is required - ";
                     }
                     if (line.getQuantity() == null || 
-                            line.getQuantity().intValue() == 0) {
+                            line.getQuantity().doubleValue() == 0.0) {
                         error += "OrderLineWS: if useItem == true the quantity " +
                                 "is required - ";
                     }

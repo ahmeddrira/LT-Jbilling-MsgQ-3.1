@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
@@ -77,18 +78,29 @@ public class NewOrderSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public OrderDTO addItem(Integer itemID, Integer quantity, 
+    public OrderDTO addItem(Integer itemID, Double quantity, 
             Integer userId, Integer entityId) 
-            throws SessionInternalError {
+            throws SessionInternalError, ItemDecimalsException {
 
-            LOG.debug("Adding item " + itemID + " q:" + quantity);
+        LOG.debug("Adding item " + itemID + " q:" + quantity);
 
-            OrderBL bl = new OrderBL(order);
-            bl.addItem(itemID, quantity, language, userId, entityId, 
-                    order.getCurrencyId());
-            return order;
+        OrderBL bl = new OrderBL(order);
+        bl.addItem(itemID, quantity, language, userId, entityId, 
+                order.getCurrencyId());
+        return order;
 
     }
+    
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+     public OrderDTO addItem(Integer itemID, Integer quantity, 
+             Integer userId, Integer entityId) 
+             throws SessionInternalError, ItemDecimalsException {
+
+         return addItem( itemID, new Double(quantity), userId, entityId );
+
+     }
 
     /**
     * @ejb:interface-method view-type="remote"
@@ -107,7 +119,7 @@ public class NewOrderSessionBean implements SessionBean {
     * @ejb:interface-method view-type="remote"
     */
     public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId) 
-            throws NamingException {
+            throws NamingException, ItemDecimalsException {
         
         OrderBL bl = new OrderBL();
         bl.set(modifiedOrder);

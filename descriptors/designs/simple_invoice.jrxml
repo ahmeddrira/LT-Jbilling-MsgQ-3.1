@@ -49,7 +49,7 @@
 	</parameter>
 	<parameter name="totalWithTax" class="java.lang.String">
 	</parameter>
-	<field name="quantity" class="java.lang.Integer">
+	<field name="quantity" class="java.lang.Double">
 	</field>
 	<field name="description" class="java.lang.String">
 	</field>
@@ -256,7 +256,7 @@
 				<textElement textAlignment="Right">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{quantity}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[(new DecimalFormat("#,##0.##")).format($F{quantity})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement positionType="Float" x="64" y="6" width="328" height="20"/>

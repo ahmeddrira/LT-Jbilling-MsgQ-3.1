@@ -56,7 +56,7 @@
 				<td>
 				<logic:notPresent name="thisLine" 
 				              property="value.item.percentage">
-				    <html:text property='<%= "orderLine(" + itemId + ").quantity" %>' size="4"/>
+				    <html:text property='<%= "orderLine(" + itemId + ").quantity" %>' size="6"/>
                 </logic:notPresent>				
 				</td>
 				<td>
@@ -104,10 +104,10 @@
 				<bean:write name="thisLine" property="value.description"/>	
 				</td>
 				<td>
-				<bean:write name="thisLine" property="value.quantity"/>
+				<bean:write name="thisLine" property="value.quantity" formatKey="format.double"/>
 				</td>
 				<td>
-				<bean:write name="thisLine" property="value.price"/>
+				<bean:write name="thisLine" property="value.price" formatKey="format.money"/>
 				</td>
 				<td>
 				<bean:write name="thisLine" property="value.amount" formatKey="format.money"/>

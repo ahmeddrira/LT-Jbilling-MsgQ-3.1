@@ -48,8 +48,9 @@ public final class ItemDTOEx extends ItemDTO implements Serializable {
     public ItemDTOEx(Integer id,String number, Integer entity, 
             String description,
             Integer manualPrice, Integer deleted, Integer currencyId,
-            Float price, Float percentage, Integer orderLineTypeId) {
-        super(id, number, percentage, manualPrice ,deleted);
+            Float price, Float percentage, Integer orderLineTypeId,
+            Integer hasDecimals ) {
+        super(id, number, percentage, manualPrice, hasDecimals, deleted);
         setEntityId(entity);
         setDescription(description);
         setCurrencyId(currencyId);

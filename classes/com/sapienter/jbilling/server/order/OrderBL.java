@@ -50,6 +50,7 @@ import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PromotionBL;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
@@ -101,7 +102,6 @@ public class OrderBL extends ResultList
     private OrderPeriodDAS orderPeriodDAS = null;
     private OrderDAS orderDas = null;
     private OrderBillingTypeDAS orderBillingTypeDas = null;
-    private OrderStatusDAS orderStatusDAS = null;
     
     private static final Logger LOG = Logger.getLogger(OrderBL.class);
     private EventLogger eLogger = null;
@@ -125,7 +125,6 @@ public class OrderBL extends ResultList
         this.order = order;
     }
     
-    
     private void init() throws NamingException {
         EJBFactory = JNDILookup.getFactory(false);
         eLogger = EventLogger.getInstance();        
@@ -133,7 +132,6 @@ public class OrderBL extends ResultList
         orderPeriodDAS = new OrderPeriodDAS();
         orderDas = new OrderDAS();
         orderBillingTypeDas = new OrderBillingTypeDAS();
-        orderStatusDAS = new OrderStatusDAS();
     }
 
     public OrderDTO getEntity() {
@@ -201,8 +199,9 @@ public class OrderBL extends ResultList
     	return order;
     }
 
-    public void addItem(Integer itemID, Integer quantity, Integer language, 
-            Integer userId, Integer entityId, Integer currencyId, Vector<Record> records) {
+    public void addItem(Integer itemID, Double quantity, Integer language, 
+            Integer userId, Integer entityId, Integer currencyId, Vector<Record> records) 
+    	throws ItemDecimalsException {
 
             try {
                 PluggableTaskManager<IItemPurchaseManager> taskManager =
@@ -214,16 +213,35 @@ public class OrderBL extends ResultList
                     myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
                     myTask = taskManager.getNextClass();
                 }
-            } catch (Exception e) {
-                // do not change this error text, it is used to identify the error
+            } catch(PluggableTaskException e) { 
                 throw new SessionInternalError("Item Manager task error", OrderBL.class, e);
+            } catch ( TaskException e) {
+            	if( e.getCause() instanceof ItemDecimalsException ) {
+            		throw (ItemDecimalsException)e.getCause();
+            	} else {
+	                // do not change this error text, it is used to identify the error
+	                throw new SessionInternalError("Item Manager task error", OrderBL.class, e);
+            	}
             }
 
     }
 
-    public void addItem(Integer itemID, Integer quantity, Integer language, 
-            Integer userId, Integer entityId, Integer currencyId) {
+    public void addItem(Integer itemID, Double quantity, Integer language, 
+            Integer userId, Integer entityId, Integer currencyId)
+    	throws ItemDecimalsException {
         addItem(itemID, quantity, language, userId, entityId, currencyId, null);
+    }
+    
+    public void addItem(Integer itemID, Integer quantity, Integer language, 
+            Integer userId, Integer entityId, Integer currencyId, Vector<Record> records)
+    	throws ItemDecimalsException{
+        addItem(itemID, new Double(quantity), language, userId, entityId, currencyId, records);
+    }
+    
+    public void addItem(Integer itemID, Integer quantity, Integer language, 
+            Integer userId, Integer entityId, Integer currencyId)
+    	throws ItemDecimalsException{
+        addItem(itemID, new Double(quantity), language, userId, entityId, currencyId, null);
     }
     
     public void deleteItem(Integer itemID) {
@@ -249,7 +267,7 @@ public class OrderBL extends ResultList
      * Goes over the processing tasks configured in the database for this
      * entity. The order entity is then modified.
      */
-    public void recalculate(Integer entityId) throws SessionInternalError {
+    public void recalculate(Integer entityId) throws SessionInternalError, ItemDecimalsException {
         LOG.debug("Processing and order for reviewing." + order.getLines().size());
         // make sure the user is there
         UserDAS user = new UserDAS();
@@ -269,6 +287,9 @@ public class OrderBL extends ResultList
             throw new SessionInternalError("Problems handling order " +
                     "processing task.");
         } catch (TaskException e) {
+        	if( e.getCause() instanceof ItemDecimalsException ) {
+        		throw (ItemDecimalsException)e.getCause();
+        	}
 			LOG.fatal("Problems excecuting order processing task.", e);
 			throw new SessionInternalError("Problems executing order processing task.");
         }
@@ -502,7 +523,7 @@ public class OrderBL extends ResultList
         if (code != null && code.length() > 0) {
             PromotionBL promotion = new PromotionBL();
             if (promotion.isPresent(entityId, code)) {
-            	UserBL user;
+                UserBL user;
 				try {
 					user = new UserBL(order.getBaseUserByUserId().getId());
 				} catch (Exception e) {

@@ -41,7 +41,7 @@ public class InvoiceLine  implements java.io.Serializable {
      private Item item;
      private Invoice invoice;
      private double amount;
-     private Integer quantity;
+     private Double quantity;
      private Double price;
      private short deleted;
      private String description;
@@ -58,7 +58,7 @@ public class InvoiceLine  implements java.io.Serializable {
         this.deleted = deleted;
         this.isPercentage = isPercentage;
     }
-    public InvoiceLine(int id, InvoiceLineType invoiceLineType, Item item, Invoice invoice, double amount, Integer quantity, Double price, short deleted, String description, Integer sourceUserId, short isPercentage) {
+    public InvoiceLine(int id, InvoiceLineType invoiceLineType, Item item, Invoice invoice, double amount, Double quantity, Double price, short deleted, String description, Integer sourceUserId, short isPercentage) {
        this.id = id;
        this.invoiceLineType = invoiceLineType;
        this.item = item;
@@ -120,12 +120,16 @@ public class InvoiceLine  implements java.io.Serializable {
     }
     
     @Column(name="quantity")
-    public Integer getQuantity() {
+    public Double getQuantity() {
         return this.quantity;
     }
     
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+    
+    public void setQuantity(Integer quantity) {
+        setQuantity( new Double(quantity) );
     }
     
     @Column(name="price", precision=17, scale=17)

@@ -57,7 +57,7 @@ public class InvoiceLineDTOEx extends InvoiceLineDTO implements Serializable {
      * @param itemId
      */
     public InvoiceLineDTOEx(Integer id, String description, Float amount,
-            Float price, Integer quantity, Integer typeId, Integer deleted,
+            Float price, Double quantity, Integer typeId, Integer deleted,
             Integer itemId, Integer sourceUserId, Integer isPercentage) {
         super(id, description, amount, price, quantity, deleted, itemId, 
                 sourceUserId, isPercentage);
@@ -83,6 +83,10 @@ public class InvoiceLineDTOEx extends InvoiceLineDTO implements Serializable {
     }
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
+    }
+    
+    public void setQuantity( Integer quantity ) {
+    	setQuantity( new Double(quantity) );
     }
     
     public String toString() {

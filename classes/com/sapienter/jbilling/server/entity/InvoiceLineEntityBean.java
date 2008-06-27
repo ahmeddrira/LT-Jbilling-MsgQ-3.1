@@ -65,7 +65,7 @@ public abstract class InvoiceLineEntityBean implements EntityBean {
     /**
      * @ejb:create-method view-type="local"
      */
-    public Integer ejbCreate(String description, Float amount, Integer quantity, 
+    public Integer ejbCreate(String description, Float amount, Double quantity, 
             Float price, Integer typeId, Integer itemId, Integer sourceUserId,
             Integer isPercentage)
             throws CreateException {
@@ -107,7 +107,7 @@ public abstract class InvoiceLineEntityBean implements EntityBean {
         return newId;
     }
 
-    public void ejbPostCreate(String description, Float amount, Integer quantity, 
+    public void ejbPostCreate(String description, Float amount, Double quantity, 
             Float price, Integer typeId, Integer itemId, Integer sourceUserId,
             Integer isPercentage) {
         try {
@@ -165,8 +165,8 @@ public abstract class InvoiceLineEntityBean implements EntityBean {
      * @jboss:column-name name="quantity"
      * @jboss.method-attributes read-only="true"
      */
-    public abstract Integer getQuantity();
-    public abstract void setQuantity(Integer quantity);
+    public abstract Double getQuantity();
+    public abstract void setQuantity(Double quantity);
 
     /**
      * @ejb:interface-method view-type="local"

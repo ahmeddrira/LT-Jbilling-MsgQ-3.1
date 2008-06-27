@@ -67,4 +67,5 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 		
 		return criteria.list();
 	}
+	
 }

@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 
 /**
@@ -280,4 +281,16 @@ public class OrderSessionBean implements SessionBean {
         //context = aContext;
     }
 
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+     public Long getCountWithDecimals(Integer itemId) 
+             throws SessionInternalError {
+         try {
+         	return new OrderLineDAS().findLinesWithDecimals(itemId);
+         } catch (Exception e) {
+             throw new SessionInternalError(e);
+         }
+     }
+    
 }

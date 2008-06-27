@@ -42,7 +42,7 @@ public class OrderLineWS implements Serializable {
 
 	private Float amount;
 
-	private Integer quantity;
+	private Double quantity;
 
 	private Float price;
 
@@ -87,7 +87,7 @@ public class OrderLineWS implements Serializable {
 	 * @param deleted
 	 */
 	public OrderLineWS(Integer id, Integer itemId, String description,
-			Float amount, Integer quantity, Float price, Integer itemPrice,
+			Float amount, Double quantity, Float price, Integer itemPrice,
 			Date create, Integer deleted, Integer newTypeId, Boolean editable,
 			Integer orderId, Boolean useItem, Integer version) {
 		setId(id);
@@ -225,16 +225,16 @@ public class OrderLineWS implements Serializable {
 		return priceStr;
 	}
 
-	public void setPriceStr(String priceStr) {
-		this.priceStr = priceStr;
-	}
-
-	public Integer getQuantity() {
+	public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
+	}
+	
+	public void setQuantity(Integer quantity) {
+		setQuantity( new Double(quantity) );
 	}
 
 	public Integer getVersionNum() {

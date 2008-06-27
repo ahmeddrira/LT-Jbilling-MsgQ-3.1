@@ -185,6 +185,12 @@
 	      </jbilling:permission>	      
 	      </tr>
         </logic:iterate>
+    	
+    	<tr class="form">
+			<td></td>
+			<td class="form_prompt"><bean:message key="item.prompt.hasDecimals"/></td>
+	        <td><html:checkbox property="chbx_hasDecimals"/></td>
+		</tr>
 
       <jbilling:permission permission='<%=Constants.P_ITEM_EDIT%>'>
 	    <tr class="form">

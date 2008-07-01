@@ -492,7 +492,7 @@ public final class EntitySignup {
         //ORDER_PERIODS
         // puts only monthly now
         String orderPeriod[] = { "i_id", "i_entity_id", "i_value", "i_unit_id", "i_optlock" };
-        String orderPeriodData[][] = new String[1][3];
+        String orderPeriodData[][] = new String[1][4];
         String orderPeriodIntColumns[][][] = new String [1][1][2];
         orderPeriodData[0][0] = String.valueOf(newEntityId);
         orderPeriodData[0][1] = "1"; 

@@ -36,8 +36,8 @@ public class PeriodCancelledEvent implements Event {
     private final Integer executorId;
     private final OrderDTO order;
     
-    public PeriodCancelledEvent(OrderDTO order, Integer executorId) {
-        this.entityId = order.getBaseUserByUserId().getCompany().getId();
+    public PeriodCancelledEvent(OrderDTO order, Integer entityId, Integer executorId) {
+        this.entityId = entityId;
         this.order = order;
         this.executorId = executorId;
     }

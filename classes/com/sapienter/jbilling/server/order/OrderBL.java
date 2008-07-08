@@ -357,7 +357,8 @@ public class OrderBL extends ResultList
         if (to != null && order.getNextBillableDay() != null && to.before(order.getNextBillableDay())) {
             // pass the new order, rather than the existing one. Otherwise, the exsiting gets
             // and changes overwritten by the data of the new order.
-            EventManager.process(new PeriodCancelledEvent(newOrder, executorId));
+            EventManager.process(new PeriodCancelledEvent(newOrder, 
+                    order.getBaseUserByUserId().getCompany().getId(), executorId));
         }
     }
 

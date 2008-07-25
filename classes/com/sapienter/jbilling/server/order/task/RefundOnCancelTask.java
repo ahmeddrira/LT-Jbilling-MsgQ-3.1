@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineTypeDAS;
@@ -65,8 +66,8 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
         LOG.debug("Plug in processing cancellation event for order " + order.getId());
 
         // local variables
-        Integer userId = order.getBaseUserByUserId().getUserId();
-        Integer entityId = order.getBaseUserByUserId().getCompany().getId();
+        Integer userId = new OrderDAS().find(order.getId()).getBaseUserByUserId().getUserId(); // the order might not be in the session
+        Integer entityId = event.getEntityId();
         UserBL userBL;
         ResourceBundle bundle;
         try {

@@ -33,7 +33,7 @@ public class NewActiveUntilEvent implements Event {
     private Integer userId;
     private Integer orderId;
     private Date newActiveUntil; 
-    private Date oldActiveUnti;
+    private Date oldActiveUntil;
     private Integer orderType;
     private Integer statusId;
     
@@ -51,7 +51,7 @@ public class NewActiveUntilEvent implements Event {
         } 
         this.orderId = orderId;
         this.newActiveUntil = newActiveUntil;
-        this.oldActiveUnti = oldActiveUntil;
+        this.oldActiveUntil = oldActiveUntil;
     }
     
     public Integer getEntityId() {
@@ -68,8 +68,8 @@ public class NewActiveUntilEvent implements Event {
     public Date getNewActiveUntil() {
         return newActiveUntil;
     }
-    public Date getOldActiveUnti() {
-        return oldActiveUnti;
+    public Date getOldActiveUntil() {
+        return oldActiveUntil;
     }
     public Integer getOrderId() {
         return orderId;

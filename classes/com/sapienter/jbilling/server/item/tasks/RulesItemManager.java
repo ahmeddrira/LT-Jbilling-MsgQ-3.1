@@ -46,7 +46,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
 
     private static final Logger LOG = Logger.getLogger(RulesItemManager.class);
 
-    private OrderManager helperOrder = null;
+    protected OrderManager helperOrder = null;
     private Vector<Record> records;
     
     public void addItem(Integer itemID, Double quantity, Integer language,
@@ -59,7 +59,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         processRules(order);
     }
 
-    private void processRules(OrderDTO newOrder) throws TaskException {
+    protected void processRules(OrderDTO newOrder) throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules
         RuleBase ruleBase;

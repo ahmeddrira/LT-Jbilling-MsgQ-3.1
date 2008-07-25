@@ -3,8 +3,8 @@
 # see a complement query down this file
 delete from contact_map where table_id = 10 and foreign_id in (select id from base_user where entity_id = XXX);
 delete from contact_map where table_id = 5 and foreign_id = XXX;
-delete from contact_field where contact_id not in ( select contact_id from contact_map);
-delete from contact where id not in ( select contact_id from contact_map);
+delete from contact_field where contact_id not in ( select contact_id from contact_map); -- needs optmize with exists
+delete from contact where id not in ( select contact_id from contact_map); -- needs optmize with exists
 delete from preference where table_id = 10 and foreign_id in (select id from base_user where entity_id = XXX);
 delete from customer where user_id in ( select id from base_user where entity_id = XXX);
 delete from partner_payout  where partner_id in ( select p.id from partner p, base_user b where p.user_id = b.id and b.entity_id = XXX);
@@ -12,7 +12,7 @@ delete from partner where user_id in ( select id from base_user where entity_id 
 delete from order_line  where order_id in ( select p.id from purchase_order p, base_user b where p.user_id = b.id and b.entity_id = XXX);
 delete from order_process where order_id in ( select p.id from purchase_order p, base_user b where p.user_id = b.id and b.entity_id = XXX);
 delete from purchase_order where user_id in ( select id from base_user where entity_id = XXX);
-delete from payment_invoice_map where invoice_id in ( select i.id from invoice i, base_user b where i.user_id = b.id and entity_id = XXX);
+delete from payment_invoice where invoice_id in ( select i.id from invoice i, base_user b where i.user_id = b.id and entity_id = XXX);
 delete from invoice_line  where invoice_id in ( select p.id from invoice p, base_user b where p.user_id = b.id and b.entity_id = XXX);
 delete from invoice where user_id in ( select id from base_user where entity_id = XXX);
 delete from partner_payout where payment_id in ( select p.id from payment p, base_user b where p.user_id = b.id and b.entity_id = XXX);
@@ -25,12 +25,15 @@ select credit_card_id from user_credit_card_map m, base_user b where m.user_id =
 delete from user_credit_card_map where user_id in ( select id from base_user where entity_id = XXX);
 delete from credit_card  where id in ( select id from id_temp );
 drop table id_temp;
-delete from notification_message_archive_line  where message_archive_id in ( select p.id from notification_message_archive p, base_user b where p.user_id = b.id and b.entity_id = XXX);
-delete from notification_message_archive where user_id in ( select id from base_user where entity_id = XXX);
+delete from notification_message_arch_line  where message_archive_id in ( select p.id from notification_message_arch p, base_user b where p.user_id = b.id and b.entity_id = XXX);
+delete from notification_message_arch where user_id in ( select id from base_user where entity_id = XXX);
 delete from user_role_map where user_id in (select id from base_user where entity_id = XXX);
 delete from event_log where user_id in (select id from base_user where entity_id = XXX);
 delete from report_user where user_id in (select id from base_user where entity_id = XXX);
 delete from permission_user where user_id in (select id from base_user where entity_id = XXX);
+delete from item_user_price where user_id in (select id from base_user where entity_id = XXX);
+delete from ach where user_id in (select id from base_user where entity_id = XXX);
+delete from promotion_user_map where user_id in (select id from base_user where entity_id = XXX);
 delete from base_user where entity_id = XXX;
 delete from item_price where item_id in ( select id from item where entity_id = XXX);
 delete from item_type_map where item_id in ( select id from item where entity_id = XXX);
@@ -45,10 +48,9 @@ delete from billing_process_configuration where entity_id = XXX;
 delete from notification_message_line where message_section_id in ( select s.id from notification_message_section s, notification_message n where n.entity_id = XXX and s.message_id = n.id);
 delete from notification_message_section where message_id in ( select id from notification_message where entity_id = XXX);
 delete from notification_message where entity_id = XXX;
-delete from billing_process_run_total  where process_run_id in ( select pr.id from billing_process_run pr, billing_process p where pr.process_id = p.id and p.entity_id = XXX);
-delete from billing_process_run where process_id in ( select id from billing_process where entity_id = XXX);
+delete from process_run_total  where process_run_id in ( select pr.id from process_run pr, billing_process p where pr.process_id = p.id and p.entity_id = XXX);
+delete from process_run where process_id in ( select id from billing_process where entity_id = XXX);
 delete from billing_process where entity_id = XXX;
-delete from base_user where entity_id = XXX;
 delete from order_period where entity_id = XXX;
 delete from entity_payment_method_map where entity_id = XXX;
 delete from event_log where entity_id = XXX;
@@ -63,6 +65,7 @@ delete from contact_type where entity_id = XXX;
 delete from list_field_entity where list_entity_id in ( select id from list_entity where entity_id = XXX);
 delete from list_entity where entity_id = XXX;
 delete from entity where id = XXX; 
+
 
 
 #Getting all the text in a language

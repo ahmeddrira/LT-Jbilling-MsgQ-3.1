@@ -59,7 +59,7 @@ public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscripti
             if (!auEvent.getOrderType().equals(Constants.ORDER_PERIOD_ONCE) &&
                     auEvent.getStatusId().equals(Constants.ORDER_STATUS_ACTIVE)) {
                 task.subscriptionEnds(auEvent.getUserId(), 
-                        auEvent.getNewActiveUntil(), auEvent.getOldActiveUnti());
+                        auEvent.getNewActiveUntil(), auEvent.getOldActiveUntil());
             }
         } else if (event instanceof NoNewInvoiceEvent) {
             NoNewInvoiceEvent sEvent = (NoNewInvoiceEvent) event;

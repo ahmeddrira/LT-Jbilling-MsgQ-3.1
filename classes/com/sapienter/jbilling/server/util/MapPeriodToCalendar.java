@@ -54,4 +54,24 @@ public class MapPeriodToCalendar {
         
         return retValue;
     }
+    
+    public static int periodToDays(Integer period) {
+        int retValue = 0;
+        if (period == null) {
+            throw new SessionInternalError("Can't convert a period that is null");
+        }
+        if (period.compareTo(Constants.PERIOD_UNIT_DAY) == 0) {
+            retValue = 1;
+        } else if (period.compareTo(Constants.PERIOD_UNIT_MONTH) == 0) {
+            retValue = 30;
+        } else if (period.compareTo(Constants.PERIOD_UNIT_WEEK) == 0) {
+            retValue = 7;
+        } else if (period.compareTo(Constants.PERIOD_UNIT_YEAR) == 0) {
+            retValue = 365;
+        } else { // error !
+            throw new SessionInternalError("Period not supported:" + period);
+        }
+        
+        return retValue;
+    }
 }

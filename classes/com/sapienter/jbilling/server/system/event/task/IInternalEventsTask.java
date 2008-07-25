@@ -19,9 +19,10 @@
 */
 package com.sapienter.jbilling.server.system.event.task;
 
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
 
 public interface IInternalEventsTask {
-	public void process(Event event);
+	public void process(Event event) throws PluggableTaskException;
 	public Class<Event>[] getSubscribedEvents();
 }

@@ -2951,6 +2951,7 @@
     <PluggableTaskType Id="38" CategoryId="4" ClassName="com.sapienter.jbilling.server.process.task.DailyProRateCompositionTask" MinParameters="0"/>
     <PluggableTaskType Id="39" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAtlasTask" MinParameters="5"/>
     <PluggableTaskType Id="40" CategoryId="17" ClassName="com.sapienter.jbilling.server.order.task.RefundOnCancelTask" MinParameters="0"/>
+    <PluggableTaskType Id="41" CategoryId="17" ClassName="com.sapienter.jbilling.server.order.task.CancellationFeeRulesTask" MinParameters="1"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

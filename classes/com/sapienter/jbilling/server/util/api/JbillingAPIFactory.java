@@ -45,7 +45,13 @@ public final class JbillingAPIFactory {
                     throw new JbillingAPIException("properties user_name " +
                             "password end_point are required for AXIS");
                 }
-                api =  new AxisAPI(userName,password,endPoint);
+                String timeOutStr = config.getProperty("timeout");
+                int timeOut = 10;
+                if (timeOutStr != null && timeOutStr.length() > 0) {
+                    timeOut = Integer.valueOf(timeOutStr);
+                }
+                timeOut *= 1000; // convert to mills
+                api =  new AxisAPI(userName,password,endPoint,timeOut );
             } else if (default_api.compareToIgnoreCase("ejb") == 0) {
                 String userName = config.getProperty("user_name");
                 String password = config.getProperty("password");

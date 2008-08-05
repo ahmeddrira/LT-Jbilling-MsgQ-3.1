@@ -55,7 +55,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
     private ArrayList<Method> methods = new ArrayList<Method>();
     private Class local = null;
     private Class remote = null;
-    private static Logger LOG = Logger.getLogger(WSMethodSecurityProxy.class);
+    private static final Logger LOG = Logger.getLogger(WSMethodSecurityProxy.class);
     
     private void addMethod(String name, Class params[]) throws InstantiationException {
         try {
@@ -212,7 +212,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
     
     public void invoke(Method m, Object[] args, Object bean)
             throws SecurityException {
-        //log.debug("invoke, m=" + m);
+        LOG.debug("invoke, m=" + m);
         if (!isMethodPresent(m)) {
             return;
         }
@@ -342,5 +342,6 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             // no need to log, this simply means that the request is rejected
             throw new SecurityException(e.getMessage());
         }
+        LOG.debug("Done");
     }
 }

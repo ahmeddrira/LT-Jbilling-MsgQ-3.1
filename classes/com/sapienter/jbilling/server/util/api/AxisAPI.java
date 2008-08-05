@@ -58,6 +58,7 @@ public class AxisAPI implements JbillingAPI {
 	private final String username;
 	private final String password;
 	private final String endPoint;
+    private final Integer timeout;
     private static final Logger LOG = Logger.getLogger(AxisAPI.class);
     private final Call call;
 	
@@ -66,10 +67,12 @@ public class AxisAPI implements JbillingAPI {
 	 * @param username
 	 * @param password
 	 */
-	protected AxisAPI(String username, String password, String endPoint) throws JbillingAPIException {
+	protected AxisAPI(String username, String password, String endPoint, Integer timeout) 
+            throws JbillingAPIException {
 		this.username = username;
 		this.password = password;
         this.endPoint = endPoint;
+        this.timeout = timeout;
         call = prepareAxisCall();
 	}
 	
@@ -86,6 +89,7 @@ public class AxisAPI implements JbillingAPI {
 	        call.setTargetEndpointAddress( new java.net.URL(endPoint) );
 	        call.setUsername(username);
 	        call.setPassword(password);
+            call.setTimeout(timeout);
 	        registerTypeMappings(call);
 	        return call;
 		} catch (Exception t){

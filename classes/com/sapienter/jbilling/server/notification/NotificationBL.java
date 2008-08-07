@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -106,7 +107,7 @@ public class NotificationBL extends ResultList
     private NotificationMessageTypeEntityLocalHome messageTypeHome = null;
     private NotificationMessageLineEntityLocalHome messageLineHome = null;
     private NotificationMessageEntityLocal messageRow = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(NotificationBL.class);
     
     public NotificationBL(Integer messageId) 
             throws NamingException, FinderException {
@@ -120,7 +121,7 @@ public class NotificationBL extends ResultList
     }
     
     private void init() throws NamingException {
-        log = Logger.getLogger(NotificationBL.class);     
+             
         EJBFactory = JNDILookup.getFactory(false);
         messageHome = (NotificationMessageEntityLocalHome) 
                 EJBFactory.lookUpLocalHome(
@@ -223,7 +224,7 @@ public class NotificationBL extends ResultList
             // reality, all users that will get an invoice have to be 
             // customers
             deliveryMethod = Constants.D_METHOD_EMAIL;
-            log.warn("A user that is not a customer is getting an invoice." + 
+            LOG.warn("A user that is not a customer is getting an invoice." + 
                     " User id = " + invoice.getUser().getUserId());
         } else {
             deliveryMethod = invoice.getUser().getCustomer().
@@ -424,10 +425,10 @@ public class NotificationBL extends ResultList
             if (pref.getInt() == 1) {
                 message.setAttachmentFile(generatePaperInvoiceAsFile(
                         invoice));
-                log.debug("Setted attachement " + message.getAttachmentFile());
+                LOG.debug("Setted attachement " + message.getAttachmentFile());
             }
         } catch (Exception e) {
-            log.error(e);
+            LOG.error(e);
         }
         
         return message;
@@ -453,7 +454,7 @@ public class NotificationBL extends ResultList
                 message.addParameter("total", Util.float2string(
                         invoice.getEntity().getBalance(), user.getLocale()));
             } else {
-                log.warn("user " + userId + " has no invoice but an ageing " +
+                LOG.warn("user " + userId + " has no invoice but an ageing " +
                         "message is being sent");
             }
         } catch (NamingException e) {
@@ -580,7 +581,7 @@ public class NotificationBL extends ResultList
 					" for entity " + entity + " language " + language +
 					" but could not find it. This entity has to specify " +
 					"this notification message.";
-			log.warn(message);
+			LOG.warn(message);
     		throw new NotificationNotFoundException(message);
     	}
     	
@@ -599,12 +600,13 @@ public class NotificationBL extends ResultList
             Collection lines = section.getLines();
             int checkOrder = 0; // there's nothing to assume that the lines
                                 // will be retrived in order, but the have to!
-            // TODO : add a comparator and a sort here
-            for (Iterator it2 = lines.iterator(); it2.hasNext();) {
+            Vector vLines = new Vector<NotificationMessageSectionEntityLocal>(lines);
+            Collections.sort(vLines, new NotificationLineEntityComparator());
+            for (Iterator it2 = vLines.iterator(); it2.hasNext();) {
                 NotificationMessageLineEntityLocal line = 
                         (NotificationMessageLineEntityLocal) it2.next();
                 if (line.getId().intValue() <= checkOrder) {
-                    log.fatal("Lines have to be retreived in order. " +
+                    LOG.error("Lines have to be retreived in order. " +
                             "See class java.util.TreeSet for solution or " +
                             "Collections.sort()");
                     throw new SessionInternalError("Lines have to be " +

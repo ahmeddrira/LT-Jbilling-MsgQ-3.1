@@ -166,7 +166,7 @@ public class GetSelectableOptions {
                 "    and ct.id = id.foreign_id " +
                 "    and id.language_id = ? " +
                 "    and ct.entity_id = ? " +
-                "  order by ct.is_primary, id.content";
+                "  order by ct.is_primary desc, id.content";
                 
                 argEntity= true;
             } else if (type.equals("deliveryMethod")) {

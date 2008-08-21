@@ -54,8 +54,7 @@ public interface OrderSQL {
         " where po.deleted = 0 " +
         "   and po.user_id = ? " +
         "   and po.user_id = bu.id " +
-        "   and c.user_id = bu.id " +
-        " order by 1 desc";
+        "   and c.user_id = bu.id ";
 
     static final String listByProcess = 
         "select po.id, po.id, bu.user_name, po.create_datetime " +

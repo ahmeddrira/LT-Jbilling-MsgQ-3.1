@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.common.Util;
@@ -67,5 +69,16 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 		
 		return criteria.list();
 	}
-	
+
+    // used for the web services call to get the latest X orders
+    public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
+        Criteria criteria = getSession().createCriteria(OrderDTO.class)
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUserByUserId", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .setProjection(Projections.id())
+                .addOrder(Order.desc("id"))
+                .setMaxResults(maxResults);
+        return criteria.list();
+    }
 }

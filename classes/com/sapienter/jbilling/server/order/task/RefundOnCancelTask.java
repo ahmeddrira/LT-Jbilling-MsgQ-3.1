@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.order.task;
 
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
@@ -34,6 +35,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineTypeDAS;
 import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
+import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
 import com.sapienter.jbilling.server.order.event.PeriodCancelledEvent;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.system.event.Event;
@@ -44,7 +46,10 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class RefundOnCancelTask extends PluggableTask implements IInternalEventsTask {
 
-    private static final Class<Event> events[] = new Class[] { PeriodCancelledEvent.class };
+    private enum EventType { PERIOD_CANCELLED_EVENT, NEW_QUANTITY_EVENT } 
+
+    private static final Class<Event> events[] = new Class[] { PeriodCancelledEvent.class, 
+            NewQuantityEvent.class };
 
     private static final Logger LOG = Logger.getLogger(RefundOnCancelTask.class);
 
@@ -53,17 +58,34 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
     }
 
     public void process(Event event) {
-        PeriodCancelledEvent myEvent = null;
+        EventType eventType;
+        OrderDTO order = null;
 
         // validate the type of the event
         if (event instanceof PeriodCancelledEvent) {
-            myEvent = (PeriodCancelledEvent) event;
+            order = ((PeriodCancelledEvent) event).getOrder();
+            eventType = EventType.PERIOD_CANCELLED_EVENT;
+            LOG.debug("Plug in processing period cancelled event for order " + 
+                    order.getId());
+        } else if (event instanceof NewQuantityEvent) {
+            NewQuantityEvent myEvent = (NewQuantityEvent) event;
+            // don't process if new quantity has increased instead of decreased
+            if (myEvent.getNewQuantity() > myEvent.getOldQuantity()) {
+                return;
+            }
+            order = new OrderDAS().find(myEvent.getOrderId());
+            // check if it the order has been invoiced, otherwise return
+            OrderBL orderBL = new OrderBL(order);
+            if (!orderBL.isDateInvoiced(new Date())) {
+                return;
+            }
+            eventType = EventType.NEW_QUANTITY_EVENT;
+            LOG.debug("Plug in processing new quantity event for order " + 
+                    order.getId());
         } else {
-            throw new SessionInternalError("Can't process anything but a period cancel event");
+            throw new SessionInternalError("Can't process anything but a period cancel event " +
+                    "or a new quantity event");
         }
-
-        OrderDTO order = myEvent.getOrder();
-        LOG.debug("Plug in processing cancellation event for order " + order.getId());
 
         // local variables
         Integer userId = new OrderDAS().find(order.getId()).getBaseUserByUserId().getUserId(); // the order might not be in the session
@@ -92,20 +114,43 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
         newOrder.setNextBillableDay(null);
         newOrder.setIsCurrent(0);
         // add some clarification notes
-        newOrder.setNotes(bundle.getString("order.credit.notes") + " " + order.getId());
+        String notesString = null;
+        if (eventType == EventType.PERIOD_CANCELLED_EVENT) {
+            notesString = "order.credit.notes";
+        } else {
+            notesString = "order.creditPartial.notes";
+        }
+        newOrder.setNotes(bundle.getString(notesString) + " " + order.getId());
         newOrder.setNotesInInvoice(0);
         // 
         // order lines:
         //
-        for (OrderLineDTO line : order.getLines()) {
-            OrderLineDTO newLine = new OrderLineDTO(line);
-            // reset so they get inserted
+        if (eventType == EventType.PERIOD_CANCELLED_EVENT) {
+            for (OrderLineDTO line : order.getLines()) {
+                OrderLineDTO newLine = new OrderLineDTO(line);
+                // reset so they get inserted
+                newLine.setId(0);
+                newLine.setVersionNum(null);
+                newLine.setPurchaseOrder(newOrder);
+                newOrder.getLines().add(newLine);
+                // make the order negative (refund/credit)
+                newLine.setPrice(line.getPrice() * -1);
+            }
+        } else {
+            // NEW_QUANTITY_EVENT
+            NewQuantityEvent myEvent = (NewQuantityEvent) event;
+            OrderLineDTO newLine = new OrderLineDTO(myEvent.getOrderLine());
+            // reset so it gets inserted
             newLine.setId(0);
             newLine.setVersionNum(null);
             newLine.setPurchaseOrder(newOrder);
             newOrder.getLines().add(newLine);
+            // set quantity as the difference between the old and new quantities
+            double newQuantity = myEvent.getOldQuantity().doubleValue() - 
+                    myEvent.getNewQuantity().doubleValue();
+            newLine.setQuantity(new Double(newQuantity));
             // make the order negative (refund/credit)
-            newLine.setPrice(line.getPrice() * -1);
+            newLine.setPrice(newLine.getPrice() * -1);
         }
 
         // add extra lines with items from the parameters
@@ -156,10 +201,15 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
         //
         // Update original order
         //
-        order.setOrderStatus(new OrderStatusDAS().find(Constants.ORDER_STATUS_FINISHED));
-        order.setNotes(order.getNotes() + " - " + bundle.getString("order.cancelled.notes") + " "
-                + newOrderId);
-        
+        if (eventType == EventType.PERIOD_CANCELLED_EVENT) {
+            order.setOrderStatus(new OrderStatusDAS().find(Constants.ORDER_STATUS_FINISHED));
+            notesString = "order.cancelled.notes";
+        } else {
+            notesString = "order.cancelledPartial.notes";
+        }
+        order.setNotes(order.getNotes() + " - " + 
+                bundle.getString(notesString) + " " + newOrderId);
+
         LOG.debug("Credit done with new order " + newOrderId);
 
     }

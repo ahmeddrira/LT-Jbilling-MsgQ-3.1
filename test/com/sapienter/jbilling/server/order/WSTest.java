@@ -363,7 +363,7 @@ public class WSTest  extends TestCase {
     	InvoiceWS before = callGetLatestInvoice(USER_ID);
     	
     	OrderWS orderWS = createMockOrder(USER_ID, 2, 234);
-    	orderWS.setActiveSince(nextWeek());
+    	orderWS.setActiveSince(weeksFromToday(1));
         JbillingAPI api = JbillingAPIFactory.getAPI();
     	Integer orderId = api.createOrder(orderWS);
     	assertNotNull(orderId);
@@ -471,10 +471,10 @@ public class WSTest  extends TestCase {
     	assertNull(auth);
     }
     
-    private Date nextWeek() {
+    private Date weeksFromToday(int weekNumber) {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTimeInMillis(System.currentTimeMillis());
-		calendar.add(Calendar.WEEK_OF_YEAR, 1);
+		calendar.add(Calendar.WEEK_OF_YEAR, weekNumber);
 		return calendar.getTime();
 	}
 
@@ -592,5 +592,131 @@ public class WSTest  extends TestCase {
             fail("Exception: " + e);
         }
     }
-        
+
+    public void testRefundAndCancelFee() {
+        try {
+            // create an order an order for testing
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            OrderWS newOrder = new OrderWS();
+            newOrder.setUserId(GANDALF_USER_ID); 
+            newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            newOrder.setPeriod(2);
+            newOrder.setCurrencyId(new Integer(1));
+
+            // now add some lines
+            OrderLineWS lines[] = new OrderLineWS[2];
+            OrderLineWS line;
+
+            // 5 lemonades - 1 per day monthly pass
+            line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setQuantity(new Integer(5));
+            line.setItemId(new Integer(1));
+            line.setUseItem(new Boolean(true));
+            lines[0] = line;
+
+            // 5 coffees
+            line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setQuantity(new Integer(5));
+            line.setItemId(new Integer(3));
+            line.setUseItem(new Boolean(true));
+            lines[1] = line;
+
+            newOrder.setOrderLines(lines);
+
+            // create the first order and invoice it
+            System.out.println("Creating order ...");
+            Integer orderId = api.createOrderAndInvoice(newOrder);
+            assertNotNull("The order was not created", orderId);
+
+            // update the quantities of the order (-2 lemonades, -3 coffees)
+            System.out.println("Updating quantities of order ...");
+            OrderWS order = api.getLatestOrder(GANDALF_USER_ID);
+            assertEquals("No. of order lines", 2, order.getOrderLines().length);
+            OrderLineWS orderLine = order.getOrderLines()[0];
+            orderLine.setQuantity(3);
+            orderLine = order.getOrderLines()[1];
+            orderLine.setQuantity(2);
+            api.updateOrder(order);
+
+            // get last 3 orders and check what's on them (2 refunds and a fee)
+            System.out.println("Getting last 3 orders ...");
+            Integer[] list = api.getLastOrders(new Integer(2), new Integer(3));
+            assertNotNull("Missing list", list);
+
+            // order 1 - coffee refund
+            order = api.getOrder(list[0]);
+            assertEquals("No. of order lines", 1, order.getOrderLines().length);
+            orderLine = order.getOrderLines()[0];
+            assertEquals("Item Id", new Integer(3), orderLine.getItemId());
+            assertEquals("Quantity", new Double(3), orderLine.getQuantity());
+            assertEquals("Price", new Float(-15), orderLine.getPrice());
+            assertEquals("Amount", new Float(-45), orderLine.getAmount());
+
+            // order 2 - cancel fee for lemonade (see the rule in CancelFees.drl)
+            order = api.getOrder(list[1]);
+            assertEquals("No. of order lines", 1, order.getOrderLines().length);
+            orderLine = order.getOrderLines()[0];
+            assertEquals("Item Id", new Integer(24), orderLine.getItemId());
+            assertEquals("Quantity", new Double(2), orderLine.getQuantity());
+            assertEquals("Price", new Float(5), orderLine.getPrice());
+            assertEquals("Amount", new Float(10), orderLine.getAmount());
+
+            // order 3 - lemonade refund
+            order = api.getOrder(list[2]);
+            assertEquals("No. of order lines", 1, order.getOrderLines().length);
+            orderLine = order.getOrderLines()[0];
+            assertEquals("Item Id", new Integer(1), orderLine.getItemId());
+            assertEquals("Quantity", new Double(2), orderLine.getQuantity());
+            assertEquals("Price", new Float(-10), orderLine.getPrice());
+            assertEquals("Amount", new Float(-20), orderLine.getAmount());
+
+            // create a new order like the first one
+            System.out.println("Creating order ...");
+            // to test period calculation of fees in CancellationFeeRulesTask
+            newOrder.setActiveUntil(weeksFromToday(12));
+            orderId = api.createOrderAndInvoice(newOrder);
+            assertNotNull("The order was not created", orderId);
+
+            // set active until earlier than invoice date
+            order = api.getLatestOrder(GANDALF_USER_ID);
+            order.setActiveUntil(weeksFromToday(2));
+            api.updateOrder(order);
+
+            // get last 2 orders and check what's on them (a full refund and a fee)
+            System.out.println("Getting last 2 orders ...");
+            list = api.getLastOrders(new Integer(2), new Integer(3));
+            assertNotNull("Missing list", list);
+
+            // order 1 - full refund
+            order = api.getOrder(list[0]);
+            assertEquals("No. of order lines", 2, order.getOrderLines().length);
+            orderLine = order.getOrderLines()[0];
+            assertEquals("Item Id", new Integer(1), orderLine.getItemId());
+            assertEquals("Quantity", new Double(5), orderLine.getQuantity());
+            assertEquals("Price", new Float(-10), orderLine.getPrice());
+            assertEquals("Amount", new Float(-50), orderLine.getAmount());
+            orderLine = order.getOrderLines()[1];
+            assertEquals("Item Id", new Integer(3), orderLine.getItemId());
+            assertEquals("Quantity", new Double(5), orderLine.getQuantity());
+            assertEquals("Price", new Float(-15), orderLine.getPrice());
+            assertEquals("Amount", new Float(-75), orderLine.getAmount());
+
+            // order 2 - cancel fee for lemonades (see the rule in CancelFees.drl)
+            order = api.getOrder(list[1]);
+            assertEquals("No. of order lines", 1, order.getOrderLines().length);
+            orderLine = order.getOrderLines()[0];
+            assertEquals("Item Id", new Integer(24), orderLine.getItemId());
+            // 2 periods cancelled (2 periods * 5 fee quantity)
+            assertEquals("Quantity", new Double(10), orderLine.getQuantity());
+            assertEquals("Price", new Float(5), orderLine.getPrice());
+            assertEquals("Amount", new Float(50), orderLine.getAmount());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

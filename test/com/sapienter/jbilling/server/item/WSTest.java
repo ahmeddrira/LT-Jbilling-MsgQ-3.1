@@ -84,7 +84,7 @@ public class WSTest  extends TestCase {
             	}
             });
             assertNotNull("The items were not retrieved", items);
-            assertTrue("Wrong number of items", items.length == 5);
+            assertTrue("Wrong number of items", items.length == 6);
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", 
                     items[0].getDescription());
@@ -121,13 +121,20 @@ public class WSTest  extends TestCase {
             assertEquals("Number", "J-01", items[3].getNumber());
             assertEquals("Type 12", new Integer(12), items[3].getTypes()[0]);
 
-            assertEquals("Description", "an item from ws", 
+            assertEquals("Description", "Cancel fee", 
                     items[4].getDescription());
-            assertEquals("Price", new Float(29.5), items[4].getPrice());
-            assertEquals("Price Vector", new Float(29.5), 
-                    ((ItemPriceDTOEx) items[4].getPrices().get(0)).getPrice());
+            assertEquals("Price", new Float(5), items[4].getPrice());
             assertEquals("ID", new Integer(24), items[4].getId());
-            assertEquals("Type 1", new Integer(1), items[4].getTypes()[0]);
+            assertEquals("Number", "F-1", items[4].getNumber());
+            assertEquals("Type 22", new Integer(22), items[4].getTypes()[0]);
+
+            assertEquals("Description", "an item from ws", 
+                    items[5].getDescription());
+            assertEquals("Price", new Float(29.5), items[5].getPrice());
+            assertEquals("Price Vector", new Float(29.5), 
+                    ((ItemPriceDTOEx) items[5].getPrices().get(0)).getPrice());
+            assertEquals("ID", new Integer(25), items[5].getId());
+            assertEquals("Type 1", new Integer(1), items[5].getTypes()[0]);
 
             System.out.println("Done!");
             

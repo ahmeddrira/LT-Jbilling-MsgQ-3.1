@@ -24,6 +24,7 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,9 +105,14 @@ public abstract class PluggableTask {
         Properties rulesProperties = new Properties();
         
         for (String key: parameters.keySet()) {
-            rulesProperties.setProperty(key, (String) parameters.get(key));
-            LOG.debug("adding parameter " + key + " value " + 
-                    rulesProperties.getProperty(key));
+            String value = (String) parameters.get(key);
+            if (key.equals("file") && !(new File(value)).isAbsolute()) {
+                // prepend the default directory if file path is relative
+                String defaultDir = Util.getSysProp("base_dir") + "rules";
+                value = defaultDir + File.separator + value;
+            }
+            rulesProperties.setProperty(key, value);
+            LOG.debug("adding parameter " + key + " value " + value);
         }
         if (parameters.size() == 0) {
             String defaultDir = Util.getSysProp("base_dir") + "rules";

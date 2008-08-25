@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineTypeDAS;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDAS;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
+import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
@@ -47,7 +48,10 @@ import com.sapienter.jbilling.server.util.Constants;
 
 public class CancellationFeeRulesTask extends RulesItemManager implements IInternalEventsTask {
 
-    private static final Class<Event> events[] = new Class[] { NewActiveUntilEvent.class };
+    private enum EventType { NEW_ACTIVE_UNTIL_EVENT, NEW_QUANTITY_EVENT } 
+
+    private static final Class<Event> events[] = new Class[] { NewActiveUntilEvent.class,
+            NewQuantityEvent.class };
 
     private static final Logger LOG = Logger.getLogger(CancellationFeeRulesTask.class);
 
@@ -56,11 +60,12 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
     }
 
     public void process(Event event) throws PluggableTaskException {
-        NewActiveUntilEvent myEvent = null;
+        EventType eventType;
+        OrderDTO order = null;
 
         // validate the type of the event
         if (event instanceof NewActiveUntilEvent) {
-            myEvent = (NewActiveUntilEvent) event;
+            NewActiveUntilEvent myEvent = (NewActiveUntilEvent) event;
 
             // if the new active until is later than the old one
             // or the new one is null
@@ -73,19 +78,44 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
                                 + "Order id" + myEvent.getOrderId());
                 return;
             }
+
+            order = new OrderDAS().find(myEvent.getOrderId());
+            eventType = EventType.NEW_ACTIVE_UNTIL_EVENT;
+        } else if (event instanceof NewQuantityEvent) {
+            NewQuantityEvent myEvent = (NewQuantityEvent) event;
+            // don't process if new quantity has increased instead of decreased
+            if (myEvent.getNewQuantity() > myEvent.getOldQuantity()) {
+                return;
+            }
+
+            // Create a copy of the order that had a line quantity changed
+            // and add the changed line (with cancelled quantity) to it.
+            OrderDTO changedOrder = new OrderDAS().find(myEvent.getOrderId());
+            order = new OrderDTO(changedOrder);
+            // clear the order lines
+            order.getLines().clear();
+            // add the changed line
+            OrderLineDTO line = new OrderLineDTO(myEvent.getOrderLine());
+            line.setPurchaseOrder(order);
+            order.getLines().add(line);
+            // set quantity as the difference between the old and new quantities
+            double newQuantity = myEvent.getOldQuantity().doubleValue() - 
+                    myEvent.getNewQuantity().doubleValue();
+            line.setQuantity(new Double(newQuantity));
+
+            eventType = EventType.NEW_QUANTITY_EVENT;
         } else {
             throw new SessionInternalError("Can't process anything but a new active until event");
         }
 
         LOG.debug("Processing event " + event + " for cancellation fee");
 
-        OrderDTO order = new OrderDAS().find(myEvent.getOrderId());
-
         helperOrder = new FeeOrderManager(order, order.getBaseUserByUserId().getLanguage().getId(),
                 order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity()
                         .getId(), order.getBaseUserByUserId().getCurrency().getId());
 
-        if (myEvent != null) {
+        if (event != null && eventType == EventType.NEW_ACTIVE_UNTIL_EVENT) {
+            NewActiveUntilEvent myEvent = (NewActiveUntilEvent) event;
             ((FeeOrderManager) helperOrder).setNewActiveUntil(myEvent.getNewActiveUntil());
             ((FeeOrderManager) helperOrder).setOldActiveUntil(myEvent.getOldActiveUntil());
         }
@@ -112,7 +142,7 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
         // all the methods from OrderManager are actually unnecesary for this
         // helper but it is an instance or OrderManager that makes it into the working
         // memory
-        public void applyFee(Integer itemId, Integer daysInPeriod) {
+        public void applyFee(Integer itemId, Double quantity, Integer daysInPeriod) {
             ResourceBundle bundle;
             UserBL userBL;
             try {
@@ -122,27 +152,32 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
                 throw new SessionInternalError("Error when doing credit", RefundOnCancelTask.class, e);
             }
 
-            int quantity = 0;
+            int periods = 0;
             // calculate the number of periods that have been cancelled
             if (oldActiveUntil == null) {
-                quantity = 1;
-                LOG.info("Old active until not present. Quantity will be 1.");
+                periods = 1;
+                LOG.info("Old active until not present. Period will be 1.");
             } else {
                 long totalMills = oldActiveUntil.getTime() - newActiveUntil.getTime();
                 BigDecimal periodMills = new BigDecimal(daysInPeriod).multiply(
                         new BigDecimal(24)).multiply(new BigDecimal(60)).multiply(
                         new BigDecimal(60)).multiply(new BigDecimal(1000));
-                BigDecimal periods = new BigDecimal(totalMills).divide(periodMills,
+                BigDecimal calcPeriods = new BigDecimal(totalMills).divide(periodMills,
                         Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-                quantity = periods.intValue(); // we do not want to charge for fractions
+                periods = calcPeriods.intValue(); // we do not want to charge for fractions
                 //LOG.debug("total: " + totalMills + " result " + periods + " divisor " + periodMills);
             }
             
-            if (quantity == 0) {
+            if (periods == 0) {
                 LOG.debug("No a single compelte period cancelled: " + oldActiveUntil + " " + 
                         newActiveUntil);
                 return;
             }
+
+            if (quantity == null) {
+                quantity = new Double(1);
+            }
+            quantity *= periods;
 
             // now create a new order for the fee:
             // - one time
@@ -176,8 +211,13 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
         
         // convenience method for 30 days, which is the typical period of time (month) to 
         // calculate fees
+        public void applyFee(Integer itemId, Double quantity) {
+            applyFee(itemId, quantity, 30);
+        }
+
+        // convenience method for cancellation fee quantity of 1 and period of 30 days
         public void applyFee(Integer itemId) {
-            applyFee(itemId, 30);
+            applyFee(itemId, 1.0, 30);
         }
 
         public Date getNewActiveUntil() {

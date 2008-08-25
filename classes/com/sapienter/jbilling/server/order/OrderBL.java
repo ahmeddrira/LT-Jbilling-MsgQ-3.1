@@ -28,8 +28,11 @@ package com.sapienter.jbilling.server.order;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -71,6 +74,7 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
+import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
 import com.sapienter.jbilling.server.order.event.NewStatusEvent;
 import com.sapienter.jbilling.server.order.event.PeriodCancelledEvent;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
@@ -354,7 +358,7 @@ public class OrderBL extends ResultList
         
         // if the new active until is earlier than the next invoice date, we have a 
         // period already invoice being cancelled
-        if (to != null && order.getNextBillableDay() != null && to.before(order.getNextBillableDay())) {
+        if (isDateInvoiced(to)) {
             // pass the new order, rather than the existing one. Otherwise, the exsiting gets
             // and changes overwritten by the data of the new order.
             EventManager.process(new PeriodCancelledEvent(newOrder, 
@@ -401,6 +405,88 @@ public class OrderBL extends ResultList
         /*
          *  now proces the order lines
          */
+ 
+        // NewQuantityEvent is generated when an order line and it's quantity 
+        // has changed, including from >0 to 0 (deleted) and 0 to >0 (added).
+        // First, copy and sort new and old order lines by order line id.
+        Vector<OrderLineDTO> oldOrderLines = new Vector(order.getLines());
+        Vector<OrderLineDTO> newOrderLines = new Vector(dto.getLines());
+        Comparator<OrderLineDTO> sortByOrderLineId = new Comparator<OrderLineDTO>() {
+            public int compare(OrderLineDTO ol1, OrderLineDTO ol2) {
+                return ol1.getId() - ol2.getId();
+            }
+        };
+        Collections.sort(oldOrderLines, sortByOrderLineId);
+        Collections.sort(newOrderLines, sortByOrderLineId);
+
+        // remove any deleted lines
+        for (Iterator<OrderLineDTO> it = oldOrderLines.iterator(); it.hasNext() ;) {
+            if (it.next().getDeleted() != 0) {
+                it.remove();
+            }
+        }
+        for (Iterator<OrderLineDTO> it = newOrderLines.iterator(); it.hasNext() ;) {
+            if (it.next().getDeleted() != 0) {
+                it.remove();
+            }
+        }
+
+        Iterator<OrderLineDTO> itOldLines = oldOrderLines.iterator();
+        Iterator<OrderLineDTO> itNewLines = newOrderLines.iterator();
+        Integer entityId = order.getBaseUserByUserId().getCompany().getId();
+        Integer orderId = order.getId();
+
+        // Step through the sorted order lines, checking if it exists only in 
+        // one, the other or both. If both, then check if quantity has changed.
+        OrderLineDTO currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
+        OrderLineDTO currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
+        while (currentOldLine != null && currentNewLine != null) {
+            int oldLineId = currentOldLine.getId();
+            int newLineId = currentNewLine.getId();
+            if (oldLineId < newLineId) {
+                // order line has been deleted
+                LOG.debug("Deleted order line. Order line Id: " + oldLineId);
+                EventManager.process(new NewQuantityEvent(entityId, 
+                        currentOldLine.getQuantity(), new Double(0), orderId, 
+                        currentOldLine));
+                currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
+            } else if (oldLineId > newLineId) {
+                // order line has been added
+                LOG.debug("Added order line. Order line Id: " + newLineId);
+                EventManager.process(new NewQuantityEvent(entityId, new Double(0), 
+                        currentNewLine.getQuantity(), orderId, currentNewLine));
+                currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
+            } else {
+                // order line exists in both, so check quantity
+                Double oldLineQuantity = currentOldLine.getQuantity();
+                Double newLineQuantity = currentNewLine.getQuantity();
+                if (oldLineQuantity.doubleValue() != newLineQuantity.doubleValue()) {
+                    LOG.debug("Order line quantity changed. Order line Id: " + 
+                            oldLineId);
+                    EventManager.process(new NewQuantityEvent(entityId, 
+                            oldLineQuantity, newLineQuantity, orderId, currentOldLine));
+                }
+                currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
+                currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
+            }
+        }
+        // check for any remaining item lines that must have been deleted or added
+        while (currentOldLine != null) {
+            LOG.debug("Deleted order line. Order line id: " + currentOldLine.getId());
+            EventManager.process(new NewQuantityEvent(entityId, 
+                    currentOldLine.getQuantity(), new Double(0), orderId, 
+                    currentOldLine));
+            currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
+        }
+        while (currentNewLine != null) {
+            LOG.debug("Added order line. Order line id: " + currentNewLine.getId());
+            EventManager.process(new NewQuantityEvent(entityId, new Double(0), 
+                    currentNewLine.getQuantity(), orderId, 
+                    currentNewLine));
+            currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
+        }
+        // end of NewQuantityEvent processing
+
         OrderLineDTO oldLine = null;
     	int nonDeletedLines = 0;
         // Determine if the item of the order changes and, if it is,
@@ -941,28 +1027,18 @@ public class OrderBL extends ResultList
             
         return retValue;
     }
+
+    public boolean isDateInvoiced(Date date) {
+        return date != null && order.getNextBillableDay() != null && 
+                date.before(order.getNextBillableDay());
+    }
     
     public Integer[] getListIds(Integer userId, Integer number, 
             Integer entityId) 
             throws Exception {
-        // use the list of orders as if this was a customer asking
-        CachedRowSet result = getList(entityId, Constants.TYPE_CUSTOMER, userId);
-        Vector<Integer> allRows = new Vector<Integer>();
-        while (result.next()) {
-            allRows.add(new Integer(result.getInt(1)));
-        }
-        result.close();
         
-        // now convert to an array that is no bigger than the expected
-        Integer retValue[] = new Integer[allRows.size() > 
-                                         number.intValue() ? number.intValue() :
-                                             allRows.size()];
-        for (int f = 0; f < allRows.size() && f < number.intValue(); 
-                f++) {
-            retValue[f] = allRows.get(f);
-        }
-        
-        return retValue;
+        List<Integer> result = orderDas.findIdsByUserLatestFirst(userId, number);
+        return result.toArray(new Integer[result.size()]);
     }
     
     public Integer[] getByUserAndPeriod(Integer userId, Integer statusId) 

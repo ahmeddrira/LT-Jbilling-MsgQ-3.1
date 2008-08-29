@@ -253,6 +253,24 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public OrderDTO getMainOrder(Integer userId)
+            throws SessionInternalError {
+        try {
+            OrderBL bl = new OrderBL();
+            Integer orderId = bl.getMainOrderId(userId);
+            if (orderId == null) {
+                // there was no main order
+                return null;
+            }
+            return getOrder(orderId);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
     // EJB Callbacks -------------------------------------------------
 
     /**

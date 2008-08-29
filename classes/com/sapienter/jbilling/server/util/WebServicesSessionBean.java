@@ -1658,6 +1658,27 @@ public class WebServicesSessionBean implements SessionBean {
             	line.setId(0);
             	line.setVersionNum(null);
             }
+
+            // set a default cycle starts if needed (obtained from the main 
+            // subscription order, if it exists)
+            if (dto.getCycleStarts() == null && dto.getIsCurrent() == null) {
+                Integer mainOrderId = orderBL.getMainOrderId(dto.getUser().getId());
+                if (mainOrderId != null) {
+                    // only set a default if preference use current order is set
+                    PreferenceBL preferenceBL = new PreferenceBL();
+                    try {
+                        preferenceBL.set(entityId, Constants.PREFERENCE_USE_CURRENT_ORDER);
+                    } catch(FinderException e) {
+                        // default preference will be used
+                    }
+                    if (preferenceBL.getInt() != 0) {
+                        OrderDAS das = new OrderDAS();
+                        OrderDTO mainOrder = das.findNow(mainOrderId);
+                        LOG.debug("Copying cycle starts from main order");
+                        dto.setCycleStarts(mainOrder.getCycleStarts());
+                    }
+                }
+            }
             
             orderBL.set(dto);
             orderBL.recalculate(entityId);

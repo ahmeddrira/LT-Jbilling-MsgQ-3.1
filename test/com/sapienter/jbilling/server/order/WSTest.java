@@ -719,4 +719,63 @@ public class WSTest  extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+
+    public void testDefaultCycleStart() {
+        try {
+            // create an order an order for testing
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create a main subscription (current) order
+            OrderWS mainOrder = createMockOrder(GANDALF_USER_ID, 1, 10);
+            mainOrder.setPeriod(2);
+            mainOrder.setIsCurrent(1);
+            mainOrder.setCycleStarts(new Date());
+            System.out.println("Creating main subscription order ...");
+            Integer mainOrderId = api.createOrder(mainOrder);
+            assertNotNull("The order was not created", mainOrderId);
+
+            // create another order and see if cycle starts was set
+            OrderWS testOrder = createMockOrder(GANDALF_USER_ID, 1, 20);
+            testOrder.setPeriod(2);
+            System.out.println("Creating test order ...");
+            Integer testOrderId = api.createOrder(testOrder);
+            assertNotNull("The order was not created", testOrderId);
+
+            // check cycle starts dates are the same
+            mainOrder = api.getOrder(mainOrderId);
+            testOrder = api.getOrder(testOrderId);
+            assertEquals("Cycle starts", mainOrder.getCycleStarts(), 
+                    testOrder.getCycleStarts());
+
+            // create another order with cycle starts set to check it isn't 
+            // overwritten
+            testOrder = createMockOrder(GANDALF_USER_ID, 1, 30);
+            testOrder.setPeriod(2);
+            testOrder.setCycleStarts(weeksFromToday(1));
+            System.out.println("Creating test order ...");
+            testOrderId = api.createOrder(testOrder);
+            assertNotNull("The order was not created", testOrderId);
+
+            // check cycle starts dates aren't the same
+            testOrder = api.getOrder(testOrderId);
+            assertFalse("Cycle starts", mainOrder.getCycleStarts().equals(
+                    testOrder.getCycleStarts()));
+
+            // create another order with isCurrent not null
+            testOrder = createMockOrder(GANDALF_USER_ID, 1, 40);
+            testOrder.setPeriod(2);
+            testOrder.setIsCurrent(0);
+            System.out.println("Creating test order ...");
+            testOrderId = api.createOrder(testOrder);
+            assertNotNull("The order was not created", testOrderId);
+
+            // check that cycle starts wasn't set (is null)
+            testOrder = api.getOrder(testOrderId);
+            assertNull("Cycle starts", testOrder.getCycleStarts());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

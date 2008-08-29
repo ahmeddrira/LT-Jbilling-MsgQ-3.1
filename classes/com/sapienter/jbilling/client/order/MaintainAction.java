@@ -21,7 +21,10 @@
 package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
+import javax.ejb.CreateException;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +38,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
@@ -119,12 +123,12 @@ public class MaintainAction extends Action {
                 if (remoteUser.isParentCustomer(userId).booleanValue()) {
                     return mapping.findForward("sub_accounts");
                 } else {
-                    return mapping.findForward("order_edit");
+                    return newOrderEdit(mapping, form, request, response);
                 }
             } else if (request.getParameter("action").equals("useParent")) {
                 // New order: it doesn't want to create an order for a sub-account
                 // it want to create one for the parent account
-                return mapping.findForward("order_edit");
+                return newOrderEdit(mapping, form, request, response);
             }
             
             NewOrderSessionHome newOrderHome =
@@ -159,5 +163,36 @@ public class MaintainAction extends Action {
         
         return mapping.findForward("error");
     }
-  
+
+    /**     * Method newOrderEdit.
+     * Sets a default cycle starts for the new order edit screen if cycle 
+     * starts is set for the main subscription (current) order (if it exists). 
+     * Forwards onto the order edit screen.
+     */
+    private ActionForward newOrderEdit(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response) 
+            throws NamingException, CreateException, RemoteException {
+        HttpSession session = request.getSession(false);
+        JNDILookup EJBFactory = JNDILookup.getFactory(false);
+
+        OrderSessionHome orderHome =
+        (OrderSessionHome) EJBFactory.lookUpHome(
+        OrderSessionHome.class,
+        OrderSessionHome.JNDI_NAME);
+
+        OrderSession remoteOrder = orderHome.create();
+
+        Integer userId = (Integer) session.getAttribute(
+                Constants.SESSION_USER_ID);
+
+        OrderDTO mainOrder = remoteOrder.getMainOrder(userId);
+
+        if (mainOrder != null && mainOrder.getCycleStarts() != null) {
+            DynaValidatorForm myForm = (DynaValidatorForm) form;
+            FormDateHelper formDateHelper = new FormDateHelper(myForm, request);
+            formDateHelper.setFormDate("cycle", mainOrder.getCycleStarts());
+        }
+        
+        return mapping.findForward("order_edit");
+    }
 }

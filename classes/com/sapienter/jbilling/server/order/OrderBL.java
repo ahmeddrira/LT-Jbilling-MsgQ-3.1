@@ -366,51 +366,16 @@ public class OrderBL extends ResultList
         }
     }
 
-    public void update(Integer executorId, OrderDTO dto) 
-            throws FinderException, CreateException {
-        // update first the order own fields
-        if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
-            updateActiveUntil(executorId, dto.getActiveUntil(), dto);
-        }
-        if (!Util.equal(order.getActiveSince(), dto.getActiveSince())) {
-            audit(executorId, order.getActiveSince());
-            order.setActiveSince(dto.getActiveSince());
-        }
-        setStatus(executorId, dto.getStatusId());
-        
-        if (order.getOrderPeriod().getId() != dto.getOrderPeriod().getId()) {
-            audit(executorId, order.getOrderPeriod().getId());
-            order.setOrderPeriod(orderPeriodDAS.find(dto.getOrderPeriod().getId()));
-        }
-        // this should not be necessary any more, since the order is a pojo...
-        order.setOrderBillingType(dto.getOrderBillingType());
-        order.setNotify(dto.getNotify());
-        order.setDueDateUnitId(dto.getDueDateUnitId());
-        order.setDueDateValue(dto.getDueDateValue());
-        order.setDfFm(dto.getDfFm());
-        order.setAnticipatePeriods(dto.getAnticipatePeriods());
-        order.setOwnInvoice(dto.getOwnInvoice());
-        order.setNotes(dto.getNotes());
-        order.setNotesInInvoice(dto.getNotesInInvoice());
-        order.setCycleStarts(dto.getCycleStarts());
-        if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 1) {
-            setMainSubscription(executorId);
-        }
-        if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 0) {
-            unsetMainSubscription(executorId);
-        }
-        // this one needs more to get updated
-        updateNextBillableDay(executorId, dto.getNextBillableDay());
-        
-        /*
-         *  now proces the order lines
-         */
- 
+    /**     * Method checkOrderLineQuantities.
+     * Generates a NewQuantityEvent for each order line that has had
+     * its quantity modified (including those added or deleted).
+     */
+    public void checkOrderLineQuantities(OrderDTO oldOrder, OrderDTO newOrder) {
         // NewQuantityEvent is generated when an order line and it's quantity 
         // has changed, including from >0 to 0 (deleted) and 0 to >0 (added).
         // First, copy and sort new and old order lines by order line id.
-        Vector<OrderLineDTO> oldOrderLines = new Vector(order.getLines());
-        Vector<OrderLineDTO> newOrderLines = new Vector(dto.getLines());
+        Vector<OrderLineDTO> oldOrderLines = new Vector(oldOrder.getLines());
+        Vector<OrderLineDTO> newOrderLines = new Vector(newOrder.getLines());
         Comparator<OrderLineDTO> sortByOrderLineId = new Comparator<OrderLineDTO>() {
             public int compare(OrderLineDTO ol1, OrderLineDTO ol2) {
                 return ol1.getId() - ol2.getId();
@@ -433,8 +398,8 @@ public class OrderBL extends ResultList
 
         Iterator<OrderLineDTO> itOldLines = oldOrderLines.iterator();
         Iterator<OrderLineDTO> itNewLines = newOrderLines.iterator();
-        Integer entityId = order.getBaseUserByUserId().getCompany().getId();
-        Integer orderId = order.getId();
+        Integer entityId = oldOrder.getBaseUserByUserId().getCompany().getId();
+        Integer orderId = oldOrder.getId();
 
         // Step through the sorted order lines, checking if it exists only in 
         // one, the other or both. If both, then check if quantity has changed.
@@ -485,7 +450,50 @@ public class OrderBL extends ResultList
                     currentNewLine));
             currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
         }
-        // end of NewQuantityEvent processing
+    }
+
+    public void update(Integer executorId, OrderDTO dto) 
+            throws FinderException, CreateException {
+        // update first the order own fields
+        if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
+            updateActiveUntil(executorId, dto.getActiveUntil(), dto);
+        }
+        if (!Util.equal(order.getActiveSince(), dto.getActiveSince())) {
+            audit(executorId, order.getActiveSince());
+            order.setActiveSince(dto.getActiveSince());
+        }
+        setStatus(executorId, dto.getStatusId());
+        
+        if (order.getOrderPeriod().getId() != dto.getOrderPeriod().getId()) {
+            audit(executorId, order.getOrderPeriod().getId());
+            order.setOrderPeriod(orderPeriodDAS.find(dto.getOrderPeriod().getId()));
+        }
+        // this should not be necessary any more, since the order is a pojo...
+        order.setOrderBillingType(dto.getOrderBillingType());
+        order.setNotify(dto.getNotify());
+        order.setDueDateUnitId(dto.getDueDateUnitId());
+        order.setDueDateValue(dto.getDueDateValue());
+        order.setDfFm(dto.getDfFm());
+        order.setAnticipatePeriods(dto.getAnticipatePeriods());
+        order.setOwnInvoice(dto.getOwnInvoice());
+        order.setNotes(dto.getNotes());
+        order.setNotesInInvoice(dto.getNotesInInvoice());
+        order.setCycleStarts(dto.getCycleStarts());
+        if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 1) {
+            setMainSubscription(executorId);
+        }
+        if (dto.getIsCurrent() != null && dto.getIsCurrent().intValue() == 0) {
+            unsetMainSubscription(executorId);
+        }
+        // this one needs more to get updated
+        updateNextBillableDay(executorId, dto.getNextBillableDay());
+        
+        /*
+         *  now proces the order lines
+         */
+ 
+        // generate new quantity events as necessary
+        checkOrderLineQuantities(order, dto);
 
         OrderLineDTO oldLine = null;
     	int nonDeletedLines = 0;
@@ -1261,7 +1269,12 @@ public class OrderBL extends ResultList
             order.setIsCurrent(0);
         }
     }
-    
+
+    public Integer getMainOrderId(Integer userId) {
+        UserDAS das = new UserDAS();
+        return das.find(userId).getCustomer().getCurrentOrderId();
+    }
+
     public CachedRowSet getOneTimersByDate(Integer userId, Date activeSince) 
             throws SQLException, Exception{
                 
@@ -1318,6 +1331,7 @@ public class OrderBL extends ResultList
     		retValue.getLines().add(getOrderLine(line));
     	}
     	retValue.setIsCurrent(other.getIsCurrent());
+    	retValue.setCycleStarts(other.getCycleStarts());
     	retValue.setVersionNum(other.getVersionNum());
     	
     	return retValue;

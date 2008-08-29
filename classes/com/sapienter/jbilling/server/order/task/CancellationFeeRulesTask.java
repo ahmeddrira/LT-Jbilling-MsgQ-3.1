@@ -118,6 +118,10 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
             NewActiveUntilEvent myEvent = (NewActiveUntilEvent) event;
             ((FeeOrderManager) helperOrder).setNewActiveUntil(myEvent.getNewActiveUntil());
             ((FeeOrderManager) helperOrder).setOldActiveUntil(myEvent.getOldActiveUntil());
+        } else if (eventType == EventType.NEW_QUANTITY_EVENT) {
+            // default to now. This is needed to calculate the number of periods cancelled
+            ((FeeOrderManager) helperOrder).setNewActiveUntil(new Date());
+            ((FeeOrderManager) helperOrder).setOldActiveUntil(order.getActiveUntil());
         }
 
         try {

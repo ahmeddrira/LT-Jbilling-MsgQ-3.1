@@ -595,11 +595,13 @@ public class WSTest  extends TestCase {
 
     public void testRefundAndCancelFee() {
         try {
+            final Integer USER_ID = 1000;
+
             // create an order an order for testing
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             OrderWS newOrder = new OrderWS();
-            newOrder.setUserId(GANDALF_USER_ID); 
+            newOrder.setUserId(USER_ID); 
             newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             newOrder.setPeriod(2);
             newOrder.setCurrencyId(new Integer(1));
@@ -633,7 +635,7 @@ public class WSTest  extends TestCase {
 
             // update the quantities of the order (-2 lemonades, -3 coffees)
             System.out.println("Updating quantities of order ...");
-            OrderWS order = api.getLatestOrder(GANDALF_USER_ID);
+            OrderWS order = api.getLatestOrder(USER_ID);
             assertEquals("No. of order lines", 2, order.getOrderLines().length);
             OrderLineWS orderLine = order.getOrderLines()[0];
             orderLine.setQuantity(3);
@@ -643,7 +645,7 @@ public class WSTest  extends TestCase {
 
             // get last 3 orders and check what's on them (2 refunds and a fee)
             System.out.println("Getting last 3 orders ...");
-            Integer[] list = api.getLastOrders(new Integer(2), new Integer(3));
+            Integer[] list = api.getLastOrders(new Integer(USER_ID), new Integer(3));
             assertNotNull("Missing list", list);
 
             // order 1 - coffee refund
@@ -681,13 +683,13 @@ public class WSTest  extends TestCase {
             assertNotNull("The order was not created", orderId);
 
             // set active until earlier than invoice date
-            order = api.getLatestOrder(GANDALF_USER_ID);
+            order = api.getLatestOrder(USER_ID);
             order.setActiveUntil(weeksFromToday(2));
             api.updateOrder(order);
 
             // get last 2 orders and check what's on them (a full refund and a fee)
             System.out.println("Getting last 2 orders ...");
-            list = api.getLastOrders(new Integer(2), new Integer(3));
+            list = api.getLastOrders(new Integer(USER_ID), new Integer(3));
             assertNotNull("Missing list", list);
 
             // order 1 - full refund
@@ -714,6 +716,16 @@ public class WSTest  extends TestCase {
             assertEquals("Price", new Float(5), orderLine.getPrice());
             assertEquals("Amount", new Float(50), orderLine.getAmount());
 
+            // remove invoices
+            list = api.getLastInvoices(new Integer(USER_ID), new Integer(2));
+            api.deleteInvoice(list[0]);
+            api.deleteInvoice(list[1]);
+            // remove orders
+            list = api.getLastOrders(new Integer(USER_ID), new Integer(7));
+            for (int i = 0; i < list.length; i++) {
+                api.deleteOrder(list[i]);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
@@ -722,11 +734,13 @@ public class WSTest  extends TestCase {
 
     public void testDefaultCycleStart() {
         try {
+            final Integer USER_ID = 1000;
+
             // create an order an order for testing
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             // create a main subscription (current) order
-            OrderWS mainOrder = createMockOrder(GANDALF_USER_ID, 1, 10);
+            OrderWS mainOrder = createMockOrder(USER_ID, 1, 10);
             mainOrder.setPeriod(2);
             mainOrder.setIsCurrent(1);
             mainOrder.setCycleStarts(new Date());
@@ -735,7 +749,7 @@ public class WSTest  extends TestCase {
             assertNotNull("The order was not created", mainOrderId);
 
             // create another order and see if cycle starts was set
-            OrderWS testOrder = createMockOrder(GANDALF_USER_ID, 1, 20);
+            OrderWS testOrder = createMockOrder(USER_ID, 1, 20);
             testOrder.setPeriod(2);
             System.out.println("Creating test order ...");
             Integer testOrderId = api.createOrder(testOrder);
@@ -749,7 +763,8 @@ public class WSTest  extends TestCase {
 
             // create another order with cycle starts set to check it isn't 
             // overwritten
-            testOrder = createMockOrder(GANDALF_USER_ID, 1, 30);
+            api.deleteOrder(testOrderId);
+            testOrder = createMockOrder(USER_ID, 1, 30);
             testOrder.setPeriod(2);
             testOrder.setCycleStarts(weeksFromToday(1));
             System.out.println("Creating test order ...");
@@ -762,7 +777,8 @@ public class WSTest  extends TestCase {
                     testOrder.getCycleStarts()));
 
             // create another order with isCurrent not null
-            testOrder = createMockOrder(GANDALF_USER_ID, 1, 40);
+            api.deleteOrder(testOrderId);
+            testOrder = createMockOrder(USER_ID, 1, 40);
             testOrder.setPeriod(2);
             testOrder.setIsCurrent(0);
             System.out.println("Creating test order ...");
@@ -772,6 +788,10 @@ public class WSTest  extends TestCase {
             // check that cycle starts wasn't set (is null)
             testOrder = api.getOrder(testOrderId);
             assertNull("Cycle starts", testOrder.getCycleStarts());
+
+            // remove orders
+            api.deleteOrder(mainOrderId);
+            api.deleteOrder(testOrderId);
             
         } catch (Exception e) {
             e.printStackTrace();

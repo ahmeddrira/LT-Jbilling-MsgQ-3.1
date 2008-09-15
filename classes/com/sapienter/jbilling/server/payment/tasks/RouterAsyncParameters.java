@@ -38,8 +38,18 @@ public class RouterAsyncParameters extends PluggableTask implements IAsyncPaymen
             
             PluggableTaskManager taskManager = new PluggableTaskManager(entityId, 
                     Constants.PLUGGABLE_TASK_PAYMENT);
-            // the router task HAS to be the first in the payment chain
-            PaymentRouterTask router = (PaymentRouterTask) taskManager.getNextClass();
+
+            // search for PaymentRouterTask in the payment chain
+            PaymentRouterTask router = null;
+            Object task = taskManager.getNextClass();
+            while (task != null) {
+                if (task instanceof PaymentRouterTask) {
+                    router = (PaymentRouterTask) task;
+                    break;
+                }
+                task = taskManager.getNextClass();
+            }
+            
             if (router == null) {
                 throw new TaskException("Can not find router task");
             }

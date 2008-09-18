@@ -52,8 +52,8 @@
 </logic:present>
 <logic:present parameter="frompartner">
     <%
-       session.setAttribute("jsp_partnerId", ((UserDTOEx) session.getAttribute(
-       			Constants.SESSION_USER_DTO)).getPartnerDto().getId().toString());
+       session.setAttribute("jsp_partnerId", String.valueOf(((UserDTOEx) session.getAttribute(
+       			Constants.SESSION_USER_DTO)).getPartner().getId()));
     %>
 </logic:present>
 

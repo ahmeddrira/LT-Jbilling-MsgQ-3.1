@@ -32,7 +32,6 @@ import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
@@ -70,7 +69,7 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public abstract class ItemPriceEntityBean implements EntityBean {
 
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(ItemPriceEntityBean.class);
     
     /**
      * @ejb:create-method view-type="local"
@@ -91,7 +90,7 @@ public abstract class ItemPriceEntityBean implements EntityBean {
                     Constants.TABLE_ITEM_PRICE));
 
         } catch (Exception e) {
-            log.error("Exception creating item price", e);
+            LOG.error("Exception creating item price", e);
             throw new CreateException(
                     "Problems generating the primary key "
                     + "for the item_price table");
@@ -173,7 +172,6 @@ public abstract class ItemPriceEntityBean implements EntityBean {
      * @see javax.ejb.EntityBean#setEntityContext(javax.ejb.EntityContext)
      */
     public void setEntityContext(EntityContext context) {
-        log = Logger.getLogger(CurrencyEntityBean.class);
     }
 
     /* (non-Javadoc)

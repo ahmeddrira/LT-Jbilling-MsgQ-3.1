@@ -37,18 +37,12 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
 import com.sapienter.jbilling.interfaces.MenuOptionEntityLocal;
 import com.sapienter.jbilling.interfaces.MenuOptionEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportFieldEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
-import com.sapienter.jbilling.interfaces.RoleEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.ReportUserDTO;
@@ -57,13 +51,23 @@ import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.FieldComparator;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
+import com.sapienter.jbilling.server.report.db.ReportDAS;
 import com.sapienter.jbilling.server.user.AchBL;
-import com.sapienter.jbilling.server.user.CustomerDTOEx;
+import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.MenuOption;
-import com.sapienter.jbilling.server.user.PartnerBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.RoleDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.db.generated.Ach;
+import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import com.sapienter.jbilling.server.util.db.generated.Report;
+import com.sapienter.jbilling.server.util.db.generated.ReportType;
 
 /**
  *
@@ -81,6 +85,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
  */
 public class DTOFactory {
 
+    private static final Logger LOG = Logger.getLogger(DTOFactory.class);
     /**
      * The constructor is private, do it doesn't get instantiated.
      * All the methods then are static.
@@ -103,16 +108,11 @@ public class DTOFactory {
         throws CreateException, NamingException, FinderException,
             SessionInternalError {
 
-        Logger log = Logger.getLogger(DTOFactory.class);
-        log.debug("getting the user " + username);
+        LOG.debug("getting the user " + username);
 
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        UserEntityLocalHome UserHome =
-                (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                UserEntityLocalHome.class,
-                UserEntityLocalHome.JNDI_NAME);
-
-        UserEntityLocal user = UserHome.findByUserName(username, entityId);
+        UserDTO user = new UserDAS().findByUserName(
+                username, entityId);
+        if (user == null) return null;
         return getUserDTOEx(user);
     }
 
@@ -120,47 +120,34 @@ public class DTOFactory {
             throws CreateException, NamingException, FinderException,
                 SessionInternalError {
 
-        Logger log = Logger.getLogger(DTOFactory.class);
-        log.debug("getting the user " + userId);
+        LOG.debug("getting the user " + userId);
 
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        UserEntityLocalHome userHome =
-                (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                UserEntityLocalHome.class,
-                UserEntityLocalHome.JNDI_NAME);
 
-        UserEntityLocal user = userHome.findByPrimaryKey(userId);
+        UserDTO user = new UserDAS().find(userId);
         return getUserDTOEx(user);
     }
 
 
-    public static UserDTOEx getUserDTOEx(UserEntityLocal user) 
+    public static UserDTOEx getUserDTOEx(UserDTO user) 
             throws NamingException, FinderException, SessionInternalError { 
-        UserDTOEx dto = new UserDTOEx(user.getUserId(), 
-                user.getEntity().getId(), user.getUserName(),
-                user.getPassword(), user.getDeleted(), 
-                user.getLanguageIdField(),
-                null, user.getCurrencyId(), user.getCreateDateTime(),
-                user.getLastStatusChange(), user.getLastLogin(),
-                user.getFailedAttmepts()); // I'll set all the roles later
+        UserDTOEx dto = new UserDTOEx(user);
 
         // get the status
         dto.setStatusId(user.getStatus().getId());
         dto.setStatusStr(user.getStatus().getDescription(user.getLanguageIdField()));
         // the subscriber status
-        dto.setSubscriptionStatusId(user.getSubscriptionStatus().getId());
-        dto.setSubscriptionStatusStr(user.getSubscriptionStatus().getDescription(
+        dto.setSubscriptionStatusId(user.getSubscriberStatus().getId());
+        dto.setSubscriptionStatusStr(user.getSubscriberStatus().getDescription(
                 user.getLanguageIdField()));
         
         // add the roles
         Integer mainRole = new Integer(1000);
         String roleStr = null;
-        for (Iterator it = user.getRoles().iterator(); it.hasNext(); ) {
-            RoleEntityLocal role = (RoleEntityLocal) it.next();
-            dto.getRoles().add(role.getId());
+        dto.getRoles().addAll(user.getRoles());
+        for (RoleDTO role : user.getRoles()) {
             // the main role is the smallest of them, so they have to be ordered in the
             // db in ascending order (small = important);
-            if (role.getId().compareTo(mainRole) < 0) {
+            if (role.getId() < mainRole) {
                 mainRole = role.getId();
                 roleStr = role.getTitle(user.getLanguageIdField());
             }
@@ -169,12 +156,7 @@ public class DTOFactory {
         dto.setMainRoleStr(roleStr);
 
         // now get the language
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        LanguageEntityLocalHome languageHome =
-                (LanguageEntityLocalHome) EJBFactory.lookUpLocalHome(
-                LanguageEntityLocalHome.class,
-                LanguageEntityLocalHome.JNDI_NAME);
-        LanguageEntityLocal language = languageHome.findByPrimaryKey(
+        LanguageDTO language = new LanguageDAS().find(
                 user.getLanguageIdField());
         dto.setLanguageStr(language.getDescription());
         
@@ -189,61 +171,34 @@ public class DTOFactory {
         // make sure the currency is set
         if (dto.getCurrencyId() == null) {
             // defaults to the one from the entity
-            dto.setCurrencyId(user.getEntity().getCurrencyId());
+            dto.setCurrency(user.getEntity().getCurrency());
         }
         CurrencyBL currency = new CurrencyBL(dto.getCurrencyId());
         dto.setCurrencySymbol(currency.getEntity().getSymbol());
         dto.setCurrencyName(currency.getEntity().getDescription(
-                dto.getLanguageId()));
+                user.getLanguageIdField()));
         
         // add a credit card if available
-        if (!user.getCreditCard().isEmpty()) {
-            dto.setCreditCard(getCreditCardDTO((CreditCardEntityLocal)
-                    user.getCreditCard().iterator().next()));
+        if (!user.getCreditCards().isEmpty()) {
+            dto.setCreditCard(getCreditCardDTO(new CreditCardBL(
+                    ((CreditCard) user.getCreditCards().iterator().next()).getId()).getEntity()));
         }   
         
-        if (user.getAch() != null) {
-        	AchBL ach = new AchBL(user.getAch());
+        if (!user.getAchs().isEmpty()) {
+        	AchBL ach = new AchBL(((Ach)user.getAchs().toArray()[0]).getId());
             dto.setAch(ach.getDTO());
         }
         
         // if this is a customer, add its dto
         if (user.getCustomer() != null) {
-            CustomerDTOEx customerDto = new CustomerDTOEx();
-            customerDto.setId(user.getCustomer().getId());
-            if (user.getCustomer().getPartner() != null) {
-                customerDto.setPartnerId(user.getCustomer().getPartner().getId());
-            }
-            customerDto.setReferralFeePaid(
-                    user.getCustomer().getReferralFeePaid());
-            customerDto.setNotes(user.getCustomer().getNotes());
-            customerDto.setInvoiceDeliveryMethodId(
-                    user.getCustomer().getInvoiceDeliveryMethodId());
-            customerDto.setDueDateUnitId(
-                    user.getCustomer().getDueDateUnitId());
-            customerDto.setDueDateValue(
-                    user.getCustomer().getDueDateValue());
-            customerDto.setDfFm(user.getCustomer().getDfFm());
-            customerDto.setExcludeAging(user.getCustomer().getExcludeAging());
-            customerDto.setIsParent(user.getCustomer().getIsParent());
-            customerDto.setInvoiceChild(user.getCustomer().getInvoiceChild() == null ?
-                    new Integer(0) : user.getCustomer().getInvoiceChild());
-            if (user.getCustomer().getParent() != null) {
-                customerDto.setParentId(user.getCustomer().getParent().
-                        getUser().getUserId());
-            } else if (user.getCustomer().getIsParent() != null &&
-                    user.getCustomer().getIsParent().intValue() == 1) {
-                customerDto.setTotalSubAccounts(new Integer(user.getCustomer().
-                        getChildren().size()));
-            }
             
-            dto.setCustomerDto(customerDto);
+            dto.setCustomer(user.getCustomer());
         }
         
         // if this is a partner, add its dto
         if (user.getPartner() != null) {
             PartnerBL partner = new PartnerBL(user.getPartner());
-            dto.setPartnerDto(partner.getDTO());
+            dto.setPartner(partner.getDTO());
         }
         
         // the locale will be handy
@@ -297,7 +252,7 @@ public class DTOFactory {
         ReportEntityLocal report = reportHome.findByPrimaryKey(reportId);
 
         EntityBL entity = new EntityBL(entityId);
-        ReportDTOEx dto = getReportDTOEx(report, entity.getLocale());
+        ReportDTOEx dto = getReportDTOEx(new ReportDAS().find(reportId), entity.getLocale());
         Collection fields = report.getFields();
         
         for (Iterator it = fields.iterator(); it.hasNext();) {
@@ -335,12 +290,12 @@ public class DTOFactory {
         return dto;
     }
  
-    public static ReportDTOEx getReportDTOEx(ReportEntityLocal report,
+    public static ReportDTOEx getReportDTOEx(Report report,
             Locale locale) { 
     
-        ReportDTOEx dto = new ReportDTOEx(report.getTitleKey(), 
-                report.getInstructionsKey(), report.getTables(),
-                report.getWhere(), locale);
+        ReportDTOEx dto = new ReportDTOEx(report.getTitlekey(), 
+                report.getInstructionskey(), report.getTablesList(),
+                report.getWhereStr(), locale);
             
         dto.setIdColumn(report.getIdColumn());
         dto.setId(report.getId());
@@ -349,25 +304,21 @@ public class DTOFactory {
         return dto;
     }
   
-    public static Collection reportEJB2DTOEx(Collection reports, 
+    public static Collection<ReportDTOEx> reportEJB2DTOEx(Collection<Report> reports, 
             boolean filter) {
-        Vector dtos = new Vector();
+        Vector<ReportDTOEx> dtos = new Vector<ReportDTOEx>();
         
-        for (Iterator it = reports.iterator(); it.hasNext();) {
-            ReportEntityLocal reportEJB = (ReportEntityLocal) it.next();
+        for (Report report: reports) {
             
             if (filter) {
-                for (Iterator it2 = reportEJB.getTypes().iterator(); 
-                        it2.hasNext(); ) {
-                    ReportTypeEntityLocal type = 
-                            (ReportTypeEntityLocal) it2.next();
-                    if (type.getShowable().intValue() == 1) {
-                        dtos.add(getReportDTOEx(reportEJB, null));
+                for (ReportType type: report.getReportTypes()) {
+                    if (type.getShowable() == 1) {
+                        dtos.add(getReportDTOEx(report, null));
                         break;
                     }
                 }
             } else {
-                dtos.add(getReportDTOEx(reportEJB, null));
+                dtos.add(getReportDTOEx(report, null));
             }
             
         }
@@ -375,12 +326,11 @@ public class DTOFactory {
         return dtos;
     }
     
-    public static Collection reportEJB2DTO(Collection reports) {
+    public static Collection reportEJB2DTO(Collection<Report> reports) {
         Vector dtos = new Vector();
         
-        for (Iterator it = reports.iterator(); it.hasNext();) {
-            ReportEntityLocal reportEJB = (ReportEntityLocal) it.next();
-            dtos.add(getReportDTOEx(reportEJB, null));
+        for (Report report: reports) {
+            dtos.add(getReportDTOEx(report, null));
         }
         
         return dtos;
@@ -402,7 +352,7 @@ public class DTOFactory {
     public static ReportUserDTO getReportUserDTO(
             ReportUserEntityLocal rUser) {
         return new ReportUserDTO(rUser.getId(), 
-                rUser.getCreateDatetime(), rUser.getTitle());
+                rUser.getCreateDatetime(), rUser.getTitle(), rUser.getUserId());
     }
  
     public static MenuOption getMenuOption(Integer id, Integer languageId) 

@@ -56,18 +56,16 @@ import com.sapienter.jbilling.server.util.Constants;
  *
  * @ejb:finder signature="ContactEntityLocal findPrimaryContact(java.lang.Integer userId) "
  * 			   query="SELECT OBJECT(c)
- *                      FROM base_user a, contact c
- *                     WHERE a.userId = c.userId
- *                       AND a.userId = ?1"
+ *                      FROM contact c
+ *                     WHERE c.userId = ?1"
  * 
  * @ejb:finder signature="ContactEntityLocal findContact(java.lang.Integer userId, java.lang.Integer typeId) "
  *             query="SELECT OBJECT(c)
- *                      FROM base_user a, contact c, jbilling_table d
- *                     WHERE a.userId = c.contactMap.foreignId
- *                       AND c.contactMap.tableId = d.id
+ *                      FROM contact c, jbilling_table d
+ *                     WHERE c.contactMap.tableId = d.id
  *                       AND d.name = 'base_user'
  *                       AND c.contactMap.type.id = ?2
- *                       AND a.userId = ?1"
+ *                       AND c.contactMap.foreignId = ?1"
  *
  *
  * @ejb:finder signature="ContactEntityLocal findEntityContact(java.lang.Integer entityId) "

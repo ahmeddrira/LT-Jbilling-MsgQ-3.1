@@ -36,9 +36,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
-import com.sapienter.jbilling.server.util.db.generated.Company;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
 import com.sapienter.jbilling.server.util.db.generated.ItemPrice;
 import com.sapienter.jbilling.server.util.db.generated.ItemType;
@@ -51,7 +51,7 @@ public class Item extends AbstractDescription {
 
 
      private int id;
-     private Company entity;
+     private CompanyDTO entity;
      private String internalNumber;
      private Double percentage;
      private short priceManual;
@@ -74,7 +74,7 @@ public class Item extends AbstractDescription {
         this.deleted = deleted;
         this.hasDecimals = hasDecimals;
     }
-    public Item(int id, Company entity, String internalNumber, Double percentage, short priceManual, short deleted, short hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<Promotion> promotions, Set<ItemType> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPrice> itemUserPrices, Set<ItemPrice> itemPrices) {
+    public Item(int id, CompanyDTO entity, String internalNumber, Double percentage, short priceManual, short deleted, short hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<Promotion> promotions, Set<ItemType> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPrice> itemUserPrices, Set<ItemPrice> itemPrices) {
        this.id = id;
        this.entity = entity;
        this.internalNumber = internalNumber;
@@ -106,11 +106,11 @@ public class Item extends AbstractDescription {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     

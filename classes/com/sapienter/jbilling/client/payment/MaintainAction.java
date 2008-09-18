@@ -50,9 +50,10 @@ import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
-import com.sapienter.jbilling.server.user.PartnerPayoutDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
+import com.sapienter.jbilling.server.util.db.generated.Payment;
 
 public class MaintainAction extends Action {
 
@@ -110,14 +111,14 @@ public class MaintainAction extends Action {
                 }
                 
                 boolean isPayout = false;
-                PartnerPayoutDTOEx payout = null;
-                PartnerDTOEx partner = null;
+                PartnerPayout payout = null;
+                Partner partner = null;
                 if (request.getParameter("payout") != null && 
                         request.getParameter("payout").equals("yes")) {
                     isPayout = true;
-                    payout = (PartnerPayoutDTOEx) session.getAttribute(
+                    payout = (PartnerPayout) session.getAttribute(
                             Constants.SESSION_PAYOUT_DTO);
-                    partner = (PartnerDTOEx) session.
+                    partner = (Partner) session.
                             getAttribute(Constants.SESSION_PARTNER_DTO);                
                 }
                 
@@ -134,7 +135,7 @@ public class MaintainAction extends Action {
                                 payout.getStartingDate(), 
                                 payout.getEndingDate(), partner.getId(),
                                 new Boolean(true));
-                        payout.setPayment(paymentDto);
+                        payout.setPayment(new Payment(paymentDto));
                     }
                     
                     if (result == null) {

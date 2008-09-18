@@ -26,10 +26,12 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -47,27 +49,11 @@ import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.AchEntityLocal;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
-import com.sapienter.jbilling.interfaces.CustomerEntityLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocal;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.PermissionEntityLocal;
-import com.sapienter.jbilling.interfaces.PermissionUserEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
-import com.sapienter.jbilling.interfaces.RoleEntityLocal;
-import com.sapienter.jbilling.interfaces.RoleEntityLocalHome;
-import com.sapienter.jbilling.interfaces.SubscriptionStatusEntityLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.PermissionDTO;
-import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -76,8 +62,17 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.AgeingBL;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.report.db.ReportUserDAS;
+import com.sapienter.jbilling.server.user.db.AchDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDAS;
+import com.sapienter.jbilling.server.user.db.RoleDAS;
+import com.sapienter.jbilling.server.user.db.RoleDTO;
+import com.sapienter.jbilling.server.user.db.SubscriberStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.UserStatusDAS;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
 import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
 import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
@@ -85,83 +80,65 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.db.generated.Ach;
+import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
+import com.sapienter.jbilling.server.util.db.generated.Permission;
+import com.sapienter.jbilling.server.util.db.generated.PermissionUser;
+import com.sapienter.jbilling.server.util.db.generated.ReportUser;
 
 
 public class UserBL extends ResultList
         implements UserSQL {
-    private JNDILookup EJBFactory = null;
-    private UserEntityLocalHome userHome = null;
-    private SubscriptionStatusEntityLocalHome subscirptionStatusHome = null;
-    private UserEntityLocal user = null;
+    private UserDTO user = null;
     private final static Logger LOG = Logger.getLogger(UserBL.class);
     private EventLogger eLogger = null;
     private Integer mainRole = null;
-    private CustomerEntityLocalHome customerHome = null;
     private UserDAS das = null;
     
     public UserBL(Integer userId) throws FinderException {
         init();
-
         set(userId);
     }
     
-    public UserBL() throws NamingException {
+    public UserBL() {
         init();
     }
     
-    public UserBL(UserEntityLocal entity) 
-            throws NamingException{
+    public UserBL(UserDTO entity) {
         user = entity;
         init();
     }
     
-    public UserBL(String username, Integer entityId) 
-            throws NamingException, FinderException {
+    public UserBL(String username, Integer entityId) {
         init();
-        user = userHome.findByUserName(username, entityId);
+        user = das.findByUserName(username, entityId);
     }
     
-    public void set(Integer userId) 
-            throws FinderException {
-        user = userHome.findByPrimaryKey(userId);
+    public void set(Integer userId) {
+        user = das.find(userId);
     }
     
     public void set(String userName, Integer entityId) 
             throws FinderException {
-        user = userHome.findByUserName(userName, entityId);
+        user = das.findByUserName(userName, entityId);
     }
     
-    public void set(UserEntityLocal user) {
+    public void set(UserDTO user) {
         this.user = user;
     }
      
     public void setRoot(String userName) 
             throws FinderException {
-        user = userHome.findRoot(userName);
-    }
-    
-    public UserEntityLocalHome getHome() {
-        return userHome;
+        user = das.findRoot(userName);
     }
     
     private void init() {
-        try {
-            eLogger = EventLogger.getInstance();        
-            EJBFactory = JNDILookup.getFactory(false);
-            userHome = (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    UserEntityLocalHome.class,
-                    UserEntityLocalHome.JNDI_NAME);
-            customerHome = (CustomerEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    CustomerEntityLocalHome.class,
-                    CustomerEntityLocalHome.JNDI_NAME);
-            subscirptionStatusHome = (SubscriptionStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    SubscriptionStatusEntityLocalHome.class,
-                    SubscriptionStatusEntityLocalHome.JNDI_NAME);
-            
-            das = new UserDAS();
-        } catch (NamingException e) {
-            throw new SessionInternalError("init UserBL", this.getClass(), e);
-        }
+        eLogger = EventLogger.getInstance();        
+        das = new UserDAS();
     }
     
     /**
@@ -192,17 +169,16 @@ public class UserBL extends ResultList
         }
         if (dto.getLanguageId() != null && !user.getLanguageIdField().equals(
         		dto.getLanguageId())) {
-        		user.setLanguageId(dto.getLanguageId());
+                
+        		user.setLanguage(new LanguageDAS().find(dto.getLanguageId()));
         }
-        if (dto.getEntityId() != null && !user.getEntity().getId().equals(
-        		dto.getEntityId())) {
-	        EntityEntityLocalHome entityHome = (EntityEntityLocalHome) 
-	                EJBFactory.lookUpLocalHome(EntityEntityLocalHome.class,
-	                EntityEntityLocalHome.JNDI_NAME);
-	        user.setEntity(entityHome.findByPrimaryKey(dto.getEntityId()));
+        if (dto.getEntityId() != null && user.getEntity().getId() !=
+        		dto.getEntityId()) {
+
+	        user.setCompany(new CompanyDAS().find(dto.getEntityId()));
         }
-        if (dto.getStatusId() != null && !user.getStatus().getId().equals(
-        		dto.getStatusId())) {
+        if (dto.getStatusId() != null && user.getStatus().getId() !=
+        		dto.getStatusId()) {
             AgeingBL age = new AgeingBL();
             age.setUserStatus(executorId, user.getUserId(), dto.getStatusId(), 
                     Calendar.getInstance().getTime());
@@ -210,65 +186,55 @@ public class UserBL extends ResultList
         updateSubscriptionStatus(dto.getSubscriptionStatusId());
         if (dto.getCurrencyId() != null && !user.getCurrencyId().equals(
         		dto.getCurrencyId())) {
-        	user.setCurrencyId(dto.getCurrencyId());
+        	user.setCurrency(new CurrencyDAS().find(dto.getCurrencyId()));
         }
-        if (dto.getCustomerDto() != null) {
-            if (dto.getCustomerDto().getInvoiceDeliveryMethodId() != null) {
-                user.getCustomer().setInvoiceDeliveryMethodId(
-                        dto.getCustomerDto().getInvoiceDeliveryMethodId());
+        if (dto.getCustomer() != null) {
+            if (dto.getCustomer().getInvoiceDeliveryMethod() != null) {
+                // this is not nullable
+                user.getCustomer().setInvoiceDeliveryMethod(
+                        dto.getCustomer().getInvoiceDeliveryMethod());
             }
             user.getCustomer().setDueDateUnitId(
-                    dto.getCustomerDto().getDueDateUnitId());
+                    dto.getCustomer().getDueDateUnitId());
             user.getCustomer().setDueDateValue(
-                    dto.getCustomerDto().getDueDateValue());
-            user.getCustomer().setDfFm(dto.getCustomerDto().getDfFm());
-            if (dto.getCustomerDto().getPartnerId() != null) {
-                PartnerBL partner = new PartnerBL(dto.getCustomerDto().getPartnerId());
-                user.getCustomer().setPartner(partner.getEntity());    
+                    dto.getCustomer().getDueDateValue());
+            user.getCustomer().setDfFm(dto.getCustomer().getDfFm());
+            if (dto.getCustomer().getPartner() != null) {
+                user.getCustomer().setPartner(
+                        dto.getCustomer().getPartner());    
             } else {
                 user.getCustomer().setPartner(null);
             }
-            if (dto.getCustomerDto().getExcludeAging() != null) {
+            if (dto.getCustomer().getExcludeAging() != 0) {
                 user.getCustomer().setExcludeAging(
-                        dto.getCustomerDto().getExcludeAging());
+                        dto.getCustomer().getExcludeAging());
             }
         }
         
         updateRoles(dto.getRoles(), dto.getMainRoleId());
     }
     
-    private void updateRoles(Collection rolesIds, Integer main) 
+    private void updateRoles(Set<RoleDTO> theseRoles, Integer main) 
             throws NamingException, SessionInternalError {    
 
-        if (rolesIds == null || rolesIds.isEmpty()) {
+        if (theseRoles == null || theseRoles.isEmpty()) {
             if (main != null) {
-                if (rolesIds == null) {
-                    rolesIds = new Vector();
+                if (theseRoles == null) {
+                    theseRoles = new HashSet<RoleDTO>();
                 }
-                rolesIds.add(main);
+                theseRoles.add(new RoleDTO(main));
             } else {
                 return; // nothing to do
             }
         }
         
-        RoleEntityLocalHome roleHome = (RoleEntityLocalHome) 
-               EJBFactory.lookUpLocalHome(
-               RoleEntityLocalHome.class,
-               RoleEntityLocalHome.JNDI_NAME);
-
         user.getRoles().clear();
-        for (Iterator it = rolesIds.iterator(); it.hasNext();) {
-             Integer roleId = (Integer) it.next();
-             
-             try {   
-                RoleEntityLocal role = roleHome.findByPrimaryKey(roleId);
-                user.getRoles().add(role);
-             } catch (FinderException e) {
-                 LOG.error("Trying to add unexisting role to user " + roleId, e);
-                 throw new SessionInternalError("Invalid role " + roleId);
-             }
-        };        
-                
+        for (RoleDTO aRole: theseRoles) {
+            // make sure the role is in the session
+            RoleDTO dbRole = new RoleDAS().find(aRole.getId());
+            //dbRole.getBaseUsers().add(user);
+            user.getRoles().add(dbRole);
+        }
     }
     
     public boolean exists(String userName, Integer entityId) {
@@ -276,11 +242,10 @@ public class UserBL extends ResultList
             LOG.error("exists is being call with a null username");
             return true;
         }
-        try {
-            userHome.findByUserName(userName, entityId);
-            return true;
-        } catch (FinderException e) {
+        if (new UserDAS().findByUserName(userName, entityId) == null) {
             return false;
+        } else {
+            return true;
         }
     }
     
@@ -289,13 +254,16 @@ public class UserBL extends ResultList
         
         Integer newId;
         LOG.debug("Creating user " + dto);
+        Vector<Integer> roles = new Vector<Integer>();
         if (dto.getRoles() == null || dto.getRoles().size() == 0) {
             if (dto.getMainRoleId() != null) {
-                Vector roles = new Vector();
                 roles.add(dto.getMainRoleId());
-                dto.setRoles(roles);
             } else {
                 LOG.warn("Creating user without any role...");
+            }
+        } else {
+            for (RoleDTO role: dto.getRoles()) {
+                roles.add(role.getId());
             }
         }
         
@@ -304,51 +272,50 @@ public class UserBL extends ResultList
         dto.setPassword(passwordCrypter.encrypt(dto.getPassword()));
         
         // may be this is a partner
-        if (dto.getPartnerDto() != null) {
+        if (dto.getPartner() != null) {
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
-            		dto.getLanguageId(), dto.getRoles(), dto.getCurrencyId(),
+            		dto.getLanguageId(), roles, dto.getCurrencyId(),
 					dto.getStatusId(), dto.getSubscriptionStatusId());
             PartnerBL partner = new PartnerBL();
-            partner.create(dto.getPartnerDto());
+            partner.create(dto.getPartner());
             user.setPartner(partner.getEntity());
-        } else if (dto.getCustomerDto() != null) {
+            partner.getEntity().setBaseUser(user);
+        } else if (dto.getCustomer() != null) {
             try {
                 // link the partner
                 PartnerBL partner = null;
-                if (dto.getCustomerDto().getPartnerId() != null) {
-                    partner = new PartnerBL(dto.getCustomerDto().
-                            getPartnerId());
+                if (dto.getCustomer().getPartner() != null) {
+                    partner = new PartnerBL(dto.getCustomer().
+                            getPartner().getId());
                     // see that this partner is valid
-                    if (!partner.getEntity().getUser().getEntity().getId().
-                            equals(dto.getEntityId()) || partner.getEntity().
-                            getUser().getDeleted().intValue() == 1) {
+                    if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId()
+                            || partner.getEntity().getUser().getDeleted() == 1) {
                         partner = null;
                     }
                 }
                 newId = create(dto.getEntityId(), dto.getUserName(), 
                         dto.getPassword(), dto.getLanguageId(), 
-                        dto.getRoles(), dto.getCurrencyId(),
+                        roles, dto.getCurrencyId(),
 						dto.getStatusId(), dto.getSubscriptionStatusId());
-                user.setCustomer(customerHome.create());
-                user.getCustomer().setReferralFeePaid(dto.getCustomerDto().
+                user.setCustomer(new CustomerDAS().create());
+                user.getCustomer().setBaseUser(user);
+                user.getCustomer().setReferralFeePaid(dto.getCustomer().
                         getReferralFeePaid());
                 if (partner != null) {
                     user.getCustomer().setPartner(partner.getEntity());
                 }
                 // set the sub-account fields
-                user.getCustomer().setIsParent(
-                        dto.getCustomerDto().getIsParent());
-                if (dto.getCustomerDto().getParentId() != null) {
-                    UserBL parent = new UserBL(dto.getCustomerDto().getParentId());
-                    user.getCustomer().setParent(parent.getEntity().getCustomer());
-                    user.getCustomer().setInvoiceChild(dto.getCustomerDto().getInvoiceChild());
+                user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
+                if (dto.getCustomer().getParent() != null) {
+                    user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                    user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
                 } 
             } catch (FinderException e) {
                 newId = null;
             }
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
-                    dto.getLanguageId(), dto.getRoles(), dto.getCurrencyId(),
+                    dto.getLanguageId(), roles, dto.getCurrencyId(),
 					dto.getStatusId(), dto.getSubscriptionStatusId());
         }
         
@@ -358,7 +325,7 @@ public class UserBL extends ResultList
     }    
 
     private Integer create(Integer entityId, String userName, String password,
-            Integer languageId, Vector roles, Integer currencyId, 
+            Integer languageId, Vector<Integer> roles, Integer currencyId, 
 			Integer statusId, Integer subscriberStatusId) 
             throws CreateException, NamingException, SessionInternalError {
         // Default the language and currency to that one of the entity         
@@ -384,27 +351,42 @@ public class UserBL extends ResultList
             subscriberStatusId = UserDTOEx.SUBSCRIBER_NONSUBSCRIBED;
         }
         
-    	user = userHome.create(entityId, userName, password, languageId, 
-                currencyId, statusId, subscriberStatusId);
-        updateRoles(roles, null);
+        UserDTO newUser = new UserDTO();
+        newUser.setCompany(new CompanyDAS().find(entityId));
+        newUser.setUserName(userName);
+        newUser.setPassword(password);
+        newUser.setLanguage(new LanguageDAS().find(languageId));
+        newUser.setCurrency(new CurrencyDAS().find(currencyId));
+        newUser.setUserStatus(new UserStatusDAS().find(statusId));
+        newUser.setSubscriberStatus(new SubscriberStatusDAS().find(subscriberStatusId));
+        newUser.setDeleted(new Integer(0));
+        newUser.setCreateDatetime(Calendar.getInstance().getTime());    
+        newUser.setFailedAttempts(0);
+
+    	user = das.save(newUser);
+        HashSet<RoleDTO> rolesDTO = new HashSet<RoleDTO>();
+        for (Integer roleId: roles) {
+            rolesDTO.add(new RoleDAS().find(roleId));
+        }
+        updateRoles(rolesDTO, null);
         
         return user.getUserId();
     }    
         
     
     public boolean validateUserNamePassword(UserDTOEx loggingUser, 
-           UserDTOEx db) throws FinderException, NamingException {
+           UserDTOEx db) {
         
         // the user status is not part of this check, as a customer that
-        // can't LOGin to the entity's service still has to be able to
-        // LOGin to sapienter to pay
-        if (db.getDeleted().intValue() == 0 && 
+        // can't login to the entity's service still has to be able to
+        // as a customer to submit a payment or update her credit card
+        if (db.getDeleted() == 0 && 
                 loggingUser.getEntityId().equals(db.getEntityId())) {
         	
         	String dbPassword = db.getPassword();
         	String notCryptedLoggingPassword = loggingUser.getPassword();
         	
-        	//using service specific for DB-user, LOGging one may not have its role set
+        	//using service specific for DB-user, loging one may not have its role set
         	JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());
         	String comparableLoggingPassword = passwordCryptoService.encrypt(notCryptedLoggingPassword);
 
@@ -416,19 +398,11 @@ public class UserBL extends ResultList
         
         return false;
     }
-     
-     public static UserEntityLocal getUserEntity(Integer userId) 
-            throws NamingException, FinderException {
-         JNDILookup EJBFactory = JNDILookup.getFactory(false);
-         UserEntityLocalHome UserHome =
-                (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                 UserEntityLocalHome.class,
-                 UserEntityLocalHome.JNDI_NAME);
+    
+    public static UserDTO getUserEntity(Integer userId) {
+        return new UserDAS().find(userId);
+    }
 
-         UserEntityLocal user = UserHome.findByPrimaryKey(userId);
-         return user;
-         
-     }
      
      /**
       * sent the lost password to the user
@@ -444,6 +418,7 @@ public class UserBL extends ResultList
      public void sendLostPassword(Integer entityId, Integer userId, Integer languageId) throws NamingException, SessionInternalError, FinderException, NotificationNotFoundException, CreateException {
     	 NotificationBL notif = new NotificationBL();
     	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
+         JNDILookup EJBFactory = JNDILookup.getFactory(false);
     	 NotificationSessionLocalHome notificationHome =
     		 (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
     				 NotificationSessionLocalHome.class,
@@ -452,74 +427,54 @@ public class UserBL extends ResultList
     	notificationSess.notify(userId, message);
      }
      
-     public UserEntityLocal getEntity() {
+     public UserDTO getEntity() {
          return user;
      }
      
-     public Vector getPermissions() { 
-         Vector ret = new Vector();
+     public Vector<Permission> getPermissions() { 
+         Vector<Permission> ret = new Vector<Permission>();
 
          LOG.debug("Reading permisions for user " + user.getUserId());
          
-         Collection roles = user.getRoles();
-         for (Iterator it = roles.iterator(); it.hasNext();) {
-             RoleEntityLocal role = (RoleEntityLocal) it.next();
-             
-             // now get the permissions
-             Collection permissions = role.getPermissions();
-             for (Iterator it2 = permissions.iterator(); it2.hasNext();) {
-                 PermissionEntityLocal permission = 
-                        (PermissionEntityLocal) it2.next();
-                 ret.add(new PermissionDTO(permission.getId(), 
-                        permission.getTypeId(), permission.getForeignId()));
-                 //LOG.debug("Adding permission from role " + permission.getId());
-             }
+         for (RoleDTO role: user.getRoles()) {
+             // now get the permissions. They come sorted from the DB
+             ret.addAll(role.getPermissions());
          }
-         // get it sorted to allow binary searches ;)
-         PermissionIdComparator comparator = new PermissionIdComparator();
-         Collections.sort(ret, comparator);
          
          // now add / remove those privileges that were granted / revoked
          // to this particular user
-         for(Iterator it = user.getPermissions().iterator(); it.hasNext();) {
-             PermissionUserEntityLocal permission = (PermissionUserEntityLocal)
-                     it.next();
-             PermissionDTO thisPerm = new PermissionDTO();
-             thisPerm.setId(permission.getPermission().getId());
-             int idx = Collections.binarySearch(ret, thisPerm, comparator);
-             if (permission.getIsGrant().intValue() == 1) {
+         for(PermissionUser permission : user.getPermissions()) {
+             if (permission.getIsGrant() == 1) {
                  // see that this guy has it
-                 if (idx < 0) {
+                 if (!ret.contains(permission.getPermission())) {
                      // not there, add it
                      //LOG.debug("adding " + thisPerm.getId());
-                     ret.add(new PermissionDTO(permission.getPermission().getId(),
-                             permission.getPermission().getTypeId(),
-                             permission.getPermission().getForeignId()));
-                     Collections.sort(ret, comparator);
+                     ret.add(permission.getPermission());
                  }
              } else {
                  // make sure she doesn't
-                 if (idx >= 0) {
+                 if (ret.contains(permission.getPermission())) {
                      //LOG.debug("removing " + thisPerm.getId());
-                     ret.remove(idx);
+                     ret.remove(permission.getPermission());
                  }
              }
          }
+         
+         // make sure the permissions are sorted
+         Collections.sort(ret, new PermissionIdComparator());
                  
          return ret;
      }
      
-    public Menu getMenu(Vector permissions) 
+    public Menu getMenu(Vector<Permission> permissions) 
             throws NamingException, FinderException, SessionInternalError {
 
         Menu menu = new Menu();
         // this should be doable in EJB/QL !! :( :(
         LOG.debug("getting menu for user=" + user.getUserId());
 
-        for (Iterator iPer = permissions.iterator(); iPer.hasNext();) {
-            PermissionDTO permission = (PermissionDTO)
-                    iPer.next();
-            if (permission.getTypeId().equals(Constants.PERMISSION_TYPE_MENU)) {
+        for (Permission permission : permissions) {
+            if (permission.getPermissionType().getId() == Constants.PERMISSION_TYPE_MENU) {
                 // get the menu
                 MenuOption option = DTOFactory.getMenuOption(
                         permission.getForeignId(), 
@@ -624,7 +579,7 @@ public class UserBL extends ResultList
             break;
         case OPTION_PLUG_IN_EDIT:
             UserDTOEx dto = new UserDTOEx();
-            dto.setPermissions(getPermissions());
+            dto.setAllPermissions(getPermissions());
             retValue = dto.isGranted(PermissionConstants.P_TASK_MODIFY);
             break;
         }
@@ -670,8 +625,7 @@ public class UserBL extends ResultList
     public Integer getMainRole() {
         if (mainRole == null) {
             List roleIds = new LinkedList();
-            for (Iterator roles = user.getRoles().iterator(); roles.hasNext();){
-                RoleEntityLocal nextRoleObject = (RoleEntityLocal)roles.next();
+            for (RoleDTO nextRoleObject : user.getRoles()){
         		roleIds.add(nextRoleObject.getId());
         	}
         	mainRole = selectMainRole(roleIds);
@@ -697,11 +651,7 @@ public class UserBL extends ResultList
         Locale retValue = null;
         // get the language first
         Integer languageId = user.getLanguageIdField();
-        LanguageEntityLocalHome languageHome = (LanguageEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(LanguageEntityLocalHome.class,
-                        LanguageEntityLocalHome.JNDI_NAME);
-        LanguageEntityLocal language = languageHome
-                .findByPrimaryKey(languageId);
+        LanguageDTO language = new LanguageDAS().find(languageId);
         String languageCode = language.getCode();
 
         // now the country
@@ -722,7 +672,7 @@ public class UserBL extends ResultList
         Integer retValue;
         
         if (user.getCurrencyId() == null) {
-            retValue = user.getEntity().getCurrencyId();
+            retValue = user.getEntity().getCurrency().getId();
         } else {
             retValue = user.getCurrencyId();
         }
@@ -732,43 +682,34 @@ public class UserBL extends ResultList
 
     /**
      * Will mark the user as deleted (deleted = 1), and do the same
-     * with all her invoices and orders, etc ...
+     * with all her orders, etc ...
      * Not deleted for reporting reasong: invoices, payments
      */
     public void delete(Integer executorId) 
             throws RemoveException{
-        Integer deleted = new Integer(1);
-        user.setDeleted(deleted);
-        user.setStatusId(UserDTOEx.STATUS_DELETED);
+        user.setDeleted(1);
+        user.setUserStatus(new UserStatusDAS().find(UserDTOEx.STATUS_DELETED));
         user.setLastStatusChange(Calendar.getInstance().getTime());
         
         // credit cards
-        for (Iterator it = user.getCreditCard().iterator(); it.hasNext();) {
-            CreditCardEntityLocal cc =  (CreditCardEntityLocal) it.next();
-            cc.setDeleted(deleted);
+        for (CreditCard cc: user.getCreditCards()) {
+            cc.setDeleted(1);
         }
         // item prices
-        for (Iterator it = user.getItemPrices().iterator(); it.hasNext();) {
-            ItemUserPriceEntityLocal itemPrice =  
-                (ItemUserPriceEntityLocal) it.next();
-            itemPrice.remove();
-            // since the collection has been modified by the remove, we
-            // need to refresh it or we'll get an Exception
-            it = user.getItemPrices().iterator();
+        for (ItemUserPrice itemPrice: user.getItemUserPrices()) {
+            new ItemUserPriceDAS().delete(itemPrice);
         }
         // orders
-        for (Iterator it = user.getOrders().iterator(); it.hasNext();) {
-            OrderDTO order =  (OrderDTO) it.next();
-            order.setDeleted(deleted);
+        for (OrderDTO order: user.getOrders()) {
+            order.setDeleted(1);
         }
         // permisions
         user.getPermissions().clear();
         // promotions
         user.getPromotions().clear();
         // user saved reports
-        for (Iterator it = user.getReports().iterator(); it.hasNext();) {
-            ReportUserEntityLocal report =  (ReportUserEntityLocal) it.next();
-            report.remove();
+        for (ReportUser report: user.getReports()) {
+            new ReportUserDAS().delete(report);
         }
         // roles
         user.getRoles().clear();
@@ -778,15 +719,10 @@ public class UserBL extends ResultList
                     EventLogger.MODULE_USER_MAINTENANCE, 
                     EventLogger.ROW_DELETED, null, null, null);
         }
-
     }
  
     public UserDTO getDto() {
-        return new UserDTO(user.getUserId(), user.getUserName(), 
-                user.getPassword(), user.getDeleted(), 
-                user.getLanguageIdField(), user.getCurrencyId(),
-                user.getCreateDateTime(), user.getLastStatusChange(),
-                user.getLastLogin(), user.getFailedAttmepts());
+        return user;
     }   
     
     /**
@@ -794,7 +730,7 @@ public class UserBL extends ResultList
      * @return true if the user has a credit card, or fals if it doeas not
      */
     public boolean hasCreditCard() {
-        return !user.getCreditCard().isEmpty();
+        return !user.getCreditCards().isEmpty();
     }
     /**
      * Verifies that both user belong to the same entity. 
@@ -809,9 +745,9 @@ public class UserBL extends ResultList
                 
         boolean retValue;
         try {
-            user = userHome.findByPrimaryKey(callerUserId);
+            user = das.find(callerUserId);
             set(rootUserName, user.getEntity().getId());
-            if (user.getDeleted().equals(new Integer(1))) {
+            if (user.getDeleted() == 1) {
                 throw new SessionInternalError("the caller is set as deleted");
             }
             if (!getMainRole().equals(Constants.TYPE_ROOT)) {
@@ -829,13 +765,17 @@ public class UserBL extends ResultList
     		throws NamingException, CreateException, SessionInternalError {
     	AchBL bl = new AchBL();
     	// let's see if this guy already has an ach record
-    	AchEntityLocal row = user.getAch();
-    	if (row == null) {
+    	Set<Ach> rows = user.getAchs();
+    	if (rows.size() == 0) {
     		bl.create(ach);
-    		user.setAch(bl.getEntity());
+            rows.add(new AchDAS().find(bl.getEntity().getId()));
     	} else { // its an update
-    		bl.set(row);
-    		bl.update(executorId, ach);
+    		try {
+                bl.set(((Ach)rows.toArray()[0]).getId());
+                bl.update(executorId, ach);
+            } catch (FinderException e) {
+                e.printStackTrace();
+            }
     	}
     }
     
@@ -869,7 +809,7 @@ public class UserBL extends ResultList
             UserWS[] ret = new UserWS[dtos.size()];
             int index = 0;
             for (Iterator it = dtos.iterator(); it.hasNext();) {
-                user = (UserEntityLocal) it.next();
+                user = (UserDTO) it.next();
                 ret[index] = entity2WS();
                 index++;
             }
@@ -883,7 +823,7 @@ public class UserBL extends ResultList
     public UserWS entity2WS() 
             throws NamingException, FinderException {
         UserWS retValue = new UserWS();
-        retValue.setCreateDateTime(user.getCreateDateTime());
+        retValue.setCreateDatetime(user.getCreateDatetime());
         retValue.setCurrencyId(getCurrencyId());
         retValue.setDeleted(user.getDeleted());
         retValue.setLanguageId(user.getLanguageIdField());
@@ -903,10 +843,10 @@ public class UserBL extends ResultList
         contact.set(retValue.getUserId());
         retValue.setContact(new ContactWS(contact.getDTO()));
         // the credit card
-        Collection ccs = user.getCreditCard();
+        Collection ccs = user.getCreditCards();
         if (ccs.size() > 0) {
-            CreditCardBL cc = new CreditCardBL((CreditCardEntityLocal) 
-                    ccs.toArray()[0]);
+            CreditCardBL cc = new CreditCardBL(((CreditCard) 
+                    ccs.toArray()[0]).getId());
             retValue.setCreditCard(cc.getDTO());
         }
         return retValue;
@@ -1036,7 +976,7 @@ public class UserBL extends ResultList
     }
     
     public void updateSubscriptionStatus(Integer id) {
-        if (id == null || user.getSubscriptionStatus().getId().equals(id)) {
+        if (id == null || user.getSubscriberStatus().getId() == id) {
             // no update ... it's already there
             return;
         }
@@ -1044,10 +984,9 @@ public class UserBL extends ResultList
                 Constants.TABLE_BASE_USER, user.getUserId(), 
                 EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.SUBSCRIPTION_STATUS_CHANGE,
-                user.getSubscriptionStatus().getId(), id.toString(), null);
+                user.getSubscriberStatus().getId(), id.toString(), null);
         try {
-            user.setSubscriptionStatus(subscirptionStatusHome
-                    .findByPrimaryKey(id));
+            user.setSubscriberStatus(new SubscriberStatusDAS().find(id));
         } catch (Exception e) {
             throw new SessionInternalError("Can't update a user subscription status",
                     UserBL.class, e);
@@ -1131,7 +1070,7 @@ public class UserBL extends ResultList
             Date lastChange = cachedResults.getDate(1);
             // no changes? then take when the user signed-up
             if (lastChange == null) {
-                lastChange = user.getCreateDateTime();
+                lastChange = user.getCreateDatetime();
             }
             conn.close();
             
@@ -1165,9 +1104,9 @@ public class UserBL extends ResultList
         
         // zero means not to enforce this rule
         if (allowedRetries > 0) {
-            int total = user.getFailedAttmepts();
+            int total = user.getFailedAttempts();
             total ++;
-            user.setFailedAttmepts(new Integer(total));
+            user.setFailedAttempts(total);
             
             if (total >= allowedRetries) {
                 retValue = true;
@@ -1190,12 +1129,12 @@ public class UserBL extends ResultList
     
     public void successLoginAttempt() {
         user.setLastLogin(Calendar.getInstance().getTime());
-        user.setFailedAttmepts(new Integer(0));
+        user.setFailedAttempts(0);
     }
     
     public boolean canInvoice() {
         // can't be deleted and has to be a customer
-        if (user.getDeleted().intValue() == 1 ||
+        if (user.getDeleted() == 1 ||
                 !getMainRole().equals(Constants.TYPE_CUSTOMER)) {
             return false;
         }
@@ -1317,11 +1256,10 @@ public class UserBL extends ResultList
      * @throws NamingException
      */
     public Integer getEntityId(Integer userId) {
-        LOG.debug("getting entity id for user " + userId);
         if (userId == null) {
             userId = user.getUserId();
         }
-       	BaseUser user = das.find(userId);
+       	UserDTO user = das.find(userId);
        	return user.getCompany().getId();
         		
     }

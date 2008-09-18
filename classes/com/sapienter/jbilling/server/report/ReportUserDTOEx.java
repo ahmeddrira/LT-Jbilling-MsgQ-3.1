@@ -36,7 +36,7 @@ public class ReportUserDTOEx extends ReportUserDTO {
     public ReportUserDTOEx(Integer id, Integer reportId, Date createDatetime, 
             String title) {
              
-        super(id, createDatetime, title);
+        super(id, createDatetime, title, null);
         this.reportId = reportId;
     }
 

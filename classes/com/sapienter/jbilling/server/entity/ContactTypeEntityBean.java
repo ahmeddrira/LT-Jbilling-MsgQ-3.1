@@ -31,7 +31,8 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 /**
  * @ejb:bean name="ContactTypeEntity" 
@@ -47,12 +48,6 @@ import com.sapienter.jbilling.interfaces.EntityEntityLocal;
  *
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
- *
- * @ejb:finder signature="ContactTypeEntityLocal findPrimary(java.lang.Integer entityId) "
- *             query="SELECT OBJECT(a)
- *                      FROM contact_type a
- *                     WHERE a.isPrimary = 1
- *                       AND a.entity.id = ?1"
  *
  * @jboss:table-name "contact_type"
  * @jboss.read-only read-only="true"
@@ -83,13 +78,16 @@ public abstract class ContactTypeEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="entity-contact_types"
-     *               role-name="type-belongs_to-entity"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="entity_id"           
      */
-    public abstract EntityEntityLocal getEntity();
-    public abstract void setEntity(EntityEntityLocal entity);
+    public CompanyDTO getEntity() {
+        return new ContactTypeDAS().find(getId()).getEntity();
+    }
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void setEntity(CompanyDTO entity) {
+        new ContactTypeDAS().find(getId()).setEntity(entity);
+    }
 
    
     /*

@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <logic:notPresent name='<%=Constants.SESSION_CUSTOMER_DTO%>' 
-		property="customerDto.parentId">
+		property="customer.parent">
 <table class="info">
 	<tr>
 		<th class="info" colspan="2"><bean:message key="creditcard.info.title"/></th>

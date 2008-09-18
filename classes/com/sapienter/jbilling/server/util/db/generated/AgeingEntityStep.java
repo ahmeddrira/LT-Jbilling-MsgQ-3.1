@@ -28,14 +28,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserStatusDTO;
+
 @Entity
 @Table(name="ageing_entity_step")
 public class AgeingEntityStep  implements java.io.Serializable {
 
 
      private int id;
-     private Company company;
-     private UserStatus userStatus;
+     private CompanyDTO company;
+     private UserStatusDTO userStatus;
      private int days;
 
     public AgeingEntityStep() {
@@ -46,7 +49,7 @@ public class AgeingEntityStep  implements java.io.Serializable {
         this.id = id;
         this.days = days;
     }
-    public AgeingEntityStep(int id, Company entity, UserStatus userStatus, int days) {
+    public AgeingEntityStep(int id, CompanyDTO entity, UserStatusDTO userStatus, int days) {
        this.id = id;
        this.company = entity;
        this.userStatus = userStatus;
@@ -65,20 +68,20 @@ public class AgeingEntityStep  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    public Company getCompany() {
+    public CompanyDTO getCompany() {
         return this.company;
     }
     
-    public void setCompany(Company entity) {
+    public void setCompany(CompanyDTO entity) {
         this.company = entity;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="status_id")
-    public UserStatus getUserStatus() {
+    public UserStatusDTO getUserStatus() {
         return this.userStatus;
     }
     
-    public void setUserStatus(UserStatus userStatus) {
+    public void setUserStatus(UserStatusDTO userStatus) {
         this.userStatus = userStatus;
     }
     

@@ -40,12 +40,11 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
-import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
+import com.sapienter.jbilling.server.process.db.AgeingEntityStepDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -60,13 +59,6 @@ import com.sapienter.jbilling.server.util.Constants;
  *          primkey-field="id"
  *          schema="ageing_entity_step"
  *
- * @ejb:finder signature="AgeingEntityStepEntityLocal findStep(java.lang.Integer entityId, java.lang.Integer stepId)"
- *             query="SELECT OBJECT(a) 
- *                      FROM ageing_entity_step a 
- *                     WHERE a.entity.id = ?1
- *                       AND a.status.id = ?2" 
- *             result-type-mapping="Local"
- *
  * @ejb.value-object name="AgeingEntityStep"
  *
  * @ejb:pk class="java.lang.Integer"
@@ -77,7 +69,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @jboss:remove-table remove="false"
  */
 public abstract class AgeingEntityStepEntityBean implements EntityBean {
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(AgeingEntityStepEntityBean.class);
     
     /**
      * @ejb:create-method view-type="local"
@@ -100,7 +92,7 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
                     Constants.TABLE_AGEING_ENTITY_STEP));
 
         } catch (Exception e) {
-            log.error("Exception creating aging entity step row", e);
+            LOG.error("Exception creating aging entity step row", e);
             throw new CreateException(
                     "Problems generating the primary key "
                     + "for the ageing_entity_step table");
@@ -121,22 +113,12 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
             String welcomeMessage, String loginFailMessage, Integer languageId,
             Integer days) {
         try {
-            JNDILookup EJBFactory = null;
-            EJBFactory = JNDILookup.getFactory(false);
-            EntityEntityLocalHome entityHome =
-                    (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    EntityEntityLocalHome.class,
-                    EntityEntityLocalHome.JNDI_NAME);
-            setEntity(entityHome.findByPrimaryKey(entityId));
+            setEntity(new CompanyDAS().find(entityId));
  
-            UserStatusEntityLocalHome userStatusHome =
-                    (UserStatusEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    UserStatusEntityLocalHome.class,
-                    UserStatusEntityLocalHome.JNDI_NAME);
-            log.debug("setting crm with statusId = "  + statusId);
-            setStatus(userStatusHome.findByPrimaryKey(statusId));
+            LOG.debug("setting crm with statusId = "  + statusId);
+            setStatusId(statusId);
         } catch (Exception e) {
-            log.error("Exception in post create ",e);
+            LOG.error("Exception in post create ",e);
         }
         
     }
@@ -183,7 +165,7 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
       * @ejb:interface-method view-type="local"
       * @ejb:persistent-field
       * @jboss:column-name name="days"
-     * @jboss.method-attributes read-only="true"
+      * @jboss.method-attributes read-only="true"
       */
     public abstract Integer getDays();
     /**
@@ -252,29 +234,27 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
     
     // CMR fields --------------------------------------------------
     /**
-     * many-to-one unidirectional
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="ageing_steps-status"
-     *               role-name="steps-has-status"
-     *               target-ejb="UserStatusEntity"
-     *               target-role-name="status-provieds_for-step"
-     *               target-multiple="yes"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="status_id"            
+     * @ejb:persistent-field
+     * @jboss:column-name name="status_id"
+     * @jboss.method-attributes read-only="true"
      */
-    public abstract UserStatusEntityLocal getStatus();
-    public abstract void setStatus(UserStatusEntityLocal status);
+   public abstract Integer getStatusId();
+    public abstract void setStatusId(Integer status);
 
     /**
-     * one-to-many bidirectional
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="entity-ageing_steps"
-     *               role-name="step-belongs_to-entity"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="entity_id"            
      */
-    public abstract EntityEntityLocal getEntity();
-    public abstract void setEntity(EntityEntityLocal entity);
+    public CompanyDTO getEntity() {
+        return new AgeingEntityStepDAS().find(getId()).getCompany();
+    }
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void setEntity(CompanyDTO entity) {
+        new AgeingEntityStepDAS().find(getId()).setCompany(entity);
+    }
+
     
     // EJB Callbacks ------------------------------------------------
     /* (non-Javadoc)
@@ -312,7 +292,6 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
      * @see javax.ejb.EntityBean#setEntityContext(javax.ejb.EntityContext)
      */
     public void setEntityContext(EntityContext context) {
-        log = Logger.getLogger(AgeingEntityStepEntityBean.class);
     }
 
     /* (non-Javadoc)

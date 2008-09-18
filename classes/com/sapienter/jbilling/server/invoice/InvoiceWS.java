@@ -116,7 +116,7 @@ public class InvoiceWS extends InvoiceDTO implements Serializable {
             String number, Date lastReminder, Integer overdueStep) {
         super(id, createDateTime, createTimeStamp, lastReminder, dueDate, total, toProcess, balance,
                 carriedBalance, inProcessPayment, deleted, paymentAttempts, 
-                isReview, currencyId, notes, number, overdueStep);
+                isReview, currencyId, notes, number, overdueStep, null);
     }
 
     /**

@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.client.user;
 
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 import javax.servlet.ServletException;
@@ -44,12 +43,19 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.CustomerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.RoleDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 public class CreateAction extends Action {
+    
+    private static final Logger LOG = Logger.getLogger(CreateAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -70,7 +76,7 @@ public class CreateAction extends Action {
         // get the dynamic form
         DynaActionForm userForm = (DynaActionForm) form;
         
-        Logger.getLogger(CreateAction.class).debug("Create user action");
+        LOG.debug("Create user action");
         
         // verify that the password and the verification password are the same
         if (!((String) userForm.get("password")).equals((String) 
@@ -95,20 +101,20 @@ public class CreateAction extends Action {
                     // type, so it is assumend they are creating customers
                     typeId = Constants.TYPE_CUSTOMER;
                 }
-                UserDTOEx dto = new UserDTOEx(null, entityId, 
-                        (String)userForm.get("username"),
-                        (String)userForm.get("password"),
-                        null, languageId, 
-                        typeId, (Integer) userForm.get("currencyId"),
-                        null, null,null, null);
+
+                UserDTOEx dto = new UserDTOEx();
+                dto.setCompany(new CompanyDTO(entityId));
+                dto.setUserName((String)userForm.get("username"));
+                dto.setPassword((String)userForm.get("password"));
+                dto.setLanguage(new LanguageDTO(languageId));
+                dto.setMainRoleId(typeId);
+                dto.setCurrency(new CurrencyDTO((Integer) userForm.get("currencyId")));
                 
                 // add the roles 
                 // now, it will be just one and directly mapped to the user type
                 // this doesn't have to be like this, it is now because it is 
                 // enough for the BAT requirements
-                Vector<Integer> roles = new Vector<Integer>();
-                roles.add(typeId);
-                dto.setRoles(roles);
+                dto.getRoles().add(new RoleDTO(typeId));
                 
                 // finally, create the contact dto to send the email
                 ContactDTOEx contact = new ContactDTOEx();
@@ -122,7 +128,7 @@ public class CreateAction extends Action {
                 
                 // if it is a customer, it'll need the customer dto
                 if (typeId.equals(Constants.TYPE_CUSTOMER)) {
-                    CustomerDTOEx customerDto = new CustomerDTOEx();
+                    CustomerDTO customerDto = new CustomerDTO();
                     
                     // set the partner 
                     Integer partnerId = null;
@@ -137,10 +143,10 @@ public class CreateAction extends Action {
                         }
                     }
                     if (partnerId != null) {
-                        customerDto.setPartnerId(partnerId);
+                        customerDto.setPartner(new Partner(partnerId));
                     }
                     customerDto.setReferralFeePaid(new Integer(0));
-                    dto.setCustomerDto(customerDto);
+                    dto.setCustomer(customerDto);
 
                     // set the sub-account fields
                     String parentStr = (String) userForm.get("parentId");
@@ -149,7 +155,7 @@ public class CreateAction extends Action {
                         parentId = Integer.valueOf(parentStr);
                     }
                     if (parentId != null) {
-                        customerDto.setParentId(parentId);
+                        customerDto.setParent(new CustomerDTO(parentId));
                     }
                     
                     customerDto.setIsParent(((Boolean) userForm.get(
@@ -157,7 +163,7 @@ public class CreateAction extends Action {
                             ? new Integer(1) : new Integer(0));
                     
                     if (customerDto.getIsParent().intValue() == 1 &&
-                            customerDto.getParentId() != null) {
+                            customerDto.getParent() != null) {
                         // can't be parent and child at the same time
                         errors.add(ActionErrors.GLOBAL_ERROR,
                                 new ActionError(
@@ -165,19 +171,19 @@ public class CreateAction extends Action {
                     }
                     
                     // verify that the parent is valid
-                    if (customerDto.getParentId() != null) {
+                    if (customerDto.getParent() != null) {
                         try {
                             UserDTOEx parent = myRemoteSession.getUserDTOEx(
-                                    customerDto.getParentId());
+                                    customerDto.getParent().getId());
                             if (!parent.getEntityId().equals(entityId) ||
-                                    parent.getDeleted().intValue() == 1) {
+                                    parent.getDeleted() == 1) {
                                 errors.add(ActionErrors.GLOBAL_ERROR,
                                         new ActionError(
                                             "user.create.error.noParent"));                               
                             } else {
-                                if (parent.getCustomerDto() == null ||
-                                        parent.getCustomerDto().getIsParent() == null ||
-                                        parent.getCustomerDto().getIsParent().intValue() == 0) {
+                                if (parent.getCustomer() == null ||
+                                        parent.getCustomer().getIsParent() == null ||
+                                        parent.getCustomer().getIsParent().intValue() == 0) {
                                     errors.add(ActionErrors.GLOBAL_ERROR,
                                             new ActionError(
                                                 "user.create.error.badParent"));        
@@ -195,7 +201,7 @@ public class CreateAction extends Action {
                             ? new Integer(1) : new Integer(0));
                     
                     if (customerDto.getInvoiceChild().intValue() == 1 &&
-                            customerDto.getParentId() == null) {
+                            customerDto.getParent() == null) {
                         // it has to be a child with a parent for this flag to 
                         // make any sense
                         errors.add(ActionErrors.GLOBAL_ERROR,
@@ -240,6 +246,7 @@ public class CreateAction extends Action {
             } catch (Exception e) {
                 errors.add(ActionErrors.GLOBAL_ERROR,
                         new ActionError("all.internal"));
+                LOG.error("Exception", e);
             }
         }
         
@@ -254,7 +261,7 @@ public class CreateAction extends Action {
             // is time to show up the contact/cc options
             session.setAttribute(Constants.SESSION_USER_ID, 
                     newUserId);
-            Logger.getLogger(CreateAction.class).debug("new user id = " + 
+            LOG.debug("new user id = " + 
                     newUserId);
             session.setAttribute(Constants.SESSION_CONTACT_USER_ID, 
                     newUserId);
@@ -269,7 +276,7 @@ public class CreateAction extends Action {
         } else {
             // something failed
             saveErrors(request, errors);
-            Logger.getLogger(CreateAction.class).debug("errors: " + errors.size());
+            LOG.debug("errors: " + errors.size());
             retValue = "error";
         }
         

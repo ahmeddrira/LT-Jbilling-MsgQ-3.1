@@ -36,6 +36,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+
 @Entity
 @Table(name="list_entity" , uniqueConstraints = @UniqueConstraint(columnNames={"list_id", "entity_id"}) 
 )
@@ -44,7 +46,7 @@ public class ListEntity  implements java.io.Serializable {
 
      private int id;
      private List list;
-     private Company entity;
+     private CompanyDTO entity;
      private int totalRecords;
      private Date lastUpdate;
      private Set<ListFieldEntity> listFieldEntities = new HashSet<ListFieldEntity>(0);
@@ -53,13 +55,13 @@ public class ListEntity  implements java.io.Serializable {
     }
 
 	
-    public ListEntity(int id, Company entity, int totalRecords, Date lastUpdate) {
+    public ListEntity(int id, CompanyDTO entity, int totalRecords, Date lastUpdate) {
         this.id = id;
         this.entity = entity;
         this.totalRecords = totalRecords;
         this.lastUpdate = lastUpdate;
     }
-    public ListEntity(int id, List list, Company entity, int totalRecords, Date lastUpdate, Set<ListFieldEntity> listFieldEntities) {
+    public ListEntity(int id, List list, CompanyDTO entity, int totalRecords, Date lastUpdate, Set<ListFieldEntity> listFieldEntities) {
        this.id = id;
        this.list = list;
        this.entity = entity;
@@ -89,11 +91,11 @@ public class ListEntity  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id", nullable=false)
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     

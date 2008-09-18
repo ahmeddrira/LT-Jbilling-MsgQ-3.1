@@ -102,7 +102,7 @@ public abstract class MethodBaseSecurityProxy implements SecurityProxy {
             throw new SecurityException("User not found " + userId);
         }
         UserDTOEx dto = new UserDTOEx();
-        dto.setPermissions(user.getPermissions());
+        dto.setAllPermissions(user.getPermissions());
         if (!dto.isGranted(permission)) {
             throw new SecurityException("Permission " + permission +
                     " not grated for " + userId);

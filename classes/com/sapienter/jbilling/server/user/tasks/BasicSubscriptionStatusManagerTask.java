@@ -49,7 +49,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         LOG.debug("A payment failed " + payment);
         
         UserBL user = getUser(null);
-        Integer status = user.getEntity().getSubscriptionStatus().getId();
+        Integer status = user.getEntity().getSubscriberStatus().getId();
 
         if (isLastRetry()) {
             if (status.equals(UserDTOEx.SUBSCRIBER_PENDING_EXPIRATION)) {
@@ -90,23 +90,23 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         if (oldActiveUntil == null || (newActiveUntil != null && 
                 newActiveUntil.after(oldActiveUntil))) {
             user = getUser(userId);
-            if (user.getEntity().getSubscriptionStatus().getId().equals(
-                    UserDTOEx.SUBSCRIBER_ACTIVE)) {
+            if (user.getEntity().getSubscriberStatus().getId() ==
+                    UserDTOEx.SUBSCRIBER_ACTIVE) {
                 user.updateSubscriptionStatus(
                         UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION);
             } else {
                 LOG.info("Should go to pending unsubscription, but is in " + 
-                        user.getEntity().getSubscriptionStatus().getDescription(1));
+                        user.getEntity().getSubscriberStatus().getDescription(1));
             }
         } else if (newActiveUntil == null) { // it's going back to on-going (subscribed)
             user = getUser(userId);
-            if (user.getEntity().getSubscriptionStatus().getId().equals(
-                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION)) {
+            if (user.getEntity().getSubscriberStatus().getId() ==
+                    UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION) {
                 user.updateSubscriptionStatus(
                         UserDTOEx.SUBSCRIBER_ACTIVE);
             } else {
                 LOG.info("Should go to active, but is in " + 
-                        user.getEntity().getSubscriptionStatus().getDescription(1));
+                        user.getEntity().getSubscriberStatus().getDescription(1));
             }
         }
     }

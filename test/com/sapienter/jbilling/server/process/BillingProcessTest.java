@@ -119,7 +119,7 @@ public class BillingProcessTest extends TestCase {
         runDate = cal.getTime();
 
     }
-
+    
     public void testRetry() {
         try {
             // set the configuration to something we are sure about
@@ -191,11 +191,14 @@ public class BillingProcessTest extends TestCase {
 
             assertEquals("21 - No new retry", 2, lastDtoC.getRuns().size());
             
+            // wait for the asynchronous payment processing to finish
+            Thread.sleep(3000);
+            
             // let's monitor invoice 45, which is the one to be retried
             invoice = remoteInvoice.getInvoiceEx(45, 1);
-            assertEquals("Invoice without payments before retry", new Integer(1), 
+            assertEquals("Invoice without payments after retry", new Integer(1), 
                     invoice.getPaymentAttempts());
-            assertEquals("Invoice without payments before retry - 2", 1, 
+            assertEquals("Invoice without payments after retry - 2", 1, 
                     invoice.getPaymentMap().size());
             
             // the billing process has to have a total paid equal to the invoice
@@ -518,9 +521,9 @@ public class BillingProcessTest extends TestCase {
             assertNotNull("The payment processing did not run", run.getPaymentFinished());
             // we know that the only one invoice will be payed in full
             assertEquals("Invoices in the grand total", new Integer(998), process.getGrandTotal().getInvoiceGenerated());
-            assertEquals("Total invoiced is consitent", ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced(),
-                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid() + 
-                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalNotPaid());
+            assertTrue("Total invoiced is consitent", Math.abs(((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced().floatValue() -
+                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid().floatValue() - 
+                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalNotPaid().floatValue()) < 1);
             InvoiceDTO invoice = remoteInvoice.getInvoice(NEW_INVOICE);
             assertEquals("Invoice is paid", new Integer(0), invoice.getToProcess());
             
@@ -661,7 +664,74 @@ public class BillingProcessTest extends TestCase {
         }
 
     }
-    
+
+    public void testAgeing() {
+        try {
+            Integer userId = new Integer(876);
+            
+            // grace period = 5
+            // overdue1 = 3
+            // overdue2 = 1
+            // suspended 1 = 2
+            // suspended 3 = 30
+            // deleted (end)
+            // invoice 3543 Due date 11/26/2006 (1540)
+            
+            // the grace period should keep this user active
+            cal.clear();
+            cal.set(2006, GregorianCalendar.DECEMBER, 1);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            UserDTOEx user = remoteUser.getUserDTOEx(userId);
+            assertEquals("Grace period", UserDTOEx.STATUS_ACTIVE,
+                    user.getStatusId());
+                    
+            // when the grace over, she should be warned
+            cal.set(2006, GregorianCalendar.DECEMBER, 2);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            user = remoteUser.getUserDTOEx(userId);
+            assertEquals("to overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1,
+                    user.getStatusId().intValue());
+
+            // two day after, the status should be the same
+            cal.set(2006, GregorianCalendar.DECEMBER, 4);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            user = remoteUser.getUserDTOEx(userId);
+            assertEquals("still overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1,
+                    user.getStatusId().intValue());
+
+            // after three days of the warning, fire the next one
+            cal.set(2006, GregorianCalendar.DECEMBER, 5);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            user = remoteUser.getUserDTOEx(userId);
+            assertEquals("to overdue 2", UserDTOEx.STATUS_ACTIVE.intValue() + 2,
+                    user.getStatusId().intValue());
+
+            // the next day it goes to suspended
+            cal.set(2006, GregorianCalendar.DECEMBER, 6);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            user = remoteUser.getUserDTOEx(userId);
+            assertEquals("to suspended", UserDTOEx.STATUS_ACTIVE.intValue() + 4,
+                    user.getStatusId().intValue());
+
+            // two days for suspended 3
+            cal.set(2006, GregorianCalendar.DECEMBER, 8);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            user = remoteUser.getUserDTOEx(userId);
+            assertEquals("to suspended 3", UserDTOEx.STATUS_ACTIVE.intValue() + 6,
+                    user.getStatusId().intValue());
+
+            // 30 days for deleted
+            cal.add(GregorianCalendar.DATE, 30);
+            remoteBillingProcess.reviewUsersStatus(cal.getTime());
+            user = remoteUser.getUserDTOEx(userId);
+            assertEquals("deleted",1, user.getDeleted());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception:" + e);
+        }
+    }
+
     /*
     public void testInvoicesFlaggedOut() {
         int invoices[] = { 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 17, 18, 19, 
@@ -839,64 +909,6 @@ public class BillingProcessTest extends TestCase {
         }
     }
     
-    public void testAgeing() {
-        try {
-            Integer userId = new Integer(17);
-            
-            // the grace period should keep this user active
-            cal.clear();
-            cal.set(2003, GregorianCalendar.MAY, 6);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            UserDTOEx user = remoteUser.getUserDTOEx(userId);
-            assertEquals("Grace period", UserDTOEx.STATUS_ACTIVE,
-                    user.getStatusId());
-                    
-            // when the grace over, she should be warned
-            cal.set(2003, GregorianCalendar.MAY, 7);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1,
-                    user.getStatusId().intValue());
-
-            // two day after, the status should be the same
-            cal.set(2003, GregorianCalendar.MAY, 9);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            user = remoteUser.getUserDTOEx(userId);
-            assertEquals("still overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1,
-                    user.getStatusId().intValue());
-
-            // after three days of the warning, fire the next one
-            cal.set(2003, GregorianCalendar.MAY, 10);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to overdue 2", UserDTOEx.STATUS_ACTIVE.intValue() + 2,
-                    user.getStatusId().intValue());
-
-            // the next day it goes to suspended
-            cal.set(2003, GregorianCalendar.MAY, 11);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to suspended", UserDTOEx.STATUS_ACTIVE.intValue() + 4,
-                    user.getStatusId().intValue());
-
-            // two days for suspended 3
-            cal.set(2003, GregorianCalendar.MAY, 13);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to suspended 3", UserDTOEx.STATUS_ACTIVE.intValue() + 6,
-                    user.getStatusId().intValue());
-
-            // two days for suspended 3
-            cal.add(GregorianCalendar.DATE, 30);
-            remoteBillingProcess.reviewUsersStatus(cal.getTime());
-            user = remoteUser.getUserDTOEx(userId);
-            assertEquals("deleted", new Integer(1), user.getDeleted());
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception:" + e);
-        }
-    }
 
 
     public void testQuicky() {

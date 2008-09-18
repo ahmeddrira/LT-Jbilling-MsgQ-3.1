@@ -27,7 +27,6 @@ import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
@@ -35,9 +34,10 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.ItemEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 
@@ -58,14 +58,14 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:finder signature="Collection findByUserItem(java.lang.Integer userId, java.lang.Integer itemId)"
  *             query="SELECT OBJECT(a) 
  *                      FROM item_user_price a 
- *                     WHERE a.user.userId = ?1
+ *                     WHERE a.userId = ?1
  *                       AND a.item.id = ?2 "
  *             result-type-mapping="Local"
  *
  * @ejb:finder signature="ItemUserPriceEntityLocal find(java.lang.Integer userId, java.lang.Integer itemId, java.lang.Integer currencyId)"
  *             query="SELECT OBJECT(a) 
  *                      FROM item_user_price a 
- *                     WHERE a.user.userId = ?1
+ *                     WHERE a.userId = ?1
  *                       AND a.currencyId = ?3
  *                       AND a.item.id = ?2 "
  *             result-type-mapping="Local"
@@ -158,16 +158,25 @@ public abstract class ItemUserPriceEntityBean implements EntityBean {
     public abstract Integer getCurrencyId();
     public abstract void setCurrencyId(Integer currencyId);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="user_id"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getUserId();
+    public abstract void setUserId(Integer userId);
+
     // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="user-item_prices"
-     *               role-name="prices-belong_to-user"
-     * @jboss.relation related-pk-field="userId"  
-     *                 fk-column="user_id"            
      */
-    public abstract UserEntityLocal getUser();
-    public abstract void setUser(UserEntityLocal user);
+    public UserDTO getUser() {
+        return new ItemUserPriceDAS().find(getId()).getBaseUser();
+    }
+    public void setUser(UserDTO user) {
+        new ItemUserPriceDAS().find(getId()).setBaseUser(user);
+    }
 
     /**
      * @ejb:interface-method view-type="local"

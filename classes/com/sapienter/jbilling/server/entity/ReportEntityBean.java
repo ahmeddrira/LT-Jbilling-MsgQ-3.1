@@ -18,21 +18,19 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on Jun 13, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.sapienter.jbilling.server.entity;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
+
+import com.sapienter.jbilling.server.report.db.ReportDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 /**
  * @ejb:bean name="ReportEntity" 
@@ -149,15 +147,16 @@ public abstract class ReportEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="report-entity"
-     *               role-name="report-belongs_to-entity"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="entity_id"            
-     * @jboss.relation-table table-name="report_entity_map"
-     *                       create-table="false"
      */
-    public abstract Collection getEntity();
-    public abstract void setEntity(Collection entity);
+    public Set<CompanyDTO> getEntitys() {
+        return new ReportDAS().find(getId()).getEntities();
+    }
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void setEntity(Set<CompanyDTO> entity) {
+        new ReportDAS().find(getId()).setEntities(entity);
+    }
 
     /**
      * @ejb:interface-method view-type="local"

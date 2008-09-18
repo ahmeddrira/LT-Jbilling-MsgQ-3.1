@@ -31,8 +31,10 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.PromotionEntityLocal;
 import com.sapienter.jbilling.interfaces.PromotionEntityLocalHome;
+import com.sapienter.jbilling.server.item.db.PromotionDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.generated.Promotion;
 
 public class PromotionBL {
     private JNDILookup EJBFactory = null;
@@ -132,14 +134,16 @@ public class PromotionBL {
      * comes from the related item.
      */
     public boolean isPresent(Integer entityId, String code) {
-        boolean retValue = true;
-        try {
-            promotion = promotionHome.findByEntityCode(entityId, code);
-        } catch (FinderException e) {
-            retValue = false;
-        } 
-        
-        return retValue;
+        Promotion pro = new PromotionDAS().findByEntityCode(entityId, code);
+        if (pro == null) {
+            return false;
+        } else {
+            try {
+                set(pro.getId());
+            } catch (FinderException e) {
+            }
+            return true;
+        }
     }
     
     /**

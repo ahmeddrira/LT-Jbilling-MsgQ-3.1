@@ -30,6 +30,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.util.db.generated.Payment;
 
 public class PaymentDTOEx extends PaymentDTO {
     
@@ -38,7 +39,7 @@ public class PaymentDTOEx extends PaymentDTO {
     private AchDTO ach = null;
     private CreditCardDTO creditCard = null;
     private String method = null;
-    private Vector invoiceIds = null;
+    private Vector<Integer> invoiceIds = null;
     private Vector paymentMaps = null;
     private PaymentDTOEx payment = null; // for refunds
     private String resultStr = null;
@@ -46,6 +47,26 @@ public class PaymentDTOEx extends PaymentDTO {
     // now we only support one of these
     private PaymentAuthorizationDTO authorization = null; // useful in refuds
 
+    public PaymentDTOEx(Payment dto) {
+        // TODO: this is not complete
+        userId = dto.getBaseUser().getId();
+        setId(dto.getId());
+        setAmount(new Float(dto.getAmount()));
+        setAttempt(dto.getAttempt());
+        setBalance(dto.getBalance().floatValue());
+        setCreateDateTime(dto.getCreateDatetime());
+        setCurrencyId(dto.getCurrency().getId());
+        setDeleted(dto.getDeleted());
+        setIsPreauth(dto.getIsPreauth());
+        setIsRefund(dto.getIsRefund());
+        setMethodId(dto.getPaymentMethod().getId());
+        setPaymentDate(dto.getPaymentDate());
+        setResultId(dto.getPaymentResult().getId());
+        setUpdateDateTime(dto.getUpdateDatetime());
+        
+        invoiceIds = new Vector<Integer>();
+        paymentMaps = new Vector();
+    }
     public PaymentDTOEx(PaymentWS dto) {
         super(dto);
         userId = dto.getUserId();
@@ -53,7 +74,7 @@ public class PaymentDTOEx extends PaymentDTO {
         creditCard = dto.getCreditCard();
         method = dto.getMethod();
         ach = dto.getAch();
-        invoiceIds = new Vector();
+        invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
         
         if (dto.getInvoiceIds() != null) {
@@ -77,7 +98,7 @@ public class PaymentDTOEx extends PaymentDTO {
      */
     public PaymentDTOEx() {
         super();
-        invoiceIds = new Vector();
+        invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
     }
 
@@ -96,8 +117,8 @@ public class PaymentDTOEx extends PaymentDTO {
             Integer isPreauth, Integer currencyId, Float balance) {
         super(id, amount, balance, createDateTime, updateDateTime,
                 paymentDate, attempt, deleted, methodId, resultId, isRefund, 
-                isPreauth, currencyId);
-        invoiceIds = new Vector();
+                isPreauth, currencyId, null);
+        invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
     }
 
@@ -106,7 +127,7 @@ public class PaymentDTOEx extends PaymentDTO {
      */
     public PaymentDTOEx(PaymentDTO otherValue) {
         super(otherValue);
-        invoiceIds = new Vector();
+        invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
     }
 

@@ -29,7 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.sapienter.jbilling.server.item.db.Item;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
@@ -38,7 +38,7 @@ public class ItemUserPrice  implements java.io.Serializable {
 
 
      private int id;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private CurrencyDTO currencyDTO;
      private Item item;
      private double price;
@@ -52,7 +52,7 @@ public class ItemUserPrice  implements java.io.Serializable {
         this.currencyDTO = currencyDTO;
         this.price = price;
     }
-    public ItemUserPrice(int id, BaseUser baseUser, CurrencyDTO currencyDTO, Item item, double price) {
+    public ItemUserPrice(int id, UserDTO baseUser, CurrencyDTO currencyDTO, Item item, double price) {
        this.id = id;
        this.baseUser = baseUser;
        this.currencyDTO = currencyDTO;
@@ -72,11 +72,11 @@ public class ItemUserPrice  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
 @ManyToOne(fetch=FetchType.LAZY)

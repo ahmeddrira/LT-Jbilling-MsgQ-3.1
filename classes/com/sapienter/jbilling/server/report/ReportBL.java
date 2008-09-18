@@ -37,20 +37,22 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportFieldEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportFieldEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ReportTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportTypeEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
 import com.sapienter.jbilling.interfaces.ReportUserEntityLocalHome;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.report.db.ReportDAS;
+import com.sapienter.jbilling.server.report.db.ReportTypeDAS;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.Util;
+import com.sapienter.jbilling.server.util.db.generated.Report;
 
 
 public class ReportBL extends ResultList {
@@ -331,7 +333,8 @@ public class ReportBL extends ResultList {
         
         // create the initial report dto from the relationship
         UserBL user = new UserBL(reportUser.getUser());
-        reportDto = DTOFactory.getReportDTOEx(reportUser.getReport(), user.getLocale());
+        reportDto = DTOFactory.getReportDTOEx(new ReportDAS().find(reportUser.getReport().getId()),
+                user.getLocale());
         reportDto.setUserReportId(userReportId);
         
         // find this user's saved fields
@@ -348,23 +351,17 @@ public class ReportBL extends ResultList {
     
     public Collection getList(Integer entityId) 
             throws SQLException, Exception{
-        EntityEntityLocalHome entityHome =
-                (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
-                EntityEntityLocalHome.class,
-                EntityEntityLocalHome.JNDI_NAME);
 
-        EntityEntityLocal entity = entityHome.findByPrimaryKey(entityId);
+        CompanyDTO entity = new CompanyDAS().find(entityId);
         
-        Collection reports = entity.getReports();
+        Collection<Report> reports = entity.getReports();
         return DTOFactory.reportEJB2DTOEx(reports, true);
 
     }
     
     public Collection getListByType(Integer typeId) 
             throws FinderException {
-        ReportTypeEntityLocal type = reportTypeHome.findByPrimaryKey(
-                typeId);
-        return DTOFactory.reportEJB2DTOEx(type.getReports(), false);
+        return DTOFactory.reportEJB2DTOEx(new ReportTypeDAS().find(typeId).getReports(), false);
     }
     
     public void save(ReportDTOEx report, Integer userId, String title) 

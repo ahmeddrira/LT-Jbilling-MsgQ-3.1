@@ -1,4 +1,4 @@
-package PricingRules
+package PricingRule
 #imports
 import com.sapienter.jbilling.server.user.ContactDTOEx
 import com.sapienter.jbilling.server.item.PricingField
@@ -10,18 +10,19 @@ global com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager 
 
 rule '604 -  512'
 when
-    exists(PricingField( name == "src", eval(strValue.substring(0,3).equals("604"))))
-    exists(PricingField( name == "dst", eval(strValue.substring(0,3).equals("512"))))
-    PricingManager( itemId == "1" )
+    exists(PricingField( name == "src", strValue matches "^604.*"))
+    exists(PricingField( name == "dst", strValue matches "^512.*"))
+    PricingManager( itemId == 1 )
 then
    manager.setPrice(7);
+   System.out.println("2 - Processing line starting with 604 ending with 512 for item 1");
 end
 
 rule "special for item 2"
 	dialect "java"
 	when
-	PricingManager( itemId == "2" )
-	PricingManager( userId == "2" )
+	PricingManager( itemId == 2 )
+	PricingManager( userId == 2 )
 	then
 	manager.setPrice(30);
 end

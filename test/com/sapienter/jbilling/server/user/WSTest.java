@@ -53,7 +53,7 @@ public class WSTest extends TestCase {
 
             System.out.println("Getting user 2");
             UserWS ret = api.getUserWS(new Integer(2));
-            assertEquals(new Integer(2), ret.getUserId());
+            assertEquals(2, ret.getUserId());
             try {
                 System.out.println("Getting invalid user 13");
                 ret = api.getUserWS(new Integer(13));
@@ -85,7 +85,7 @@ public class WSTest extends TestCase {
             assertEquals("Id of new user found", newUserId, ret);
             
             //verify the created user       
-            System.out.println("Getting created user ");
+            System.out.println("Getting created user " + newUserId);
             UserWS retUser = api.getUserWS(newUserId);
             assertEquals("created username", retUser.getUserName(),
                     newUser.getUserName());
@@ -254,7 +254,7 @@ public class WSTest extends TestCase {
             // try to fetch the deleted user
             System.out.println("Getting deleted user " + newUserId);
             updatedUser = api.getUserWS(newUserId);
-            assertEquals(updatedUser.getDeleted(), new Integer(1));
+            assertEquals(updatedUser.getDeleted(), 1);
             
             // verify I can't delete users from another company 
             try {
@@ -272,7 +272,7 @@ public class WSTest extends TestCase {
             Integer[] users = api.getUsersInStatus(new Integer(1));
             assertEquals(1007,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 1074, users[1006].intValue());
+            assertEquals("Last returned user ", 10731, users[1006].intValue());
 
             /*
              * Get list of not active customers
@@ -472,7 +472,7 @@ public class WSTest extends TestCase {
             Integer[] ids = api.getUsersByCreditCard("1152");
             assertNotNull("One customer with CC", ids);
             assertEquals("One customer with CC",1, ids.length);
-            assertEquals("Created user with CC", 1074, ids[0].intValue());
+            assertEquals("Created user with CC", 10731, ids[0].intValue());
                     
             // get the user
             assertNotNull("Getting found user",api.getUserWS(ids[0]));

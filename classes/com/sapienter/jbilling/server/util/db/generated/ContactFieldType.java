@@ -32,16 +32,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+
 @Entity
 @Table(name="contact_field_type")
 public class ContactFieldType  implements java.io.Serializable {
 
 
      private int id;
-     private Company entity;
+     private CompanyDTO entity;
      private String promptKey;
      private String dataType;
-     private Short customerReadonly;
+     private Integer customerReadonly;
      private Set<ContactField> contactFields = new HashSet<ContactField>(0);
 
     public ContactFieldType() {
@@ -53,7 +55,7 @@ public class ContactFieldType  implements java.io.Serializable {
         this.promptKey = promptKey;
         this.dataType = dataType;
     }
-    public ContactFieldType(int id, Company entity, String promptKey, String dataType, Short customerReadonly, Set<ContactField> contactFields) {
+    public ContactFieldType(int id, CompanyDTO entity, String promptKey, String dataType, Integer customerReadonly, Set<ContactField> contactFields) {
        this.id = id;
        this.entity = entity;
        this.promptKey = promptKey;
@@ -74,11 +76,11 @@ public class ContactFieldType  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     
@@ -101,11 +103,11 @@ public class ContactFieldType  implements java.io.Serializable {
     }
     
     @Column(name="customer_readonly")
-    public Short getCustomerReadonly() {
+    public Integer getCustomerReadonly() {
         return this.customerReadonly;
     }
     
-    public void setCustomerReadonly(Short customerReadonly) {
+    public void setCustomerReadonly(Integer customerReadonly) {
         this.customerReadonly = customerReadonly;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="contactFieldType")

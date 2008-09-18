@@ -33,7 +33,7 @@
 	</tr>
 	
 	<logic:notPresent name='<%=Constants.SESSION_CUSTOMER_DTO%>' 
-		property="customerDto.parentId">
+		property=".parentId">
 	<tr>
 		<td class="leftMenuOption">
 			<html:link styleClass="leftMenu" page='<%="/reportTrigger.do?mode=customer&id=" + ReportDTOEx.REPORT_INVOICE%>'>
@@ -58,9 +58,9 @@
 	</logic:notPresent>
 	
 	<%-- not a report, this is the list of children accounts --%>
-	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="customerDto.isParent">
+	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="customer.isParent">
 		<logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>' 
-			property="customerDto.isParent" value="1">
+			property="customer.isParent" value="1">
 		<td class="leftMenuOption">
 			<html:link styleClass="leftMenu" page="/user/listSubAccounts.jsp">
 				<bean:message key="user.report.sub_accounts"/>

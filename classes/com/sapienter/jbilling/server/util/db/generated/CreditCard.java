@@ -36,7 +36,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="credit_card")
@@ -48,24 +48,24 @@ public class CreditCard  implements java.io.Serializable {
      private Date ccExpiry;
      private String name;
      private int ccType;
-     private short deleted;
+     private int deleted;
      private Integer securityCode;
      private String ccNumberPlain;
      private Set<Payment> payments = new HashSet<Payment>(0);
-     private Set<BaseUser> baseUsers = new HashSet<BaseUser>(0);
+     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
 
     public CreditCard() {
     }
 
 	
-    public CreditCard(int id, String ccNumber, Date ccExpiry, int ccType, short deleted) {
+    public CreditCard(int id, String ccNumber, Date ccExpiry, int ccType, int deleted) {
         this.id = id;
         this.ccNumber = ccNumber;
         this.ccExpiry = ccExpiry;
         this.ccType = ccType;
         this.deleted = deleted;
     }
-    public CreditCard(int id, String ccNumber, Date ccExpiry, String name, int ccType, short deleted, Integer securityCode, String ccNumberPlain, Set<Payment> payments, Set<BaseUser> baseUsers) {
+    public CreditCard(int id, String ccNumber, Date ccExpiry, String name, int ccType, int deleted, Integer securityCode, String ccNumberPlain, Set<Payment> payments, Set<UserDTO> baseUsers) {
        this.id = id;
        this.ccNumber = ccNumber;
        this.ccExpiry = ccExpiry;
@@ -126,11 +126,11 @@ public class CreditCard  implements java.io.Serializable {
     }
     
     @Column(name="deleted", nullable=false)
-    public short getDeleted() {
+    public int getDeleted() {
         return this.deleted;
     }
     
-    public void setDeleted(short deleted) {
+    public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
     
@@ -163,11 +163,11 @@ public class CreditCard  implements java.io.Serializable {
     @JoinTable(name="user_credit_card_map", joinColumns = { 
         @JoinColumn(name="credit_card_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="user_id", updatable=false) })
-    public Set<BaseUser> getBaseUsers() {
+    public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;
     }
     
-    public void setBaseUsers(Set<BaseUser> baseUsers) {
+    public void setBaseUsers(Set<UserDTO> baseUsers) {
         this.baseUsers = baseUsers;
     }
 

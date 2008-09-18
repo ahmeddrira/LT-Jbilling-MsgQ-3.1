@@ -19,16 +19,56 @@
 */
 package com.sapienter.jbilling.server.user.db;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.common.CommonConstants;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
-public class UserDAS extends AbstractDAS<BaseUser> {
-	public BaseUser findRoot(String username) {
+              
+    
+public class UserDAS extends AbstractDAS<UserDTO> {
+   
+    private static final String findByCustomField =
+        "SELECT a " + 
+        "  FROM UserDTO a, ContactMap cm " +
+        " WHERE a.company.id = :entity " +
+        "   AND a.id = cm.foreignId " +
+        "   AND cm.jbillingTable.id = 10 " +
+        "   AND cm.contactType.isPrimary = 1 " +
+        "   AND cm.contact.contactFields.contactFieldType.id = :type " +
+        "   AND cm.contact.contactFields.contactFieldType.content = :content " +
+        "   AND a.deleted = 0";
+
+     private static final String findInStatusSQL = 
+         "SELECT a " + 
+         "  FROM UserDTO a " + 
+         " WHERE a.userStatus.id = :status " +
+         "   AND a.company.id = :entity " +
+         "   AND a.deleted = 0" ;
+
+     private static final String findNotInStatusSQL =
+         "SELECT a " +
+         "  FROM UserDTO a " + 
+         " WHERE a.userStatus.id <> :status " +
+         "   AND a.company.id = :entity " +
+         "   AND a.deleted = 0";
+
+     private static final String findAgeingSQL = 
+         "SELECT a " + 
+         "  FROM UserDTO a " + 
+         " WHERE a.userStatus.id > " + UserDTOEx.STATUS_ACTIVE +
+         "   AND a.userStatus.id <> " + UserDTOEx.STATUS_DELETED +
+         "   AND a.customer.excludeAging = 0 " +
+         "   AND a.deleted = 0";
+
+	public UserDTO findRoot(String username) {
 		// I need to access an association, so I can't use the parent helper class
-		Criteria criteria = getSession().createCriteria(BaseUser.class)
+		Criteria criteria = getSession().createCriteria(UserDTO.class)
 			.add(Restrictions.eq("userName", username))
 			.add(Restrictions.eq("deleted", 0))
 			.createAlias("roles", "r")
@@ -36,18 +76,45 @@ public class UserDAS extends AbstractDAS<BaseUser> {
 		
 		criteria.setCacheable(true); // it will be called over an over again
 		
-		return (BaseUser) criteria.uniqueResult();
+		return (UserDTO) criteria.uniqueResult();
 	}
 
-	public BaseUser findByUserName(String username, Integer entityId) {
+	public UserDTO findByUserName(String username, Integer entityId) {
 		// I need to access an association, so I can't use the parent helper class
-		Criteria criteria = getSession().createCriteria(BaseUser.class)
+		Criteria criteria = getSession().createCriteria(UserDTO.class)
 				.add(Restrictions.eq("userName", username))
 				.add(Restrictions.eq("deleted", 0))
 				.createAlias("company", "e")
 					.add(Restrictions.eq("e.id", entityId));
 		
-		return (BaseUser) criteria.uniqueResult();
-
+		return (UserDTO) criteria.uniqueResult();
 	}
+    
+    public List<UserDTO> findInStatus(Integer entityId, Integer statusId) {
+        Query query = getSession().createQuery(findInStatusSQL);
+        query.setParameter("entity", entityId);
+        query.setParameter("status", statusId);
+        return query.list();
+    }
+    
+    public List<UserDTO> findNotInStatus(Integer entityId, Integer statusId) {
+        Query query = getSession().createQuery(findNotInStatusSQL);
+        query.setParameter("entity", entityId);
+        query.setParameter("status", statusId);
+        return query.list();
+    }
+
+    public List<UserDTO> findByCustomField(Integer entityId, Integer typeId, String value) {
+        Query query = getSession().createQuery(findByCustomField);
+        query.setParameter("entity", entityId);
+        query.setParameter("type", typeId);
+        query.setParameter("content", value);
+        return query.list();
+    }
+    
+    public List<UserDTO> findAgeing() {
+        Query query = getSession().createQuery(findAgeingSQL);
+        return query.list();
+    }
+
 }

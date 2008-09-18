@@ -44,7 +44,6 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.ListEntityLocal;
 import com.sapienter.jbilling.interfaces.ListEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
@@ -52,7 +51,8 @@ import com.sapienter.jbilling.server.customer.CustomerSQL;
 import com.sapienter.jbilling.server.invoice.InvoiceSQL;
 import com.sapienter.jbilling.server.order.OrderSQL;
 import com.sapienter.jbilling.server.payment.PaymentSQL;
-import com.sapienter.jbilling.server.user.EntityBL;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -130,10 +130,9 @@ public class ListBL {
                     listsIt.hasNext();) {
                 list = (ListEntityLocal) listsIt.next();
                 // now for each entity
-                EntityBL entityBl = new EntityBL();
-                for (Iterator entityIt = entityBl.getHome().findEntities().
+                for (Iterator entityIt = new CompanyDAS().findEntities().
                         iterator(); entityIt.hasNext();) {
-                    EntityEntityLocal anEntity = (EntityEntityLocal) 
+                    CompanyDTO anEntity = (CompanyDTO) 
                             entityIt.next();
 
                     parameters.put("entityId", anEntity.getId());

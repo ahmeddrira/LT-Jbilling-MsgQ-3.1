@@ -47,7 +47,7 @@ import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 public class MaintainAction extends Action {
 
@@ -139,7 +139,7 @@ public class MaintainAction extends Action {
             summary = (OrderDTO) session.getAttribute(
                     Constants.SESSION_ORDER_SUMMARY);   
                         
-            BaseUser user = new BaseUser();
+            UserDTO user = new UserDTO();
             user.setId((Integer) session.getAttribute( //TODO this is known to have thrown a Null pointer exception
                     Constants.SESSION_USER_ID));
             summary.setBaseUserByUserId(user);

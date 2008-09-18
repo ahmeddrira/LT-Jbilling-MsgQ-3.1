@@ -169,6 +169,10 @@ public class Util {
         return nf.format(arg);
     }
 
+    public static String float2string(double arg, Locale loc) {
+        return float2string(new Float(arg), loc);
+    }
+
     public static Float string2float (String arg, Locale loc) 
         throws ParseException {
         if (arg == null) {

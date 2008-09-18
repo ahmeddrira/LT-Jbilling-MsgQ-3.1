@@ -38,9 +38,9 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
+import com.sapienter.jbilling.interfaces.CreditCardUserEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -54,15 +54,18 @@ import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.system.event.EventManager;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 public class CreditCardBL extends ResultList 
         implements CreditCardSQL {
     private JNDILookup EJBFactory = null;
     private CreditCardEntityLocalHome creditCardHome = null;
+    private CreditCardUserEntityLocalHome mapHome = null;
     private CreditCardEntityLocal creditCard = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(CreditCardBL.class);
     private EventLogger eLogger = null;
     
     public CreditCardBL(Integer creditCardId) 
@@ -82,13 +85,16 @@ public class CreditCardBL extends ResultList
     }
     
     private void init() throws NamingException {
-        log = Logger.getLogger(CreditCardBL.class);     
         eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         creditCardHome = (CreditCardEntityLocalHome) 
                 EJBFactory.lookUpLocalHome(
                 CreditCardEntityLocalHome.class,
                 CreditCardEntityLocalHome.JNDI_NAME);
+        mapHome = (CreditCardUserEntityLocalHome) 
+            EJBFactory.lookUpLocalHome(
+                CreditCardUserEntityLocalHome.class,
+                CreditCardUserEntityLocalHome.JNDI_NAME);
     }
 
     public CreditCardEntityLocal getEntity() {
@@ -139,12 +145,13 @@ public class CreditCardBL extends ResultList
                 EventLogger.ROW_DELETED, null, null,null);
         
         creditCard.setDeleted(new Integer(1));
+        mapHome.remove(creditCard.getId());
     }
     
     public void notifyExipration(Date today) 
             throws SQLException, NamingException, FinderException,
                 SessionInternalError, CreateException {
-        log.debug("Sending credit card expiration notifications. Today " 
+        LOG.debug("Sending credit card expiration notifications. Today " 
                 + today);
         prepareStatement(CreditCardSQL.expiring);
         cachedResults.setDate(1, new java.sql.Date(today.getTime()));
@@ -171,7 +178,7 @@ public class CreditCardBL extends ResultList
                     notificationHome.create();
                 notificationSess.notify(userId, message);
             } catch (NotificationNotFoundException e) {
-                log.warn("credit card message not set to user " + userId +
+                LOG.warn("credit card message not set to user " + userId +
                         " because the entity lacks notification text");
             }
         }
@@ -321,17 +328,17 @@ public class CreditCardBL extends ResultList
             throws CreateException, RemoveException, NamingException,
             FinderException {
 
-        UserEntityLocal user = UserBL.getUserEntity(userId);
+        UserDTO user = UserBL.getUserEntity(userId);
 
-        Iterator iter = user.getCreditCard().iterator();
+        Iterator iter = user.getCreditCards().iterator();
         // delete existing cc records
         while (iter.hasNext()) {
-            set((CreditCardEntityLocal) iter.next());
+            set(((CreditCard) iter.next()).getId());
             delete(executorId);
             iter.remove();
         }
         // add the new one
         create(cc);
-        user.getCreditCard().add(creditCard);
+        creditCard.setUserId(userId);
     }
 }

@@ -44,6 +44,7 @@
         <column name="last_login" type="TIMESTAMP"/>
         <column name="user_name" size="50" type="VARCHAR"/>
         <column name="failed_attempts" type="INTEGER" required="true" default="0"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_base_user_un">
         	<index-column name="entity_id"/>
         	<index-column name="user_name"/>
@@ -291,6 +292,7 @@
         <column name="currency_id" type="INTEGER"/>
         <column name="rate" required="true" type="DOUBLE"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
         </foreign-key>
@@ -311,6 +313,7 @@
         <column default="0" name="exclude_aging" required="true" type="SMALLINT"/>
         <column name="invoice_child" type="SMALLINT"/>
         <column name="current_order_id" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="customer_i_2">
 	        <index-column name="user_id"/>
         </index>
@@ -680,9 +683,6 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="user_id" type="INTEGER"/>
         <column name="result_message" size="200" type="VARCHAR"/>
-        <foreign-key foreignTable="base_user">
-            <reference foreign="id" local="user_id"/>
-        </foreign-key>
     </table>
     <table name="notification_message_arch_line">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
@@ -816,6 +816,7 @@
         <column name="due_payout" type="DOUBLE"/>
         <column name="automatic_process" required="true" type="SMALLINT"/>
         <column name="related_clerk" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="partner_i_3">
 	        <index-column name="user_id"/>
         </index>
@@ -841,6 +842,7 @@
         <column name="balance_left" required="true" type="DOUBLE"/>
         <column name="payment_id" type="INTEGER"/>
         <column name="partner_id" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="partner_payout_i_2">
 	        <index-column name="partner_id"/>
         </index>
@@ -858,6 +860,7 @@
         <column name="referral_fee" type="DOUBLE"/>
         <column name="range_from" required="true" type="INTEGER"/>
         <column name="range_to" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="partner_range_p">
 	        <index-column name="partner_id"/>
         </index>
@@ -1247,12 +1250,6 @@
         	<index-column name="user_id"/>
         	<index-column name="credit_card_id"/>
         </index>
-        <foreign-key foreignTable="credit_card">
-            <reference foreign="id" local="credit_card_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="base_user">
-            <reference foreign="id" local="user_id"/>
-        </foreign-key>
     </table>
     <table name="user_role_map">
         <column name="user_id" type="INTEGER"/>

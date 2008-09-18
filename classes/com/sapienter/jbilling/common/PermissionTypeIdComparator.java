@@ -27,29 +27,25 @@ package com.sapienter.jbilling.common;
 
 import java.util.Comparator;
 
-//import org.apache.log4j.Logger;
-
-import com.sapienter.jbilling.server.entity.PermissionDTO;
+import com.sapienter.jbilling.server.util.db.generated.Permission;
 
 /**
  * @author Emil
  */
-public class PermissionTypeIdComparator implements Comparator {
+public class PermissionTypeIdComparator implements Comparator<Permission> {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object arg0, Object arg1) {
-        PermissionDTO perA = (PermissionDTO) arg0;
-        PermissionDTO perB = (PermissionDTO) arg1;
+    public int compare(Permission perA, Permission perB) {
         int retValue;
         
         Integer aTypeId, bTypeId, aFId, bFId;
         
-        aTypeId = (perA.getTypeId() == null) ? new Integer(-1) :
-                perA.getTypeId(); 
-        bTypeId = (perB.getTypeId() == null) ? new Integer(-1) :
-                perB.getTypeId();
+        aTypeId = (perA.getPermissionType() == null) ? new Integer(-1) :
+                perA.getPermissionType().getId(); 
+        bTypeId = (perB.getPermissionType() == null) ? new Integer(-1) :
+                perB.getPermissionType().getId();
         aFId = (perA.getForeignId() == null) ? new Integer(-1) :
                 perA.getForeignId(); 
         bFId = (perB.getForeignId() == null) ? new Integer(-1) :
@@ -70,14 +66,5 @@ public class PermissionTypeIdComparator implements Comparator {
         
         return retValue;
         
-    }
-
-    public static void main(String[] args) throws Exception {
-        PermissionDTO a, b;
-        PermissionTypeIdComparator comp = new PermissionTypeIdComparator();
-        
-        a = new PermissionDTO(null, new Integer(4), new Integer(6));
-        b = new PermissionDTO(null, new Integer(5), new Integer(1));
-        System.out.println("1 - " + comp.compare(a, b));
     }
 }

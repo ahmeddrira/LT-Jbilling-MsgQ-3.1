@@ -39,7 +39,7 @@ public class ItemUserPriceDTOEx extends ItemUserPriceDTO {
      * @param price
      */
     public ItemUserPriceDTOEx(Integer id, Float price, Integer currencyId) {
-        super(id, price, currencyId);
+        super(id, price, currencyId,null);
     }
 
     /**

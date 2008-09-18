@@ -261,7 +261,8 @@ public class WSTest  extends TestCase {
             
             // the first in the list is the last one created
             retOrder = api.getOrder(new Integer(list[0]));
-            assertEquals("Latest id", ret, retOrder.getId());
+            assertEquals("Latest id " + Arrays.toString(list), ret, retOrder.getId());
+
             
             // try to get the orders of my neighbor
             try {

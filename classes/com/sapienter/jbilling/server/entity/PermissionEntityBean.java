@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.entity;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
@@ -33,7 +34,8 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PermissionEntityLocal;
+import com.sapienter.jbilling.server.user.db.RoleDTO;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -127,15 +129,11 @@ public abstract class PermissionEntityBean implements EntityBean {
     //  CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="permission-role"
-     *               role-name="permission-is_in-role"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="role_id"            
-     * @jboss.relation-table table-name="permission_role_map"
-     *                       create-table="false"
      */
-    public abstract Collection getRoles();
-    public abstract void setRoles(Collection roles);
+    public Set<RoleDTO> getRoles() {
+        return new PermissionDAS().find(getId()).getRoles();
+    }
+    //public abstract void setRoles(Collection roles);
 
     /**
      * @ejb:interface-method view-type="local"

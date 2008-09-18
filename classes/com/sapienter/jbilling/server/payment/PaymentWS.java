@@ -95,7 +95,7 @@ public class PaymentWS extends PaymentDTO implements Serializable {
             Integer isPreauth,
             Integer currencyId, Float balance) {
         super(id, amount, balance, createDateTime, null, paymentDate, attempt,
-                deleted, methodId, resultId, isRefund, isPreauth, currencyId);
+                deleted, methodId, resultId, isRefund, isPreauth, currencyId, null);
     }
 
     /**

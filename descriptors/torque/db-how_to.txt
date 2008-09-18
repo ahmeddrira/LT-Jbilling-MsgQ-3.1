@@ -48,14 +48,14 @@ Ubuntu notes:
   - Example of running pg_ctl:  sudo -u postgres /usr/lib/postgresql/8.2/bin/pg_ctl reload -D /etc/postgresql/8.2/main/pgdata
   Install:
     sudo apt-get install postgres
-    sudo  mkdir /etc/postgresql/8.3/main/data
-    sudo chown postgres /etc/postgresql/8.3/main/data
-    sudo -u postgres /usr/lib/postgresql/8.3/bin/initdb -D /etc/postgresql/8.3/main/data/
-    sudo -u postgres /usr/lib/postgresql/8.3/bin/pg_ctl stop -D /var/lib/postgresql/8.3/main/
-    sudo -u postgres /usr/lib/postgresql/8.3/bin/pg_ctl start -D /etc/postgresql/8.3/main/data/
+    (follow here the instructions from the web page: add permissions to user postgres and create database)
     sudo -u postgres /usr/lib/postgresql/8.3/bin/createdb betty
 
 - To startup/shutdown : pg_ctl start/stop            
+   Ubuntu: use service: 
+    sudo /etc/init.d/postgresql-8.3 stop
+    sudo /etc/init.d/postgresql-8.3 start
+   
 The following shouldn't be necessary since the creation of the tables first drops the tables:
 - To drop a database : dropdb betty
 - To create it : createdb betty

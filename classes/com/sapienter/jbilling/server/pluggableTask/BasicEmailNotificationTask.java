@@ -41,12 +41,12 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 public class BasicEmailNotificationTask extends PluggableTask
         implements NotificationTask {
@@ -67,7 +67,7 @@ public class BasicEmailNotificationTask extends PluggableTask
      * 1 - The subject
      * 2 - The body 
      */
-    public void deliver(UserEntityLocal user, MessageDTO message) 
+    public void deliver(UserDTO user, MessageDTO message) 
             throws TaskException {
     	Logger log = Logger.getLogger(BasicEmailNotificationTask.class);
         

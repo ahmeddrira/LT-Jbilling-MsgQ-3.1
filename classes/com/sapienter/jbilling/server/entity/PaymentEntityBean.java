@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -34,13 +35,15 @@ import javax.ejb.RemoveException;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.AchEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
-import com.sapienter.jbilling.interfaces.PartnerPayoutEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentInfoChequeEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayoutDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -61,7 +64,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:finder signature="Collection findWithBalance(java.lang.Integer userId)"
  *             query="SELECT OBJECT(p) 
  *                      FROM payment p
- *                     WHERE p.user.userId = ?1
+ *                     WHERE p.userId = ?1
  *                       AND p.balance >= 0.01
  *                       AND p.isRefund = 0
  *                       AND p.isPreauth = 0
@@ -71,7 +74,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:finder signature="Collection findPreauth(java.lang.Integer userId)"
  *             query="SELECT OBJECT(p) 
  *                      FROM payment p
- *                     WHERE p.user.userId = ?1
+ *                     WHERE p.userId = ?1
  *                       AND p.balance >= 0.01
  *                       AND p.isRefund = 0
  *                       AND p.isPreauth = 1
@@ -293,6 +296,18 @@ public abstract class PaymentEntityBean implements EntityBean {
      */
      public abstract void setCurrencyId(Integer currencyId);
 
+     /**
+      * @ejb:interface-method view-type="local"
+      * @ejb:persistent-field
+      * @jboss:column-name name="user_id"
+      * @jboss.method-attributes read-only="true"
+      */
+     public abstract Integer getUserId();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+     public abstract void setUserId(Integer id);
+
     // CMR fields -------------------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
@@ -304,13 +319,13 @@ public abstract class PaymentEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="user-payments"
-     *               role-name="payment-belongs-to-user"
-     * @jboss.relation related-pk-field="userId"  
-     *                 fk-column="user_id"            
      */
-    public abstract UserEntityLocal getUser();
-    public abstract void setUser(UserEntityLocal user);
+    public UserDTO getUser() {
+        return new PaymentDAS().find(getId()).getBaseUser();
+    }
+    public void setUser(UserDTO user) {
+        new PaymentDAS().find(getId()).setBaseUser(user);
+    }
 
     /**
      * @ejb:interface-method view-type="local"
@@ -391,26 +406,27 @@ public abstract class PaymentEntityBean implements EntityBean {
     /**
      * A payout is really a payment. This relatinship links both rows.
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="payout-payment"
-     *               role-name="payment-is-payout"
      */
-    public abstract PartnerPayoutEntityLocal getPayout();
-    public abstract void setPayout(PartnerPayoutEntityLocal payout);
+    public Set<PartnerPayout> getPayout() {
+        return new PaymentDAS().find(getId()).getPartnerPayouts();
+    }
+    
+    //public abstract void setPayout(PartnerPayoutEntityLocal payout);
 
     /**
      * A payment/refund from a customer that belongs to a partner would
      * have to be eventually included in a payout
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="payments-payout"
-     *               role-name="payments-included_in-payout"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="payout_id"            
      */
-    public abstract PartnerPayoutEntityLocal getPayoutIncludedIn();
+    public PartnerPayout getPayoutIncludedIn() {
+        return new PartnerPayoutDAS().find(new PaymentDAS().find(getId()).getPayoutId());
+    }
     /**
      * @ejb:interface-method view-type="local"
      */
-    public abstract void setPayoutIncludedIn(PartnerPayoutEntityLocal payout);
+    public void setPayoutIncludedIn(PartnerPayout payout) {
+        new PaymentDAS().find(getId()).setPayoutId(payout.getId());
+    }
 
     // EJB Callbacks ------------------------------------------------------------
     /* (non-Javadoc)

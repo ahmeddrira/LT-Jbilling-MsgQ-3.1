@@ -37,8 +37,9 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.ReportEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
+import com.sapienter.jbilling.server.report.db.ReportUserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -56,7 +57,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:finder signature="Collection findByTypeUser(java.lang.Integer type,java.lang.Integer userId)"
  *             query="SELECT OBJECT(a) 
  *                      FROM report_user a 
- *                     WHERE a.user.userId = ?2
+ *                     WHERE a.userId = ?2
  *                       AND a.report.id = ?1 "
  *             result-type-mapping="Local"
  *
@@ -108,13 +109,8 @@ public abstract class ReportUserEntityBean implements EntityBean {
     public void ejbPostCreate(String title, ReportEntityLocal report,
             Integer user) {
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserEntityLocalHome userHome =
-                    (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    UserEntityLocalHome.class,
-                    UserEntityLocalHome.JNDI_NAME);
-            UserEntityLocal userRow = userHome.findByPrimaryKey(user);
-            setUser(userRow);
+            UserDTO userRow = new UserDAS().find(user);
+            new ReportUserDAS().find(getId()).setBaseUser(userRow);
         } catch (Exception e) {
             log.fatal("exception in post create",e);
         }
@@ -150,6 +146,15 @@ public abstract class ReportUserEntityBean implements EntityBean {
     public abstract String getTitle();
     public abstract void setTitle(String title);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
+     * @jboss:column-name name="user_id"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getUserId();
+    public abstract void setUserId(Integer id);
+
     //  CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
@@ -179,13 +184,10 @@ public abstract class ReportUserEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="user-reports"
-     *               role-name="report-belongs-to-user"
-     * @jboss.relation related-pk-field="userId"  
-     *                 fk-column="user_id"            
      */
-    public abstract UserEntityLocal getUser();
-    public abstract void setUser(UserEntityLocal user);
+    public UserDTO getUser() {
+        return new ReportUserDAS().find(getId()).getBaseUser();
+    }
 
     // EJB Callbacks -----------------------------------------------------
     /* (non-Javadoc)

@@ -25,12 +25,12 @@ import java.util.Date;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogMessageDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogModuleDAS;
-import com.sapienter.jbilling.server.util.db.generated.CompanyDAS;
 import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
 
 public class EventLogger {

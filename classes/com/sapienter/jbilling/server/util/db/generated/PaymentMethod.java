@@ -33,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+
 @Entity
 @Table(name="payment_method")
 public class PaymentMethod  implements java.io.Serializable {
@@ -40,7 +42,7 @@ public class PaymentMethod  implements java.io.Serializable {
 
      private int id;
      private Set<Payment> payments = new HashSet<Payment>(0);
-     private Set<Company> entities = new HashSet<Company>(0);
+     private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
      private Set<ProcessRunTotalPm> processRunTotalPms = new HashSet<ProcessRunTotalPm>(0);
 
     public PaymentMethod() {
@@ -50,7 +52,7 @@ public class PaymentMethod  implements java.io.Serializable {
     public PaymentMethod(int id) {
         this.id = id;
     }
-    public PaymentMethod(int id, Set<Payment> payments, Set<Company> entities, Set<ProcessRunTotalPm> processRunTotalPms) {
+    public PaymentMethod(int id, Set<Payment> payments, Set<CompanyDTO> entities, Set<ProcessRunTotalPm> processRunTotalPms) {
        this.id = id;
        this.payments = payments;
        this.entities = entities;
@@ -79,11 +81,11 @@ public class PaymentMethod  implements java.io.Serializable {
     @JoinTable(name="entity_payment_method_map", joinColumns = { 
         @JoinColumn(name="payment_method_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) })
-    public Set<Company> getEntities() {
+    public Set<CompanyDTO> getEntities() {
         return this.entities;
     }
     
-    public void setEntities(Set<Company> entities) {
+    public void setEntities(Set<CompanyDTO> entities) {
         this.entities = entities;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="paymentMethod")

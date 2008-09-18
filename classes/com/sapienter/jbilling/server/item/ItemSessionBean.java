@@ -33,6 +33,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ItemTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemTypeEntityLocalHome;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  *
@@ -381,7 +382,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public CurrencyDTOEx[] getCurrencies(Integer languageId, Integer entityId) 
+    public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) 
             throws SessionInternalError {
         try {
             CurrencyBL bl = new CurrencyBL();
@@ -394,7 +395,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public void setCurrencies(Integer entityId, CurrencyDTOEx[] currencies,
+    public void setCurrencies(Integer entityId, CurrencyDTO[] currencies,
             Integer currencyId) 
             throws SessionInternalError {
         try {

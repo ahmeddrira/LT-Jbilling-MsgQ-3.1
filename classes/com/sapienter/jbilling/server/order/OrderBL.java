@@ -18,11 +18,6 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on 15-Mar-2003
- *
- * Copyright Sapienter Enterprise Software
- */
 package com.sapienter.jbilling.server.order;
 
 import java.sql.SQLException;
@@ -49,7 +44,6 @@ import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -85,15 +79,14 @@ import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.util.db.generated.Company;
-import com.sapienter.jbilling.server.util.db.generated.CompanyDAS;
 
 /**
  * @author Emil
@@ -833,10 +826,7 @@ public class OrderBL extends ResultList
         NotificationSessionLocal notificationSess = 
             	notificationHome.create();
 
-    	EntityBL entity = new EntityBL();
-    	Collection entities = entity.getHome().findEntities();
-    	for (Iterator it = entities.iterator(); it.hasNext(); ) {
-    		EntityEntityLocal ent = (EntityEntityLocal) it.next();
+    	for (CompanyDTO ent: new CompanyDAS().findEntities()) {
     		// find the orders for this entity
     	    prepareStatement(OrderSQL.getAboutToExpire);
     	    
@@ -882,7 +872,7 @@ public class OrderBL extends ResultList
     	    		cal.getTime().getTime()));
     	    
     	    // the entity
-    	    cachedResults.setInt(3, ent.getId().intValue());
+    	    cachedResults.setInt(3, ent.getId());
             // the total number of steps
             cachedResults.setInt(4, totalSteps);
     	            
@@ -1081,7 +1071,7 @@ public class OrderBL extends ResultList
     public OrderPeriodDTO[] getPeriods(Integer entityId, Integer languageId) {
         OrderPeriodDTO retValue[] = null;
     	CompanyDAS companyDas = new CompanyDAS();
-    	Company company = companyDas.find(entityId);
+    	CompanyDTO company = companyDas.find(entityId);
     	
 		Set<OrderPeriodDTO> periods = company.getOrderPeriods();
 		if (periods == null || periods.size() == 0) {

@@ -69,7 +69,6 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationMessageEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationMessageEntityLocalHome;
@@ -92,8 +91,9 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.EntityBL;
-import com.sapienter.jbilling.server.user.PartnerBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
@@ -228,7 +228,7 @@ public class NotificationBL extends ResultList
                     " User id = " + invoice.getUser().getUserId());
         } else {
             deliveryMethod = invoice.getUser().getCustomer().
-                    getInvoiceDeliveryMethodId();
+                    getInvoiceDeliveryMethod().getId();
         }
         
         int index = 0;
@@ -502,7 +502,7 @@ public class NotificationBL extends ResultList
         return retValue;
    }
     public MessageDTO getPayoutMessage(Integer entityId, Integer languageId,
-            Float total, Date startDate, Date endDate, boolean clerk, 
+            double total, Date startDate, Date endDate, boolean clerk, 
             Integer partnerId) 
             throws FinderException, SessionInternalError, NotificationNotFoundException {
         
@@ -517,14 +517,9 @@ public class NotificationBL extends ResultList
             EntityBL en = new EntityBL(entityId);
 
 			setContent(message, message.getTypeId(), entityId, languageId);
-			message.addParameter("total", Util.float2string(total, en.getLocale()));
+			message.addParameter("total", Util.float2string(new Float(total), en.getLocale()));
 			
-			EntityEntityLocalHome entity = (EntityEntityLocalHome) 
-			        EJBFactory.lookUpLocalHome(
-			        EntityEntityLocalHome.class,
-			        EntityEntityLocalHome.JNDI_NAME);
-
-			message.addParameter("company", entity.findByPrimaryKey(entityId).
+			message.addParameter("company", new CompanyDAS().find(entityId).
 			        getDescription()); 
             PartnerBL partner = new PartnerBL(partnerId);
             

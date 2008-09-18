@@ -33,8 +33,6 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CurrencyEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ItemPriceEntityLocal;
@@ -42,15 +40,18 @@ import com.sapienter.jbilling.interfaces.ItemPriceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ItemTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocal;
 import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.ItemPriceDTO;
+import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class ItemBL {
     private JNDILookup EJBFactory = null;
@@ -378,13 +379,13 @@ public class ItemBL {
             if (userPrice == null) {
                 try {
                     UserBL userBL = new UserBL(userId);
-                    UserEntityLocal user = userBL.getEntity();
+                    UserDTO user = userBL.getEntity();
                     if (user.getCustomer() != null
                             && user.getCustomer().getParent() != null) {
                         // this is a child account, see if the parent has a
                         // price
                         userPrice = getPriceByUser(user.getCustomer()
-                                .getParent().getUser().getUserId(), currencyId);
+                                .getParent().getBaseUser().getUserId(), currencyId);
                     }
                     // if the user is a customer belonging to a partner, then
                     // that partner might have special prices
@@ -493,8 +494,7 @@ public class ItemBL {
         Vector retValue = new Vector();
 
         // go over all the curencies of this entity
-        for (Iterator it = item.getEntity().getCurrencies().iterator(); it.hasNext();) {
-            CurrencyEntityLocal currency = (CurrencyEntityLocal) it.next();
+        for (CurrencyDTO currency: item.getEntity().getCurrencies()) {
             ItemPriceDTOEx price = new ItemPriceDTOEx();
             price.setCurrencyId(currency.getId());
             price.setName(currency.getDescription(languageId));
@@ -527,16 +527,15 @@ public class ItemBL {
     public ItemDTOEx[] getAllItems(Integer entityId)
             throws FinderException, NamingException {
         EntityBL entityBL = new EntityBL(entityId);
-        EntityEntityLocal entity = entityBL.getEntity();
+        CompanyDTO entity = entityBL.getEntity();
         Collection itemEntities = entity.getItems();
         ItemDTOEx[] items = new ItemDTOEx[itemEntities.size()];
 
         // iterate through returned item entities, converting them into a DTO
         int index = 0;
-        for (Iterator iter = itemEntities.iterator(); iter.hasNext(); index++) {
-            ItemEntityLocal item = (ItemEntityLocal) iter.next();
-            this.item = item;
-            items[index] = getDTO(entity.getLanguageId(), null, entityId,
+        for (Item item: entity.getItems()) {
+            set(item.getId());
+            items[index++] = getDTO(entity.getLanguageId(), null, entityId,
                 entity.getCurrencyId());
         }
 

@@ -32,7 +32,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="ach")
@@ -40,7 +40,7 @@ public class Ach  implements java.io.Serializable {
 
 
      private int id;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private String abaRouting;
      private String bankAccount;
      private int accountType;
@@ -60,7 +60,7 @@ public class Ach  implements java.io.Serializable {
         this.bankName = bankName;
         this.accountName = accountName;
     }
-    public Ach(int id, BaseUser baseUser, String abaRouting, String bankAccount, int accountType, String bankName, String accountName, Set<Payment> payments) {
+    public Ach(int id, UserDTO baseUser, String abaRouting, String bankAccount, int accountType, String bankName, String accountName, Set<Payment> payments) {
        this.id = id;
        this.baseUser = baseUser;
        this.abaRouting = abaRouting;
@@ -83,11 +83,11 @@ public class Ach  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
     

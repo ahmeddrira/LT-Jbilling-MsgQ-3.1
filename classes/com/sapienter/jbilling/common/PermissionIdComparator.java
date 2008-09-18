@@ -17,32 +17,22 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/*
- * Created on Dec 11, 2003
- *
- * Copyright Sapienter Enterprise Software
- */
 package com.sapienter.jbilling.common;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.server.entity.PermissionDTO;
+import com.sapienter.jbilling.server.util.db.generated.Permission;
 
 /**
  * @author Emil
  */
-public class PermissionIdComparator implements Comparator {
+public class PermissionIdComparator implements Comparator<Permission> {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object arg0, Object arg1) {
-        PermissionDTO perA = (PermissionDTO) arg0;
-        PermissionDTO perB = (PermissionDTO) arg1;
-        
-        return perA.getId().compareTo(perB.getId());
-        
+    public int compare(Permission perA, Permission perB) {
+        return new Integer(perA.getId()).compareTo(perB.getId());
     }
 
 }

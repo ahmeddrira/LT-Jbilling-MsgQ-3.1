@@ -45,8 +45,8 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
-import com.sapienter.jbilling.server.item.CurrencyDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class CurrencyMaintainAction extends Action {
 
@@ -81,7 +81,7 @@ public class CurrencyMaintainAction extends Action {
                         entityId)); 
             } else if (action.equals("edit")) {
                 for (int f = 0; f < myForm.getLines().length; f++) {
-                    CurrencyDTOEx line = myForm.getLines()[f];
+                    CurrencyDTO line = myForm.getLines()[f];
                     if (line.getRate() != null && line.getRate().trim().
                             length() > 0) {
                         try {

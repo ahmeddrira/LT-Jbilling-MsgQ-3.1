@@ -33,7 +33,8 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 /**
  * @ejb:bean name="ContactFieldTypeEntity" 
@@ -110,13 +111,16 @@ public abstract class ContactFieldTypeEntityBean implements EntityBean {
     // CMR ---------------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="entity-contact_field_types"
-     *               role-name="type-belongs_to-entity"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="entity_id"            
      */
-    public abstract EntityEntityLocal getEntity();
-    public abstract void setEntity(EntityEntityLocal entity);
+    public CompanyDTO getEntity() {
+        return new ContactFieldTypeDAS().find(getId()).getEntity();
+    }
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void setEntity(CompanyDTO entity) {
+        new ContactFieldTypeDAS().find(getId()).setEntity(entity);
+    }
 
     /* (non-Javadoc)
      * @see javax.ejb.EntityBean#ejbActivate()

@@ -46,7 +46,7 @@ public final class JbillingAPIFactory {
                             "password end_point are required for AXIS");
                 }
                 String timeOutStr = config.getProperty("timeout");
-                int timeOut = 10;
+                int timeOut = 30;
                 if (timeOutStr != null && timeOutStr.length() > 0) {
                     timeOut = Integer.valueOf(timeOutStr);
                 }

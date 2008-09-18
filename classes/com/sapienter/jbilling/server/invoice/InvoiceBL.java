@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
@@ -44,7 +45,6 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocal;
@@ -53,6 +53,7 @@ import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -72,6 +73,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
@@ -648,23 +651,8 @@ public class InvoiceBL extends ResultList
    
     public Integer[] getManyWS(Integer userId, Integer number)
             throws NamingException, FinderException, SessionInternalError {
-        // find the invoice records first
-        UserBL user = new UserBL(userId);
-        Collection invoices = user.getEntity().getInvoices();
-        Vector invoicesVector = new Vector(invoices); // needed to use sort
-        Collections.sort(invoicesVector, new InvoiceEntityComparator());
-        Collections.reverse(invoicesVector);
-        // now convert the entities to WS objects
-        Integer retValue[] = new Integer[invoicesVector.size() > 
-                                         number.intValue() ? number.intValue() :
-                                             invoicesVector.size()];
-        for (int f = 0; f < invoicesVector.size() && f < number.intValue(); 
-                f++) {
-            invoice = (InvoiceEntityLocal) invoicesVector.get(f);
-            retValue[f] = invoice.getId();
-        }
-        
-        return retValue;
+        List<Integer> result = new InvoiceDAS().findIdsByUserLatestFirst(userId, number);
+        return result.toArray(new Integer[result.size()]);
     }
     
     public InvoiceWS[] DTOtoWS(Vector dtos) {
@@ -697,10 +685,9 @@ public class InvoiceBL extends ResultList
                 SessionInternalError, CreateException {
         GregorianCalendar cal = new GregorianCalendar();
         
-        EntityBL entity = new EntityBL();
-        for (Iterator it = entity.getHome().findEntities().iterator();
+        for (Iterator it = new CompanyDAS().findEntities().iterator();
                 it.hasNext(); ){
-            EntityEntityLocal thisEntity = (EntityEntityLocal) it.next();
+            CompanyDTO thisEntity = (CompanyDTO) it.next();
             Integer entityId = thisEntity.getId();
             PreferenceBL pref = new PreferenceBL();
             try {
@@ -1044,7 +1031,7 @@ public class InvoiceBL extends ResultList
                 invoice.getDeleted(), invoice.getPaymentAttempts(), 
                 invoice.getIsReview(), invoice.getCurrencyId(),
                 invoice.getCustomerNotes(), invoice.getNumber(),
-                invoice.getOverdueStep()); 
+                invoice.getOverdueStep(), null); 
         ret.setBalance(new Float(Util.round(invoice.getBalance().floatValue(), 2)));
         ret.setTotal(new Float(Util.round(invoice.getTotal().floatValue(), 2)));
         return ret;

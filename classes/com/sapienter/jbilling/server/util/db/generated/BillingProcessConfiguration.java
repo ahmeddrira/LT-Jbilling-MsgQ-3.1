@@ -32,6 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 @Entity
 @Table(name="billing_process_configuration")
@@ -40,7 +41,7 @@ public class BillingProcessConfiguration  implements java.io.Serializable {
 
      private int id;
      private PeriodUnitDTO periodUnitDTO;
-     private Company entity;
+     private CompanyDTO entity;
      private Date nextRunDate;
      private short generateReport;
      private Integer retries;
@@ -76,7 +77,7 @@ public class BillingProcessConfiguration  implements java.io.Serializable {
         this.maximumPeriods = maximumPeriods;
         this.autoPaymentApplication = autoPaymentApplication;
     }
-    public BillingProcessConfiguration(int id, PeriodUnitDTO periodUnitDTO, Company entity, Date nextRunDate, short generateReport, Integer retries, Integer daysForRetry, Integer daysForReport, int reviewStatus, int periodValue, int dueDateUnitId, int dueDateValue, Short dfFm, short onlyRecurring, short invoiceDateProcess, short autoPayment, int maximumPeriods, int autoPaymentApplication) {
+    public BillingProcessConfiguration(int id, PeriodUnitDTO periodUnitDTO, CompanyDTO entity, Date nextRunDate, short generateReport, Integer retries, Integer daysForRetry, Integer daysForReport, int reviewStatus, int periodValue, int dueDateUnitId, int dueDateValue, Short dfFm, short onlyRecurring, short invoiceDateProcess, short autoPayment, int maximumPeriods, int autoPaymentApplication) {
        this.id = id;
        this.periodUnitDTO = periodUnitDTO;
        this.entity = entity;
@@ -118,11 +119,11 @@ public class BillingProcessConfiguration  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     @Temporal(TemporalType.DATE)

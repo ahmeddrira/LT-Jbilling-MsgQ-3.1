@@ -18,7 +18,7 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
-<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants,com.sapienter.jbilling.server.user.PartnerDTOEx"%>
+<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants,com.sapienter.jbilling.server.user.partner.db.Partner"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -79,7 +79,7 @@
 			       property="referralFee" scope="session"/></td>
 	</tr>
 	<tr class="infoB">
-		<jbilling:getOptions generalPeriod="true" map='<%= ((PartnerDTOEx) session.getAttribute(Constants.SESSION_PARTNER_DTO)).getPeriodUnitId().toString()%>' />
+		<jbilling:getOptions generalPeriod="true" map='<%= String.valueOf(((Partner) session.getAttribute(Constants.SESSION_PARTNER_DTO)).getPeriodUnit().getId())%>' />
 		<td class="infoprompt"><bean:message key="partner.prompt.period"/></td>
 		<td  class="infodata">
 			<bean:write name='<%=Constants.SESSION_PARTNER_DTO%>'  

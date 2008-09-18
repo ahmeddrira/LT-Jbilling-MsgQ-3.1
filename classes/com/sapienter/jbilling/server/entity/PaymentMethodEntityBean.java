@@ -21,7 +21,7 @@
 package com.sapienter.jbilling.server.entity;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
+import java.util.Set;
 
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -91,15 +93,16 @@ public abstract class PaymentMethodEntityBean implements EntityBean {
     // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="entity-payment_method"
-     *               role-name="payment_method-given_to-entities"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="entity_id"
-     * @jboss.relation-table table-name="entity_payment_method_map"
-     *                       create-table="false"
      */
-    public abstract Collection getEntities();
-    public abstract void setEntities(Collection entities);
+    public Set<CompanyDTO> getEntitys() {
+        return new PaymentMethodDAS().find(getId()).getEntities();
+    }
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void setEntitys(Set<CompanyDTO> entity) {
+        new PaymentMethodDAS().find(getId()).setEntities(entity);
+    }
 
     // Custom field accessors --------------------------------------------------
 

@@ -41,7 +41,7 @@ import org.hibernate.annotations.FetchMode;
 
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
 import com.sapienter.jbilling.server.util.db.generated.PaperInvoiceBatch;
@@ -54,7 +54,7 @@ public class Invoice  implements java.io.Serializable {
 
      private int id;
      private BillingProcessDTO billingProcessDTO;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private CurrencyDTO currencyDTO;
      private Invoice invoice;
      private PaperInvoiceBatch paperInvoiceBatch;
@@ -62,12 +62,12 @@ public class Invoice  implements java.io.Serializable {
      private Date dueDate;
      private double total;
      private int paymentAttempts;
-     private short toProcess;
+     private int toProcess;
      private Double balance;
      private double carriedBalance;
-     private short inProcessPayment;
+     private int inProcessPayment;
      private int isReview;
-     private short deleted;
+     private int deleted;
      private String customerNotes;
      private String publicNumber;
      private Date lastReminder;
@@ -82,7 +82,7 @@ public class Invoice  implements java.io.Serializable {
     }
 
 	
-    public Invoice(int id, CurrencyDTO currencyDTO, Date createDatetime, Date dueDate, double total, int paymentAttempts, short toProcess, double carriedBalance, short inProcessPayment, int isReview, short deleted, Date createTimestamp) {
+    public Invoice(int id, CurrencyDTO currencyDTO, Date createDatetime, Date dueDate, double total, int paymentAttempts, int toProcess, double carriedBalance, int inProcessPayment, int isReview, int deleted, Date createTimestamp) {
         this.id = id;
         this.currencyDTO = currencyDTO;
         this.createDatetime = createDatetime;
@@ -96,7 +96,7 @@ public class Invoice  implements java.io.Serializable {
         this.deleted = deleted;
         this.createTimestamp = createTimestamp;
     }
-    public Invoice(int id, BillingProcessDTO billingProcessDTO, BaseUser baseUser, CurrencyDTO currencyDTO, Invoice invoice, PaperInvoiceBatch paperInvoiceBatch, Date createDatetime, Date dueDate, double total, int paymentAttempts, short toProcess, Double balance, double carriedBalance, short inProcessPayment, int isReview, short deleted, String customerNotes, String publicNumber, Date lastReminder, Integer overdueStep, Date createTimestamp, Set<PaymentInvoice> paymentInvoices, Set<InvoiceLine> invoiceLines, Set<Invoice> invoices) {
+    public Invoice(int id, BillingProcessDTO billingProcessDTO, UserDTO baseUser, CurrencyDTO currencyDTO, Invoice invoice, PaperInvoiceBatch paperInvoiceBatch, Date createDatetime, Date dueDate, double total, int paymentAttempts, int toProcess, Double balance, double carriedBalance, int inProcessPayment, int isReview, int deleted, String customerNotes, String publicNumber, Date lastReminder, Integer overdueStep, Date createTimestamp, Set<PaymentInvoice> paymentInvoices, Set<InvoiceLine> invoiceLines, Set<Invoice> invoices) {
        this.id = id;
        this.billingProcessDTO = billingProcessDTO;
        this.baseUser = baseUser;
@@ -144,11 +144,11 @@ public class Invoice  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
 @ManyToOne(fetch=FetchType.LAZY)
@@ -217,11 +217,11 @@ public class Invoice  implements java.io.Serializable {
     }
     
     @Column(name="to_process", nullable=false)
-    public short getToProcess() {
+    public int getToProcess() {
         return this.toProcess;
     }
     
-    public void setToProcess(short toProcess) {
+    public void setToProcess(int toProcess) {
         this.toProcess = toProcess;
     }
     
@@ -244,11 +244,11 @@ public class Invoice  implements java.io.Serializable {
     }
     
     @Column(name="in_process_payment", nullable=false)
-    public short getInProcessPayment() {
+    public int getInProcessPayment() {
         return this.inProcessPayment;
     }
     
-    public void setInProcessPayment(short inProcessPayment) {
+    public void setInProcessPayment(int inProcessPayment) {
         this.inProcessPayment = inProcessPayment;
     }
     
@@ -262,11 +262,11 @@ public class Invoice  implements java.io.Serializable {
     }
     
     @Column(name="deleted", nullable=false)
-    public short getDeleted() {
+    public int getDeleted() {
         return this.deleted;
     }
     
-    public void setDeleted(short deleted) {
+    public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
     

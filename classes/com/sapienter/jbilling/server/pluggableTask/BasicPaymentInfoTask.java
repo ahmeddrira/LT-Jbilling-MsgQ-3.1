@@ -30,12 +30,14 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.interfaces.AchEntityLocal;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.generated.Ach;
+import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 /**
  * This creates payment dto. It now only goes and fetches the credit card
@@ -72,14 +74,14 @@ public class BasicPaymentInfoTask
             }
             
             if (method.equals(Constants.AUTO_PAYMENT_TYPE_CC)) {
-	            if (userBL.getEntity().getCreditCard().isEmpty()) {
+	            if (userBL.getEntity().getCreditCards().isEmpty()) {
 	                // no credit cards entered! no payment ...
 	            } else {
 	                // go around the provided cards and get one that is sendable
 	                // to the processor
-	                for (Iterator it = userBL.getEntity().getCreditCard().
+	                for (Iterator it = userBL.getEntity().getCreditCards().
 	                        iterator(); it.hasNext(); ) {
-	                    ccBL.set((CreditCardEntityLocal) it.next());
+	                    ccBL.set(((CreditCard) it.next()).getId());
 	                    if (ccBL.validate()) {
 	                        retValue = new PaymentDTOEx();
 	                        retValue.setCreditCard(ccBL.getDTO());
@@ -89,7 +91,12 @@ public class BasicPaymentInfoTask
 	                }
 	            }
             } else if (method.equals(Constants.AUTO_PAYMENT_TYPE_ACH)) {
-            	AchEntityLocal ach = userBL.getEntity().getAch();
+                
+                AchEntityLocal ach =  null;
+                if (userBL.getEntity().getAchs().size() > 0) {
+                    AchBL bl = new AchBL(((Ach)userBL.getEntity().getAchs().toArray()[0]).getId());
+                    ach = bl.getEntity();
+                }
             	if (ach == null) {
             		// no info, no payment
             	} else {

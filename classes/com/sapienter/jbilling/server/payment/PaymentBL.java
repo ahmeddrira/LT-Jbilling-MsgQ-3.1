@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -41,7 +42,6 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
@@ -65,6 +65,7 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.event.AbstractPaymentEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
@@ -76,7 +77,9 @@ import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
@@ -379,7 +382,7 @@ public class PaymentBL extends ResultList
                 payment.getAttempt(), payment.getDeleted(), 
                 payment.getMethodId(), payment.getResultId(), 
                 payment.getIsRefund(), payment.getIsPreauth(),
-                payment.getCurrencyId());
+                payment.getCurrencyId(), payment.getUserId());
     }
     
     public PaymentDTOEx getDTOEx(Integer language) 
@@ -454,8 +457,8 @@ public class PaymentBL extends ResultList
         }
         
         // to which payout this payment has been included
-        if (payment.getPayout() != null) {
-            dto.setPayoutId(payment.getPayout().getId());
+        if (payment.getPayout().size() > 0) {
+            dto.setPayoutId(((PartnerPayout) payment.getPayout().toArray()[0]).getId());
         }
         
         return dto;
@@ -539,8 +542,8 @@ public class PaymentBL extends ResultList
         PaymentMethodEntityLocal method = methodHome.findByPrimaryKey(
             paymentMethodId);
         
-        for (Iterator it = method.getEntities().iterator(); it.hasNext();) {
-            if (((EntityEntityLocal) it.next()).getId().equals(entityId)) {
+        for (Iterator it = method.getEntitys().iterator(); it.hasNext();) {
+            if (((CompanyDTO) it.next()).getId() == entityId) {
                 retValue = true;
                 break;
             }
@@ -621,34 +624,21 @@ public class PaymentBL extends ResultList
     public Integer[] getManyWS(Integer userId, Integer number, 
             Integer languageId) 
             throws NamingException, FinderException {
-        // find the payment records first
-        UserBL user = new UserBL(userId);
-        Collection payments = user.getEntity().getPayments();
-        Vector paymentsVector = new Vector(payments); // needed to use sort
-        Collections.sort(paymentsVector, new PaymentEntityComparator());
-        Collections.reverse(paymentsVector);
-        // now convert the entities to an array of Integers
-        Integer retValue[] = new Integer[paymentsVector.size() > 
-                                         number.intValue() ? number.intValue() :
-                                             paymentsVector.size()];
-        for (int f = 0; f < retValue.length; f++) {
-            payment = (PaymentEntityLocal) paymentsVector.get(f);
-            retValue[f] = payment.getId();
-        }
-        
-        return retValue;
+        List<Integer> result = new PaymentDAS().findIdsByUserLatestFirst(userId, number);
+        return result.toArray(new Integer[result.size()]);
+
     }
 
-    private Vector getPaymentsWithBalance(Integer userId) {
+    private Vector<PaymentEntityLocal> getPaymentsWithBalance(Integer userId) {
         // this will usually return 0 or 1 records, rearly a few more
-        Vector paymentsVector = null;
+        Vector<PaymentEntityLocal> paymentsVector = null;
         try {
             Collection payments = paymentHome.findWithBalance(userId);
-            paymentsVector = new Vector(payments); // needed for the sort
+            paymentsVector = new Vector<PaymentEntityLocal>(payments); // needed for the sort
             Collections.sort(paymentsVector, new PaymentEntityComparator());
             Collections.reverse(paymentsVector);
         } catch (FinderException e) {
-            paymentsVector = new Vector(); // empty
+            paymentsVector = new Vector<PaymentEntityLocal>(); // empty
         }
 
         return paymentsVector;

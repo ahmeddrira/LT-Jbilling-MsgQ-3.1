@@ -53,8 +53,7 @@ public class ContactField  implements java.io.Serializable {
        this.content = content;
     }
    
-     @Id 
-    
+    @Id 
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -63,7 +62,8 @@ public class ContactField  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="type_id")
     public ContactFieldType getContactFieldType() {
         return this.contactFieldType;
@@ -72,7 +72,8 @@ public class ContactField  implements java.io.Serializable {
     public void setContactFieldType(ContactFieldType contactFieldType) {
         this.contactFieldType = contactFieldType;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="contact_id")
     public Contact getContact() {
         return this.contact;
@@ -90,10 +91,6 @@ public class ContactField  implements java.io.Serializable {
     public void setContent(String content) {
         this.content = content;
     }
-
-
-
-
 }
 
 

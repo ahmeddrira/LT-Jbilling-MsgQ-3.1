@@ -353,11 +353,21 @@ public abstract class CrudAction extends Action {
     protected final String float2string(Float arg) {
 		return getFormHelper().float2string(arg);
 	}
+    protected final String float2string(Double arg) {
+        if (arg == null) return null;
+        return getFormHelper().float2string(new Float(arg));
+    }
 
     protected final Float string2float(String arg) {
         return getFormHelper().string2float(arg);
     }
-    
+
+    protected final Double string2double(String arg) {
+        Float fl =  getFormHelper().string2float(arg);
+        if (fl == null) return null;
+        else return new Double(fl);
+    }
+
 	protected final UserDTOEx getUser(Integer userId) throws FinderException {    
 		UserDTOEx retValue = null;
 		try {

@@ -44,6 +44,7 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 
 public final class UserLoginAction extends Action {
@@ -102,9 +103,9 @@ public final class UserLoginAction extends Action {
             }
         }
         if (!internalLogin) {
-            user.setEntityId(Integer.valueOf(entityId));
+            user.setCompany(new CompanyDTO(Integer.valueOf(entityId)));
         } else {
-            user.setEntityId(new Integer(1));
+            user.setCompany(new CompanyDTO(1));
         }
         
         // verify that the billing process is not running
@@ -143,8 +144,8 @@ public final class UserLoginAction extends Action {
                 user = myRemoteSession.getGUIDTO(user.getUserName(), user.getEntityId());
                 // children accounts can not login. They have no invoices and
                 // can't make any payments
-                if (user.getCustomerDto() != null && 
-                        user.getCustomerDto().getParentId() != null) {
+                if (user.getCustomer() != null && 
+                        user.getCustomer().getParent() != null) {
                     errors.add(
                             ActionErrors.GLOBAL_ERROR,
                             new ActionError("user.login.badpassword"));

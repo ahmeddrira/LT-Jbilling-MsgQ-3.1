@@ -92,7 +92,7 @@ public class NotesEditAction extends Action {
 	            userSession.setCustomerNotes(userId, notes);
 
 	            // refresh the object in the session
-	            user.getCustomerDto().setNotes(notes);
+	            user.getCustomer().setNotes(notes);
 
 	            forward = "customer_view";
     		} else if (action.equals("setup")) {
@@ -101,7 +101,7 @@ public class NotesEditAction extends Action {
     	        DynaActionForm myForm = (DynaActionForm) RequestUtils.createActionForm(
     	                request, mapping, moduleConfig, servlet);
     	        
-    	        String notes = user.getCustomerDto().getNotes();
+    	        String notes = user.getCustomer().getNotes();
     	        if (notes != null) {
     	        	notes = notes.replaceAll("<br/>", "\r\n");
     	        }

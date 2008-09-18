@@ -38,7 +38,6 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceSessionLocal;
 import com.sapienter.jbilling.interfaces.InvoiceSessionLocalHome;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
@@ -50,6 +49,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 
@@ -165,10 +166,9 @@ public class InvoiceSessionBean implements SessionBean {
             InvoiceSessionLocal invoiceSession = home.create();;
 
             // go over all the entities
-            EntityBL entity = new EntityBL();
-            for (Iterator it = entity.getHome().findEntities().iterator();
+            for (Iterator it = new CompanyDAS().findEntities().iterator();
                     it.hasNext(); ){
-                EntityEntityLocal thisEntity = (EntityEntityLocal) it.next();
+                CompanyDTO thisEntity = (CompanyDTO) it.next();
                 Integer entityId = thisEntity.getId();
                 PreferenceBL pref = new PreferenceBL();
                 try {
@@ -312,7 +312,7 @@ public class InvoiceSessionBean implements SessionBean {
 					customerUserBL = new UserBL(customer);
 				} catch(FinderException e) {		
 				}
-				if ((customerUserBL != null) && customerUserBL.getEntity().getEntity().getId().equals(entityId)) {
+				if ((customerUserBL != null) && customerUserBL.getEntity().getEntity().getId() == entityId) {
 					cachedRowSet = invoiceBL.getInvoicesByUserId(customer);
 				}				
 			} else if (operationType

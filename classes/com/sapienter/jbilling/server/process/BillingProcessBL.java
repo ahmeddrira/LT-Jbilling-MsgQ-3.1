@@ -48,12 +48,10 @@ import com.sapienter.jbilling.interfaces.BillingProcessEntityLocalHome;
 import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocalHome;
 import com.sapienter.jbilling.interfaces.BillingProcessRunTotalEntityLocal;
-import com.sapienter.jbilling.interfaces.CustomerEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentSessionLocal;
 import com.sapienter.jbilling.interfaces.PaymentSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
@@ -76,6 +74,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -302,7 +302,7 @@ public class BillingProcessBL extends ResultList
     }
         
     public InvoiceEntityLocal[] generateInvoice(
-            BillingProcessEntityLocal process, UserEntityLocal user, 
+            BillingProcessEntityLocal process, UserDTO user, 
             boolean isReview, boolean onlyRecurring)
             throws NamingException, SessionInternalError {
 
@@ -473,9 +473,9 @@ public class BillingProcessBL extends ResultList
             
             // see if there is any subaccounts to include in this invoice
             if (subAccountsIt!= null) {
-                CustomerEntityLocal customer = null;
+                CustomerDTO customer = null;
                 while(subAccountsIt.hasNext()) {
-                    customer = (CustomerEntityLocal) 
+                    customer = (CustomerDTO) 
                             subAccountsIt.next();
                     if (customer.getInvoiceChild() == null || 
                             customer.getInvoiceChild().intValue() == 0) {
@@ -487,7 +487,7 @@ public class BillingProcessBL extends ResultList
                     }
                 }
                 if (customer != null) {
-                    userId = customer.getUser().getUserId();
+                    userId = customer.getBaseUser().getUserId();
                     LOG.debug("Now processing subaccount " + userId);
                 } else {
                     subAccountsIt = null;

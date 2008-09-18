@@ -20,7 +20,7 @@
 
 package com.sapienter.jbilling.client.user;
 
-import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
+import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 
 /**
  * Intentionally package local. This is helper that used only by
@@ -31,9 +31,9 @@ import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
  * scope.
  */
 class PartnerRangedMaintainActionContext {
-	private final PartnerRangeDTO[] myData;
+	private final PartnerRange[] myData;
 
-	public PartnerRangedMaintainActionContext(PartnerRangeDTO[] ranges) {
+	public PartnerRangedMaintainActionContext(PartnerRange[] ranges) {
 		myData = ranges;
 	}
 
@@ -41,7 +41,7 @@ class PartnerRangedMaintainActionContext {
 	 * Generally it is bad idea to return not guarded array. Intentionally done
 	 * this way, but made package local.
 	 */
-	PartnerRangeDTO[] getData() {
+	PartnerRange[] getData() {
 		return myData;
 	}
 

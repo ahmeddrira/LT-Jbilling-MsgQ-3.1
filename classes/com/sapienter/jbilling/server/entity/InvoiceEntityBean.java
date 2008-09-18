@@ -40,12 +40,12 @@ import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocalHome;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -63,7 +63,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:finder signature="Collection findProccesableByUser(java.lang.Integer userId)"
  *             query="SELECT OBJECT(a) 
  *                      FROM invoice a 
- *                     WHERE a.user.userId = ?1
+ *                     WHERE a.userId = ?1
  *                       AND a.toProcess = 1 
  *                       AND a.isReview = 0
  *                       AND a.deleted = 0"
@@ -72,7 +72,7 @@ import com.sapienter.jbilling.server.util.Constants;
  * @ejb:finder signature="Collection findWithBalanceByUser(java.lang.Integer userId)"
  *             query="SELECT OBJECT(a) 
  *                      FROM invoice a 
- *                     WHERE a.user.userId = ?1
+ *                     WHERE a.userId = ?1
  *                       AND a.balance <> 0 
  *                       AND a.isReview = 0
  *                       AND a.deleted = 0"
@@ -162,23 +162,7 @@ public abstract class InvoiceEntityBean implements EntityBean {
             setIncludedInvoices(invoices);
         }
 
-        UserEntityLocal user;
-
-        try {
-
-            EJBFactory = JNDILookup.getFactory(false);
-            UserEntityLocalHome userHome =
-                (UserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    UserEntityLocalHome.class,
-                    UserEntityLocalHome.JNDI_NAME);
-            user = userHome.findByPrimaryKey(userId);
-        } catch (Exception e) {
-            throw new EJBException(
-                e.getMessage() +"User not found when creating invoice record:" 
-                + userId);
-        }
-
-        setUser(user);
+        setUser(new UserDAS().find(userId));
         setBillingProcess(process);
 
     }
@@ -393,7 +377,19 @@ public abstract class InvoiceEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
      public abstract void setOverdueStep(Integer step);
- 
+
+     /**
+      * @ejb:interface-method view-type="local"
+      * @ejb:persistent-field
+      * @jboss:column-name name="user_id"
+     * @jboss.method-attributes read-only="true"
+      */
+     public abstract Integer getUserId();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+     public abstract void setUserId(Integer userId);
+
     // CMR field accessors -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
@@ -419,13 +415,13 @@ public abstract class InvoiceEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="user-invoices"
-     *               role-name="invoice-belongs-to-user"
-     * @jboss.relation related-pk-field="userId"  
-     *                 fk-column="user_id"            
      */
-    public abstract UserEntityLocal getUser();
-    public abstract void setUser(UserEntityLocal user);
+    public UserDTO getUser() {
+        return new InvoiceDAS().find(getId()).getBaseUser();
+    }
+    public void setUser(UserDTO user) {
+        new InvoiceDAS().find(getId()).setBaseUser(user);
+    }
 
     /**
      * This is a circular relationship

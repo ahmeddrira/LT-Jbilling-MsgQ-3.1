@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
@@ -37,6 +36,7 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 /**
  * @author Emil
@@ -56,7 +56,7 @@ public class PaperInvoiceNotificationTask
      * @see com.sapienter.jbilling.server.pluggableTask.NotificationTask#deliver(com.sapienter.betty.interfaces.UserEntityLocal, com.sapienter.betty.server.notification.MessageDTO)
      */
 	
-	private void init(UserEntityLocal user, MessageDTO message) 
+	private void init(UserDTO user, MessageDTO message) 
 			throws TaskException{
         design = (String) parameters.get(PARAMETER_DESIGN);
 		invoice = (InvoiceDTOEx) message.getParameters().get(
@@ -72,7 +72,7 @@ public class PaperInvoiceNotificationTask
             throw new TaskException(e);
         }
 	}
-    public void deliver(UserEntityLocal user, MessageDTO message)
+    public void deliver(UserDTO user, MessageDTO message)
             throws TaskException {
         if (!message.getTypeId().equals(MessageDTO.TYPE_INVOICE_PAPER)) {
             // this task is only to notify about invoices
@@ -99,7 +99,7 @@ public class PaperInvoiceNotificationTask
         }
     }
     
-    public byte[] getPDF(UserEntityLocal user, MessageDTO message)
+    public byte[] getPDF(UserDTO user, MessageDTO message)
     		throws SessionInternalError {
     	try {
     		init(user, message);
@@ -113,7 +113,7 @@ public class PaperInvoiceNotificationTask
         }
     }
     
-    public String getPDFFile(UserEntityLocal user, MessageDTO message)
+    public String getPDFFile(UserDTO user, MessageDTO message)
             throws SessionInternalError {
         try {
             init(user, message);

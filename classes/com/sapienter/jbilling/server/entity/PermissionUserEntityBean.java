@@ -34,7 +34,8 @@ import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
 import com.sapienter.jbilling.interfaces.PermissionEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDAS;
 
 /**
  * @ejb:bean name="PermissionUserEntity" 
@@ -81,13 +82,13 @@ public abstract class PermissionUserEntityBean implements EntityBean {
      // CMR ----------------------------------------------------
      /**
       * @ejb:interface-method view-type="local"
-      * @ejb.relation name="permission-user"
-      *               role-name="permission-for-user"
-      * @jboss.relation related-pk-field="userId"  
-      *                 fk-column="user_id"            
       */
-     public abstract UserEntityLocal getUser();
-     public abstract void setUser(UserEntityLocal user);
+     public UserDTO getUser() {
+         return new PermissionUserDAS().find(getId()).getBaseUser();
+     }
+     public void setUser(UserDTO user) {
+         new PermissionUserDAS().find(getId()).setBaseUser(user);
+     }
      
      /**
       * @ejb:interface-method view-type="local"

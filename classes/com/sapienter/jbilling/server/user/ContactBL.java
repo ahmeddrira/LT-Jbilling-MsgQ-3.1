@@ -38,14 +38,16 @@ import com.sapienter.jbilling.interfaces.ContactEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ContactFieldEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactFieldEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ContactFieldTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactMapEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactMapEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ContactTypeEntityLocal;
 import com.sapienter.jbilling.interfaces.ContactTypeEntityLocalHome;
 import com.sapienter.jbilling.server.entity.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.generated.ContactFieldType;
+import com.sapienter.jbilling.server.util.db.generated.ContactType;
 
 public class ContactBL {
     // contact types in synch with the table contact_type
@@ -128,7 +130,7 @@ public class ContactBL {
 
     public Integer getPrimaryType(Integer entityId) 
             throws FinderException {
-        return contactTypeHome.findPrimary(entityId).getId();
+        return new ContactTypeDAS().findPrimary(entityId).getId();
     }
     
     /**
@@ -207,10 +209,7 @@ public class ContactBL {
         Vector<ContactDTOEx> retValue = new Vector<ContactDTOEx>();
         UserBL user = new UserBL(userId);
         entityId = user.getEntityId(userId);
-        for (Iterator it = user.getEntity().getEntity().getContactTypes().
-                iterator(); it.hasNext(); ) {
-            ContactTypeEntityLocal type = (ContactTypeEntityLocal) it.next();
-            
+        for (ContactType type: user.getEntity().getEntity().getContactTypes()) {
             try {
                 contact = contactHome.findContact(userId, type.getId());
                 ContactDTOEx dto = getDTO();
@@ -235,17 +234,14 @@ public class ContactBL {
         // now go over the entity specific fields
         Hashtable fields = new Hashtable();
         EntityBL entity = new EntityBL(entityId);
-        for (Iterator it = entity.getEntity().getContactFieldTypes().iterator();
-                it.hasNext();) {
+        for (ContactFieldType field: entity.getEntity().getContactFieldTypes()) {
             ContactFieldDTOEx fieldDto = new ContactFieldDTOEx();
-            ContactFieldTypeEntityLocal field = 
-                (ContactFieldTypeEntityLocal) it.next();
             fieldDto.setTypeId(field.getId());
             ContactFieldTypeDTO type = new ContactFieldTypeDTO();
             type.setDataType(field.getDataType());
             type.setId(field.getId());
             type.setPromptKey(field.getPromptKey());
-            type.setReadOnly(field.getReadOnly());
+            type.setReadOnly(field.getCustomerReadonly());
             fieldDto.setType(type);
             //fieldDto.setContent(new String()); // can't be null
             // the key HAS to be a String if we want struts to be able to
@@ -276,7 +272,8 @@ public class ContactBL {
         // find which type id is the primary for this entity
         try {
             Integer retValue;
-            ContactTypeEntityLocal type = contactTypeHome.findPrimary(entityId);
+            ContactType type = new ContactTypeDAS().findPrimary(entityId);
+
             retValue =  createForUser(dto, userId, type.getId());
             // this is the primary contact, the only one with a user_id
             // denormilized for performance
@@ -504,6 +501,6 @@ public class ContactBL {
      */
     public void setFromChild(Integer userId) throws FinderException {
         UserBL customer = new UserBL(userId);
-        set(customer.getEntity().getCustomer().getParent().getUser().getUserId());
+        set(customer.getEntity().getCustomer().getParent().getBaseUser().getUserId());
     }
 }

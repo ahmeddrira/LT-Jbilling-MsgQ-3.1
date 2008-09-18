@@ -34,6 +34,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.RoleDTO;
+
 @Entity
 @Table(name="permission")
 public class Permission  implements java.io.Serializable {
@@ -43,17 +45,20 @@ public class Permission  implements java.io.Serializable {
      private PermissionType permissionType;
      private Integer foreignId;
      private Set<PermissionUser> permissionUsers = new HashSet<PermissionUser>(0);
-     private Set<Role> roles = new HashSet<Role>(0);
+     private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
 
     public Permission() {
     }
 
+    public Permission(int id) {
+        this.id = id;
+    }
 	
     public Permission(int id, PermissionType permissionType) {
         this.id = id;
         this.permissionType = permissionType;
     }
-    public Permission(int id, PermissionType permissionType, Integer foreignId, Set<PermissionUser> permissionUsers, Set<Role> roles) {
+    public Permission(int id, PermissionType permissionType, Integer foreignId, Set<PermissionUser> permissionUsers, Set<RoleDTO> roles) {
        this.id = id;
        this.permissionType = permissionType;
        this.foreignId = foreignId;
@@ -61,8 +66,7 @@ public class Permission  implements java.io.Serializable {
        this.roles = roles;
     }
    
-     @Id 
-    
+    @Id 
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -71,7 +75,8 @@ public class Permission  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="type_id", nullable=false)
     public PermissionType getPermissionType() {
         return this.permissionType;
@@ -89,7 +94,8 @@ public class Permission  implements java.io.Serializable {
     public void setForeignId(Integer foreignId) {
         this.foreignId = foreignId;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="permission")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="permission")
     public Set<PermissionUser> getPermissionUsers() {
         return this.permissionUsers;
     }
@@ -101,15 +107,18 @@ public class Permission  implements java.io.Serializable {
     @JoinTable(name="permission_role_map", joinColumns = { 
         @JoinColumn(name="permission_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="role_id", updatable=false) })
-    public Set<Role> getRoles() {
+    public Set<RoleDTO> getRoles() {
         return this.roles;
     }
     
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Set<RoleDTO> roles) {
         this.roles = roles;
     }
 
-
+    public boolean equals(Object p) {
+        if (p != null && ((Permission)p).getId() == this.id) return true;
+        return false;
+    }
 
 
 }

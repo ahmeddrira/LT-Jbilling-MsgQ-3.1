@@ -33,14 +33,17 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+
 @Entity
 @Table(name="invoice_delivery_method")
 public class InvoiceDeliveryMethod  implements java.io.Serializable {
 
 
      private int id;
-     private Set<Company> entities = new HashSet<Company>(0);
-     private Set<Customer> customers = new HashSet<Customer>(0);
+     private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
+     private Set<CustomerDTO> customers = new HashSet<CustomerDTO>(0);
 
     public InvoiceDeliveryMethod() {
     }
@@ -49,7 +52,7 @@ public class InvoiceDeliveryMethod  implements java.io.Serializable {
     public InvoiceDeliveryMethod(int id) {
         this.id = id;
     }
-    public InvoiceDeliveryMethod(int id, Set<Company> entities, Set<Customer> customers) {
+    public InvoiceDeliveryMethod(int id, Set<CompanyDTO> entities, Set<CustomerDTO> customers) {
        this.id = id;
        this.entities = entities;
        this.customers = customers;
@@ -69,19 +72,19 @@ public class InvoiceDeliveryMethod  implements java.io.Serializable {
     @JoinTable(name="entity_delivery_method_map",joinColumns = { 
         @JoinColumn(name="method_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) })
-    public Set<Company> getEntities() {
+    public Set<CompanyDTO> getEntities() {
         return this.entities;
     }
     
-    public void setEntities(Set<Company> entities) {
+    public void setEntities(Set<CompanyDTO> entities) {
         this.entities = entities;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="invoiceDeliveryMethod")
-    public Set<Customer> getCustomers() {
+    public Set<CustomerDTO> getCustomers() {
         return this.customers;
     }
     
-    public void setCustomers(Set<Customer> customers) {
+    public void setCustomers(Set<CustomerDTO> customers) {
         this.customers = customers;
     }
 

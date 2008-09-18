@@ -25,14 +25,14 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
 
 <logic:notPresent name='<%=Constants.SESSION_CUSTOMER_DTO%>' 
-		property="customerDto.parentId">
+		property="customer.parent">
 <table class="info" border="0" cellpadding="0" cellspacing="0">
 	<tr>
 		<th class="info"><bean:message key="user.notes.info.title"/></th>
 	</tr>
 	<tr class="infoA">
 		<td class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			property="customerDto.notes" scope="session" filter="false"/></td>
+			property="customer.notes" scope="session" filter="false"/></td>
 	</tr>
 	<jbilling:permission permission='<%=Constants.P_USER_EDIT_LINKS%>'>
 	<tr>

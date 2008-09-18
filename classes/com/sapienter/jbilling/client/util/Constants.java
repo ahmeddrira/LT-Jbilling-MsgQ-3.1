@@ -85,7 +85,7 @@ public final class Constants implements PermissionConstants, CommonConstants {
     
     // the id of a partner
     public static final String SESSION_PARTNER_ID = "partner_id";
-    // a PartnerDTOEx
+    // a Partner
     public static final String SESSION_PARTNER_DTO = "partner_dto";
     // a PartnerPayoutDTOEx
     public static final String SESSION_PAYOUT_DTO = "payout_dto";

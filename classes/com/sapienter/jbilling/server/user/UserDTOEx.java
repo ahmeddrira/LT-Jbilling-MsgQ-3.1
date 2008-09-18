@@ -30,13 +30,18 @@ import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.PermissionTypeIdComparator;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PermissionDTO;
-import com.sapienter.jbilling.server.entity.UserDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.generated.Permission;
+import com.sapienter.jbilling.server.util.db.generated.PermissionType;
 
 /**
  * @author emilc
  */
-public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
+public final class UserDTOEx extends UserDTO {
 
     // constants
     
@@ -54,11 +59,9 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     public static final Integer SUBSCRIBER_NONSUBSCRIBED = new Integer(6);
     public static final Integer SUBSCRIBER_DISCONTINUED = new Integer(7);
     
-    // private fields
-    private Integer entityId = null;
     private Menu menu = null;
-    private Vector permissions = null;
-    private Vector permissionsTypeId = null; // same as before but sorted by type
+    private Vector<Permission> allPermissions = null;
+    private Vector<Permission> permissionsTypeId = null; // same as before but sorted by type
     private Vector<Integer> roles = null;
     private Integer mainRoleId = null;
     private String mainRoleStr = null;
@@ -73,9 +76,6 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
     private String currencySymbol = null;
     private String currencyName = null;
     private Locale locale = null;
-    // extended fields
-    private CustomerDTOEx customerDto = null;
-    private PartnerDTOEx partnerDto = null;
 
 
     /**
@@ -91,23 +91,37 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
             Integer currencyId, Date creation, Date modified, Date lLogin, 
             Integer failedAttempts) {
         // set the base dto fields
-        super(userId, userName, password, deleted, language, currencyId, 
-                creation, modified, lLogin, failedAttempts);
+        setId((userId == null) ? 0 : userId);
+        setUserName(userName);
+        setPassword(password);
+        setDeleted((deleted == null) ? 0 : deleted);
+        setLanguage(new LanguageDAS().find(language));
+        setCurrency(new CurrencyDAS().find(currencyId));
+        setCreateDatetime(creation);
+        setLastStatusChange(modified);
+        setLastLogin(lLogin);
+        setFailedAttempts((failedAttempts == null) ? 0 : failedAttempts);
         // the entity id
         setEntityId(entityId);
         // the permissions are defaulted to nothing
-        permissions = new Vector();
+        allPermissions = new Vector();
         roles = new Vector<Integer>();
         if (roleId != null) {
             // we ask for at least one role for this user
             roles.add(roleId);
             mainRoleId = roleId;
         }
-        
     }
     
     public UserDTOEx(UserWS dto, Integer entityId) {
-        super(dto);
+        setId(dto.getUserId());
+        setPassword(dto.getPassword());
+        setDeleted(dto.getDeleted());
+        setCreateDatetime(dto.getCreateDatetime());
+        setLastStatusChange(dto.getLastStatusChange());
+        setLastLogin(dto.getLastLogin());
+        setUserName(dto.getUserName());
+        setFailedAttempts(dto.getFailedAttempts());        
         creditCard = dto.getCreditCard();
         mainRoleStr = dto.getRole();
         mainRoleId = dto.getMainRoleId();
@@ -115,37 +129,36 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
         statusStr = dto.getStatus();
         statusId = dto.getStatusId();
         subscriptionStatusId = dto.getSubscriberStatusId();
-        this.entityId = entityId;
+        setEntityId(entityId);
         
         roles = new Vector<Integer>();
         roles.add(mainRoleId);
         
         if (mainRoleId.equals(Constants.TYPE_CUSTOMER)) {
-            customerDto = new CustomerDTOEx();
-            customerDto.setPartnerId(dto.getPartnerId());
-            customerDto.setParentId(dto.getParentId());
-            customerDto.setIsParent(dto.getIsParent() == null ? new Integer(0) :
-                dto.getIsParent().booleanValue() ? new Integer(1) : new Integer(0));
-            customerDto.setInvoiceChild(dto.getInvoiceChild() == null ? new Integer(0) :
-                dto.getInvoiceChild().booleanValue() ? new Integer(1) : new Integer(0));
-            if (dto.getCreditCard() != null) {
-                customerDto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
-            }
+            CustomerDTO customer = new CustomerDTO(dto);
+            setCustomer(customer);
         }
     }
     
     public UserDTOEx() {
         super();
     }
+    
+    public UserDTOEx(UserDTO user) {
+       super(user); 
+    }
 
+    public Vector<Permission> getAllPermissions() {
+        return this.allPermissions;
+    }
     // this expects the Vector to be sorted already
-    public void setPermissions(Vector permissions) {
-        this.permissions = permissions;
+    public void setAllPermissions(Vector<Permission> permissions) {
+        this.allPermissions = permissions;
     }
     
     public boolean isGranted(Integer permissionId) {
-        PermissionDTO permission = new PermissionDTO(permissionId, null, null);
-        if (Collections.binarySearch(permissions, permission,
+        Permission permission = new Permission(permissionId);
+        if (Collections.binarySearch(allPermissions, permission,
                 new PermissionIdComparator()) >= 0) {
             return true;
         } else {
@@ -162,16 +175,17 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
      */
     public boolean isGranted(Integer typeId, Integer foreignId) {
         if (permissionsTypeId == null) {
-            permissionsTypeId = (Vector) permissions.clone();
-            Collections.sort(permissionsTypeId, 
-                    new PermissionTypeIdComparator());
+            permissionsTypeId = new Vector<Permission>();
+            permissionsTypeId.addAll(allPermissions);
+            Collections.sort(permissionsTypeId, new PermissionTypeIdComparator());
           /*
             Logger.getLogger(UserDTOEx.class).debug("Permissions now = " +
                     permissionsTypeId);
                     */
         }
         boolean retValue;
-        PermissionDTO permission = new PermissionDTO(null, typeId, foreignId);
+        Permission permission = new Permission(0, new PermissionType(typeId, null), 
+                foreignId, null, null);
         if (Collections.binarySearch(permissionsTypeId, permission,
                 new PermissionTypeIdComparator()) >= 0) {
             retValue = true;
@@ -187,15 +201,12 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
         return retValue;
     }
 
-    public Vector getPermissions() {
-        return permissions;
-    }
     /**
      * Returns the entityId.
      * @return Integer
      */
     public Integer getEntityId() {
-        return entityId;
+        return getCompany().getId();
     }
 
     /**
@@ -203,7 +214,7 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
      * @param entityId The entityId to set
      */
     public void setEntityId(Integer entityId) {
-        this.entityId = entityId;
+        setCompany(new CompanyDAS().find(entityId));
     }
 
     /**
@@ -218,20 +229,6 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
      */
     public void setMenu(Menu menu) {
         this.menu = menu;
-    }
-
-    /**
-     * @return
-     */
-    public Vector getRoles() {
-        return roles;
-    }
-
-    /**
-     * @param vector
-     */
-    public void setRoles(Vector vector) {
-        roles = vector;
     }
 
     /**
@@ -253,6 +250,12 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
      */
     public void setMainRoleId(Integer integer) {
         mainRoleId = integer;
+        if (roles == null) {
+            roles = new Vector<Integer>();
+        }
+        if (!roles.contains(integer)) {
+            roles.add(integer);
+        }
     }
 
     /**
@@ -360,34 +363,6 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
         this.currencyName = currencyName;
     }
 
-    /**
-     * @return
-     */
-    public CustomerDTOEx getCustomerDto() {
-        return customerDto;
-    }
-
-    /**
-     * @param customerDto
-     */
-    public void setCustomerDto(CustomerDTOEx customerDto) {
-        this.customerDto = customerDto;
-    }
-
-    /**
-     * @return
-     */
-    public PartnerDTOEx getPartnerDto() {
-        return partnerDto;
-    }
-
-    /**
-     * @param partnerDto
-     */
-    public void setPartnerDto(PartnerDTOEx partnerDto) {
-        this.partnerDto = partnerDto;
-    }
-
 	/**
 	 * @return Returns the ach.
 	 */
@@ -421,5 +396,20 @@ public final class UserDTOEx extends UserDTO implements java.io.Serializable  {
 
     public void setSubscriptionStatusStr(String subscriptionStatusStr) {
         this.subscriptionStatusStr = subscriptionStatusStr;
+    }
+    
+    public Integer getLanguageId() {
+        if (getLanguage() != null) {
+            return getLanguage().getId();
+        }
+        return null;
+    }
+    
+    public void setUserId(Integer id) {
+        setId(id);
+    }
+    
+    public Integer getUserId() {
+        return getId();
     }
 }

@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.util.Vector;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
@@ -49,8 +48,9 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
-import com.sapienter.jbilling.server.user.CustomerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.RoleDTO;
 
 /**
  * @author Emil
@@ -222,13 +222,11 @@ public class UploadData {
 				// get the user object ready
 				UserDTOEx user = new UserDTOEx();
 				ContactDTOEx contact = new ContactDTOEx();
-				CustomerDTOEx customer = new CustomerDTOEx();
+				CustomerDTO customer = new CustomerDTO();
                 contact.setInclude(new Integer(1));
 				
 				user.setEntityId(entityId);
-			    Vector roles = new Vector();
-	            roles.add(Constants.TYPE_CUSTOMER);
-		        user.setRoles(roles);
+		        user.getRoles().add(new RoleDTO(Constants.TYPE_CUSTOMER));
 				
 				if (first_name >= 0) {
 					contact.setFirstName(fields[first_name].trim());
@@ -340,7 +338,7 @@ public class UploadData {
                 }
                 //System.out.println("CC = " + cc);
                 
-                user.setCustomerDto(customer);
+                user.setCustomer(customer);
                 
                 // the entity specific fields
                 for (int spField = 0; spField < totalSpecificFields; spField++) {

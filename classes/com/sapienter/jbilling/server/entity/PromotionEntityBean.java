@@ -38,6 +38,7 @@ import com.sapienter.jbilling.interfaces.ItemEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.db.PromotionDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 
@@ -57,15 +58,6 @@ import com.sapienter.jbilling.server.util.Constants;
  *
  * @ejb:pk class="java.lang.Integer"
  *         generate="false"
- *
- * @ejb:finder signature="PromotionEntityLocal findByEntityCode(java.lang.Integer entityId, java.lang.String code)"
- *             query="SELECT OBJECT(a) 
- *                      FROM promotion a 
- *                     WHERE a.code = ?2
- *                       AND a.item.entity.id = ?1
- *                       AND a.item.deleted = 0"
- *             result-type-mapping="Local"
- *
  *
  * @jboss:table-name "promotion"
  * @jboss:create-table create="false"
@@ -165,6 +157,18 @@ public abstract class PromotionEntityBean implements EntityBean {
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @jboss:column-name name="user_id"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getUserId();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setUserId(Integer id);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
      * @jboss:column-name name="since"
      * @jboss.method-attributes read-only="true"
      */
@@ -199,22 +203,18 @@ public abstract class PromotionEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="promotion-user"
-     *               role-name="promotion-used_by-user"
-     * @jboss.relation related-pk-field="userId"  
-     *                 fk-column="user_id"            
-     * @jboss.relation-table table-name="promotion_user_map"
-     *                       create-table="false"
      */
-    public abstract Collection getUsers();
-    public abstract void setUsers(Collection users);
+    public Collection getUsers() {
+        return new PromotionDAS().find(getId()).getBaseUsers();
+    }
+//    public abstract void setUsers(Collection users);
     
     // Select methods -------------
     /**
-     * @ejb.select query="SELECT u.userId
-     *                      FROM promotion AS pr, IN (pr.users) u  
+     * @ejb.select query="SELECT pr.userId
+     *                      FROM promotion AS pr  
      *                     WHERE pr.code = ?2
-     *                       AND u.userId = ?1"
+     *                       AND pr.userId = ?1"
      */
     public abstract int ejbSelectUserUsedPromotion(Integer userId, 
             String code) throws FinderException;

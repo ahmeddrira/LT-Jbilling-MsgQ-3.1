@@ -31,6 +31,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -44,62 +45,42 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CurrencyEntityLocal;
-import com.sapienter.jbilling.interfaces.CurrencyEntityLocalHome;
-import com.sapienter.jbilling.interfaces.CurrencyExchangeEntityLocal;
-import com.sapienter.jbilling.interfaces.CurrencyExchangeEntityLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
-import com.sapienter.jbilling.server.entity.CurrencyDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Util;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO;
 
 /**
  * @author Emil
  */
 public class CurrencyBL {
-    private JNDILookup EJBFactory = null;
-    private CurrencyEntityLocalHome currencyHome = null;
-    private CurrencyExchangeEntityLocalHome currencyExchangeHome = null;
-    private CurrencyEntityLocal currency = null;
-    EntityEntityLocalHome entityHome = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(CurrencyBL.class);
+    private CurrencyDAS das = null;
+    private CurrencyDTO currency = null;
+    //private Logger log = null;
     
-    public CurrencyBL(Integer currencyId) 
-            throws NamingException, FinderException {
+    public CurrencyBL(Integer currencyId) {
         init();
         set(currencyId);
     }
     
-    public void set(Integer id) 
-            throws FinderException {
-        currency = currencyHome.findByPrimaryKey(id);
+    public void set(Integer id)  {
+        currency = das.find(id);
     }
     
     public CurrencyBL() throws NamingException {
         init();
     }
     
-    private void init() throws NamingException {
-        log = Logger.getLogger(CurrencyBL.class);     
-        EJBFactory = JNDILookup.getFactory(false);
-        currencyHome = (CurrencyEntityLocalHome) EJBFactory.lookUpLocalHome(
-                CurrencyEntityLocalHome.class,
-                CurrencyEntityLocalHome.JNDI_NAME);
-
-        currencyExchangeHome = (CurrencyExchangeEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                CurrencyExchangeEntityLocalHome.class,
-                CurrencyExchangeEntityLocalHome.JNDI_NAME);
-        
-        entityHome = (EntityEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                EntityEntityLocalHome.class,
-                EntityEntityLocalHome.JNDI_NAME);
-
+    private void init() {
+        das = new CurrencyDAS();
     }
     
-    public CurrencyEntityLocal getEntity() {
+    public CurrencyDTO getEntity() {
         return currency;
     }
 
@@ -108,6 +89,8 @@ public class CurrencyBL {
             throws SessionInternalError {
         Float retValue = null;
         
+        LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId +
+                " am " + amount + " en " + entityId);
         if (fromCurrencyId.equals(toCurrencyId)) {
             // mmm.. no conversion needed
             return amount;
@@ -124,7 +107,7 @@ public class CurrencyBL {
             Integer entityId) 
             throws SessionInternalError {
         Float retValue = null;
-        CurrencyExchangeEntityLocal exchange = null;
+        CurrencyExchangeDTO exchange = null;
         
         if (currencyId.intValue() == 1) {
             // this is already in the pivot
@@ -134,7 +117,7 @@ public class CurrencyBL {
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp = tmp.divide(new BigDecimal(exchange.getRate().toString()), CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
+        tmp = tmp.divide(new BigDecimal(exchange.getRate()), CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
         retValue = new Float(tmp.floatValue());
         
         return retValue;
@@ -144,7 +127,7 @@ public class CurrencyBL {
             Integer entityId) 
             throws SessionInternalError {
         Float retValue = null;
-        CurrencyExchangeEntityLocal exchange = null;
+        CurrencyExchangeDTO exchange = null;
         
         if (currencyId.intValue() == 1) {
             // this is already in the pivot
@@ -154,37 +137,34 @@ public class CurrencyBL {
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp.multiply(new BigDecimal(exchange.getRate().toString()));
+        tmp = tmp.multiply(new BigDecimal(exchange.getRate()));
         retValue = new Float(tmp.floatValue());
         
         return retValue;
     }
     
-    public CurrencyExchangeEntityLocal findExchange(Integer entityId,
-            Integer currencyId) 
+    public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId)
             throws SessionInternalError {
-        CurrencyExchangeEntityLocal exchange = null;
-        
-        try {
-            exchange = currencyExchangeHome.find(entityId, currencyId);
-        } catch (FinderException e) {
+        CurrencyExchangeDTO exchange = null;
+
+        exchange = new CurrencyExchangeDAS().findExchange(entityId, currencyId);
+        if (exchange == null) {
             // this entity doesn't have this exchange defined
-            try {
-                // 0 is the default, don't try to use null, it won't work
-                exchange = currencyExchangeHome.find(new Integer(0), 
-                        currencyId);
-            } catch (FinderException e1) {
-                throw new SessionInternalError("Currency " + currencyId +
-                        " doesn't have a defualt exchange");
+            // 0 is the default, don't try to use null, it won't work
+            exchange = new CurrencyExchangeDAS().findExchange(new Integer(0), currencyId);
+            if (exchange == null) {
+                throw new SessionInternalError("Currency " + currencyId
+                        + " doesn't have a defualt exchange");
             }
         }
-    
+
         return exchange;
     }
     
     /**
      * Returns all the currency symbols in the proper order, so
      * retValue[currencyId] would be the symbol of currencyId
+     * 
      * @return
      * @throws NamingException
      * @throws SQLException
@@ -206,7 +186,7 @@ public class CurrencyBL {
             }
             String symbol = result.getString(2);
             String code = result.getString(3);
-            CurrencyDTO bean = new CurrencyDTO(null, code, symbol, null);
+            CurrencyDTO bean = new CurrencyDTO(0, code, symbol, null);
             results.add(result.getInt(1), bean);
         }
         result.close();
@@ -217,7 +197,7 @@ public class CurrencyBL {
         return (CurrencyDTO []) results.toArray(retValue);
     }
     
-    public CurrencyDTOEx[] getCurrencies(Integer languageId, 
+    public CurrencyDTO[] getCurrencies(Integer languageId, 
             Integer entityId) 
             throws NamingException, SQLException, FinderException {
         Vector result = new Vector();
@@ -226,54 +206,60 @@ public class CurrencyBL {
         for (int f = 1; f < all.length; f++) {
             Integer currencyId = new Integer(f);
             set(currencyId);
-            CurrencyDTOEx newCurrency = new CurrencyDTOEx();
+            CurrencyDTO newCurrency = new CurrencyDTO();
             newCurrency.setId(currencyId);
             newCurrency.setName(currency.getDescription(languageId));
             // find the system rate
             if (f == 1) {
-                newCurrency.setSysRate(new Float(1));
+                newCurrency.setSysRate(1.0);
             } else {
-                newCurrency.setSysRate(currencyExchangeHome.find(new Integer(0),
+                newCurrency.setSysRate(new CurrencyExchangeDAS().findExchange(new Integer(0),
                         currencyId).getRate());
             }
             // may be there's an entity rate
-            try {
-                EntityBL en = new EntityBL(entityId);
-                newCurrency.setRate(Util.float2string(currencyExchangeHome.find(entityId,
-                        currencyId).getRate(), en.getLocale()));
-            } catch (FinderException e) {}
+            EntityBL en = new EntityBL(entityId);
+            CurrencyExchangeDTO exchange = new CurrencyExchangeDAS().findExchange(entityId,
+                    currencyId);
+            if (exchange != null) {
+                newCurrency.setRate(Util.float2string(exchange.getRate(), en.getLocale()));
+            }
             // let's see if this currency is in use by this entity
             newCurrency.setInUse(new Boolean(entityHasCurrency(entityId, 
                     currencyId)));
             result.add(newCurrency);
         }
-        CurrencyDTOEx[] retValue = new CurrencyDTOEx[result.size()];
-        return (CurrencyDTOEx[]) result.toArray(retValue);
+        CurrencyDTO[] retValue = new CurrencyDTO[result.size()];
+        return (CurrencyDTO[]) result.toArray(retValue);
     }
     
-    public void setCurrencies(Integer entityId, CurrencyDTOEx[] currencies) 
+    public void setCurrencies(Integer entityId, CurrencyDTO[] currencies) 
             throws NamingException, FinderException, RemoveException,
                     CreateException, ParseException {
         EntityBL entity = new EntityBL(entityId);
 
         // start by wiping out the existing data for this entity
         entity.getEntity().getCurrencies().clear();
-        for (Iterator it = currencyExchangeHome.findByEntity(entityId).
+        for (Iterator it = new CurrencyExchangeDAS().findByEntity(entityId).
                 iterator(); it.hasNext(); ) {
-            CurrencyExchangeEntityLocal exchange = 
-                    (CurrencyExchangeEntityLocal) it.next();
-            exchange.remove();
+            CurrencyExchangeDTO exchange = 
+                    (CurrencyExchangeDTO) it.next();
+            new CurrencyExchangeDAS().delete(exchange);
         }
         
         for (int f = 0; f < currencies.length; f++) {
             if (currencies[f].getInUse().booleanValue()) {
                 set(currencies[f].getId());
-                entity.getEntity().getCurrencies().add(currency);
+                
+                entity.getEntity().getCurrencies().add(new CurrencyDAS().find(currency.getId()));
 
                 if (currencies[f].getRate() != null) {
-                    currencyExchangeHome.create(entityId, currencies[f].getId(), 
-                            Util.string2float(currencies[f].getRate(), 
-                                    entity.getLocale()));
+                    CurrencyExchangeDTO exchange = new CurrencyExchangeDTO();
+                    exchange.setCreateDatetime(Calendar.getInstance().getTime());
+                    exchange.setCurrency(new CurrencyDAS().find(currencies[f].getId()));
+                    exchange.setEntityId(entityId);
+                    exchange.setRate(Util.string2float(currencies[f].getRate(), 
+                            entity.getLocale()));
+                    new CurrencyExchangeDAS().save(exchange);
                 }
             }
         }
@@ -281,14 +267,14 @@ public class CurrencyBL {
     
     public Integer getEntityCurrency(Integer entityId)
              throws FinderException {
-        EntityEntityLocal entity = entityHome.findByPrimaryKey(entityId);
+        CompanyDTO entity = new CompanyDAS().find(entityId);
         return entity.getCurrencyId();
     }
     
     public void setEntityCurrency(Integer entityId, Integer currencyId) 
             throws FinderException {
-        EntityEntityLocal entity = entityHome.findByPrimaryKey(entityId);
-        entity.setCurrencyId(currencyId);
+        CompanyDTO entity = new CompanyDAS().find(entityId);
+        entity.setCurrency(new CurrencyDAS().find(currencyId));
     }
     
     /**

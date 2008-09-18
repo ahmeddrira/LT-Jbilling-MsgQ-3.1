@@ -28,7 +28,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="permission_user")
@@ -36,7 +36,7 @@ public class PermissionUser  implements java.io.Serializable {
 
 
      private int id;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private Permission permission;
      private short isGrant;
 
@@ -48,7 +48,7 @@ public class PermissionUser  implements java.io.Serializable {
         this.id = id;
         this.isGrant = isGrant;
     }
-    public PermissionUser(int id, BaseUser baseUser, Permission permission, short isGrant) {
+    public PermissionUser(int id, UserDTO baseUser, Permission permission, short isGrant) {
        this.id = id;
        this.baseUser = baseUser;
        this.permission = permission;
@@ -67,11 +67,11 @@ public class PermissionUser  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
 @ManyToOne(fetch=FetchType.LAZY)

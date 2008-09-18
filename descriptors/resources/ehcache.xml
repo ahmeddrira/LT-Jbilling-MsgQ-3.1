@@ -107,7 +107,34 @@
      />                       
 
      <!-- Level 3: objects that do not change at all: purely static data -->
-     <cache name="com.sapienter.jbilling.server.util.db.generated.Company"
+     <cache name="com.sapienter.jbilling.server.user.db.CompanyDTO"
+            maxElementsInMemory="10"
+            eternal="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.user.db.RoleDTO"
+            maxElementsInMemory="10"
+            eternal="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.user.db.SubscriberStatusDTO"
+            maxElementsInMemory="10"
+            eternal="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.user.db.UserStatusDTO"
             maxElementsInMemory="10"
             eternal="true"
             timeToIdleSeconds="1800"
@@ -135,6 +162,15 @@
 
      <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
      <cache name="com.sapienter.jbilling.server.order.db.OrderPeriodDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO"
             maxElementsInMemory="100"
             eternal="false"
             timeToIdleSeconds="60"

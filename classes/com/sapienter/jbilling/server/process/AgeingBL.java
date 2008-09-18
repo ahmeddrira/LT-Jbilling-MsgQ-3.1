@@ -27,7 +27,6 @@ package com.sapienter.jbilling.server.process;
 
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -50,13 +49,9 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.AgeingEntityStepEntityLocal;
 import com.sapienter.jbilling.interfaces.AgeingEntityStepEntityLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
-import com.sapienter.jbilling.interfaces.UserStatusEntityLocal;
-import com.sapienter.jbilling.interfaces.UserStatusEntityLocalHome;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -64,11 +59,18 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.process.db.AgeingEntityStepDAS;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserStatusDTO;
+import com.sapienter.jbilling.server.user.db.UserStatusDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 
 /**
  * @author Emil
@@ -78,8 +80,7 @@ public class AgeingBL {
     private JNDILookup EJBFactory = null;
     private AgeingEntityStepEntityLocalHome ageingHome = null;
     private AgeingEntityStepEntityLocal ageing = null;
-    private UserStatusEntityLocalHome userStatusHome = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(AgeingBL.class);
     private EventLogger eLogger = null;
 
     public AgeingBL(Integer ageingId) 
@@ -93,7 +94,6 @@ public class AgeingBL {
     }
 
     private void init() throws NamingException {
-        log = Logger.getLogger(AgeingBL.class);     
         eLogger = EventLogger.getInstance();        
         EJBFactory = JNDILookup.getFactory(false);
         ageingHome = (AgeingEntityStepEntityLocalHome) 
@@ -101,11 +101,6 @@ public class AgeingBL {
                 AgeingEntityStepEntityLocalHome.class,
                 AgeingEntityStepEntityLocalHome.JNDI_NAME);
 
-        userStatusHome = (UserStatusEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                UserStatusEntityLocalHome.class,
-                UserStatusEntityLocalHome.JNDI_NAME);
-    
     }
 
     public AgeingEntityStepEntityLocal getEntity() {
@@ -127,10 +122,9 @@ public class AgeingBL {
             return;
         }
          
-        log.debug("Setting user " + userId + " status to " + statusId);
+        LOG.debug("Setting user " + userId + " status to " + statusId);
         // see if this guy could login in her present status
-        boolean couldLogin = user.getEntity().getStatus().getCanLogin().
-                intValue() == 1;
+        boolean couldLogin = user.getEntity().getStatus().getCanLogin() == 1;
         
         // log an event
         if (executorId != null) {
@@ -166,7 +160,7 @@ public class AgeingBL {
                     notificationHome.create();
             notificationSess.notify(user.getEntity(), message);
         } catch (NotificationNotFoundException e) {
-            log.warn("Changeing the satus of a user. An ageing notification " +
+            LOG.warn("Changeing the satus of a user. An ageing notification " +
                     "should be " +
                     "sent to the user, but the entity doesn't have it. " +
                     "entity " + user.getEntity().getEntity().getId());
@@ -174,18 +168,18 @@ public class AgeingBL {
  
 
         // make the change
-        UserStatusEntityLocal status = userStatusHome.findByPrimaryKey(
+        UserStatusDTO status = new UserStatusDAS().find(
                 statusId);
-        user.getEntity().setStatus(status);
+        user.getEntity().setUserStatus(status);
         user.getEntity().setLastStatusChange(today);
-        if (status.getId().equals(UserDTOEx.STATUS_DELETED)) {
+        if (status.getId() == UserDTOEx.STATUS_DELETED) {
             // yikes, it's out
             user.delete(executorId);
             return; // her orders were deleted, no need for any change in status
         }
         
         // see if this new status is suspended
-        if (couldLogin && status.getCanLogin().intValue() == 0) {
+        if (couldLogin && status.getCanLogin() == 0) {
             // all the current orders have to be suspended
             OrderDAS orderDas = new OrderDAS();
             OrderBL order = new OrderBL();
@@ -197,7 +191,7 @@ public class AgeingBL {
                 order.setStatus(executorId, 
                         Constants.ORDER_STATUS_SUSPENDED_AGEING);
             }               
-        } else if (!couldLogin && status.getCanLogin().intValue() == 1) {
+        } else if (!couldLogin && status.getCanLogin() == 1) {
             // the oposite, it is getting out of the ageing process
             // all the suspended orders have to be reactivated
             OrderDAS orderDas = new OrderDAS();
@@ -225,7 +219,7 @@ public class AgeingBL {
         if (url != null && url.length() > 0) {
             // get the url connection
             try {
-                log.debug("Making callback to " + url);
+                LOG.debug("Making callback to " + url);
                 
                 // cook the parameters to be sent
                 NameValuePair[] data = new NameValuePair[6];
@@ -234,7 +228,7 @@ public class AgeingBL {
                 data[2] = new NameValuePair("login_name", user.getEntity().getUserName());
                 data[3] = new NameValuePair("from_status", originalStatusId.toString());
                 data[4] = new NameValuePair("to_status", statusId.toString());
-                data[5] = new NameValuePair("can_login", status.getCanLogin().toString());
+                data[5] = new NameValuePair("can_login", String.valueOf(status.getCanLogin()));
                 
                 // make the call
                 HttpClient client = new HttpClient();
@@ -243,7 +237,7 @@ public class AgeingBL {
                 post.setRequestBody(data);
                 client.executeMethod(post);
             } catch (Exception e1) {
-                log.info("Could not make call back. url = " + url + 
+                LOG.info("Could not make call back. url = " + url + 
                         " Message:" + e1.getMessage());
             }
 
@@ -255,12 +249,12 @@ public class AgeingBL {
      * but only if she doesn't have any outstanding invoices.
      * @param user
      */
-    public void out(UserEntityLocal user, Integer excludigInvoiceId) 
+    public void out(UserDTO user, Integer excludigInvoiceId) 
             throws NamingException, CreateException, SessionInternalError,
                     FinderException, RemoveException, SQLException {
         // if the user is in the ageing process
-        log.debug("Taking user " + user.getUserId() + " out of ageing");
-        if (!user.getStatus().getId().equals(UserDTOEx.STATUS_ACTIVE)) {
+        LOG.debug("Taking user " + user.getUserId() + " out of ageing");
+        if (user.getStatus().getId() != UserDTOEx.STATUS_ACTIVE) {
             InvoiceBL invoices = new InvoiceBL();
             // only if the user doesn't have any more invoices that are overdue
             if (!invoices.isUserWithOverdueInvoices(user.getUserId(),
@@ -270,10 +264,10 @@ public class AgeingBL {
                 setUserStatus(null, user.getUserId(),  UserDTOEx.STATUS_ACTIVE,
                         Calendar.getInstance().getTime());
             } else {
-                log.debug("User with overdue invoices");
+                LOG.debug("User with overdue invoices");
             }
         } else {
-            log.debug("User already active");
+            LOG.debug("User already active");
         }
 
     }
@@ -288,10 +282,10 @@ public class AgeingBL {
      * @throws SessionInternalError
      * @throws CreateException
      */
-    public void age(UserEntityLocal user, Date today) 
+    public void age(UserDTO user, Date today) 
             throws NamingException, FinderException, SessionInternalError,
                 CreateException, RemoveException {
-        log.debug("Ageing user:" + user.getUserId());
+        LOG.debug("Ageing user:" + user.getUserId());
         Integer status = user.getStatus().getId();
         Integer nextStatus = null;
         if (status.equals(UserDTOEx.STATUS_ACTIVE)) {
@@ -299,21 +293,22 @@ public class AgeingBL {
             nextStatus = getNextStep(user.getEntity(),
                     UserDTOEx.STATUS_ACTIVE);
         } else {
-            log.debug("she's already in the ageing");
+            LOG.debug("she's already in the ageing");
             // this guy is already in the ageing
             try {
-	            ageing = ageingHome.findStep(user.getEntity().getId(), 
-	                    status);
+                AgeingEntityStep step = new AgeingEntityStepDAS().findStep(
+                        user.getEntity().getId(), status);
+	            ageing = ageingHome.findByPrimaryKey(step.getId());
             
 	            // verify if it is time for another notch
 	            GregorianCalendar cal = new GregorianCalendar();
 	            Date lastChange = user.getLastStatusChange();
 	            if (lastChange == null) {
-	            	lastChange = user.getCreateDateTime();
+	            	lastChange = user.getCreateDatetime();
 	            }
 	            cal.setTime(lastChange);
 	            cal.add(Calendar.DATE, ageing.getDays().intValue());
-	            log.debug("last time + days=" + cal.getTime() + " today " + today
+	            LOG.debug("last time + days=" + cal.getTime() + " today " + today
 	                    + "compare=" + cal.getTime().compareTo(today));
 	            if (cal.getTime().compareTo(today) <= 0) {
 	                nextStatus =  getNextStep(user.
@@ -349,30 +344,23 @@ public class AgeingBL {
      * @return
      * @throws SessionInternalError
      */
-    private Integer getNextStep(EntityEntityLocal entity, Integer statusId) 
+    private Integer getNextStep(CompanyDTO entity, Integer statusId) 
             throws SessionInternalError {
-        // now how good would it be to have cmr with order by ?
-        Vector steps = new Vector();
-        for (Iterator it = entity.getSteps().iterator(); it.hasNext(); ) {
-            ageing = (AgeingEntityStepEntityLocal) it.next();
-            steps.add(ageing.getStatus().getId());
-        }
-
-        Collections.sort(steps);
         // this will return the next step, even if statusId doesn
-        // exists in the current set of steps
-    	for (Iterator it = steps.iterator(); it.hasNext(); ) {
-    		Integer step = (Integer) it.next();
-    		if (step.compareTo(statusId) > 0) {
-    			return step;
+        // exists in the current set of steps.
+        // The steps are returned order by status id.
+    	for (AgeingEntityStep step : entity.getAgeingEntitySteps()) {
+    		Integer stepId = step.getUserStatus().getId();
+    		if (stepId.compareTo(statusId) > 0) {
+    			return stepId;
     		}
     	}
     	
     	return null;
     }
     
-    public static boolean isAgeingInUse(EntityEntityLocal entity) {
-        return entity.getSteps().size() > 1;
+    public static boolean isAgeingInUse(CompanyDTO entity) {
+        return entity.getAgeingEntitySteps().size() > 1;
     }
     
     /**
@@ -382,29 +370,19 @@ public class AgeingBL {
     public void reviewAll(Date today) 
             throws NamingException, CreateException, FinderException,
                 SessionInternalError, RemoveException, SQLException {
-        UserBL user = new UserBL();
-        Collection users;
-        
         // go over all the users already in the ageing system
-        try {
-            users = user.getHome().findAgeing();
-        } catch (FinderException e) {
-            // if there's no users againg, it's ok
-            return;
-        }
-        for (Iterator it = users.iterator(); it.hasNext(); ) {
-            UserEntityLocal userRow = (UserEntityLocal) it.next();
+        for (UserDTO userRow : new UserDAS().findAgeing()) {
             age(userRow, today);
         }
         
         // now go over the active users with payable invoices
+        UserBL user = new UserBL();
         CachedRowSet usersSql;
         try {
-            
             usersSql = user.findActiveWithOpenInvoices();
         } catch (Exception e) {
             // avoid further problems
-            log.error("Exception finding users to age", e);
+            LOG.error("Exception finding users to age", e);
             return;
         }
         
@@ -413,13 +391,13 @@ public class AgeingBL {
         while (usersSql.next()) {
             Integer userId = new Integer(usersSql.getInt(1));
             user.set(userId);
-            UserEntityLocal userRow = user.getEntity();
+            UserDTO userRow = user.getEntity();
             // get the grace period for the entity of this user
             PreferenceBL prefs = new PreferenceBL();
             prefs.set(userRow.getEntity().getId(), 
                     Constants.PREFERENCE_GRACE_PERIOD);
             int gracePeriod = prefs.getInt();
-            log.debug("Reviewing invoices of user:" + userRow.getUserId() +
+            LOG.debug("Reviewing invoices of user:" + userRow.getUserId() +
                     " grace: " + gracePeriod);
             // now go over this user's pending invoices
             for (Iterator it2 = invoiceBL.getHome().findProccesableByUser(
@@ -432,7 +410,7 @@ public class AgeingBL {
                 }
                 
                 if (userRow.getUserId().intValue() == 17) {
-                    log.debug("invoice " + invoice.getId() + " due+grace=" + cal.getTime() +
+                    LOG.debug("invoice " + invoice.getId() + " due+grace=" + cal.getTime() +
                         " today=" + today + " compare=" + (cal.getTime().compareTo(today)));
                 }
                     
@@ -448,7 +426,9 @@ public class AgeingBL {
     public String getWelcome(Integer entityId, Integer languageId, 
             Integer statusId) 
             throws NamingException, FinderException {
-        ageing = ageingHome.findStep(entityId, statusId);
+        AgeingEntityStep step = new AgeingEntityStepDAS().findStep(
+            entityId, statusId);
+        ageing = ageingHome.findByPrimaryKey(step.getId());
         return ageing.getWelcomeMessage(languageId);
     }
     
@@ -463,20 +443,22 @@ public class AgeingBL {
                 step <= UserDTOEx.STATUS_DELETED.intValue(); step++) {
             AgeingDTOEx newStep = new AgeingDTOEx();
             newStep.setStatusId(new Integer(step));
-            UserStatusEntityLocal statusRow = userStatusHome.findByPrimaryKey(
-                    new Integer(step));
+            UserStatusDTO statusRow = new UserStatusDAS().find(step);
             newStep.setStatusStr(statusRow.getDescription(
                         executorLanguageId));
             newStep.setCanLogin(statusRow.getCanLogin());
-            try {
-                ageing = ageingHome.findStep(entityId, new Integer(step));
+            AgeingEntityStep myStep = new AgeingEntityStepDAS().findStep(
+                    entityId, new Integer(step));
+            if (myStep != null) { // it doesn't have to be there
+                ageing = ageingHome.findByPrimaryKey(myStep.getId());
+
                 newStep.setDays(ageing.getDays());
                 newStep.setFailedLoginMessage(ageing.getFailedLoginMessage(
                         languageId));
                 newStep.setInUse(new Boolean(true));
                 newStep.setWelcomeMessage(ageing.getWelcomeMessage(
                         languageId));
-            } catch (FinderException e) {
+            } else {
                 newStep.setInUse(new Boolean(false));
             }
             result[step-1] = newStep;
@@ -487,37 +469,40 @@ public class AgeingBL {
     
     public void setSteps(Integer entityId, Integer languageId, 
             AgeingDTOEx[] steps) 
-            throws RemoveException, CreateException, NamingException {
-        log.debug("Setting a total of " + steps.length + " steps");
+            throws RemoveException, CreateException, NamingException, FinderException {
+        LOG.debug("Setting a total of " + steps.length + " steps");
         for (int f = 0; f < steps.length; f++) {
             // get the existing data for this step
-            log.debug("Processing step[" + f + "]:" + steps[f].getStatusId());
-            try {
-                ageing = ageingHome.findStep(entityId, steps[f].getStatusId());
-                log.debug("step present");
-            } catch (FinderException e) {
-                log.debug("step not present");
+            LOG.debug("Processing step[" + f + "]:" + steps[f].getStatusId());
+            AgeingEntityStep myStep = new AgeingEntityStepDAS().findStep(
+                    entityId, steps[f].getStatusId());
+            if (myStep != null) {
+                ageing = ageingHome.findByPrimaryKey(myStep.getId());
+
+                LOG.debug("step present");
+            } else {
+                LOG.debug("step not present");
                 ageing = null;
             }
             if (!steps[f].getInUse().booleanValue()) {
                 // delete if now is not wanted
                 if (ageing != null) {
-                    log.debug("Removig step.");
+                    LOG.debug("Removig step.");
                     ageing.remove();
                 } 
             } else {
                 // it is wanted
-                log.debug("welcome = " + steps[f].getWelcomeMessage());
+                LOG.debug("welcome = " + steps[f].getWelcomeMessage());
                 if (ageing == null) {
                     // create
-                    log.debug("Creating step.");
+                    LOG.debug("Creating step.");
                     ageingHome.create(entityId, steps[f].getStatusId(), 
                             steps[f].getWelcomeMessage(), 
                             steps[f].getFailedLoginMessage(), 
                             languageId, steps[f].getDays());
                 } else {
                     // update
-                    log.debug("Updating step.");
+                    LOG.debug("Updating step.");
                     ageing.setDays(steps[f].getDays());
                     ageing.setFailedLoginMessage(languageId,
                             steps[f].getFailedLoginMessage());

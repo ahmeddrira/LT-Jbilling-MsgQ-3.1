@@ -79,18 +79,18 @@
 					 scope="session"
 					 value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
 	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			property="customerDto" scope="session">
+			property="customer" scope="session">
 	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			property="customerDto.parentId" scope="session">
+			property="customer.parent" scope="session">
 	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="user.prompt.parent"/></td>
 		<td class="infodata">
 			<html:link page="/userMaintain.do?action=setup" 
 				       paramId="id" 
 					   paramName='<%=Constants.SESSION_CUSTOMER_DTO%>'
-					   paramProperty="customerDto.parentId">		
+					   paramProperty="customer.parent.baseUser.id">		
 			    <bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			         property="customerDto.parentId" scope="session"/></td>
+			         property="customer.parent.baseUser.id" scope="session"/></td>
 	        </html:link>
 	     </td>
 	</tr>
@@ -98,12 +98,12 @@
 		<td class="infoprompt"><bean:message key="user.prompt.invoiceChild"/></td>
 		<td class="infodata">
 		 	<logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'
-			 		property="customerDto.invoiceChild" 
+			 		property="customer.invoiceChild" 
 			 		value="1">
 			 		<bean:message key="all.prompt.yes"/>
 		 	</logic:equal>
 		 	<logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			 		property="customerDto.invoiceChild" 
+			 		property="customer.invoiceChild" 
 			 		value="0">
 			 		<bean:message key="all.prompt.no"/>
 		 	</logic:equal>
@@ -114,13 +114,13 @@
 	</logic:notEqual>
 	
 	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			property="customerDto" scope="session">
+			property="customer" scope="session">
 	<logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			property="customerDto.totalSubAccounts" scope="session">
+			property="customer.totalSubAccounts" scope="session">
 	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="user.prompt.totalSubAccounts"/></td>
 		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
-			property="customerDto.totalSubAccounts" scope="session"/></td>
+			property="customer.totalSubAccounts" scope="session"/></td>
 	</tr>
 	</logic:present>
 	</logic:present>

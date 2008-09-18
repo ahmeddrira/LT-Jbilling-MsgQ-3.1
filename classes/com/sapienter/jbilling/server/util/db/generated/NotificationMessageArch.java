@@ -35,7 +35,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="notification_message_arch")
@@ -43,7 +43,7 @@ public class NotificationMessageArch  implements java.io.Serializable {
 
 
      private int id;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private Integer typeId;
      private Date createDatetime;
      private String resultMessage;
@@ -57,7 +57,7 @@ public class NotificationMessageArch  implements java.io.Serializable {
         this.id = id;
         this.createDatetime = createDatetime;
     }
-    public NotificationMessageArch(int id, BaseUser baseUser, Integer typeId, Date createDatetime, String resultMessage, Set<NotificationMessageArchLine> notificationMessageArchLines) {
+    public NotificationMessageArch(int id, UserDTO baseUser, Integer typeId, Date createDatetime, String resultMessage, Set<NotificationMessageArchLine> notificationMessageArchLines) {
        this.id = id;
        this.baseUser = baseUser;
        this.typeId = typeId;
@@ -78,11 +78,11 @@ public class NotificationMessageArch  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
     

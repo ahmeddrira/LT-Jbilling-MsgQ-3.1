@@ -37,7 +37,7 @@ import javax.persistence.TemporalType;
 
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
-import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.generated.PaperInvoiceBatch;
 import com.sapienter.jbilling.server.util.db.generated.ProcessRun;
 
@@ -49,7 +49,7 @@ public class BillingProcessDTO  implements java.io.Serializable {
      private int id;
      private PeriodUnitDTO periodUnitDTO;
      private PaperInvoiceBatch paperInvoiceBatch;
-     private Company entity;
+     private CompanyDTO entity;
      private Date billingDate;
      private int periodValue;
      private int isReview;
@@ -62,7 +62,7 @@ public class BillingProcessDTO  implements java.io.Serializable {
     }
 
 	
-    public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo) {
+    public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO, CompanyDTO entity, Date billingDate, int periodValue, int isReview, int retriesToDo) {
         this.id = id;
         this.periodUnitDTO = periodUnitDTO;
         this.entity = entity;
@@ -71,7 +71,7 @@ public class BillingProcessDTO  implements java.io.Serializable {
         this.isReview = isReview;
         this.retriesToDo = retriesToDo;
     }
-    public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO, PaperInvoiceBatch paperInvoiceBatch, Company entity, Date billingDate, int periodValue, int isReview, int retriesToDo, Set<OrderProcessDTO> orderProcesses, Set<Invoice> invoices, Set<ProcessRun> processRuns) {
+    public BillingProcessDTO(int id, PeriodUnitDTO periodUnitDTO, PaperInvoiceBatch paperInvoiceBatch, CompanyDTO entity, Date billingDate, int periodValue, int isReview, int retriesToDo, Set<OrderProcessDTO> orderProcesses, Set<Invoice> invoices, Set<ProcessRun> processRuns) {
        this.id = id;
        this.periodUnitDTO = periodUnitDTO;
        this.paperInvoiceBatch = paperInvoiceBatch;
@@ -115,11 +115,11 @@ public class BillingProcessDTO  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id", nullable=false)
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     @Temporal(TemporalType.DATE)

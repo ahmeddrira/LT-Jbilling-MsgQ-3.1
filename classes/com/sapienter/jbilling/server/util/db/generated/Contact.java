@@ -35,9 +35,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="contact"
-    , uniqueConstraints = @UniqueConstraint(columnNames="user_id") 
-)
+@Table(name="contact", uniqueConstraints = @UniqueConstraint(columnNames="user_id"))
 public class Contact  implements java.io.Serializable {
 
 

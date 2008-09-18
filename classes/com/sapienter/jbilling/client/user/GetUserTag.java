@@ -105,24 +105,24 @@ public class GetUserTag extends TagSupport {
                 form.set("password", "");
                 form.set("language", dto.getLanguageId());
                 form.set("currencyId", dto.getCurrencyId());
-                if (dto.getCustomerDto() != null) {
+                if (dto.getCustomer() != null) {
                     form.set("deliveryMethodId", 
-                            dto.getCustomerDto().getInvoiceDeliveryMethodId());
+                            dto.getCustomer().getInvoiceDeliveryMethod().getId());
                     form.set("due_date_unit_id", 
-                            dto.getCustomerDto().getDueDateUnitId());
-                    form.set("due_date_value", dto.getCustomerDto()
+                            dto.getCustomer().getDueDateUnitId());
+                    form.set("due_date_value", dto.getCustomer()
                             .getDueDateValue() == null ? null : dto
-                            .getCustomerDto().getDueDateValue().toString());
-                    form.set("chbx_df_fm", new Boolean(dto.getCustomerDto().getDfFm() 
-                            == null ? false : dto.getCustomerDto().getDfFm().intValue() 
+                            .getCustomer().getDueDateValue().toString());
+                    form.set("chbx_df_fm", new Boolean(dto.getCustomer().getDfFm() 
+                            == null ? false : dto.getCustomer().getDfFm().intValue() 
                                     == 1));
                     form.set("chbx_excludeAging", new Boolean(
-                            dto.getCustomerDto().getExcludeAging() 
-                                == null ? false : 
-                            dto.getCustomerDto().getExcludeAging().intValue() == 1));
-                    if (dto.getCustomerDto().getPartnerId() != null) {
-                        form.set("partnerId", dto.getCustomerDto().getPartnerId()
-                                .toString());
+                            dto.getCustomer().getExcludeAging() 
+                                == 0 ? false : 
+                            dto.getCustomer().getExcludeAging() == 1));
+                    if (dto.getCustomer().getPartner() != null) {
+                        form.set("partnerId", String.valueOf(dto.getCustomer().getPartner().getId())
+                                );
                     } else {
                         form.set("partnerId", null);
                     }
@@ -135,9 +135,9 @@ public class GetUserTag extends TagSupport {
             
             // if this is a partner, leave the id in the session to allow for 
             // edition of its attributes
-            if (dto.getPartnerDto() != null) {
+            if (dto.getPartner() != null) {
                 session.setAttribute(Constants.SESSION_PARTNER_ID, 
-                        dto.getPartnerDto().getId());
+                        dto.getPartner().getId());
             } else {
                 // make sure there's no confusion
                 session.removeAttribute(Constants.SESSION_PARTNER_ID);

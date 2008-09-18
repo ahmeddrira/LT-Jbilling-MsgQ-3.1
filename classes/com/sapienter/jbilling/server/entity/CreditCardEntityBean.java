@@ -33,7 +33,9 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.interfaces.CreditCardUserEntityLocalHome;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
@@ -245,6 +247,23 @@ public abstract class CreditCardEntityBean implements EntityBean {
      */
     public abstract void setSecurityCode(Integer number);
 
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public void setUserId(Integer userId) {
+        try {
+            JNDILookup EJBFactory = JNDILookup.getFactory(false);
+            CreditCardUserEntityLocalHome creditCardHome = (CreditCardUserEntityLocalHome) 
+                    EJBFactory.lookUpLocalHome(
+                            CreditCardUserEntityLocalHome.class,
+                            CreditCardUserEntityLocalHome.JNDI_NAME);
+            creditCardHome.create(userId, getId());
+        } catch (Exception e) {
+            throw new SessionInternalError("Error setting the user-cc relationship", 
+                    CreditCardUserEntityBean.class,e);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see javax.ejb.EntityBean#ejbActivate()
      */

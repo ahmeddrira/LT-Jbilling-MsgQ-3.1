@@ -32,11 +32,12 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
 import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PromotionEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -122,22 +123,9 @@ public abstract class ItemEntityBean implements EntityBean {
     public void ejbPostCreate(Integer entityId, Float percentage, 
             Integer priceManual, String description, 
             Integer languageId, Integer hasDecimals) {
-                // set the entity
-        JNDILookup EJBFactory = null;
-        try {
-            EJBFactory = JNDILookup.getFactory(false); 
-
-            EntityEntityLocalHome entityHome =
-                    (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    EntityEntityLocalHome.class,
-                    EntityEntityLocalHome.JNDI_NAME);
-            EntityEntityLocal entityRow = entityHome.findByPrimaryKey(
-                    entityId);
-            setEntity(entityRow);
-            
-        } catch (Exception e) {
-            log.error(e);
-        }
+        // set the entity
+        CompanyDTO entityRow = new CompanyDAS().find(entityId);
+        setEntity(entityRow);
     }
 
     private DescriptionEntityLocal getDescriptionObject(Integer language) {
@@ -272,16 +260,16 @@ public abstract class ItemEntityBean implements EntityBean {
 
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="entity-items"
-     *               role-name="item-belongs-to-entity"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="entity_id"            
      */
-    public abstract EntityEntityLocal getEntity();
+    public CompanyDTO getEntity() {
+        return new ItemDAS().find(getId()).getEntity();
+    }
     /**
      * @ejb:interface-method view-type="local"
      */
-    public abstract void setEntity(EntityEntityLocal entity);
+    public void setEntity(CompanyDTO entity) {
+        new ItemDAS().find(getId()).setEntity(entity);
+    }
 
     /**
      * One-to-many unidirectional
@@ -336,7 +324,7 @@ public abstract class ItemEntityBean implements EntityBean {
     /**
      * @ejb.select query="SELECT up.price
      *                      FROM item AS it, IN (it.userPrices) up  
-     *                     WHERE up.user.userId = ?1
+     *                     WHERE up.userId = ?1
      *                       AND it.id = ?2"
      */
     public abstract float ejbSelectGetUserPrice(Integer userId, Integer itemId) 

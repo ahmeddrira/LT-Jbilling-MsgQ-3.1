@@ -31,16 +31,13 @@ import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 /**
  * @author Emil
  */
-public class PaymentEntityComparator implements Comparator {
+public class PaymentEntityComparator implements Comparator<PaymentEntityLocal> {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object o1, Object o2) {
-        PaymentEntityLocal parA = (PaymentEntityLocal) o1;
-        PaymentEntityLocal parB = (PaymentEntityLocal) o2;
-        
-        return parA.getId().compareTo(parB.getId());
+    public int compare(PaymentEntityLocal o1, PaymentEntityLocal o2) {
+        return o1.getId().compareTo(o2.getId());
     }
 
 }

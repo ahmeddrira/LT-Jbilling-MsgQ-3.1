@@ -32,6 +32,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+
 @Entity
 @Table(name="notification_message")
 public class NotificationMessage  implements java.io.Serializable {
@@ -39,8 +42,8 @@ public class NotificationMessage  implements java.io.Serializable {
 
      private int id;
      private NotificationMessageType notificationMessageType;
-     private Company entity;
-     private Language language;
+     private CompanyDTO entity;
+     private LanguageDTO language;
      private short useFlag;
      private Set<NotificationMessageSection> notificationMessageSections = new HashSet<NotificationMessageSection>(0);
 
@@ -48,13 +51,13 @@ public class NotificationMessage  implements java.io.Serializable {
     }
 
 	
-    public NotificationMessage(int id, Company entity, Language language, short useFlag) {
+    public NotificationMessage(int id, CompanyDTO entity, LanguageDTO language, short useFlag) {
         this.id = id;
         this.entity = entity;
         this.language = language;
         this.useFlag = useFlag;
     }
-    public NotificationMessage(int id, NotificationMessageType notificationMessageType, Company entity, Language language, short useFlag, Set<NotificationMessageSection> notificationMessageSections) {
+    public NotificationMessage(int id, NotificationMessageType notificationMessageType, CompanyDTO entity, LanguageDTO language, short useFlag, Set<NotificationMessageSection> notificationMessageSections) {
        this.id = id;
        this.notificationMessageType = notificationMessageType;
        this.entity = entity;
@@ -84,20 +87,20 @@ public class NotificationMessage  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id", nullable=false)
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="language_id", nullable=false)
-    public Language getLanguage() {
+    public LanguageDTO getLanguage() {
         return this.language;
     }
     
-    public void setLanguage(Language language) {
+    public void setLanguage(LanguageDTO language) {
         this.language = language;
     }
     

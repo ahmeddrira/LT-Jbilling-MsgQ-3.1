@@ -26,20 +26,20 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 public class TestNotificationTask extends PluggableTask implements NotificationTask {
     
     public static final String PARAMETER_FROM = "from";
     public static final Logger LOG = Logger.getLogger(TestNotificationTask.class);
 
-    public void deliver(UserEntityLocal user, MessageDTO sections)
+    public void deliver(UserDTO user, MessageDTO sections)
             throws TaskException {
         String directory = Util.getSysProp("base_dir");
         try {

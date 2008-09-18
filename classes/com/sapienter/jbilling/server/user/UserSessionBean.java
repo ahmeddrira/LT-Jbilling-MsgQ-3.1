@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -42,21 +43,23 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.AchEntityLocal;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
-import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
+import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.generated.Ach;
+import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 /**
  *
@@ -78,7 +81,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
 
 public class UserSessionBean implements SessionBean, PartnerSQL {
 
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(UserSessionBean.class);
     private SessionContext context = null;
     
 
@@ -95,12 +98,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             throws SessionInternalError {
         Integer result = Constants.AUTH_WRONG_CREDENTIALS;
         try {
-            log.debug("Authentication of " + clientUser.getUserName() + 
+            LOG.debug("Authentication of " + clientUser.getUserName() + 
             		" password = [" + clientUser.getPassword() + "]" +
                     " entity = " + clientUser.getEntityId());
             UserDTOEx dbUser = DTOFactory.getUserDTO(clientUser.getUserName(), 
                     clientUser.getEntityId());
-            log.debug("DB password is [" + dbUser.getPassword() + "]");
+            if (dbUser == null) return result; // username is wrong (not found in DB)
+            LOG.debug("DB password is [" + dbUser.getPassword() + "]");
             // the permissions and menu will get loaded only for
             // successfulls logins
             UserBL user = new UserBL();
@@ -114,16 +118,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                 }
             }
 
-        } catch (FinderException e) {
-        	// the username is invalid and wasn't found in the database
-        	// result is null, no need for details
         } catch (Exception e) { // all the rest are internal error
             // I catch everything here, and let know to the client that an
             // internal error has happened.
             throw new SessionInternalError(e);
         }
         
-        log.debug("result is " + result);
+        LOG.debug("result is " + result);
         return result;
     }
     
@@ -140,8 +141,8 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         try {
             UserBL bl = new UserBL(username, entityId);
             retValue = DTOFactory.getUserDTOEx(bl.getEntity());
-            retValue.setPermissions(bl.getPermissions());
-            retValue.setMenu(bl.getMenu(retValue.getPermissions()));
+            retValue.setAllPermissions(bl.getPermissions());
+            retValue.setMenu(bl.getMenu(retValue.getAllPermissions()));
         } catch (Exception e) {
             throw new SessionInternalError(e);
         } 
@@ -149,23 +150,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         return retValue;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @return null if authentication fails, otherwise the id of the entity
-     */
-    public Integer authenticateEntity(String rootUserName, String externalId) {
-        Integer retValue = null;
-        try {
-            EntityBL entity = new EntityBL(externalId);
-            UserBL user = new UserBL(rootUserName, entity.getEntity().getId());
-            if (user.getMainRole().equals(Constants.TYPE_ROOT)) {
-                retValue = entity.getEntity().getId();
-            }
-        } catch (Exception e) {
-        } 
-        return retValue;
-    }    
-    
     /**
      * @ejb:interface-method view-type="remote"
      * @return the new user id if everthing ok, or null if the username is already 
@@ -182,11 +166,11 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                 Integer userId = bl.create(newUser);
                 if (userId != null) {
                     // children inherit the contact of the parent user
-                    if (newUser.getCustomerDto() != null && 
-                            newUser.getCustomerDto().getParentId() != null) {
+                    if (newUser.getCustomer() != null && 
+                            newUser.getCustomer().getParent() != null) {
                         cBl.setFromChild(userId);
                         contact = cBl.getDTO();
-                        log.debug("Using parent's contact " + contact.getId());
+                        LOG.debug("Using parent's contact " + contact.getId());
                     }
                     cBl.createPrimaryForUser(contact, userId, newUser.getEntityId());
                 } else {
@@ -213,11 +197,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         try {
             // start by creating the new entity
             EntityBL bl = new EntityBL();
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            LanguageEntityLocalHome languageHome = (LanguageEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(  LanguageEntityLocalHome.class,
-                            LanguageEntityLocalHome.JNDI_NAME);
-            Integer languageId = languageHome.findByCode(language).getId();
+            Integer languageId = new LanguageDAS().findByCode(language).getId();
             Integer entityId = bl.create(user, contact, languageId);
             
             final String notCryptedPassword = user.getPassword();
@@ -262,7 +242,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         try {
             UserBL user = new UserBL(userName, entityId);
             dto = user.getDto();
-        } catch (FinderException e) {
         } catch (Exception e) { 
             throw new SessionInternalError(e);
         }
@@ -361,7 +340,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public void updatePartner(Integer executorId, PartnerDTOEx dto) 
+    public void updatePartner(Integer executorId, Partner dto) 
             throws SessionInternalError {
         try {
             PartnerBL bl = new PartnerBL(dto.getId());
@@ -375,7 +354,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * @ejb:interface-method view-type="remote"
      */
     public void updatePartnerRanges(Integer executorId, Integer partnerId, 
-            PartnerRangeDTO[] ranges) 
+            PartnerRange[] ranges) 
             throws SessionInternalError {
         try {
             PartnerBL bl = new PartnerBL(partnerId);
@@ -396,7 +375,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             bl.set(userId);
             return bl.getDTO();
         } catch (Exception e) {
-            log.error("Exception retreiving the customer contact", e);
+            LOG.error("Exception retreiving the customer contact", e);
             throw new SessionInternalError("Customer primary contact");
         }
     }
@@ -483,6 +462,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         
         try {
             dto = DTOFactory.getUserDTOEx(userId);
+            dto.touch();
         } catch (FinderException e) {
             throw new FinderException();
         } catch (Exception e) {
@@ -522,6 +502,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             UserBL bl = new UserBL();
             bl.set(userName, entityId);
             dto = DTOFactory.getUserDTOEx(bl.getEntity());
+            dto.touch();
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -540,8 +521,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             CreditCardBL ccBL = new CreditCardBL();
             ccBL.create(dto);
             // now find this user to add the cc to it
-            UserBL userBL = new UserBL(userId);
-            userBL.getEntity().getCreditCard().add(ccBL.getEntity());
+            ccBL.getEntity().setUserId(userId);
             
             return ccBL.getEntity().getId();
         } catch (Exception e) {
@@ -581,7 +561,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
     
-    private void updateCreditCard(UserEntityLocal user, 
+    private void updateCreditCard(UserDTO user, 
             CreditCardDTO dto, Integer executorId) 
             throws SessionInternalError {
         // find this user and get the first cc
@@ -592,9 +572,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             userBL.set(user);
             // if it starts with a *, it is passing a masked cc, which means no update
             if (dto != null && (dto.getNumber() == null || dto.getNumber().charAt(0) != '*')) { // it is providing a new cc
-                if (!userBL.getEntity().getCreditCard().isEmpty()) {
-                    CreditCardBL ccBL = new CreditCardBL((CreditCardEntityLocal)
-                            userBL.getEntity().getCreditCard().iterator().next());
+                if (!userBL.getEntity().getCreditCards().isEmpty()) {
+                    CreditCardBL ccBL = new CreditCardBL(((CreditCard)
+                            userBL.getEntity().getCreditCards().iterator().next()).getId());
                     ccBL.update(executorId, dto);
                 } else { // this is really a create
                     createCreditCard(user.getUserId(), dto);
@@ -617,7 +597,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     	try {
     		UserBL user = new UserBL(userId);
             if (user.getEntity().getCustomer() == null) {
-                log.warn("Trying to update the automatic payment type of a " +
+                LOG.warn("Trying to update the automatic payment type of a " +
                         "non customer");
                 return;
             }
@@ -678,9 +658,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 			throws SessionInternalError {
 		try {
 			UserBL user = new UserBL(userId);
-			AchEntityLocal ach = user.getEntity().getAch();
-			if (ach != null) {
-				AchBL bl = new AchBL(ach);
+			Set<Ach> ach = user.getEntity().getAchs();
+			if (ach.size() > 0) {
+				AchBL bl = new AchBL(((Ach)ach.toArray()[0]).getId());
 				return bl.getDTO();
 			} 
 			return null;
@@ -697,9 +677,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 			throws SessionInternalError {
 		try {
 			UserBL user = new UserBL(userId);
-			AchEntityLocal ach = user.getEntity().getAch();
-			if (ach != null) {
-				AchBL bl = new AchBL(ach);
+            Set<Ach> ach = user.getEntity().getAchs();
+            if (ach.size() > 0) {
+                AchBL bl = new AchBL(((Ach)ach.toArray()[0]).getId());
 				bl.delete(executorId);
 			}
 		} catch (Exception e) {
@@ -718,9 +698,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         try {
             // find this user and get the first cc
             UserBL userBL = new UserBL(userId);
-            if (!userBL.getEntity().getCreditCard().isEmpty()) {
-                CreditCardBL ccBL = new CreditCardBL((CreditCardEntityLocal)
-                        userBL.getEntity().getCreditCard().iterator().next());
+            if (!userBL.getEntity().getCreditCards().isEmpty()) {
+                CreditCardBL ccBL = new CreditCardBL(((CreditCard)
+                        userBL.getEntity().getCreditCards().toArray()[0]).getId());
                 retValue = ccBL.getDTO();
             } else { // return a blank one
                 retValue = null;
@@ -750,15 +730,15 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 
             if (result == null  || result.trim().length() == 0) {
                 result = preference.getDefaultAsString(preferenceId);
-                log.debug("Using default");
+                LOG.debug("Using default");
             }
             
             if (result == null) {
-                log.warn("Preference " + preferenceId + " does not have a " +
+                LOG.warn("Preference " + preferenceId + " does not have a " +
                         " default.");
             }
         
-            log.debug("result for " + preferenceId + " =" + result);
+            LOG.debug("result for " + preferenceId + " =" + result);
             return result;    
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -779,7 +759,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             bl.setEntity(entityId);
             return bl.getDTO();
         } catch (Exception e) {
-            log.error("Exception retreiving the entity contact", e);
+            LOG.error("Exception retreiving the entity contact", e);
             throw new SessionInternalError("Customer primary contact");
         }
     }
@@ -880,7 +860,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             String strValue, Float floatValue) 
         throws SessionInternalError {
         try {
-            log.debug("updateing preference " + typeId + " for user " +
+            LOG.debug("updateing preference " + typeId + " for user " +
                     userId);
             PreferenceBL preference = new PreferenceBL();
             preference.createUpdateForUser(userId, typeId, intValue, strValue, 
@@ -902,7 +882,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             String paramStr, Integer paramInt, Float paramFloat) 
             throws SessionInternalError {
         try {
-        	log.debug("updateing preference " + preferenceId + " for entity " +
+        	LOG.debug("updateing preference " + preferenceId + " for entity " +
         			entityId);
             PreferenceBL preference = new PreferenceBL();
             preference.createUpdateForEntity(entityId, preferenceId, paramInt, 
@@ -922,14 +902,12 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         try {
             // find this user and get the first cc
             UserBL userBL = new UserBL(userId);
-            Iterator it = userBL.getEntity().getCreditCard().iterator();
+            Iterator it = userBL.getEntity().getCreditCards().iterator();
             while (it.hasNext()) {
-                CreditCardBL bl = new CreditCardBL((CreditCardEntityLocal)
-                        it.next());
+                CreditCardBL bl = new CreditCardBL(((CreditCard)
+                        it.next()).getId());
                 bl.delete(executorId);
             } 
-            
-            userBL.getEntity().getCreditCard().clear();
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -962,18 +940,18 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         String retValue;
         try {
             AgeingBL age = new AgeingBL();
-            log.debug("Getting welcome message for " + entityId +
+            LOG.debug("Getting welcome message for " + entityId +
                     " language " + languageId + " status " + statusId);
             try {
                 retValue = age.getWelcome(entityId, languageId, statusId);
                 //log.debug("welcome = " + retValue);
             } catch (FinderException e1) {
-                log.warn("No message found. Looking for active status");
+                LOG.warn("No message found. Looking for active status");
                 try {
                     retValue = age.getWelcome(entityId, languageId, 
                             UserDTOEx.STATUS_ACTIVE);
                 } catch (FinderException e2) {
-                    log.warn("Using welcome default");
+                    LOG.warn("Using welcome default");
                     retValue = "Welcome!";
                 }
             }
@@ -992,9 +970,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     * @ejb:create-method view-type="remote"
     */
     public void ejbCreate() throws CreateException {
-        if (log == null) {
-            log = Logger.getLogger(UserSessionBean.class);
-    	} 
     }
 
     /**
@@ -1040,7 +1015,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     public void processPayout(Integer partnerId) 
             throws SessionInternalError {
         try {
-            log.debug("Processing partner " + partnerId);
+            LOG.debug("Processing partner " + partnerId);
             PartnerBL partnerBL = new PartnerBL();
             partnerBL.processPayout(partnerId);
         } catch (Exception e) {
@@ -1051,7 +1026,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public PartnerPayoutDTOEx calculatePayout(Integer partnerId, Date start, 
+    public PartnerPayout calculatePayout(Integer partnerId, Date start, 
             Date end, Integer currencyId) 
             throws SessionInternalError {
         try {
@@ -1070,11 +1045,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public PartnerDTOEx getPartnerDTO(Integer partnerId) 
+    public Partner getPartnerDTO(Integer partnerId) 
             throws SessionInternalError, FinderException {
         try {
             PartnerBL partnerBL = new PartnerBL(partnerId);
-            return partnerBL.getDTO();
+            Partner retValue = partnerBL.getDTO();
+            retValue.touch();
+            return retValue;
         } catch (NamingException e) {
             throw new SessionInternalError(e);
         }
@@ -1083,7 +1060,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public PartnerPayoutDTOEx getPartnerLastPayoutDTO(Integer partnerId) 
+    public PartnerPayout getPartnerLastPayoutDTO(Integer partnerId) 
             throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL();
@@ -1096,7 +1073,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public PartnerPayoutDTOEx getPartnerPayoutDTO(Integer payoutId) 
+    public PartnerPayout getPartnerPayoutDTO(Integer payoutId) 
             throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL();
@@ -1173,7 +1150,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 
     public void setSessionContext(SessionContext aContext)
             throws EJBException {
-        log = Logger.getLogger(UserSessionBean.class);
         context = aContext;
     }
 

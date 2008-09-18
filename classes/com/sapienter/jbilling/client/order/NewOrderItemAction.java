@@ -47,7 +47,7 @@ import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 /**
  * @author Emil
@@ -104,7 +104,7 @@ public class NewOrderItemAction extends Action {
                 summary = (OrderDTO) session.getAttribute(
                         Constants.SESSION_ORDER_SUMMARY);   
                         
-                BaseUser user = new BaseUser();
+                UserDTO user = new UserDTO();
                 user.setId((Integer) session.getAttribute(
                         Constants.SESSION_USER_ID));
                 summary.setBaseUserByCreatedBy(user);

@@ -49,7 +49,7 @@ public class PromotionDTOEx extends PromotionDTO {
         Integer once,
         Date since,
         Date until, Integer itemId) {
-        super(id, code, notes, once, since, until);
+        super(id, code, notes, once, null, since, until);
         this.itemId = itemId; 
     }
 

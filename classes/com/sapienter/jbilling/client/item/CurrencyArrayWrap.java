@@ -24,7 +24,7 @@
  */
 package com.sapienter.jbilling.client.item;
 
-import com.sapienter.jbilling.server.entity.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  * @author Emil

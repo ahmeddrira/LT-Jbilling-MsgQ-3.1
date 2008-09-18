@@ -22,8 +22,7 @@ package com.sapienter.jbilling.server.util.db;
 
 import java.io.Serializable;
 
-import javax.persistence.Transient;
-
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
 
 public abstract class AbstractDescription implements Serializable {
@@ -37,16 +36,22 @@ public abstract class AbstractDescription implements Serializable {
      * Returns the description.
      * @return String
      */
-    @Transient
     public String getDescription(Integer languageId) {
+        return getDescription(languageId, "description");
+    }
+    
+    public String getDescription(Integer languageId, String label) {
+        if (label == null || languageId == null) {
+            throw new SessionInternalError("Null parameters " + label + " " + languageId);
+        }
         JbillingTableDAS jt = new JbillingTableDAS();
-        
         DescriptionDAS de = new DescriptionDAS();
         InternationalDescriptionId iid = new InternationalDescriptionId(jt.findByName(
-        		getTable()).getId(), getId(), "description", languageId);
+                getTable()).getId(), getId(), label, languageId);
         InternationalDescription desc = de.find(iid);
         
         return desc.getContent();
+        
     }
     /**
      * Sets the description.

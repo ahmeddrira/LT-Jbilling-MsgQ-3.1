@@ -41,7 +41,7 @@ public class PartnerTest extends TestCase {
 
     public void testPartnerGeneral() {
         try {
-            PartnerDTOEx partner = null;
+            Partner partner = null;
             UserSessionHome userHome =
                     (UserSessionHome) JNDILookup.getFactory(true).lookUpHome(
                     UserSessionHome.class,

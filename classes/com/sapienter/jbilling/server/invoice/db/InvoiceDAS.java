@@ -20,8 +20,26 @@
 
 package com.sapienter.jbilling.server.invoice.db;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class InvoiceDAS extends AbstractDAS<Invoice> {
+    // used for the web services call to get the latest X 
+    public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
+        Criteria criteria = getSession().createCriteria(Invoice.class)
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUser", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .setProjection(Projections.id())
+                .addOrder(Order.desc("id"))
+                .setMaxResults(maxResults);
+        return criteria.list();
+    }
 
 }

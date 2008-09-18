@@ -26,15 +26,26 @@
 package com.sapienter.jbilling.server.user;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.UserDTO;
 
 /**
  * @author Emil
  * @jboss-net.xml-schema urn="sapienter:UserWS"
  */
-public class UserWS extends UserDTO implements Serializable {
+public class UserWS implements Serializable {
+    private int id;
+    private Integer currencyId;
+    private String password;
+    private int deleted;
+    private Date createDatetime;
+    private Date lastStatusChange;
+    private Date lastLogin;
+    private String userName;
+    private int failedAttempts;
+    private Integer languageId;
+
     private CreditCardDTO creditCard = null;
     private ContactWS contact = null;
     private String role = null;
@@ -47,7 +58,8 @@ public class UserWS extends UserDTO implements Serializable {
     private Integer parentId = null;
     private Boolean isParent = null;
     private Boolean invoiceChild = null;
-    
+    private Integer mainOrderId = null;
+
     public Integer getPartnerId() {
         return partnerId;
     }
@@ -59,7 +71,17 @@ public class UserWS extends UserDTO implements Serializable {
     }
     
     public UserWS(UserDTOEx dto) {
-        super(dto);
+        id = dto.getId();
+        currencyId = dto.getCurrencyId();
+        password = dto.getPassword();
+        deleted = dto.getDeleted();
+        createDatetime = dto.getCreateDatetime();
+        lastStatusChange = dto.getLastStatusChange();
+        lastLogin = dto.getLastLogin();
+        userName = dto.getUserName();
+        failedAttempts = dto.getFailedAttempts();
+        languageId = dto.getLanguageId();
+
         creditCard = dto.getCreditCard();
         role = dto.getMainRoleStr();
         mainRoleId = dto.getMainRoleId();
@@ -68,20 +90,20 @@ public class UserWS extends UserDTO implements Serializable {
         role = dto.getMainRoleStr();
         statusId = dto.getStatusId();
         subscriberStatusId = dto.getSubscriptionStatusId();
-        if (dto.getCustomerDto() != null) {
-            partnerId = dto.getCustomerDto().getPartnerId();
-            parentId = dto.getCustomerDto().getParentId();
-            isParent = dto.getCustomerDto().getIsParent() == null ? false : 
-                dto.getCustomerDto().getIsParent().equals(new Integer(1));
-            invoiceChild = dto.getCustomerDto().getInvoiceChild() == null ? false : 
-                dto.getCustomerDto().getInvoiceChild().equals(new Integer(1));
+        if (dto.getCustomer() != null) {
+            partnerId = (dto.getCustomer().getPartner() == null) ? null : dto.getCustomer().getPartner().getId();
+            parentId = (dto.getCustomer().getParent() == null) ? null : dto.getCustomer().getParent().getBaseUser().getId();
+            isParent = dto.getCustomer().getIsParent() == null ? false : 
+                dto.getCustomer().getIsParent().equals(new Integer(1));
+            invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : 
+                dto.getCustomer().getInvoiceChild().equals(new Integer(1));
         }
     }
     
     public String toString() {
-        return "credit card = [" + creditCard + "] contact = [" +
-                contact + "] type = [" + role + "] language = [" +
-                language + "] status = [" + status + "] statusId = [" +
+        return "id = [" + id + "] credit card = [" + creditCard + "] contact = [" +
+                contact + "] type = [" + role + "] language = [" + languageId +
+                language + "]  status = [" + status + "] statusId = [" +
                 statusId + "] subscriberStatusId = [" + subscriberStatusId +
                 "] roleId = [" + mainRoleId + "] " +  " parentId = [" + parentId +
                 "] " + super.toString();
@@ -207,6 +229,72 @@ public class UserWS extends UserDTO implements Serializable {
     }
     public void setInvoiceChild(Boolean invoiceChild) {
         this.invoiceChild = invoiceChild;
+    }
+    public Date getCreateDatetime() {
+        return createDatetime;
+    }
+    public void setCreateDatetime(Date createDatetime) {
+        this.createDatetime = createDatetime;
+    }
+    public Integer getCurrencyId() {
+        return currencyId;
+    }
+    public void setCurrencyId(Integer currencyId) {
+        this.currencyId = currencyId;
+    }
+    public int getDeleted() {
+        return deleted;
+    }
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
+    }
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+    public int getUserId() {
+        return id;
+    }
+    public void setUserId(int id) {
+        this.id = id;
+    }
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+    public Date getLastStatusChange() {
+        return lastStatusChange;
+    }
+    public void setLastStatusChange(Date lastStatusChange) {
+        this.lastStatusChange = lastStatusChange;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public Integer getLanguageId() {
+        return languageId;
+    }
+    public void setLanguageId(Integer languageId) {
+        this.languageId = languageId;
+    }
+    public Integer getMainOrderId() {
+        return mainOrderId;
+    }
+    public void setMainOrderId(Integer mainOrderId) {
+        this.mainOrderId = mainOrderId;
     }
 
 

@@ -38,17 +38,18 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.PartnerDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 
 public class PartnerMaintainAction extends Action {
 
+    private final static Logger LOG = Logger.getLogger(PromotionMaintainAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         
-        Logger log = Logger.getLogger(PromotionMaintainAction.class);
+        
         try {
             JNDILookup EJBFactory = JNDILookup.getFactory(false);
             UserSessionHome userHome =
@@ -93,19 +94,19 @@ public class PartnerMaintainAction extends Action {
                 
                 // now the partner
                 session.setAttribute(Constants.SESSION_PARTNER_DTO,
-                        dto.getPartnerDto());
+                        dto.getPartner());
                 
                 // the contact
                 session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                         userSession.getPrimaryContactDTO(dto.getUserId()));
                         
                 // the latest payout, if any available
-                log.debug("Partner has " + dto.getPartnerDto().getPayouts().length
+                LOG.debug("Partner has " + dto.getPartner().getPartnerPayouts().size()
                         + " payouts");
-                if (dto.getPartnerDto().getPayouts().length > 0) {
+                if (dto.getPartner().getPartnerPayouts().size() > 0) {
                     session.setAttribute(Constants.SESSION_PAYOUT_DTO,
                             userSession.getPartnerLastPayoutDTO(
-                                dto.getPartnerDto().getId()));
+                                dto.getPartner().getId()));
                 } else {
                     session.removeAttribute(Constants.SESSION_PAYOUT_DTO);
                 }
@@ -126,7 +127,7 @@ public class PartnerMaintainAction extends Action {
                             != null) {
                     
                     session.setAttribute(Constants.SESSION_PARTNER_ID,
-                            ((PartnerDTO) session.getAttribute(
+                            ((Partner) session.getAttribute(
                                     Constants.SESSION_PARTNER_DTO)).getId());
                 }
                 PartnerCrudAction delegate = new PartnerCrudAction(userSession);
@@ -134,7 +135,7 @@ public class PartnerMaintainAction extends Action {
                 return delegate.execute(mapping, form, request, response);
             }
         } catch (Exception e) {
-            log.error("Exception ", e);
+            LOG.error("Exception ", e);
         }
         
         return mapping.findForward("error");

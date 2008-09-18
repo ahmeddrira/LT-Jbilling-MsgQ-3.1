@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.notification;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -37,13 +36,13 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.NotificationMessageArchiveEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationMessageArchiveEntityLocalHome;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -165,7 +164,7 @@ public class NotificationSessionBean implements SessionBean {
     * @ejb:interface-method view-type="local"
     * @ejb.transaction type="Required"
     */
-    public Boolean notify(UserEntityLocal user, MessageDTO message) 
+    public Boolean notify(UserDTO user, MessageDTO message) 
             throws SessionInternalError {
         
         Boolean retValue = new Boolean(true);
@@ -195,12 +194,10 @@ public class NotificationSessionBean implements SessionBean {
                     NotificationMessageArchiveEntityLocalHome.class,
                     NotificationMessageArchiveEntityLocalHome.JNDI_NAME);
             
-            Collection userMessages = user.getArchivedMessages();
-            
             while (task != null) {
                 NotificationMessageArchiveEntityLocal messageRecord =
                         messageHome.create(message.getTypeId(), sections);
-                userMessages.add(messageRecord);
+                messageRecord.setUserId(user.getId());
                 try {
                     task.deliver(user, message);
                 } catch (TaskException e) {

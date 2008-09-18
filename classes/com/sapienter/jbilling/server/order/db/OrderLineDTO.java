@@ -297,7 +297,9 @@ public class OrderLineDTO implements Serializable, Comparable {
 	
 	public void touch() {
 		getCreateDatetime();
-		getItem().getInternalNumber();
+		if (getItem() != null) {
+            getItem().getInternalNumber();
+        }
 		getEditable();
 	}
 	

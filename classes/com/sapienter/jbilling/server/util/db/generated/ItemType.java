@@ -34,6 +34,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 @Entity
 @Table(name="item_type")
@@ -41,7 +42,7 @@ public class ItemType  implements java.io.Serializable {
 
 
      private int id;
-     private Company entity;
+     private CompanyDTO entity;
      private String description;
      private int orderLineTypeId;
      private Set<Item> items = new HashSet<Item>(0);
@@ -50,12 +51,12 @@ public class ItemType  implements java.io.Serializable {
     }
 
 	
-    public ItemType(int id, Company entity, int orderLineTypeId) {
+    public ItemType(int id, CompanyDTO entity, int orderLineTypeId) {
         this.id = id;
         this.entity = entity;
         this.orderLineTypeId = orderLineTypeId;
     }
-    public ItemType(int id, Company entity, String description, int orderLineTypeId, Set<Item> items) {
+    public ItemType(int id, CompanyDTO entity, String description, int orderLineTypeId, Set<Item> items) {
        this.id = id;
        this.entity = entity;
        this.description = description;
@@ -75,11 +76,11 @@ public class ItemType  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id", nullable=false)
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     

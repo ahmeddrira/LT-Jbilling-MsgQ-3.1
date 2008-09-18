@@ -31,7 +31,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="report_user")
@@ -39,7 +39,7 @@ public class ReportUser  implements java.io.Serializable {
 
 
      private int id;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private Report report;
      private Date createDatetime;
      private String title;
@@ -52,7 +52,7 @@ public class ReportUser  implements java.io.Serializable {
         this.id = id;
         this.createDatetime = createDatetime;
     }
-    public ReportUser(int id, BaseUser baseUser, Report report, Date createDatetime, String title) {
+    public ReportUser(int id, UserDTO baseUser, Report report, Date createDatetime, String title) {
        this.id = id;
        this.baseUser = baseUser;
        this.report = report;
@@ -72,11 +72,11 @@ public class ReportUser  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
 @ManyToOne(fetch=FetchType.LAZY)

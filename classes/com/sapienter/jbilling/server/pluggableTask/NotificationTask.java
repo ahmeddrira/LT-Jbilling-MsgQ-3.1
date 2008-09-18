@@ -20,8 +20,8 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 /*
  * Each task is resposaible of verifying if it should run or not,
@@ -32,6 +32,6 @@ import com.sapienter.jbilling.server.notification.MessageDTO;
  * provided.   
  */
 public interface NotificationTask {
-    public void deliver(UserEntityLocal user, MessageDTO sections)
+    public void deliver(UserDTO user, MessageDTO sections)
             throws TaskException;
 }

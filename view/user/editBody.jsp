@@ -245,23 +245,25 @@
 			 </tr>
 	 	</jbilling:permission>		
 	 	
-	 	<logic:present name='<%=Constants.PAGE_USER_DTO%>' property="customerDto">
+	 	<logic:present name='<%=Constants.PAGE_USER_DTO%>' property="customer">
+	 	<logic:present name='<%=Constants.PAGE_USER_DTO%>' property="customer.parent">
 	 	<tr class="form">
 	  	 	 <td></td>
 			 <td class="form_prompt"><bean:message key="user.prompt.parent"/></td>
-			 <td><bean:write name='<%=Constants.PAGE_USER_DTO%>'  property="customerDto.parentId" scope="page"/></td>
+			 <td><bean:write name='<%=Constants.PAGE_USER_DTO%>'  property="customer.parent.baseUser.id" scope="page"/></td>
 		 </tr>
+		 </logic:present>
 	 	<tr class="form">
 		 	 <td></td>
 			 <td class="form_prompt"><bean:message key="user.prompt.isParent"/></td>
 			 <td>
 			 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
-			 		property="customerDto.isParent" 
+			 		property="customer.isParent" 
 			 		scope="page" value="1">
 			 		<bean:message key="all.prompt.yes"/>
 			 	</logic:equal>
 			 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
-			 		property="customerDto.isParent" 
+			 		property="customer.isParent" 
 			 		scope="page" value="0">
 			 		<bean:message key="all.prompt.no"/>
 			 	</logic:equal>
@@ -272,12 +274,12 @@
 			 <td class="form_prompt"><bean:message key="user.prompt.invoiceChild"/></td>
 			 <td>
 		 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
-			 		property="customerDto.invoiceChild" 
+			 		property="customer.invoiceChild" 
 			 		scope="page" value="1">
 			 		<bean:message key="all.prompt.yes"/>
 		 	</logic:equal>
 		 	<logic:equal name='<%=Constants.PAGE_USER_DTO%>'  
-			 		property="customerDto.invoiceChild" 
+			 		property="customer.invoiceChild" 
 			 		scope="page" value="0">
 			 		<bean:message key="all.prompt.no"/>
 		 	</logic:equal>

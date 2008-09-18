@@ -152,8 +152,8 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
         try {
             UserBL user = new UserBL(userId);
             PluggableTaskBL task = new PluggableTaskBL(taskId);
-            if (!user.getEntity().getEntity().getId().equals(
-                    task.getDTO().getEntityId())) {
+            if (user.getEntity().getEntity().getId() !=
+                    task.getDTO().getEntityId()) {
                 throw new SecurityException("Unauthorize access to user " + 
                         userId);
             }

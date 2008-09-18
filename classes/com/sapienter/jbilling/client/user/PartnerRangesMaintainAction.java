@@ -25,6 +25,7 @@ package com.sapienter.jbilling.client.user;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts.action.ActionError;
@@ -36,8 +37,8 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.PartnerRangeDTO;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 
 /**
  * @author Emil
@@ -84,18 +85,18 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
         String to[] = (String[]) myForm.get(FIELD_RANGE_TO);
         String percentage[] = (String[]) myForm.get(FIELD_PERCENTAGE);
         String referral[] = (String[]) myForm.get(FIELD_REFERRAL_FEE);
-        List<PartnerRangeDTO> ranges = new ArrayList<PartnerRangeDTO>(from.length);
+        List<PartnerRange> ranges = new ArrayList<PartnerRange>(from.length);
         
         for (int f = 0; f < from.length; f++) {
             if (from[f] != null && from[f].trim().length() > 0) {
-                PartnerRangeDTO range = new PartnerRangeDTO();
+                PartnerRange range = new PartnerRange();
                 try {
                     range.setRangeFrom(parseInteger(from[f]));
                     range.setRangeTo(parseInteger(to[f]));
-                    range.setPercentageRate(string2float(percentage[f]));
-                    range.setReferralFee(string2float(referral[f]));
+                    range.setPercentageRate(string2double(percentage[f]));
+                    range.setReferralFee(string2double(referral[f]));
 
-                    if (range.getRangeFrom() == null || range.getRangeTo() == null ||
+                    if (range.getRangeFrom() == 0 || range.getRangeTo() == 0 ||
                             (range.getPercentageRate() == null && range.getReferralFee() == null) ||
                             (range.getPercentageRate() != null && range.getReferralFee() != null)) {
                     
@@ -111,12 +112,13 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
             } 
         }
         
-        PartnerRangeDTO[] data = new PartnerRangeDTO[ranges.size()];
+        PartnerRange[] data = new PartnerRange[ranges.size()];
         ranges.toArray(data);
         
         if (errors.isEmpty()) {
-            PartnerDTOEx p = new PartnerDTOEx();
-            p.setRanges(data);
+            Partner p = new Partner();
+            
+            p.getRanges().addAll(Arrays.asList(data));
             int ret = p.validateRanges();
             if (ret == 2) {
                 errors.add(ActionErrors.GLOBAL_ERROR,
@@ -131,24 +133,20 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
 	
 	@Override
 	protected ForwardAndMessage doSetup() throws RemoteException {
-        PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
+        Partner partner = (Partner) session.getAttribute(
                 Constants.SESSION_PARTNER_DTO);
-        PartnerRangeDTO ranges[] = partner.getRanges();
-        
         final int MAX_RANGES = 20;
         String[] allFrom = new String[MAX_RANGES];
 		String[] allTo = new String[MAX_RANGES];
 		String[] allPercentages = new String[MAX_RANGES];
 		String[] allReferralFees = new String[MAX_RANGES];
 
-		if (ranges != null) {
-			for (int f = 0; f < Math.min(MAX_RANGES, ranges.length); f++) {
-				PartnerRangeDTO next = ranges[f];
-				allFrom[f] = next.getRangeFrom().toString();
-				allTo[f] = next.getRangeTo().toString();
-				allPercentages[f] = float2string(next.getPercentageRate());
-				allReferralFees[f] = float2string(next.getReferralFee());
-			}
+		for (int f = 0; f < Math.min(MAX_RANGES, partner.getRanges().size()); f++) {
+			PartnerRange next = (PartnerRange) partner.getRanges().toArray()[f];
+			allFrom[f] = String.valueOf(next.getRangeFrom());
+			allTo[f] = String.valueOf(next.getRangeTo());
+			allPercentages[f] = float2string(next.getPercentageRate());
+			allReferralFees[f] = float2string(next.getReferralFee());
 		}
 
         myForm.set(FIELD_RANGE_FROM, allFrom);
@@ -161,10 +159,10 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
 	
 	@Override
 	protected ForwardAndMessage doUpdate(PartnerRangedMaintainActionContext dto) throws RemoteException {
-        PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
+        Partner partner = (Partner) session.getAttribute(
                 Constants.SESSION_PARTNER_DTO);
         
-        partner.setRanges(dto.getData()); 
+        partner.getRanges().addAll(Arrays.asList(dto.getData()));
         myUserSession.updatePartnerRanges(//
         		executorId, partner.getId(), dto.getData());
         return new ForwardAndMessage(FORWARD_PARTNER, MESSAGE_UPDATED_OK);

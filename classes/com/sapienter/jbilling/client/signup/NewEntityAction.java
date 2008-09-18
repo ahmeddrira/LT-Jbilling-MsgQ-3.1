@@ -48,8 +48,9 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.ContactDTO;
-import com.sapienter.jbilling.server.user.CustomerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
 /**
  * @author Emil
@@ -131,9 +132,9 @@ public class NewEntityAction extends Action {
             user.setUserName((String) myForm.get("user_name"));
             user.setPassword((String) myForm.get("password"));
             user.setMainRoleId(Constants.TYPE_ROOT);
-            CustomerDTOEx cust = new CustomerDTOEx();
-            cust.setInvoiceDeliveryMethodId(Constants.D_METHOD_EMAIL);
-            user.setCustomerDto(cust);
+            CustomerDTO cust = new CustomerDTO();
+            cust.setInvoiceDeliveryMethod(new InvoiceDeliveryMethod(Constants.D_METHOD_EMAIL));
+            user.setCustomer(cust);
             
             try {
                 JNDILookup EJBFactory = JNDILookup.getFactory(false);            

@@ -34,23 +34,21 @@ import javax.naming.NamingException;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocal;
-import com.sapienter.jbilling.interfaces.LanguageEntityLocalHome;
 import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 /**
  * @author Emil
  */
 public class EntityBL extends ResultList 
         implements EntitySQL {
-    private JNDILookup EJBFactory = null;
-    private EntityEntityLocalHome entityHome = null;
-    private EntityEntityLocal entity = null;
+    private CompanyDAS das = null;
+    private CompanyDTO entity = null;
     
     public EntityBL() 
             throws NamingException {
@@ -60,28 +58,22 @@ public class EntityBL extends ResultList
     public EntityBL(Integer id) 
     		throws FinderException, NamingException {
     	init();
-    	entity = entityHome.findByPrimaryKey(id);
+    	entity = das.find(id);
     }
-    
+
+    /*
     public EntityBL(String externalId) 
             throws FinderException, NamingException {
         init();
         entity = entityHome.findByExternalId(externalId);
     }
+    */
     
-    public EntityEntityLocalHome getHome() {
-    	return  entityHome;
+    private void init() {
+        das = new CompanyDAS();
     }
     
-    private void init() throws NamingException {
-        EJBFactory = JNDILookup.getFactory(false);
-        entityHome = (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
-                EntityEntityLocalHome.class,
-                EntityEntityLocalHome.JNDI_NAME);
-
-    }
-    
-    public EntityEntityLocal getEntity() {
+    public CompanyDTO getEntity() {
         return entity;
     }
     
@@ -90,12 +82,7 @@ public class EntityBL extends ResultList
     	Locale retValue = null;
     	// get the language first
     	Integer languageId = entity.getLanguageId();
-    	LanguageEntityLocalHome languageHome = (LanguageEntityLocalHome) 
-				EJBFactory.lookUpLocalHome(
-                LanguageEntityLocalHome.class,
-                LanguageEntityLocalHome.JNDI_NAME);
-    	LanguageEntityLocal language = languageHome.findByPrimaryKey(
-    			languageId);
+    	LanguageDTO language = new LanguageDAS().find(languageId);
     	String languageCode = language.getCode();
     	
     	// now the country

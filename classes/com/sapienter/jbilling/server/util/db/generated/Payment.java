@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.util.db.generated;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
@@ -44,7 +47,7 @@ public class Payment  implements java.io.Serializable {
 
 
      private int id;
-     private BaseUser baseUser;
+     private UserDTO baseUser;
      private CurrencyDTO currencyDTO;
      private PaymentMethod paymentMethod;
      private Payment payment;
@@ -55,12 +58,12 @@ public class Payment  implements java.io.Serializable {
      private double amount;
      private Date createDatetime;
      private Date paymentDate;
-     private short deleted;
-     private short isRefund;
+     private int deleted;
+     private int isRefund;
      private Integer payoutId;
      private Double balance;
      private Date updateDatetime;
-     private short isPreauth;
+     private int isPreauth;
      private Set<PaymentInvoice> paymentInvoices = new HashSet<PaymentInvoice>(0);
      private Set<PaymentAuthorization> paymentAuthorizations = new HashSet<PaymentAuthorization>(0);
      private Set<Payment> payments = new HashSet<Payment>(0);
@@ -70,8 +73,23 @@ public class Payment  implements java.io.Serializable {
     public Payment() {
     }
 
+    public Payment(PaymentDTOEx dto) {
+        setId(dto.getId());
+        setAmount(new Float(dto.getAmount()));
+        setAttempt(dto.getAttempt());
+        setBalance(dto.getBalance().doubleValue());
+        setCreateDatetime(dto.getCreateDateTime());
+        setCurrency(new CurrencyDTO(dto.getCurrencyId()));
+        setDeleted(dto.getDeleted());
+        setIsPreauth(dto.getIsPreauth());
+        setIsRefund(dto.getIsRefund());
+        setPaymentMethod(new PaymentMethod(dto.getMethodId()));
+        setPaymentDate(dto.getPaymentDate());
+        setPaymentResult(new PaymentResult(dto.getResultId()));
+        setUpdateDatetime(dto.getUpdateDateTime());
+    }
 	
-    public Payment(int id, CurrencyDTO currencyDTO, PaymentMethod paymentMethod, double amount, Date createDatetime, short deleted, short isRefund, short isPreauth) {
+    public Payment(int id, CurrencyDTO currencyDTO, PaymentMethod paymentMethod, double amount, Date createDatetime, int deleted, int isRefund, int isPreauth) {
         this.id = id;
         this.currencyDTO = currencyDTO;
         this.paymentMethod = paymentMethod;
@@ -81,7 +99,7 @@ public class Payment  implements java.io.Serializable {
         this.isRefund = isRefund;
         this.isPreauth = isPreauth;
     }
-    public Payment(int id, BaseUser baseUser, CurrencyDTO currencyDTO, PaymentMethod paymentMethod, Payment payment, CreditCard creditCard, PaymentResult paymentResult, Ach ach, Integer attempt, double amount, Date createDatetime, Date paymentDate, short deleted, short isRefund, Integer payoutId, Double balance, Date updateDatetime, short isPreauth, Set<PaymentInvoice> paymentInvoices, Set<PaymentAuthorization> paymentAuthorizations, Set<Payment> payments, Set<PartnerPayout> partnerPayouts, Set<PaymentInfoCheque> paymentInfoCheques) {
+    public Payment(int id, UserDTO baseUser, CurrencyDTO currencyDTO, PaymentMethod paymentMethod, Payment payment, CreditCard creditCard, PaymentResult paymentResult, Ach ach, Integer attempt, double amount, Date createDatetime, Date paymentDate, int deleted, int isRefund, Integer payoutId, Double balance, Date updateDatetime, int isPreauth, Set<PaymentInvoice> paymentInvoices, Set<PaymentAuthorization> paymentAuthorizations, Set<Payment> payments, Set<PartnerPayout> partnerPayouts, Set<PaymentInfoCheque> paymentInfoCheques) {
        this.id = id;
        this.baseUser = baseUser;
        this.currencyDTO = currencyDTO;
@@ -119,11 +137,11 @@ public class Payment  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
-    public void setBaseUser(BaseUser baseUser) {
+    public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
 @ManyToOne(fetch=FetchType.LAZY)
@@ -218,20 +236,20 @@ public class Payment  implements java.io.Serializable {
     }
     
     @Column(name="deleted", nullable=false)
-    public short getDeleted() {
+    public int getDeleted() {
         return this.deleted;
     }
     
-    public void setDeleted(short deleted) {
+    public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
     
     @Column(name="is_refund", nullable=false)
-    public short getIsRefund() {
+    public int getIsRefund() {
         return this.isRefund;
     }
     
-    public void setIsRefund(short isRefund) {
+    public void setIsRefund(int isRefund) {
         this.isRefund = isRefund;
     }
     
@@ -263,11 +281,11 @@ public class Payment  implements java.io.Serializable {
     }
     
     @Column(name="is_preauth", nullable=false)
-    public short getIsPreauth() {
+    public int getIsPreauth() {
         return this.isPreauth;
     }
     
-    public void setIsPreauth(short isPreauth) {
+    public void setIsPreauth(int isPreauth) {
         this.isPreauth = isPreauth;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="payment")

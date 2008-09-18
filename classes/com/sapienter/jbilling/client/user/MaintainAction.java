@@ -45,10 +45,15 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.UserDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.user.CustomerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
 public class MaintainAction extends Action {
 
@@ -232,7 +237,7 @@ public class MaintainAction extends Action {
                     UserDTOEx dto = new UserDTOEx();
                     
                     dto.setUserId(userId);
-                    dto.setEntityId((Integer) userForm.get("entity"));
+                    dto.setCompany(new CompanyDTO((Integer) userForm.get("entity")));
                     dto.setMainRoleId((Integer) userForm.get("type"));
                     dto.setUserName((String) userForm.get("username"));
                     if (updatePassword) {
@@ -240,38 +245,38 @@ public class MaintainAction extends Action {
                     } else {
                         dto.setPassword(null);
                     }
-                    dto.setLanguageId((Integer) userForm.get("language"));
+                    dto.setLanguage(new LanguageDTO((Integer) userForm.get("language")));
                     dto.setStatusId((Integer) userForm.get("status"));
-                    dto.setCurrencyId((Integer) userForm.get("currencyId"));
+                    dto.setCurrency(new CurrencyDTO((Integer) userForm.get("currencyId")));
                     dto.setSubscriptionStatusId((Integer) 
                             userForm.get("subscriberStatus"));
 
                     
                     if (dto.getMainRoleId().equals(Constants.TYPE_CUSTOMER)) {
-                        dto.setCustomerDto(new CustomerDTOEx());
-                        dto.getCustomerDto().setInvoiceDeliveryMethodId(
-                                (Integer) userForm.get("deliveryMethodId"));
-                        dto.getCustomerDto().setDueDateUnitId(
+                        dto.setCustomer(new CustomerDTO());
+                        dto.getCustomer().setInvoiceDeliveryMethod(new InvoiceDeliveryMethod(
+                                (Integer) userForm.get("deliveryMethodId")));
+                        dto.getCustomer().setDueDateUnitId(
                                 (Integer) userForm.get("due_date_unit_id"));
                         String value = (String) userForm.get("due_date_value");
                         if (value != null && value.length() > 0) {
-                            dto.getCustomerDto().setDueDateValue(
+                            dto.getCustomer().setDueDateValue(
                                     Integer.valueOf(value));
                         } else {
-                            dto.getCustomerDto().setDueDateValue(null);
+                            dto.getCustomer().setDueDateValue(null);
                         }
-                        dto.getCustomerDto().setDfFm(new Integer(((Boolean)
+                        dto.getCustomer().setDfFm(new Integer(((Boolean)
                                     userForm.get("chbx_df_fm")).booleanValue() 
                                         ? 1 : 0));
-                        dto.getCustomerDto().setExcludeAging(new Integer(((Boolean)
+                        dto.getCustomer().setExcludeAging(new Integer(((Boolean)
                                     userForm.get("chbx_excludeAging")).booleanValue() 
                                         ? 1 : 0));
                         
                         if (partnerId != null && partnerId.length() > 0) {
-                            dto.getCustomerDto().setPartnerId(Integer.valueOf(
-                                partnerId));
+                            dto.getCustomer().setPartner(new Partner(Integer.valueOf(
+                                partnerId)));
                         } else {
-                            dto.getCustomerDto().setPartnerId(null);
+                            dto.getCustomer().setPartner(null);
                         }
                     }
                     

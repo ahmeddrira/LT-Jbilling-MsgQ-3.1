@@ -145,6 +145,18 @@ public abstract class NotificationMessageArchiveEntityBean implements EntityBean
     /**
      * @ejb:interface-method view-type="local"
      * @ejb:persistent-field
+     * @jboss:column-name name="user_id"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getUserId();
+    /**
+     * @ejb:interface-method view-type="local"
+     */
+    public abstract void setUserId(Integer userId);
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb:persistent-field
      * @jboss:column-name name="create_datetime"
      * @jboss.method-attributes read-only="true"
      */

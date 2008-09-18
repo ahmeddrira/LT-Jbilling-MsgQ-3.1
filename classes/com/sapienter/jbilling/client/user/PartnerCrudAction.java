@@ -33,11 +33,13 @@ import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.client.util.PreferencesMap;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.UserSession;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
-public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
+public class PartnerCrudAction extends CrudActionBase<Partner> {
 	private static final String FORM = "partner";
 
 	private static final String FIELD_BALANCE = "balance";
@@ -68,14 +70,14 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
 	
 	
 	@Override
-	protected ForwardAndMessage doCreate(PartnerDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doCreate(Partner dto) throws RemoteException {
         // get the user dto from the session. This is the dto with the
         // info of the user to create
         UserDTOEx user = (UserDTOEx) session.getAttribute(Constants.SESSION_CUSTOMER_DTO);
         ContactDTOEx contact = (ContactDTOEx) session.getAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO);
         // add the partner information just submited to the user to be
         // created
-        user.setPartnerDto(dto);
+        user.setPartner(dto);
         // make the call
         Integer newUserID = myUserSession.create(user, contact);
         LOG.debug("Partner created = " + newUserID);
@@ -83,7 +85,7 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
         
         try {
             session.setAttribute(Constants.SESSION_PARTNER_DTO, 
-                    myUserSession.getUserDTOEx(newUserID).getPartnerDto());
+                    myUserSession.getUserDTOEx(newUserID).getPartner());
         } catch (FinderException e) {
             throw new SessionInternalError(e);
         }
@@ -104,15 +106,18 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
 	}
 	
 	@Override
-	protected PartnerDTOEx doEditFormToDTO() throws RemoteException {
-		PartnerDTOEx dto = new PartnerDTOEx();
-        dto.setBalance(string2float((String) myForm.get(FIELD_BALANCE)));
-        dto.setPercentageRate(string2float((String) myForm.get(FIELD_RATE)));
-        dto.setReferralFee(string2float((String) myForm.get(FIELD_FEE)));
-        if (dto.getReferralFee() != null) {
-            dto.setFeeCurrencyId((Integer) myForm.get(FIELD_FEE_CURRENCY));
+	protected Partner doEditFormToDTO() throws RemoteException {
+		Partner dto = (Partner)session.getAttribute(Constants.SESSION_PARTNER_DTO);
+        if (dto == null) {
+            dto = new Partner();
         }
-        dto.setPeriodUnitId((Integer) myForm.get(FIELD_PERIOD_UNIT_ID));
+        dto.setBalance(string2float((String) myForm.get(FIELD_BALANCE)));
+        dto.setPercentageRate(string2float((String) myForm.get(FIELD_RATE)).doubleValue());
+        dto.setReferralFee(string2float((String) myForm.get(FIELD_FEE)).doubleValue());
+        if (dto.getReferralFee() != null) {
+            dto.setFeeCurrency(new CurrencyDTO((Integer) myForm.get(FIELD_FEE_CURRENCY)));
+        }
+        dto.setPeriodUnit(new PeriodUnitDTO((Integer) myForm.get(FIELD_PERIOD_UNIT_ID)));
         dto.setPeriodValue(Integer.valueOf((String) myForm.get(FIELD_PERIOD_VALUE)));
         dto.setNextPayoutDate(parseDate(FIELD_GROUP_PAYOUT, "partner.prompt.nextPayout"));
         
@@ -123,7 +128,7 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
             Integer clerkId = Integer.valueOf((String) myForm.get(FIELD_CLERK));
             UserDTOEx clerk = getUser(clerkId);
             if (!entityId.equals(clerk.getEntityId()) || 
-                    clerk.getDeleted().intValue() == 1 ||
+                    clerk.getDeleted() == 1 ||
                     clerk.getMainRoleId().intValue() > 
                         Constants.TYPE_CLERK.intValue()) {
             	
@@ -140,7 +145,7 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(PartnerDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(Partner dto) throws RemoteException {
         dto.setId((Integer) session.getAttribute(Constants.SESSION_PARTNER_ID));
         myUserSession.updatePartner(executorId, dto);
         return (request.getParameter("ranges") == null) ?
@@ -160,7 +165,7 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
 		Integer partnerId = (Integer) session.getAttribute(
                 Constants.SESSION_PARTNER_ID);
         
-        PartnerDTOEx partner;
+        Partner partner;
         if (partnerId != null) {
             try {
                 partner = myUserSession.getPartnerDTO(partnerId);
@@ -180,10 +185,10 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
         if (partner.getReferralFee() != null) {
             myForm.set(FIELD_FEE, float2string(partner.getReferralFee()));
         }
-        myForm.set(FIELD_FEE_CURRENCY, partner.getFeeCurrencyId());
+        myForm.set(FIELD_FEE_CURRENCY, partner.getFeeCurrency().getId());
         myForm.set(FIELD_ONE_TIME, Integer.valueOf(1).equals(partner.getOneTime()));
-        myForm.set(FIELD_PERIOD_UNIT_ID, partner.getPeriodUnitId());
-        myForm.set(FIELD_PERIOD_VALUE, partner.getPeriodValue().toString());
+        myForm.set(FIELD_PERIOD_UNIT_ID, partner.getPeriodUnit().getId());
+        myForm.set(FIELD_PERIOD_VALUE, String.valueOf(partner.getPeriodValue()));
         myForm.set(FIELD_PROCESS, Integer.valueOf(1).equals(partner.getAutomaticProcess()));
         myForm.set(FIELD_CLERK, partner.getRelatedClerkUserId().toString());
 
@@ -192,9 +197,9 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
         return result;
 	}
 	
-	private PartnerDTOEx createPartnerFromDefaults() throws RemoteException {
-		PartnerDTOEx partner;
-		partner = new PartnerDTOEx();
+	private Partner createPartnerFromDefaults() throws RemoteException {
+		Partner partner;
+		partner = new Partner();
 		// set the values from the preferences (defaults)
 		Integer[] preferenceIds = new Integer[] {
 				Constants.PREFERENCE_PART_DEF_RATE, 
@@ -208,13 +213,13 @@ public class PartnerCrudAction extends CrudActionBase<PartnerDTOEx> {
 		};
       
 		PreferencesMap prefs = mapEntityParameters(preferenceIds);
-		partner.setPercentageRate(string2float(prefs.getString(Constants.PREFERENCE_PART_DEF_RATE)));
-		partner.setReferralFee(string2float(prefs.getString(Constants.PREFERENCE_PART_DEF_FEE)));
+		partner.setPercentageRate(string2float(prefs.getString(Constants.PREFERENCE_PART_DEF_RATE)).doubleValue());
+		partner.setReferralFee(string2float(prefs.getString(Constants.PREFERENCE_PART_DEF_FEE)).doubleValue());
 		if (partner.getReferralFee() != null){
-			partner.setFeeCurrencyId(prefs.getInteger(Constants.PREFERENCE_PART_DEF_FEE_CURR));
+			partner.setFeeCurrency(new CurrencyDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_FEE_CURR)));
 		}
 		partner.setOneTime(prefs.getInteger(Constants.PREFERENCE_PART_DEF_ONE_TIME));
-		partner.setPeriodUnitId(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_UNIT));
+		partner.setPeriodUnit(new PeriodUnitDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_UNIT)));
 		partner.setPeriodValue(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_VALUE));
 		partner.setAutomaticProcess(prefs.getInteger(Constants.PREFERENCE_PART_DEF_AUTOMATIC));
 		partner.setRelatedClerkUserId(prefs.getInteger(Constants.PREFERENCE_PART_DEF_CLERK));

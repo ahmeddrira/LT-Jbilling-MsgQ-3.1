@@ -48,8 +48,8 @@ import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 
 /**
  * This action is used to run a report with a series of parameters directly from
@@ -170,12 +170,11 @@ public class TriggerAction extends Action {
             UserDTOEx loggedUser = (UserDTOEx) session.getAttribute(
                     Constants.SESSION_USER_DTO);
             if (loggedUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
-                report.addDynamicParameter(loggedUser.getPartnerDto().getId().
-                        toString());
+                report.addDynamicParameter(String.valueOf(loggedUser.getPartner().getId()));
             } else {
-                PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
+                Partner partner = (Partner) session.getAttribute(
                         Constants.SESSION_PARTNER_DTO);
-                report.addDynamicParameter(partner.getId().toString());
+                report.addDynamicParameter(String.valueOf(partner.getId()));
             }
             report.addDynamicParameter(languageId);
         } else {

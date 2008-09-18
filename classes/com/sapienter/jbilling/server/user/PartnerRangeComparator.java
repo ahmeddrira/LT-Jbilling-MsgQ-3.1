@@ -26,7 +26,7 @@ package com.sapienter.jbilling.server.user;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.interfaces.PartnerRangeEntityLocal;
+import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 
 /**
  * @author Emil
@@ -38,10 +38,10 @@ public class PartnerRangeComparator implements Comparator {
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object arg0, Object arg1) {
-        PartnerRangeEntityLocal perA = (PartnerRangeEntityLocal) arg0;
-        PartnerRangeEntityLocal perB = (PartnerRangeEntityLocal) arg1;
+        PartnerRange perA = (PartnerRange) arg0;
+        PartnerRange perB = (PartnerRange) arg1;
         
-        return perA.getRangeFrom().compareTo(perB.getRangeFrom());
+        return new Integer(perA.getRangeFrom()).compareTo(perB.getRangeFrom());
     }
 
 }

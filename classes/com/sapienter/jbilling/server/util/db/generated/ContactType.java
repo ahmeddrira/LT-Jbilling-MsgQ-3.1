@@ -32,14 +32,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+
 @Entity
 @Table(name="contact_type")
 public class ContactType  implements java.io.Serializable {
 
 
      private int id;
-     private Company entity;
-     private Short isPrimary;
+     private CompanyDTO entity;
+     private Integer isPrimary;
      private Set<ContactMap> contactMaps = new HashSet<ContactMap>(0);
 
     public ContactType() {
@@ -49,7 +51,7 @@ public class ContactType  implements java.io.Serializable {
     public ContactType(int id) {
         this.id = id;
     }
-    public ContactType(int id, Company entity, Short isPrimary, Set<ContactMap> contactMaps) {
+    public ContactType(int id, CompanyDTO entity, Integer isPrimary, Set<ContactMap> contactMaps) {
        this.id = id;
        this.entity = entity;
        this.isPrimary = isPrimary;
@@ -66,25 +68,27 @@ public class ContactType  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+    
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    public Company getEntity() {
+    public CompanyDTO getEntity() {
         return this.entity;
     }
     
-    public void setEntity(Company entity) {
+    public void setEntity(CompanyDTO entity) {
         this.entity = entity;
     }
     
     @Column(name="is_primary")
-    public Short getIsPrimary() {
+    public Integer getIsPrimary() {
         return this.isPrimary;
     }
     
-    public void setIsPrimary(Short isPrimary) {
+    public void setIsPrimary(Integer isPrimary) {
         this.isPrimary = isPrimary;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="contactType")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="contactType")
     public Set<ContactMap> getContactMaps() {
         return this.contactMaps;
     }

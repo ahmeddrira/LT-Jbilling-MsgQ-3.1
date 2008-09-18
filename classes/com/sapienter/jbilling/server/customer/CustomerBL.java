@@ -22,19 +22,12 @@ package com.sapienter.jbilling.server.customer;
 
 import java.sql.SQLException;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
-
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CustomerEntityLocal;
-import com.sapienter.jbilling.interfaces.CustomerEntityLocalHome;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -42,29 +35,16 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public final class CustomerBL extends ResultList implements CustomerSQL {
     
-    private CustomerEntityLocal customer = null;
-    private CustomerEntityLocalHome customerHome = null;
-    private final Logger LOG = Logger.getLogger(CustomerBL.class);
-    private JNDILookup EJBFactory = null;
-
+    private CustomerDTO customer = null;
+    //private final Logger LOG = Logger.getLogger(CustomerBL.class);
     
     public CustomerBL() {};
     
-    public CustomerBL(Integer id) throws FinderException {
-        try {
-            EJBFactory = JNDILookup.getFactory(false);
-            customerHome = (CustomerEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    CustomerEntityLocalHome.class,
-                    CustomerEntityLocalHome.JNDI_NAME);
-            customer = customerHome.findByPrimaryKey(id);
-        } catch (ClassCastException e) {
-            throw new SessionInternalError(e);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        } 
+    public CustomerBL(Integer id) {
+        customer = new CustomerDAS().find(id);
     }
     
-    public CustomerEntityLocal getEntity() {
+    public CustomerDTO getEntity() {
         return customer;
     }
 
@@ -124,8 +104,7 @@ public final class CustomerBL extends ResultList implements CustomerSQL {
         UserBL user = new UserBL(userId);
         
         prepareStatement(CustomerSQL.listSubaccounts);
-        cachedResults.setInt(1,user.getEntity().getCustomer().getId().
-                intValue());
+        cachedResults.setInt(1,user.getEntity().getCustomer().getId());
         
         execute();
         conn.close();

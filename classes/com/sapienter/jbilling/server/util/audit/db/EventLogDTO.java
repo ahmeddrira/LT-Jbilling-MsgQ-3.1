@@ -37,8 +37,8 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.sapienter.jbilling.server.user.db.BaseUser;
-import com.sapienter.jbilling.server.util.db.generated.Company;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
 
 @Entity
@@ -65,7 +65,7 @@ public class EventLogDTO  implements java.io.Serializable {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
-    private BaseUser baseUser;
+    private UserDTO baseUser;
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="message_id", nullable=false)
@@ -77,7 +77,7 @@ public class EventLogDTO  implements java.io.Serializable {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    private Company company;
+    private CompanyDTO company;
 
     @Column(name="foreign_id", nullable=false)
     private int foreignId;
@@ -106,7 +106,7 @@ public class EventLogDTO  implements java.io.Serializable {
     }
 
 	
-    public EventLogDTO(Integer id, JbillingTable jbillingTable, BaseUser baseUser, EventLogMessageDTO eventLogMessage, EventLogModuleDTO eventLogModule, Company entity, int foreignId, int levelField, Integer oldNum, String oldStr, Date oldDate) {
+    public EventLogDTO(Integer id, JbillingTable jbillingTable, UserDTO baseUser, EventLogMessageDTO eventLogMessage, EventLogModuleDTO eventLogModule, CompanyDTO entity, int foreignId, int levelField, Integer oldNum, String oldStr, Date oldDate) {
        this.id = id;
        this.jbillingTable = jbillingTable;
        this.baseUser = baseUser;
@@ -129,7 +129,7 @@ public class EventLogDTO  implements java.io.Serializable {
         return this.jbillingTable;
     }
     
-    public BaseUser getBaseUser() {
+    public UserDTO getBaseUser() {
         return this.baseUser;
     }
     
@@ -141,7 +141,7 @@ public class EventLogDTO  implements java.io.Serializable {
         return this.eventLogModule;
     }
         
-    public Company getCompany() {
+    public CompanyDTO getCompany() {
         return this.company;
     }
         

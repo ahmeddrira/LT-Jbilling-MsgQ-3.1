@@ -33,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+
 @Entity
 @Table(name="report")
 public class Report  implements java.io.Serializable {
@@ -43,9 +45,9 @@ public class Report  implements java.io.Serializable {
      private String instructionskey;
      private String tablesList;
      private String whereStr;
-     private short idColumn;
+     private int idColumn;
      private String link;
-     private Set<Company> entities = new HashSet<Company>(0);
+     private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
      private Set<ReportField> reportFields = new HashSet<ReportField>(0);
      private Set<ReportType> reportTypes = new HashSet<ReportType>(0);
      private Set<ReportUser> reportUsers = new HashSet<ReportUser>(0);
@@ -54,13 +56,13 @@ public class Report  implements java.io.Serializable {
     }
 
 	
-    public Report(int id, String tablesList, String whereStr, short idColumn) {
+    public Report(int id, String tablesList, String whereStr, int idColumn) {
         this.id = id;
         this.tablesList = tablesList;
         this.whereStr = whereStr;
         this.idColumn = idColumn;
     }
-    public Report(int id, String titlekey, String instructionskey, String tablesList, String whereStr, short idColumn, String link, Set<Company> entities, Set<ReportField> reportFields, Set<ReportType> reportTypes, Set<ReportUser> reportUsers) {
+    public Report(int id, String titlekey, String instructionskey, String tablesList, String whereStr, int idColumn, String link, Set<CompanyDTO> entities, Set<ReportField> reportFields, Set<ReportType> reportTypes, Set<ReportUser> reportUsers) {
        this.id = id;
        this.titlekey = titlekey;
        this.instructionskey = instructionskey;
@@ -122,11 +124,11 @@ public class Report  implements java.io.Serializable {
     }
     
     @Column(name="id_column", nullable=false)
-    public short getIdColumn() {
+    public int getIdColumn() {
         return this.idColumn;
     }
     
-    public void setIdColumn(short idColumn) {
+    public void setIdColumn(int idColumn) {
         this.idColumn = idColumn;
     }
     
@@ -142,11 +144,11 @@ public class Report  implements java.io.Serializable {
     @JoinTable(name="report_entity_map", joinColumns = { 
         @JoinColumn(name="report_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) })
-    public Set<Company> getEntities() {
+    public Set<CompanyDTO> getEntities() {
         return this.entities;
     }
     
-    public void setEntities(Set<Company> entities) {
+    public void setEntities(Set<CompanyDTO> entities) {
         this.entities = entities;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="report")

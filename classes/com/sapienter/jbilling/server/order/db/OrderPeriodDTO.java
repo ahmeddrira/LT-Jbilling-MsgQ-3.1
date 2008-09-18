@@ -42,9 +42,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
-import com.sapienter.jbilling.server.util.db.generated.Company;
 
 @Entity
 @TableGenerator(
@@ -61,7 +61,7 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
 
 
      private int id;
-     private Company company;
+     private CompanyDTO company;
      private PeriodUnitDTO periodUnitDTO;
      private Integer value;
      private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
@@ -74,7 +74,7 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
     public OrderPeriodDTO(int id) {
         this.id = id;
     }
-    public OrderPeriodDTO(int id, Company entity, PeriodUnitDTO periodUnitDTO, Integer value, Set<OrderDTO> orderDTOs) {
+    public OrderPeriodDTO(int id, CompanyDTO entity, PeriodUnitDTO periodUnitDTO, Integer value, Set<OrderDTO> orderDTOs) {
        this.id = id;
        this.company = entity;
        this.periodUnitDTO = periodUnitDTO;
@@ -98,11 +98,11 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
     }
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id")
-    public Company getCompany() {
+    public CompanyDTO getCompany() {
         return this.company;
     }
     
-    public void setCompany(Company entity) {
+    public void setCompany(CompanyDTO entity) {
         this.company = entity;
     }
     @ManyToOne(fetch=FetchType.LAZY)

@@ -48,13 +48,10 @@ import com.sapienter.jbilling.interfaces.BillingProcessEntityLocalHome;
 import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
-import com.sapienter.jbilling.interfaces.UserEntityLocal;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -69,6 +66,9 @@ import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -88,7 +88,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
  */
 public class BillingProcessSessionBean implements SessionBean {
 
-    Logger log = null;
+    private static final Logger LOG = Logger.getLogger(BillingProcessSessionBean.class);
     SessionContext ctx = null;
 
     /**
@@ -175,7 +175,7 @@ public class BillingProcessSessionBean implements SessionBean {
     public void generateReview(Integer entityId, Date billingDate,
             Integer periodType, Integer periodValue)
             throws SessionInternalError, NamingException, CreateException {
-        log.debug("Generating review entity " + entityId);
+        LOG.debug("Generating review entity " + entityId);
         // call using JNDI to use CMT
         JNDILookup EJBFactory = JNDILookup.getFactory(false);
         BillingProcessSessionLocalHome localHome = 
@@ -194,7 +194,7 @@ public class BillingProcessSessionBean implements SessionBean {
             NotificationBL.sendSapienterEmail(entityId, "process.new_review", 
                     null, params);
         } catch (Exception e) {
-            log.warn("Exception sending email to entity", e);
+            LOG.warn("Exception sending email to entity", e);
         }
     }
 
@@ -276,48 +276,37 @@ public class BillingProcessSessionBean implements SessionBean {
             int totalInvoices = 0;
             
             boolean onlyRecurring;
-            try {
-                // find out parameters from the configuration
-                onlyRecurring = conf.getEntity().getOnlyRecurring().
-                        intValue() == 1;
-                // find the entity home interface
-                EntityEntityLocalHome entityHome =
-                    (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
-                        EntityEntityLocalHome.class,
-                        EntityEntityLocalHome.JNDI_NAME);
+            // find out parameters from the configuration
+            onlyRecurring = conf.getEntity().getOnlyRecurring().
+                    intValue() == 1;
 
-                EntityEntityLocal entity = entityHome.findByPrimaryKey(entityId);
-                entityUsers = entity.getUsers().iterator();
+            CompanyDTO entity = new CompanyDAS().find(entityId);
+            entityUsers = entity.getBaseUsers().iterator();
 
-                if (!entityUsers.hasNext()) {
-                    log.warn("There are no users for the entity id " + entityId);
-                }
-            } catch (FinderException e) {
-                log.error("Billing process started for an unexisting entity:" + 
-                        entityId, e);
-                throw new SessionInternalError("Entity doesn't exist " + entityId);
+            if (!entityUsers.hasNext()) {
+                LOG.warn("There are no users for the entity id " + entityId);
             }
             
-            log.debug("**** ENTITY " + entityId + " PROCESSING USERS");
+            LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
             boolean allGood = true;
 
             while (entityUsers.hasNext()) {
-                UserEntityLocal user = (UserEntityLocal) entityUsers.next();
+                UserDTO user = (UserDTO) entityUsers.next();
                 Integer result[] = local.processUser(billingProcessId, user.getUserId(), 
                         isReview, onlyRecurring);
                 if (result != null) {
-                    log.debug("User " + user.getUserId() + " done invoice generation.");
+                    LOG.debug("User " + user.getUserId() + " done invoice generation.");
                     if (!isReview) {
                         for (int f = 0; f < result.length; f++) {
                             local.emailAndPayment(entityId, result[f], 
                                     billingProcessId,  
                                     conf.getEntity().getAutoPayment().intValue() == 1);
                         }
-                        log.debug("User " + user.getUserId() + " done email & payment.");
+                        LOG.debug("User " + user.getUserId() + " done email & payment.");
                     }
                     totalInvoices += result.length;
                 } else {
-                    log.debug("User " + user.getUserId() + " NOT done");
+                    LOG.debug("User " + user.getUserId() + " NOT done");
                     allGood = false;
                 }
             }
@@ -336,7 +325,7 @@ public class BillingProcessSessionBean implements SessionBean {
                         batchBl.sendEmail();
                     }
                 } catch (Exception e) {
-                    log.error("Error generetaing batch file", e);
+                    LOG.error("Error generetaing batch file", e);
                 }
             }
             
@@ -359,15 +348,15 @@ public class BillingProcessSessionBean implements SessionBean {
                 cal.add(MapPeriodToCalendar.map(periodType),
                         periodValue.intValue());
                 conf.getEntity().setNextRunDate(cal.getTime());
-                log.debug("Updated run date to " + cal.getTime());
+                LOG.debug("Updated run date to " + cal.getTime());
             }
 
-            log.debug("**** ENTITY " + entityId + " DONE");
+            LOG.debug("**** ENTITY " + entityId + " DONE");
         } catch (Exception e) {
             // no need to specify a rollback, an error in any of the
             // updates would not require the rest to be rolled back.
             // Actually, it's better to keep as far as it went.
-            log.error("Error processing entity " + entityId, e);
+            LOG.error("Error processing entity " + entityId, e);
         } 
     }
     
@@ -382,7 +371,7 @@ public class BillingProcessSessionBean implements SessionBean {
             BillingProcessBL bl = new BillingProcessBL();
             bl.generatePayment(processId, runId, invoiceId);
         } catch (Exception e) {
-            log.error("Exception processing a payment ", e);
+            LOG.error("Exception processing a payment ", e);
         }
     }
 
@@ -400,9 +389,9 @@ public class BillingProcessSessionBean implements SessionBean {
                 Collections.max(process.getEntity().getRuns(),
                     runBL.new DateComparator());
         cal.setTime(Util.truncateDate(lastRun.getStarted()));
-        log.debug("Retry evaluation lastrun = " + cal.getTime());
+        LOG.debug("Retry evaluation lastrun = " + cal.getTime());
         cal.add(GregorianCalendar.DAY_OF_MONTH, retryDays);
-        log.debug("Added days = " + cal.getTime() + " today = " + today);
+        LOG.debug("Added days = " + cal.getTime() + " today = " + today);
         if (!cal.getTime().after(today)) {
             return true;
         } else {
@@ -425,7 +414,7 @@ public class BillingProcessSessionBean implements SessionBean {
 
             if (process.verifyIsRetry(processId, retryDays, today)) {
                 // it's time for a retry
-                log.debug("Retring process " + processId);
+                LOG.debug("Retring process " + processId);
                 Integer runId = process.createRetryRun(processId); 
                 BillingProcessRunBL runBL = new BillingProcessRunBL(runId);
                 Integer entityId = runBL.getEntity().getProcess().getEntityId();
@@ -435,7 +424,7 @@ public class BillingProcessSessionBean implements SessionBean {
                 for (Iterator it = invoiceBL.getHome().findProccesableByProcess(
                         processId).iterator(); it.hasNext();) {
                     InvoiceEntityLocal invoice = (InvoiceEntityLocal) it.next();
-                    log.debug("Retrying invoice " + invoice.getId());
+                    LOG.debug("Retrying invoice " + invoice.getId());
 
                     // post the need a a payment process, it'll be done asynchronusly
                     ProcessPaymentEvent event = new ProcessPaymentEvent(invoice.getId(), 
@@ -475,7 +464,7 @@ public class BillingProcessSessionBean implements SessionBean {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             Integer userId = invoice.getEntity().getUser().getUserId();
  
-            log.debug("email and payment for user " + userId + " invoice " +
+            LOG.debug("email and payment for user " + userId + " invoice " +
                     invoiceId);
             // last but not least, let this user know about his/her new
             // invoice.
@@ -499,7 +488,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     notificationSess.notify(userId, invoiceMessage[msg]);
                 }
             } catch (NotificationNotFoundException e) {
-                log.warn("Invoice message not defined for entity " + entityId
+                LOG.warn("Invoice message not defined for entity " + entityId
                         + " Invoice email not sent");
             }
             
@@ -509,7 +498,7 @@ public class BillingProcessSessionBean implements SessionBean {
                 EventManager.process(event);
             }
         } catch (Exception e) {
-            log.error("sending email and processing payment", e);
+            LOG.error("sending email and processing payment", e);
             ctx.setRollbackOnly();
         } 
     }
@@ -530,7 +519,7 @@ public class BillingProcessSessionBean implements SessionBean {
             UserBL user = new UserBL(userId);
             
             if (!user.canInvoice()) {
-                log.debug("Skipping non-customer / subaccount user " + 
+                LOG.debug("Skipping non-customer / subaccount user " + 
                         userId);
                 return new Integer[0];
             }
@@ -547,7 +536,7 @@ public class BillingProcessSessionBean implements SessionBean {
 	                NoNewInvoiceEvent event = new NoNewInvoiceEvent(
 	                        user.getEntityId(userId), userId, 
 	                        process.getBillingDate(), 
-	                        user.getEntity().getSubscriptionStatus().getId());
+	                        user.getEntity().getSubscriberStatus().getId());
 	                EventManager.process(event);
             	}
                 return new Integer[0];
@@ -564,10 +553,10 @@ public class BillingProcessSessionBean implements SessionBean {
                 
                 invoiceGenerated++;
             }
-            log.info("The user " + userId + " has been processed."
+            LOG.info("The user " + userId + " has been processed."
                     + invoiceGenerated);
         } catch (Exception e) {
-            log.error("Exception caught when processing the user " + 
+            LOG.error("Exception caught when processing the user " + 
                     userId, e);
             // rollback !
             ctx.setRollbackOnly();
@@ -620,7 +609,7 @@ public class BillingProcessSessionBean implements SessionBean {
         Integer retValue;
         
         try {
-            log.debug("Updating configuration " + dto);
+            LOG.debug("Updating configuration " + dto);
             ConfigurationBL config = new ConfigurationBL();
             retValue = config.createUpdate(executorId, dto);
         } catch (Exception e) {
@@ -670,7 +659,7 @@ public class BillingProcessSessionBean implements SessionBean {
             Integer executorId, Integer entityId, 
             Boolean flag) throws SessionInternalError {
         try {
-            log.debug("Setting review approval : " + flag);
+            LOG.debug("Setting review approval : " + flag);
             ConfigurationBL config = new ConfigurationBL(entityId);
             config.setReviewApproval(executorId, flag.booleanValue());
             return getConfigurationDto(entityId);
@@ -704,14 +693,14 @@ public class BillingProcessSessionBean implements SessionBean {
             // loop over all the entities
             EntityBL entityBL = new EntityBL();
             Integer entityArray[] = entityBL.getAllIDs();
-            log.debug("Running trigger. Today = " + today + "[" + today.getTime() +
+            LOG.debug("Running trigger. Today = " + today + "[" + today.getTime() +
                     "] entities = " + entityArray.length);
             for (int entityIndex = 0; entityIndex < entityArray.length;
                     entityIndex++) {
-                log.debug("New entity row index " + entityIndex + 
+                LOG.debug("New entity row index " + entityIndex + 
                         " of " + entityArray.length);
                 Integer entityId = entityArray[entityIndex];
-                log.debug("Processing (1) entity " + entityId + " total = " + 
+                LOG.debug("Processing (1) entity " + entityId + " total = " + 
                         entityArray.length);
                 // now process this entity
                 ConfigurationBL configEntity = new ConfigurationBL(entityId);
@@ -719,7 +708,7 @@ public class BillingProcessSessionBean implements SessionBean {
                 if (!config.getNextRunDate().after(today)) {
                     // there should be a run today 
                     boolean doRun = true;
-                	log.debug("A process has to be done for entity " + entityId);
+                	LOG.debug("A process has to be done for entity " + entityId);
                     // check that: the configuration requires a review
                     // AND, there is no partial run already there (failed)
                     if (config.getGenerateReport().intValue() == 1 && 
@@ -728,7 +717,7 @@ public class BillingProcessSessionBean implements SessionBean {
                         // a review had to be done for the run to go ahead
                         boolean reviewPresent = processBL.isReviewPresent(entityId); 
                         if (!reviewPresent) {  // review wasn't generated
-                            log.warn("Review is required but not present for " +
+                            LOG.warn("Review is required but not present for " +
                                     "entity " + entityId);
                             eLogger.warning(entityId, config.getId(), 
                                     EventLogger.MODULE_BILLING_PROCESS, 
@@ -744,7 +733,7 @@ public class BillingProcessSessionBean implements SessionBean {
                                 equals(Constants.REVIEW_STATUS_GENERATED)) {
                             // the review has to be reviewd yet
                             GregorianCalendar now = new GregorianCalendar();
-                            log.warn("Review is required but is not approved" +
+                            LOG.warn("Review is required but is not approved" +
                                     ".Entity " + entityId + " hour is " + 
                                     now.get(GregorianCalendar.HOUR_OF_DAY));
                             eLogger.warning(entityId, config.getId(), 
@@ -760,14 +749,14 @@ public class BillingProcessSessionBean implements SessionBean {
                                             "process.review_waiting", null, params);
                                 }
                             } catch (Exception e) {
-                                log.warn("Exception sending an entity email", 
+                                LOG.warn("Exception sending an entity email", 
                                         e);
                             }
                             doRun = false;
                         } else if (config.getReviewStatus().
                                 equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
                             // is has been disapproved, let's regenerate
-                            log.debug("The process should run, but the review " +
+                            LOG.debug("The process should run, but the review " +
                                     "has been disapproved");
                             generateReview(entityId, config.getNextRunDate(), 
                                     config.getPeriodUnitId(), config.
@@ -784,7 +773,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     }
                 } else {
                     // no run, may be then a review generation
-                	log.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
+                	LOG.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
                     
                     /*
                      * Review generation
@@ -800,7 +789,7 @@ public class BillingProcessSessionBean implements SessionBean {
                                 // there's already a review there, and it's been
                                 // either approved or not yet reviewed
                             } else {
-                                log.debug("Review disapproved. Regeneratting.");
+                                LOG.debug("Review disapproved. Regeneratting.");
                                 generateReview(entityId, config.getNextRunDate(),
                                         config.getPeriodUnitId(), config.
                                             getPeriodValue());
@@ -896,7 +885,6 @@ public class BillingProcessSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext newCtx)
         throws EJBException, RemoteException {
-        log = Logger.getLogger(BillingProcessSessionBean.class);
         ctx = newCtx;
     }
 

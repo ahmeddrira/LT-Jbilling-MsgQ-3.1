@@ -79,7 +79,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -277,7 +277,7 @@ public class WebServicesSessionBean implements SessionBean {
                 if (newUser.getCreditCard() != null) {
                     CreditCardBL ccBL = new CreditCardBL();
                     ccBL.create(newUser.getCreditCard());
-                    bl.getEntity().getCreditCard().add(ccBL.getEntity());
+                    ccBL.getEntity().setUserId(userId);
                 }
                 LOG.debug("Done");
                 return userId;
@@ -469,7 +469,7 @@ public class WebServicesSessionBean implements SessionBean {
         String root = context.getCallerPrincipal().getName();
         try {
         	UserDAS das = new UserDAS();
-        	BaseUser rootUser = das.findRoot(root);
+        	UserDTO rootUser = das.findRoot(root);
             LOG.debug("Done");
             return das.findByUserName(username, rootUser.getCompany().getId()).getId();
         	

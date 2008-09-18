@@ -56,7 +56,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -77,8 +77,8 @@ public class OrderDTO  implements java.io.Serializable {
 	private static Logger LOG = Logger.getLogger(OrderDTO.class);
 
      private Integer id;
-     private BaseUser baseUserByUserId;
-     private BaseUser baseUserByCreatedBy;
+     private UserDTO baseUserByUserId;
+     private UserDTO baseUserByCreatedBy;
      private CurrencyDTO currencyDTO;
      private OrderStatusDTO orderStatusDTO;
      private OrderPeriodDTO orderPeriodDTO;
@@ -153,7 +153,7 @@ public class OrderDTO  implements java.io.Serializable {
     	this.cycleStarts = other.getCycleStarts();
     }
     
-    public OrderDTO(int id, BaseUser baseUserByCreatedBy, CurrencyDTO currencyDTO, OrderStatusDTO orderStatusDTO, OrderBillingTypeDTO orderBillingTypeDTO, Date createDatetime, Integer deleted) {
+    public OrderDTO(int id, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, OrderStatusDTO orderStatusDTO, OrderBillingTypeDTO orderBillingTypeDTO, Date createDatetime, Integer deleted) {
         this.id = id;
         this.baseUserByCreatedBy = baseUserByCreatedBy;
         this.currencyDTO = currencyDTO;
@@ -162,7 +162,7 @@ public class OrderDTO  implements java.io.Serializable {
         this.createDate = createDatetime;
         this.deleted = deleted;
     }
-    public OrderDTO(int id, BaseUser baseUserByUserId, BaseUser baseUserByCreatedBy, CurrencyDTO currencyDTO, 
+    public OrderDTO(int id, UserDTO baseUserByUserId, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, 
     		OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO, 
     		OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime, 
     		Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep, 
@@ -208,20 +208,20 @@ public class OrderDTO  implements java.io.Serializable {
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id", nullable=false)
-    public BaseUser getBaseUserByUserId() {
+    public UserDTO getBaseUserByUserId() {
         return this.baseUserByUserId;
     }
-    public void setBaseUserByUserId(BaseUser baseUserByUserId) {
+    public void setBaseUserByUserId(UserDTO baseUserByUserId) {
         this.baseUserByUserId = baseUserByUserId;
     }
     
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="created_by")
-    public BaseUser getBaseUserByCreatedBy() {
+    public UserDTO getBaseUserByCreatedBy() {
         return this.baseUserByCreatedBy;
     }
     
-    public void setBaseUserByCreatedBy(BaseUser baseUserByCreatedBy) {
+    public void setBaseUserByCreatedBy(UserDTO baseUserByCreatedBy) {
         this.baseUserByCreatedBy = baseUserByCreatedBy;
     }
 @ManyToOne(fetch=FetchType.LAZY)
@@ -499,7 +499,7 @@ public class OrderDTO  implements java.io.Serializable {
     }
     
     @Transient
-    public BaseUser getUser() {
+    public UserDTO getUser() {
     	return getBaseUserByUserId();
     }
     

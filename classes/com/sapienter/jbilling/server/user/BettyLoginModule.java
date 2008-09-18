@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -216,7 +215,7 @@ public class BettyLoginModule extends AbstractServerLoginModule {
             }            
             
             if (password == null || !user.getPassword().equals(
-                    password) || user.getDeleted().intValue() == 1) {
+                    password) || user.getDeleted() == 1) {
                 throw new FailedLoginException("Password Incorrect/Password Required");
             }
             

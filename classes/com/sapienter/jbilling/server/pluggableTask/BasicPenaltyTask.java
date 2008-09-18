@@ -42,7 +42,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Util;
 
@@ -115,7 +115,7 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
         summary.setOrderBillingType(type);
         summary.setCreateDate(Calendar.getInstance().getTime());
         summary.setCurrencyId(currencyId);
-        BaseUser user = new BaseUser();
+        UserDTO user = new UserDTO();
         user.setId(userId);
         summary.setBaseUserByUserId(user);
         

@@ -50,8 +50,8 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
-import com.sapienter.jbilling.server.user.PartnerPayoutDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 
 /**
  * @author Emil
@@ -74,7 +74,7 @@ public class PayoutAction extends Action {
             UserSession userSession = userHome.create();
             String action = request.getParameter("action");
             HttpSession session = request.getSession(false);
-            PartnerDTOEx partner = (PartnerDTOEx) session.getAttribute(
+            Partner partner = (Partner) session.getAttribute(
                     Constants.SESSION_PARTNER_DTO);
             
             DynaValidatorForm myForm = (DynaValidatorForm) form;
@@ -126,7 +126,7 @@ public class PayoutAction extends Action {
                 }
                 
                 if (errors.isEmpty()) {
-                    PartnerPayoutDTOEx payout = userSession.calculatePayout(
+                    PartnerPayout payout = userSession.calculatePayout(
                             partner.getId(), startDate, endDate, null);
                     session.setAttribute(Constants.SESSION_PAYMENT_DTO, 
                             new PaymentDTOEx(payout.getPayment()));

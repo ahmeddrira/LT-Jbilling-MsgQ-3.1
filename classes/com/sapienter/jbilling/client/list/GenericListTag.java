@@ -43,8 +43,8 @@ import com.sapienter.jbilling.server.list.ListSessionHome;
 import com.sapienter.jbilling.server.list.PagedListDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.user.PartnerDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 
 /**
  * Prepares the result set so the InsertDataRowTag can then render
@@ -303,7 +303,7 @@ public class GenericListTag extends ListTagBase {
                 } else if (type.equals(Constants.LIST_TYPE_SUB_ACCOUNTS)) {
                     parameters.put("userId", userId);
                 } else if (type.equals(Constants.LIST_TYPE_PARTNERS_CUSTOMER)) {
-                    PartnerDTOEx partner = (PartnerDTOEx) 
+                    Partner partner = (Partner) 
                             session.getAttribute(
                                 Constants.SESSION_PARTNER_DTO);
                     parameters.put("partnerId", partner.getId());
@@ -369,7 +369,7 @@ public class GenericListTag extends ListTagBase {
                 } else if (type.equals(Constants.LIST_TYPE_PARTNER)) {
                     parameters.put("entityId", entityID);
                 } else if (type.equals(Constants.LIST_TYPE_PAYOUT)) {
-                    parameters.put("partnerId", ((PartnerDTOEx) 
+                    parameters.put("partnerId", ((Partner) 
                             session.getAttribute(
                                 Constants.SESSION_PARTNER_DTO)).getId());
                 } else {

@@ -18,11 +18,6 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on 27-Feb-2003
- *
- * Copyright Sapienter Enterprise Software
- */
 package com.sapienter.jbilling.server.item;
 
 import java.io.Serializable;
@@ -31,7 +26,6 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
@@ -40,13 +34,13 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.EntityEntityLocal;
-import com.sapienter.jbilling.interfaces.EntityEntityLocalHome;
 import com.sapienter.jbilling.interfaces.ItemEntityLocal;
+import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.list.ListDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 /**
  * @author Emil
@@ -110,15 +104,8 @@ public final class ItemListBL extends ResultList
         ListDTO result = new ListDTO();
 
         LOG.debug("Runing item list for a new order");
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        EntityEntityLocalHome entityHome =
-                (EntityEntityLocalHome) EJBFactory.lookUpLocalHome(
-                EntityEntityLocalHome.class,
-                EntityEntityLocalHome.JNDI_NAME);
-        EntityEntityLocal entity = entityHome.findByPrimaryKey(entityID);
+        CompanyDTO entity = new CompanyDAS().find(entityID);
         // I wish I could exclude the deleted right here
-        Collection items = entity.getItems();
-        
         int fields = 4;
         
         result.setTypes(new Integer[fields]);
@@ -127,18 +114,17 @@ public final class ItemListBL extends ResultList
         result.getTypes()[2] = new Integer(Types.VARCHAR);
         result.getTypes()[3] = new Integer(Types.FLOAT);
         
-        for (Iterator it = items.iterator(); it.hasNext();) {
-            ItemEntityLocal item = (ItemEntityLocal) it.next();
-            if (item.getDeleted().intValue() == 1) {
+        for (Item item: entity.getItems()) {
+            if (item.getDeleted()  == 1) {
                 continue;
             }
-            ItemBL itemBL = new ItemBL(item);
+            ItemBL itemBL = new ItemBL(item.getId());
             Object columns[] = new Object[fields];
-            columns[0] = new String(item.getId().toString());
+            columns[0] = String.valueOf(item.getId());
             columns[1] = new String(item.getDescription(languageId));
             if (item.getPercentage() != null) {
                 columns[2] = "%";
-                columns[3] = item.getPercentage();
+                columns[3] = item.getPercentage().floatValue();
             } else {
                 columns[3] = itemBL.getPrice(userId, entityID);
                 columns[2] = itemBL.getPriceCurrencySymbol(); 

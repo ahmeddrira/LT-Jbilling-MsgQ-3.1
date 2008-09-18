@@ -34,7 +34,6 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
 import com.sapienter.jbilling.server.customer.CustomerBL;
-import com.sapienter.jbilling.server.entity.CurrencyDTO;
 import com.sapienter.jbilling.server.entity.ListFieldDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
@@ -43,10 +42,11 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
-import com.sapienter.jbilling.server.user.PartnerBL;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.GetSelectableOptions;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  *
@@ -112,7 +112,7 @@ public class ListSessionBean implements javax.ejb.SessionBean {
                 Integer partnerId = (Integer) parameters.get("partnerId");
                 PartnerBL partner = new PartnerBL(partnerId);
                 int entityId = partner.getEntity().getUser().getEntity().
-                        getId().intValue();
+                        getId();
                 Integer userType = Constants.TYPE_PARTNER;
                 Integer userId = partner.getEntity().getUser().getUserId();
                 retValue = list.getCustomerList(entityId, userType, userId);

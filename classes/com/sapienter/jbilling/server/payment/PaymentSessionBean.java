@@ -38,11 +38,9 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CustomerEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
-import com.sapienter.jbilling.interfaces.PartnerEntityLocal;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
@@ -52,9 +50,11 @@ import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.system.event.EventManager;
-import com.sapienter.jbilling.server.user.PartnerBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -418,20 +418,20 @@ public class PaymentSessionBean implements SessionBean {
                     ageing.out(invoice.getUser(), invoice.getId());
                 }
                 // update the partner if this customer belongs to one
-                CustomerEntityLocal customer = invoice.getUser().getCustomer();
+                CustomerDTO customer = invoice.getUser().getCustomer();
                 if (customer != null && customer.getPartner() != null) {
-                    PartnerEntityLocal partner = customer.getPartner();
-                    BigDecimal pBalance = new BigDecimal(partner.getBalance().toString());
+                    Partner partner = customer.getPartner();
+                    BigDecimal pBalance = new BigDecimal(partner.getBalance());
                     BigDecimal paymentAmount = new BigDecimal(payment.getAmount().toString());
                     if (payment.getIsRefund().intValue() == 0) {
                     	pBalance = pBalance.add(paymentAmount);
-                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalPayments().toString()));
+                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalPayments()));
                         partner.setTotalPayments(new Float(
                                 paymentAmount.floatValue()));
                         
                     } else {
                     	pBalance = pBalance.subtract(paymentAmount);
-                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalRefunds().toString()));
+                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalRefunds()));
                         partner.setTotalRefunds(new Float(
                                 paymentAmount.floatValue()));
                     }

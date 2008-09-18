@@ -37,7 +37,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.sapienter.jbilling.server.item.db.Item;
-import com.sapienter.jbilling.server.user.db.BaseUser;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="promotion")
@@ -51,7 +51,7 @@ public class Promotion  implements java.io.Serializable {
      private short once;
      private Date since;
      private Date until;
-     private Set<BaseUser> baseUsers = new HashSet<BaseUser>(0);
+     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
 
     public Promotion() {
     }
@@ -62,7 +62,7 @@ public class Promotion  implements java.io.Serializable {
         this.code = code;
         this.once = once;
     }
-    public Promotion(int id, Item item, String code, String notes, short once, Date since, Date until, Set<BaseUser> baseUsers) {
+    public Promotion(int id, Item item, String code, String notes, short once, Date since, Date until, Set<UserDTO> baseUsers) {
        this.id = id;
        this.item = item;
        this.code = code;
@@ -141,11 +141,11 @@ public class Promotion  implements java.io.Serializable {
     @JoinTable(name="promotion_user_map", joinColumns = { 
         @JoinColumn(name="promotion_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="user_id", updatable=false) })
-    public Set<BaseUser> getBaseUsers() {
+    public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;
     }
     
-    public void setBaseUsers(Set<BaseUser> baseUsers) {
+    public void setBaseUsers(Set<UserDTO> baseUsers) {
         this.baseUsers = baseUsers;
     }
 

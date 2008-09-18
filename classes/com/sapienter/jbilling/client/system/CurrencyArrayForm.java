@@ -28,14 +28,14 @@ package com.sapienter.jbilling.client.system;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 
-import com.sapienter.jbilling.server.item.CurrencyDTOEx;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  * @author Emil
  */
 public class CurrencyArrayForm extends ActionForm {
 
-    private CurrencyDTOEx[] lines = null;
+    private CurrencyDTO[] lines = null;
     private Integer defaultCurrencyId = null;
     /**
      * 
@@ -47,14 +47,14 @@ public class CurrencyArrayForm extends ActionForm {
     /**
      * @return
      */
-    public CurrencyDTOEx[] getLines() {
+    public CurrencyDTO[] getLines() {
         return lines;
     }
 
     /**
      * @param line
      */
-    public void setLines(CurrencyDTOEx[] lines) {
+    public void setLines(CurrencyDTO[] lines) {
         this.lines = lines;
     }
 

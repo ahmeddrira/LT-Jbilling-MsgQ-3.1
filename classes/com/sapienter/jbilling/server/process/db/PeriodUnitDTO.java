@@ -31,8 +31,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.db.generated.BillingProcessConfiguration;
-import com.sapienter.jbilling.server.util.db.generated.Partner;
 
 @Entity
 @Table(name="period_unit")

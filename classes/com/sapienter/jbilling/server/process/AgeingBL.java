@@ -295,9 +295,9 @@ public class AgeingBL {
         } else {
             LOG.debug("she's already in the ageing");
             // this guy is already in the ageing
-            try {
-                AgeingEntityStep step = new AgeingEntityStepDAS().findStep(
-                        user.getEntity().getId(), status);
+            AgeingEntityStep step = new AgeingEntityStepDAS().findStep(
+                    user.getEntity().getId(), status);
+            if (step != null) {    
 	            ageing = ageingHome.findByPrimaryKey(step.getId());
             
 	            // verify if it is time for another notch
@@ -316,7 +316,7 @@ public class AgeingBL {
 	            } else {
 	                return;
 	            }
-            } catch (FinderException e) {
+            } else {
             	// this user is an ageing status that has been removed.
             	// may be this is a bug, and a currently-in-use status
             	// should not be removable.

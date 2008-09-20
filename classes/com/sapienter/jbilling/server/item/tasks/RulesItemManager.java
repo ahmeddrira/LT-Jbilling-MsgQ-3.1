@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.item.tasks;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
@@ -39,6 +40,8 @@ import com.sapienter.jbilling.server.pluggableTask.BasicLineTotalTask;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.DTOFactory;
 
@@ -85,7 +88,12 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             rulesMemoryContext.add(user);
             ContactBL contact = new ContactBL();
             contact.set(userId);
-            rulesMemoryContext.add(contact.getDTO());
+            ContactDTOEx contactDTO = contact.getDTO();
+            rulesMemoryContext.add(contactDTO);
+            for (ContactFieldDTOEx field: (Collection<ContactFieldDTOEx>) contactDTO.getFields().values()) {
+                rulesMemoryContext.add(field);    
+            }
+
             
             // Add the subscriptions
             OrderBL order = new OrderBL();

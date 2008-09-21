@@ -57,8 +57,8 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.PartnerRangeComparator;
 import com.sapienter.jbilling.server.user.PartnerSQL;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
@@ -408,7 +408,7 @@ public class PartnerBL extends ResultList
         
         LOG.debug("total " + total + " currency = " + currencyId);
         PartnerPayout retValue = new PartnerPayout();
-        retValue.getPayment().setAmount(new Float(total.floatValue()));
+        retValue.getPayment().setAmount(total.doubleValue());
         retValue.getPayment().setCurrency(new CurrencyDAS().find(currencyId));
         retValue.setRefundsAmount(new Float(refundTotal.floatValue()));
         retValue.setPaymentsAmount(new Float(paymentTotal.floatValue()));

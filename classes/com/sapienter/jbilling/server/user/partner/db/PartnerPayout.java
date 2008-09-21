@@ -68,6 +68,7 @@ public class PartnerPayout  implements java.io.Serializable {
      private PaymentDTO paymentDTO = null;
 
     public PartnerPayout() {
+        payment = new Payment();
     }
 
 	

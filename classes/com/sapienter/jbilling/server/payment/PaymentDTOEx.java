@@ -53,15 +53,19 @@ public class PaymentDTOEx extends PaymentDTO {
         setId(dto.getId());
         setAmount(new Float(dto.getAmount()));
         setAttempt(dto.getAttempt());
-        setBalance(dto.getBalance().floatValue());
+        setBalance(dto.getBalance() == null ? null : dto.getBalance().floatValue());
         setCreateDateTime(dto.getCreateDatetime());
         setCurrencyId(dto.getCurrency().getId());
         setDeleted(dto.getDeleted());
         setIsPreauth(dto.getIsPreauth());
         setIsRefund(dto.getIsRefund());
-        setMethodId(dto.getPaymentMethod().getId());
+        if (dto.getPaymentMethod() != null) {
+            setMethodId(dto.getPaymentMethod().getId());
+        }
         setPaymentDate(dto.getPaymentDate());
-        setResultId(dto.getPaymentResult().getId());
+        if (dto.getPaymentResult() != null) {
+            setResultId(dto.getPaymentResult().getId());
+        }
         setUpdateDateTime(dto.getUpdateDatetime());
         
         invoiceIds = new Vector<Integer>();

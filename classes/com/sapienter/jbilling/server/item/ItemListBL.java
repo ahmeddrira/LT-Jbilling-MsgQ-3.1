@@ -23,7 +23,6 @@ package com.sapienter.jbilling.server.item;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -35,7 +34,6 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ItemEntityLocal;
 import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.list.ListDTO;
 import com.sapienter.jbilling.server.list.ResultList;

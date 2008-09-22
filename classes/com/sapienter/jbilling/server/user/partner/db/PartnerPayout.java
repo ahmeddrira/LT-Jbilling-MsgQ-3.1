@@ -209,6 +209,12 @@ public class PartnerPayout  implements java.io.Serializable {
         return new Float(balance.add(new BigDecimal(getPayment().getAmount())).floatValue());
     }
 
+    public void touch() {
+        getStartingDate();
+        if (getPayment() != null) {
+            getPayment().getCurrency();
+        }
+    }
 }
 
 

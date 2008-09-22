@@ -215,14 +215,14 @@ public class PartnerBL extends ResultList
         } else {
             notPaid = true;
             // just notify to the clerk in charge
-            notifyPayout(entityId, new UserDAS().find(partner.getRelatedClerkUserId()).
+            notifyPayout(entityId, partner.getBaseUserByRelatedClerk().
                     getLanguageIdField(), dto.getPayment().
                         getAmount(), startDate, endDate, true);
         }
         
         if (notPaid) {
             // let know that this partner should have been paid.
-            notifyPayout(entityId, new UserDAS().find(partner.getRelatedClerkUserId()).
+            notifyPayout(entityId, partner.getBaseUserByRelatedClerk().
                     getLanguageIdField(), dto.getPayment().
                         getAmount(), startDate, endDate, true);
             // set the partner due payout
@@ -245,7 +245,7 @@ public class PartnerBL extends ResultList
                 SQLException, NamingException {
         
         partner = partnerDAS.find(partnerId);
-        PartnerPayout payout = new PartnerPayout();
+        payout = new PartnerPayout();
         payout.setStartingDate(start);
         payout.setEndingDate(end);
         payout.setBalanceLeft(0);
@@ -410,6 +410,7 @@ public class PartnerBL extends ResultList
         PartnerPayout retValue = new PartnerPayout();
         retValue.getPayment().setAmount(total.doubleValue());
         retValue.getPayment().setCurrency(new CurrencyDAS().find(currencyId));
+        retValue.getPayment().setBaseUser(partner.getBaseUser());
         retValue.setRefundsAmount(new Float(refundTotal.floatValue()));
         retValue.setPaymentsAmount(new Float(paymentTotal.floatValue()));
         retValue.setStartingDate(start);
@@ -618,6 +619,7 @@ public class PartnerBL extends ResultList
     
     public PartnerPayout getPayoutDTO() 
             throws NamingException {
+        payout.touch();
         return payout;
     }
     

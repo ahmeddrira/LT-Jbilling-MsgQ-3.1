@@ -102,7 +102,10 @@ public class InternationalDescriptionId  implements java.io.Serializable {
          return result;
    }   
 
-
+   public String toString() {
+       return "foreignId " + foreignId + " languageId " + languageId + " psudoColumn " + psudoColumn +
+               " tableId " + tableId;
+   }
 }
 
 

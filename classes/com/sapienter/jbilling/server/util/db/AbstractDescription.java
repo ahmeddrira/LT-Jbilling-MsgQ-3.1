@@ -22,11 +22,14 @@ package com.sapienter.jbilling.server.util.db;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
 
 public abstract class AbstractDescription implements Serializable {
 	
+    private static final Logger LOG = Logger.getLogger(AbstractDescription.class);
 	private String description = null;
 	
 	abstract public int getId();
@@ -48,9 +51,14 @@ public abstract class AbstractDescription implements Serializable {
         DescriptionDAS de = new DescriptionDAS();
         InternationalDescriptionId iid = new InternationalDescriptionId(jt.findByName(
                 getTable()).getId(), getId(), label, languageId);
-        InternationalDescription desc = de.find(iid);
+        InternationalDescription desc = de.findNow(iid);
         
-        return desc.getContent();
+        if (desc != null) {
+            return desc.getContent();
+        } else {
+            LOG.debug("Description not set for " + iid);
+            return null;
+        }
         
     }
     /**

@@ -121,7 +121,7 @@ public final class ItemListBL extends ResultList
             ItemBL itemBL = new ItemBL(item.getId());
             Object columns[] = new Object[fields];
             columns[0] = String.valueOf(item.getId());
-            columns[1] = new String(item.getDescription(languageId));
+            columns[1] = (item.getDescription(languageId) == null) ? "" : item.getDescription(languageId);
             if (item.getPercentage() != null) {
                 columns[2] = "%";
                 columns[3] = item.getPercentage().floatValue();

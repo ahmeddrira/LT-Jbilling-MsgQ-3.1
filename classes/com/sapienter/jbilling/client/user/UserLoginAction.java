@@ -49,6 +49,8 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 public final class UserLoginAction extends Action {
 
+    private static final Logger LOG = Logger.getLogger(UserLoginAction.class);
+
     // --------------------------------------------------------- Public Methods
 
     /**
@@ -73,7 +75,6 @@ public final class UserLoginAction extends Action {
         HttpServletResponse response)
         throws IOException, ServletException {
             
-        Logger log = Logger.getLogger(UserLoginAction.class);
 
         // Get the values from the form and do further validation
         // or parsing
@@ -95,11 +96,11 @@ public final class UserLoginAction extends Action {
             String key = request.getParameter("internalKey");
             if (key != null && key.equals(
                     Util.getSysProp("internal_key"))) {
-                user.setEntityId(new Integer(1));
+                user.setCompany(new CompanyDTO(1));
                 internalLogin = true;
-                log.debug("identified interal login");
+                LOG.debug("identified interal login");
             } else {
-                log.debug("internal failed. Key is not good " + key);
+                LOG.debug("internal failed. Key is not good " + key);
             }
         }
         if (!internalLogin) {
@@ -111,7 +112,7 @@ public final class UserLoginAction extends Action {
         // verify that the billing process is not running
         File lock = new File(Util.getSysProp("login_lock"));
         if (lock.exists()) {
-            log.debug("Denying login. Lock present.");
+            LOG.debug("Denying login. Lock present.");
             errors.add(
                     ActionErrors.GLOBAL_ERROR,
                     new ActionError("user.login.lock"));
@@ -191,12 +192,12 @@ public final class UserLoginAction extends Action {
         }
 
         if (internalLogin) {
-            user.setEntityId(Integer.valueOf(entityId));
+            user.setCompany(new CompanyDTO(Integer.valueOf(entityId)));
         }
         
         logUser(session, user);
         
-        log.debug("user " + user.getUserName() + " logged. entity = " + user.getEntityId());
+        LOG.debug("user " + user.getUserName() + " logged. entity = " + user.getEntityId());
         // Forward control to the specified success URI
         return (mapping.findForward("success"));
 

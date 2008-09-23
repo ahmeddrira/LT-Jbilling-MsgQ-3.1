@@ -58,7 +58,7 @@
 		<td class="infoprompt"><bean:message key="payout.prompt.payments"/></td>
 		<td  class="infodata">
 			 <bean:define id="index" name='<%=Constants.SESSION_PAYOUT_DTO%>'
-				  property="payment.currencyId"/>
+				  property="payment.currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -71,7 +71,7 @@
 		<td class="infoprompt"><bean:message key="payout.prompt.refunds"/></td>
 		<td  class="infodata">
 			 <bean:define id="index" name='<%=Constants.SESSION_PAYOUT_DTO%>'
-				  property="payment.currencyId"/>
+				  property="payment.currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -84,7 +84,7 @@
 		<td class="infoprompt"><bean:message key="payout.prompt.total"/></td>
 		<td  class="infodata">
 			 <bean:define id="index" name='<%=Constants.SESSION_PAYOUT_DTO%>'
-				  property="payment.currencyId"/>
+				  property="payment.currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -97,7 +97,7 @@
 		<td class="infoprompt"><bean:message key="payout.prompt.balance"/></td>
 		<td  class="infodata">
 			 <bean:define id="index" name='<%=Constants.SESSION_PAYOUT_DTO%>'
-				  property="payment.currencyId"/>
+				  property="payment.currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -110,7 +110,7 @@
 		<td class="infoprompt"><bean:message key="payout.prompt.paid"/></td>
 		<td  class="infodata">
 			 <bean:define id="index" name='<%=Constants.SESSION_PAYOUT_DTO%>'
-				  property="payment.currencyId"/>
+				  property="payment.currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -122,7 +122,7 @@
 	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="payout.prompt.date"/></td>
 		<td  class="infodata"><bean:write name='<%=Constants.SESSION_PAYOUT_DTO%>'  
-			property="payment.createDateTime" scope="session" formatKey="format.timestamp"/></td>
+			property="payment.createDatetime" scope="session" formatKey="format.timestamp"/></td>
 	</tr>
 	</logic:present>
 	<logic:notPresent name='<%=Constants.SESSION_PAYOUT_DTO%>' scope="session">

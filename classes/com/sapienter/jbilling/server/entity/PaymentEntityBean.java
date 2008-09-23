@@ -40,7 +40,7 @@ import com.sapienter.jbilling.interfaces.PaymentInfoChequeEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
-import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayoutDAS;
@@ -127,21 +127,13 @@ public abstract class PaymentEntityBean implements EntityBean {
         // by default, this is a normal payment, not a refund
         setIsRefund(new Integer(0));
         setIsPreauth(new Integer(0));
+        setUserId(userId);
         
         return newId;
     }
     
     public void ejbPostCreate(Float amount, Integer methodId, Integer userId,
             Integer attempt, Integer result, Integer currencyId) {
-
-        try {
-            UserBL bl = new UserBL(userId);
-            setUser(bl.getEntity());
-        } catch (Exception e) {
-            throw new EJBException(
-                e.getMessage() +"User not found when creating payment record:" 
-                + userId);
-        }
 
     }
 
@@ -321,10 +313,10 @@ public abstract class PaymentEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public UserDTO getUser() {
-        return new PaymentDAS().find(getId()).getBaseUser();
+        return new UserDAS().find(getUserId());
     }
     public void setUser(UserDTO user) {
-        new PaymentDAS().find(getId()).setBaseUser(user);
+        setUserId(user.getUserId());
     }
 
     /**

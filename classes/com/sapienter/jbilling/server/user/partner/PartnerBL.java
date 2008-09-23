@@ -489,7 +489,7 @@ public class PartnerBL extends ResultList
 	        if (!clerk) {
 	            notificationSess.notify(partner.getUser(), message);
 	        } else {
-	            notificationSess.notify(new UserDAS().find(partner.getRelatedClerkUserId()), message);
+	            notificationSess.notify(partner.getBaseUserByRelatedClerk(), message);
 
 	        }
         } catch (NotificationNotFoundException e) {

@@ -846,9 +846,6 @@
         <index name="partner_payout_i_2">
 	        <index-column name="partner_id"/>
         </index>
-        <foreign-key foreignTable="payment">
-            <reference foreign="id" local="payment_id"/>
-        </foreign-key>
         <foreign-key foreignTable="partner">
             <reference foreign="id" local="partner_id"/>
         </foreign-key>

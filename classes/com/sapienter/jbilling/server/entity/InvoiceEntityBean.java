@@ -44,8 +44,8 @@ import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -142,6 +142,7 @@ public abstract class InvoiceEntityBean implements EntityBean {
         setInProcessPayment(invoice.getInProcessPayment());
         setIsReview(invoice.getIsReview());
         setCurrencyId(invoice.getCurrencyId());
+        setUserId(userId);
         // Initially the invoices are processable, this will be changed
         // when the invoice gets fully paid. This doesn't mean that the
         // invoice will be picked up by the main process, because of the
@@ -162,9 +163,7 @@ public abstract class InvoiceEntityBean implements EntityBean {
             setIncludedInvoices(invoices);
         }
 
-        setUser(new UserDAS().find(userId));
         setBillingProcess(process);
-
     }
     /*
      * Some custom field calls
@@ -413,14 +412,15 @@ public abstract class InvoiceEntityBean implements EntityBean {
     public abstract Collection getInvoiceLines();
     public abstract void setInvoiceLines(Collection lines);
 
+    
     /**
      * @ejb:interface-method view-type="local"
      */
     public UserDTO getUser() {
-        return new InvoiceDAS().find(getId()).getBaseUser();
+        return new UserDAS().find(getUserId());
     }
     public void setUser(UserDTO user) {
-        new InvoiceDAS().find(getId()).setBaseUser(user);
+        setUserId(user.getId());
     }
 
     /**

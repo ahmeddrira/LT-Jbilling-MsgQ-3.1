@@ -294,6 +294,13 @@ public class OrderLineDTO implements Serializable, Comparable {
 	public void setItemDto(ItemDTOEx itemDto) {
 		this.itemDto = itemDto;
 	}
+    
+    @Transient
+    public Integer getQuantityInt() {
+        if (quantity == null) return null;
+        return this.quantity.intValue();
+    }
+
 	
 	public void touch() {
 		getCreateDatetime();

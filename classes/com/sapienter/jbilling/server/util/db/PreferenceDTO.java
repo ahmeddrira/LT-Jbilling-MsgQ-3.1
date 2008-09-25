@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.util.db;
 
 
 import javax.persistence.Column;
@@ -28,29 +28,35 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
+
 @Entity
 @Table(name="preference")
-public class Preference  implements java.io.Serializable {
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class PreferenceDTO  implements java.io.Serializable {
 
 
      private int id;
      private JbillingTable jbillingTable;
-     private PreferenceType preferenceType;
+     private PreferenceTypeDTO preferenceType;
      private int foreignId;
      private Integer intValue;
      private String strValue;
      private Double floatValue;
 
-    public Preference() {
+    public PreferenceDTO() {
     }
 
 	
-    public Preference(int id, JbillingTable jbillingTable, int foreignId) {
+    public PreferenceDTO(int id, JbillingTable jbillingTable, int foreignId) {
         this.id = id;
         this.jbillingTable = jbillingTable;
         this.foreignId = foreignId;
     }
-    public Preference(int id, JbillingTable jbillingTable, PreferenceType preferenceType, int foreignId, Integer intValue, String strValue, Double floatValue) {
+    public PreferenceDTO(int id, JbillingTable jbillingTable, PreferenceTypeDTO preferenceType, int foreignId, Integer intValue, String strValue, Double floatValue) {
        this.id = id;
        this.jbillingTable = jbillingTable;
        this.preferenceType = preferenceType;
@@ -81,11 +87,11 @@ public class Preference  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="type_id")
-    public PreferenceType getPreferenceType() {
+    public PreferenceTypeDTO getPreferenceType() {
         return this.preferenceType;
     }
     
-    public void setPreferenceType(PreferenceType preferenceType) {
+    public void setPreferenceType(PreferenceTypeDTO preferenceType) {
         this.preferenceType = preferenceType;
     }
     

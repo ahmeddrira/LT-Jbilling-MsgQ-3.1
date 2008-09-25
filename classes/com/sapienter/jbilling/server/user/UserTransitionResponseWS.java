@@ -20,8 +20,8 @@
 
 package com.sapienter.jbilling.server.user;
 
-import java.util.Date;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @jboss-net.xml-schema urn="sapienter:UserTransitionResponseWS"

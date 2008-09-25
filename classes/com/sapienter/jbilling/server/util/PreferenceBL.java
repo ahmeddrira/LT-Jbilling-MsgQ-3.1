@@ -27,31 +27,28 @@ import javax.ejb.FinderException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.PreferenceEntityLocal;
-import com.sapienter.jbilling.interfaces.PreferenceEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PreferenceTypeEntityLocal;
-import com.sapienter.jbilling.interfaces.PreferenceTypeEntityLocalHome;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.PreferenceDAS;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
+import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
 
 public class PreferenceBL {
     
 
     // private methods
-    private JNDILookup EJBFactory = null;
-    private PreferenceEntityLocalHome preferenceHome = null;
-    private PreferenceTypeEntityLocalHome typeHome = null;
-    private PreferenceEntityLocal preference = null;
-    private PreferenceTypeEntityLocal type = null;
+    private PreferenceDAS preferenceDas = null;
+    private PreferenceTypeDAS typeDas = null;
+    private PreferenceDTO preference = null;
+    private PreferenceTypeDTO type = null;
     private static Logger LOG = Logger.getLogger(PreferenceBL.class);
     private Locale locale = null;
     
-    public PreferenceBL(Integer preferenceId) 
-            throws FinderException {
+    public PreferenceBL(Integer preferenceId) {
         init();
-        preference = preferenceHome.findByPrimaryKey(preferenceId);
+        preference = preferenceDas.find(preferenceId);
     }
     
     public PreferenceBL() {
@@ -59,19 +56,8 @@ public class PreferenceBL {
     }
     
     private void init() {
-        try {
-            EJBFactory = JNDILookup.getFactory(false);
-            preferenceHome = (PreferenceEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PreferenceEntityLocalHome.class,
-                    PreferenceEntityLocalHome.JNDI_NAME);
-            typeHome = (PreferenceTypeEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PreferenceTypeEntityLocalHome.class,
-                    PreferenceTypeEntityLocalHome.JNDI_NAME);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
+        preferenceDas = new PreferenceDAS();
+        typeDas = new PreferenceTypeDAS();
     }
     
     /**
@@ -94,13 +80,12 @@ public class PreferenceBL {
             } catch (Exception e) {}
         }
         
-        try {
-            preference = preferenceHome.findByType_Row(
-                    typeId, entityId, Constants.TABLE_ENTITY);
-        } catch (FinderException e) {
-            preference = null;
-            type = typeHome.findByPrimaryKey(typeId);
-            throw new FinderException(e.getMessage());
+        preference = preferenceDas.findByType_Row(
+                typeId, entityId, Constants.TABLE_ENTITY);
+        if (preference == null) {
+            type = typeDas.find(typeId);
+            // TODO: refactor code so there is no need to rely on this obsolete exception
+            throw new FinderException("Could not find preference " + typeId);
         }
             
     }
@@ -112,13 +97,12 @@ public class PreferenceBL {
             locale = us.getLocale();
         } catch (Exception e) {}
 
-        try {
-            preference = preferenceHome.findByType_Row(typeId, userId,
-                    Constants.TABLE_BASE_USER);
-        } catch (FinderException e) {
-            preference = null;
-            type = typeHome.findByPrimaryKey(typeId);
-            throw new FinderException(e.getMessage());
+        preference = preferenceDas.findByType_Row(typeId, userId,
+                Constants.TABLE_BASE_USER);
+        if (preference == null) {
+            type = typeDas.find(typeId);
+            // TODO: refactor code so there is no need to rely on this obsolete exception
+            throw new FinderException("Could not find preference " + typeId);
         }
 
     }
@@ -132,11 +116,17 @@ public class PreferenceBL {
             // it does
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
-            preference.setFloatValue(fValue);
+            preference.setFloatValue((fValue == null) ? null : fValue.doubleValue());
         } catch (FinderException e) {
             // we need a new one
-            preferenceHome.create(preferenceId, Constants.TABLE_ENTITY, 
-            		entityId, intValue, strValue, fValue);
+            preference = new PreferenceDTO();
+            preference.setIntValue(intValue);
+            preference.setStrValue(strValue);
+            preference.setFloatValue(fValue == null ? null : fValue.doubleValue());
+            preference.setForeignId(entityId);
+            preference.setJbillingTable(new JbillingTableDAS().findByName(Constants.TABLE_ENTITY));
+            preference.setPreferenceType(new PreferenceTypeDAS().find(preferenceId));
+            preference = preferenceDas.save(preference);
         }
     }
 
@@ -149,11 +139,18 @@ public class PreferenceBL {
             // it does
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
-            preference.setFloatValue(fValue);
+            preference.setFloatValue((fValue == null) ? null : fValue.doubleValue());
         } catch (FinderException e) {
             // we need a new one
-            preferenceHome.create(typeId, Constants.TABLE_BASE_USER, 
-                    userId, intValue, strValue, fValue);
+            preference = new PreferenceDTO();
+            preference.setIntValue(intValue);
+            preference.setStrValue(strValue);
+            preference.setFloatValue(fValue == null ? null : fValue.doubleValue());
+            preference.setForeignId(userId);
+            preference.setJbillingTable(new JbillingTableDAS().findByName(Constants.TABLE_BASE_USER));
+            preference.setPreferenceType(new PreferenceTypeDAS().find(typeId));
+            preference = preferenceDas.save(preference);
+
         }
     }
 
@@ -197,10 +194,9 @@ public class PreferenceBL {
         return null;
     }
     
-    public String getDefaultAsString(Integer id) 
-            throws FinderException{
+    public String getDefaultAsString(Integer id) {
         LOG.debug("Looking for preference default for type " + id);
-        type = typeHome.findByPrimaryKey(id);
+        type = typeDas.find(id);
         if (type.getIntDefValue() != null) {
             return type.getIntDefValue().toString();
         } else if (type.getStrDefValue() != null) {
@@ -222,7 +218,7 @@ public class PreferenceBL {
                 preference.getFloatValue() == null;
     }
     
-    public PreferenceEntityLocal getEntity() {
+    public PreferenceDTO getEntity() {
         return preference;
     }
     

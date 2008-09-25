@@ -43,8 +43,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity

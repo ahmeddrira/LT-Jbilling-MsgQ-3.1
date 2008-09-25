@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.user.permisson.db;
 
 
 import javax.persistence.Column;
@@ -28,27 +28,31 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @Table(name="permission_user")
-public class PermissionUser  implements java.io.Serializable {
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class PermissionUserDTO  implements java.io.Serializable {
 
 
      private int id;
      private UserDTO baseUser;
-     private Permission permission;
+     private PermissionDTO permission;
      private short isGrant;
 
-    public PermissionUser() {
+    public PermissionUserDTO() {
     }
 
 	
-    public PermissionUser(int id, short isGrant) {
+    public PermissionUserDTO(int id, short isGrant) {
         this.id = id;
         this.isGrant = isGrant;
     }
-    public PermissionUser(int id, UserDTO baseUser, Permission permission, short isGrant) {
+    public PermissionUserDTO(int id, UserDTO baseUser, PermissionDTO permission, short isGrant) {
        this.id = id;
        this.baseUser = baseUser;
        this.permission = permission;
@@ -76,11 +80,11 @@ public class PermissionUser  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="permission_id")
-    public Permission getPermission() {
+    public PermissionDTO getPermission() {
         return this.permission;
     }
     
-    public void setPermission(Permission permission) {
+    public void setPermission(PermissionDTO permission) {
         this.permission = permission;
     }
     

@@ -31,8 +31,8 @@ import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
-import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;

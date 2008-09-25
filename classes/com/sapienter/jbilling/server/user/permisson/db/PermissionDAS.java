@@ -21,8 +21,7 @@
 package com.sapienter.jbilling.server.user.permisson.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.Permission;
 
-public class PermissionDAS extends AbstractDAS<Permission> {
+public class PermissionDAS extends AbstractDAS<PermissionDTO> {
 
 }

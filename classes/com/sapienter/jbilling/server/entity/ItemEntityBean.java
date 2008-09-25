@@ -36,8 +36,8 @@ import com.sapienter.jbilling.interfaces.PromotionEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**

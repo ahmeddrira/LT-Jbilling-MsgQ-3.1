@@ -17,11 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.user.db;
+package com.sapienter.jbilling.server.user.permisson.db;
 
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,9 +38,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OrderBy;
 
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
-import com.sapienter.jbilling.server.util.db.generated.Permission;
 
 @Entity
 @Table(name="role")
@@ -49,7 +50,7 @@ public class RoleDTO extends AbstractDescription implements java.io.Serializable
 
      private int id;
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
-     private Set<Permission> permissions = new HashSet<Permission>(0);
+     private Set<PermissionDTO> permissions = new HashSet<PermissionDTO>(0);
 
     public RoleDTO() {
     }
@@ -58,7 +59,7 @@ public class RoleDTO extends AbstractDescription implements java.io.Serializable
     public RoleDTO(int id) {
         this.id = id;
     }
-    public RoleDTO(int id, Set<UserDTO> baseUsers, Set<Permission> permissions) {
+    public RoleDTO(int id, Set<UserDTO> baseUsers, Set<PermissionDTO> permissions) {
        this.id = id;
        this.baseUsers = baseUsers;
        this.permissions = permissions;
@@ -100,11 +101,11 @@ public class RoleDTO extends AbstractDescription implements java.io.Serializable
         @JoinColumn(name="role_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="permission_id", updatable=false) })
     @OrderBy(clause = "permission_id")
-    public Set<Permission> getPermissions() {
+    public Set<PermissionDTO> getPermissions() {
         return this.permissions;
     }
     
-    public void setPermissions(Set<Permission> permissions) {
+    public void setPermissions(Set<PermissionDTO> permissions) {
         this.permissions = permissions;
     }
 

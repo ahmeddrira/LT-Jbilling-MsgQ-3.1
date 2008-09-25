@@ -20,11 +20,9 @@
 
 package com.sapienter.jbilling.client.invoice;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.TagData;
 import javax.servlet.jsp.tagext.TagExtraInfo;
 import javax.servlet.jsp.tagext.VariableInfo;
-import javax.servlet.jsp.tagext.TagData;
 
 public class LogoExistsTagTEI extends TagExtraInfo {
     public VariableInfo[] getVariableInfo(TagData data) {

@@ -79,8 +79,8 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 

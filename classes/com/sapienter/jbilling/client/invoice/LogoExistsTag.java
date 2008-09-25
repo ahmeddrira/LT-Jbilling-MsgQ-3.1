@@ -20,10 +20,11 @@
 
 package com.sapienter.jbilling.client.invoice;
 
+import java.io.File;
+
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.Globals;

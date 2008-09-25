@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.util.db;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,8 +37,8 @@ import javax.persistence.Transient;
 
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.generated.ItemPrice;

@@ -38,8 +38,7 @@ import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
-import com.sapienter.jbilling.server.entity.OrderDTO;
-import com.sapienter.jbilling.server.order.NewOrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 

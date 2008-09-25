@@ -50,7 +50,7 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.db.RoleDTO;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 
 /**
  * @author Emil

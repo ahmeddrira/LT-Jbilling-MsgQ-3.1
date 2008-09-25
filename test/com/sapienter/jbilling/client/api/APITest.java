@@ -31,6 +31,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.common.GatewayBL;
 
 /**
  * EJBFactory

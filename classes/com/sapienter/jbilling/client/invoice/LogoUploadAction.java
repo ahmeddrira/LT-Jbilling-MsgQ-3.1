@@ -20,10 +20,10 @@
 
 package com.sapienter.jbilling.client.invoice;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.File;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,18 +32,18 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionError;
+import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.apache.struts.action.ActionError;
-import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.upload.FormFile;
 
-import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.common.Util;
 
 /**
  * Saves uploaded logo image file for the user's entity (company).

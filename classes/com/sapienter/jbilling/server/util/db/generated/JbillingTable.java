@@ -36,6 +36,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 
 @Entity
 @Table(name="jbilling_table"
@@ -50,7 +51,7 @@ public class JbillingTable  implements java.io.Serializable {
      private int nextId;
      private Set<ContactMap> contactMaps = new HashSet<ContactMap>(0);
      private Set<BettyTableColumn> bettyTableColumns = new HashSet<BettyTableColumn>(0);
-     private Set<Preference> preferences = new HashSet<Preference>(0);
+     private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
 
     public JbillingTable() {
@@ -62,7 +63,7 @@ public class JbillingTable  implements java.io.Serializable {
         this.name = name;
         this.nextId = nextId;
     }
-    public JbillingTable(int id, String name, int nextId, Set<ContactMap> contactMaps, Set<BettyTableColumn> bettyTableColumns, Set<Preference> preferences, Set<EventLogDTO> eventLogs) {
+    public JbillingTable(int id, String name, int nextId, Set<ContactMap> contactMaps, Set<BettyTableColumn> bettyTableColumns, Set<PreferenceDTO> preferences, Set<EventLogDTO> eventLogs) {
        this.id = id;
        this.name = name;
        this.nextId = nextId;
@@ -117,11 +118,11 @@ public class JbillingTable  implements java.io.Serializable {
     }
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
-    public Set<Preference> getPreferences() {
+    public Set<PreferenceDTO> getPreferences() {
         return this.preferences;
     }
     
-    public void setPreferences(Set<Preference> preferences) {
+    public void setPreferences(Set<PreferenceDTO> preferences) {
         this.preferences = preferences;
     }
     

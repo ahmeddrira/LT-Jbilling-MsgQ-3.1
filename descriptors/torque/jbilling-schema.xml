@@ -481,9 +481,11 @@
         <foreign-key foreignTable="invoice">
             <reference foreign="id" local="delegated_invoice_id"/>
         </foreign-key>
+        <!--
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
         </foreign-key>
+        -->
     </table>
     <table name="invoice_delivery_method">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
@@ -907,9 +909,11 @@
         <foreign-key foreignTable="payment_method">
             <reference foreign="id" local="method_id"/>
         </foreign-key>
+        <!--
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
         </foreign-key>
+        -->
     </table>
     <table name="payment_authorization">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

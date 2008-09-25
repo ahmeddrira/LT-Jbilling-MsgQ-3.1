@@ -30,7 +30,6 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.interfaces.AchEntityLocal;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;

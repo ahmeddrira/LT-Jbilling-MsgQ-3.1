@@ -33,10 +33,10 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
-import com.sapienter.jbilling.server.util.db.generated.Permission;
-import com.sapienter.jbilling.server.util.db.generated.PermissionType;
 
 /**
  * @author emilc
@@ -60,8 +60,8 @@ public final class UserDTOEx extends UserDTO {
     public static final Integer SUBSCRIBER_DISCONTINUED = new Integer(7);
     
     private Menu menu = null;
-    private Vector<Permission> allPermissions = null;
-    private Vector<Permission> permissionsTypeId = null; // same as before but sorted by type
+    private Vector<PermissionDTO> allPermissions = null;
+    private Vector<PermissionDTO> permissionsTypeId = null; // same as before but sorted by type
     private Vector<Integer> roles = null;
     private Integer mainRoleId = null;
     private String mainRoleStr = null;
@@ -148,16 +148,16 @@ public final class UserDTOEx extends UserDTO {
        super(user); 
     }
 
-    public Vector<Permission> getAllPermissions() {
+    public Vector<PermissionDTO> getAllPermissions() {
         return this.allPermissions;
     }
     // this expects the Vector to be sorted already
-    public void setAllPermissions(Vector<Permission> permissions) {
+    public void setAllPermissions(Vector<PermissionDTO> permissions) {
         this.allPermissions = permissions;
     }
     
     public boolean isGranted(Integer permissionId) {
-        Permission permission = new Permission(permissionId);
+        PermissionDTO permission = new PermissionDTO(permissionId);
         if (Collections.binarySearch(allPermissions, permission,
                 new PermissionIdComparator()) >= 0) {
             return true;
@@ -175,7 +175,7 @@ public final class UserDTOEx extends UserDTO {
      */
     public boolean isGranted(Integer typeId, Integer foreignId) {
         if (permissionsTypeId == null) {
-            permissionsTypeId = new Vector<Permission>();
+            permissionsTypeId = new Vector<PermissionDTO>();
             permissionsTypeId.addAll(allPermissions);
             Collections.sort(permissionsTypeId, new PermissionTypeIdComparator());
           /*
@@ -184,7 +184,7 @@ public final class UserDTOEx extends UserDTO {
                     */
         }
         boolean retValue;
-        Permission permission = new Permission(0, new PermissionType(typeId, null), 
+        PermissionDTO permission = new PermissionDTO(0, new PermissionTypeDTO(typeId, null), 
                 foreignId, null, null);
         if (Collections.binarySearch(permissionsTypeId, permission,
                 new PermissionTypeIdComparator()) >= 0) {

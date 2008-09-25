@@ -42,10 +42,10 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.ContactBL;
 
 /**
  * @author Emil

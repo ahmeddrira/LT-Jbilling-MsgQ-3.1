@@ -17,11 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.user.permisson.db;
 
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,31 +35,34 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.sapienter.jbilling.server.user.db.RoleDTO;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 
 @Entity
 @Table(name="permission")
-public class Permission  implements java.io.Serializable {
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class PermissionDTO  implements java.io.Serializable {
 
 
      private int id;
-     private PermissionType permissionType;
+     private PermissionTypeDTO permissionType;
      private Integer foreignId;
-     private Set<PermissionUser> permissionUsers = new HashSet<PermissionUser>(0);
+     private Set<PermissionUserDTO> permissionUsers = new HashSet<PermissionUserDTO>(0);
      private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
 
-    public Permission() {
+    public PermissionDTO() {
     }
 
-    public Permission(int id) {
+    public PermissionDTO(int id) {
         this.id = id;
     }
 	
-    public Permission(int id, PermissionType permissionType) {
+    public PermissionDTO(int id, PermissionTypeDTO permissionType) {
         this.id = id;
         this.permissionType = permissionType;
     }
-    public Permission(int id, PermissionType permissionType, Integer foreignId, Set<PermissionUser> permissionUsers, Set<RoleDTO> roles) {
+    public PermissionDTO(int id, PermissionTypeDTO permissionType, Integer foreignId, Set<PermissionUserDTO> permissionUsers, Set<RoleDTO> roles) {
        this.id = id;
        this.permissionType = permissionType;
        this.foreignId = foreignId;
@@ -78,11 +82,11 @@ public class Permission  implements java.io.Serializable {
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="type_id", nullable=false)
-    public PermissionType getPermissionType() {
+    public PermissionTypeDTO getPermissionType() {
         return this.permissionType;
     }
     
-    public void setPermissionType(PermissionType permissionType) {
+    public void setPermissionType(PermissionTypeDTO permissionType) {
         this.permissionType = permissionType;
     }
     
@@ -96,11 +100,11 @@ public class Permission  implements java.io.Serializable {
     }
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="permission")
-    public Set<PermissionUser> getPermissionUsers() {
+    public Set<PermissionUserDTO> getPermissionUsers() {
         return this.permissionUsers;
     }
     
-    public void setPermissionUsers(Set<PermissionUser> permissionUsers) {
+    public void setPermissionUsers(Set<PermissionUserDTO> permissionUsers) {
         this.permissionUsers = permissionUsers;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -116,7 +120,7 @@ public class Permission  implements java.io.Serializable {
     }
 
     public boolean equals(Object p) {
-        if (p != null && ((Permission)p).getId() == this.id) return true;
+        if (p != null && ((PermissionDTO)p).getId() == this.id) return true;
         return false;
     }
 

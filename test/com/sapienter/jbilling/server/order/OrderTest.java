@@ -28,9 +28,8 @@ import junit.framework.TestCase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.server.entity.OrderDTO;
-import com.sapienter.jbilling.server.entity.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.process.BillingProcessTest;
 
 public class OrderTest extends TestCase {

@@ -17,11 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.user.permisson.db;
 
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,24 +31,29 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+
 @Entity
 @Table(name="permission_type")
-public class PermissionType  implements java.io.Serializable {
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class PermissionTypeDTO  implements java.io.Serializable {
 
 
      private int id;
      private String description;
-     private Set<Permission> permissions = new HashSet<Permission>(0);
+     private Set<PermissionDTO> permissions = new HashSet<PermissionDTO>(0);
 
-    public PermissionType() {
+    public PermissionTypeDTO() {
     }
 
 	
-    public PermissionType(int id, String description) {
+    public PermissionTypeDTO(int id, String description) {
         this.id = id;
         this.description = description;
     }
-    public PermissionType(int id, String description, Set<Permission> permissions) {
+    public PermissionTypeDTO(int id, String description, Set<PermissionDTO> permissions) {
        this.id = id;
        this.description = description;
        this.permissions = permissions;
@@ -73,11 +79,11 @@ public class PermissionType  implements java.io.Serializable {
         this.description = description;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="permissionType")
-    public Set<Permission> getPermissions() {
+    public Set<PermissionDTO> getPermissions() {
         return this.permissions;
     }
     
-    public void setPermissions(Set<Permission> permissions) {
+    public void setPermissions(Set<PermissionDTO> permissions) {
         this.permissions = permissions;
     }
 

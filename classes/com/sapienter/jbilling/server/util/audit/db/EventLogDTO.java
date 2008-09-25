@@ -37,8 +37,8 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
 
 @Entity

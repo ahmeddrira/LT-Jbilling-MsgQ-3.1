@@ -17,11 +17,12 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.util.db;
 
 
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,25 +31,28 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 @Entity
 @Table(name="preference_type")
-public class PreferenceType  implements java.io.Serializable {
-
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class PreferenceTypeDTO  implements java.io.Serializable {
 
      private int id;
      private Integer intDefValue;
      private String strDefValue;
      private Double floatDefValue;
-     private Set<Preference> preferences = new HashSet<Preference>(0);
+     private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
 
-    public PreferenceType() {
+    public PreferenceTypeDTO() {
     }
 
 	
-    public PreferenceType(int id) {
+    public PreferenceTypeDTO(int id) {
         this.id = id;
     }
-    public PreferenceType(int id, Integer intDefValue, String strDefValue, Double floatDefValue, Set<Preference> preferences) {
+    public PreferenceTypeDTO(int id, Integer intDefValue, String strDefValue, Double floatDefValue, Set<PreferenceDTO> preferences) {
        this.id = id;
        this.intDefValue = intDefValue;
        this.strDefValue = strDefValue;
@@ -94,11 +98,11 @@ public class PreferenceType  implements java.io.Serializable {
         this.floatDefValue = floatDefValue;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="preferenceType")
-    public Set<Preference> getPreferences() {
+    public Set<PreferenceDTO> getPreferences() {
         return this.preferences;
     }
     
-    public void setPreferences(Set<Preference> preferences) {
+    public void setPreferences(Set<PreferenceDTO> preferences) {
         this.preferences = preferences;
     }
 

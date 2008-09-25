@@ -20,13 +20,14 @@
 
 package com.sapienter.jbilling.client.invoice;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.File;
-import java.io.FileInputStream;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.Globals;

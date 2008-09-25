@@ -71,10 +71,10 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.db.RoleDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 

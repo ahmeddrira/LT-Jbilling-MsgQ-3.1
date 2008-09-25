@@ -25,6 +25,7 @@
 package com.sapienter.jbilling.server.item;
 
 import java.io.Serializable;
+
 import com.sapienter.jbilling.server.entity.ItemPriceDTO;
 
 /**

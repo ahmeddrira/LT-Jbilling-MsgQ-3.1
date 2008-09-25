@@ -38,8 +38,8 @@ import com.sapienter.jbilling.interfaces.ReportEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.report.db.ReportUserDAS;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**

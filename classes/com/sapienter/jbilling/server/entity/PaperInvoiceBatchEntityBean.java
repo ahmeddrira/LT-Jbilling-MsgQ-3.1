@@ -34,7 +34,6 @@ import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 

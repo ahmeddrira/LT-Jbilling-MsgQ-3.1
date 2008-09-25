@@ -26,8 +26,8 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**

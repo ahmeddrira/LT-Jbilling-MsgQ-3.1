@@ -28,8 +28,6 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.RemoveException;
 
-import org.apache.log4j.Logger;
-
 /**
  * @ejb:bean name="ReportTypeEntity" 
  *          display-name="Object representation of the table REPORT_TYPE" 

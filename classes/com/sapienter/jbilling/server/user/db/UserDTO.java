@@ -47,6 +47,8 @@ import javax.persistence.Version;
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
@@ -55,7 +57,6 @@ import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
 import com.sapienter.jbilling.server.util.db.generated.NotificationMessageArch;
 import com.sapienter.jbilling.server.util.db.generated.Payment;
-import com.sapienter.jbilling.server.util.db.generated.PermissionUser;
 import com.sapienter.jbilling.server.util.db.generated.Promotion;
 import com.sapienter.jbilling.server.util.db.generated.ReportUser;
 
@@ -91,7 +92,7 @@ public class UserDTO  implements java.io.Serializable {
      // now the collections
      private Set<Payment> payments = new HashSet<Payment>(0);
      private Set<Ach> achs = new HashSet<Ach>(0);
-     private Set<PermissionUser> permissions = new HashSet<PermissionUser>(0);
+     private Set<PermissionUserDTO> permissions = new HashSet<PermissionUserDTO>(0);
      private Set<ReportUser> reports = new HashSet<ReportUser>(0);
      private Set<Partner> partnersForRelatedClerk = new HashSet<Partner>(0);
      private Set<OrderDTO> purchaseOrdersForCreatedBy = new HashSet<OrderDTO>(0);
@@ -149,7 +150,7 @@ public class UserDTO  implements java.io.Serializable {
     public UserDTO(int id, CurrencyDTO currencyDTO, CompanyDTO entity, SubscriberStatusDTO subscriberStatus, 
     		UserStatusDTO userStatus, LanguageDTO language, String password, short deleted, Date createDatetime, 
     		Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<Payment> payments, 
-    		Set<Ach> achs, Set<PermissionUser> permissionUsers, Set<ReportUser> reportUsers,
+    		Set<Ach> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUser> reportUsers,
     		Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
     		Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId, 
     		Set<CreditCard> creditCards, Set<NotificationMessageArch> notificationMessageArchs, Set<RoleDTO> roles, 
@@ -322,11 +323,11 @@ public class UserDTO  implements java.io.Serializable {
     }
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
-    public Set<PermissionUser> getPermissions() {
+    public Set<PermissionUserDTO> getPermissions() {
         return this.permissions;
     }
     
-    public void setPermissions(Set<PermissionUser> permissionUsers) {
+    public void setPermissions(Set<PermissionUserDTO> permissionUsers) {
         this.permissions = permissionUsers;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")

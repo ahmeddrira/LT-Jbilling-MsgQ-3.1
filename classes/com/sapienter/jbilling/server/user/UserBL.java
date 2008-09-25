@@ -66,13 +66,15 @@ import com.sapienter.jbilling.server.report.db.ReportUserDAS;
 import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
-import com.sapienter.jbilling.server.user.db.RoleDAS;
-import com.sapienter.jbilling.server.user.db.RoleDTO;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserStatusDAS;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
 import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
 import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
@@ -86,8 +88,6 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
-import com.sapienter.jbilling.server.util.db.generated.Permission;
-import com.sapienter.jbilling.server.util.db.generated.PermissionUser;
 import com.sapienter.jbilling.server.util.db.generated.ReportUser;
 
 
@@ -431,8 +431,8 @@ public class UserBL extends ResultList
          return user;
      }
      
-     public Vector<Permission> getPermissions() { 
-         Vector<Permission> ret = new Vector<Permission>();
+     public Vector<PermissionDTO> getPermissions() { 
+         Vector<PermissionDTO> ret = new Vector<PermissionDTO>();
 
          LOG.debug("Reading permisions for user " + user.getUserId());
          
@@ -443,7 +443,7 @@ public class UserBL extends ResultList
          
          // now add / remove those privileges that were granted / revoked
          // to this particular user
-         for(PermissionUser permission : user.getPermissions()) {
+         for(PermissionUserDTO permission : user.getPermissions()) {
              if (permission.getIsGrant() == 1) {
                  // see that this guy has it
                  if (!ret.contains(permission.getPermission())) {
@@ -466,14 +466,14 @@ public class UserBL extends ResultList
          return ret;
      }
      
-    public Menu getMenu(Vector<Permission> permissions) 
+    public Menu getMenu(Vector<PermissionDTO> permissions) 
             throws NamingException, FinderException, SessionInternalError {
 
         Menu menu = new Menu();
         // this should be doable in EJB/QL !! :( :(
         LOG.debug("getting menu for user=" + user.getUserId());
 
-        for (Permission permission : permissions) {
+        for (PermissionDTO permission : permissions) {
             if (permission.getPermissionType().getId() == Constants.PERMISSION_TYPE_MENU) {
                 // get the menu
                 MenuOption option = DTOFactory.getMenuOption(

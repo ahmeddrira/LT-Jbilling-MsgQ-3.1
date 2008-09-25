@@ -120,6 +120,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_LIST_ENTITY = "list_entity";
     public static final String TABLE_LIST_FIELD_ENTITY = "list_field_entity";
     public static final String TABLE_MEDIATION_CFG = "mediation_cfg";
+    public static final String TABLE_BLACKLIST = "blacklist";
      
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);

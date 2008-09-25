@@ -1319,4 +1319,32 @@
             <reference foreign="id" local="mediation_process_id"/>
         </foreign-key>
     </table>
+    <table name="blacklist">
+        <column name="id" primaryKey="true" type="INTEGER" required="true"/>
+        <column name="entity_id" type="INTEGER" required="true"/>
+        <column name="create_datetime" type="TIMESTAMP" required="true"/>
+        <column name="type" type="INTEGER" required="true"/>
+        <column name="source" type="INTEGER" required="true"/>
+        <column name="credit_card" type="INTEGER"/>
+        <column name="credit_card_id" type="INTEGER"/>
+        <column name="contact_id" type="INTEGER"/>
+        <column name="user_id" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="entity">
+            <reference foreign="id" local="entity_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="credit_card">
+            <reference foreign="id" local="credit_card_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="contact">
+            <reference foreign="id" local="contact_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="base_user">
+            <reference foreign="id" local="user_id"/>
+        </foreign-key>
+        <index name="ix_blacklist_user_type">
+        	<index-column name="user_id"/>
+        	<index-column name="type"/>
+        </index>
+    </table>
 </database>

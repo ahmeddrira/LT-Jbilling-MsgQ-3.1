@@ -19,9 +19,11 @@
 */
 package com.sapienter.jbilling.server.payment.blacklist.db;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
@@ -70,5 +72,89 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
                 .add(Restrictions.eq("type", type));
 
         return criteria.list();
-    }    
+    }
+
+    // blacklist filter specific queries
+
+    public List<BlacklistDTO> filterByName(Integer entityId, String firstName,
+            String lastName) {
+        Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
+                .createAlias("company", "c")
+                    .add(Restrictions.eq("c.id", entityId))
+                .add(Restrictions.eq("type", BlacklistDTO.TYPE_NAME))
+                .createAlias("contact", "ct")
+                    .add(equals("ct.firstName", firstName))
+                    .add(equals("ct.lastName", lastName));
+
+        return criteria.list();
+    }
+
+    public List<BlacklistDTO> filterByAddress(Integer entityId, String address1,
+            String address2, String city, String stateProvince, 
+            String postalCode, String countryCode) {
+        Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
+                .createAlias("company", "c")
+                    .add(Restrictions.eq("c.id", entityId))
+                .add(Restrictions.eq("type", BlacklistDTO.TYPE_ADDRESS))
+                .createAlias("contact", "ct")
+                    .add(equals("ct.streetAddres1", address1))
+                    .add(equals("ct.streetAddres2", address2))
+                    .add(equals("ct.city", city))
+                    .add(equals("ct.stateProvince", stateProvince))
+                    .add(equals("ct.postalCode", postalCode))
+                    .add(equals("ct.countryCode", countryCode));
+
+        return criteria.list();
+    }
+
+    public List<BlacklistDTO> filterByPhone(Integer entityId, 
+            Integer phoneCountryCode, Integer phoneAreaCode, String phoneNumber) {
+        Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
+                .createAlias("company", "c")
+                    .add(Restrictions.eq("c.id", entityId))
+                .add(Restrictions.eq("type", BlacklistDTO.TYPE_PHONE_NUMBER))
+                .createAlias("contact", "ct")
+                    .add(equals("ct.phoneCountryCode", phoneCountryCode))
+                    .add(equals("ct.phoneAreaCode", phoneAreaCode))
+                    .add(equals("ct.phonePhoneNumber", phoneNumber));
+
+        return criteria.list();
+    }
+
+    public List<BlacklistDTO> filterByCcNumbers(Integer entityId, 
+            Collection<String> ccNumbers) {
+        Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
+                .createAlias("company", "c")
+                    .add(Restrictions.eq("c.id", entityId))
+                .add(Restrictions.eq("type", BlacklistDTO.TYPE_CC_NUMBER))
+                .createAlias("creditCard", "cc")
+                    .add(Restrictions.in("cc.ccNumber", ccNumbers));
+
+        return criteria.list();
+    }
+
+    public List<BlacklistDTO> filterByIpAddress(Integer entityId, 
+            String ipAddress, Integer ccfId) {
+        Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
+                .createAlias("company", "c")
+                    .add(Restrictions.eq("c.id", entityId))
+                .add(Restrictions.eq("type", BlacklistDTO.TYPE_IP_ADDRESS))
+                .createAlias("contact.contactFields.contactFieldType", "cfType")
+                    .add(Restrictions.eq("cfType.id", ccfId))
+                .createAlias("contact.contactFields", "cf")
+                    .add(Restrictions.eq("cf.content", ipAddress));
+
+        return criteria.list();
+    }
+
+    /**
+     * Considers comparing nulls as equal. Useful for some filters,
+     * such as address, where not all fields may have a value.
+     */
+    private Criterion equals(String propertyName, Object value) {
+        if (value != null) {
+            return Restrictions.eq(propertyName, value);
+        }
+        return Restrictions.isNull(propertyName);
+    }
 }

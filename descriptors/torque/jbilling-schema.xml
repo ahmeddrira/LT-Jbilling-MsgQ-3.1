@@ -191,6 +191,23 @@
         <index name="contact_i_del">
         	<index-column name="deleted"/>
         </index>
+        <index name="ix_contact_fname_lname">
+            <index-column name="first_name"/>
+            <index-column name="last_name"/>
+        </index>
+        <index name="ix_contact_address">
+            <index-column name="street_addres1"/>
+            <index-column name="city"/>
+            <index-column name="postal_code"/>
+            <index-column name="street_addres2"/>
+            <index-column name="state_province"/>
+            <index-column name="country_code"/>
+        </index>
+        <index name="ix_contact_phone">
+            <index-column name="phone_phone_number"/>
+            <index-column name="phone_area_code"/>
+            <index-column name="phone_country_code"/>
+        </index>
     </table>
     <table name="contact_field">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
@@ -199,6 +216,9 @@
         <column name="content" required="true" size="100" type="VARCHAR"/>
         <index name="ix_contact_field_cid">
         	<index-column name="contact_id"/>
+        </index>
+        <index name="ix_contact_field_content">
+        	<index-column name="content"/>
         </index>
         <foreign-key foreignTable="contact">
             <reference foreign="id" local="contact_id"/>
@@ -264,6 +284,9 @@
         <column name="security_code" type="INTEGER"/>
         <index name="ix_cc_number">
         	<index-column name="cc_number_plain"/>
+        </index>
+        <index name="ix_cc_number_encrypted">
+        	<index-column name="cc_number"/>
         </index>
     </table>
     <table name="currency">
@@ -1346,5 +1369,9 @@
         	<index-column name="user_id"/>
         	<index-column name="type"/>
         </index>
+        <index name="ix_blacklist_entity_type">
+        	<index-column name="entity_id"/>
+        	<index-column name="type"/>
+    	</index>
     </table>
 </database>

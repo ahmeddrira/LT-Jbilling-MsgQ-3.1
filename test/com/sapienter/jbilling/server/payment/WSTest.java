@@ -165,55 +165,74 @@ public class WSTest extends TestCase {
         }
     }
 
-    public void testBlacklistFilter() {
+    /**
+     * Test for UserIdFilter, NameFilter, AddressFilter, PhoneFilter, 
+     * CreditCardFilter and IpAddressFilter
+     */
+    public void testBlacklistFilters() {
         try {
-            final Integer USER_ID = 1000;
+            Integer userId = 1000; // starting user id
+
+            // expected filter response messages
+            String[] message = { "User id is blacklisted.", 
+                    "Name is blacklisted.", "Address is blacklisted.",
+                    "Phone number is blacklisted.", 
+                    "Credit card number is blacklisted.", 
+                    "IP address is blacklisted." };
 
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
-            // create a new order and invoice it
-            OrderWS order = new OrderWS();            
-            order.setUserId(USER_ID); 
-            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
-            order.setPeriod(2);
-            order.setCurrencyId(new Integer(1));
+            /*
+             * Loop through users 1000-1005, which should fail on a respective 
+             * filter: UserIdFilter, NameFilter, AddressFilter, PhoneFilter, 
+             * CreditCardFilter or IpAddressFilter
+             */
+            for(int i = 0; i < 6; i++, userId++) {
+                // create a new order and invoice it
+                OrderWS order = new OrderWS();            
+                order.setUserId(userId); 
+                order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+                order.setPeriod(2);
+                order.setCurrencyId(new Integer(1));
 
-            // add a line
-            OrderLineWS lines[] = new OrderLineWS[1];
-            OrderLineWS line;
-            line = new OrderLineWS();
-            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            line.setQuantity(new Integer(1));
-            line.setItemId(new Integer(1));
-            line.setUseItem(new Boolean(true));
-            lines[0] = line;
+                // add a line
+                OrderLineWS lines[] = new OrderLineWS[1];
+                OrderLineWS line;
+                line = new OrderLineWS();
+                line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+                line.setQuantity(new Integer(1));
+                line.setItemId(new Integer(1));
+                line.setUseItem(new Boolean(true));
+                lines[0] = line;
 
-            order.setOrderLines(lines);
+                order.setOrderLines(lines);
 
-            // create the order and invoice it
-            System.out.println("Creating and invoicing order ...");
-            Integer orderId = api.createOrderAndInvoice(order);
-            assertNotNull("The order was not created", orderId);
+                // create the order and invoice it
+                System.out.println("Creating and invoicing order ...");
+                Integer orderId = api.createOrderAndInvoice(order);
+                assertNotNull("The order was not created", orderId);
 
-            // get invoice id
-        	InvoiceWS invoice = api.getLatestInvoice(USER_ID);
-        	assertNotNull("Couldn't get last invoice", invoice);
-        	Integer invoiceId = invoice.getId();
-    	    assertNotNull("Invoice id was null", invoiceId);
+                // get invoice id
+            	InvoiceWS invoice = api.getLatestInvoice(userId);
+            	assertNotNull("Couldn't get last invoice", invoice);
+            	Integer invoiceId = invoice.getId();
+        	    assertNotNull("Invoice id was null", invoiceId);
 
-            // try paying the invoice
-            System.out.println("Trying to pay invoice for blacklisted user ...");
-            PaymentAuthorizationDTOEx authInfo = api.payInvoice(invoiceId);
-        	assertNotNull("Payment result empty", authInfo);
+                // try paying the invoice
+                System.out.println("Trying to pay invoice for blacklisted user ...");
+                PaymentAuthorizationDTOEx authInfo = api.payInvoice(invoiceId);
+            	assertNotNull("Payment result empty", authInfo);
 
-            // check that it was failed by the test blacklist filter
-            assertFalse("Payment wasn't failed", authInfo.getResult().booleanValue());
-            assertEquals("Processor response", "This user is blacklisted", 
-                authInfo.getResponseMessage());
+                // check that it was failed by the test blacklist filter
+                assertFalse("Payment wasn't failed for user: " + userId, 
+                        authInfo.getResult().booleanValue());
+                assertEquals("Processor response", message[i], 
+                    authInfo.getResponseMessage());
 
-            // remove invoice and order
-            api.deleteInvoice(invoiceId);
-            api.deleteOrder(orderId);
+                // remove invoice and order
+                api.deleteInvoice(invoiceId);
+                api.deleteOrder(orderId);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

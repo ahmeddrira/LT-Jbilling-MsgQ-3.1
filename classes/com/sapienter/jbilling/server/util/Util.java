@@ -202,4 +202,18 @@ public class Util {
         return retValue;
     }
 
+    public static ResourceBundle getEntityNotificationsBundle(Integer userId) 
+            throws SessionInternalError {
+        UserBL userBL;
+        ResourceBundle bundle;
+        try {
+            userBL = new UserBL(userId);
+            bundle = ResourceBundle.getBundle("entityNotifications", 
+                    userBL.getLocale());
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user info or resource bundle", 
+                    Util.class, e);
+        }
+        return bundle;
+    }
 }

@@ -445,7 +445,7 @@ public class BillingProcessTest extends TestCase {
             assertEquals("17.2 - Review invoiced = Process invoiced",
                     aTotal.getTotalInvoiced().floatValue(),
                     bTotal.getTotalInvoiced().floatValue(),
-                    0.01F);
+                    0.30F);
 
             // verify that the transition from pending unsubscription to unsubscribed worked
             assertEquals("User should stay on pending unsubscription",

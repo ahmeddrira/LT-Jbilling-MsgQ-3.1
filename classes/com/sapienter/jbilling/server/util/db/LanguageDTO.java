@@ -31,12 +31,16 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.generated.NotificationMessage;
 
 @Entity
 @Table(name="language")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class LanguageDTO  implements java.io.Serializable {
 
 

@@ -257,6 +257,25 @@
             timeToLiveSeconds="100000"
             overflowToDisk="false"
      />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.util.db.LanguageDTO"
+            maxElementsInMemory="10"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.util.db.CurrencyDTO"
+            maxElementsInMemory="10"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />                       
+
      <!-- Query cache regions -->
      <cache name="org.hibernate.cache.StandardQueryCache"
             maxElementsInMemory="5000"

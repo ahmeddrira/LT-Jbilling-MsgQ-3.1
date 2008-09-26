@@ -35,6 +35,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -48,6 +51,7 @@ import com.sapienter.jbilling.server.util.db.generated.ProcessRunTotal;
 
 @Entity
 @Table(name="currency")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class CurrencyDTO extends AbstractDescription  implements java.io.Serializable {
 
 

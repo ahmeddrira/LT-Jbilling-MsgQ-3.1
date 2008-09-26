@@ -34,6 +34,7 @@ public class PreferenceDAS extends AbstractDAS<PreferenceDTO> {
         query.setParameter("typeId", typeId);
         query.setParameter("foreignId", foreignId);
         query.setParameter("tableName", tableName);
+        query.setCacheable(true);
         return (PreferenceDTO) query.uniqueResult();
     }
 

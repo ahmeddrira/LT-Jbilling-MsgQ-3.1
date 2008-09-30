@@ -170,7 +170,7 @@
     </definition>
     <definition name="user.view" extends="main"><put name="featureTitle" value="bar.user.view" /><put name="body" value="user.view.body" /><put name="leftMenuBar" value="/user/viewReportsBar.jsp" />
     </definition>
-    <definition name="user.view.body" path="/layouts/bodySplitSix.jsp"><put name="one" value="/user/viewHeader.jsp" /><put name="two" value="/user/viewBody.jsp" /><put name="three" value="/user/viewNotesBody.jsp" /><put name="four" value="/user/viewContactBody.jsp" /><put name="five" value="/user/viewCreditCardBody.jsp" /><put name="six" value="/invoice/viewBody.jsp?noTitle=yes" />
+    <definition name="user.view.body" path="/layouts/bodySplitSeven.jsp"><put name="one" value="/user/viewHeader.jsp" /><put name="two" value="/user/viewBody.jsp" /><put name="three" value="/user/viewNotesBody.jsp" /><put name="four" value="/user/viewContactBody.jsp" /><put name="five" value="/user/viewCreditCardBody.jsp" /><put name="six" value="/invoice/viewBody.jsp?noTitle=yes" /><put name="seven" value="/user/viewBlacklistBody.jsp" />
     </definition>
     <definition name="user.notes.edit" extends="main"><put name="featureTitle" value="bar.user.notes.edit" /><put name="body" value="/user/notesEditBody.jsp" />
     </definition>

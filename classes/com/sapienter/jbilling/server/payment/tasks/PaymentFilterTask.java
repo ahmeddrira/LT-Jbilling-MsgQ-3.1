@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.payment.tasks;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -108,6 +109,23 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
     }
 
 	/**
+	 * Calls each blacklist filter to test the user id. If any fail, the 
+	 * response message is added to the returned results vector. An empty
+	 * returned vector means the user id didn't match any blacklist entries.
+	 */
+    public Vector<String> getBlacklistMatches(Integer userId) {
+        Vector<String> results = new Vector<String>();
+        List<BlacklistFilter> filters = getEnabledFilters();
+        for (BlacklistFilter filter : filters) {
+            BlacklistFilter.Result result = filter.checkUser(userId);
+            if (result.isBlacklisted()) {
+                results.add(result.getMessage());
+            }
+        }
+        return results;
+    }
+
+	/**
 	 * Returns a list of enabled blacklist filters
 	 */
     private List<BlacklistFilter> getEnabledFilters() {
@@ -130,9 +148,26 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
             LOG.debug("AddressFilter enabled");
         } 
         if (getBooleanParameter(PARAM_ENABLE_FILTER_IP_ADDRESS)) {
-            filters.add(new IpAddressFilter(
-                    (Integer) parameters.get(PARAM_IP_ADDRESS_CCF_ID)));
-            LOG.debug("IpAddressFilter enabled");
+            // try to get the ip address ccf id
+            Integer ccfId = null;
+            Object param = parameters.get(PARAM_IP_ADDRESS_CCF_ID);
+            if (param instanceof Integer) {
+                ccfId = (Integer) param;
+            } else if (param instanceof String) {
+                try {
+                    ccfId = new Integer((String) param);
+                } catch (NumberFormatException nfe) {
+                }
+            }
+
+            if (ccfId != null) {
+                filters.add(new IpAddressFilter(ccfId));
+                LOG.debug("IpAddressFilter enabled");
+            } else {
+                // ccf id wasn't there or couldn't be parsed from a string param
+                LOG.warn("Invalid " + PARAM_IP_ADDRESS_CCF_ID + " parameter " +
+                        " - skipping IpAddresFilter");
+            }
         } 
         if (getBooleanParameter(PARAM_ENABLE_FILTER_PHONE_NUMBER)) {
             filters.add(new PhoneFilter());

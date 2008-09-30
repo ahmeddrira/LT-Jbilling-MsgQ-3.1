@@ -76,6 +76,7 @@ public final class UserDTOEx extends UserDTO {
     private String currencySymbol = null;
     private String currencyName = null;
     private Locale locale = null;
+    private Vector<String> blacklistMatches = null;
 
 
     /**
@@ -411,5 +412,13 @@ public final class UserDTOEx extends UserDTO {
     
     public Integer getUserId() {
         return getId();
+    }
+
+    public Vector<String> getBlacklistMatches() {
+        return blacklistMatches;
+    }
+
+    public void setBlacklistMatches(Vector<String> blacklistMatches) {
+        this.blacklistMatches = blacklistMatches;
     }
 }

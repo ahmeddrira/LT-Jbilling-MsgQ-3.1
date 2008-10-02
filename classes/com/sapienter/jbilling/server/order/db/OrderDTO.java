@@ -196,7 +196,7 @@ public class OrderDTO  implements java.io.Serializable {
        this.isCurrent = isCurrent;
     }
    
-    @Id  @GeneratedValue(strategy=GenerationType.TABLE, generator="purchase_order_GEN")
+    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="purchase_order_GEN")
     @Column(name="id", unique=true, nullable=false)
     public Integer getId() {
         return this.id;

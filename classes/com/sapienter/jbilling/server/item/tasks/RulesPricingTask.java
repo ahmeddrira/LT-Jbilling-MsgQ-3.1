@@ -33,8 +33,8 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 
 public class RulesPricingTask extends PluggableTask implements IPricing {
@@ -70,7 +70,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
                 contact.set(userId);
                 ContactDTOEx contactDTO = contact.getDTO();
                 rulesMemoryContext.add(contactDTO);
-                for (ContactFieldDTOEx field: (Collection<ContactFieldDTOEx>) contactDTO.getFields().values()) {
+                for (ContactFieldDTO field: (Collection<ContactFieldDTO>) contactDTO.getFieldsTable().values()) {
                     rulesMemoryContext.add(field);    
                 }
             }

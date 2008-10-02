@@ -42,10 +42,10 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 
 /**
  * @author Emil
@@ -241,9 +241,8 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                     validate(userId);
                 }
                 // check that this is a valid contact type id
-                ContactBL con = new ContactBL();
                 try {
-                    Integer entityId = con.getTypeHome().findByPrimaryKey(
+                    Integer entityId = new ContactTypeDAS().find(
                             contactTypeId).getEntity().getId();
                     UserBL user = new UserBL();
                     user.setRoot(context.getCallerPrincipal().getName());

@@ -32,7 +32,6 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
-import com.sapienter.jbilling.interfaces.ContactEntityLocal;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -42,6 +41,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class PaymentAtlasTask extends PaymentTaskWithTimeout {
@@ -190,7 +190,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 		try {
 			ContactBL contact = new ContactBL();
 			contact.set(userId);
-			ContactEntityLocal entity = contact.getEntity();
+			ContactDTO entity = contact.getEntity();
 			data.put("city", entity.getCity());
 			data.put("email", entity.getEmail());
 			data.put("customerAccountCode", userId.toString());

@@ -28,7 +28,6 @@ package com.sapienter.jbilling.server.util;
 import java.lang.reflect.Method;
 
 import javax.ejb.EJBContext;
-import javax.ejb.FinderException;
 
 import org.apache.log4j.Logger;
 import org.jboss.security.SecurityProxy;
@@ -96,11 +95,7 @@ public abstract class MethodBaseSecurityProxy implements SecurityProxy {
      */
     protected void validatePermission(Integer userId, Integer permission) {
         UserBL user;
-        try {
-            user = new UserBL(userId);
-        } catch (FinderException e) {
-            throw new SecurityException("User not found " + userId);
-        }
+        user = new UserBL(userId);
         UserDTOEx dto = new UserDTOEx();
         dto.setAllPermissions(user.getPermissions());
         if (!dto.isGranted(permission)) {

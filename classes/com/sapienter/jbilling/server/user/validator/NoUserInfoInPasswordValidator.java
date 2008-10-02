@@ -28,6 +28,7 @@ import org.apache.commons.validator.Field;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.commons.validator.ValidatorAction;
 import org.apache.commons.validator.util.ValidatorUtils;
+import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.validator.Resources;
 
@@ -40,6 +41,8 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 
 public class NoUserInfoInPasswordValidator {
     
+    private static final Logger LOG = Logger.getLogger(NoUserInfoInPasswordValidator.class);
+
 	/**
 	 * This method verifies that the password passed as parameter does not
 	 * contain any user information as retrieved from the user contact
@@ -94,8 +97,8 @@ public class NoUserInfoInPasswordValidator {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
+            LOG.error("Exception validating for contact in password ", e);
 			retVal = false;
 		}
 		return retVal;

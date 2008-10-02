@@ -25,10 +25,10 @@ import java.util.ResourceBundle;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.generated.Contact;
 
 /**
  * Filters contact addresses.
@@ -40,9 +40,9 @@ public class AddressFilter implements BlacklistFilter {
     }
 
     public Result checkUser(Integer userId) {
-        Contact contact = new ContactDAS().findUserContact(userId);
+        ContactDTO contact = new ContactDAS().findPrimaryContact(userId);
 
-        if (contact.getStreetAddres1() == null && contact.getStreetAddres2() == null &&
+        if (contact.getAddress1() == null && contact.getAddress2() == null &&
                 contact.getCity() == null && contact.getStateProvince() == null &&
                 contact.getPostalCode() == null && contact.getCountryCode() == null) {
             return new Result(false, null);
@@ -50,7 +50,7 @@ public class AddressFilter implements BlacklistFilter {
 
         Integer entityId = new UserDAS().find(userId).getCompany().getId();
         List<BlacklistDTO> blacklist = new BlacklistDAS().filterByAddress(
-                entityId, contact.getStreetAddres1(), contact.getStreetAddres2(),
+                entityId, contact.getAddress1(), contact.getAddress2(),
                 contact.getCity(), contact.getStateProvince(), 
                 contact.getPostalCode(), contact.getCountryCode());
 

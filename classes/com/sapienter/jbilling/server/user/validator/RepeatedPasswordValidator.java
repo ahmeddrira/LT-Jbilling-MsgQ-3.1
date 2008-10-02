@@ -34,6 +34,7 @@ import org.apache.commons.validator.Field;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.commons.validator.ValidatorAction;
 import org.apache.commons.validator.util.ValidatorUtils;
+import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.validator.Resources;
 
@@ -48,6 +49,7 @@ import com.sapienter.jbilling.server.user.UserSQL;
 
 public class RepeatedPasswordValidator {
 
+    private static final Logger LOG = Logger.getLogger(RepeatedPasswordValidator.class);
 
 	/**
      * Queries the event_log table to check whether the user has already used 
@@ -120,7 +122,8 @@ public class RepeatedPasswordValidator {
 					}
 				}
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
+            LOG.error("Exception validating for repeated password ", e);
 			result = false;
 		}
 		return result;

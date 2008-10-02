@@ -307,10 +307,7 @@ public class InvoiceSessionBean implements SessionBean {
 				
 				//security check is done here for speed
 				UserBL customerUserBL = null;
-				try {
-					customerUserBL = new UserBL(customer);
-				} catch(FinderException e) {		
-				}
+				customerUserBL = new UserBL(customer);
 				if ((customerUserBL != null) && customerUserBL.getEntity().getEntity().getId() == entityId) {
 					cachedRowSet = invoiceBL.getInvoicesByUserId(customer);
 				}				

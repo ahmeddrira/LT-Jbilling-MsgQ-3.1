@@ -26,11 +26,11 @@ import java.util.Set;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.generated.Contact;
-import com.sapienter.jbilling.server.util.db.generated.ContactField;
 
 /**
  * Filters by custom contact field: IP Address.
@@ -51,13 +51,13 @@ public class IpAddressFilter implements BlacklistFilter {
     }
 
     public Result checkUser(Integer userId) {
-        Contact contact = new ContactDAS().findUserContact(userId);
-        Set<ContactField> contactFields = contact.getContactFields();
+        ContactDTO contact = new ContactDAS().findPrimaryContact(userId);
+        Set<ContactFieldDTO> contactFields = contact.getFields();
         String ipAddress = null;
 
         // find the ip address custom contact field
-        for (ContactField contactField : contactFields) {
-            if (contactField.getContactFieldType().getId() == ipAddressCcf) {
+        for (ContactFieldDTO contactField : contactFields) {
+            if (contactField.getType().getId() == ipAddressCcf) {
                 ipAddress = contactField.getContent();
                 break;
             }

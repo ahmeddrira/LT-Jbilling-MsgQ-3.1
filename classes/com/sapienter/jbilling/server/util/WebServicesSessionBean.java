@@ -257,6 +257,7 @@ public class WebServicesSessionBean implements SessionBean {
 
         LOG.debug("Call to createUser ");
         validateUser(newUser);
+        newUser.setUserId(0);
 
         try {
             UserBL bl = new UserBL();
@@ -270,11 +271,13 @@ public class WebServicesSessionBean implements SessionBean {
                 UserDTOEx dto = new UserDTOEx(newUser, entityId);
                 Integer userId = bl.create(dto);
                 if (newUser.getContact() != null) {
+                    newUser.getContact().setId(0);
                     cBl.createPrimaryForUser(new ContactDTOEx(
                             newUser.getContact()), userId, entityId);
                 }
                 
                 if (newUser.getCreditCard() != null) {
+                    newUser.getCreditCard().setId(null);
                     CreditCardBL ccBL = new CreditCardBL();
                     ccBL.create(newUser.getCreditCard());
                     ccBL.getEntity().setUserId(userId);
@@ -286,9 +289,6 @@ public class WebServicesSessionBean implements SessionBean {
             return null;
         // need to catch every single one to be able to throw inside
         } catch (NamingException e) {
-            LOG.error("WS user creation error", e);
-            throw new SessionInternalError("Error creating user");
-        } catch (FinderException e) {
             LOG.error("WS user creation error", e);
             throw new SessionInternalError("Error creating user");
         } catch (CreateException e) {

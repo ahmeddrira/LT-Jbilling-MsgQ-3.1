@@ -99,9 +99,6 @@ public abstract class AbstractDAS<T> {
         } else {
             mySession = sessionFactory.getCurrentSession();
         }
-        // just make sure queries only return objects, never single columns
-        // OR, modifications in the persitance context are not relevant to the result
-        mySession.setFlushMode(FlushMode.COMMIT);
         return mySession;
     }
     

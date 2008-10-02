@@ -51,7 +51,8 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 
 public class ContactEditAction extends Action {
 
-    DynaValidatorForm contactForm = null;
+    private DynaValidatorForm contactForm = null;
+    private static final Logger LOG = Logger.getLogger(ContactEditAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -59,7 +60,6 @@ public class ContactEditAction extends Action {
     
         ActionErrors errors = new ActionErrors();
         ActionMessages messages = new ActionMessages();
-        Logger log = Logger.getLogger(ContactEditAction.class);
         HttpSession session = request.getSession();
         String forward = "edit";
         // Look up the module configuration information. Later will need it
@@ -75,7 +75,7 @@ public class ContactEditAction extends Action {
                         
         String action = request.getParameter("action");
 
-        log.debug("In contact edit action = " + action);
+        LOG.debug("In contact edit action = " + action);
 
         try {
             JNDILookup EJBFactory = JNDILookup.getFactory(false);
@@ -142,7 +142,7 @@ public class ContactEditAction extends Action {
                 contact.setFaxAreaCode((Integer) contactForm.get("faxAreaCode"));
                 contact.setFaxNumber(cleanField("faxNumber"));
                 contact.setEmail(cleanField("email"));
-                contact.setFields((Hashtable) contactForm.get("fields"));
+                contact.setFieldsTable((Hashtable) contactForm.get("fieldsTable"));
                 contact.setInclude(new Integer(((Boolean) contactForm.get("chbx_include")).
                         booleanValue() ? 1 : 0));
                 
@@ -159,20 +159,20 @@ public class ContactEditAction extends Action {
             }
                 
         } catch (Exception e) {
-            log.error("Exception!", e);
+            LOG.error("Exception!", e);
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));
             saveErrors(request, errors);
         }
         
-        log.debug("After contact: action = " + action);
-        log.debug("Fields number:" + ((Hashtable) contactForm.get(
-                "fields")).size());
+        LOG.debug("After contact: action = " + action);
+        LOG.debug("Fields number:" + ((Hashtable) contactForm.get(
+                "fieldsTable")).size());
         for (Iterator it = ((Hashtable) contactForm.get(
-                "fields")).keySet().iterator(); it.hasNext();) {
+                "fieldsTable")).keySet().iterator(); it.hasNext();) {
             String key = (String) it.next();
-            log.debug("field " + key + " is " + ((Hashtable) contactForm.get(
-                "fields")).get(key));
+            LOG.debug("field " + key + " is " + ((Hashtable) contactForm.get(
+                "fieldsTable")).get(key));
         }
         return mapping.findForward(forward);
     }
@@ -216,7 +216,7 @@ public class ContactEditAction extends Action {
                 dbContact.getFaxAreaCode());
         contactForm.set("faxNumber", dbContact.getFaxNumber());
         contactForm.set("email", dbContact.getEmail());
-        contactForm.set("fields", dbContact.getFields());
+        contactForm.set("fieldsTable", dbContact.getFieldsTable());
         Boolean include = new Boolean(false);
         if (dbContact.getInclude() != null) {
             include = new Boolean(dbContact.getInclude().intValue() == 1);

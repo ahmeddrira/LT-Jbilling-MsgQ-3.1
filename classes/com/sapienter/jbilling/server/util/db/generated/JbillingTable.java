@@ -35,6 +35,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 
@@ -49,7 +50,7 @@ public class JbillingTable  implements java.io.Serializable {
      private int id;
      private String name;
      private int nextId;
-     private Set<ContactMap> contactMaps = new HashSet<ContactMap>(0);
+     private Set<ContactMapDTO> contactMaps = new HashSet<ContactMapDTO>(0);
      private Set<BettyTableColumn> bettyTableColumns = new HashSet<BettyTableColumn>(0);
      private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
@@ -63,7 +64,7 @@ public class JbillingTable  implements java.io.Serializable {
         this.name = name;
         this.nextId = nextId;
     }
-    public JbillingTable(int id, String name, int nextId, Set<ContactMap> contactMaps, Set<BettyTableColumn> bettyTableColumns, Set<PreferenceDTO> preferences, Set<EventLogDTO> eventLogs) {
+    public JbillingTable(int id, String name, int nextId, Set<ContactMapDTO> contactMaps, Set<BettyTableColumn> bettyTableColumns, Set<PreferenceDTO> preferences, Set<EventLogDTO> eventLogs) {
        this.id = id;
        this.name = name;
        this.nextId = nextId;
@@ -101,11 +102,11 @@ public class JbillingTable  implements java.io.Serializable {
         this.nextId = nextId;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
-    public Set<ContactMap> getContactMaps() {
+    public Set<ContactMapDTO> getContactMaps() {
         return this.contactMaps;
     }
     
-    public void setContactMaps(Set<ContactMap> contactMaps) {
+    public void setContactMaps(Set<ContactMapDTO> contactMaps) {
         this.contactMaps = contactMaps;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")

@@ -149,20 +149,16 @@ public class OrderBL extends ResultList
     }
 
     public void setUserCurrent(Integer userId) {
-        try {
-            UserBL user = new UserBL(userId);
-            Integer orderId = user.getEntity().getCustomer().getCurrentOrderId();
-            if (orderId != null) {
-                set(orderId);
-                // deleted does not count
-                if (order.getDeleted() == 1) {
-                    order = null;
-                }
-            } else {
+        UserBL user = new UserBL(userId);
+        Integer orderId = user.getEntity().getCustomer().getCurrentOrderId();
+        if (orderId != null) {
+            set(orderId);
+            // deleted does not count
+            if (order.getDeleted() == 1) {
                 order = null;
             }
-        } catch (FinderException e) {
-            throw new SessionInternalError("Can not find for current order", OrderBL.class, e);
+        } else {
+            order = null;
         }
     }
 

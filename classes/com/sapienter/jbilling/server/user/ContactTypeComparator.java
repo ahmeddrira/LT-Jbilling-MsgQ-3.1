@@ -27,21 +27,18 @@ package com.sapienter.jbilling.server.user;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.interfaces.ContactTypeEntityLocal;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 
 /**
  * @author Emil
  */
-public class ContactTypeComparator implements Comparator {
+public class ContactTypeComparator implements Comparator<ContactTypeDTO> {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object arg0, Object arg1) {
-        ContactTypeEntityLocal perA = (ContactTypeEntityLocal) arg0;
-        ContactTypeEntityLocal perB = (ContactTypeEntityLocal) arg1;
-        
-        return perA.getId().compareTo(perB.getId());
+    public int compare(ContactTypeDTO perA, ContactTypeDTO perB) {
+        return new Integer(perA.getId()).compareTo(perB.getId());
     }
 
 }

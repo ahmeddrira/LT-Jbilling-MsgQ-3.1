@@ -108,7 +108,7 @@
 	 	</tr>
 	 	
 	 	<%-- Now the entity specific fields --%>
-	 	<logic:iterate id="field" name="contact" property="fields">
+	 	<logic:iterate id="field" name="contact" property="fieldsTable">
  		<bean:define id="typeId" name="field" property="key"/>
 	 	<tr class="form">
 	 		<td class="form_prompt"><bean:message name="field" property="value.type.promptKey"/></td>
@@ -118,7 +118,7 @@
 					 property="mainRoleId"
 					 scope="session"
 					 value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
-	 			<html:text property='<%= "fields(" + typeId + ").content" %>' size="20" />
+	 			<html:text property='<%= "fieldsTable(" + typeId + ").content" %>' size="20" />
 	 			</logic:notEqual>
 
 	 			<logic:equal name='<%=Constants.SESSION_USER_DTO%>'
@@ -126,16 +126,16 @@
 					 scope="session"
 					 value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
 	 			<logic:notEqual name="contact"
-					 property='<%= "fields(" + typeId + ").type.readOnly" %>'
+					 property='<%= "fieldsTable(" + typeId + ").type.readOnly" %>'
 					 scope="session"
 					 value="1">
-	 				<html:text property='<%= "fields(" + typeId + ").content" %>' size="20" />
+	 				<html:text property='<%= "fieldsTable(" + typeId + ").content" %>' size="20" />
 	 			</logic:notEqual>
 	 			<logic:equal name="contact"
-					 property='<%= "fields(" + typeId + ").type.readOnly" %>'
+					 property='<%= "fieldsTable(" + typeId + ").type.readOnly" %>'
 					 scope="session"
 					 value="1">
-	 				<bean:write name="contact" property='<%= "fields(" + typeId + ").content" %>'/>
+	 				<bean:write name="contact" property='<%= "fieldsTable(" + typeId + ").content" %>'/>
 	 			</logic:equal>
 	 			</logic:equal>
 

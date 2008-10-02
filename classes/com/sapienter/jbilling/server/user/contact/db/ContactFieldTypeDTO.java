@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.user.contact.db;
 
 
 import java.util.HashSet;
@@ -33,35 +33,45 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Table(name="contact_field_type")
-public class ContactFieldType  implements java.io.Serializable {
+public class ContactFieldTypeDTO  implements java.io.Serializable {
 
 
      private int id;
      private CompanyDTO entity;
      private String promptKey;
      private String dataType;
-     private Integer customerReadonly;
-     private Set<ContactField> contactFields = new HashSet<ContactField>(0);
+     private Integer readOnly;
+     private Set<ContactFieldDTO> contactFields = new HashSet<ContactFieldDTO>(0);
 
-    public ContactFieldType() {
+    public ContactFieldTypeDTO() {
+    }
+
+    public ContactFieldTypeDTO(Integer id) {
+        if (id != null) {
+            this.id = id;
+        }
     }
 
 	
-    public ContactFieldType(int id, String promptKey, String dataType) {
+    public ContactFieldTypeDTO(int id, String promptKey, String dataType) {
         this.id = id;
         this.promptKey = promptKey;
         this.dataType = dataType;
     }
-    public ContactFieldType(int id, CompanyDTO entity, String promptKey, String dataType, Integer customerReadonly, Set<ContactField> contactFields) {
+    public ContactFieldTypeDTO(int id, CompanyDTO entity, String promptKey, String dataType, Integer customerReadonly, Set<ContactFieldDTO> contactFields) {
        this.id = id;
        this.entity = entity;
        this.promptKey = promptKey;
        this.dataType = dataType;
-       this.customerReadonly = customerReadonly;
+       this.readOnly = customerReadonly;
        this.contactFields = contactFields;
     }
    
@@ -104,19 +114,20 @@ public class ContactFieldType  implements java.io.Serializable {
     }
     
     @Column(name="customer_readonly")
-    public Integer getCustomerReadonly() {
-        return this.customerReadonly;
+    public Integer getReadOnly() {
+        return this.readOnly;
     }
     
-    public void setCustomerReadonly(Integer customerReadonly) {
-        this.customerReadonly = customerReadonly;
+    public void setReadOnly(Integer customerReadonly) {
+        this.readOnly = customerReadonly;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="contactFieldType")
-    public Set<ContactField> getContactFields() {
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="type")
+    public Set<ContactFieldDTO> getContactFields() {
         return this.contactFields;
     }
     
-    public void setContactFields(Set<ContactField> contactFields) {
+    public void setContactFields(Set<ContactFieldDTO> contactFields) {
         this.contactFields = contactFields;
     }
 

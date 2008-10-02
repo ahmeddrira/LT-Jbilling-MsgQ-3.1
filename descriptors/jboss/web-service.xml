@@ -8,13 +8,6 @@
       encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
 
   <typeMapping 
-      qname="sapienter:ContactDTO" 
-      type="java:com.sapienter.jbilling.server.entity.ContactDTO"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
-
-  <typeMapping 
       qname="sapienter:InvoiceLineDTO" 
       type="java:com.sapienter.jbilling.server.entity.InvoiceLineDTO"
       serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"

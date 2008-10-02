@@ -25,10 +25,10 @@ import java.util.ResourceBundle;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.generated.Contact;
 
 /**
  * Filters contact names.
@@ -40,7 +40,7 @@ public class NameFilter implements BlacklistFilter {
     }
 
     public Result checkUser(Integer userId) {
-        Contact userContact = new ContactDAS().findUserContact(userId);
+        ContactDTO userContact = new ContactDAS().findPrimaryContact(userId);
 
         if (userContact.getFirstName() == null && 
                 userContact.getLastName() == null) {

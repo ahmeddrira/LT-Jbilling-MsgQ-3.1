@@ -47,8 +47,8 @@ import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
@@ -108,25 +108,22 @@ public class NewEntityAction extends Action {
             }
             log.debug("now doing the entity creation");
             // check this constructor out ... :p
-            ContactDTO contact = new ContactDTO(
-                    null, 
-                    (String) myForm.get("company_name"), 
-                    (String) myForm.get("address1"), 
-                    (String) myForm.get("address2"), 
-                    (String) myForm.get("city"), 
-                    (String) myForm.get("state"), 
-                    (String) myForm.get("postal_code"), 
-                    (String) myForm.get("country"), 
-                    (String) myForm.get("last_name"), 
-                    (String) myForm.get("first_name"), 
-                    null, null, null, 
-                    ((String)myForm.get("phone_area")).length() == 0 ? 
-                        null : Integer.valueOf((String) myForm.get("phone_area")), 
-                    (String) myForm.get("phone_number"), 
-                    null, null, null, 
-                    (String) myForm.get("email"), 
-                    null, 
-                    new Integer(0), new Integer(1),null);
+            ContactDTO contact = new ContactDTO();
+            contact.setOrganizationName((String) myForm.get("company_name")); 
+            contact.setAddress1((String) myForm.get("address1"));
+            contact.setAddress2((String) myForm.get("address2"));
+            contact.setCity((String) myForm.get("city"));
+            contact.setStateProvince((String) myForm.get("state"));
+            contact.setPostalCode((String) myForm.get("postal_code"));
+            contact.setCountryCode((String) myForm.get("country"));
+            contact.setLastName((String) myForm.get("last_name"));
+            contact.setFirstName((String) myForm.get("first_name"));
+            contact.setPhoneAreaCode(((String)myForm.get("phone_area")).length() == 0 ? 
+                        null : Integer.valueOf((String) myForm.get("phone_area")));
+            contact.setPhoneNumber((String) myForm.get("phone_number")); 
+            contact.setEmail((String) myForm.get("email"));
+            contact.setDeleted(0);
+            contact.setInclude(1);
             
             UserDTOEx user = new UserDTOEx();
             user.setUserName((String) myForm.get("user_name"));

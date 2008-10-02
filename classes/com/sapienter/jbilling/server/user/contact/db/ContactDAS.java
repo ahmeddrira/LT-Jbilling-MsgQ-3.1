@@ -19,13 +19,54 @@
 */
 package com.sapienter.jbilling.server.user.contact.db;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.Contact;
 
-public class ContactDAS extends AbstractDAS<Contact> {
-    public Contact findUserContact(Integer userId) {
+public class ContactDAS extends AbstractDAS<ContactDTO> {
+    public static final String findContactSQL =  
+        "SELECT c " +
+        "  FROM ContactDTO c, JbillingTable d " +
+        " WHERE c.contactMap.jbillingTable.id = d.id " +
+        "   AND d.name = :tableName " +
+        "   AND c.contactMap.contactType.id = :typeId " +
+        "   AND c.contactMap.foreignId = :userId ";
+
+    public static final String findSimpleContactSQL =  
+        "SELECT c " +
+        "  FROM ContactDTO c, JbillingTable d " +
+        " WHERE c.contactMap.jbillingTable.id = d.id " +
+        "   AND d.name = :tableName " +
+        "   AND c.contactMap.foreignId = :id ";
+
+    public ContactDTO findPrimaryContact(Integer userId) {
         return findByCriteriaSingle(Restrictions.eq("userId", userId));
     }
+    
+    public ContactDTO findContact(Integer userId, Integer typeId) {
+        Query query = getSession().createQuery(findContactSQL);
+        query.setParameter("typeId", typeId);
+        query.setParameter("userId", userId);
+        query.setParameter("tableName", Constants.TABLE_BASE_USER);
+        return (ContactDTO) query.uniqueResult();
+    }
+
+    public ContactDTO findEntityContact(Integer entityId) {
+        Query query = getSession().createQuery(findSimpleContactSQL);
+        query.setParameter("id", entityId);
+        query.setParameter("tableName", Constants.TABLE_ENTITY);
+        query.setCacheable(true);
+        return (ContactDTO) query.uniqueResult();
+    }
+
+    public ContactDTO findInvoiceContact(Integer invoiceId) {
+        Query query = getSession().createQuery(findSimpleContactSQL);
+        query.setParameter("id", invoiceId);
+        query.setParameter("tableName", Constants.TABLE_INVOICE);
+        return (ContactDTO) query.uniqueResult();
+    }
+
 }

@@ -20,7 +20,6 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
 import javax.ejb.FinderException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
@@ -30,7 +29,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 
 public class PaymentRouterTask extends PluggableTask implements PaymentTask {
 	public static final String PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR = "custom_field_id";
@@ -115,18 +114,11 @@ public class PaymentRouterTask extends PluggableTask implements PaymentTask {
     public String getProcessorName(Integer userId) throws PluggableTaskException {
         ContactBL contactLoader;
         String processorName = null;
-        try {
-            contactLoader = new ContactBL();
-            contactLoader.set(userId);
-        } catch (NamingException e) {
-            throw new PluggableTaskException("Configuration problems", e);
-        } catch (FinderException e) {
-            throw new PluggableTaskException("Valid userId expected, actual:"
-                    + userId, e);
-        }
+        contactLoader = new ContactBL();
+        contactLoader.set(userId);
 
         ContactDTOEx contact = contactLoader.getDTO();
-        ContactFieldDTOEx paymentProcessorField = (ContactFieldDTOEx) contact.getFields().get(
+        ContactFieldDTO paymentProcessorField = (ContactFieldDTO) contact.getFieldsTable().get(
                 parameters.get(PARAM_CUSTOM_FIELD_PAYMENT_PROCESSOR));
         if (paymentProcessorField == null){
             LOG.warn("Can't find CCF with type " + 

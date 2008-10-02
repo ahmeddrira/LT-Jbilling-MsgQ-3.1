@@ -49,9 +49,9 @@ import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 
 /**
  * All the parameters of the list have to come from the request (hidden fields

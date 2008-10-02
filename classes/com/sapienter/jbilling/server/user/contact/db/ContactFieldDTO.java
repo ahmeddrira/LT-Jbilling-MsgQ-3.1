@@ -17,43 +17,67 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.user.contact.db;
 
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
+@TableGenerator(
+        name="contact_field_GEN",
+        table="jbilling_table",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="contact_field",
+        allocationSize=10
+        )
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name="contact_field")
-public class ContactField  implements java.io.Serializable {
+public class ContactFieldDTO  implements java.io.Serializable {
 
 
      private int id;
-     private ContactFieldType contactFieldType;
-     private Contact contact;
+     private ContactFieldTypeDTO type;
+     private ContactDTO contact;
      private String content;
+     private int versionNum;
 
-    public ContactField() {
+    public ContactFieldDTO() {
+    }
+    
+    public ContactFieldDTO(ContactFieldDTO other) {
+        setId(other.getId());
+        setType(other.getType());
+        setContact(other.getContact());
+        setContent(other.getContent());
     }
 
 	
-    public ContactField(int id, String content) {
+    public ContactFieldDTO(int id, String content) {
         this.id = id;
         this.content = content;
     }
-    public ContactField(int id, ContactFieldType contactFieldType, Contact contact, String content) {
+    public ContactFieldDTO(int id, ContactFieldTypeDTO contactFieldType, ContactDTO contact, String content) {
        this.id = id;
-       this.contactFieldType = contactFieldType;
+       this.type = contactFieldType;
        this.contact = contact;
        this.content = content;
     }
    
-    @Id 
+    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="contact_field_GEN")
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -65,21 +89,21 @@ public class ContactField  implements java.io.Serializable {
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="type_id")
-    public ContactFieldType getContactFieldType() {
-        return this.contactFieldType;
+    public ContactFieldTypeDTO getType() {
+        return this.type;
     }
     
-    public void setContactFieldType(ContactFieldType contactFieldType) {
-        this.contactFieldType = contactFieldType;
+    public void setType(ContactFieldTypeDTO contactFieldType) {
+        this.type = contactFieldType;
     }
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="contact_id")
-    public Contact getContact() {
+    public ContactDTO getContact() {
         return this.contact;
     }
     
-    public void setContact(Contact contact) {
+    public void setContact(ContactDTO contact) {
         this.contact = contact;
     }
     
@@ -91,6 +115,16 @@ public class ContactField  implements java.io.Serializable {
     public void setContent(String content) {
         this.content = content;
     }
+    
+    @Version
+    @Column(name="OPTLOCK")
+    public int getVersionNum() {
+        return versionNum;
+    }
+    public void setVersionNum(int versionNum) {
+        this.versionNum = versionNum;
+    }
+
 }
 
 

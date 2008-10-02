@@ -46,13 +46,13 @@ import org.hibernate.annotations.OrderBy;
 import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 import com.sapienter.jbilling.server.util.db.generated.BillingProcessConfiguration;
-import com.sapienter.jbilling.server.util.db.generated.ContactFieldType;
-import com.sapienter.jbilling.server.util.db.generated.ContactType;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 import com.sapienter.jbilling.server.util.db.generated.ItemType;
 import com.sapienter.jbilling.server.util.db.generated.ListEntity;
@@ -77,12 +77,12 @@ public class CompanyDTO  implements java.io.Serializable {
      private Set<OrderPeriodDTO> orderPeriodDTOs = new HashSet<OrderPeriodDTO>(0);
      private Set<BillingProcessDTO> billingProcesses = new HashSet<BillingProcessDTO>(0);
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
-     private Set<ContactType> contactTypes = new HashSet<ContactType>(0);
+     private Set<ContactTypeDTO> contactTypes = new HashSet<ContactTypeDTO>(0);
      private Set<Item> items = new HashSet<Item>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
      private Set<NotificationMessage> notificationMessages = new HashSet<NotificationMessage>(0);
      private Set<Report> reports = new HashSet<Report>(0);
-     private Set<ContactFieldType> contactFieldTypes = new HashSet<ContactFieldType>(0);
+     private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
      private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
      private Set<ItemType> itemTypes = new HashSet<ItemType>(0);
      private Set<BillingProcessConfiguration> billingProcessConfigurations = new HashSet<BillingProcessConfiguration>(0);
@@ -103,7 +103,7 @@ public class CompanyDTO  implements java.io.Serializable {
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactType> contactTypes, Set<Item> items, Set<EventLogDTO> eventLogs, Set<NotificationMessage> notificationMessages, Set<Report> reports, Set<ContactFieldType> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemType> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntity> listEntities) {
+    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<Item> items, Set<EventLogDTO> eventLogs, Set<NotificationMessage> notificationMessages, Set<Report> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemType> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntity> listEntities) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.language = language;
@@ -234,15 +234,19 @@ public class CompanyDTO  implements java.io.Serializable {
     public void setBaseUsers(Set<UserDTO> baseUsers) {
         this.baseUsers = baseUsers;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
-    public Set<ContactType> getContactTypes() {
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+    @OrderBy (
+        clause = "id"
+    )
+    public Set<ContactTypeDTO> getContactTypes() {
         return this.contactTypes;
     }
-    
-    public void setContactTypes(Set<ContactType> contactTypes) {
+    public void setContactTypes(Set<ContactTypeDTO> contactTypes) {
         this.contactTypes = contactTypes;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
     public Set<Item> getItems() {
         return this.items;
     }
@@ -280,11 +284,11 @@ public class CompanyDTO  implements java.io.Serializable {
         this.reports = reports;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
-    public Set<ContactFieldType> getContactFieldTypes() {
+    public Set<ContactFieldTypeDTO> getContactFieldTypes() {
         return this.contactFieldTypes;
     }
     
-    public void setContactFieldTypes(Set<ContactFieldType> contactFieldTypes) {
+    public void setContactFieldTypes(Set<ContactFieldTypeDTO> contactFieldTypes) {
         this.contactFieldTypes = contactFieldTypes;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

@@ -97,8 +97,8 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
                     .add(Restrictions.eq("c.id", entityId))
                 .add(Restrictions.eq("type", BlacklistDTO.TYPE_ADDRESS))
                 .createAlias("contact", "ct")
-                    .add(equals("ct.streetAddres1", address1))
-                    .add(equals("ct.streetAddres2", address2))
+                    .add(equals("ct.address1", address1))
+                    .add(equals("ct.address2", address2))
                     .add(equals("ct.city", city))
                     .add(equals("ct.stateProvince", stateProvince))
                     .add(equals("ct.postalCode", postalCode))
@@ -116,7 +116,7 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
                 .createAlias("contact", "ct")
                     .add(equals("ct.phoneCountryCode", phoneCountryCode))
                     .add(equals("ct.phoneAreaCode", phoneAreaCode))
-                    .add(equals("ct.phonePhoneNumber", phoneNumber));
+                    .add(equals("ct.phoneNumber", phoneNumber));
 
         return criteria.list();
     }
@@ -139,9 +139,9 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))
                 .add(Restrictions.eq("type", BlacklistDTO.TYPE_IP_ADDRESS))
-                .createAlias("contact.contactFields.contactFieldType", "cfType")
+                .createAlias("contact.fields.type", "cfType")
                     .add(Restrictions.eq("cfType.id", ccfId))
-                .createAlias("contact.contactFields", "cf")
+                .createAlias("contact.fields", "cf")
                     .add(Restrictions.eq("cf.content", ipAddress));
 
         return criteria.list();

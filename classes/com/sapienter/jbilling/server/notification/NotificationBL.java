@@ -89,9 +89,9 @@ import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
@@ -300,12 +300,8 @@ public class NotificationBL extends ResultList
                 new Integer(MessageDTO.TYPE_PAYMENT.intValue() + 1));
         
         try {
-            try {
-                user = new UserBL(dto.getUserId());
-                languageId = user.getEntity().getLanguageIdField();
-            } catch (FinderException e1) {
-                throw new SessionInternalError("Can't find user " + dto.getUserId());
-            }
+            user = new UserBL(dto.getUserId());
+            languageId = user.getEntity().getLanguageIdField();
             setContent(message, message.getTypeId(), entityId, languageId);
             
             // find the description for the payment method
@@ -340,12 +336,8 @@ public class NotificationBL extends ResultList
         message.setTypeId(MessageDTO.TYPE_INVOICE_REMINDER);
         
         try {
-            try {
-                user = new UserBL(userId);
-                languageId = user.getEntity().getLanguageIdField();
-            } catch (FinderException e1) {
-                throw new SessionInternalError("Can't find user " + userId);
-            }
+            user = new UserBL(userId);
+            languageId = user.getEntity().getLanguageIdField();
             setContent(message, message.getTypeId(), entityId, languageId);
             
             message.addParameter("days", days.toString());
@@ -823,17 +815,13 @@ public class NotificationBL extends ResultList
             
             // add all the custom contact fields
             // the from 
-            for (Iterator it = from.getFields().values().iterator(); 
-                    it.hasNext();) {
-                ContactFieldDTOEx field = (ContactFieldDTOEx) it.next();
+            for (ContactFieldDTO field: from.getFields()) {
                 String fieldName = field.getType().getPromptKey();
                 fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
                 parameters.put("from_custom_" + fieldName,
                         field.getContent());
             }
-            for (Iterator it = to.getFields().values().iterator(); 
-                    it.hasNext();) {
-                ContactFieldDTOEx field = (ContactFieldDTOEx) it.next();
+            for (ContactFieldDTO field: from.getFields()) {
                 String fieldName = field.getType().getPromptKey();
                 fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
                 parameters.put("to_custom_" + fieldName,

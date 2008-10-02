@@ -28,14 +28,16 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Hashtable;
 
-import com.sapienter.jbilling.server.entity.ContactDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 
 /**
  * @author Emil
  */
 public class ContactDTOEx extends ContactDTO implements Serializable  {
     
-    private Hashtable fields = null; // the entity specific fields
+    private Hashtable<String, ContactFieldDTO> fieldsTable = null; // the entity specific fields
     private Integer type = null; // the contact type
 
     /**
@@ -76,11 +78,10 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
             String phoneNumber, Integer faxCountryCode, Integer faxAreaCode,
             String faxNumber, String email, Date createDate, Integer deleted,
             Integer notify) {
-        super(id, organizationName, address1, address2, city, stateProvince,
-                postalCode, countryCode, lastName, firstName, initial, title,
-                phoneCountryCode, phoneAreaCode, phoneNumber, faxCountryCode,
-                faxAreaCode, faxNumber, email, createDate, deleted, notify,
-                null);
+        super(id,organizationName, address1, address2, city, stateProvince, postalCode, countryCode, 
+                lastName, firstName, initial, title, phoneCountryCode, phoneAreaCode, 
+                phoneNumber, faxCountryCode, faxAreaCode, faxNumber, email, createDate, deleted, 
+                notify, null, null, null);
     }
 
     /**
@@ -91,25 +92,46 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
     }
     
     public ContactDTOEx(ContactWS ws) {
-        super(ws);
+        setId(ws.getId());
+        setOrganizationName(ws.getOrganizationName());
+        setAddress1(ws.getAddress1());
+        setAddress2(ws.getAddress2());
+        setCity(ws.getCity());
+        setStateProvince(ws.getStateProvince());
+        setPostalCode(ws.getPostalCode());
+        setCountryCode(ws.getCountryCode());
+        setLastName(ws.getLastName());
+        setFirstName(ws.getFirstName());
+        setInitial(ws.getInitial());
+        setTitle(ws.getTitle());
+        setPhoneCountryCode(ws.getPhoneCountryCode());
+        setPhoneAreaCode(ws.getPhoneAreaCode());
+        setPhoneNumber(ws.getPhoneNumber());
+        setFaxCountryCode(ws.getFaxCountryCode());
+        setFaxAreaCode(ws.getFaxAreaCode());
+        setFaxNumber(ws.getFaxNumber());
+        setEmail(ws.getEmail());
+        setCreateDate(ws.getCreateDate());
+        setDeleted(ws.getDeleted());
+        setInclude(ws.getInclude());
         // contacts from ws are always included in notifications
         setInclude(new Integer(1));
         // now add the custom fields
         if (ws.getFieldNames() == null || ws.getFieldNames().length == 0) {
             return;
         }
-        fields = new Hashtable();
+        fieldsTable = new Hashtable<String, ContactFieldDTO>();
         for(int f = 0; f < ws.getFieldNames().length; f++) {
-            fields.put(ws.getFieldNames()[f], new ContactFieldDTOEx(
-                    null, ws.getFieldValues()[f], null));
+            fieldsTable.put(ws.getFieldNames()[f], new ContactFieldDTO(0, new ContactFieldTypeDTO(
+                    Integer.valueOf(ws.getFieldNames()[f])), null, ws.getFieldValues()[f]));
         }
     }
 
-    public Hashtable getFields() {
-        return fields;
+    public Hashtable<String, ContactFieldDTO> getFieldsTable() {
+        return fieldsTable;
     }
-    public void setFields(Hashtable fields) {
-        this.fields = fields;
+    public void setFieldsTable(Hashtable<String, ContactFieldDTO> fields) {
+        this.fieldsTable = fields;
     }
     public Integer getType() {
         return type;
@@ -119,6 +141,6 @@ public class ContactDTOEx extends ContactDTO implements Serializable  {
     }
     
     public String toString(){
-        return super.toString() + fields.toString(); 
+        return super.toString() + fieldsTable.toString(); 
     }
 }

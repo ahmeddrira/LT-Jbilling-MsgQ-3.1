@@ -47,8 +47,9 @@ import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 
@@ -343,14 +344,14 @@ public class UploadData {
                 // the entity specific fields
                 for (int spField = 0; spField < totalSpecificFields; spField++) {
                     if (specific[spField] >= 0) {
-                        ContactFieldDTOEx fieldDto = new ContactFieldDTOEx();
-                        fieldDto.setTypeId(new Integer(specificType[spField]));
+                        ContactFieldDTO fieldDto = new ContactFieldDTO();
+                        fieldDto.setType(new ContactFieldTypeDTO(new Integer(specificType[spField])));
                         fieldDto.setContent(fields[specific[spField]].trim());
                         entitySpecificFeilds.put(
                                 (specificType[spField] + ""),fieldDto);
                     }
                 }
-                contact.setFields(entitySpecificFeilds);
+                contact.setFieldsTable(entitySpecificFeilds);
 				
 				Integer newUserId = remoteSession.create(user, contact);
                 if (newUserId != null && notes >= 0) {

@@ -78,7 +78,7 @@
 	 </tr>
 	 
 	<%-- Now the entity specific custom contact fields (CCF) --%>
- 	<logic:iterate id="field" name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property="fields">
+ 	<logic:iterate id="field" name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property="fieldsTable">
  		<bean:define id="typeId" name="field" property="key"/>
 		<c:choose>
 			<c:when test="${colorFlag == 1}">
@@ -92,7 +92,7 @@
 	    </c:choose>
 	 		<td class="infoprompt"><bean:message name="field" property="value.type.promptKey"/></td>
 	 		<td class="infodata"> 
-	 			<bean:write name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property='<%= "fields(" + typeId + ").content" %>'/>
+	 			<bean:write name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property='<%= "fieldsTable(" + typeId + ").content" %>'/>
 	 		</td>
 	 	</tr>
  	</logic:iterate>

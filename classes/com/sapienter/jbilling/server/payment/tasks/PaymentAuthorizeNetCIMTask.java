@@ -26,8 +26,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -45,7 +43,7 @@ import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.ContactFieldDTOEx;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implements PaymentTask {
@@ -198,23 +196,16 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
         StringBuffer XML = new StringBuffer();
         ContactBL contactLoader;
-        try {
-            contactLoader = new ContactBL();
-            contactLoader.set(paymentInfo.getUserId());
-        } catch (NamingException e) {
-            throw new PluggableTaskException("Configuration problems", e);
-        } catch (FinderException e) {
-            throw new PluggableTaskException("Valid userId expected, actual:"
-                    + paymentInfo.getUserId(), e);
-        }
+        contactLoader = new ContactBL();
+        contactLoader.set(paymentInfo.getUserId());
 
         ContactDTOEx contact = contactLoader.getDTO();
         String ccfProfileIdName = ensureGetParameter(PARAMETER_CUSTOMER_PROFILE_ID);
         String ccfPaymentIdName = ensureGetParameter(PARAMETER_CUSTOMER_PAYMENT_PROFILE_ID);
 
-        ContactFieldDTOEx customerProfileIdField = (ContactFieldDTOEx) contact.getFields().get(
+        ContactFieldDTO customerProfileIdField = (ContactFieldDTO) contact.getFieldsTable().get(
                 ccfProfileIdName);
-        ContactFieldDTOEx customerPaymentProfileIdField = (ContactFieldDTOEx) contact.getFields()
+        ContactFieldDTO customerPaymentProfileIdField = (ContactFieldDTO) contact.getFieldsTable()
                 .get(ccfPaymentIdName);
 
         if (customerProfileIdField == null)

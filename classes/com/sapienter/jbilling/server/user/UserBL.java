@@ -99,7 +99,7 @@ public class UserBL extends ResultList
     private Integer mainRole = null;
     private UserDAS das = null;
     
-    public UserBL(Integer userId) throws FinderException {
+    public UserBL(Integer userId) {
         init();
         set(userId);
     }
@@ -122,8 +122,7 @@ public class UserBL extends ResultList
         user = das.find(userId);
     }
     
-    public void set(String userName, Integer entityId) 
-            throws FinderException {
+    public void set(String userName, Integer entityId) {
         user = das.findByUserName(userName, entityId);
     }
     
@@ -131,8 +130,7 @@ public class UserBL extends ResultList
         this.user = user;
     }
      
-    public void setRoot(String userName) 
-            throws FinderException {
+    public void setRoot(String userName) {
         user = das.findRoot(userName);
     }
     
@@ -594,11 +592,9 @@ public class UserBL extends ResultList
         // the contact is not included in the Ex
         ContactBL bl= new ContactBL();
         
-        try {
-            bl.set(dto.getUserId());
+        bl.set(dto.getUserId());
+        if (bl.getEntity() != null) { // this user has no contact ...
             retValue.setContact(new ContactWS(bl.getDTO()));
-        } catch (FinderException e) {
-            // this user has no contact ...
         }
         
         // some entities rather not know the credit card numbers
@@ -744,19 +740,18 @@ public class UserBL extends ResultList
             throws SessionInternalError {
                 
         boolean retValue;
-        try {
-            user = das.find(callerUserId);
-            set(rootUserName, user.getEntity().getId());
-            if (user.getDeleted() == 1) {
-                throw new SessionInternalError("the caller is set as deleted");
-            }
-            if (!getMainRole().equals(Constants.TYPE_ROOT)) {
-                throw new SessionInternalError("can't validate but root users");
-            }
-            retValue = true;
-        } catch (FinderException e) {
-            retValue = false;
+        user = das.find(callerUserId);
+        set(rootUserName, user.getEntity().getId());
+        if (user == null) {
+            return false;
         }
+        if (user.getDeleted() == 1) {
+            throw new SessionInternalError("the caller is set as deleted");
+        }
+        if (!getMainRole().equals(Constants.TYPE_ROOT)) {
+            throw new SessionInternalError("can't validate but root users");
+        }
+        retValue = true;
         
         return retValue;
     }
@@ -1041,6 +1036,7 @@ public class UserBL extends ResultList
     			}
     		}
     	} catch (Throwable e) {
+            LOG.error("Error validating password " + password, e);
     		result = false;
     	}
     	return result;

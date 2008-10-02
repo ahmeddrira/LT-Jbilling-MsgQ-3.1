@@ -24,16 +24,15 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.ContactType;
 
-public class ContactTypeDAS extends AbstractDAS<ContactType> {
+public class ContactTypeDAS extends AbstractDAS<ContactTypeDTO> {
 
-    public ContactType findPrimary(Integer entityId) {
-        Criteria criteria = getSession().createCriteria(ContactType.class)
+    public ContactTypeDTO findPrimary(Integer entityId) {
+        Criteria criteria = getSession().createCriteria(ContactTypeDTO.class)
             .createAlias("entity", "e")
                 .add(Restrictions.eq("e.id", entityId))
             .add(Restrictions.eq("isPrimary", 1));
         
-        return (ContactType) criteria.uniqueResult();
+        return (ContactTypeDTO) criteria.uniqueResult();
     }
 }

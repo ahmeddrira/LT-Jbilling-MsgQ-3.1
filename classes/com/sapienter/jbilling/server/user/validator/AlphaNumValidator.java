@@ -40,11 +40,7 @@ public class AlphaNumValidator {
 		if (password == null || password.equals("")) {
 			return true;
 		}
-		try {
-			if (!password.matches(LETTERS) || !password.matches(NUMBERS)) {
-				result = false;
-			}
-		} catch (Throwable e) {
+		if (!password.matches(LETTERS) || !password.matches(NUMBERS)) {
 			result = false;
 		}
 		return result;

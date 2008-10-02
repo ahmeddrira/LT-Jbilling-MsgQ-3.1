@@ -20,61 +20,57 @@
 
 package com.sapienter.jbilling.server.user;
 
-import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ContactEntityLocal;
-import com.sapienter.jbilling.interfaces.ContactEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ContactFieldEntityLocal;
-import com.sapienter.jbilling.interfaces.ContactFieldEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ContactMapEntityLocal;
-import com.sapienter.jbilling.interfaces.ContactMapEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ContactTypeEntityLocal;
-import com.sapienter.jbilling.interfaces.ContactTypeEntityLocalHome;
-import com.sapienter.jbilling.server.entity.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactMapDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.generated.ContactFieldType;
-import com.sapienter.jbilling.server.util.db.generated.ContactType;
+import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
 
 public class ContactBL {
+    private static final Logger LOG = Logger.getLogger(ContactBL.class);             
+
     // contact types in synch with the table contact_type
     static public final Integer ENTITY = new Integer(1);
     
     // private methods
-    private JNDILookup EJBFactory = null;
-    private ContactEntityLocalHome contactHome = null;
-    private ContactTypeEntityLocalHome contactTypeHome = null;
-    private ContactFieldEntityLocalHome contactFieldHome = null;
-    private ContactEntityLocal contact = null;
-    private Logger log = null;
+    private ContactDAS contactDas = null;
+    private ContactFieldDAS contactFieldDas = null;
+    private ContactDTO contact = null;
     private Integer entityId = null;
     
     public ContactBL(Integer contactId) 
             throws NamingException, FinderException {
         init();
-        contact = contactHome.findByPrimaryKey(contactId);
+        contact = contactDas.find(contactId);
     }
     
-    public ContactBL() throws NamingException {
+    public ContactBL() {
         init();
     }
     
-    public void set(Integer userId) 
-            throws FinderException {
-        contact = contactHome.findPrimaryContact(userId);
+    public void set(Integer userId) {
+        contact = contactDas.findPrimaryContact(userId);
+        LOG.debug("Found " + contact + " for " + userId);
         setEntityFromUser(userId);
     }
     
@@ -85,27 +81,26 @@ public class ContactBL {
             user = new UserBL();
             entityId = user.getEntityId(userId);
         } catch (Exception e) {
-            log.error("Finding the entity", e);
+            LOG.error("Finding the entity", e);
         } 
 
     }
  
-    public void set(Integer userId, Integer contactTypeId)
-            throws FinderException {
-        contact = contactHome.findContact(userId, contactTypeId);
+    public void set(Integer userId, Integer contactTypeId) {
+        contact = contactDas.findContact(userId, contactTypeId);
         setEntityFromUser(userId);
     }
 
-    public void setEntity(Integer entityId) throws FinderException {
+    public void setEntity(Integer entityId) {
         this.entityId = entityId;
-    	contact = contactHome.findEntityContact(entityId);
+    	contact = contactDas.findEntityContact(entityId);
     }
 
     
     public boolean setInvoice(Integer invoiceId) throws FinderException {
         boolean retValue = false;
         try {
-            contact = contactHome.findInvoiceContact(invoiceId);
+            contact = contactDas.findInvoiceContact(invoiceId);
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             // this is needed to fetch the entity's custom fields
             entityId = invoice.getEntity().getUser().getEntity().getId();
@@ -117,11 +112,11 @@ public class ContactBL {
                 InvoiceBL invoice = new InvoiceBL(invoiceId);
                 set(invoice.getEntity().getUser().getUserId());
             } catch (NamingException e1) {
-                log.error("Exception finding contact for invoice " + 
+                LOG.error("Exception finding contact for invoice " + 
                         invoiceId, e1);
             } 
         } catch (NamingException e1) {
-            log.error("Exception finding entity for invoice " + 
+            LOG.error("Exception finding entity for invoice " + 
                     invoiceId, e1);
         } 
         
@@ -138,19 +133,16 @@ public class ContactBL {
      * to follow the convention
      * @return
      */
-    public ContactEntityLocal getEntity() {
+    public ContactDTO getEntity() {
     	return contact;
     }
     
-    public ContactTypeEntityLocalHome getTypeHome() {
-        return contactTypeHome;
-    }
     
     public ContactDTOEx getVoidDTO(Integer myEntityId) 
             throws NamingException, FinderException {
         entityId = myEntityId;
         ContactDTOEx retValue = new ContactDTOEx();
-        retValue.setFields(initializeFields());
+        retValue.setFieldsTable(initializeFields());
         return retValue;
     }
     
@@ -180,25 +172,23 @@ public class ContactBL {
             contact.getDeleted(),
             contact.getInclude());
         
-        log.debug("ContactDTO: getting custom fields");
+        LOG.debug("ContactDTO: getting custom fields");
         try {
-            retValue.setFields(initializeFields());
-            for (Iterator it = contact.getFields().iterator(); it.hasNext();) {
-                ContactFieldEntityLocal field = (ContactFieldEntityLocal) it
-                        .next();
+            retValue.setFieldsTable(initializeFields());
+            for (ContactFieldDTO field: contact.getFields()) {
                 // now find the field of this type
-                ContactFieldDTOEx dto = (ContactFieldDTOEx) retValue
-                        .getFields().get(field.getTypeId().toString());
+                ContactFieldDTO dto = (ContactFieldDTO) retValue
+                        .getFieldsTable().get(String.valueOf(field.getType().getId()));
                 if (field != null && dto != null) {
-                    dto.setContent(field.getContent());
+                    dto.setContent(field.getContent() == null ? "" : field.getContent());
                     dto.setId(field.getId());
                 }
             }
         } catch (Exception e) {
-            log.error("Error initializing fields", e);
+            LOG.error("Error initializing fields", e);
         } 
         
-        log.debug("Returning dto with " + retValue.getFields().size() + 
+        LOG.debug("Returning dto with " + retValue.getFieldsTable().size() + 
                 " fields");
         
         return retValue;
@@ -209,14 +199,12 @@ public class ContactBL {
         Vector<ContactDTOEx> retValue = new Vector<ContactDTOEx>();
         UserBL user = new UserBL(userId);
         entityId = user.getEntityId(userId);
-        for (ContactType type: user.getEntity().getEntity().getContactTypes()) {
-            try {
-                contact = contactHome.findContact(userId, type.getId());
+        for (ContactTypeDTO type: user.getEntity().getEntity().getContactTypes()) {
+                contact = contactDas.findContact(userId, type.getId());
+            if (contact != null) {
                 ContactDTOEx dto = getDTO();
                 dto.setType(type.getId());
                 retValue.add(dto);
-            } catch (FinderException e) {
-                // it is ok to not have a contact type
             }
         }
         return retValue;
@@ -229,42 +217,26 @@ public class ContactBL {
      * @throws NamingException
      * @throws FinderException
      */
-    private Hashtable initializeFields() 
+    private Hashtable<String, ContactFieldDTO> initializeFields() 
             throws NamingException, FinderException {
         // now go over the entity specific fields
-        Hashtable fields = new Hashtable();
+        Hashtable<String, ContactFieldDTO> fields = new Hashtable<String, ContactFieldDTO>();
         EntityBL entity = new EntityBL(entityId);
-        for (ContactFieldType field: entity.getEntity().getContactFieldTypes()) {
-            ContactFieldDTOEx fieldDto = new ContactFieldDTOEx();
-            fieldDto.setTypeId(field.getId());
-            ContactFieldTypeDTO type = new ContactFieldTypeDTO();
-            type.setDataType(field.getDataType());
-            type.setId(field.getId());
-            type.setPromptKey(field.getPromptKey());
-            type.setReadOnly(field.getCustomerReadonly());
-            fieldDto.setType(type);
-            //fieldDto.setContent(new String()); // can't be null
+        for (ContactFieldTypeDTO field: entity.getEntity().getContactFieldTypes()) {
+            ContactFieldDTO fieldDto = new ContactFieldDTO();
+            fieldDto.setType(field);
+            fieldDto.setContent(new String()); // can't be null
             // the key HAS to be a String if we want struts to be able to
             // read the Hashtabe
-            fields.put(type.getId().toString(), fieldDto);
+            fields.put(String.valueOf(field.getId()), fieldDto);
         }
         
         return fields;
     }
     
-    private void init() throws NamingException {
-        log = Logger.getLogger(ContactBL.class);             
-        EJBFactory = JNDILookup.getFactory(false);
-        contactHome = (ContactEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ContactEntityLocalHome.class,
-                ContactEntityLocalHome.JNDI_NAME);
-        contactTypeHome = (ContactTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ContactTypeEntityLocalHome.class,
-                ContactTypeEntityLocalHome.JNDI_NAME);
-        contactFieldHome = (ContactFieldEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                    ContactFieldEntityLocalHome.class,
-                    ContactFieldEntityLocalHome.JNDI_NAME);
+    private void init() {
+        contactDas = new ContactDAS();
+        contactFieldDas = new ContactFieldDAS();
     }
     
     public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) 
@@ -272,7 +244,7 @@ public class ContactBL {
         // find which type id is the primary for this entity
         try {
             Integer retValue;
-            ContactType type = new ContactTypeDAS().findPrimary(entityId);
+            ContactTypeDTO type = new ContactTypeDAS().findPrimary(entityId);
 
             retValue =  createForUser(dto, userId, type.getId());
             // this is the primary contact, the only one with a user_id
@@ -290,18 +262,11 @@ public class ContactBL {
      * @param dto
      */
     public boolean append(ContactDTOEx dto, Integer userId) 
-            throws NamingException, FinderException, CreateException, 
-                SessionInternalError {
+                throws SessionInternalError {
         UserBL user = new UserBL(userId);
-        Vector types = new Vector(user.getEntity().getEntity().
-                getContactTypes());
-        Collections.sort(types, new ContactTypeComparator());
-        for (int f = 0; f < types.size(); f++) {
-            ContactTypeEntityLocal type = (ContactTypeEntityLocal) 
-                    types.get(f);
-            try {
-                set(userId, type.getId());
-            } catch (FinderException e) {
+        for (ContactTypeDTO type: user.getEntity().getEntity().getContactTypes()) {
+            set(userId, type.getId());
+            if (contact == null) {
                 // this one is available
                 createForUser(dto, userId, type.getId());
                 return true;
@@ -316,7 +281,7 @@ public class ContactBL {
         try {
             return create(dto, Constants.TABLE_BASE_USER, userId, typeId);
         } catch (Exception e) {
-            log.debug("Error creating contact for " +
+            LOG.debug("Error creating contact for " +
                     "user " + userId);
             throw new SessionInternalError(e);
         }
@@ -339,69 +304,50 @@ public class ContactBL {
      * @throws CreateException
      */
     public Integer create(ContactDTOEx dto, String table,  
-            Integer foreignId, Integer typeId) 
-            throws NamingException, FinderException, CreateException {
+            Integer foreignId, Integer typeId) {
         // first thing is to create the map to the user
-        ContactMapEntityLocalHome contactMapHome = (ContactMapEntityLocalHome)
-                EJBFactory.lookUpLocalHome(
-                ContactMapEntityLocalHome.class,
-                ContactMapEntityLocalHome.JNDI_NAME);
-        ContactMapEntityLocal map = contactMapHome.create(typeId, 
-                table, foreignId);
+        ContactMapDTO map = new ContactMapDTO();
+        map.setJbillingTable(new JbillingTableDAS().findByName(table));
+        map.setContactType(new ContactTypeDAS().find(typeId));
+        map.setForeignId(foreignId);
+        map = new ContactMapDAS().save(map);
         
         // now the contact itself
-        contact = contactHome.create(map);
+        dto.setCreateDate(new Date());
+        dto.setDeleted(0);
+        dto.setVersionNum(0);
+        dto.setId(0);
+        contact = contactDas.save(new ContactDTO(dto)); // it won't take the Ex
+        contact.setContactMap(map);
+        map.setContact(contact);
         
-        // set all the optional fields
-        contact.setAddress1(dto.getAddress1());
-        contact.setAddress2(dto.getAddress2());
-        contact.setCity(dto.getCity());
-        contact.setCountryCode(dto.getCountryCode());
-        contact.setEmail(dto.getEmail());
-        contact.setFaxAreaCode(dto.getFaxAreaCode());
-        contact.setFaxCountryCode(dto.getFaxCountryCode());
-        contact.setFaxNumber(dto.getFaxNumber());
-        contact.setFirstName(dto.getFirstName());
-        contact.setInitial(dto.getInitial());
-        contact.setLastName(dto.getLastName());
-        contact.setOrganizationName(dto.getOrganizationName());
-        contact.setPhoneAreaCode(dto.getPhoneAreaCode());
-        contact.setPhoneCountryCode(dto.getPhoneCountryCode());
-        contact.setPhoneNumber(dto.getPhoneNumber());
-        contact.setPostalCode(dto.getPostalCode());
-        contact.setStateProvince(dto.getStateProvince());
-        contact.setTitle(dto.getTitle());
-        contact.setInclude(dto.getInclude());
+        updateCreateFields(dto.getFieldsTable(), false);
         
-        updateCreateFields(dto.getFields(), false);
+        LOG.debug("created " + contact);
         
         return contact.getId();
     }
     
-    public void updatePrimaryForUser(ContactDTOEx dto, Integer userId)
-            throws FinderException, CreateException {
-        contact = contactHome.findPrimaryContact(userId);
+    public void updatePrimaryForUser(ContactDTOEx dto, Integer userId) {
+        contact = contactDas.findPrimaryContact(userId);
         update(dto);
     }
     
     public void updateForUser(ContactDTOEx dto, Integer userId,
             Integer contactTypeId) throws SessionInternalError {
-        try {
-            contact = contactHome.findContact(userId, contactTypeId);
+        contact = contactDas.findContact(userId, contactTypeId);
+        if (contact != null) {
             update(dto);
-        } catch (FinderException e) {
+        } else {
             try {
                 createForUser(dto, userId, contactTypeId);
             } catch (Exception e1) {
                 throw new SessionInternalError(e1);
             }
-        } catch (CreateException e1) {
-            throw new SessionInternalError(e1);
-        }
+        } 
     }
     
-    private void update(ContactDTOEx dto) 
-            throws CreateException {
+    private void update(ContactDTOEx dto) {
         contact.setAddress1(dto.getAddress1());
         contact.setAddress2(dto.getAddress2());
         contact.setCity(dto.getCity());
@@ -422,75 +368,69 @@ public class ContactBL {
         contact.setTitle(dto.getTitle());
         contact.setInclude(dto.getInclude());
         
-        updateCreateFields(dto.getFields(), true);
+        updateCreateFields(dto.getFieldsTable(), true);
     }
     
-    private void updateCreateFields(Hashtable fields, boolean isUpdate) 
-            throws CreateException {
+    private void updateCreateFields(Hashtable fields, boolean isUpdate) {
         if (fields == null) {
             // if the fields are not there, do nothing
             return;
         }
         // now the per-entity fields
-        for (Iterator it = fields.keySet().iterator(); 
-                it.hasNext();) {
+        for (Iterator it = fields.keySet().iterator(); it.hasNext();) {
             String type = (String) it.next();
-            ContactFieldDTOEx field = (ContactFieldDTOEx) fields.
-                    get(type);
-            //we can't create or update custom fields with null value
+            ContactFieldDTO field = (ContactFieldDTO) fields.get(type);
+            // we can't create or update custom fields with null value
             if (field.getContent() == null) {
                 continue;
             }
             if (isUpdate) {
-                try {
-                    if (field.getId() != null) {
-                        contactFieldHome.findByPrimaryKey(field.getId())
-                                .setContent(field.getContent());
+                if (field.getId() != 0) {
+                    contactFieldDas.find(field.getId()).setContent(field.getContent());
+                } else {
+                    // it is un update, but don't know the field id
+                    ContactFieldDTO aField = contactFieldDas.findByType(Integer.valueOf(type),
+                            contact.getId());
+                    if (aField != null) {
+                        aField.setContent(field.getContent());
                     } else {
-                        try {
-                            // it is un update, but don't know the field id
-                            contactFieldHome.findByType(Integer.valueOf(type),
-                                    contact.getId()).setContent(field.getContent());
-                        
-                        } catch (FinderException e) {
-                            // not there yet. It's ok
-                            contact.getFields().add(contactFieldHome.create(
-                                    Integer.valueOf(type), field.getContent()));
-
-                        }
+                        // not there yet. It's ok
+                        createContactField(Integer.valueOf(type), field.getContent());
                     }
-                } catch (FinderException e) {
-                    log.error("Updating contact", e);
                 }
             } else {
                 // create the new field
-                contact.getFields().add(contactFieldHome.create(
-                        Integer.valueOf(type), field.getContent()));
+                createContactField(Integer.valueOf(type), field.getContent());
             }
         }
 
     }
     
-    public void delete() 
-            throws RemoveException {
+    private void createContactField(Integer type, String content) {
+        ContactFieldDTO newField = new ContactFieldDTO();
+        newField.setType(new ContactFieldTypeDAS().find(type));
+        newField.setContent(content);
+        newField.setContact(contact);
+        newField = new ContactFieldDAS().save(newField);
+        contact.getFields().add(newField);
+    }
+    
+    public void delete() {
         
         if (contact == null) return;
         
-        log.debug("Deleting contact " + contact.getId());
+        LOG.debug("Deleting contact " + contact.getId());
         // delete the map first
-        contact.getContactMap().remove();
+        new ContactMapDAS().delete(contact.getContactMap());
         
         // now the fields
-        Iterator it = contact.getFields().iterator();
-        while(it.hasNext()) {
-            ContactFieldEntityLocal field = (ContactFieldEntityLocal) it.next();
-            field.remove();
-            // the collection has to be refreshed, or the container will throw
-            it = contact.getFields().iterator();
+        for(ContactFieldDTO field: contact.getFields()) {
+            new ContactFieldDAS().delete(field);
         }
-        
-        // last the contact
-        contact.remove();
+        contact.getFields().clear();
+
+        // the contact goes last
+        contactDas.delete(contact);
         contact = null;
     }
     
@@ -499,7 +439,7 @@ public class ContactBL {
      * as a parameter. 
      * @param customerId
      */
-    public void setFromChild(Integer userId) throws FinderException {
+    public void setFromChild(Integer userId) {
         UserBL customer = new UserBL(userId);
         set(customer.getEntity().getCustomer().getParent().getBaseUser().getUserId());
     }

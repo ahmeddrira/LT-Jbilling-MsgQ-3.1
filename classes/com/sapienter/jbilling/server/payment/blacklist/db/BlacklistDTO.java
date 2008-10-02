@@ -37,9 +37,9 @@ import org.apache.log4j.Logger;
 //import org.hibernate.annotations.Cache;
 //import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.generated.Contact;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 @Entity
@@ -97,7 +97,7 @@ public class BlacklistDTO implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="contact_id")
-    private Contact contact;
+    private ContactDTO contact;
 
     @ManyToOne
     @JoinColumn(name="user_id")
@@ -112,7 +112,7 @@ public class BlacklistDTO implements Serializable {
 
     public BlacklistDTO(Integer id, CompanyDTO company, Date createDate, 
             Integer type, Integer source, CreditCard creditCard,
-            Contact contact, UserDTO user) {
+            ContactDTO contact, UserDTO user) {
         this.id = id;
         this.company = company;
         this.createDate = createDate;
@@ -171,11 +171,11 @@ public class BlacklistDTO implements Serializable {
         return creditCard;
     }
 
-    public void setContact(Contact contact) {
+    public void setContact(ContactDTO contact) {
         this.contact = contact;
     }
 
-    public Contact getContact() {
+    public ContactDTO getContact() {
         return contact;
     }
 

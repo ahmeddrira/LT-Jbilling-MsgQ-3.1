@@ -31,7 +31,6 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.ContactEntityLocal;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
@@ -41,6 +40,7 @@ import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -371,7 +371,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 		try {
 			ContactBL contact = new ContactBL();
 			contact.set(payment.getUserId());
-			ContactEntityLocal contactEntity = contact.getEntity();
+			ContactDTO contactEntity = contact.getEntity();
 			request.add(SageParams.General.BILLING_ADDRESS, contactEntity
 					.getAddress1());
 			request.add(SageParams.General.BILLING_CITY, contactEntity

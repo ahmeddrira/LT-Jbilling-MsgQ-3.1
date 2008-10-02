@@ -44,11 +44,11 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -399,13 +399,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      */
      public ContactDTOEx getContactDTO(Integer userId, Integer contactTypeId)
              throws SessionInternalError, FinderException {
-        try {
-            ContactBL bl = new ContactBL();
-            bl.set(userId, contactTypeId);
-            return bl.getDTO();
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        } 
+        ContactBL bl = new ContactBL();
+        bl.set(userId, contactTypeId);
+        return bl.getDTO();
      }
  
      /**
@@ -1134,12 +1130,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      */
    public boolean isPasswordExpired(Integer userId) {
         UserBL user;
-        try {
-            user = new UserBL(userId);
-        } catch (FinderException e) {
-            // cant recover from this
-            throw new SessionInternalError(e);
-        }
+        user = new UserBL(userId);
         return user.isPasswordExpired();
     }
 

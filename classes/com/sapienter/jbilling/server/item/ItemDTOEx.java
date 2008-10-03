@@ -24,8 +24,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.server.entity.ItemDTO;
 
 /**
@@ -33,7 +31,7 @@ import com.sapienter.jbilling.server.entity.ItemDTO;
  * @jboss-net.xml-schema urn="sapienter:ItemDTOEx"
  */
 public final class ItemDTOEx extends ItemDTO implements Serializable {
-    private static final Logger LOG = Logger.getLogger(ItemDTOEx.class);
+    // private static final Logger LOG = Logger.getLogger(ItemDTOEx.class);
     
     private String description = null;
     private Integer[] types = null;
@@ -50,8 +48,7 @@ public final class ItemDTOEx extends ItemDTO implements Serializable {
             Integer manualPrice, Integer deleted, Integer currencyId,
             Float price, Float percentage, Integer orderLineTypeId,
             Integer hasDecimals ) {
-        super(id, number, percentage, manualPrice, hasDecimals, deleted);
-        setEntityId(entity);
+        super(id, number, percentage, manualPrice, hasDecimals, deleted, entity);
         setDescription(description);
         setCurrencyId(currencyId);
         setPrice(price);

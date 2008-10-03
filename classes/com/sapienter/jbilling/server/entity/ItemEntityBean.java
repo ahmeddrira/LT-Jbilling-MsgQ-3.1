@@ -35,7 +35,6 @@ import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PromotionEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -116,6 +115,7 @@ public abstract class ItemEntityBean implements EntityBean {
         	setHasDecimals(new Integer(0));
         }
         setDeleted(new Integer(0));
+        setEntityId(entityId);
 
         return newId;
     }
@@ -123,9 +123,6 @@ public abstract class ItemEntityBean implements EntityBean {
     public void ejbPostCreate(Integer entityId, Float percentage, 
             Integer priceManual, String description, 
             Integer languageId, Integer hasDecimals) {
-        // set the entity
-        CompanyDTO entityRow = new CompanyDAS().find(entityId);
-        setEntity(entityRow);
     }
 
     private DescriptionEntityLocal getDescriptionObject(Integer language) {
@@ -221,6 +218,15 @@ public abstract class ItemEntityBean implements EntityBean {
       */
     public abstract void setDeleted(Integer deleted);
 
+    
+    /**
+     * @ejb:persistent-field
+     * @jboss:column-name name="entity_id"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getEntityId();
+    public abstract void setEntityId(Integer entityId);
+
     // CMR field accessors -----------------------------------------------------
     /**
       * @ejb:interface-method view-type="local"
@@ -262,13 +268,13 @@ public abstract class ItemEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public CompanyDTO getEntity() {
-        return new ItemDAS().find(getId()).getEntity();
+        return new CompanyDAS().find(getEntityId());
     }
     /**
      * @ejb:interface-method view-type="local"
      */
     public void setEntity(CompanyDTO entity) {
-        new ItemDAS().find(getId()).setEntity(entity);
+        setEntityId(entity.getId());
     }
 
     /**

@@ -61,6 +61,8 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
+import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.report.db.ReportUserDAS;
 import com.sapienter.jbilling.server.user.db.AchDAS;
@@ -1258,5 +1260,51 @@ public class UserBL extends ResultList
        	UserDTO user = das.find(userId);
        	return user.getCompany().getId();
         		
+    }
+
+    /**
+     * Adds/removes blacklist entries directly related to this user.
+     */
+    public void setUserBlacklisted(Integer executorId, Boolean isBlacklisted) {
+        BlacklistDAS blacklistDAS = new BlacklistDAS();
+        List<BlacklistDTO> blacklist = blacklistDAS.findByUserType(
+                user.getId(), BlacklistDTO.TYPE_USER_ID);
+
+        if (isBlacklisted) {
+            if (blacklist.isEmpty()) {
+                // add a new blacklist entry
+                LOG.debug("Adding blacklist record for user id: " + 
+                        user.getId());
+
+                BlacklistDTO entry = new BlacklistDTO();
+                entry.setCompany(user.getCompany());
+                entry.setCreateDate(new Date());
+                entry.setType(BlacklistDTO.TYPE_USER_ID); 
+                entry.setSource(BlacklistDTO.SOURCE_CUSTOMER_SERVICE);
+                entry.setUser(user); 
+                entry = blacklistDAS.save(entry);
+
+                eLogger.audit(executorId, Constants.TABLE_BLACKLIST, 
+                        entry.getId(),
+                        EventLogger.MODULE_BLACKLIST,
+                        EventLogger.BLACKLIST_USER_ID_ADDED, null, null, null);
+            }
+        } else {
+            if (!blacklist.isEmpty()) {
+                // remove any blacklist entries found
+                LOG.debug("Removing blacklist records for user id: " + 
+                        user.getId());
+
+                for (BlacklistDTO entry : blacklist) {
+                    blacklistDAS.delete(entry);
+
+                    eLogger.audit(executorId, Constants.TABLE_BLACKLIST, 
+                            entry.getId(),
+                            EventLogger.MODULE_BLACKLIST, 
+                            EventLogger.BLACKLIST_USER_ID_REMOVED, null,
+                            null, null);
+                }
+            }
+        }
     }
 }

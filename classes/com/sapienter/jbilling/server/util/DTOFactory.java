@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.ReportUserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.payment.blacklist.UserIdFilter;
 import com.sapienter.jbilling.server.payment.tasks.PaymentFilterTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
@@ -223,9 +224,11 @@ public class DTOFactory {
         }
         Integer blacklistPluginId = preferenceBL.getInt(); 
 
-        // if the plug-in is enabled, add the list of blacklist 
+        // if the plug-in is enabled (non-zero id), add the list of blacklist
         // entries that match this user
         if (blacklistPluginId != 0) {
+            // instantiate blacklist payment filter plug-in &
+            // initialize its parameters
             PluggableTaskDTO blacklistPluginInfo = new PluggableTaskDAS().find(
                     blacklistPluginId);
             PaymentFilterTask blacklist = new PaymentFilterTask();
@@ -235,7 +238,11 @@ public class DTOFactory {
                 throw new SessionInternalError("Error initilizing blacklist parameters",
                         DTOFactory.class, pte);
             }
+            // set blacklist matches results strings for this user
             dto.setBlacklistMatches(blacklist.getBlacklistMatches(user.getId()));
+            // set whether this user id is blacklisted
+            dto.setUserIdBlacklisted(new UserIdFilter().checkUser(user.getId())
+                    .isBlacklisted());
         }
 
         return dto;

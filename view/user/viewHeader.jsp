@@ -27,7 +27,3 @@
 
 <p class="title"><bean:message key="customer.view.title"/></p>
 <p class="instr"><bean:message key="customer.view.instr"/></p>
-
-<html:messages message="true" id="myMessage">
-	<p><bean:write name="myMessage"/></p>
-</html:messages>

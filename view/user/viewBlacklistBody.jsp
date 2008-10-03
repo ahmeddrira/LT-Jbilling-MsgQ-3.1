@@ -21,6 +21,7 @@
 <%@ page language="java" import="com.sapienter.jbilling.client.util.Constants"%>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
+<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -30,27 +31,49 @@
 <logic:notEqual name="use_blacklist" value="0">
     <bean:define id="blacklist_matches" name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="blacklistMatches"/>
     <table class="info">
-	    <tr>
-		    <th class="info" colspan="2"><bean:message key="blacklist_matches.info.title"/></th>
-	    </tr>
-	    <logic:equal name="blacklist_matches" property="empty" value="true">
-    	    <tr class="infoA">
-        		<td class="infoprompt"><bean:message key="blacklist_matches.none"/></td>
-        	</tr>
-    	</logic:equal>
-	    <logic:iterate id="message" name="blacklist_matches">
-		    <c:choose>
-			    <c:when test="${colorFlag == 1}">
-				    <tr class="infoB">
-				    <c:remove var="colorFlag"/>
-			    </c:when>
-			    <c:otherwise>
-				    <tr class="infoA">
-				    <c:set var="colorFlag" value="1"/>
-			    </c:otherwise>
-	        </c:choose>
+        <tr>
+            <th class="info" colspan="2"><bean:message key="blacklist_matches.info.title"/></th>
+        </tr>
+        <logic:equal name="blacklist_matches" property="empty" value="true">
+            <tr class="infoA">
+                <td class="infoprompt"><bean:message key="blacklist_matches.none"/></td>
+            </tr>
+        </logic:equal>
+        <logic:iterate id="message" name="blacklist_matches">
+            <c:choose>
+                <c:when test="${colorFlag == 1}">
+                    <tr class="infoB">
+                    <c:remove var="colorFlag"/>
+                </c:when>
+                <c:otherwise>
+                    <tr class="infoA">
+                    <c:set var="colorFlag" value="1"/>
+                </c:otherwise>
+            </c:choose>
                 <td class="infodata"><bean:write name="message"/></td>
             </tr>
         </logic:iterate>
+        <jbilling:permission permission='<%=Constants.P_USER_EDIT_CHANGE_BLACKLIST%>'>
+        <tr>
+            <td class="infocommands" colspan="2">
+                <logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="userIdBlacklisted" value="true">
+                    <html:link action="/userMaintain.do?action=blacklist_remove"
+                            paramId="userId"
+                            paramName='<%=Constants.SESSION_CUSTOMER_DTO%>'
+                            paramProperty="userId">
+                    <bean:message key="blacklist.user.remove.link"/>
+                    </html:link>
+                </logic:equal>
+                <logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>' property="userIdBlacklisted" value="false">
+                    <html:link action="/userMaintain.do?action=blacklist_add"
+                            paramId="userId"
+                            paramName='<%=Constants.SESSION_CUSTOMER_DTO%>'
+                            paramProperty="userId">
+                    <bean:message key="blacklist.user.add.link"/>
+                    </html:link>
+                </logic:equal>
+            </td>
+        </tr>
+        </jbilling:permission>
     </table>
 </logic:notEqual>

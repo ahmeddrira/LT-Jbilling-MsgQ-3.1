@@ -64,6 +64,9 @@ public class EventLogger {
     public static final Integer INVOICE_ORDER_APPLIED = new Integer(16);
     // mediation
     public static final Integer CURRENT_ORDER_FINISHED = new Integer(23);
+    // blacklist
+    public static final Integer BLACKLIST_USER_ID_ADDED = new Integer(27);
+    public static final Integer BLACKLIST_USER_ID_REMOVED = new Integer(28);
     // others
     public static final Integer ROW_CREATED = new Integer(25);
     public static final Integer ROW_DELETED = new Integer(7);
@@ -85,6 +88,7 @@ public class EventLogger {
     public static final Integer MODULE_TASK_MAINTENANCE = new Integer(11);
     public static final Integer MODULE_WEBSERVICES = new Integer(12);
     public static final Integer MODULE_MEDIATION = new Integer(13);
+    public static final Integer MODULE_BLACKLIST = new Integer(14);
 
     
     // levels of logging    

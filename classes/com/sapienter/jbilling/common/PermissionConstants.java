@@ -45,6 +45,7 @@ public interface PermissionConstants {
     public static final Integer P_USER_EDIT_CHANGE_CURRENCY = new Integer(81);
     public static final Integer P_USER_EDIT_VIEW_CURRENCY = new Integer(82);
     public static final Integer P_USER_EDIT_VIEW_CC = new Integer(134);
+    public static final Integer P_USER_EDIT_CHANGE_BLACKLIST = new Integer(145);
     // links to edit a user contact/cc/ach, plus other user edit options etc
     public static final Integer P_USER_EDIT_LINKS = new Integer(114);
     // initial page, link to craete new user

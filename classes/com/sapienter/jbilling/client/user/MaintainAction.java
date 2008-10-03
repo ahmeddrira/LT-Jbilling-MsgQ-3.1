@@ -293,6 +293,22 @@ public class MaintainAction extends Action {
                 session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                         userSession.getPrimaryContactDTO(userId));
                 forward = "order";
+
+            // blacklist add/remove
+            } else if (action.equals("blacklist_add") || action.equals("blacklist_remove")) {
+                Integer blacklistUserId = Integer.parseInt(request.getParameter("userId"));
+                if (action.equals("blacklist_add")) {
+                    userSession.setUserBlacklisted(executorId, userId, true);
+                    messages.add(ActionMessages.GLOBAL_MESSAGE, 
+                            new ActionMessage("blacklist.user.add.done"));
+                } else {
+                    userSession.setUserBlacklisted(executorId, userId, false);
+                    messages.add(ActionMessages.GLOBAL_MESSAGE, 
+                            new ActionMessage("blacklist.user.remove.done"));
+                }
+
+                forward="userView";
+
             } else {
                 log.error("action not supported" + action);
                 throw new ServletException("action is not supported :" + action);

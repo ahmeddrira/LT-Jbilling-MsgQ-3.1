@@ -1109,7 +1109,20 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             throw new SessionInternalError(e);
         }
     } 
-    
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public void setUserBlacklisted(Integer executorId, Integer userId, 
+            Boolean isBlacklisted) throws SessionInternalError {
+        try {
+            UserBL bl = new UserBL(userId);
+            bl.setUserBlacklisted(executorId, isBlacklisted);
+        } catch(Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
     /**
      * @throws FinderException throws when no user with the specified username
      * @throws NamingException 

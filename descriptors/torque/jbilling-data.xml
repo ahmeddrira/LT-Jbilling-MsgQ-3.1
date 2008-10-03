@@ -306,6 +306,8 @@
     <EventLogMessage Id="24"/>
     <EventLogMessage Id="25"/>
     <EventLogMessage Id="26"/>
+    <EventLogMessage Id="27"/>
+    <EventLogMessage Id="28"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -319,6 +321,7 @@
     <EventLogModule Id="11"/>
     <EventLogModule Id="12"/>
     <EventLogModule Id="13"/>
+    <EventLogModule Id="14"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Manual invoice deletion"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Invoice maintenance"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Pluggable tasks maintenance"/>
@@ -2554,6 +2557,7 @@
     <Permission Id="142" TypeId="5" ForeignId="23"/>
     <Permission Id="143" TypeId="1" ForeignId="95"/>
     <Permission Id="144" TypeId="1" ForeignId="96"/>
+    <Permission Id="145" TypeId="3"/>
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2899,6 +2903,8 @@
     <PermissionRoleMap PermissionId="142" RoleId="3"/>
     <PermissionRoleMap PermissionId="143" RoleId="2"/>
     <PermissionRoleMap PermissionId="144" RoleId="2"/>
+    <PermissionRoleMap PermissionId="145" RoleId="2"/>
+    <PermissionRoleMap PermissionId="145" RoleId="3"/>
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>

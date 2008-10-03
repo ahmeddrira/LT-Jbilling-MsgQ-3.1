@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.user;
 
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
 import com.sapienter.jbilling.interfaces.CreditCardUserEntityLocalHome;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
+import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -117,7 +119,7 @@ public class CreditCardBL extends ResultList
         return creditCard.getId();       
     }
     
-    public void update(Integer executorId, CreditCardDTO dto) 
+    public void update(Integer executorId, CreditCardDTO dto, Integer userId) 
             throws SessionInternalError {
         if (executorId != null) {
             eLogger.audit(executorId, Constants.TABLE_CREDIT_CARD, 
@@ -134,6 +136,22 @@ public class CreditCardBL extends ResultList
             creditCard.setNumber(dto.getNumber());
         }
         creditCard.setDeleted(new Integer(0));
+        
+        // remove any pre-authorization. Otherwise the next payment won't be
+        // done with this new credit card
+        if (userId != null) {
+            PaymentBL paymentBl = new PaymentBL();
+            try {
+                for (PaymentEntityLocal auth: (Collection<PaymentEntityLocal>) paymentBl.getHome().findPreauth(userId)) {
+                    LOG.debug("New credit card for user with pre-auths." + dto);
+                    paymentBl.set(auth);
+                    paymentBl.delete();
+                }
+                
+            } catch (FinderException e) {
+                // no problem not having pre-auths
+            }
+        }
     }
     
     public void delete(Integer executorId) 

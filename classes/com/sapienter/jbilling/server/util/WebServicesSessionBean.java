@@ -1107,7 +1107,7 @@ public class WebServicesSessionBean implements SessionBean {
      */
     public PaymentWS getPayment(Integer paymentId) 
             throws SessionInternalError {
-        LOG.debug("Call to applyPayment " + paymentId);
+        LOG.debug("Call to getPayment " + paymentId);
         try {
             // get the info from the caller
             UserBL userbl = new UserBL();

@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
@@ -233,6 +234,47 @@ public class WSTest extends TestCase {
                 api.deleteInvoice(invoiceId);
                 api.deleteOrder(orderId);
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+    
+    public void testRemoveOnCCChange() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            final Integer userId = 868; // this is a user with a good CC
+            
+            // put a pre-auth record on this user
+            api.createOrderPreAuthorize(com.sapienter.jbilling.server.order.WSTest.createMockOrder(userId, 3, 3.45F));
+            Integer orderId = api.getLatestOrder(userId).getId();
+            
+            // user should a a pre-auth
+            PaymentWS payment = null;
+            for (int paymentId:api.getLastPayments(userId, 10)) {
+                payment = api.getPayment(paymentId);
+                if (payment.getIsPreauth() == 1) break;
+            }
+            
+            if (payment == null || payment.getIsPreauth() == 0) {
+                fail("Could not find pre-auth payment for user " + userId);
+            }
+            
+            // change the credit card
+            UserWS user = api.getUserWS(userId);
+            user.getCreditCard().setName("Meriadoc Pipin");
+            api.updateCreditCard(userId, user.getCreditCard());
+            
+            // the payment should not be there any more
+            payment = api.getPayment(payment.getId());
+            if (payment != null && payment.getDeleted() == 0) {
+                fail("Pre-auth should've been deleted");
+            }
+            
+            // clean-up 
+            api.deleteOrder(orderId);
+            
 
         } catch (Exception e) {
             e.printStackTrace();

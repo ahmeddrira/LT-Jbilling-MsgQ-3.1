@@ -110,6 +110,10 @@ public class PaymentBL extends ResultList
         init();
         this.payment = payment;
     }
+    
+    public void set(PaymentEntityLocal payment) {
+        this.payment = payment;
+    }
 
     private void init() {
         try {
@@ -151,6 +155,10 @@ public class PaymentBL extends ResultList
 
     public PaymentEntityLocal getEntity() {
         return payment;
+    }
+    
+    public PaymentEntityLocalHome getHome() {
+        return paymentHome;
     }
     
     public String getMethodDescription(Integer methodId, Integer languageId) 
@@ -274,7 +282,7 @@ public class PaymentBL extends ResultList
             cheque.setDate(dto.getCheque().getDate());
         } else if (dto.getCreditCard() != null) {
             CreditCardBL cc = new CreditCardBL(payment.getCreditCardInfo());
-            cc.update(executorId, dto.getCreditCard());
+            cc.update(executorId, dto.getCreditCard(), null);
         } else if (dto.getAch() != null) {
             AchBL achBl = new AchBL(payment.getAchInfo());
             achBl.update(executorId, dto.getAch());
@@ -510,6 +518,12 @@ public class PaymentBL extends ResultList
             LOG.debug("Deleting payment " + payment.getId());
             payment.setUpdateDateTime(Calendar.getInstance().getTime());
             payment.setDeleted(new Integer(1));
+            
+            eLogger.auditBySystem(payment.getUser().getEntity().getId(),
+                    Constants.TABLE_PAYMENT, payment.getId(),
+                    EventLogger.MODULE_PAYMENT_MAINTENANCE, 
+                    EventLogger.ROW_DELETED, null, null, null);
+
         } catch (Exception e) {
             LOG.warn("Problem deleteing payment.", e);
             throw new SessionInternalError("Problem deleteing payment.");

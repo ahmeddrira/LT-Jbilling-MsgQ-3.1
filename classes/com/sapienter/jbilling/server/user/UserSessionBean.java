@@ -571,7 +571,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                 if (!userBL.getEntity().getCreditCards().isEmpty()) {
                     CreditCardBL ccBL = new CreditCardBL(((CreditCard)
                             userBL.getEntity().getCreditCards().iterator().next()).getId());
-                    ccBL.update(executorId, dto);
+                    ccBL.update(executorId, dto, user.getId());
                 } else { // this is really a create
                     createCreditCard(user.getUserId(), dto);
                 }

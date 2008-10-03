@@ -310,7 +310,7 @@ public class WSTest  extends TestCase {
              */
             System.out.println("Create an order with pre-authorization" + ret);
             PaymentAuthorizationDTOEx auth = (PaymentAuthorizationDTOEx) 
-        	api.createOrderPreAuthorize(newOrder);
+        	        api.createOrderPreAuthorize(newOrder);
             assertNotNull("Missing list", auth);
             // the test processor should always approve gandalf
             assertEquals("Result is ok", new Boolean(true), auth.getResult());
@@ -490,7 +490,7 @@ public class WSTest  extends TestCase {
     	
     }
     
-	private OrderWS createMockOrder(int userId, int orderLinesCount, float linePrice) {
+	public static OrderWS createMockOrder(int userId, int orderLinesCount, float linePrice) {
 		OrderWS order = new OrderWS();
     	order.setUserId(userId); 
         order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);

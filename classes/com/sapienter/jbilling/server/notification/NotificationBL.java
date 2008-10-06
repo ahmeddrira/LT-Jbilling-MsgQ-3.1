@@ -821,7 +821,7 @@ public class NotificationBL extends ResultList
                 parameters.put("from_custom_" + fieldName,
                         field.getContent());
             }
-            for (ContactFieldDTO field: from.getFields()) {
+            for (ContactFieldDTO field: to.getFields()) {
                 String fieldName = field.getType().getPromptKey();
                 fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
                 parameters.put("to_custom_" + fieldName,

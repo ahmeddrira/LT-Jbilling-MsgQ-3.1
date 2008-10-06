@@ -612,7 +612,6 @@ public class NotificationBL extends ResultList
     
     static public String parseParameters(String content, 
             HashMap parameters) {
-        Logger log = Logger.getLogger(NotificationBL.class);
         StringBuffer result = new StringBuffer();
         
         StringTokenizer tokens = new StringTokenizer(content, "|");
@@ -704,8 +703,7 @@ public class NotificationBL extends ResultList
     	try {
 			return JasperExportManager.exportReportToPdf(report);
 		} catch (JRException e) {
-			Logger.getLogger(NotificationBL.class).error(
-					"Exception generating paper invoice", e);
+			LOG.error("Exception generating paper invoice", e);
 			return null;
 		}
     }
@@ -723,8 +721,7 @@ public class NotificationBL extends ResultList
                     entityId + "-" + invoice.getId() + "-invoice.pdf";
 			JasperExportManager.exportReportToPdfFile(report, fileName);
 		} catch (JRException e) {
-			Logger.getLogger(NotificationBL.class).error(
-				"Exception generating paper invoice", e);
+			LOG.error("Exception generating paper invoice", e);
 		}
         return fileName;
     }
@@ -735,13 +732,12 @@ public class NotificationBL extends ResultList
             String username, String password) 
     		throws FileNotFoundException, SessionInternalError {
     	try {
-            Logger log = Logger.getLogger(NotificationBL.class);
     		// This is needed for JasperRerpots to work, for some twisted XWindows issue
     		System.setProperty("java.awt.headless", "true");
             String designFile = com.sapienter.jbilling.common.Util.getSysProp("base_dir") + 
                     "designs/" + design + ".jasper";
 			File compiledDesign = new File(designFile);
-			log.debug("Generating paper invoice with design file : " + designFile);
+			LOG.debug("Generating paper invoice with design file : " + designFile);
 			FileInputStream stream = new FileInputStream(compiledDesign);
             Locale locale = (new UserBL(invoice.getUserId())).getLocale();
 			
@@ -768,7 +764,7 @@ public class NotificationBL extends ResultList
 					invoice.getCreateDateTime(), invoice.getUserId()));
 			parameters.put("invoiceDueDate", Util.formatDate(
 					invoice.getDueDate(), invoice.getUserId()));
-			log.debug("m1 = " + message1 + " m2 = " + message2);
+			LOG.debug("m1 = " + message1 + " m2 = " + message2);
 			System.out.println("m1 = " + message1 + " m2 = " + message2);
 			if (message1 == null || message1.length() == 0) {
 				message1 = " ";
@@ -808,26 +804,25 @@ public class NotificationBL extends ResultList
                 }
                 
             } catch (Exception e) {
-                Logger.getLogger(NotificationBL.class).error(
-                        "Exception generating paper invoice", e);
+                LOG.error("Exception generating paper invoice", e);
                 return null;
             }
             
             // add all the custom contact fields
-            // the from 
-            for (ContactFieldDTO field: from.getFields()) {
+            // the from
+            for (Iterator it = from.getFieldsTable().values().iterator(); it.hasNext();) {
+                ContactFieldDTO field = (ContactFieldDTO) it.next();
                 String fieldName = field.getType().getPromptKey();
                 fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
-                parameters.put("from_custom_" + fieldName,
-                        field.getContent());
+                parameters.put("from_custom_" + fieldName, field.getContent());
             }
-            for (ContactFieldDTO field: to.getFields()) {
+            for (Iterator it = to.getFieldsTable().values().iterator(); it.hasNext();) {
+                ContactFieldDTO field = (ContactFieldDTO) it.next();
                 String fieldName = field.getType().getPromptKey();
                 fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
-                parameters.put("to_custom_" + fieldName,
-                        field.getContent());
+                parameters.put("to_custom_" + fieldName, field.getContent());
             }
-            
+
 			// the logo is a file
 			File logo = new File(com.sapienter.jbilling.common.Util.getSysProp("base_dir") + 
                     "logos/entity-" + entityId + ".jpg");
@@ -873,7 +868,7 @@ public class NotificationBL extends ResultList
             parameters.put("balance", Util.formatMoney(invoice.getBalance(), 
                     invoice.getUserId(), invoice.getCurrencyId(), false));
 
-            log.debug("Parameter tax = " + parameters.get("tax") +
+            LOG.debug("Parameter tax = " + parameters.get("tax") +
                     " totalWithTax = " + parameters.get("totalWithTax") +
                     " totalWithoutTax = " + parameters.get("totalWithoutTax") +
                     " balance = " + parameters.get("balance"));
@@ -888,8 +883,7 @@ public class NotificationBL extends ResultList
             stream.close();
 			return report;
 		} catch (Exception e) {
-			Logger.getLogger(NotificationBL.class).error(
-					"Exception generating paper invoice", e);
+			LOG.error("Exception generating paper invoice", e);
 			return null;
 		}
     }
@@ -913,8 +907,7 @@ public class NotificationBL extends ResultList
         address = contactBL.getEntity().getEmail();
         if (address == null) {
             // can't send something to the ether
-            Logger log = Logger.getLogger(NotificationBL.class);
-            log.warn("Trying to send email to entity " + entityId + 
+            LOG.warn("Trying to send email to entity " + entityId + 
                     " but no address was found");
             return;
         }
@@ -934,10 +927,9 @@ public class NotificationBL extends ResultList
     		String messageKey, String attachmentFileName, String[] params) 
     		throws MessagingException, NamingException, FinderException,
 				IOException {
-    	Logger log = Logger.getLogger(NotificationBL.class);
         Properties prop = new Properties();   
         
-        log.debug("seding sapienter email " + messageKey + " to " + address + " of entity " 
+        LOG.debug("seding sapienter email " + messageKey + " to " + address + " of entity " 
                 + entityId);
         // tell the server that is has to authenticate to the maileer
         // (yikes, this was painfull to find out)

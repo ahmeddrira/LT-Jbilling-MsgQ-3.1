@@ -43,6 +43,8 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
  */
 public class PaperInvoiceNotificationTask
         extends PluggableTask implements NotificationTask {
+    
+    private static final Logger LOG = Logger.getLogger(PaperInvoiceNotificationTask.class);
     // pluggable task parameters names
     public static final String PARAMETER_DESIGN = "design";
 	private String design;
@@ -103,7 +105,7 @@ public class PaperInvoiceNotificationTask
     		throws SessionInternalError {
     	try {
     		init(user, message);
-    		Logger.getLogger(PaperInvoiceNotificationTask.class).debug("now message1 = " + message.getContent()[0].getContent());
+    		LOG.debug("now message1 = " + message.getContent()[0].getContent());
         	return NotificationBL.generatePaperInvoiceAsStream(design, invoice, from, to, 
         			message.getContent()[0].getContent(), 
 					message.getContent()[1].getContent(), entityId,

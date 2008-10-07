@@ -20,38 +20,10 @@
 
 package com.sapienter.jbilling.server.process;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
-
-import sun.jdbc.rowset.CachedRowSet;
-
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocalHome;
-import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocalHome;
-import com.sapienter.jbilling.interfaces.BillingProcessRunTotalEntityLocal;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentSessionLocal;
-import com.sapienter.jbilling.interfaces.PaymentSessionLocalHome;
+import com.sapienter.jbilling.interfaces.*;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
@@ -64,21 +36,29 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
 import com.sapienter.jbilling.server.payment.PaymentBL;
-import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
-import com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask;
-import com.sapienter.jbilling.server.pluggableTask.OrderFilterTask;
-import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.pluggableTask.*;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import org.apache.log4j.Logger;
+import sun.jdbc.rowset.CachedRowSet;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import javax.naming.NamingException;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.*;
 
 public class BillingProcessBL extends ResultList 
         implements ProcessSQL {
@@ -217,20 +197,7 @@ public class BillingProcessBL extends ResultList
         boolean paymentApplication = config.getEntity().
                 getAutoPaymentApplication().intValue() == 1;
         // The user could be the parent of a sub-account
-        Integer userId;
-        if (order.getEntity().getUser().getCustomer().getParent() == null){
-            userId = order.getEntity().getUser().getUserId();
-        } else {
-            Integer flag = order.getEntity().getUser().getCustomer().getInvoiceChild();
-            if (flag == null || flag.intValue() == 0) {
-                // there is a parent, the invoice should go to her
-                userId = order.getEntity().getUser().getCustomer().getParent().
-                        getBaseUser().getUserId(); // yes, I like CRM!
-            } else {
-                // the child gets its own invoices
-                userId = order.getEntity().getUser().getUserId();
-            }
-        }
+        Integer userId = findUserId(order.getEntity());
         Date processDate = Calendar.getInstance().getTime();
         processDate = Util.truncateDate(processDate);
         // create the my invoice
@@ -246,7 +213,7 @@ public class BillingProcessBL extends ResultList
         
         try {
             // put the order in the invoice using all the pluggable taks stuff
-            addOrderToInvoice(entityId, order.getEntity(), newInvoice, 
+            addOrderToInvoice(entityId, order.getEntity(), newInvoice,
                     processDate, maxPeriods);
             
             // this means that the user is trying to generate an invoice from
@@ -255,7 +222,9 @@ public class BillingProcessBL extends ResultList
             // sense, or some business rules in the tasks have to be changed
             // (probably with a personalized task for this entity)
             if (newInvoice.getOrders().size() == 0) return null;
-            
+
+            processOrderToInvoiceEvents(newInvoice, entityId);
+
             // generate the invoice lines
             composeInvoice(entityId, userId, newInvoice);
             // put the resulting invoice in the database
@@ -434,7 +403,7 @@ public class BillingProcessBL extends ResultList
                              * The order periods plug-in might not add any period. This should not happen
                              * but if it does, the invoice should not be included
                              */
-                            if (addOrderToInvoice(entityId, order, thisInvoice, 
+                            if (addOrderToInvoice(entityId, order, thisInvoice,
                                     process.getBillingDate(), maximumPeriods)) {
 	                            // add or replace
 	                            newInvoices.put(dueDatePeriod, thisInvoice);
@@ -501,6 +470,12 @@ public class BillingProcessBL extends ResultList
             LOG.debug("No applicable orders. No invoice generated (skipping " +
                     "invoices).");
             return null;
+        }
+
+        if (!isReview) {
+            for (Map.Entry<TimePeriod, NewInvoiceDTO> newInvoiceEntry : newInvoices.entrySet()) {
+                processOrderToInvoiceEvents(newInvoiceEntry.getValue(), entityId);
+            }
         }
 
         /*
@@ -744,7 +719,7 @@ public class BillingProcessBL extends ResultList
     }
     
     private boolean addOrderToInvoice(Integer entityId, OrderDTO order,
-            NewInvoiceDTO newInvoice, Date processDate, int maxPeriods) 
+            NewInvoiceDTO newInvoice, Date processDate, int maxPeriods)
             throws CreateException, SessionInternalError, TaskException,
                 PluggableTaskException {
         // require the calculation of the period dates
@@ -1130,6 +1105,40 @@ public class BillingProcessBL extends ResultList
         } catch (FinderException e) {
             // there's no review for this entity, nothing to purge/check then
         }
-    }  
+    }
+
+    @SuppressWarnings("unchecked")
+    private void processOrderToInvoiceEvents(NewInvoiceDTO newInvoice, Integer entityId) {
+        Vector<OrderDTO> orders = newInvoice.getOrders();
+        Vector<Vector<PeriodOfTime>> periods = newInvoice.getPeriods();
+        for (int i = 0; i < orders.size(); i++) {
+            OrderDTO order = orders.get(i);
+            Integer orderId = order.getId();
+            Integer userId = findUserId(order);
+            for (PeriodOfTime period : periods.get(i)) {
+                OrderToInvoiceEvent newEvent =
+                    new OrderToInvoiceEvent(entityId, userId, orderId);
+                newEvent.setStart(period.getStart());
+                newEvent.setEnd(period.getEnd());
+                EventManager.process(newEvent);
+            }
+        }
+    }
+
+    private Integer findUserId(OrderDTO order) {
+        if (order.getUser().getCustomer().getParent() == null){
+            return order.getUser().getUserId();
+        } else {
+            Integer flag = order.getUser().getCustomer().getInvoiceChild();
+            if (flag == null || flag == 0) {
+                // there is a parent, the invoice should go to her
+                return order.getUser().getCustomer().getParent().
+                        getBaseUser().getUserId(); // yes, I like CRM!
+            } else {
+                // the child gets its own invoices
+                return order.getUser().getUserId();
+            }
+        }
+    }
 
 }

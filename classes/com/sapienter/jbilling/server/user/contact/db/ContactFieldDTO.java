@@ -30,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.Cache;
@@ -125,6 +126,11 @@ public class ContactFieldDTO  implements java.io.Serializable {
         this.versionNum = versionNum;
     }
 
+    @Transient
+    public int getTypeId() {
+        return this.getType().getId();
+    }
+    
 }
 
 

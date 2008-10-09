@@ -20,14 +20,15 @@
 
 package com.sapienter.jbilling.server.invoice.db;
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import java.util.Date;
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import java.util.Date;
-import java.util.List;
+import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class InvoiceDAS extends AbstractDAS<Invoice> {
     // used for the web services call to get the latest X 
@@ -73,11 +74,11 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
         addPaidInvoiceCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCriteria(criteria, itemId);
-        criteria.setProjection(Projections.count("*"));
+        criteria.setProjection(Projections.count("id"));
         return (Integer) criteria.uniqueResult();
     }
 
-    public Double findAmountForPeriodByItemCategory(Integer userId, String categoryId, Date start, Date end) {
+    public Double findAmountForPeriodByItemCategory(Integer userId, Integer categoryId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
         addPaidInvoiceCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
@@ -86,7 +87,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
         return (Double) criteria.uniqueResult();
     }
 
-    public Double findQuantityForPeriodByItemCategory(Integer userId, String categoryId, Date start, Date end) {
+    public Double findQuantityForPeriodByItemCategory(Integer userId, Integer categoryId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
         addPaidInvoiceCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
@@ -95,12 +96,12 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
         return (Double) criteria.uniqueResult();
     }
 
-    public Integer findLinesForPeriodByItemCategory(Integer userId, String categoryId, Date start, Date end) {
+    public Integer findLinesForPeriodByItemCategory(Integer userId, Integer categoryId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
         addPaidInvoiceCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCategoryCriteria(criteria, categoryId);
-        criteria.setProjection(Projections.count("*"));
+        criteria.setProjection(Projections.count("id"));
         return (Integer) criteria.uniqueResult();
     }
 
@@ -108,7 +109,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
         criteria
             .add(Restrictions.eq("deleted", 0))
             .add(Restrictions.eq("toProcess", 0))
-            .add(Restrictions.eq("balance", 0))
+            .add(Restrictions.eq("balance", 0.0))
             .createAlias("baseUser", "u")
             .add(Restrictions.eq("u.id", userId))
             .add(Restrictions.isNotEmpty("paymentInvoices"));
@@ -126,7 +127,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
             .add(Restrictions.eq("invoiceLines.item.id", itemId));
     }
 
-    private void addItemCategoryCriteria(Criteria criteria, String categoryId) {
+    private void addItemCategoryCriteria(Criteria criteria, Integer categoryId) {
         criteria
             .createAlias("invoiceLines", "invoiceLines")
             .createAlias("invoiceLines.item", "item")

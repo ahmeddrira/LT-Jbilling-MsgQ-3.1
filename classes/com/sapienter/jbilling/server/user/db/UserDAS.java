@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.user.db;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
@@ -32,6 +33,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
               
     
 public class UserDAS extends AbstractDAS<UserDTO> {
+    private static final Logger LOG = Logger.getLogger(UserDAS.class);
    
     private static final String findByCustomField =
         "SELECT a " + 
@@ -67,6 +69,10 @@ public class UserDAS extends AbstractDAS<UserDTO> {
          "   AND a.deleted = 0";
 
 	public UserDTO findRoot(String username) {
+        if (username == null || username.length() == 0) {
+            LOG.error("can not find an empty root: " + username);
+            return null;
+        }
 		// I need to access an association, so I can't use the parent helper class
 		Criteria criteria = getSession().createCriteria(UserDTO.class)
 			.add(Restrictions.eq("userName", username))

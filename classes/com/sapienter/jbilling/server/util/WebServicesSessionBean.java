@@ -470,12 +470,14 @@ public class WebServicesSessionBean implements SessionBean {
         try {
         	UserDAS das = new UserDAS();
         	UserDTO rootUser = das.findRoot(root);
-            LOG.debug("Done");
-            return das.findByUserName(username, rootUser.getCompany().getId()).getId();
+            Integer retValue = das.findByUserName(username, rootUser.getCompany().getId()).getId(); 
+            LOG.debug("Done " + retValue);
+            return retValue;
         	
         } catch (Exception e) {
             LOG.error("WS - getUserId", e);
-            throw new SessionInternalError("Error getting user id");
+            throw new SessionInternalError("Error getting user id username = " + username + 
+                    " root " + root);
         }
         
     }

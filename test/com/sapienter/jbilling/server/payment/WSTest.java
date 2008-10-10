@@ -26,6 +26,7 @@
 package com.sapienter.jbilling.server.payment;
 
 import java.util.Calendar;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -33,6 +34,7 @@ import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
@@ -275,6 +277,52 @@ public class WSTest extends TestCase {
             // clean-up 
             api.deleteOrder(orderId);
             
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    /**
+     * Test for BlacklistUserStatusTask. When a user's status moves to
+     * suspended or higher, the user and all their information is 
+     * added to the blacklist.
+     */
+    public void testBlacklistUserStatus() {
+        try {
+            final Integer USER_ID = 1006; // user id for testing
+
+            // expected filter response messages
+            Vector<String> messages = new Vector<String>(5);
+            messages.add("User id is blacklisted.");
+            messages.add("Name is blacklisted.");
+            messages.add("Credit card number is blacklisted.");
+            messages.add("Address is blacklisted.");
+            messages.add("IP address is blacklisted.");
+            messages.add("Phone number is blacklisted.");
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // check that a user isn't blacklisted
+            UserWS user = api.getUserWS(USER_ID);
+            assertTrue("User shouldn't be blacklisted yet", 
+                    user.getBlacklistMatches().isEmpty());
+
+            // change their status to suspended
+            user.setStatusId(UserDTOEx.STATUS_SUSPENDED);
+            user.setPassword(null);
+            api.updateUser(user);
+
+            // check all their records are now blacklisted
+            user = api.getUserWS(USER_ID);
+            assertEquals("User records should be blacklisted.", 
+                    messages, user.getBlacklistMatches());
+
+            // clean-up
+            user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+            user.setPassword(null);
+            api.updateUser(user);
 
         } catch (Exception e) {
             e.printStackTrace();

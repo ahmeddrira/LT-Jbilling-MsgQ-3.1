@@ -58,6 +58,8 @@ import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.db.AgeingEntityStepDAS;
+import com.sapienter.jbilling.server.process.event.NewUserStatusEvent;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -240,6 +242,11 @@ public class AgeingBL {
             }
 
         }
+
+        // trigger NewUserStatusEvent
+        EventManager.process(new NewUserStatusEvent(
+                user.getDto().getCompany().getId(), userId, originalStatusId,
+                statusId));
     }
     
     /**

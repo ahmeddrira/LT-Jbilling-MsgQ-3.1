@@ -186,7 +186,7 @@ public class CurrencyBL {
             }
             String symbol = result.getString(2);
             String code = result.getString(3);
-            CurrencyDTO bean = new CurrencyDTO(0, code, symbol, null);
+            CurrencyDTO bean = new CurrencyDTO(0, symbol, code, null);
             results.add(result.getInt(1), bean);
         }
         result.close();

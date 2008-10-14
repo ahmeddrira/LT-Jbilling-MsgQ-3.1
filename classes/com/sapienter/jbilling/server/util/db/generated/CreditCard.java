@@ -39,6 +39,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
@@ -65,6 +66,7 @@ public class CreditCard  implements java.io.Serializable {
      private String ccNumberPlain;
      private Set<Payment> payments = new HashSet<Payment>(0);
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
+     private Integer versionNum;
 
     public CreditCard() {
     }
@@ -183,9 +185,15 @@ public class CreditCard  implements java.io.Serializable {
         this.baseUsers = baseUsers;
     }
 
+    @Version
+    @Column(name="OPTLOCK")
+    public Integer getVersionNum() {
+        return versionNum;
+    }
 
-
-
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
 }
 
 

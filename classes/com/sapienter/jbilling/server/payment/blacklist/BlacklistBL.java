@@ -95,30 +95,18 @@ public class BlacklistBL {
     /**
      * Instantiates the payment filter plug-in and checks the user 
      * against the enabled filters. Returns a vector of messages
-     * returned by filters the user fails on. 
+     * returned by filters the user fails on, or null if the blacklist
+     * preference isn't enabled.
      */
     public static Vector<String> getBlacklistMatches(Integer userId) {
         Integer entityId = new UserDAS().find(userId).getCompany().getId();
-        Integer blacklistPluginId = getBlacklistPluginId(entityId);
 
-        if (blacklistPluginId == 0) {
-            // blacklist isn't enabled
-            return null;
+        PaymentFilterTask blacklist = instantiatePaymentFilter(entityId);
+
+        if (blacklist != null) {
+            return blacklist.getBlacklistMatches(userId);
         }
-
-        // instantiate blacklist payment filter plug-in &
-        // initialize its parameters
-        PluggableTaskDTO blacklistPluginInfo = new PluggableTaskDAS().find(
-            blacklistPluginId);
-        PaymentFilterTask blacklist = new PaymentFilterTask();
-        try {
-            blacklist.initializeParamters(blacklistPluginInfo);
-        } catch (PluggableTaskException pte) {
-            throw new SessionInternalError("Error initilizing blacklist parameters",
-                    BlacklistBL.class, pte);
-        }
-
-        return blacklist.getBlacklistMatches(userId);
+        return null;
     }
 
     /**
@@ -171,5 +159,45 @@ public class BlacklistBL {
         blacklistEntry = blacklistDAS.save(entry);
 
         return blacklistEntry.getId();
+    }
+
+    /**
+     * Instantiates the payment filter plug-in and returns the 
+     * IP Address CCF Id or null if it can't be found.
+     */
+    public static Integer getIpAddressCcfId(Integer entityId) {
+        PaymentFilterTask blacklist = instantiatePaymentFilter(entityId);
+
+        if (blacklist != null) {
+            return blacklist.getIpAddressCcfId();
+        }
+        return null;
+    }
+
+    /**
+     * Returns an instance of the payment filter plug-in or
+     * null if the blacklist preference isn't enabled.
+     */
+    public static PaymentFilterTask instantiatePaymentFilter(Integer entityId) {
+        Integer blacklistPluginId = getBlacklistPluginId(entityId);
+
+        if (blacklistPluginId == 0) {
+            // blacklist isn't enabled
+            return null;
+        }
+
+        // instantiate blacklist payment filter plug-in &
+        // initialize its parameters
+        PluggableTaskDTO blacklistPluginInfo = new PluggableTaskDAS().find(
+            blacklistPluginId);
+        PaymentFilterTask blacklist = new PaymentFilterTask();
+        try {
+            blacklist.initializeParamters(blacklistPluginInfo);
+        } catch (PluggableTaskException pte) {
+            throw new SessionInternalError("Error initilizing blacklist parameters",
+                    BlacklistBL.class, pte);
+        }
+
+        return blacklist;
     }
 }

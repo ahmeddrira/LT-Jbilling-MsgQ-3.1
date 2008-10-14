@@ -25,8 +25,6 @@
  */
 package com.sapienter.jbilling.server.user;
 
-import java.util.Vector;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -61,7 +59,7 @@ public class UserWS implements Serializable {
     private Boolean isParent = null;
     private Boolean invoiceChild = null;
     private Integer mainOrderId = null;
-    private Vector<String> blacklistMatches = null;
+    private String[] blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
 
     public Integer getPartnerId() {
@@ -102,7 +100,8 @@ public class UserWS implements Serializable {
             invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : 
                 dto.getCustomer().getInvoiceChild().equals(new Integer(1));
         }
-        blacklistMatches = dto.getBlacklistMatches();
+        blacklistMatches = dto.getBlacklistMatches() != null ? 
+                dto.getBlacklistMatches().toArray(new String[0]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();
     }
     
@@ -303,11 +302,11 @@ public class UserWS implements Serializable {
         this.mainOrderId = mainOrderId;
     }
 
-    public Vector<String> getBlacklistMatches() {
+    public String[] getBlacklistMatches() {
         return blacklistMatches;
     }
 
-    public void setBlacklistMatches(Vector<String> blacklistMatches) {
+    public void setBlacklistMatches(String[] blacklistMatches) {
         this.blacklistMatches = blacklistMatches;
     }
 

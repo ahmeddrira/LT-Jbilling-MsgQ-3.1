@@ -50,8 +50,6 @@ import com.sapienter.jbilling.server.util.db.generated.CreditCard;
  */
 public class BlacklistUserStatusTask extends PluggableTask 
         implements IInternalEventsTask {
-    private static final String PARAM_IP_ADDRESS_CCF_ID = "ip_address_ccf_id";
-
     private static final Logger LOG = Logger.getLogger(BlacklistUserStatusTask.class);
 
     private static final Class<Event> events[] = new Class[] { 
@@ -151,24 +149,14 @@ public class BlacklistUserStatusTask extends PluggableTask
         }
 
         // blacklist ip address
-        Integer ipAddressCcf = null; // from plug-in parameter
+        Integer ipAddressCcf = 
+                BlacklistBL.getIpAddressCcfId(user.getCompany().getId());
         String ipAddress = null;
 
-        // try to get the ip address ccf id
-        Object param = parameters.get(PARAM_IP_ADDRESS_CCF_ID);
-        if (param instanceof Integer) {
-            ipAddressCcf = (Integer) param;
-        } else if (param instanceof String) {
-            try {
-                ipAddressCcf = new Integer((String) param);
-            } catch (NumberFormatException nfe) {
-            }
-        }
-
         if (ipAddressCcf == null) {
-            // ccf id wasn't there or couldn't be parsed from a string param
-            LOG.warn("Invalid " + PARAM_IP_ADDRESS_CCF_ID + " parameter " +
-                    " - skipping adding IpAddress contact info");
+            // blacklist preference or payment filter plug-in 
+            // not configured properly
+            LOG.warn("Null ipAddressCcf - skipping adding IpAddress contact info");
             return;
         }
 

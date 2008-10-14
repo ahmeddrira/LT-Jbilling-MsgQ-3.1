@@ -99,6 +99,7 @@ public abstract class CreditCardEntityBean implements EntityBean {
         if (getType() == null) {
             throw new CreateException("Credit card not supported: " + number);
         }
+        setVersionNum(new Integer(1));
         
         return newId;
     }
@@ -263,6 +264,15 @@ public abstract class CreditCardEntityBean implements EntityBean {
                     CreditCardUserEntityBean.class,e);
         }
     }
+
+    /**
+     * @ejb:persistent-field
+     * @jboss:column-name name="optlock"
+     * @jboss.method-attributes read-only="true"
+     */
+    public abstract Integer getVersionNum();
+    public abstract void setVersionNum(Integer versionNum);
+
     
     /* (non-Javadoc)
      * @see javax.ejb.EntityBean#ejbActivate()

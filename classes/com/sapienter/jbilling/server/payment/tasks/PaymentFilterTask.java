@@ -58,7 +58,7 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
 
     private static final String PAYMENT_PROCESSOR_NAME = "Payment filter task";
 
-	private static final Logger LOG = Logger.getLogger(PaymentFilterTask.class);
+    private static final Logger LOG = Logger.getLogger(PaymentFilterTask.class);
 
     public void failure(Integer userId, Integer retry) {
     }
@@ -76,11 +76,11 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
         return callFilters(paymentInfo);
     }
 
-	/**
-	 * Calls each blacklist filter and if any fail, returns payment failure, 
-	 * otherwise returns payment processor unavailable (so a real processor
-	 * can handle the payment).
-	 */
+    /**
+     * Calls each blacklist filter and if any fail, returns payment failure, 
+     * otherwise returns payment processor unavailable (so a real processor
+     * can handle the payment).
+     */
     private boolean callFilters(PaymentDTOEx paymentInfo) 
             throws PluggableTaskException{
         // Get all enabled filters and check the payment through each one
@@ -108,11 +108,11 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
         return true;
     }
 
-	/**
-	 * Calls each blacklist filter to test the user id. If any fail, the 
-	 * response message is added to the returned results vector. An empty
-	 * returned vector means the user id didn't match any blacklist entries.
-	 */
+    /**
+     * Calls each blacklist filter to test the user id. If any fail, the 
+     * response message is added to the returned results vector. An empty
+     * returned vector means the user id didn't match any blacklist entries.
+     */
     public Vector<String> getBlacklistMatches(Integer userId) {
         Vector<String> results = new Vector<String>();
         List<BlacklistFilter> filters = getEnabledFilters();
@@ -125,9 +125,9 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
         return results;
     }
 
-	/**
-	 * Returns a list of enabled blacklist filters
-	 */
+    /**
+     * Returns a list of enabled blacklist filters
+     */
     private List<BlacklistFilter> getEnabledFilters() {
         List<BlacklistFilter> filters = new LinkedList<BlacklistFilter>();
 
@@ -149,16 +149,7 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
         } 
         if (getBooleanParameter(PARAM_ENABLE_FILTER_IP_ADDRESS)) {
             // try to get the ip address ccf id
-            Integer ccfId = null;
-            Object param = parameters.get(PARAM_IP_ADDRESS_CCF_ID);
-            if (param instanceof Integer) {
-                ccfId = (Integer) param;
-            } else if (param instanceof String) {
-                try {
-                    ccfId = new Integer((String) param);
-                } catch (NumberFormatException nfe) {
-                }
-            }
+            Integer ccfId = getIpAddressCcfId();
 
             if (ccfId != null) {
                 filters.add(new IpAddressFilter(ccfId));
@@ -175,5 +166,24 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
         }
 
         return filters;
+    }
+
+    /**
+     * Returns the IP Address CCF Id plug-in parameter
+     * or null if it doesn't exist or invalid.
+     */
+    public Integer getIpAddressCcfId() {
+        // try to get the ip address ccf id
+        Integer ccfId = null;
+        Object param = parameters.get(PARAM_IP_ADDRESS_CCF_ID);
+        if (param instanceof Integer) {
+            ccfId = (Integer) param;
+        } else if (param instanceof String) {
+            try {
+                ccfId = new Integer((String) param);
+            } catch (NumberFormatException nfe) {
+            }
+        }
+        return ccfId;
     }
 }

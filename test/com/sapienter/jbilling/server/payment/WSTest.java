@@ -25,8 +25,8 @@
  */
 package com.sapienter.jbilling.server.payment;
 
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -294,20 +294,20 @@ public class WSTest extends TestCase {
             final Integer USER_ID = 1006; // user id for testing
 
             // expected filter response messages
-            Vector<String> messages = new Vector<String>(5);
-            messages.add("User id is blacklisted.");
-            messages.add("Name is blacklisted.");
-            messages.add("Credit card number is blacklisted.");
-            messages.add("Address is blacklisted.");
-            messages.add("IP address is blacklisted.");
-            messages.add("Phone number is blacklisted.");
+            String[] messages = new String[6];
+            messages[0] = "User id is blacklisted.";
+            messages[1] = "Name is blacklisted.";
+            messages[2] = "Credit card number is blacklisted.";
+            messages[3] = "Address is blacklisted.";
+            messages[4] = "IP address is blacklisted.";
+            messages[5] = "Phone number is blacklisted.";
 
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             // check that a user isn't blacklisted
             UserWS user = api.getUserWS(USER_ID);
             assertTrue("User shouldn't be blacklisted yet", 
-                    user.getBlacklistMatches().isEmpty());
+                    user.getBlacklistMatches().length == 0);
 
             // change their status to suspended
             user.setStatusId(UserDTOEx.STATUS_SUSPENDED);
@@ -317,7 +317,8 @@ public class WSTest extends TestCase {
             // check all their records are now blacklisted
             user = api.getUserWS(USER_ID);
             assertEquals("User records should be blacklisted.", 
-                    messages, user.getBlacklistMatches());
+                    Arrays.toString(messages), 
+                    Arrays.toString(user.getBlacklistMatches()));
 
             // clean-up
             user.setStatusId(UserDTOEx.STATUS_ACTIVE);

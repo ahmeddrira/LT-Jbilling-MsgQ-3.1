@@ -362,6 +362,8 @@
     </definition>
     <definition name="system.task.edit" extends="main"><put name="featureTitle" value="bar.system.task" /><put name="body" value="/system/taskEdit.jsp" />
     </definition>
+    <definition name="system.blacklist" extends="main"><put name="featureTitle" value="bar.system.blacklist" /><put name="body" value="/system/blacklistUpload.jsp" />
+    </definition>
     <!-- 
            Mediation screens
      -->

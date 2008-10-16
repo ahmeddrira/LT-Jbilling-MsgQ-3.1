@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -215,5 +216,33 @@ public class Util {
                     Util.class, e);
         }
         return bundle;
+    }
+
+    /**
+     * Basic CSV line splitting that takes quotes into account.
+     * Doesn't do any error checking, e.g., mis-matched quotes.
+     */
+    public static String[] csvSplitLine(String line, char fieldSeparator) {
+        LinkedList<String> fields = new LinkedList<String>();
+        boolean inQuote = false; // whether inside a quotation
+        String field = "";
+        for (int i = 0; i < line.length(); i++) {
+            if (line.charAt(i) == '\"') {
+                if (inQuote && i + 1 != line.length() && line.charAt(i + 1) == '\"') {
+                    field += '\"';
+                    i++; // skip over quote escape
+                } else {
+                    inQuote = !inQuote;
+                }
+            } else if (!inQuote && line.charAt(i) == ',') {
+                fields.add(field);
+                field = "";
+            } else {
+                field += line.charAt(i);
+            }
+        }
+        fields.add(field); // after last ','
+
+        return fields.toArray(new String[0]);
     }
 }

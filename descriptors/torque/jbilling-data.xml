@@ -1052,6 +1052,7 @@
     <InternationalDescription TableId="52" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Lost password"/>
     <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="1" Content="Plug-ins"/>
     <InternationalDescription TableId="63" ForeignId="94" PsudoColumn="display" LanguageId="1" Content="Logo"/>
+    <InternationalDescription TableId="63" ForeignId="97" PsudoColumn="display" LanguageId="1" Content="Blacklist"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="2" Content="Eliminação manual de facturas"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Manutenção de facturas"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="2" Content="Manutenção de tarefas de plug-ins"/>
@@ -2369,6 +2370,7 @@
     <MenuOption Id="94" Link="/invoice/logo.jsp" LevelField="2" ParentId="35"/>
     <MenuOption Id="95" Link="/mediation/processList.do" LevelField="2" ParentId="37"/>
     <MenuOption Id="96" Link="/mediation/configuration.do?action=setup" LevelField="2" ParentId="4"/>
+    <MenuOption Id="97" Link="/system/blacklist.jsp" LevelField="2" ParentId="4"/>
     <NotificationMessageType Id="1" Sections="2"/>
     <NotificationMessageType Id="2" Sections="2"/>
     <NotificationMessageType Id="3" Sections="2"/>
@@ -2558,6 +2560,7 @@
     <Permission Id="143" TypeId="1" ForeignId="95"/>
     <Permission Id="144" TypeId="1" ForeignId="96"/>
     <Permission Id="145" TypeId="3"/>
+    <Permission Id="146" TypeId="1" ForeignId="97"/>
     <PermissionRoleMap PermissionId="1" RoleId="1"/>
     <PermissionRoleMap PermissionId="2" RoleId="1"/>
     <PermissionRoleMap PermissionId="3" RoleId="1"/>
@@ -2905,6 +2908,8 @@
     <PermissionRoleMap PermissionId="144" RoleId="2"/>
     <PermissionRoleMap PermissionId="145" RoleId="2"/>
     <PermissionRoleMap PermissionId="145" RoleId="3"/>
+    <PermissionRoleMap PermissionId="146" RoleId="2"/>
+    <PermissionRoleMap PermissionId="146" RoleId="3"/>
     <PermissionType Id="1" Description="Menu option"/>
     <PermissionType Id="2" Description="User creation"/>
     <PermissionType Id="3" Description="User edition"/>

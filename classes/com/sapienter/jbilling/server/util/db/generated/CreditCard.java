@@ -39,8 +39,10 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
@@ -193,6 +195,17 @@ public class CreditCard  implements java.io.Serializable {
 
     public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
+    }
+
+    @Transient
+    public String getNumber() {
+    	return JBCrypto.getCreditCardCrypto().decrypt(getCcNumber());
+    }
+
+    @Transient
+    public void setNumber(String number) {
+    	setCcNumber(JBCrypto.getCreditCardCrypto().encrypt(number));
+        setCcNumberPlain(number.substring(number.length()-4));
     }
 }
 

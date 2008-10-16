@@ -46,6 +46,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.process.AgeingBL;
@@ -76,6 +77,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 public class PaymentSessionBean implements SessionBean {
 
     private final Logger LOG = Logger.getLogger(PaymentSessionBean.class);
+    SessionContext ctx = null;
 
     /**
     * Create the Session Bean
@@ -686,6 +688,26 @@ public class PaymentSessionBean implements SessionBean {
         payment.removeInvoiceLink(mapId);
     }
 
+    /** 
+     * Processes the blacklist CSV file specified by filePath.
+     * It will either add to or replace the existing uploaded 
+     * blacklist for the given entity (company). Returns the number
+     * of new blacklist entries created.
+     *
+     * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
+     */
+    public int processCsvBlacklist(String filePath, boolean replace, 
+            Integer entityId) throws CsvProcessor.ParseException {
+        CsvProcessor processor = new CsvProcessor();
+        try {
+            return processor.process(filePath, replace, entityId);
+        } catch (CsvProcessor.ParseException pe) {
+            ctx.setRollbackOnly();
+            throw pe;
+        }
+    }
+
     // EJB Callbacks -------------------------------------------------
 
     /* (non-Javadoc)
@@ -711,6 +733,7 @@ public class PaymentSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext aContext)
             throws EJBException, RemoteException {
+        ctx = aContext;
     }
 
 }

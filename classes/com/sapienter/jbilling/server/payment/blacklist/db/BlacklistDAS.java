@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -156,5 +157,51 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
             return Restrictions.eq(propertyName, value);
         }
         return Restrictions.isNull(propertyName);
+    }
+
+    public int deleteSource(Integer entityId, Integer source) {
+        /*
+        List<BlacklistDTO> deleteList = findByEntitySource(entityId, source);
+
+        for (BlacklistDTO entry : deleteList) {
+            delete(entry);
+        }
+
+        return deleteList.size();
+        */
+
+        // should be faster than above, but hql doesn't do cascading deletes :(
+        String hql = "DELETE FROM CreditCard WHERE id IN (" +
+                "SELECT creditCard.id FROM BlacklistDTO " + 
+                "WHERE company.id = :company AND source = :source)";
+        Query query = getSession().createQuery(hql);
+        query.setParameter("company", entityId);
+        query.setParameter("source", source);
+        query.executeUpdate();
+
+        hql = "DELETE FROM ContactFieldDTO WHERE contact.id IN (" +
+                "SELECT contact.id FROM BlacklistDTO " + 
+                "WHERE company.id = :company AND source = :source)";
+        query = getSession().createQuery(hql);
+        query.setParameter("company", entityId);
+        query.setParameter("source", source);
+        query.executeUpdate();
+
+        hql = "DELETE FROM ContactDTO WHERE id IN (" +
+                "SELECT contact.id FROM BlacklistDTO " + 
+                "WHERE company.id = :company AND source = :source)";
+        query = getSession().createQuery(hql);
+        query.setParameter("company", entityId);
+        query.setParameter("source", source);
+        query.executeUpdate();
+
+        hql = "DELETE FROM BlacklistDTO " +
+                "WHERE company.id = :company AND source = :source";
+        query = getSession().createQuery(hql);
+        query.setParameter("company", entityId);
+        query.setParameter("source", source);
+        int result = query.executeUpdate();
+
+        return result;
     }
 }

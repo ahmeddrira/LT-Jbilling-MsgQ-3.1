@@ -34,10 +34,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -147,15 +145,11 @@ public class BlacklistBL {
         entry.setCreateDate(new Date());
         entry.setType(type);
         entry.setSource(source);
+        entry.setCreditCard(creditCard);
+        entry.setContact(contact);
         entry.setUser(user);
 
         // save data
-        if (creditCard != null) {
-            entry.setCreditCard(new CreditCardDAS().save(creditCard));
-        }
-        if (contact != null) {
-            entry.setContact(new ContactDAS().save(contact));
-        }
         blacklistEntry = blacklistDAS.save(entry);
 
         return blacklistEntry.getId();

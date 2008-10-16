@@ -66,8 +66,8 @@ public class LogoUploadAction extends Action {
         try {
             FormFile logoFile = (FormFile) logoUploadForm.get("logoFile");
 
-            // if image file was received
-            if (logoFile != null) {
+            // if image file was received and less than 250KB
+            if (logoFile != null && logoFile.getFileSize() < 256000) {
                 // and is a JPEG image file
                 // (mime types: firefox -> image/jpeg, IE -> image/pjpeg)
                 if (logoFile.getContentType().equals("image/jpeg")

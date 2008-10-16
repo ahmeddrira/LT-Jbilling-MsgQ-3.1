@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.payment.blacklist.db;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,6 +30,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
@@ -91,18 +93,18 @@ public class BlacklistDTO implements Serializable {
     @Column(name = "source", nullable=false)
     private Integer source;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="credit_card_id")
     private CreditCard creditCard;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="contact_id")
     private ContactDTO contact;
 
     @ManyToOne
     @JoinColumn(name="user_id")
     private UserDTO user;
- 
+
     @Version
     @Column(name="OPTLOCK")
     private Integer versionNum;

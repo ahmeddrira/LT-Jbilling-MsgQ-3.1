@@ -382,6 +382,10 @@
 <form-bean name="medConfiguration" type="org.apache.struts.validator.DynaValidatorForm">
     <form-property name="configurations" type="java.util.List" />
 </form-bean>
+<form-bean name="blacklistUpload" type="org.apache.struts.action.DynaActionForm">
+    <form-property name="addOrReplace" type="java.lang.String" initial="add" />
+    <form-property name="csvFile" type="org.apache.struts.upload.FormFile" />
+</form-bean>
 
 </form-beans>
   
@@ -637,9 +641,13 @@
         <forward name="added" path="/mediation/configuration.do?action=setup" redirect="false" />
     </action>
 
+    <action path="/system/blacklistUpload" type="com.sapienter.jbilling.client.system.BlacklistUploadAction" name="blacklistUpload" scope="request" input="/system/blacklist.jsp" validate="true">
+	<forward name="done" path="/system/blacklist.jsp" redirect="false"/>
+    </action>
+
   </action-mappings>
 
-  <controller maxFileSize="250K" />
+  <controller maxFileSize="10M" />
 
   <message-resources parameter="ApplicationResources.properties" />
 

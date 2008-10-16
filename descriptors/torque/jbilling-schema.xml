@@ -1363,12 +1363,14 @@
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
+        <!--
         <foreign-key foreignTable="credit_card">
             <reference foreign="id" local="credit_card_id"/>
         </foreign-key>
         <foreign-key foreignTable="contact">
             <reference foreign="id" local="contact_id"/>
         </foreign-key>
+        -->
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
         </foreign-key>

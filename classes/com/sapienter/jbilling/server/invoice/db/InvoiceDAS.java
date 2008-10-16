@@ -45,7 +45,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Double findTotalForPeriod(Integer userId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         criteria.setProjection(Projections.sum("total"));
         return (Double) criteria.uniqueResult();
@@ -53,7 +53,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Double findAmountForPeriodByItem(Integer userId, Integer itemId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCriteria(criteria, itemId);
         criteria.setProjection(Projections.sum("invoiceLines.amount"));
@@ -62,7 +62,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Double findQuantityForPeriodByItem(Integer userId, Integer itemId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCriteria(criteria, itemId);
         criteria.setProjection(Projections.sum("invoiceLines.quantity"));
@@ -71,7 +71,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Integer findLinesForPeriodByItem(Integer userId, Integer itemId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCriteria(criteria, itemId);
         criteria.setProjection(Projections.count("id"));
@@ -80,7 +80,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Double findAmountForPeriodByItemCategory(Integer userId, Integer categoryId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCategoryCriteria(criteria, categoryId);
         criteria.setProjection(Projections.sum("invoiceLines.amount"));
@@ -89,7 +89,7 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Double findQuantityForPeriodByItemCategory(Integer userId, Integer categoryId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCategoryCriteria(criteria, categoryId);
         criteria.setProjection(Projections.sum("invoiceLines.quantity"));
@@ -98,21 +98,18 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
 
     public Integer findLinesForPeriodByItemCategory(Integer userId, Integer categoryId, Date start, Date end) {
         Criteria criteria = getSession().createCriteria(Invoice.class);
-        addPaidInvoiceCriteria(criteria, userId);
+        addUserCriteria(criteria, userId);
         addPeriodCriteria(criteria, start, end);
         addItemCategoryCriteria(criteria, categoryId);
         criteria.setProjection(Projections.count("id"));
         return (Integer) criteria.uniqueResult();
     }
 
-    private void addPaidInvoiceCriteria(Criteria criteria, Integer userId) {
+    private void addUserCriteria(Criteria criteria, Integer userId) {
         criteria
             .add(Restrictions.eq("deleted", 0))
-            .add(Restrictions.eq("toProcess", 0))
-            .add(Restrictions.eq("balance", 0.0))
             .createAlias("baseUser", "u")
-            .add(Restrictions.eq("u.id", userId))
-            .add(Restrictions.isNotEmpty("paymentInvoices"));
+            .add(Restrictions.eq("u.id", userId));
     }
 
     private void addPeriodCriteria(Criteria criteria, Date start, Date end) {

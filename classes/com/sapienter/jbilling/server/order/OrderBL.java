@@ -355,7 +355,8 @@ public class OrderBL extends ResultList
         }
     }
 
-    /**     * Method checkOrderLineQuantities.
+    /**
+     * Method checkOrderLineQuantities.
      * Generates a NewQuantityEvent for each order line that has had
      * its quantity modified (including those added or deleted).
      */

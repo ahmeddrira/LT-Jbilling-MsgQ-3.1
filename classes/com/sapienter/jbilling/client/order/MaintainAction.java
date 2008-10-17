@@ -164,7 +164,8 @@ public class MaintainAction extends Action {
         return mapping.findForward("error");
     }
 
-    /**     * Method newOrderEdit.
+    /**
+     * Method newOrderEdit.
      * Sets a default cycle starts for the new order edit screen if cycle 
      * starts is set for the main subscription (current) order (if it exists). 
      * Forwards onto the order edit screen.

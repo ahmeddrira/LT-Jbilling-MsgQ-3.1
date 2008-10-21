@@ -164,6 +164,9 @@ public class PaymentSessionBean implements SessionBean {
             	logger.auditBySystem(entityId, Constants.TABLE_BASE_USER, userId, 
             			EventLogger.MODULE_PAYMENT_MAINTENANCE, EventLogger.PAYMENT_INSTRUMENT_NOT_FOUND,
             			null, null, null);
+                // update the invoice attempts
+                invoice.setPaymentAttempts(dto.getAttempt() == null ? 
+                        new Integer(1) : dto.getAttempt());
             	// treat this as a failed payment
             	PaymentFailedEvent event = new PaymentFailedEvent(entityId, dto);
             	EventManager.process(event);

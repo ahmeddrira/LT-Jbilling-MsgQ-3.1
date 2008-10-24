@@ -32,12 +32,11 @@ import org.drools.RuleBase;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
-import com.sapienter.jbilling.server.pluggableTask.BasicLineTotalTask;
-import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -45,7 +44,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 
-public class RulesItemManager extends BasicItemManager implements OrderProcessingTask {
+public class RulesItemManager extends BasicItemManager {
 
     private static final Logger LOG = Logger.getLogger(RulesItemManager.class);
 
@@ -82,6 +81,12 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
             }
             rulesMemoryContext.add(line);
         }
+
+        if (newOrder.getPricingFields() != null && newOrder.getPricingFields().size() > 0) {
+        	for (PricingField pf : newOrder.getPricingFields()) {
+        		rulesMemoryContext.add(pf);
+        	}
+        }
         try {
             Integer userId = newOrder.getBaseUserByUserId().getId();
             UserDTOEx user = DTOFactory.getUserDTOEx(userId); 
@@ -111,22 +116,7 @@ public class RulesItemManager extends BasicItemManager implements OrderProcessin
         
         executeStatefulRules(session, rulesMemoryContext);
     }
-    
-    public void doProcessing(OrderDTO order) throws TaskException {
-        helperOrder = new OrderManager(order, order.getBaseUserByUserId().getLanguage().getId(), 
-        		order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity().getId(), 
-        		order.getBaseUserByUserId().getCurrency().getId());
-
-        // cant extend two classes
-        BasicLineTotalTask parent = new BasicLineTotalTask();
-        
-        parent.validateLinesQuantity(order);
-        
-        processRules(order);
-        
-        parent.doProcessing(order);
-    }
-    
+   
     public class OrderManager {
         private OrderDTO order = null;
         private Integer language = null;

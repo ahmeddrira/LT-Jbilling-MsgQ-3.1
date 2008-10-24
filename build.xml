@@ -31,6 +31,20 @@
         </fileset>
     </path>
     
+	<path id="drools.classpath">
+		<fileset dir="${source.dir}/libs/drools">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="drools.run.classpath">
+		<fileset dir="${build.deploy.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${jboss.server.dir}/lib">
+			<include name="log4j*.jar"/>
+		</fileset>
+	</path>
 
     <path id="run.classpath">
         <path refid="compile.classpath"/>
@@ -171,6 +185,7 @@
             <include name="**/*Bean.java"/>
             <include name="**/*WS.java"/>
             <include name="**/*DTOEx.java"/>
+            <include name="**/PricingField.java"/>
          </fileset>
          
          <packageSubstitution packages="server.entity,server.user,server.item,server.order,server.util,server.customer,server.process,server.payment,server.notification,server.report,server.invoice"
@@ -428,7 +443,7 @@
     </target>
     
 	
-  <target name="prepare-test">
+  <target name="prepare-test" depends="compile-rules">
   	  <echo>Copying the binary rules</echo>
 	  <delete dir="${base_dir}/rules"/>
 	  <copy todir="${base_dir}/rules">
@@ -772,6 +787,40 @@
 	        </hibernatetool>
 	    </target>
 	
+	<target name="compile-rules" description="compile rule files">
+		<taskdef name="rulebase" 
+				classname="org.drools.contrib.DroolsCompilerAntTask" 
+				classpathref="drools.classpath" />
+
+		<rulebase 
+				srcdir="${source.rules.dir}" 		
+				tofile="${source.rules.dir}/CancelFees.pkg"
+				classpathref="drools.run.classpath"
+				binformat="package">
+			<include name="CancelFees.drl" />
+		</rulebase>
+		<rulebase 
+				srcdir="${source.rules.dir}" 		
+				tofile="${source.rules.dir}/ItemsRules.pkg"
+				classpathref="drools.run.classpath"
+				binformat="package">
+			<include name="ItemsRules.drl" />
+		</rulebase>
+		<rulebase 
+				srcdir="${source.rules.dir}" 		
+				tofile="${source.rules.dir}/Mediation.pkg"
+				classpathref="drools.run.classpath"
+				binformat="package">
+			<include name="Mediation.drl" />
+		</rulebase>
+		<rulebase 
+				srcdir="${source.rules.dir}" 		
+				tofile="${source.rules.dir}/PricingRules.pkg"
+				classpathref="drools.run.classpath"
+				binformat="package">
+			<include name="PricingRules.drl" />
+		</rulebase>
+	</target>
 
 </project>
   <!--

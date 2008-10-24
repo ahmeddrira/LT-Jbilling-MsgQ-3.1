@@ -25,8 +25,10 @@
 package com.sapienter.jbilling.server.util;
 
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -55,6 +57,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -829,7 +832,7 @@ public class WebServicesSessionBean implements SessionBean {
             throws SessionInternalError {
     	
         LOG.debug("Call to createOrder ");
-    	Integer orderId = doCreateOrder(order);
+    	Integer orderId = doCreateOrder(order, true).getId();
         LOG.debug("Done");
         return orderId;
     }
@@ -837,11 +840,44 @@ public class WebServicesSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="both"
      */
+    public OrderWS rateOrder(OrderWS order) 
+            throws SessionInternalError {
+    	
+        LOG.debug("Call to rateOrder ");
+        OrderWS ordr = doCreateOrder(order, false);
+        LOG.debug("Done");
+        return ordr;
+    }
+    
+    /**
+     * @ejb:interface-method view-type="both"
+     */
+    public void updateItem(ItemDTOEx item) {
+    	
+    	try {
+            LOG.debug("Call to updateItem ");
+            UserBL bl = new UserBL();
+            bl.setRoot(context.getCallerPrincipal().getName());
+            Integer executorId = bl.getEntity().getUserId();
+            Integer languageId = bl.getEntity().getLanguageIdField();
+            
+            ItemSessionBean itemSession = new ItemSessionBean();
+            itemSession.update(executorId, item, languageId);
+            LOG.debug("Done updateItem ");
+        } catch (SessionInternalError e) {
+            LOG.error("WS - updateItem", e);
+            throw new SessionInternalError("Error updating item ");
+        }
+    }
+    
+    /**
+     * @ejb:interface-method view-type="both"
+     */
     public Integer createOrderAndInvoice(OrderWS order) 
             throws SessionInternalError {
         
         LOG.debug("Call to createOrderAndInvoice ");
-        Integer orderId = doCreateOrder(order);
+        Integer orderId = doCreateOrder(order, true).getId();
         doCreateInvoice(orderId);
 
         LOG.debug("Done");
@@ -1334,8 +1370,39 @@ public class WebServicesSessionBean implements SessionBean {
         LOG.debug("Done");
         return result;
     }
+    
+    /**
+     * @ejb.interface-method view-type="both"
+     */
+    public ItemDTOEx getItem(Integer itemId, Integer userId, String pricing) {
+    	
+        try {
+            LOG.debug("Call to getItem");
+            PricingField[] fields = PricingField.getPricingFieldsValue(pricing);
+            
+            ItemBL helper = new ItemBL(itemId);
+            Vector<PricingField> f = new Vector<PricingField>();
+            f.addAll(Arrays.asList(fields));
+            helper.setPricingFields(f);
+            UserBL user = new UserBL();
+            user.setRoot(context.getCallerPrincipal().getName());
+            Integer callerId  = user.getEntity().getUserId();
+            Integer entityId = user.getEntityId(callerId);
+            Integer languageId = user.getEntity().getLanguageIdField();
+            Integer currencyId = user.getCurrencyId();
+            
+            ItemDTOEx retValue = helper.getDTO(languageId, userId, entityId, currencyId);
+            LOG.debug("Done");
+            return retValue;
+        } catch (Exception e) {
+            LOG.error("WS - getItem", e);
+            throw new SessionInternalError("Error getting item " + itemId);
+        }
+    }
 
-    private Integer zero2null(Integer var) {
+    
+
+	private Integer zero2null(Integer var) {
         if (var != null && var.intValue() == 0) {
             return null;
         } else {
@@ -1632,8 +1699,10 @@ public class WebServicesSessionBean implements SessionBean {
 		return result;
 	}
 
-    private Integer doCreateOrder(OrderWS order) throws SessionInternalError {
-        validateOrder(order);
+    private OrderWS doCreateOrder(OrderWS order, boolean create) 
+    		throws SessionInternalError {
+        
+    	validateOrder(order);
         try {
             // get the info from the caller
             UserBL bl = new UserBL();
@@ -1644,10 +1713,8 @@ public class WebServicesSessionBean implements SessionBean {
             
             // we'll need the langauge later
             bl.set(order.getUserId());
-            
             // see if the related items should provide info
             processItemLine(order, languageId, entityId);
-            
             // call the creation
             OrderBL orderBL = new OrderBL();
             OrderDTO dto = orderBL.getDTO(order);
@@ -1661,6 +1728,7 @@ public class WebServicesSessionBean implements SessionBean {
             	line.setVersionNum(null);
             }
 
+            LOG.info("before cycle start");
             // set a default cycle starts if needed (obtained from the main 
             // subscription order, if it exists)
             if (dto.getCycleStarts() == null && dto.getIsCurrent() == null) {
@@ -1684,12 +1752,53 @@ public class WebServicesSessionBean implements SessionBean {
             
             orderBL.set(dto);
             orderBL.recalculate(entityId);
-            
-            return orderBL.create(entityId, executorId, dto);
+            if (create) {
+            	LOG.debug("creating order");
+            	Integer id = orderBL.create(entityId, executorId, dto);
+            	orderBL.set(id);
+            	return orderBL.getWS(languageId);
+            }
+            return getWSFromOrder(orderBL, languageId);
         } catch(Exception e) {
-            LOG.debug("Exception:", e);
+            LOG.error("WS error creating order:", e);
             throw new SessionInternalError("error creating purchase order");
         }
+    }
+    
+    private OrderWS getWSFromOrder(OrderBL bl, Integer languageId) {
+    	OrderDTO order = bl.getDTO();
+    	OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(), 
+        		order.getNotify(), order.getActiveSince(), order.getActiveUntil(), 
+        		order.getCreateDate(), order.getNextBillableDay(), 
+        		order.getCreatedBy(), order.getStatusId(), order.getDeleted(), 
+        		order.getCurrencyId(), order.getLastNotified(), 
+        		order.getNotificationStep(), order.getDueDateUnitId(), 
+        		order.getDueDateValue(), order.getAnticipatePeriods(),
+        		order.getDfFm(), order.getIsCurrent(), order.getNotes(), 
+        		order.getNotesInInvoice(), order.getOwnInvoice(), 
+        		order.getOrderPeriod().getId(), 
+        		order.getBaseUserByUserId().getId(),
+        		order.getVersionNum(), order.getCycleStarts());
+        
+        retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
+        retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
+        
+        Vector<OrderLineWS> lines = new Vector<OrderLineWS>();
+        for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {
+            OrderLineDTO line = (OrderLineDTO) it.next();
+            LOG.info("copying line: " + line);
+            if (line.getDeleted() == 0) {
+            	OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
+                		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), 
+                		line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
+                		line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
+                		null, line.getVersionNum());
+                lines.add(lineWS);
+            }
+        }
+        retValue.setOrderLines(new OrderLineWS[lines.size()]);
+        lines.toArray(retValue.getOrderLines());
+        return retValue;
     }
     
 	private InvoiceEntityLocal findInvoice(Integer invoiceId) {

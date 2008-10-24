@@ -55,6 +55,7 @@ import org.hibernate.annotations.OrderBy;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -115,6 +116,7 @@ public class OrderDTO  implements java.io.Serializable {
      private String currencyName = null;
      private String promoCode = null;
      private BigDecimal total = null;
+     private Vector<PricingField> pricingFields = null;
 
     public OrderDTO() {
     }
@@ -151,6 +153,7 @@ public class OrderDTO  implements java.io.Serializable {
     	this.isCurrent = other.getIsCurrent();
     	this.versionNum = other.getVersionNum();
     	this.cycleStarts = other.getCycleStarts();
+    	this.pricingFields = other.getPricingFields();
     }
     
     public OrderDTO(int id, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, OrderStatusDTO orderStatusDTO, OrderBillingTypeDTO orderBillingTypeDTO, Date createDatetime, Integer deleted) {
@@ -720,6 +723,15 @@ public class OrderDTO  implements java.io.Serializable {
     	setCreateDate(Calendar.getInstance().getTime());
     	OrderStatusDAS das = new OrderStatusDAS();
     	setOrderStatus(das.find(Constants.ORDER_STATUS_ACTIVE));
+    }
+    
+    @Transient
+    public Vector<PricingField> getPricingFields() {
+    	return this.pricingFields;
+    }
+    
+    public void setPricingFields(Vector<PricingField> fields) {
+    	this.pricingFields = fields;
     }
 
 }

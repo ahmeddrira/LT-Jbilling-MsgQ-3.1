@@ -25,6 +25,7 @@ import java.util.Date;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -135,4 +136,11 @@ public interface JbillingAPI {
 
     public Integer authenticate(String username, String password)
             throws JbillingAPIException;
+    
+    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields)
+    		throws JbillingAPIException;
+    
+    public OrderWS rateOrder(OrderWS order) throws JbillingAPIException;
+    
+    public void updateItem(ItemDTOEx item) throws JbillingAPIException;
 }

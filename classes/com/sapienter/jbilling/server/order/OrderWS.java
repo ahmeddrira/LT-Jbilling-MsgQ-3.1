@@ -27,6 +27,9 @@ package com.sapienter.jbilling.server.order;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Vector;
+
+import com.sapienter.jbilling.server.item.PricingField;
 
 /**
  * @author Emil
@@ -70,6 +73,7 @@ public class OrderWS implements Serializable {
     // instead of the ids
     private String periodStr = null;
     private String billingTypeStr = null;
+    private String pricingFields = null;
 
     /**
      * 
@@ -89,13 +93,13 @@ public class OrderWS implements Serializable {
      * @param deleted
      */
     public OrderWS(Integer id, Integer billingTypeId, Integer notify,
-    		Date activeSince,
-            Date activeUntil, Date createDate, Date nextBillableDay,
-            Integer createdBy, Integer statusId, Integer deleted,
-            Integer currencyId, Date lastNotified, Integer notifStep,
-            Integer dueDateUnitId, Integer dueDateValue, Integer anticipatePeriods, Integer dfFm,
-            Integer isCurrent, String notes, Integer notesInInvoice, Integer ownInvoice,
-            Integer period, Integer userId, Integer version, Date cycleStarts) {
+    		Date activeSince, Date activeUntil, Date createDate, 
+    		Date nextBillableDay, Integer createdBy, Integer statusId, 
+    		Integer deleted, Integer currencyId, Date lastNotified, 
+    		Integer notifStep, Integer dueDateUnitId, Integer dueDateValue, 
+    		Integer anticipatePeriods, Integer dfFm, Integer isCurrent, 
+    		String notes, Integer notesInInvoice, Integer ownInvoice, 
+    		Integer period, Integer userId, Integer version, Date cycleStarts) {
     	setId(id);
     	setBillingTypeId(billingTypeId);
     	setNotify(notify);
@@ -409,5 +413,12 @@ public class OrderWS implements Serializable {
 	public void setCycleStarts(Date cycleStarts) {
 		this.cycleStarts = cycleStarts;
 	}
-
+	
+	public String getPricingFields() {
+		return pricingFields;
+	}
+	
+	public void setPricingFields(String pricingFields) {
+		this.pricingFields = pricingFields;
+	}
 }

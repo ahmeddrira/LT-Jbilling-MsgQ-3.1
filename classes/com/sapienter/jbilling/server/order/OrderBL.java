@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.order;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
 import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.PromotionBL;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
@@ -164,13 +166,17 @@ public class OrderBL extends ResultList
 
     public OrderWS getWS(Integer languageId) 
             throws FinderException, NamingException {
-        OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(), order.getNotify(), 
-        		order.getActiveSince(), order.getActiveUntil(), order.getCreateDate(), 
-        		order.getNextBillableDay(), order.getCreatedBy(), order.getStatusId(), order.getDeleted(), 
-        		order.getCurrencyId(), order.getLastNotified(), order.getNotificationStep(), 
-        		order.getDueDateUnitId(), order.getDueDateValue(), order.getAnticipatePeriods(),
-        		order.getDfFm(), order.getIsCurrent(), order.getNotes(), order.getNotesInInvoice(),
-        		order.getOwnInvoice(), order.getOrderPeriod().getId(), order.getBaseUserByUserId().getId(),
+        OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(), 
+        		order.getNotify(), order.getActiveSince(), order.getActiveUntil(), 
+        		order.getCreateDate(), order.getNextBillableDay(), 
+        		order.getCreatedBy(), order.getStatusId(), order.getDeleted(), 
+        		order.getCurrencyId(), order.getLastNotified(), 
+        		order.getNotificationStep(), order.getDueDateUnitId(), 
+        		order.getDueDateValue(), order.getAnticipatePeriods(),
+        		order.getDfFm(), order.getIsCurrent(), order.getNotes(), 
+        		order.getNotesInInvoice(), order.getOwnInvoice(), 
+        		order.getOrderPeriod().getId(), 
+        		order.getBaseUserByUserId().getId(),
         		order.getVersionNum(), order.getCycleStarts());
         
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
@@ -1320,6 +1326,11 @@ public class OrderBL extends ResultList
     	retValue.setIsCurrent(other.getIsCurrent());
     	retValue.setCycleStarts(other.getCycleStarts());
     	retValue.setVersionNum(other.getVersionNum());
+    	if (other.getPricingFields() != null) {
+    		Vector<PricingField> pf = new Vector<PricingField>(); 
+    		pf.addAll(Arrays.asList(PricingField.getPricingFieldsValue(other.getPricingFields())));
+    		retValue.setPricingFields(pf);
+    	}
     	
     	return retValue;
     }

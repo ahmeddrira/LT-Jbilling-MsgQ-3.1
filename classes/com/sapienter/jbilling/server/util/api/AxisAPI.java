@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -483,6 +484,24 @@ public class AxisAPI implements JbillingAPI {
         Integer[] userIds = convertToIntegerArray(ret);
         return userIds;
     }
+    
+    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) 
+    		throws JbillingAPIException {
+		
+    	ItemDTOEx ret = (ItemDTOEx) invokeAxisCall(WebServicesConstants.GET_ITEM, 
+    			new Object[] { itemId, userId, PricingField.setPricingFieldsValue(fields) } );
+    	return ret;
+    }
+    
+    public OrderWS rateOrder(OrderWS order) throws JbillingAPIException {
+    	OrderWS ret = (OrderWS) invokeAxisCall(WebServicesConstants.RATE_ORDER,
+    			new Object[] { order } );
+    	return ret;
+    }
+    
+    public void updateItem(ItemDTOEx item) throws JbillingAPIException {
+    	invokeAxisCall(WebServicesConstants.UPDATE_ITEM, new Object[] { item } );
+    }
 	
 	private Integer[] convertToIntegerArray(int[] array){
 		Integer[] ret = new Integer[array.length];
@@ -509,7 +528,7 @@ public class AxisAPI implements JbillingAPI {
 			LOG.debug("Got back " + ret + " from web service call");
 			return ret;
 		}catch(Throwable t){
-			//t.printStackTrace();
+			// t.printStackTrace();
 			throw new JbillingAPIException("Error during invocation of web service " 
 				+ operationName + " using parameters " + getParametersInfo(params) +
 				". Underlying error message is " + t.getMessage());

@@ -35,6 +35,7 @@ import com.sapienter.jbilling.interfaces.WebServicesSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -408,6 +409,31 @@ public class EJBAPI implements JbillingAPI {
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
+    }
+    
+    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) 
+    		throws JbillingAPIException {
+    	try {
+    		return session.getItem(itemId, userId, PricingField.setPricingFieldsValue(fields));
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
+    
+    public OrderWS rateOrder(OrderWS order) throws JbillingAPIException {
+    	try {
+    		return session.rateOrder(order);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
+    
+    public void updateItem(ItemDTOEx item) throws JbillingAPIException {
+    	try {
+    		session.updateItem(item);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
     }
 
 }

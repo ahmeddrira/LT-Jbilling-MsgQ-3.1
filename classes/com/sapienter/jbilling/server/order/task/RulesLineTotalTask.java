@@ -21,8 +21,26 @@
 package com.sapienter.jbilling.server.order.task;
 
 import com.sapienter.jbilling.server.item.tasks.RulesItemManager;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
+import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
-// TODO: cleanup, this is just a copy of RuilesItemManager.
-public class RulesLineTotalTask extends RulesItemManager implements OrderProcessingTask {
+/**
+ * 
+ * This allows for rule processing for order line totals. It does not do the basic calculations
+ * (price * quantity), thus it requires the BasicLineTotalTask to be configured, typically after
+ *
+ */
+public class RulesLineTotalTask extends RulesItemManager 
+		implements OrderProcessingTask {
+	
+    public void doProcessing(OrderDTO order) throws TaskException {
+        helperOrder = new OrderManager(order, order.getBaseUserByUserId().getLanguage().getId(), 
+        		order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity().getId(), 
+        		order.getBaseUserByUserId().getCurrency().getId());
+        
+        processRules(order);        
+        
+    }
+
 }

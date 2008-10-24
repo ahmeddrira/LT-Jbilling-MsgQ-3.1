@@ -19,12 +19,17 @@
 */
 package com.sapienter.jbilling.server.item;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Vector;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 
-public class PricingField {
+/**
+ * @author Emil
+ */
+public class PricingField implements Serializable {
     private final String name;
     private String strValue;
     private Date dateValue;
@@ -32,6 +37,8 @@ public class PricingField {
     private Double doubleValue;
     private Integer intValue;
     private Integer position = 1;
+    
+    public enum Type { STRING, INTEGER, FLOAT, DATE };
     
     public void setPosition(Integer position) {
         this.position = position;
@@ -41,7 +48,24 @@ public class PricingField {
         return position;
     }
     
-    public enum Type {STRING, INTEGER, FLOAT, DATE};
+    public PricingField(String encoded) {
+    	String[] fields = encoded.split(":");
+    	if (fields == null || fields.length != 3) {
+    		name = "";
+    		type = Type.INTEGER;
+    		return;
+    	}
+    	this.name = fields[0];
+    	this.type = mapType(fields[1]);
+    	if (type != null) {
+    		switch(type) {
+    			case STRING  : setStrValue(fields[2]); break;
+    			case INTEGER : setIntValue(Integer.parseInt(fields[2])); break;
+    			case FLOAT   : setDoubleValue(Double.parseDouble(fields[2])); break;
+    			case DATE    : setDateValue(new Date(Long.parseLong(fields[2]))); break;
+    		}
+    	}
+    }
     
     public PricingField(PricingField field) {
         this.name = field.getName();
@@ -151,6 +175,17 @@ public class PricingField {
         }
     }
     
+    public static String encode(PricingField field) {
+    	StringBuffer sb = new StringBuffer(field.getName());
+    	switch(field.getType()) {
+    	case STRING  : sb.append(":string:" + field.getStrValue()); break;
+    	case INTEGER : sb.append(":integer:" + field.getIntValue()); break;
+    	case FLOAT   : sb.append(":float:" + field.getFloatValue()); break;
+    	case DATE    : sb.append(":date:" + field.getDateValue().getTime()); break;
+    	}
+    	return sb.toString();
+    }
+    
     public String toString() {
         return "name: " + name + " type: " + type + " value: " + getValue();
     }
@@ -170,4 +205,34 @@ public class PricingField {
     public void setDoubleValue(Double doubleValue) {
         this.doubleValue = doubleValue;
     }
+    
+    public static PricingField[] getPricingFieldsValue(String pricingFields) {
+		if (pricingFields == null)
+			return null;
+		String[] fields = pricingFields.split(",");
+		if (fields == null || fields.length == 0) {
+			return null;
+		}
+		Vector<PricingField> result = new Vector<PricingField>();
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i] != null && !fields[i].equals("") && fields[i].split(":").length == 3) {
+				result.add(new PricingField(fields[i]));
+			}
+		}
+		return result.toArray(new PricingField[0]);
+	}
+
+	public static String setPricingFieldsValue(PricingField[] pricingFields) {
+		PricingField[] fields = pricingFields;
+		StringBuffer result = new StringBuffer();
+		if (fields != null && fields.length > 0) {
+			for (int i = 0; i < fields.length; i++) {
+				result.append(PricingField.encode(fields[i]));
+				if (i < (fields.length - 1)) {
+					result.append(",");
+				}
+			}
+		}
+		return result.toString();
+	}
 }

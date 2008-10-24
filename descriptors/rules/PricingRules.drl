@@ -27,5 +27,11 @@ rule "special for item 2"
 	manager.setPrice(30);
 end
 
-
-
+rule 'PricingField test1'
+	dialect "java"
+when
+	$newPrice : PricingField( name == "newPrice" )
+	PricingManager( itemId == 1 )
+then
+	manager.setPrice($newPrice.getDoubleValue());
+end

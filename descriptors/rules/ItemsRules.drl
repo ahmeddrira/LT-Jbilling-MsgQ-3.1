@@ -3,6 +3,8 @@ package ItemsRules3
 
 #imports
 import com.sapienter.jbilling.server.item.ItemDTOEx
+import com.sapienter.jbilling.server.item.PricingField
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager
 
 #globals
@@ -10,9 +12,26 @@ global com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager or
 
 rule "Lemon and Coffee discount"
 	when
-	    exists ItemDTOEx(id == "2") # Lemonade
-	    exists ItemDTOEx(id == "3") # Coffee
+	    exists ItemDTOEx(id == 2) # Lemonade
+	    exists ItemDTOEx(id == 3) # Coffee
 	then
 	    order.addItem(14); # 10% discount
 end
 
+rule 'rateOrder test1'
+	dialect "java"
+when
+	$field : PricingField( name == "add" )
+	$line  : OrderLineDTO( )
+then
+	$line.setPrice((float)($line.getPrice() + $field.getDoubleValue()));
+end
+
+rule 'rateOrder test2'
+	dialect "java"
+when
+	$field : PricingField( name == "subtract" )
+	$line  : OrderLineDTO( )
+then
+	$line.setPrice((float)($line.getPrice() - $field.getDoubleValue()));
+end

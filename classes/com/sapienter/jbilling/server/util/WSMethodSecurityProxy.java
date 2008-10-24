@@ -36,6 +36,8 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -204,6 +206,23 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        params = new Class[1];
        params[0] = Integer.class;
        addMethod("deleteInvoice",params);
+       
+       // getItem
+       params = new Class[3];
+       params[0] = Integer.class;
+       params[1] = Integer.class;
+       params[2] = String.class;
+       addMethod("getItem", params);
+       
+       // rateOrder
+       params = new Class[1];
+       params[0] = OrderWS.class;
+       addMethod("rateOrder", params);
+       
+       // updateItem
+       params = new Class[1];
+       params[0] = ItemDTOEx.class;
+       addMethod("updateItem", params);
 
        // set the parent methods
        setMethods(methods.toArray(new Method[methods.size()]));          
@@ -212,7 +231,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
     
     public void invoke(Method m, Object[] args, Object bean)
             throws SecurityException {
-        LOG.debug("invoke, m=" + m);
+        LOG.info("invoke, m=" + m.getName());
         if (!isMethodPresent(m)) {
             return;
         }
@@ -329,6 +348,28 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                 if (arg != null) {
                     validate(arg);
                 }
+            } else if (m.getName().equals("getItem")) {
+            	Integer itemId = (Integer) args[0];
+            	Integer userId = (Integer) args[1];
+            	
+            	Integer itemEntityId = new ItemDAS().find(itemId).getEntity().getId();
+        		UserBL user = new UserBL();
+        		user.setRoot(context.getCallerPrincipal().getName());
+        		if (!itemEntityId.equals(user.getEntity().getEntity().getId())) {
+                    throw new SecurityException("Item belongs to entity " + itemEntityId);
+                }
+            	if (userId != null) {
+            		validate(userId);
+            	}
+            } else if (m.getName().equals("updateItem")) {
+            	ItemDTOEx item = (ItemDTOEx) args[0];
+            	Integer itemEntityId = new ItemDAS().find(item.getId()).getEntity().getId();
+            	UserBL user = new UserBL();
+            	user.setRoot(context.getCallerPrincipal().getName());
+            	if (!itemEntityId.equals(user.getEntity().getEntity().getId())) {
+            		throw new SecurityException("Item belongs to entity " + itemEntityId);
+            	}
+            	validate(user.getEntity().getId());
             }
 
         } catch (SessionInternalError e) {

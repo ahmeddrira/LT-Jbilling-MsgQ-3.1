@@ -30,6 +30,9 @@ import java.util.Comparator;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
@@ -66,6 +69,116 @@ public class WSTest  extends TestCase {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
+    }
+    
+    public void testPricingRules() {
+    	
+    	try {
+    		System.out.println("Testing Pricing Rules");
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+    		
+    		// Tests item pricing for user "gandalf" (id 2)
+    		PricingField pf = new PricingField("newPrice", 50.0);
+    		ItemDTOEx it = api.getItem(new Integer(1), new Integer(2), 
+    				new PricingField[] { pf });
+    		assertTrue(it.getPrice().equals(new Float(50.0F)));
+    		System.out.println("Pricing field test passed");
+    		
+    		// Tests access to an item of a different entity
+    		boolean passed = false;
+        	try {
+        		// Try to get item 4 (should fail because the user is on entity 1 and 
+        		// the item is on entity 2).
+        		it = api.getItem(new Integer(4), new Integer(2), 
+        				new PricingField[] { pf });
+        	} catch (Exception e) {
+        		passed = true;
+        	}
+        	if (!passed) {
+        		fail("Security check failed, should not access Item from another entity");
+        	} else {
+        		System.out.println("Security check passed for item retrieval");
+        	}
+        	System.out.println("Done!");
+        	
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught: " + e);
+    	}
+    }
+    
+    private OrderWS prepareOrder() {
+    	
+    	OrderWS newOrder = new OrderWS();
+        newOrder.setUserId(new Integer(2)); 
+        newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        newOrder.setPeriod(new Integer(1)); // once
+        newOrder.setCurrencyId(new Integer(1));
+        
+        // now add some lines
+        OrderLineWS lines[] = new OrderLineWS[2];
+        OrderLineWS line;
+        
+        line = new OrderLineWS();
+        line.setPrice(new Float(10));
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setQuantity(new Integer(1));
+        line.setAmount(new Float(10));
+        line.setDescription("Fist line");
+        line.setItemId(new Integer(1));
+        lines[0] = line;
+        
+        // this is an item line
+        line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setQuantity(new Integer(1));
+        line.setItemId(new Integer(2));
+        // take the description from the item
+        line.setUseItem(new Boolean(true));
+        lines[1] = line;
+        
+        newOrder.setOrderLines(lines);
+        return newOrder;
+    }
+    
+    public void testOrderRating() {
+    	
+    	try {
+    		System.out.println("Testing Order Rating");
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+    		
+    		// Tests item pricing for user "gandalf" (id 2)
+    		PricingField add = new PricingField("add", 10.0);
+    		PricingField subtract = new PricingField("subtract", 1.0);
+    		
+    		System.out.println("Testing pricing fields on order rating 1");
+    		// rate an order, use "add" pricing field rule (adds 10 to price in all items of order)
+    		OrderWS newOrder = prepareOrder();
+            newOrder.setPricingFields(PricingField.setPricingFieldsValue(new PricingField[] { add }));
+            OrderWS order = api.rateOrder(newOrder);
+            OrderLineWS[] l = order.getOrderLines();
+            assertNotNull(l);
+            assertTrue(l.length == 2);
+            assertTrue(l[0].getPrice() == 20.0F);
+            assertTrue(l[1].getPrice() == 40.0F);
+            
+            System.out.println("Testing pricing fields on order rating 2");
+            // rate the same order, but using "subtract" (minus 1 to price in all items of order)
+            newOrder = prepareOrder();
+            newOrder.setPricingFields(PricingField.setPricingFieldsValue(new PricingField[] { subtract }));
+            order = api.rateOrder(newOrder);
+            l = order.getOrderLines();
+            assertNotNull(l);
+            assertEquals(l.length, 2);
+            assertEquals(l[0].getPrice(), 9.0F);
+            assertEquals(l[1].getPrice(), 29.0F);
+
+    		System.out.println("Done!");
+        	
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught: " + e);
+    	}
     }
 
     public void testGetAllItems() {
@@ -144,5 +257,51 @@ public class WSTest  extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+    
+    public void testUpdateItem() {
+    
+    	try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+	    	
+    		System.out.println("Getting item");
+	    	ItemDTOEx item = api.getItem(new Integer(1), 
+	    			new Integer(2), new PricingField[] {} );
+	    	String description = item.getDescription();
+	    	Integer prMan = item.getPriceManual();
+	    	String number = item.getNumber();
+	    	Float price = item.getPrice();
+	    	Float perc = item.getPercentage();
+	    	String promo = item.getPromoCode();
+	
+	    	System.out.println("Changing properties");
+	    	item.setDescription("Another description");
+	    	item.setPriceManual(new Integer(1));
+	    	item.setNumber("NMR-01");
+	    	item.setPrice(1.0F);
+	    	
+	    	System.out.println("Updating item");
+	    	api.updateItem(item);
+	    
+	    	ItemDTOEx itemChanged = api.getItem(new Integer(1), 
+	    			new Integer(2), new PricingField[] {} );
+	    	assertEquals(itemChanged.getDescription(), "Another description");
+	    	assertEquals(itemChanged.getPriceManual(), new Integer(1));
+	    	assertEquals(itemChanged.getNumber(), "NMR-01");
+	    	assertEquals(itemChanged.getPrice(), price);
+	    	assertEquals(itemChanged.getPercentage(), perc);
+	    	assertEquals(itemChanged.getPromoCode(), promo);
+	    	System.out.println("Done!");
+	    
+	    	System.out.println("Restoring initial item state.");
+	    	item.setDescription(description);
+	    	item.setPriceManual(prMan);
+	    	item.setNumber(number);
+	    	api.updateItem(item);
+	    	System.out.println("Done!");
 
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught:" + e);
+    	}
+	}
 }

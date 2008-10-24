@@ -50,19 +50,21 @@ public class PricingField implements Serializable {
     
     public PricingField(String encoded) {
     	String[] fields = encoded.split(":");
-    	if (fields == null || fields.length != 3) {
+    	if (fields == null || fields.length != 4) {
     		name = "";
     		type = Type.INTEGER;
+    		intValue = 0;
     		return;
     	}
     	this.name = fields[0];
-    	this.type = mapType(fields[1]);
+    	this.position = Integer.parseInt(fields[1]);
+    	this.type = mapType(fields[2]);
     	if (type != null) {
     		switch(type) {
-    			case STRING  : setStrValue(fields[2]); break;
-    			case INTEGER : setIntValue(Integer.parseInt(fields[2])); break;
-    			case FLOAT   : setDoubleValue(Double.parseDouble(fields[2])); break;
-    			case DATE    : setDateValue(new Date(Long.parseLong(fields[2]))); break;
+    			case STRING  : setStrValue(fields[3]); break;
+    			case INTEGER : setIntValue(Integer.parseInt(fields[3])); break;
+    			case FLOAT   : setDoubleValue(Double.parseDouble(fields[3])); break;
+    			case DATE    : setDateValue(new Date(Long.parseLong(fields[3]))); break;
     		}
     	}
     }
@@ -176,7 +178,7 @@ public class PricingField implements Serializable {
     }
     
     public static String encode(PricingField field) {
-    	StringBuffer sb = new StringBuffer(field.getName());
+    	StringBuffer sb = new StringBuffer(field.getName() + ":" + field.getPosition());
     	switch(field.getType()) {
     	case STRING  : sb.append(":string:" + field.getStrValue()); break;
     	case INTEGER : sb.append(":integer:" + field.getIntValue()); break;
@@ -215,7 +217,7 @@ public class PricingField implements Serializable {
 		}
 		Vector<PricingField> result = new Vector<PricingField>();
 		for (int i = 0; i < fields.length; i++) {
-			if (fields[i] != null && !fields[i].equals("") && fields[i].split(":").length == 3) {
+			if (fields[i] != null && !fields[i].equals("") && fields[i].split(":").length == 4) {
 				result.add(new PricingField(fields[i]));
 			}
 		}

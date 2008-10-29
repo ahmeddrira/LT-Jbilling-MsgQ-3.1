@@ -60,6 +60,10 @@ public class WSTest  extends TestCase {
             newOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             newOrder.setPeriod(new Integer(1)); // once
             newOrder.setCurrencyId(new Integer(1));
+            Calendar cal = Calendar.getInstance();
+            cal.clear();
+            cal.set(2008, 9, 3);
+            newOrder.setCycleStarts(cal.getTime());
             
             // now add some lines
             OrderLineWS lines[] = new OrderLineWS[3];
@@ -117,6 +121,8 @@ public class WSTest  extends TestCase {
                     newOrder.getBillingTypeId());
             assertEquals("created order billing period", retOrder.getPeriod(),
                     newOrder.getPeriod());
+            assertEquals("created order cycle starts", retOrder.getCycleStarts().getTime(),
+                    newOrder.getCycleStarts().getTime());
             
             /*
              * get order line. The new order should include a new discount
@@ -191,7 +197,6 @@ public class WSTest  extends TestCase {
              * Update
              */
             // now update the created order
-            Calendar cal = Calendar.getInstance();
             cal.clear();
             cal.set(2003, 9, 29, 0, 0, 0);
             retOrder.setActiveSince(cal.getTime());

@@ -19,20 +19,22 @@
 */
 package com.sapienter.jbilling.client.util;
 
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.interfaces.UserSession;
+import com.sapienter.jbilling.interfaces.UserSessionHome;
 import java.io.IOException;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.user.EntityBL;
 
 /**
- * Simply server meant to be called by a monitoring service.
+ * Simple server meant to be called by a monitoring service.
  * It will just find entity 1 and return PASSED, or something else if there
  * is a problem.
  * A PASSED return means that the basic health of jbilling is good. The classes
@@ -41,6 +43,8 @@ import com.sapienter.jbilling.server.user.EntityBL;
  *
  */
 public class ServerUpCheckServlet extends HttpServlet {
+    
+    private static final Logger LOG = Logger.getLogger(ServerUpCheckServlet.class);
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doCheck(request,response);
     }
@@ -53,14 +57,23 @@ public class ServerUpCheckServlet extends HttpServlet {
         
         try {
             ServletOutputStream output = response.getOutputStream();
+
+            JNDILookup EJBFactory = null;
+            UserSession myRemoteSession = null;
             try {
-                EntityBL entity = new EntityBL(new Integer(1));
+                EJBFactory = JNDILookup.getFactory(false);            
+                UserSessionHome UserHome =
+                        (UserSessionHome) EJBFactory.lookUpHome(
+                        UserSessionHome.class,
+                        UserSessionHome.JNDI_NAME);
+
+                myRemoteSession = UserHome.create();
+                myRemoteSession.getEntityPrimaryContactType(1);
                 output.print("PASSED");
-            } catch (FinderException e) {
-                output.print("ERROR: Can not find entity 1." + e.getMessage());
             } catch (NamingException e) {
                 output.print("ERROR: JNDI problem." + e.getMessage());
             } catch (Throwable e) {
+                LOG.error("Error in server up check: " + e);
                 output.print("ERROR: Exception." + e.getMessage());
             }
         } catch (IOException e) {

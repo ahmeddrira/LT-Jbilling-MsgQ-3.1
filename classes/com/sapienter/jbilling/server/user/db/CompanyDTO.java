@@ -229,6 +229,11 @@ public class CompanyDTO  implements java.io.Serializable {
         this.billingProcesses = billingProcesses;
     }
     
+    /**
+     * Never use this method. It will run out of memory.
+     * Instead use UserDAS().findByEntityId
+     * @return
+     */
     @OneToMany(cascade=CascadeType.ALL, mappedBy="company")
     @LazyCollection(value=LazyCollectionOption.EXTRA)
     @BatchSize(size=100)

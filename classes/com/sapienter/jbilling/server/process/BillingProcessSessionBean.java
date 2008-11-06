@@ -66,8 +66,7 @@ import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.CompanyDAS;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -280,18 +279,10 @@ public class BillingProcessSessionBean implements SessionBean {
             onlyRecurring = conf.getEntity().getOnlyRecurring().
                     intValue() == 1;
 
-            CompanyDTO entity = new CompanyDAS().find(entityId);
-            entityUsers = entity.getBaseUsers().iterator();
-
-            if (!entityUsers.hasNext()) {
-                LOG.warn("There are no users for the entity id " + entityId);
-            }
-            
             LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
             boolean allGood = true;
 
-            while (entityUsers.hasNext()) {
-                UserDTO user = (UserDTO) entityUsers.next();
+            for (UserDTO user : new UserDAS().findByEntityId(entityId)) {
                 Integer result[] = local.processUser(billingProcessId, user.getUserId(), 
                         isReview, onlyRecurring);
                 if (result != null) {

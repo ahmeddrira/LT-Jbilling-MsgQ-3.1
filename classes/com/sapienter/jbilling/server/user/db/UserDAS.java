@@ -122,5 +122,14 @@ public class UserDAS extends AbstractDAS<UserDTO> {
         Query query = getSession().createQuery(findAgeingSQL);
         return query.list();
     }
+    
+    public List<UserDTO> findByEntityId(int entityId) {
+        Criteria criteria = getSession().createCriteria(UserDTO.class)
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("company", "c")
+                    .add(Restrictions.eq("c.id", entityId))
+                .setFetchSize(100);
+        return criteria.list();
+    }
 
 }

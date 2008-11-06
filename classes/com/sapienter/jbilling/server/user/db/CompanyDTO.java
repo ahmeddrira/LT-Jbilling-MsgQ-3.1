@@ -59,6 +59,9 @@ import com.sapienter.jbilling.server.util.db.generated.ListEntity;
 import com.sapienter.jbilling.server.util.db.generated.NotificationMessage;
 import com.sapienter.jbilling.server.util.db.generated.PaymentMethod;
 import com.sapienter.jbilling.server.util.db.generated.Report;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @Entity
 @Table(name="entity")
@@ -226,7 +229,9 @@ public class CompanyDTO  implements java.io.Serializable {
         this.billingProcesses = billingProcesses;
     }
     
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="company")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="company")
+    @LazyCollection(value=LazyCollectionOption.EXTRA)
+    @BatchSize(size=100)
     public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;
     }

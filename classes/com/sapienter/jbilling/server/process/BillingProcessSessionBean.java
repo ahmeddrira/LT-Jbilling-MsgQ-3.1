@@ -271,7 +271,6 @@ public class BillingProcessSessionBean implements SessionBean {
                     conf.getEntity().getRetries());
             
             ///// start processing users of this entity
-            Iterator entityUsers;
             int totalInvoices = 0;
             
             boolean onlyRecurring;
@@ -282,24 +281,23 @@ public class BillingProcessSessionBean implements SessionBean {
             LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
             boolean allGood = true;
 
-            // TODO use pagination instead: setMaxResult()/setFirstResult()
             for (Integer userId : new UserDAS().findByEntityId(entityId)) {
-                UserDTO user = new UserDAS().find(userId);
-                Integer result[] = local.processUser(billingProcessId, user.getUserId(), 
+                //UserDTO user = new UserDAS().find(userId);
+                Integer result[] = local.processUser(billingProcessId, userId, 
                         isReview, onlyRecurring);
                 if (result != null) {
-                    LOG.debug("User " + user.getUserId() + " done invoice generation.");
+                    LOG.debug("User " + userId + " done invoice generation.");
                     if (!isReview) {
                         for (int f = 0; f < result.length; f++) {
                             local.emailAndPayment(entityId, result[f], 
                                     billingProcessId,  
                                     conf.getEntity().getAutoPayment().intValue() == 1);
                         }
-                        LOG.debug("User " + user.getUserId() + " done email & payment.");
+                        LOG.debug("User " + userId + " done email & payment.");
                     }
                     totalInvoices += result.length;
                 } else {
-                    LOG.debug("User " + user.getUserId() + " NOT done");
+                    LOG.debug("User " + userId + " NOT done");
                     allGood = false;
                 }
             }

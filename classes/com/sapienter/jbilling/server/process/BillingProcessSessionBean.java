@@ -282,7 +282,9 @@ public class BillingProcessSessionBean implements SessionBean {
             LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
             boolean allGood = true;
 
-            for (UserDTO user : new UserDAS().findByEntityId(entityId)) {
+            // TODO use pagination instead: setMaxResult()/setFirstResult()
+            for (Integer userId : new UserDAS().findByEntityId(entityId)) {
+                UserDTO user = new UserDAS().find(userId);
                 Integer result[] = local.processUser(billingProcessId, user.getUserId(), 
                         isReview, onlyRecurring);
                 if (result != null) {

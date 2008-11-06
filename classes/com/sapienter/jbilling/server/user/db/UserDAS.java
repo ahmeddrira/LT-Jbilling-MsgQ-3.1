@@ -29,6 +29,7 @@ import org.hibernate.criterion.Restrictions;
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import org.hibernate.criterion.Projections;
 
               
     
@@ -123,11 +124,12 @@ public class UserDAS extends AbstractDAS<UserDTO> {
         return query.list();
     }
     
-    public List<UserDTO> findByEntityId(int entityId) {
+    public List<Integer> findByEntityId(int entityId) {
         Criteria criteria = getSession().createCriteria(UserDTO.class)
                 .add(Restrictions.eq("deleted", 0))
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))
+                .setProjection(Projections.id())
                 .setFetchSize(100);
         return criteria.list();
     }

@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -401,7 +402,11 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
              throws SessionInternalError, FinderException {
         ContactBL bl = new ContactBL();
         bl.set(userId, contactTypeId);
-        return bl.getDTO();
+        if (bl.getEntity() != null) {
+            return bl.getDTO();
+        } else {
+            return getVoidContactDTO(new UserDAS().find(userId).getCompany().getId());
+        }
      }
  
      /**

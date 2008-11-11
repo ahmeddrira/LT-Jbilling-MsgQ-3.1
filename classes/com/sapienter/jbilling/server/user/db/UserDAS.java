@@ -129,6 +129,8 @@ public class UserDAS extends AbstractDAS<UserDTO> {
                 .add(Restrictions.eq("deleted", 0))
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))
+                .createAlias("userStatus", "us")
+                    .add(Restrictions.lt("us.id", UserDTOEx.STATUS_SUSPENDED))
                 .setProjection(Projections.id())
                 .setFetchSize(100);
         return criteria.list();

@@ -659,8 +659,8 @@ public class WSTest  extends TestCase {
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(3), orderLine.getItemId());
-            assertEquals("Quantity", new Double(3), orderLine.getQuantity());
-            assertEquals("Price", new Float(-15), orderLine.getPrice());
+            assertEquals("Quantity", new Double(-3), orderLine.getQuantity());
+            assertEquals("Price", new Float(15), orderLine.getPrice());
             assertEquals("Amount", new Float(-45), orderLine.getAmount());
 
             // order 2 - lemonade refund
@@ -668,8 +668,8 @@ public class WSTest  extends TestCase {
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(1), orderLine.getItemId());
-            assertEquals("Quantity", new Double(2), orderLine.getQuantity());
-            assertEquals("Price", new Float(-10), orderLine.getPrice());
+            assertEquals("Quantity", new Double(-2), orderLine.getQuantity());
+            assertEquals("Price", new Float(10), orderLine.getPrice());
             assertEquals("Amount", new Float(-20), orderLine.getAmount());
 
             // order 3 - cancel fee for lemonade (see the rule in CancelFees.drl)
@@ -703,13 +703,13 @@ public class WSTest  extends TestCase {
             assertEquals("No. of order lines", 2, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(1), orderLine.getItemId());
-            assertEquals("Quantity", new Double(5), orderLine.getQuantity());
-            assertEquals("Price", new Float(-10), orderLine.getPrice());
+            assertEquals("Quantity", new Double(-5), orderLine.getQuantity());
+            assertEquals("Price", new Float(10), orderLine.getPrice());
             assertEquals("Amount", new Float(-50), orderLine.getAmount());
             orderLine = order.getOrderLines()[1];
             assertEquals("Item Id", new Integer(3), orderLine.getItemId());
-            assertEquals("Quantity", new Double(5), orderLine.getQuantity());
-            assertEquals("Price", new Float(-15), orderLine.getPrice());
+            assertEquals("Quantity", new Double(-5), orderLine.getQuantity());
+            assertEquals("Price", new Float(15), orderLine.getPrice());
             assertEquals("Amount", new Float(-75), orderLine.getAmount());
 
             // order 2 - cancel fee for lemonades (see the rule in CancelFees.drl)

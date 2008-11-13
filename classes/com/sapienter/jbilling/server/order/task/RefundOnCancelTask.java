@@ -134,7 +134,7 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
                 newLine.setPurchaseOrder(newOrder);
                 newOrder.getLines().add(newLine);
                 // make the order negative (refund/credit)
-                newLine.setPrice(line.getPrice() * -1);
+                newLine.setQuantity(-line.getQuantity());
             }
         } else {
             // NEW_QUANTITY_EVENT
@@ -148,9 +148,8 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
             // set quantity as the difference between the old and new quantities
             double newQuantity = myEvent.getOldQuantity().doubleValue() - 
                     myEvent.getNewQuantity().doubleValue();
-            newLine.setQuantity(new Double(newQuantity));
             // make the order negative (refund/credit)
-            newLine.setPrice(newLine.getPrice() * -1);
+            newLine.setQuantity(new Double(-newQuantity));
         }
 
         // add extra lines with items from the parameters

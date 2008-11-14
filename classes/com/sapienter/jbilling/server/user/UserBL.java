@@ -205,10 +205,8 @@ public class UserBL extends ResultList
             } else {
                 user.getCustomer().setPartner(null);
             }
-            if (dto.getCustomer().getExcludeAging() != 0) {
-                user.getCustomer().setExcludeAging(
-                        dto.getCustomer().getExcludeAging());
-            }
+            
+            user.getCustomer().setExcludeAging(dto.getCustomer().getExcludeAging());
         }
         
         updateRoles(dto.getRoles(), dto.getMainRoleId());

@@ -216,7 +216,7 @@ public class MaintainAction extends Action {
                     }
                 }
 
-				// the login name has to be unique across entities
+		// the login name has to be unique across entities
                 // test only if it has changed
                 if (orgUser != null && !orgUser.getUserName().equals((String) 
                         userForm.get("username"))) {

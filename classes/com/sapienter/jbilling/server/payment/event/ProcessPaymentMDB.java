@@ -38,7 +38,7 @@ import com.sapienter.jbilling.server.process.BillingProcessRunBL;
 /*
  * This message bean is not configured using xdoclet.
  * The configuration needs to be done specifically for each installation/scenario
- * using the files jboos-beans.xml and message-driven-beans.xml
+ * using the files jboss-beans.xml and message-driven-beans.xml
  */
 public class ProcessPaymentMDB implements MessageDrivenBean, MessageListener {
     

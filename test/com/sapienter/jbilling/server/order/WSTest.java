@@ -456,6 +456,9 @@ public class WSTest  extends TestCase {
         assertEquals("Payment result OK", true, auth.getResult().booleanValue());
         assertEquals("Processor code", "The transaction has been approved", 
                 auth.getResponseMessage());
+        
+        // payment date should not be null (bug fix)
+        assertNotNull("Payment date not null", api.getLatestPayment(USER_ID).getPaymentDate());
                 
         // now the invoice should be shown as paid
         invoice = callGetLatestInvoice(USER_ID);

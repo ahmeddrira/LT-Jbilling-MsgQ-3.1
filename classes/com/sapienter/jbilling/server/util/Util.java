@@ -234,7 +234,7 @@ public class Util {
                 } else {
                     inQuote = !inQuote;
                 }
-            } else if (!inQuote && line.charAt(i) == ',') {
+            } else if (!inQuote && line.charAt(i) == fieldSeparator) {
                 fields.add(field);
                 field = "";
             } else {

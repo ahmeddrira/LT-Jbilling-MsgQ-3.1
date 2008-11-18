@@ -106,10 +106,19 @@ public abstract class PluggableTask {
         
         for (String key: parameters.keySet()) {
             String value = (String) parameters.get(key);
-            if (key.equals("file") && !(new File(value)).isAbsolute()) {
-                // prepend the default directory if file path is relative
-                String defaultDir = Util.getSysProp("base_dir") + "rules";
-                value = defaultDir + File.separator + value;
+            if (key.equals("file")) {
+                String[] files = com.sapienter.jbilling.server.util.Util
+                        .csvSplitLine(value, ' ');
+                value = "";
+                for (String file : files) {
+                    value += "\"";
+                    if (!(new File(file)).isAbsolute()) {
+                        // prepend the default directory if file path is relative
+                        String defaultDir = Util.getSysProp("base_dir") + "rules";
+                        value += defaultDir + File.separator;
+                    }
+                    value += file + "\" ";
+                }
             }
             rulesProperties.setProperty(key, value);
             LOG.debug("adding parameter " + key + " value " + value);

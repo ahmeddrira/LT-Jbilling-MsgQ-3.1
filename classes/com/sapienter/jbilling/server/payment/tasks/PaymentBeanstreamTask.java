@@ -83,6 +83,16 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 				throw new TaskException(error);
 			}
 
+            if (paymentInfo.getAmount() < 0 && 
+                    paymentInfo.getIsRefund().intValue() == 0) {
+
+				String error = "Credits not linked to a previous transaction " +
+                        " (refund) not supported by Beanstream processing API";
+				LOG.error(error);
+                // note: refunds haven't actually been coded for, either
+				throw new TaskException(error);
+            }
+
 			String POSTString = this.getPOSTString(paymentInfo, "P", null);
 			String HTTPResponse = doPost(POSTString, paymentInfo);
 			PaymentAuthorizationDTO paymentDTO = new BeanstreamResponseDTO()

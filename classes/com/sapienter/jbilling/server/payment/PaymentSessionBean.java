@@ -231,14 +231,29 @@ public class PaymentSessionBean implements SessionBean {
                 
             // process the payment (will create the db record as well, if
             // there is any actual processing). Do not process negative
-            // payments (from negative invoices).
+            // payments (from negative invoices), unless allowed.
             Integer result = null;
             if (dto.getAmount().floatValue() > 0) {
                 result = bl.processPayment(entityId, dto);
             } else {
-                LOG.warn("Skiping payment processing. Payment with negative " +
-                        "amount " + dto.getAmount());
+                // only process if negative payments are allowed
+                PreferenceBL preferenceBL = new PreferenceBL();
+                try {
+                    preferenceBL.set(entityId, 
+                            Constants.PREFERENCE_ALLOW_NEGATIVE_PAYMENTS);
+                } catch (FinderException fe) { 
+                    // use default
+                }
+                if (preferenceBL.getInt() == 1) {
+                    LOG.warn("Processing payment with negative amount " +
+                            dto.getAmount());
+                    result = bl.processPayment(entityId, dto);
+                } else {
+                    LOG.warn("Skiping payment processing. Payment with " +
+                            "negative amount " + dto.getAmount());
+                }
             }
+
             // only if there was any processing at all
             if (result != null) {
                 // update the dto with the created id

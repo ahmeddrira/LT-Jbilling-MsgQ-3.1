@@ -54,6 +54,7 @@ import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
+import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
@@ -70,6 +71,7 @@ import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
@@ -484,9 +486,30 @@ public class BillingProcessSessionBean implements SessionBean {
             }
             
             if (processPayment) {
-                ProcessPaymentEvent event = new ProcessPaymentEvent(invoiceId, 
-                        processId, null, entityId);
-                EventManager.process(event);
+                // when the preference is set, 
+                // only process payment if it doesn't have a negative balance 
+                // that wasn't caused by a carried balance
+                InvoiceDTO dto = invoice.getDTO();
+                if (dto.getBalance() < 0 && dto.getCarriedBalance() >= 0) {
+                    PreferenceBL preferenceBL = new PreferenceBL();
+                    try {
+                        preferenceBL.set(entityId, 
+                                Constants.PREFERENCE_DELAY_NEGATIVE_PAYMENTS);
+                    } catch (FinderException fe) {
+                        // use default
+                    }
+                    if (preferenceBL.getInt() == 1) {
+                        processPayment = false;
+                        LOG.warn("Delaying invoice payment with negative " +
+                                "balance and no negative carried balance");
+                    }
+                }
+
+                if (processPayment) {
+                    ProcessPaymentEvent event = new ProcessPaymentEvent(invoiceId,
+                            processId, null, entityId);
+                    EventManager.process(event);
+                }
             }
         } catch (Exception e) {
             LOG.error("sending email and processing payment", e);

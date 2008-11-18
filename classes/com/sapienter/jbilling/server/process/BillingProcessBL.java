@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
+import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
@@ -467,9 +468,19 @@ public class BillingProcessBL extends ResultList
         } while(subAccountsIt != null); // until there are no more subaccounts
 
         if (!includedOrders || newInvoices.size() == 0) {
-            LOG.debug("No applicable orders. No invoice generated (skipping " +
-                    "invoices).");
-            return null;
+            // check if invoices without orders are allowed
+            PreferenceBL preferenceBL = new PreferenceBL();
+            try {
+                preferenceBL.set(entityId, 
+                        Constants.PREFERENCE_ALLOW_INVOICES_WITHOUT_ORDERS);
+            } catch (FinderException fe) {
+                // use default
+            }
+            if (preferenceBL.getInt() == 0) {
+                LOG.debug("No applicable orders. No invoice generated " +
+                        "(skipping invoices).");
+                return null;
+            }
         }
 
         if (!isReview) {
@@ -489,8 +500,8 @@ public class BillingProcessBL extends ResultList
                 InvoiceEntityLocalHome.class,
                 InvoiceEntityLocalHome.JNDI_NAME);
         // any of the new invoices being created could hold the overdue invoices
-        NewInvoiceDTO holder = (NewInvoiceDTO) newInvoices.elements().
-                nextElement();
+        NewInvoiceDTO holder = newInvoices.isEmpty() ? null : 
+                (NewInvoiceDTO) newInvoices.elements().nextElement();
 
         try {
             Collection dueInvoices =
@@ -518,6 +529,33 @@ public class BillingProcessBL extends ResultList
 
                     // include this invoice only if it complies with all the rules
                     if (isProcessable) {
+                        // check for an invoice
+                        if (holder == null) {
+                            // Since there are no new invoices (therefore no orders),
+                            // don't let invoices with positive balances generate
+                            // an invoice.
+                            if (invoice.getBalance() > 0) {
+                                continue;
+                            }
+
+                            // no invoice/s yet (no applicable orders), so create one
+                            holder = new NewInvoiceDTO();
+                            holder.setDate(process.getBillingDate());
+                            holder.setIsReview(isReview ? new Integer(
+                                        1) : new Integer(0));
+                            holder.setCarriedBalance(new Float(0));
+
+                            // need to set a due date, so use the order default
+                            OrderBL orderBl = new OrderBL();
+                            OrderDTO order = new OrderDTO();
+                            order.setBaseUserByUserId(user);
+                            orderBl.set(order);
+                            TimePeriod dueDatePeriod = orderBl.getDueDate();
+
+                            holder.setDueDatePeriod(dueDatePeriod);
+                            newInvoices.put(dueDatePeriod, holder);
+                        }
+
                         InvoiceBL ibl = new InvoiceBL(invoice);
                         holder.addInvoice(ibl.getDTO());
                         // for those invoices wiht only overdue invoices, the
@@ -567,6 +605,13 @@ public class BillingProcessBL extends ResultList
             // this means that this user doesn have invoices to process
             LOG.info("User " + user.getUserId()
                     + " without due invoices to process.");
+        }
+
+        if (newInvoices.size() == 0) {
+            // no orders or invoices for this invoice
+            LOG.debug("No applicable orders or invoices. No invoice generated " +
+                    "(skipping invoices).");
+            return null;
         }
 
         try {

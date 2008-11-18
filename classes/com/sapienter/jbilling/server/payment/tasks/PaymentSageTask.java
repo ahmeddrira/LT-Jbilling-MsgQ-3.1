@@ -153,7 +153,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 
 	// Type of transaction
 	private enum Transaction {
-		Payment("01"), AuthOnly("02"), Force("03");
+		Payment("01"), AuthOnly("02"), Force("03"), Credit("06");
 
 		private String code;
 
@@ -207,7 +207,13 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 	 */
 	public boolean process(PaymentDTOEx payment) throws PluggableTaskException {
 		LOG.debug("Payment processing for " + PROCESSOR + " gateway");
-		boolean result = doProcess(payment, Transaction.Payment, null)
+        Transaction transaction = Transaction.Payment;
+        if (payment.getAmount() < 0) {
+            transaction = Transaction.Credit;
+            LOG.debug("Doing a credit transaction");
+            // note: formatAmount() will make amount positive for sending to gateway
+        }
+		boolean result = doProcess(payment, transaction, null)
 				.shouldCallOtherProcessors();
 		LOG.debug("Processing result is " + payment.getResultId()
 				+ ", return value of process is " + result);
@@ -429,6 +435,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 	 * Format number to gateway format
 	 */
 	private String formatAmount(float amount) {
+        amount = Math.abs(amount); // for credits
 		return (new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN))
 				.toPlainString();
 	}

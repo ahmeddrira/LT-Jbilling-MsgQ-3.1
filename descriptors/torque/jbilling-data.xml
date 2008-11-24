@@ -2393,7 +2393,7 @@
     <OrderLineType Id="1" Editable="1"/>
     <OrderLineType Id="2" Editable="0"/>
     <OrderLineType Id="3" Editable="0"/>
-    <OrderPeriod Id="1"/>
+    <OrderPeriod Id="1" Optlock="1"/>
     <OrderStatus Id="1"/>
     <OrderStatus Id="2"/>
     <OrderStatus Id="3"/>
@@ -2449,8 +2449,6 @@
     <Permission Id="33" TypeId="1" ForeignId="19"/>
     <Permission Id="34" TypeId="4"/>
     <Permission Id="35" TypeId="1" ForeignId="20"/>
-    <Permission Id="37" TypeId="1" ForeignId="22"/>
-    <Permission Id="38" TypeId="1" ForeignId="23"/>
     <Permission Id="39" TypeId="1" ForeignId="24"/>
     <Permission Id="40" TypeId="1" ForeignId="25"/>
     <Permission Id="41" TypeId="1" ForeignId="26"/>
@@ -2541,7 +2539,6 @@
     <Permission Id="129" TypeId="1" ForeignId="87"/>
     <Permission Id="126" TypeId="1" ForeignId="85"/>
     <Permission Id="127" TypeId="1" ForeignId="84"/>
-    <Permission Id="130" TypeId="1" ForeignId="88"/>
     <Permission Id="131" TypeId="1" ForeignId="89"/>
     <Permission Id="132" TypeId="1" ForeignId="90"/>
     <Permission Id="133" TypeId="1" ForeignId="91"/>
@@ -2588,8 +2585,6 @@
     <PermissionRoleMap PermissionId="32" RoleId="1"/>
     <PermissionRoleMap PermissionId="33" RoleId="1"/>
     <PermissionRoleMap PermissionId="35" RoleId="1"/>
-    <PermissionRoleMap PermissionId="37" RoleId="1"/>
-    <PermissionRoleMap PermissionId="38" RoleId="1"/>
     <PermissionRoleMap PermissionId="39" RoleId="1"/>
     <PermissionRoleMap PermissionId="40" RoleId="1"/>
     <PermissionRoleMap PermissionId="41" RoleId="1"/>
@@ -2676,8 +2671,6 @@
     <PermissionRoleMap PermissionId="32" RoleId="2"/>
     <PermissionRoleMap PermissionId="33" RoleId="2"/>
     <PermissionRoleMap PermissionId="35" RoleId="2"/>
-    <PermissionRoleMap PermissionId="37" RoleId="2"/>
-    <PermissionRoleMap PermissionId="38" RoleId="2"/>
     <PermissionRoleMap PermissionId="39" RoleId="2"/>
     <PermissionRoleMap PermissionId="40" RoleId="2"/>
     <PermissionRoleMap PermissionId="41" RoleId="2"/>
@@ -2882,7 +2875,6 @@
     <PermissionRoleMap PermissionId="127" RoleId="2"/>
     <PermissionRoleMap PermissionId="128" RoleId="2"/>
     <PermissionRoleMap PermissionId="129" RoleId="2"/>
-    <PermissionRoleMap PermissionId="130" RoleId="2"/>
     <PermissionRoleMap PermissionId="131" RoleId="2"/>
     <PermissionRoleMap PermissionId="132" RoleId="5"/>
     <PermissionRoleMap PermissionId="133" RoleId="2"/>

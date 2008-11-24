@@ -364,6 +364,7 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="language_id" required="true" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
         </foreign-key>

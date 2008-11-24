@@ -607,6 +607,7 @@
     EntityId CDATA #IMPLIED
     Value CDATA #IMPLIED
     UnitId CDATA #IMPLIED
+    optlock CDATA #IMPLIED
 >
 
 <!ELEMENT OrderProcess EMPTY>

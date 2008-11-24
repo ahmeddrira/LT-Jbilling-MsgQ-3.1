@@ -340,9 +340,9 @@ public final class EntitySignup {
         //ENTITY
         // defaults currency to US dollars
         String entityColumns[] =
-        { "i_id", "i_external_id", "s_description", "d_create_datetime", "i_language_id", "i_currency_id" };
+        { "i_id", "i_external_id", "s_description", "d_create_datetime", "i_language_id", "i_currency_id", "i_optlock" };
         String entityData[][] = { 
-            { null, contact.getOrganizationName(), now, languageId.toString(), "1" }, 
+            { null, contact.getOrganizationName(), now, languageId.toString(), "1", "1" }, 
         };
         Table table = addTable(Constants.TABLE_ENTITY, entityColumns, 
         		entityData, false);
@@ -361,12 +361,13 @@ public final class EntitySignup {
             "d_create_datetime",
             "d_last_status_change",
             "i_language_id",
-            "i_subscriber_status"
+            "i_subscriber_status",
+            "i_optlock"
         };
         String userData[][] = { 
             { String.valueOf(newEntityId), user.getUserName(), 
                 getDBPassword(user), "0", "1", "1", now, null, 
-                languageId.toString(), "1" },  //1
+                languageId.toString(), "1", "1" },  //1
         };
         table = addTable(Constants.TABLE_BASE_USER, userColumns, userData, false);
         processTable(table);
@@ -421,7 +422,8 @@ public final class EntitySignup {
             "s_EMAIL",
             "d_CREATE_DATETIME",
             "i_deleted",
-            "i_user_id"
+            "i_user_id",
+            "i_optlock"
         };
         String contactData[][] = {
             {
@@ -447,7 +449,8 @@ public final class EntitySignup {
                 contact.getEmail(),
                 now,
                 "0",
-                null
+                null,
+                "1"
             },
             {
                 contact.getOrganizationName(),
@@ -472,7 +475,8 @@ public final class EntitySignup {
                 contact.getEmail(),
                 now,
                 "0",
-                String.valueOf(rootUserId)
+                String.valueOf(rootUserId),
+                "1"        
             },
         };
         table = addTable(Constants.TABLE_CONTACT, contactColumns, contactData, false);
@@ -481,10 +485,10 @@ public final class EntitySignup {
         
         //CONTACT_MAP
         String contactMapColumns[] =
-        { "i_id", "i_contact_id", "i_type_id", "i_table_id", "i_foreign_id" };
+        { "i_id", "i_contact_id", "i_type_id", "i_table_id", "i_foreign_id", "i_optlock" };
         String contactMapData[][] = { 
-			{ String.valueOf(contactId), "1", "5", String.valueOf(newEntityId) }, // the contact for the entity
-            { String.valueOf(contactId + 1), String.valueOf(pContactType), "10", String.valueOf(rootUserId) }, 
+			{ String.valueOf(contactId), "1", "5", String.valueOf(newEntityId), "1" }, // the contact for the entity
+            { String.valueOf(contactId + 1), String.valueOf(pContactType), "10", String.valueOf(rootUserId), "1" }, 
         };
         table = addTable(Constants.TABLE_CONTACT_MAP, contactMapColumns, contactMapData, false);
         processTable(table);

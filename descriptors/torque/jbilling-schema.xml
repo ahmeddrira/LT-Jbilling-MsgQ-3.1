@@ -404,7 +404,7 @@
         <column name="old_num" type="INTEGER"/>
         <column name="old_str" size="1000" type="VARCHAR"/>
         <column name="old_date" type="TIMESTAMP"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="ix_el_main">
         	<index-column name="module_id"/>
@@ -760,7 +760,7 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column name="description" size="1000" type="VARCHAR"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_order_line_order_id">
         	<index-column name="order_id"/>
         </index>
@@ -786,7 +786,7 @@
         <column name="entity_id" type="INTEGER"/>
         <column name="value" type="INTEGER"/>
         <column name="unit_id" type="INTEGER"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
@@ -804,7 +804,7 @@
         <column name="period_end" type="DATE"/>
         <column name="is_review" required="true" type="INTEGER"/>
         <column name="origin" type="INTEGER"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         
         <index name="ix_uq_order_process_or_in">
@@ -1055,7 +1055,7 @@
         <column name="entity_id" required="true" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
         <column name="processing_order" required="true" type="INTEGER"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task_type">
             <reference foreign="id" local="type_id"/>
         </foreign-key>
@@ -1070,7 +1070,7 @@
         <column name="int_value" type="INTEGER"/>
         <column name="str_value" size="200" type="VARCHAR"/>
         <column name="float_value" type="DOUBLE"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task">
             <reference foreign="id" local="task_id"/>
         </foreign-key>
@@ -1164,7 +1164,7 @@
         <column name="notes" size="200" type="VARCHAR"/>
         <column name="notes_in_invoice" type="SMALLINT"/>
         <column name="is_current" type="SMALLINT"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="purchase_order_i_user">
         	<index-column name="user_id"/>
@@ -1313,7 +1313,7 @@
         <column name="name" size="50" type="VARCHAR" required="true"/>
         <column name="order_value" type="INTEGER" required="true"/>
         <column name="pluggable_task_id" type="INTEGER" required="true"/>
-        <column name="OPTLOCK" required="false" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task">
             <reference foreign="id" local="pluggable_task_id"/>
         </foreign-key>

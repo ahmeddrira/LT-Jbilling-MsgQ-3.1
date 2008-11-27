@@ -651,9 +651,9 @@ xmlvalidation="true">
     <target name="packageSource">
         <delete file="${image.target.dir}/${jbilling-${version}-src.zip}"/>
         <zip filesonly="false" update="false"
-destfile="${image.target.dir}/jbilling-${version}-src.zip">
+             destfile="${image.target.dir}/jbilling-${version}-src.zip">
             <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                        excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp,**/*.jar"/>
+                        excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp,**/*.jar,tmp/**"/>
             <!-- the following three files are taken from the binary
                  view. My own are configured for my box -->
             <zipfileset dir="${image.source.dir}/jbilling/server/default/conf" 
@@ -667,6 +667,7 @@ destfile="${image.target.dir}/jbilling-${version}-src.zip">
             <zipfileset dir="${xdoclet.home.dir}" includes="*.jar" prefix="jbilling/src/libs/xdoclet"/>
             <zipfileset dir="${libs.client.dir}" includes="*.jar" prefix="jbilling/src/libs/client"/>
             <zipfileset dir="${junit.dir}" includes="junit.jar" prefix="jbilling/src/libs/junit"/>
+            <zipfileset dir="${source.dir}/libs/drools" includes="**/*.jar" prefix="jbilling/src/libs/drools"/>
         </zip>
     </target>
     

@@ -31,8 +31,8 @@ import org.drools.RuleBase;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -199,7 +199,7 @@ public class RulesItemManager extends BasicItemManager {
             
             // now add the amount based on the itemBase
             ItemBL item = new ItemBL(itemBase);
-            ItemDTOEx itemDto = item.getDTO(language, userId, entityId, currencyId);
+            ItemDTO itemDto = item.getDTO(language, userId, entityId, currencyId);
             BigDecimal percentage = new BigDecimal(updateLine.getItem().getPercentage().toString());
             BigDecimal base = new BigDecimal(itemDto.getPrice().toString());
             BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(percentage).add(

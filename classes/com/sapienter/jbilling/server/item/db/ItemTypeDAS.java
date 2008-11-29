@@ -20,8 +20,7 @@
 package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.ItemType;
 
-public class ItemTypeDAS extends AbstractDAS<ItemType> {
+public class ItemTypeDAS extends AbstractDAS<ItemTypeDTO> {
 
 }

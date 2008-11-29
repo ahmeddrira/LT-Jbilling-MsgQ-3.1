@@ -30,11 +30,13 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemUserPriceDTOEx;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
-public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTOEx> {
+public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTO> {
 	private final ItemSession myItemSession;
 
 	private static final String FORM_PRICE = "price";
@@ -66,18 +68,18 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTOEx> {
 	}
 
 	@Override
-	protected ItemUserPriceDTOEx doEditFormToDTO() {
-		ItemUserPriceDTOEx dto = new ItemUserPriceDTOEx();
+	protected ItemUserPriceDTO doEditFormToDTO() {
+		ItemUserPriceDTO dto = new ItemUserPriceDTO();
 		dto.setPrice(string2float((String) myForm.get(FIELD_PRICE)));
-		dto.setCurrencyId((Integer) myForm.get(FIELD_CURRENCY_ID));
+		dto.setCurrency(new CurrencyDTO((Integer) myForm.get(FIELD_CURRENCY_ID)));
 		return dto;
 	}
 
 	@Override
-	protected ForwardAndMessage doCreate(ItemUserPriceDTOEx dto)
+	protected ForwardAndMessage doCreate(ItemUserPriceDTO dto)
 			throws RemoteException {
-		dto.setItemId(selectedId);
-		dto.setUserId(getSessionUserId());
+		dto.setItem(new ItemDTO(selectedId));
+		dto.setUser(new UserDTO(getSessionUserId()));
 		Integer createdId = myItemSession.createPrice(executorId, dto);
 		
 		return createdId == null ?  
@@ -86,7 +88,7 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(ItemUserPriceDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(ItemUserPriceDTO dto) throws RemoteException {
 		dto.setId((Integer) myForm.get("id"));
 		myItemSession.updatePrice(executorId, dto);
 		return new ForwardAndMessage(FORWARD_LIST, MESSAGE_UPDATE_SUCCESS);
@@ -97,7 +99,7 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTOEx> {
 		ForwardAndMessage result;
 		// for prices, a setup is needed when creating one, because
 		// the item information is displayed
-		final ItemDTOEx itemDto;
+		final ItemDTO itemDto;
 
 		// to get a price I need the user and the item
 		// the item: it's just been selected from a list, so it is in selectedId
@@ -106,7 +108,7 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTOEx> {
 
 		// check if I'm being called from the list of prices or from
 		// a create
-		final ItemUserPriceDTOEx dto;
+		final ItemUserPriceDTO dto;
 		if (getSessionItemPriceId() != null) {
 			// called from the prices list
 			Integer itemPriceId = (Integer) getSessionItemPriceId();

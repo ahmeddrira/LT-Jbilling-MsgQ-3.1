@@ -1153,8 +1153,11 @@ public class OrderBL extends ResultList
     	dto.setDescription(ws.getDescription());
     	dto.setEditable(ws.getEditable());
     	dto.setItem(new ItemDAS().find(ws.getItemId()));
-    	dto.setItemDto(ws.getItemDto());
-    	dto.setItemId(ws.getItemId());
+
+        //ItemBL itemBL = new ItemBL();
+        //dto.setItem(itemBL.getDTO(ws.getItemDto()));
+
+        dto.setItemId(ws.getItemId());
     	dto.setItemPrice(ws.getItemPrice());
     	dto.setOrderLineType(new OrderLineTypeDAS().find(ws.getTypeId()));
     	dto.setPrice(ws.getPrice());

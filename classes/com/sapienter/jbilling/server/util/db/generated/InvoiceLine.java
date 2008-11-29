@@ -29,7 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.sapienter.jbilling.server.invoice.db.Invoice;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 
 @Entity
 @Table(name="invoice_line")
@@ -38,7 +38,7 @@ public class InvoiceLine  implements java.io.Serializable {
 
      private int id;
      private InvoiceLineType invoiceLineType;
-     private Item item;
+     private ItemDTO item;
      private Invoice invoice;
      private double amount;
      private Double quantity;
@@ -58,7 +58,7 @@ public class InvoiceLine  implements java.io.Serializable {
         this.deleted = deleted;
         this.isPercentage = isPercentage;
     }
-    public InvoiceLine(int id, InvoiceLineType invoiceLineType, Item item, Invoice invoice, double amount, Double quantity, Double price, short deleted, String description, Integer sourceUserId, short isPercentage) {
+    public InvoiceLine(int id, InvoiceLineType invoiceLineType, ItemDTO item, Invoice invoice, double amount, Double quantity, Double price, short deleted, String description, Integer sourceUserId, short isPercentage) {
        this.id = id;
        this.invoiceLineType = invoiceLineType;
        this.item = item;
@@ -93,11 +93,11 @@ public class InvoiceLine  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="item_id")
-    public Item getItem() {
+    public ItemDTO getItem() {
         return this.item;
     }
     
-    public void setItem(Item item) {
+    public void setItem(ItemDTO item) {
         this.item = item;
     }
 @ManyToOne(fetch=FetchType.LAZY)

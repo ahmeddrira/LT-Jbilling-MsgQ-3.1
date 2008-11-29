@@ -36,8 +36,9 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
+import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.util.OptionDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  * Takes the object form and adds prices from the options page object
@@ -64,8 +65,8 @@ public class PopulateCurrenciesTag extends TagSupport {
         for (Iterator it = ((Collection) pageContext.getAttribute(
                 Constants.PAGE_CURRENCIES)).iterator(); it.hasNext(); ) {
             OptionDTO option = (OptionDTO) it.next();
-            ItemPriceDTOEx price = new ItemPriceDTOEx(null,null, 
-                    Integer.valueOf(option.getCode()));
+            ItemPriceDTO price = new ItemPriceDTO(null, null, null,
+                    new CurrencyDTO(Integer.valueOf(option.getCode())));
             price.setName(option.getDescription());
             
             prices.add(price);

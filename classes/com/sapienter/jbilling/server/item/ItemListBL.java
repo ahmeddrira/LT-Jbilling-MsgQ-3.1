@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.list.ListDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -112,7 +112,7 @@ public final class ItemListBL extends ResultList
         result.getTypes()[2] = new Integer(Types.VARCHAR);
         result.getTypes()[3] = new Integer(Types.FLOAT);
         
-        for (Item item: entity.getItems()) {
+        for (ItemDTO item: entity.getItems()) {
             if (item.getDeleted()  == 1) {
                 continue;
             }

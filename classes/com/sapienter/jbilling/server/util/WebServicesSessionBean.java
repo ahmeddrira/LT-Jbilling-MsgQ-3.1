@@ -58,6 +58,7 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -82,6 +83,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
@@ -857,8 +859,12 @@ public class WebServicesSessionBean implements SessionBean {
             Integer executorId = bl.getEntity().getUserId();
             Integer languageId = bl.getEntity().getLanguageIdField();
 
+            // do some transformation from WS to DTO :(
+            ItemBL itemBL = new ItemBL();
+            ItemDTO dto = itemBL.getDTO(item);
+
             ItemSessionBean itemSession = new ItemSessionBean();
-            itemSession.update(executorId, item, languageId);
+            itemSession.update(executorId, dto, languageId);
             LOG.debug("Done updateItem ");
         } catch (SessionInternalError e) {
             LOG.error("WS - updateItem", e);
@@ -887,7 +893,7 @@ public class WebServicesSessionBean implements SessionBean {
             // get the related item
             ItemSessionBean itemSession = new ItemSessionBean();
 
-            ItemDTOEx item = itemSession.get(line.getItemId(),
+            ItemDTO item = itemSession.get(line.getItemId(),
                     languageId, order.getUserId(), order.getCurrencyId(),
                     entityId);
 
@@ -1214,9 +1220,11 @@ public class WebServicesSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="both"
      */
-    public Integer createItem(ItemDTOEx dto)
+    public Integer createItem(ItemDTOEx item)
             throws SessionInternalError {
         LOG.debug("Call to createItem ");
+        ItemBL itemBL = new ItemBL();
+        ItemDTO dto = itemBL.getDTO(item);
         if (!ItemBL.validate(dto)) {
             throw new SessionInternalError("invalid argument");
         }
@@ -1226,10 +1234,9 @@ public class WebServicesSessionBean implements SessionBean {
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer languageId = bl.getEntity().getLanguageIdField();
             Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-            dto.setEntityId(entityId);
+            dto.setEntity(new CompanyDTO(entityId));
 
             // call the creation
-            ItemBL itemBL = new ItemBL();
             LOG.debug("Done");
             return itemBL.create(dto, languageId);
 
@@ -1386,7 +1393,7 @@ public class WebServicesSessionBean implements SessionBean {
             Integer languageId = user.getEntity().getLanguageIdField();
             Integer currencyId = user.getCurrencyId();
 
-            ItemDTOEx retValue = helper.getDTO(languageId, userId, entityId, currencyId);
+            ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
             LOG.debug("Done");
             return retValue;
         } catch (Exception e) {

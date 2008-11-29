@@ -37,7 +37,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
@@ -46,7 +46,7 @@ public class Promotion  implements java.io.Serializable {
 
 
      private int id;
-     private Item item;
+     private ItemDTO item;
      private String code;
      private String notes;
      private short once;
@@ -63,7 +63,7 @@ public class Promotion  implements java.io.Serializable {
         this.code = code;
         this.once = once;
     }
-    public Promotion(int id, Item item, String code, String notes, short once, Date since, Date until, Set<UserDTO> baseUsers) {
+    public Promotion(int id, ItemDTO item, String code, String notes, short once, Date since, Date until, Set<UserDTO> baseUsers) {
        this.id = id;
        this.item = item;
        this.code = code;
@@ -86,11 +86,11 @@ public class Promotion  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="item_id")
-    public Item getItem() {
+    public ItemDTO getItem() {
         return this.item;
     }
     
-    public void setItem(Item item) {
+    public void setItem(ItemDTO item) {
         this.item = item;
     }
     

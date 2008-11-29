@@ -19,9 +19,34 @@
 */
 package com.sapienter.jbilling.server.item.db;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
 
-public class ItemUserPriceDAS extends AbstractDAS<ItemUserPrice> {
+public class ItemUserPriceDAS extends AbstractDAS<ItemUserPriceDTO> {
+    public List<ItemUserPriceDTO> findByUserItem(Integer userId, Integer itemId) {
+        Criteria criteria = getSession().createCriteria(ItemUserPriceDTO.class)
+                .createAlias("baseUser", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .createAlias("item", "i")
+                    .add(Restrictions.eq("i.id", itemId));
 
+        return criteria.list();    
+    }
+
+    public ItemUserPriceDTO find(Integer userId, Integer itemId, 
+            Integer currencyId) {
+        Criteria criteria = getSession().createCriteria(ItemUserPriceDTO.class)
+                .createAlias("baseUser", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .createAlias("currency", "c")
+                    .add(Restrictions.eq("c.id", currencyId))
+                .createAlias("item", "i")
+                    .add(Restrictions.eq("i.id", itemId));
+
+        return (ItemUserPriceDTO) criteria.uniqueResult();    
+    }
 }

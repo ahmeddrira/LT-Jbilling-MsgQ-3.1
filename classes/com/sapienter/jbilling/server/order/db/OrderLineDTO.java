@@ -40,8 +40,7 @@ import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 
 @Entity
@@ -61,7 +60,7 @@ public class OrderLineDTO implements Serializable, Comparable {
 
      private int id;
      private OrderLineTypeDTO orderLineTypeDTO;
-     private Item item;
+     private ItemDTO item;
      private OrderDTO orderDTO;
      private Float amount;
      private Double quantity;
@@ -76,7 +75,6 @@ public class OrderLineDTO implements Serializable, Comparable {
      // other fields, non-persistent
      private String priceStr = null;
      private Boolean totalReadOnly = null;
-     private ItemDTOEx itemDto = null; // only while item is not JPAed
 
      
     public OrderLineDTO() {
@@ -103,7 +101,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.createDatetime = createDatetime;
         this.deleted = deleted;
     }
-    public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, Item item, OrderDTO orderDTO, float amount, 
+    public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, float amount, 
     		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
@@ -138,11 +136,11 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="item_id")
-    public Item getItem() {
+    public ItemDTO getItem() {
         return this.item;
     }
     
-    public void setItem(Item item) {
+    public void setItem(ItemDTO item) {
         this.item = item;
     }
     @ManyToOne(fetch=FetchType.LAZY)
@@ -285,14 +283,6 @@ public class OrderLineDTO implements Serializable, Comparable {
 	public void setTypeId(Integer typeId) {
 		OrderLineTypeDAS das = new OrderLineTypeDAS();
 		setOrderLineType(das.find(typeId));
-	}
-
-    @Transient
-	public ItemDTOEx getItemDto() {
-		return itemDto;
-	}
-	public void setItemDto(ItemDTOEx itemDto) {
-		this.itemDto = itemDto;
 	}
     
     @Transient

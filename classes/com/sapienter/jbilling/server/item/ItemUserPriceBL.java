@@ -20,72 +20,71 @@
 
 package com.sapienter.jbilling.server.item;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocal;
-import com.sapienter.jbilling.interfaces.ItemUserPriceEntityLocalHome;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
+import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class ItemUserPriceBL {
-    private JNDILookup EJBFactory = null;
-    private ItemUserPriceEntityLocalHome itemUserPriceHome = null;
-    private ItemUserPriceEntityLocal itemUserPrice = null;
+    private ItemUserPriceDAS itemUserPriceDas = null;
+    private ItemUserPriceDTO itemUserPrice = null;
     private Logger log = null;
     private EventLogger eLogger = null;
     
-    public ItemUserPriceBL(Integer itemUserPriceId) 
-            throws NamingException, FinderException {
+    public ItemUserPriceBL(Integer itemUserPriceId) {
         init();
         set(itemUserPriceId);
     }
     
-    public ItemUserPriceBL(Integer userId, Integer itemId, Integer currencyId)
-            throws NamingException, FinderException {
+    public ItemUserPriceBL(Integer userId, Integer itemId, Integer currencyId) {
         init();
-        itemUserPrice = itemUserPriceHome.find(userId, itemId, currencyId);
+        itemUserPrice = itemUserPriceDas.find(userId, itemId, currencyId);
     }
     
-    public ItemUserPriceBL() throws NamingException {
+    public ItemUserPriceBL() {
         init();
     }
     
-    private void init() throws NamingException {
+    private void init() {
         log = Logger.getLogger(ItemUserPriceBL.class);     
         eLogger = EventLogger.getInstance();        
-        EJBFactory = JNDILookup.getFactory(false);
-        itemUserPriceHome = (ItemUserPriceEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                ItemUserPriceEntityLocalHome.class,
-                ItemUserPriceEntityLocalHome.JNDI_NAME);
+        itemUserPriceDas = new ItemUserPriceDAS();
     }
 
-    public ItemUserPriceEntityLocal getEntity() {
+    public ItemUserPriceDTO getEntity() {
         return itemUserPrice;
     }
     
-    public void set(Integer id) throws FinderException {
-        itemUserPrice = itemUserPriceHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+        itemUserPrice = itemUserPriceDas.find(id);
     }
     
     public Integer create(Integer userId, Integer itemId, Integer currencyId,
-            Float price) 
-            throws CreateException {
-        itemUserPrice = itemUserPriceHome.create(userId, itemId, price,
-                currencyId);
+            Float price) {
+        UserDTO user = new UserDAS().find(userId);
+        ItemDTO item = new ItemDAS().find(itemId);
+        CurrencyDTO currency = new CurrencyDAS().find(currencyId);
+        itemUserPrice = new ItemUserPriceDTO(user, item, price, currency);
+        itemUserPrice = itemUserPriceDas.save(itemUserPrice);
                 
         return itemUserPrice.getId();       
     }
     
-    public void update(Integer executorId, ItemUserPriceDTOEx dto) 
+    public boolean update(Integer executorId, ItemUserPriceDTO dto) 
             throws SessionInternalError {
+        if (itemUserPrice == null) {
+            return false;
+        }
+
         eLogger.audit(executorId, Constants.TABLE_ITEM_USER_PRICE, 
                 itemUserPrice.getId(),
                 EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
@@ -93,26 +92,30 @@ public class ItemUserPriceBL {
                 itemUserPrice.getPrice().toString(), null);
 
         itemUserPrice.setPrice(dto.getPrice());
+        return true;
     }
     
-    public void delete(Integer executorId) 
-            throws RemoveException, NamingException, FinderException {
+    public void delete(Integer executorId) {
 
         eLogger.audit(executorId, Constants.TABLE_ITEM_USER_PRICE, 
                 itemUserPrice.getId(),
                 EventLogger.MODULE_ITEM_USER_PRICE_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
-        itemUserPrice.remove();
+        itemUserPriceDas.delete(itemUserPrice);
     }
     
-    public ItemUserPriceDTOEx getDTO() {
-        ItemUserPriceDTOEx dto = new ItemUserPriceDTOEx();
+    public ItemUserPriceDTO getDTO() {
+        if (itemUserPrice == null) {
+            return null;
+        }
+
+        ItemUserPriceDTO dto = new ItemUserPriceDTO();
         
         dto.setId(itemUserPrice.getId());
-        dto.setItemId(itemUserPrice.getItem().getId());
-        dto.setUserId(itemUserPrice.getUser().getUserId());
+        dto.setItem(itemUserPrice.getItem());
+        dto.setUser(itemUserPrice.getUser());
         dto.setPrice(itemUserPrice.getPrice());
-        dto.setCurrencyId(itemUserPrice.getCurrencyId());
+        dto.setCurrency(itemUserPrice.getCurrency());
         
         return dto;
     }
@@ -126,13 +129,12 @@ public class ItemUserPriceBL {
      */
     public boolean isPresent(Integer userId, Integer itemId,
             Integer currencyId) {
-        boolean retValue = true;
-        try {
-            itemUserPrice = itemUserPriceHome.find(userId, itemId, currencyId);
-        } catch (FinderException e) {
-            retValue = false;
-        } 
-        
-        return retValue;
+
+        itemUserPrice = itemUserPriceDas.find(userId, itemId, currencyId);
+
+        if (itemUserPrice == null) {
+            return false;
+        }
+        return true;
     }
 }

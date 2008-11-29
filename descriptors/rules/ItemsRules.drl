@@ -2,8 +2,8 @@
 package ItemsRules3
 
 #imports
-import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.item.PricingField
+import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager
 
@@ -12,8 +12,8 @@ global com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager or
 
 rule "Lemon and Coffee discount"
 	when
-	    exists ItemDTOEx(id == 2) # Lemonade
-	    exists ItemDTOEx(id == 3) # Coffee
+	    exists ItemDTO(id == 2) # Lemonade
+	    exists ItemDTO(id == 3) # Coffee
 	then
 	    order.addItem(14); # 10% discount
 end

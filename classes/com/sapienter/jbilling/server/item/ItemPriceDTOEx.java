@@ -18,48 +18,76 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on Mar 12, 2004
- *
- */
 package com.sapienter.jbilling.server.item;
 
-import java.io.Serializable;
-
-import com.sapienter.jbilling.server.entity.ItemPriceDTO;
-
 /**
- * @author Emil
  * @jboss-net.xml-schema urn="sapienter:ItemPriceDTOEx"
  */
-public class ItemPriceDTOEx extends ItemPriceDTO implements Serializable {
+public class ItemPriceDTOEx
+   extends java.lang.Object
+   implements java.io.Serializable 
+{
+    // ItemPriceDTO
+    private java.lang.Integer id;
+    private java.lang.Float price;
+    private java.lang.Integer currencyId;
 
+    // ItemPriceDTOEx
     private String name = null;
     // this is useful for the form, exposing a Float is trouble
     private String priceForm = null;
-    /**
-     * 
-     */
-    public ItemPriceDTOEx() {
-        super();
-    }
 
-    /**
-     * @param id
-     * @param price
-     * @param currencyId
-     */
-    public ItemPriceDTOEx(Integer id, Float price, Integer currencyId) {
-        super(id, price, currencyId);
-    }
 
-    /**
-     * @param otherValue
-     */
-    public ItemPriceDTOEx(ItemPriceDTO otherValue) {
-        super(otherValue);
-    }
+   public ItemPriceDTOEx()
+   {
+   }
 
+   public ItemPriceDTOEx( java.lang.Integer id,java.lang.Float price,java.lang.Integer currencyId )
+   {
+	  this.id = id;
+	  this.price = price;
+	  this.currencyId = currencyId;
+   }
+
+   //TODO Cloneable is better than this !
+   public ItemPriceDTOEx( ItemPriceDTOEx otherValue )
+   {
+	  this.id = otherValue.id;
+	  this.price = otherValue.price;
+	  this.currencyId = otherValue.currencyId;
+   }
+
+   public java.lang.Integer getId()
+   {
+	  return this.id;
+   }
+
+   public void setId( java.lang.Integer id )
+   {
+	  this.id = id;
+   }
+
+   public java.lang.Float getPrice()
+   {
+	  return this.price;
+   }
+
+   public void setPrice( java.lang.Float price )
+   {
+	  this.price = price;
+   }
+
+   public java.lang.Integer getCurrencyId()
+   {
+	  return this.currencyId;
+   }
+
+   public void setCurrencyId( java.lang.Integer currencyId )
+   {
+	  this.currencyId = currencyId;
+   }
+
+    // ItemPriceDTOEx
     /**
      * @return
      */
@@ -75,7 +103,7 @@ public class ItemPriceDTOEx extends ItemPriceDTO implements Serializable {
     }
     
     public String toString() {
-        return "name = " + name + " priceForm = " + priceForm + super.toString();
+        return "name = " + name + " priceForm = " + priceForm + itemPriceDtoToString();
     }
 
     /**
@@ -91,5 +119,84 @@ public class ItemPriceDTOEx extends ItemPriceDTO implements Serializable {
     public void setPriceForm(String priceForm) {
         this.priceForm = priceForm;
     }
+
+   public String itemPriceDtoToString()
+   {
+	  StringBuffer str = new StringBuffer("{");
+
+	  str.append("id=" + getId() + " " + "price=" + getPrice() + " " + "currencyId=" + getCurrencyId());
+	  str.append('}');
+
+	  return(str.toString());
+   }
+
+   public boolean equals(Object other)
+   {
+      if (this == other)
+         return true;
+	  if (other instanceof ItemPriceDTOEx)
+	  {
+		 ItemPriceDTOEx that = (ItemPriceDTOEx) other;
+		 boolean lEquals = true;
+		 if( this.id == null )
+		 {
+			lEquals = lEquals && ( that.id == null );
+		 }
+		 else
+		 {
+			lEquals = lEquals && this.id.equals( that.id );
+		 }
+
+		 lEquals = lEquals && isIdentical(that);
+
+		 return lEquals;
+	  }
+	  else
+	  {
+		 return false;
+	  }
+   }
+
+   public boolean isIdentical(Object other)
+   {
+	  if (other instanceof ItemPriceDTOEx)
+	  {
+		 ItemPriceDTOEx that = (ItemPriceDTOEx) other;
+		 boolean lEquals = true;
+		 if( this.price == null )
+		 {
+			lEquals = lEquals && ( that.price == null );
+		 }
+		 else
+		 {
+			lEquals = lEquals && this.price.equals( that.price );
+		 }
+		 if( this.currencyId == null )
+		 {
+			lEquals = lEquals && ( that.currencyId == null );
+		 }
+		 else
+		 {
+			lEquals = lEquals && this.currencyId.equals( that.currencyId );
+		 }
+
+		 return lEquals;
+	  }
+	  else
+	  {
+		 return false;
+	  }
+   }
+
+   public int hashCode(){
+	  int result = 17;
+      result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
+
+      result = 37*result + ((this.price != null) ? this.price.hashCode() : 0);
+
+      result = 37*result + ((this.currencyId != null) ? this.currencyId.hashCode() : 0);
+
+	  return result;
+   }
 
 }

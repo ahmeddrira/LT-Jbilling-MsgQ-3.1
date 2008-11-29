@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
@@ -56,7 +56,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // collecting both tax and non-tax values
         for (OrderLineDTO line : order.getLines()) {
         	if (line.getDeleted() == 1) continue;
-        	Item item = new ItemDAS().find(line.getItemId()); // the line might be dettached
+        	ItemDTO item = new ItemDAS().find(line.getItemId()); // the line might be dettached
             if (item != null && 
                     item.getPercentage() == null) { 
                 BigDecimal amount;
@@ -83,7 +83,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step two non tax percetage items
         for (OrderLineDTO line : order.getLines()) {
         	if (line.getDeleted() == 1) continue;
-        	Item item = new ItemDAS().find(line.getItemId());
+        	ItemDTO item = new ItemDAS().find(line.getItemId());
             if (item != null && 
                     item.getPercentage() != null &&
                     !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
@@ -107,7 +107,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
         for (OrderLineDTO line : order.getLines()) {
         	if (line.getDeleted() == 1) continue;
-        	Item item = new ItemDAS().find(line.getItemId());
+        	ItemDTO item = new ItemDAS().find(line.getItemId());
             if (item != null && 
                     item.getPercentage() != null &&
                     line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {

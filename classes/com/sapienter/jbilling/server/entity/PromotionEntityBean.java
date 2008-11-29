@@ -34,10 +34,10 @@ import javax.ejb.RemoveException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ItemEntityLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.PromotionDAS;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -98,8 +98,7 @@ public abstract class PromotionEntityBean implements EntityBean {
     
     public void ejbPostCreate(Integer itemId, String code, Integer once) {
         try {
-            ItemBL bl = new ItemBL(itemId);
-            setItem(bl.getEntity());
+            new PromotionDAS().find(getId()).setItem(new ItemDAS().find(itemId));
         } catch (Exception e) {
             log.error("Exception in post create:", e);
         }
@@ -193,13 +192,12 @@ public abstract class PromotionEntityBean implements EntityBean {
     // CMR  fields -----------------------------------------------------
     /**
      * @ejb:interface-method view-type="local"
-     * @ejb.relation name="item-promotion"
-     *               role-name="promotion-needs-item"
-     * @jboss.relation related-pk-field="id"  
-     *                 fk-column="item_id"            
      */
-    public abstract ItemEntityLocal getItem();
-    public abstract void setItem(ItemEntityLocal item);
+    public com.sapienter.jbilling.server.item.db.ItemDTO getItem() {
+        return new PromotionDAS().find(getId()).getItem();
+    }
+
+    //public abstract void setItem(ItemEntityLocal item);
 
     /**
      * @ejb:interface-method view-type="local"

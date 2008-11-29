@@ -42,14 +42,15 @@ import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 
@@ -451,9 +452,9 @@ public class UploadData {
             totalRows = 0;
             record = readLine(file);
             while (record != null) {
-                ItemTypeDTOEx type = new ItemTypeDTOEx();
+                ItemTypeDTO type = new ItemTypeDTO();
                 type.setDescription(record);
-                type.setEntityId(entityId);
+                type.setEntity(new CompanyDTO(entityId));
                 newType = itemSession.createType(type);
                 types.put(type.getDescription(), newType);
                 totalRows++;
@@ -473,8 +474,8 @@ public class UploadData {
             record = readLine(file);
             while (record != null) {
                 String fields[] = record.split("\t");
-                ItemDTOEx item = new ItemDTOEx();
-                item.setEntityId(entityId);
+                ItemDTO item = new ItemDTO();
+                item.setEntity(new CompanyDTO(entityId));
                 item.setDeleted(new Integer(0));
                 item.setNumber(fields[0]);
                 if (fields[1].trim().length() > 0) {

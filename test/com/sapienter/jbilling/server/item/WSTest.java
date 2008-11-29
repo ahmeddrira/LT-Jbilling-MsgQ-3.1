@@ -27,6 +27,8 @@ package com.sapienter.jbilling.server.item;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -197,13 +199,13 @@ public class WSTest  extends TestCase {
             	}
             });
             assertNotNull("The items were not retrieved", items);
-            assertTrue("Wrong number of items", items.length == 6);
+            assertTrue("Wrong number of items", items.length == 7);
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", 
                     items[0].getDescription());
             assertEquals("Price", new Float(10), items[0].getPrice());
             assertEquals("Price Vector", new Float(10), 
-                    ((ItemPriceDTOEx) items[0].getPrices().get(0)).getPrice());
+                    (getCurrencyPrice(items[0].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(1), items[0].getId());
             assertEquals("Number", "DP-1", items[0].getNumber());
             assertEquals("Type 1", new Integer(1), items[0].getTypes()[0]);
@@ -212,7 +214,7 @@ public class WSTest  extends TestCase {
                     items[1].getDescription());
             assertEquals("Price", new Float(20), items[1].getPrice());
             assertEquals("Price Vector", new Float(20), 
-                    ((ItemPriceDTOEx) items[1].getPrices().get(0)).getPrice());
+                    (getCurrencyPrice(items[1].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(2), items[1].getId());
             assertEquals("Number", "DP-2", items[1].getNumber());
             assertEquals("Type 1", new Integer(1), items[1].getTypes()[0]);
@@ -221,7 +223,7 @@ public class WSTest  extends TestCase {
                     items[2].getDescription());
             assertEquals("Price", new Float(15), items[2].getPrice());
             assertEquals("Price Vector", new Float(15), 
-                    ((ItemPriceDTOEx) items[2].getPrices().get(0)).getPrice());
+                    (getCurrencyPrice(items[2].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(3), items[2].getId());
             assertEquals("Number", "DP-3", items[2].getNumber());
             assertEquals("Type 1", new Integer(1), items[2].getTypes()[0]);
@@ -241,13 +243,15 @@ public class WSTest  extends TestCase {
             assertEquals("Number", "F-1", items[4].getNumber());
             assertEquals("Type 22", new Integer(22), items[4].getTypes()[0]);
 
+            // item at index 5 tested in testCurrencyConvert() below
+
             assertEquals("Description", "an item from ws", 
-                    items[5].getDescription());
-            assertEquals("Price", new Float(29.5), items[5].getPrice());
+                    items[6].getDescription());
+            assertEquals("Price", new Float(29.5), items[6].getPrice());
             assertEquals("Price Vector", new Float(29.5), 
-                    ((ItemPriceDTOEx) items[5].getPrices().get(0)).getPrice());
-            assertEquals("ID", new Integer(25), items[5].getId());
-            assertEquals("Type 1", new Integer(1), items[5].getTypes()[0]);
+                    (getCurrencyPrice(items[6].getPrices(), 1).getPrice()));
+            assertEquals("ID", new Integer(250), items[6].getId());
+            assertEquals("Type 1", new Integer(1), items[6].getTypes()[0]);
 
             System.out.println("Done!");
             
@@ -304,4 +308,58 @@ public class WSTest  extends TestCase {
     		fail("Exception caught:" + e);
     	}
 	}
+
+    public void testCurrencyConvert() {
+    	try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            ItemDTOEx item = api.getItem(new Integer(240), 
+                    new Integer(2), new PricingField[] {} );
+
+            assertEquals("Price in USD", 1, item.getCurrencyId().intValue());
+            assertEquals("Converted price AUD->USD", 10.0F, item.getPrice());
+            assertEquals("Price Vector size", 2, item.getPrices().size());
+
+            ItemPriceDTOEx priceUSD = getCurrencyPrice(item.getPrices(), 1);
+            assertEquals("USD currency", priceUSD.getCurrencyId().intValue(), 1);
+            assertEquals("USD price", priceUSD.getPrice(), null);
+
+            ItemPriceDTOEx priceAUD = getCurrencyPrice(item.getPrices(), 11);
+            assertEquals("AUD currency", priceAUD.getCurrencyId().intValue(), 11);
+            assertEquals("AUD price", priceAUD.getPrice(), 15.0F);
+
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught:" + e);
+    	}
+    }
+
+    public void testSpecialPrice() {
+    	try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            ItemDTOEx normalPriceItem = api.getItem(new Integer(1), 
+                    new Integer(2), new PricingField[] {} );
+            ItemDTOEx specialPriceItem = api.getItem(new Integer(1), 
+                    new Integer(1010), new PricingField[] {} );
+
+            assertEquals("Normal price", 10.0F, normalPriceItem.getPrice());
+            assertEquals("Special price", 5.0F, specialPriceItem.getPrice());
+
+        } catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught:" + e);
+    	}
+    }
+
+    private ItemPriceDTOEx getCurrencyPrice(Vector prices, int currencyId) {
+        Iterator iter = prices.iterator();
+        while (iter.hasNext()) {
+            ItemPriceDTOEx itemPrice = (ItemPriceDTOEx) iter.next();
+            if (itemPrice.getCurrencyId().intValue() == currencyId) {
+                return itemPrice;
+            }
+        }
+        return null;
+    }
 }

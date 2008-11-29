@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
@@ -54,7 +55,6 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
-import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
 import com.sapienter.jbilling.server.util.db.generated.NotificationMessageArch;
 import com.sapienter.jbilling.server.util.db.generated.Payment;
 import com.sapienter.jbilling.server.util.db.generated.Promotion;
@@ -103,7 +103,7 @@ public class UserDTO  implements java.io.Serializable {
      private Set<Promotion> promotions = new HashSet<Promotion>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
      private Set<Invoice> invoices = new HashSet<Invoice>(0);
-     private Set<ItemUserPrice> itemUserPrices = new HashSet<ItemUserPrice>(0);
+     private Set<ItemUserPriceDTO> itemUserPrices = new HashSet<ItemUserPriceDTO>(0);
 
     public UserDTO() {
     }
@@ -140,7 +140,10 @@ public class UserDTO  implements java.io.Serializable {
         setItemUserPrices(another.getItemUserPrices());
     }
 
-	
+	public UserDTO(int id) {
+        this.id = id;
+    }
+
     public UserDTO(int id, short deleted, Date createDatetime, int failedAttempts) {
         this.id = id;
         this.deleted = deleted;
@@ -155,7 +158,7 @@ public class UserDTO  implements java.io.Serializable {
     		Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId, 
     		Set<CreditCard> creditCards, Set<NotificationMessageArch> notificationMessageArchs, Set<RoleDTO> roles, 
     		Set<Promotion> promotions, Set<EventLogDTO> eventLogs, Set<Invoice> invoices, 
-    		Set<ItemUserPrice> itemUserPrices) {
+    		Set<ItemUserPriceDTO> itemUserPrices) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.company = entity;
@@ -440,11 +443,11 @@ public class UserDTO  implements java.io.Serializable {
     }
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
-    public Set<ItemUserPrice> getItemUserPrices() {
+    public Set<ItemUserPriceDTO> getItemUserPrices() {
         return this.itemUserPrices;
     }
     
-    public void setItemUserPrices(Set<ItemUserPrice> itemUserPrices) {
+    public void setItemUserPrices(Set<ItemUserPriceDTO> itemUserPrices) {
         this.itemUserPrices = itemUserPrices;
     }
 

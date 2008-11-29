@@ -41,10 +41,11 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
-public class MaintainAction extends CrudActionBase<ItemDTOEx> {
+public class MaintainAction extends CrudActionBase<ItemDTO> {
 	private static final String FORM = "item";
 
 	private static final String FIELD_PRICES = "prices";
@@ -83,10 +84,11 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
 	}
 	
 	@Override
-	protected ItemDTOEx doEditFormToDTO() throws RemoteException {
-		ItemDTOEx dto = new ItemDTOEx();
+	protected ItemDTO doEditFormToDTO() throws RemoteException {
+		ItemDTO dto = new ItemDTO();
         dto.setDescription((String) myForm.get(FIELD_DESCRIPTION));
-        dto.setEntityId((Integer) session.getAttribute(Constants.SESSION_ENTITY_ID_KEY));
+        dto.setEntity(new CompanyDTO((Integer) session.getAttribute(
+                Constants.SESSION_ENTITY_ID_KEY)));
         dto.setNumber((String) myForm.get(FIELD_INTERNAL_NUMBER));
         dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
         dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));
@@ -104,7 +106,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
         dto.setPrices((Vector) myForm.get(FIELD_PRICES));
         boolean atLeastOnePriceFound = false;
         for (int f = 0; f < dto.getPrices().size(); f++) {
-        	ItemPriceDTOEx nextPrice = (ItemPriceDTOEx)dto.getPrices().get(f);
+        	ItemPriceDTO nextPrice = (ItemPriceDTO)dto.getPrices().get(f);
             LOG.debug("Now processing item price " + f + " data:" + nextPrice); 
         	String priceStr = nextPrice.getPriceForm(); 
             if (priceStr != null && priceStr.trim().length() > 0) {
@@ -137,7 +139,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doCreate(ItemDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doCreate(ItemDTO dto) throws RemoteException {
         // we pass a null language, so it'll pick up the one from
         // the entity
         Integer newItem = myItemSession.create(dto, null);
@@ -156,7 +158,7 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(ItemDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(ItemDTO dto) throws RemoteException {
         dto.setId(selectedId);
         myItemSession.update(executorId, dto, (Integer) myForm.get(FIELD_LANGUAGE));
         return new ForwardAndMessage(FORWARD_LIST, MESSAGE_UPDATED_OK);
@@ -167,10 +169,10 @@ public class MaintainAction extends CrudActionBase<ItemDTOEx> {
         // the price is actually irrelevant in this call, since it's going
         // to be overwritten by the user's input
         // in this case the currency doesn't matter, it
-        ItemDTOEx dto = myItemSession.get(selectedId, languageId, null, null, entityId);
+        ItemDTO dto = myItemSession.get(selectedId, languageId, null, null, entityId);
         // the prices have to be localized
         for (int f = 0; f < dto.getPrices().size(); f++) {
-            ItemPriceDTOEx pr = (ItemPriceDTOEx) dto.getPrices().get(f);
+            ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);
             pr.setPriceForm(float2string(pr.getPrice()));
         }
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());

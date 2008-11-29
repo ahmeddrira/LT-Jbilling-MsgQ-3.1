@@ -560,6 +560,7 @@
         <column name="price_manual" required="true" type="SMALLINT"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column default="0" name="has_decimals" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_item_ent">
         	<index-column name="entity_id"/>
         	<index-column name="internal_number"/>
@@ -573,6 +574,7 @@
         <column name="item_id" type="INTEGER"/>
         <column name="currency_id" type="INTEGER"/>
         <column name="price" required="true" type="DOUBLE"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
         </foreign-key>
@@ -585,6 +587,7 @@
         <column name="entity_id" required="true" type="INTEGER"/>
         <column name="description" size="100" type="VARCHAR"/>
         <column name="order_line_type_id" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
         </foreign-key>
@@ -605,6 +608,7 @@
         <column name="user_id" type="INTEGER"/>
         <column name="price" required="true" type="DOUBLE"/>
         <column name="currency_id" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="item_user_price_i_2">
         	<index-column name="user_id"/>
         	<index-column name="item_id"/>

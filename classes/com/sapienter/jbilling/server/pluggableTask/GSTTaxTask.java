@@ -23,7 +23,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.math.BigDecimal;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
@@ -54,7 +54,7 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
         taxLine.setDeleted(new Integer(0));
         taxLine.setDescription((String) parameters.get(PARAMETER_DESCRIPTION));
         taxLine.setTypeId(Constants.ORDER_LINE_TYPE_TAX);
-        Item item = new Item();
+        ItemDTO item = new ItemDTO();
         item.setId(0);
         taxLine.setItem(item);
         try {

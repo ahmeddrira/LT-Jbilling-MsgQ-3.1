@@ -54,6 +54,7 @@ import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -89,7 +90,6 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
-import com.sapienter.jbilling.server.util.db.generated.ItemUserPrice;
 import com.sapienter.jbilling.server.util.db.generated.ReportUser;
 
 
@@ -692,9 +692,10 @@ public class UserBL extends ResultList
             cc.setDeleted(1);
         }
         // item prices
-        for (ItemUserPrice itemPrice: user.getItemUserPrices()) {
+        for (ItemUserPriceDTO itemPrice: user.getItemUserPrices()) {
             new ItemUserPriceDAS().delete(itemPrice);
         }
+        user.getItemUserPrices().clear();
         // orders
         for (OrderDTO order: user.getOrders()) {
             order.setDeleted(1);
@@ -707,6 +708,7 @@ public class UserBL extends ResultList
         for (ReportUser report: user.getReports()) {
             new ReportUserDAS().delete(report);
         }
+        user.getReports().clear();
         // roles
         user.getRoles().clear();
 

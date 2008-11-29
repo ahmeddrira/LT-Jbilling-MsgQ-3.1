@@ -27,9 +27,10 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
-public class TypeMaintainAction extends CrudActionBase<ItemTypeDTOEx> {
+public class TypeMaintainAction extends CrudActionBase<ItemTypeDTO> {
 	private static final String FORM_ITEM_TYPE = "itemType";
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_LINE_TYPE = "order_line_type";
@@ -60,29 +61,29 @@ public class TypeMaintainAction extends CrudActionBase<ItemTypeDTOEx> {
 	
 	@Override
 	protected ForwardAndMessage doSetup() throws RemoteException {
-		ItemTypeDTOEx dto = myItemSession.getType(selectedId);
+		ItemTypeDTO dto = myItemSession.getType(selectedId);
 		myForm.set(FIELD_NAME, dto.getDescription());
 		myForm.set(FIELD_LINE_TYPE, dto.getOrderLineTypeId());
 		return new ForwardAndMessage(FORWARD_EDIT);
 	}
 	
 	@Override
-	protected ItemTypeDTOEx doEditFormToDTO() {
-		ItemTypeDTOEx dto = new ItemTypeDTOEx();
+	protected ItemTypeDTO doEditFormToDTO() {
+		ItemTypeDTO dto = new ItemTypeDTO();
         dto.setDescription((String) myForm.get(FIELD_NAME));
         dto.setOrderLineTypeId((Integer) myForm.get(FIELD_LINE_TYPE));
-        dto.setEntityId(entityId);
+        dto.setEntity(new CompanyDTO(entityId));
 		return dto;
 	}
 	
 	@Override
-	protected ForwardAndMessage doCreate(ItemTypeDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doCreate(ItemTypeDTO dto) throws RemoteException {
 		myItemSession.createType(dto);
 		return new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATE_SUCCESS);
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(ItemTypeDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(ItemTypeDTO dto) throws RemoteException {
 		dto.setId(selectedId);
 		myItemSession.updateType(executorId, dto);
 		return new ForwardAndMessage(FORWARD_LIST, MESSAGE_UPDATE_SUCCESS);

@@ -28,10 +28,11 @@ import javax.ejb.SessionContext;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ItemTypeEntityLocal;
-import com.sapienter.jbilling.interfaces.ItemTypeEntityLocalHome;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
+import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
@@ -69,7 +70,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public Integer create(ItemDTOEx dto, Integer languageId) 
+    public Integer create(ItemDTO dto, Integer languageId) 
             throws SessionInternalError {
         try {
             ItemBL bl = new ItemBL();
@@ -83,7 +84,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public void update(Integer executorId, ItemDTOEx dto, Integer languageId) 
+    public void update(Integer executorId, ItemDTO dto, Integer languageId) 
             throws SessionInternalError {
         try {
             ItemBL bl = new ItemBL(dto.getId());
@@ -105,7 +106,7 @@ public class ItemSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public ItemDTOEx get(Integer id, Integer languageId, Integer userId,
+    public ItemDTO get(Integer id, Integer languageId, Integer userId,
             Integer currencyId, Integer entityId) 
             throws SessionInternalError {
         try {
@@ -133,7 +134,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public Integer createType(ItemTypeDTOEx dto) 
+    public Integer createType(ItemTypeDTO dto) 
             throws SessionInternalError {
         try {
             ItemTypeBL bl = new ItemTypeBL();
@@ -147,19 +148,13 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public ItemTypeDTOEx getType(Integer id) 
+    public ItemTypeDTO getType(Integer id) 
             throws SessionInternalError {
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ItemTypeEntityLocalHome itemTypeHome =
-                   (ItemTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    ItemTypeEntityLocalHome.class,
-                    ItemTypeEntityLocalHome.JNDI_NAME);
-            
-            ItemTypeEntityLocal type = itemTypeHome.findByPrimaryKey(id);
-            ItemTypeDTOEx dto = new ItemTypeDTOEx();
+        try {            
+            ItemTypeDTO type = new ItemTypeDAS().find(id);
+            ItemTypeDTO dto = new ItemTypeDTO();
             dto.setId(type.getId());
-            dto.setEntityId(type.getEntityId());
+            dto.setEntity(type.getEntity());
             dto.setDescription(type.getDescription());
             dto.setOrderLineTypeId(type.getOrderLineTypeId());
 
@@ -172,7 +167,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public void updateType(Integer executorId, ItemTypeDTOEx dto) 
+    public void updateType(Integer executorId, ItemTypeDTO dto) 
             throws SessionInternalError {
         try {
             ItemTypeBL bl = new ItemTypeBL(dto.getId());
@@ -205,16 +200,15 @@ public class ItemSessionBean implements SessionBean {
     * @return the id if all good, null if the user/item combination already
     * exists.
     */
-    public Integer createPrice(Integer executorId, ItemUserPriceDTOEx dto) 
+    public Integer createPrice(Integer executorId, ItemUserPriceDTO dto) 
             throws SessionInternalError {
         Integer retValue = null;
         ItemUserPriceBL bl;
         try {
-            try {
-                bl = new ItemUserPriceBL(dto.getUserId(),
-                        dto.getItemId(), dto.getCurrencyId());
-                bl.update(executorId, dto); 
-            } catch (FinderException e1) {
+            bl = new ItemUserPriceBL(dto.getUserId(),
+                    dto.getItemId(), dto.getCurrencyId());
+            boolean exists = bl.update(executorId, dto);
+            if(!exists) { 
                 bl = new ItemUserPriceBL();
                 retValue = bl.create(dto.getUserId(), dto.getItemId(), 
                         dto.getCurrencyId(), dto.getPrice());
@@ -229,16 +223,13 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public ItemUserPriceDTOEx getPrice(Integer userId, Integer itemId)
+    public ItemUserPriceDTO getPrice(Integer userId, Integer itemId)
             throws SessionInternalError {
         try {
             UserBL userBL = new UserBL(userId);
             ItemUserPriceBL bl = new ItemUserPriceBL(userId, itemId, 
                     userBL.getCurrencyId());
             return bl.getDTO();
-        } catch (FinderException e) {
-            // we let know the caller if the combination is not there
-            return null;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -247,14 +238,11 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public ItemUserPriceDTOEx getPrice(Integer priceId)
+    public ItemUserPriceDTO getPrice(Integer priceId)
             throws SessionInternalError {
         try {
             ItemUserPriceBL bl = new ItemUserPriceBL(priceId);
             return bl.getDTO();
-        } catch (FinderException e) {
-            // we let know the caller if the combination is not there
-            return null;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -263,7 +251,7 @@ public class ItemSessionBean implements SessionBean {
     /**
     * @ejb:interface-method view-type="remote"
     */
-    public void updatePrice(Integer executorId, ItemUserPriceDTOEx dto) 
+    public void updatePrice(Integer executorId, ItemUserPriceDTO dto) 
             throws SessionInternalError {
         try {
             ItemUserPriceBL bl = new ItemUserPriceBL(dto.getId());

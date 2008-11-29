@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
@@ -160,7 +160,7 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
             }
             int itemId = Integer.parseInt((String) parameters.get(name));
             LOG.debug("adding item " + itemId + " to new order");
-            Item item = new ItemDAS().findNow(itemId);
+            ItemDTO item = new ItemDAS().findNow(itemId);
             if (item == null || item.getEntity().getId() != event.getEntityId()) {
                 LOG.error("Item " + itemId + " not found");
                 continue;

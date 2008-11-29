@@ -17,26 +17,21 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
+package com.sapienter.jbilling.server.item.db;
 
-package com.sapienter.jbilling.server.item;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 
-import com.sapienter.jbilling.server.entity.ItemTypeDTO;
+import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
-public class ItemTypeDTOEx extends ItemTypeDTO {
-    String description = null;
-    
-    /**
-     * @return
-     */
-    public String getDescription() {
-        return description;
+public class ItemPriceDAS extends AbstractDAS<ItemPriceDTO> {
+    public ItemPriceDTO find(Integer itemId, Integer currencyId) {
+        Criteria criteria = getSession().createCriteria(ItemPriceDTO.class)
+                .createAlias("currency", "c")
+                    .add(Restrictions.eq("c.id", currencyId))
+                .createAlias("item", "i")
+                    .add(Restrictions.eq("i.id", itemId));
+
+        return (ItemPriceDTO) criteria.uniqueResult();
     }
-
-    /**
-     * @param string
-     */
-    public void setDescription(String string) {
-        description = string;
-    }
-
 }

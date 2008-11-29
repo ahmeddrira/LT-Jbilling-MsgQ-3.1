@@ -27,18 +27,16 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ItemTypeEntityLocal;
-import com.sapienter.jbilling.interfaces.ItemTypeEntityLocalHome;
+import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
+import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DescriptionBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class ItemTypeBL {
-    private JNDILookup EJBFactory = null;
-    private ItemTypeEntityLocalHome itemTypeHome = null;
-    private ItemTypeEntityLocal itemType = null;
+    private ItemTypeDAS itemTypeDas = null;
+    private ItemTypeDTO itemType = null;
     private Logger log = null;
     private EventLogger eLogger = null;
     
@@ -55,27 +53,27 @@ public class ItemTypeBL {
     private void init() throws NamingException {
         log = Logger.getLogger(ItemTypeBL.class);     
         eLogger = EventLogger.getInstance();        
-        EJBFactory = JNDILookup.getFactory(false);
-        itemTypeHome = (ItemTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ItemTypeEntityLocalHome.class,
-                ItemTypeEntityLocalHome.JNDI_NAME);
+        itemTypeDas = new ItemTypeDAS();
     }
 
-    public ItemTypeEntityLocal getEntity() {
+    public ItemTypeDTO getEntity() {
         return itemType;
     }
     
     public void set(Integer id) throws FinderException {
-        itemType = itemTypeHome.findByPrimaryKey(id);
+        itemType = itemTypeDas.find(id);
     }
     
-    public void create(ItemTypeDTOEx dto) 
+    public void create(ItemTypeDTO dto) 
             throws CreateException {
-        itemType = itemTypeHome.create(dto.getEntityId(), 
-                dto.getOrderLineTypeId(), dto.getDescription());        
+        itemType = new ItemTypeDTO();
+        itemType.setEntity(dto.getEntity());
+        itemType.setOrderLineTypeId(dto.getOrderLineTypeId());
+        itemType.setDescription(dto.getDescription());
+        itemType = itemTypeDas.save(itemType);
     }
     
-    public void update(Integer executorId, ItemTypeDTOEx dto) 
+    public void update(Integer executorId, ItemTypeDTO dto) 
             throws SessionInternalError {
         eLogger.audit(executorId, Constants.TABLE_ITEM_TYPE, itemType.getId(),
                 EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
@@ -89,7 +87,7 @@ public class ItemTypeBL {
     public void delete(Integer executorId) 
             throws RemoveException, NamingException, FinderException {
         Integer itemTypeId = itemType.getId();
-        itemType.remove();
+        itemTypeDas.delete(itemType);
         // now remove all the descriptions 
         DescriptionBL desc = new DescriptionBL();
         desc.delete(Constants.TABLE_ITEM_TYPE, itemTypeId);

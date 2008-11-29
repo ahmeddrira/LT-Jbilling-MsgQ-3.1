@@ -23,10 +23,9 @@ import java.math.BigDecimal;
 import java.util.Vector;
 
 import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -37,7 +36,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
 public class BasicItemManager extends PluggableTask implements IItemPurchaseManager {
 
-    protected ItemDTOEx item = null;
+    protected ItemDTO item = null;
     private OrderLineDTO latestLine = null;
     
     public void addItem(Integer itemID, Integer quantity, Integer language,
@@ -71,7 +70,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
         OrderLineDTO myLine = new OrderLineDTO();
-        Item item = new Item();
+        ItemDTO item = new ItemDTO();
         item.setId(itemID);
         myLine.setItem(item);
         myLine.setQuantity(quantity);
@@ -145,7 +144,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         line.setDeleted(0);
         line.setTypeId(item.getOrderLineTypeId());
         line.setEditable(editable);
-        line.setItemDto(item);
+        line.setItem(item);
         
         // also add the JPA item (no proxy, or the gui will complain)
         line.setItem(new ItemDAS().findNow(line.getItemId()));

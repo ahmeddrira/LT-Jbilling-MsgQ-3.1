@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
-import com.sapienter.jbilling.server.item.db.Item;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.RulesItemManager;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -192,7 +192,7 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
             feeOrder.setNotes(bundle.getString("order.cancelationFee.notes") + " " + getOrder().getId());
             feeOrder.setOrderPeriod(new OrderPeriodDAS().find(Constants.ORDER_PERIOD_ONCE));
             // now the line
-            Item item = new ItemDAS().find(itemId);
+            ItemDTO item = new ItemDAS().find(itemId);
             OrderLineDTO line = new OrderLineDTO();
             line.setDeleted(0);
             line.setDescription(item.getDescription(userBL.getEntity().getLanguageIdField()));

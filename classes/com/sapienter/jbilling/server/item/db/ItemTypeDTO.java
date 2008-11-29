@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util.db.generated;
+package com.sapienter.jbilling.server.item.db;
 
 
 import java.util.HashSet;
@@ -27,46 +27,67 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 
-import com.sapienter.jbilling.server.item.db.Item;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 @Entity
+@TableGenerator(
+        name="item_type_GEN",
+        table="jbilling_table",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="item_type",
+        allocationSize=10
+        )
 @Table(name="item_type")
-public class ItemType  implements java.io.Serializable {
+public class ItemTypeDTO extends AbstractDescription 
+        implements java.io.Serializable {
 
 
-     private int id;
-     private CompanyDTO entity;
-     private String description;
-     private int orderLineTypeId;
-     private Set<Item> items = new HashSet<Item>(0);
+    private int id;
+    private CompanyDTO entity;
+    private String description;
+    private int orderLineTypeId;
+    private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
+    private int versionNum;
 
-    public ItemType() {
+    public ItemTypeDTO() {
     }
 
 	
-    public ItemType(int id, CompanyDTO entity, int orderLineTypeId) {
+    public ItemTypeDTO(int id, CompanyDTO entity, int orderLineTypeId) {
         this.id = id;
         this.entity = entity;
         this.orderLineTypeId = orderLineTypeId;
     }
-    public ItemType(int id, CompanyDTO entity, String description, int orderLineTypeId, Set<Item> items) {
+
+    public ItemTypeDTO(int id, CompanyDTO entity, String description, int orderLineTypeId, Set<ItemDTO> items) {
        this.id = id;
        this.entity = entity;
        this.description = description;
        this.orderLineTypeId = orderLineTypeId;
        this.items = items;
     }
-   
-     @Id 
-    
+
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_ITEM_TYPE;
+    }
+
+    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="item_type_GEN")
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
@@ -75,7 +96,8 @@ public class ItemType  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
+
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="entity_id", nullable=false)
     public CompanyDTO getEntity() {
         return this.entity;
@@ -102,21 +124,28 @@ public class ItemType  implements java.io.Serializable {
     public void setOrderLineTypeId(int orderLineTypeId) {
         this.orderLineTypeId = orderLineTypeId;
     }
-@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+
+    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinTable(name="item_type_map", joinColumns = { 
         @JoinColumn(name="type_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="item_id", updatable=false) })
-    public Set<Item> getItems() {
+    public Set<ItemDTO> getItems() {
         return this.items;
     }
     
-    public void setItems(Set<Item> items) {
+    public void setItems(Set<ItemDTO> items) {
         this.items = items;
     }
 
+    @Version
+    @Column(name="OPTLOCK")
+    public int getVersionNum() {
+        return versionNum;
+    }
 
-
-
+    public void setVersionNum(int versionNum) {
+        this.versionNum = versionNum;
+    }
 }
 
 

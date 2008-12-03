@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.util.Constants;
 public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
     public static final String PARAM_ENABLE_FILTER_USER_ID = "enable_filter_user_id";
     public static final String PARAM_ENABLE_FILTER_NAME = "enable_filter_name";
-    public static final String PARAM_ENABLE_FILTER_CC_NUMBER = "enable_filter_test";
+    public static final String PARAM_ENABLE_FILTER_CC_NUMBER = "enable_filter_cc_number";
     public static final String PARAM_ENABLE_FILTER_ADDRESS = "enable_filter_address";
     public static final String PARAM_ENABLE_FILTER_IP_ADDRESS = "enable_filter_ip_address";
     public static final String PARAM_ENABLE_FILTER_PHONE_NUMBER = "enable_filter_phone_number";

@@ -320,7 +320,40 @@
             overflowToDisk="false"
      />                       
 
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.item.db.ItemDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+     />                       
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.item.db.ItemPriceDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+     />                       
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.item.db.ItemTypeDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="900"
+            overflowToDisk="false"
+     />                       
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.item.db.ItemUserPriceDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+     />                       
 
+     
      <!-- Query cache regions -->
      <cache name="org.hibernate.cache.StandardQueryCache"
             maxElementsInMemory="5000"

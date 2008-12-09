@@ -42,6 +42,8 @@ import javax.persistence.Version;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -53,6 +55,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
         allocationSize=10
         )
 @Table(name="item_type")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ItemTypeDTO extends AbstractDescription 
         implements java.io.Serializable {
 

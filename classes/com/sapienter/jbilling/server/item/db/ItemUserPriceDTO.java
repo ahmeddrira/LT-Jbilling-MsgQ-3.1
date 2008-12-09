@@ -35,6 +35,8 @@ import javax.persistence.Version;
 
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -46,6 +48,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
         allocationSize=10
         )
 @Table(name="item_user_price")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ItemUserPriceDTO  implements java.io.Serializable {
 
 

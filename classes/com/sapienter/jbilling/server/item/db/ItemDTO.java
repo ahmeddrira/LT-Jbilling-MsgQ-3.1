@@ -48,6 +48,8 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
 import com.sapienter.jbilling.server.util.db.generated.Promotion;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -59,6 +61,7 @@ import com.sapienter.jbilling.server.util.db.generated.Promotion;
         allocationSize=10
         )
 @Table(name="item")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ItemDTO extends AbstractDescription {
 
 

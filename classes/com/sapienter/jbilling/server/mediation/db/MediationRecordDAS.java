@@ -23,7 +23,8 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class MediationRecordDAS extends AbstractDAS<MediationRecordDTO> {
 	public MediationRecordDTO save(MediationRecordDTO dto) {
-		dto.getProcess().getRecords().add(dto);
-		return super.save(dto);
+        MediationRecordDTO savedDTO = super.save(dto);
+        dto.getProcess().getRecords().add(savedDTO);
+        return savedDTO;
 	}
 }

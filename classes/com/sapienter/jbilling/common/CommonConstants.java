@@ -126,6 +126,7 @@ public interface CommonConstants {
     public static Integer PREFERENCE_ALLOW_NEGATIVE_PAYMENTS = new Integer(44);
     public static Integer PREFERENCE_DELAY_NEGATIVE_PAYMENTS = new Integer(45);
     public static Integer PREFERENCE_ALLOW_INVOICES_WITHOUT_ORDERS = new Integer(46);
+    public static Integer PREFERENCE_MEDIATION_JDBC_READER_LAST_ID = new Integer(47);
 
     // order status, in synch with db
     public static final Integer ORDER_STATUS_ACTIVE = new Integer(1);

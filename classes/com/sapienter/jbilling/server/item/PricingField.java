@@ -160,7 +160,7 @@ public class PricingField implements Serializable {
         if (doubleValue != null)
             return doubleValue;
         
-        throw new SessionInternalError("There is no value");
+        return null;
     }
     
     public static Type mapType(String myType) {

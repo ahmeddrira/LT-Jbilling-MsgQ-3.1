@@ -46,10 +46,16 @@ import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.mediation.MediationSession;
+import com.sapienter.jbilling.server.mediation.MediationSessionHome;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import java.util.List;
 
 public class MaintainAction extends Action {
+    
+    private JNDILookup EJBFactory = null;
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -62,7 +68,7 @@ public class MaintainAction extends Action {
         Integer languageId = (Integer) session.getAttribute(
                 Constants.SESSION_LANGUAGE);
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
+            EJBFactory = JNDILookup.getFactory(false);
             
             if (request.getParameter("action").equals("view")) {
                 OrderSessionHome orderHome =
@@ -78,6 +84,14 @@ public class MaintainAction extends Action {
 
                 session.setAttribute(Constants.SESSION_ORDER_DTO, 
                         remoteOrder.getOrderEx(orderId, languageId));
+                
+                // check if this order involves any CDR records
+                if (getEvents(orderId).isEmpty()) {
+                    session.removeAttribute("order_has_cdrs");
+                } else {
+                    session.setAttribute("order_has_cdrs","yes");
+                }
+                
                 return mapping.findForward("view");
             } else if (request.getParameter("action").equals("status")) {
                 String statusStr = request.getParameter("statusId");
@@ -114,12 +128,12 @@ public class MaintainAction extends Action {
                 // show the children, or not and just go to the order edit
                 Integer userId = (Integer) session.getAttribute(
                         Constants.SESSION_USER_ID);
-                UserSessionHome orderHome =
+                UserSessionHome userHome =
                     (UserSessionHome) EJBFactory.lookUpHome(
                     UserSessionHome.class,
                     UserSessionHome.JNDI_NAME);
             
-                UserSession remoteUser = orderHome.create();
+                UserSession remoteUser = userHome.create();
                 if (remoteUser.isParentCustomer(userId).booleanValue()) {
                     return mapping.findForward("sub_accounts");
                 } else {
@@ -129,6 +143,10 @@ public class MaintainAction extends Action {
                 // New order: it doesn't want to create an order for a sub-account
                 // it want to create one for the parent account
                 return newOrderEdit(mapping, form, request, response);
+            } else if (request.getParameter("action").equals("listEvents")) {
+                session.setAttribute(Constants.SESSION_ORDER_CDR, getEvents(
+                        ((OrderDTO) session.getAttribute(Constants.SESSION_ORDER_DTO)).getId()));
+                return mapping.findForward("cdr_list");
             }
             
             NewOrderSessionHome newOrderHome =
@@ -195,5 +213,16 @@ public class MaintainAction extends Action {
         }
         
         return mapping.findForward("order_edit");
+    }
+    
+    private List<MediationRecordLineDTO> getEvents(Integer orderId) 
+            throws NamingException, CreateException, RemoteException {
+        MediationSessionHome mediationHome =
+                (MediationSessionHome) EJBFactory.lookUpHome(
+                MediationSessionHome.class,
+                MediationSessionHome.JNDI_NAME);
+
+        MediationSession remoteMed = mediationHome.create();
+        return remoteMed.getEventsForOrder(orderId);
     }
 }

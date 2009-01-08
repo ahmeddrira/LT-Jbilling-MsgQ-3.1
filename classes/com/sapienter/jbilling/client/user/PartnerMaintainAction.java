@@ -33,7 +33,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.sapienter.jbilling.client.item.PromotionMaintainAction;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
@@ -43,7 +42,7 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 
 public class PartnerMaintainAction extends Action {
 
-    private final static Logger LOG = Logger.getLogger(PromotionMaintainAction.class);
+    private final static Logger LOG = Logger.getLogger(PartnerMaintainAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -62,6 +61,7 @@ public class PartnerMaintainAction extends Action {
             if (request.getParameter("action").equals("view")) {
                 
                 if (request.getParameter("payout") != null) {
+                    
                     Integer selectedId = (Integer) session.getAttribute(
                             Constants.SESSION_LIST_ID_SELECTED);
                     session.setAttribute(Constants.SESSION_PAYOUT_DTO,

@@ -78,5 +78,15 @@
 			</html:link>
 		</td>
 	</tr>
+
+        <logic:present name="order_has_cdrs">
+	<tr>
+		<td class="leftMenuOption">
+			<html:link styleClass="leftMenu" page="/orderMaintain.do?action=listEvents">
+				<bean:message key="order.prompt.listCDR"/>
+			</html:link>
+		</td>
+	</tr>
+        </logic:present>
 </table>
 </jbilling:permission>

@@ -1,4 +1,4 @@
-/*
+<%--
     jBilling - The Enterprise Open Source Billing System
     Copyright (C) 2003-2008 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -16,26 +16,9 @@
 
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
-package com.sapienter.jbilling.server.mediation.task;
+--%>
 
-import java.util.Date;
-import java.util.Vector;
+<%@ page language="java" %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 
-import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.db.OrderLineDTO;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
-
-
-public interface IMediationProcess {
-
-    public Vector<OrderLineDTO> process(Vector<Record> records, String configurationName) throws TaskException ;
-    
-    public Integer getUserId();
-    
-    public Integer getCurrencyId();
-    
-    public Date getEventDate();
-    
-    public String getDescription();
-}
+<tiles:insert definition="order.list.events" flush="true" />

@@ -34,14 +34,11 @@ import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.ItemSession;
-import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.item.PromotionDTOEx;
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
@@ -283,41 +280,8 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
             }
         }
 
-        // now process this promotion if specified
-        if (summary.getPromoCode() != null && summary.getPromoCode().length() > 0) {
-            try {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                ItemSessionHome itemHome = (ItemSessionHome) EJBFactory.lookUpHome(
-                        ItemSessionHome.class, ItemSessionHome.JNDI_NAME);
-
-                ItemSession itemSession = itemHome.create();
-                PromotionDTOEx promotion = itemSession.getPromotion((Integer) session
-                        .getAttribute(Constants.SESSION_ENTITY_ID_KEY), summary.getPromoCode());
-
-                if (promotion == null) {
-                    addError("promotion.error.noExist", "order.prompt.promotion");
-                    return null;
-                }
-
-                // if this is an update or the promotion hasn't been
-                // used by the user
-                if (summary.getId() != null
-                        || itemSession.promotionIsAvailable(promotion.getId(), summary.getUserId(),
-                                promotion.getCode()).booleanValue()) {
-
-                    summary = myNewOrderSession.addItem(promotion.getItemId(), 1, summary
-                            .getUserId(), entityId);
-
-                    session.setAttribute(Constants.SESSION_ORDER_SUMMARY, summary);
-                } else {
-                    addError("promotion.error.alreadyUsed", "order.prompt.promotion");
-                    return null;
-                }
-
-            } catch (Exception e) {
-                LOG.warn("Validating promotion", e);
-            }
-        }
+        
+        
         return summary;
     }
 

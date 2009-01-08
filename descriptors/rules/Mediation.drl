@@ -22,10 +22,11 @@ end
 rule 'line creation'
 when 
     $field : PricingField( name == "duration")
+    $phoneCalled : PricingField( name == "dst")
     ProcessManager()
 then
     mediationManager.addLine(1, $field.getIntValue());
-
+    mediationManager.setDescription("Phone call to " + $phoneCalled);
 end
 
 

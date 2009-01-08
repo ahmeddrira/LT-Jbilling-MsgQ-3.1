@@ -453,6 +453,7 @@
         <forward name="view" path="/order/show.jsp" redirect="false" />
         <forward name="list" path="/order/list.jsp" redirect="false" />
         <forward name="sub_accounts" path="/order/listSubAccounts.jsp" redirect="false" />
+        <forward name="cdr_list" path="/order/listEvents.jsp" redirect="false" />
     </action>
     <action path="/paymentMaintain" type="com.sapienter.jbilling.client.payment.MaintainAction" name="payment" scope="session" input="/payment/enterInfoCheque.jsp" validate="false">
         <forward name="payment_review" path="/payment/review.jsp?review=yes" redirect="false" />

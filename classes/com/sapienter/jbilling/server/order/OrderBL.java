@@ -50,7 +50,6 @@ import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.PromotionBL;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -321,8 +320,6 @@ public class OrderBL extends ResultList
             if (order.getIsCurrent() != null && order.getIsCurrent().intValue() == 1) {
                 setMainSubscription(userAgentId);
             }
-            // update any promotion involved
-            updatePromotion(entityId, orderDto.getPromoCode());
             
             // add a log row for convenience
             eLogger.auditBySystem(entityId, 
@@ -609,24 +606,6 @@ public class OrderBL extends ResultList
         }
     }
     
-    private void updatePromotion(Integer entityId, String code) 
-            throws NamingException {
-        if (code != null && code.length() > 0) {
-            PromotionBL promotion = new PromotionBL();
-            if (promotion.isPresent(entityId, code)) {
-                UserBL user;
-				try {
-					user = new UserBL(order.getBaseUserByUserId().getId());
-				} catch (Exception e) {
-					throw new SessionInternalError(e);
-				}				
-                promotion.getEntity().getUsers().add(user.getEntity());
-            } else {
-                LOG.error("Can't find promotion entity = " + entityId +
-                        " code " + code);
-            }
-        }
-    } 
     
     /**
      * Method lookUpEditable.
@@ -1186,10 +1165,23 @@ public class OrderBL extends ResultList
         }
     }
     
-    public void updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId, 
+    /**
+     * Updates the one-time order that holds the period's charges.
+     * @param entityId
+     * @param executorId
+     * @param userId
+     * @param currencyId
+     * @param lines
+     * @param records
+     * @param eventDate
+     * @return detached lines that have been added or modified. The amount is only the updated
+     * amount
+     */
+    public Vector<OrderLineDTO> updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId, 
             Vector<OrderLineDTO> lines, Vector<Record> records, Date eventDate) {
         
         try {
+            Vector<OrderLineDTO> newLines = new Vector<OrderLineDTO>();
             UserBL user = new UserBL(userId);
             Integer language = user.getEntity().getLanguageIdField();
             CurrentOrder co = new CurrentOrder(userId, eventDate);
@@ -1201,9 +1193,14 @@ public class OrderBL extends ResultList
                 LOG.warn("Created current one-time order without a suitable main " +
                         "subscription order:" + currentOrderId);
             }
+                    
             // update an existing order
             order = orderDas.findNow(currentOrderId);
-            LOG.debug("current order= - order=" + order);
+            // get detached lines of this order, to later compare with the modified one
+            Vector<OrderLineDTO> oldLines = new Vector<OrderLineDTO>();
+            for (OrderLineDTO line: order.getLines()) {
+                oldLines.add(new OrderLineDTO(line));
+            }
             for (OrderLineDTO line: lines) {
                 addItem(line.getItemId(), line.getQuantity(), language, userId, 
                         entityId, currencyId, records);
@@ -1211,9 +1208,41 @@ public class OrderBL extends ResultList
             
             //link the new lines to this order
             for (OrderLineDTO line: order.getLines()) {
-            	line.setPurchaseOrder(order);
+                line.setPurchaseOrder(order);
             }
-            //order = orderDas.save(order);
+            
+            // see which lines have changed, for the return
+            Collections.sort(oldLines, new Comparator<OrderLineDTO>(){ 
+                public int compare(OrderLineDTO a, OrderLineDTO b) {
+                    return new Integer(a.getId()).compareTo(new Integer(b.getId()));
+                }
+            });
+            for (OrderLineDTO line : order.getLines()) {
+                int index = Collections.binarySearch(oldLines, line, new Comparator<OrderLineDTO>() {
+                    public int compare(OrderLineDTO a, OrderLineDTO b) {
+                        return new Integer(a.getId()).compareTo(new Integer(b.getId()));
+                    }
+                });
+                if (index >= 0) {
+                    OrderLineDTO diffLine = new OrderLineDTO(oldLines.get(index));
+                    // will fail if amounts or quantities are null...
+                    diffLine.setAmount(line.getAmount().floatValue() - diffLine.getAmount().floatValue());
+                    diffLine.setQuantity(line.getQuantity() - diffLine.getQuantity());
+                    if (diffLine.getAmount() != 0 || diffLine.getQuantity() != 0) {
+                        newLines.add(diffLine);
+                    }
+                } else {
+                    // new line
+                    newLines.add(new OrderLineDTO(line));
+                }
+            }
+            
+            // it should be at least one...
+            if (newLines.size() == 0) {
+                LOG.warn("No lines updated after update current");
+            }
+            return newLines;
+            
         } catch (Exception e) {
             throw new SessionInternalError("Updating current order", OrderBL.class, e);
         } 

@@ -19,73 +19,73 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <tiles-definitions>
+    
+    <!-- =======================================================  -->
+    <!-- User Login                                               -->
+    <!-- =======================================================  -->
 
-  <!-- =======================================================  -->
-  <!-- User Login                                               -->
-  <!-- =======================================================  -->
-
-  <definition name="userLogin" path="/layouts/centerLayout.jsp">
-      <put name="title" value="Billing User Login" />
-	  
-	  <put name="footer" value="/common/footer.jsp" />
-      <put name="body" value="/user/loginBody.jsp" />
-  </definition>
-  <definition name="changePassword" path="/layouts/centerLayout.jsp">
-      <put name="title" value="Password Expired" />
-	  <put name="footer" value="/common/footer.jsp" />
-      <put name="body" value="/user/changePasswordBody.jsp" />
-  </definition>
- 
-  <!-- =======================================================  -->
-  <!-- Forget Password                                               -->
-  <!-- =======================================================  -->
+    <definition name="userLogin" path="/layouts/centerLayout.jsp">
+        <put name="title" value="Billing User Login" />
+        
+        <put name="footer" value="/common/footer.jsp" />
+        <put name="body" value="/user/loginBody.jsp" />
+    </definition>
+    <definition name="changePassword" path="/layouts/centerLayout.jsp">
+        <put name="title" value="Password Expired" />
+        <put name="footer" value="/common/footer.jsp" />
+        <put name="body" value="/user/changePasswordBody.jsp" />
+    </definition>
+    
+    <!-- =======================================================  -->
+    <!-- Forget Password                                               -->
+    <!-- =======================================================  -->
   
-  <definition name="forgetPassword" path="/layouts/centerLayout.jsp">
-      <put name="title" value="Billing User Forget Password" />
-	  <put name="footer" value="/common/footer.jsp" />
-      <put name="body" value="/user/forgetPasswordBody.jsp" />
-  </definition>
-
-  <!-- =======================================================  -->
-  <!-- Main screen                                              
+    <definition name="forgetPassword" path="/layouts/centerLayout.jsp">
+        <put name="title" value="Billing User Forget Password" />
+        <put name="footer" value="/common/footer.jsp" />
+        <put name="body" value="/user/forgetPasswordBody.jsp" />
+    </definition>
+    
+    <!-- =======================================================  -->
+    <!-- Main screen                                              
   	   These are the defaults from where all the normal screens
   	   then extend -->
-  <!-- =======================================================  -->
+    <!-- =======================================================  -->
 
-  <definition name="main" path="/layouts/mainLayout.jsp">
-      <put name="logo" value="graphics/logo.JPG" />
-	  <put name="mainMenuBar" value="/common/dynamicMainMenu.jsp" />
-  	  <put name="secondMenuBar" value="/common/dynamicSecondMenu.jsp" />
-  	  <put name="leftMenuBar" value="/common/dynamicLeftMenu.jsp" />
-  	  <put name="footer" value="/common/footer.jsp" /><put name="featureTitle" value="bar.default" />
-  </definition>
-
-  <!-- =======================================================  -->
-  <!-- Splash page: where the user lands after login in         -->
-  <!-- =======================================================  -->
-  <definition name="initial" extends="main">
-      <put name="body" value="/user/initialBody.jsp" />
-      <put name="featureTitle" value="bar.welcome" /><put name="leftMenuBar" value="/user/initialLeftMenu.jsp" />
-  </definition>
-
-  <!-- =======================================================  -->
-  <!-- New Order page: create a new order -->
-  <!-- =======================================================  -->
+    <definition name="main" path="/layouts/mainLayout.jsp">
+        <put name="logo" value="graphics/logo.JPG" />
+        <put name="mainMenuBar" value="/common/dynamicMainMenu.jsp" />
+        <put name="secondMenuBar" value="/common/dynamicSecondMenu.jsp" />
+        <put name="leftMenuBar" value="/common/dynamicLeftMenu.jsp" />
+        <put name="footer" value="/common/footer.jsp" /><put name="featureTitle" value="bar.default" />
+    </definition>
+    
+    <!-- =======================================================  -->
+    <!-- Splash page: where the user lands after login in         -->
+    <!-- =======================================================  -->
+    <definition name="initial" extends="main">
+        <put name="body" value="/user/initialBody.jsp" />
+        <put name="featureTitle" value="bar.welcome" /><put name="leftMenuBar" value="/user/initialLeftMenu.jsp" />
+    </definition>
+    
+    <!-- =======================================================  -->
+    <!-- New Order page: create a new order -->
+    <!-- =======================================================  -->
   
   
     <!--Sub screen for the order creation body-->
     <definition name="order.create" path="/layouts/bodyRightBar.jsp">
-    	<put name="rightBar" value="/order/orderRightBar.jsp" />
-    	<put name="body" value="order.create.body" />
+        <put name="rightBar" value="/order/orderRightBar.jsp" />
+        <put name="body" value="order.create.body" />
     </definition>
     <!--Sub screen for the item list of the order creation body-->
     <definition name="order.create.body" path="/layouts/bodySplitFour.jsp">
-    	<put name="one" value="/order/itemListHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/order/view.jsp" />
-    	
-    	<put name="four" value="/order/itemListBody.jsp" />
+        <put name="one" value="/order/itemListHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/order/view.jsp" />
+        
+        <put name="four" value="/order/itemListBody.jsp" />
     </definition>
-
-
+    
+    
     <definition name="orderReview" extends="main"><put name="body" value="orderReview.body" /><put name="featureTitle" value="bar.order.review" /><put name="leftMenuBar" value="/order/orderReviewLeftMenuBar.jsp" />
     </definition>
     <definition name="orderReview.body" path="/layouts/bodySplitFour.jsp"><put name="one" value="/order/orderReviewHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/order/view.jsp" /><put name="four" value="/order/orderReviewBody.jsp" />
@@ -252,20 +252,20 @@
     </definition>
     <definition name="invoice.view" extends="main"><put name="featureTitle" value="bar.invoice.view" /><put name="body" value="/invoice/viewBody.jsp" /><put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
     </definition>
-
-
+    
+    
     <definition name="invoice.download" extends="main">
-    	<put name="featureTitle" value="bar.invoice.download" />
-    	<put name="body" value="/invoice/downloadForm.jsp" />
-    	<put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
+        <put name="featureTitle" value="bar.invoice.download" />
+        <put name="body" value="/invoice/downloadForm.jsp" />
+        <put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
     </definition>
     <definition name="invoice.download.file" extends="main">
-    	<put name="featureTitle" value="bar.invoice.download" />
-    	<put name="body" value="/invoice/downloadFile.jsp" />
-    	<put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
+        <put name="featureTitle" value="bar.invoice.download" />
+        <put name="body" value="/invoice/downloadFile.jsp" />
+        <put name="leftMenuBar" value="/invoice/viewLeftBar.jsp" />
     </definition>
-
-
+    
+    
     <definition name="invoice.logo" extends="main"><put name="featureTitle" value="bar.invoice.logo" /><put name="body" value="/invoice/logoUpload.jsp" />
     </definition>
     <definition name="process.list" extends="main"><put name="featureTitle" value="bar.process.list" /><put name="body" value="process.list.body" />
@@ -287,6 +287,10 @@
     <definition name="process.review.view.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/process/viewReviewTop.jsp" /><put name="bottom" value="/process/viewBody.jsp?review=yes" />
     </definition>
     <definition name="order.list.process" extends="main"><put name="featureTitle" value="bar.process.orders" /><put name="body" value="order.list.process.body" />
+    </definition>
+    <definition name="order.list.events" extends="main">
+        <put name="featureTitle" value="bar.order.events" />
+        <put name="body" value="/order/listEventsBody.jsp" />
     </definition>
     <definition name="order.list.process.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/order/listProcessTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />
     </definition>
@@ -368,12 +372,12 @@
            Mediation screens
      -->
     <definition name="mediation.process.list" extends="main">
-    	<put name="featureTitle" value="mediation.process.list.bar" />
-    	<put name="body" value="/mediation/processList.jsp" />
+        <put name="featureTitle" value="mediation.process.list.bar" />
+        <put name="body" value="/mediation/processList.jsp" />
     </definition>
     <definition name="mediation.configuration" extends="main">
-    	<put name="featureTitle" value="mediation.configuration.bar" />
-    	<put name="body" value="/mediation/configurationEdit.jsp" />
+        <put name="featureTitle" value="mediation.configuration.bar" />
+        <put name="body" value="/mediation/configurationEdit.jsp" />
     </definition>
-
+    
 </tiles-definitions>

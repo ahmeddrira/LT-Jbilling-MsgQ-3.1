@@ -58,7 +58,7 @@ public final class Constants implements PermissionConstants, CommonConstants {
     public static final String SESSION_LOGO_LOCATION = "sys_logo_location";
     
     
-    // new order fields
+    // order fields
     
     // NewOrderSessionBeanHome
     public static final String SESSION_ORDER_SESSION_KEY = "orderSession";
@@ -66,6 +66,8 @@ public final class Constants implements PermissionConstants, CommonConstants {
     public static final String SESSION_ORDER_SUMMARY = "newOrderSummary";
     // OrderDTO
     public static final String SESSION_ORDER_DTO = "orderDto";
+    // Mediation events that affected an order
+    public static final String SESSION_ORDER_CDR = "orderCDR";
     
     
     // customer/user fields

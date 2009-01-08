@@ -42,6 +42,14 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import java.util.List;
+import java.util.Vector;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @TableGenerator(
@@ -56,21 +64,22 @@ import com.sapienter.jbilling.server.item.db.ItemDAS;
 //No cache, mutable and critical
 public class OrderLineDTO implements Serializable, Comparable {
 
-	private static final Logger LOG =  Logger.getLogger(OrderLineDTO.class); 
+    private static final Logger LOG =  Logger.getLogger(OrderLineDTO.class); 
 
-     private int id;
-     private OrderLineTypeDTO orderLineTypeDTO;
-     private ItemDTO item;
-     private OrderDTO orderDTO;
-     private Float amount;
-     private Double quantity;
-     private Float price;
-     private Integer itemPrice;
-     private Date createDatetime;
-     private int deleted;
-     private String description;
-     private Integer versionNum;
-     private Boolean editable = null;
+    private int id;
+    private OrderLineTypeDTO orderLineTypeDTO;
+    private ItemDTO item;
+    private OrderDTO orderDTO;
+    private Float amount;
+    private Double quantity;
+    private Float price;
+    private Integer itemPrice;
+    private Date createDatetime;
+    private int deleted;
+    private String description;
+    private Integer versionNum;
+    private Boolean editable = null;
+    private List<MediationRecordLineDTO> events = new Vector<MediationRecordLineDTO>(0);
      
      // other fields, non-persistent
      private String priceStr = null;
@@ -230,6 +239,17 @@ public class OrderLineDTO implements Serializable, Comparable {
 	public void setVersionNum(Integer versionNum) {
 		this.versionNum = versionNum;
 	}
+        
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderLine")
+    @Cascade( value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN )
+    @Fetch (FetchMode.SUBSELECT)
+    public List<MediationRecordLineDTO> getEvents() {
+        return this.events;
+    }
+    
+    public void setEvents(List<MediationRecordLineDTO> events) {
+        this.events = events;
+    }        
 
 	/*
 	 * Conveniant methods to ease migration from entity beans

@@ -56,6 +56,10 @@ public class RulesMediationTask extends PluggableTask implements
         return manager.getEventDate();
     }
     
+    public String getDescription() {
+        return manager.getDescription();
+    }
+    
     public Vector<OrderLineDTO> process(Vector<Record> records, String configurationName) 
             throws TaskException {
         RuleBase ruleBase;
@@ -90,6 +94,8 @@ public class RulesMediationTask extends PluggableTask implements
         private Integer currencyId = null;
         private final String configurationName;
         private Date eventDate = null;
+        private String description = null;
+
         
         public ProcessManager(String configurationName) {
             this.configurationName = configurationName;
@@ -107,6 +113,15 @@ public class RulesMediationTask extends PluggableTask implements
         public Vector<OrderLineDTO> getLines() {
             return lines;
         }
+        
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
         
         public void addLine(Integer itemId, Integer quantity) {
         	addLine(itemId, new Double(quantity));

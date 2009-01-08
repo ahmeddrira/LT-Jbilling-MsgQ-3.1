@@ -1870,6 +1870,7 @@
     <JbillingTable Id="82" Name="mediation_cfg" NextId="1"/>
     <JbillingTable Id="83" Name="mediation_process" NextId="1"/>
     <JbillingTable Id="85" Name="blacklist" NextId="1"/>
+    <JbillingTable Id="86" Name="mediation_record_line" NextId="1"/>
     <JbillingTableColumn TableId="0" Id="0" Name="id"/>
     <JbillingTableColumn TableId="0" Id="1" Name="titleKey"/>
     <JbillingTableColumn TableId="0" Id="2" Name="instructionsKey"/>

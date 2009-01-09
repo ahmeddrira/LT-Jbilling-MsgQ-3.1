@@ -28,53 +28,54 @@
 <%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
+<p class="title"><bean:message key="mediation.event.title"/></p>
 
 <table class="list">
-		<%-- print the headers of the columns --%>
-		<tr class="listH">
-			<td><bean:message key="mediation.event.record"/></td>
-			<td><bean:message key="mediation.event.line"/></td>
-			<td><bean:message key="mediation.event.date"/></td>
-			<td><bean:message key="mediation.event.amount"/></td>
-			<td><bean:message key="mediation.event.quantity"/></td>
-			<td><bean:message key="mediation.event.Description"/></td>
-		</tr>
-		<%-- now each of the lines --%>
-		<logic:iterate name='<%=Constants.SESSION_ORDER_CDR%>' 
-						   scope="session"
-						   id="line"
-						   indexId="index">
-	        
-			<c:choose>
-				<c:when test="${flag == 1}">
-					<tr class="listB">
-					<c:remove var="flag"/>
-				</c:when>
-				<c:otherwise>
-					<tr class="listA">
-					<c:set var="flag" value="1"/>
-				</c:otherwise>
-		    </c:choose>
-				<td align="right" class="list">
-					<bean:write name="line" property="record.key"/>
-				</td>
-				<td align="right" class="list">
-                                    <bean:write name="line" property="orderLine.id"/>
-				</td>
-				<td class="list">
-					<bean:write name="line" property="eventDate" formatKey="format.timestamp"/>
-				</td>
-                                <td class="list">
-					<bean:write name="line" property="amount" formatKey="format.money"/>
-				</td>
-                                <td class="list">
-					<bean:write name="line" property="quantity" formatKey="format.double"/>
-				</td>
-                                <td class="list">
-					<bean:write name="line" property="description"/>
-				</td>
-				
-			</tr>
-			
-		</logic:iterate>	
+<%-- print the headers of the columns --%>
+<tr class="listH">
+    <td><bean:message key="mediation.event.record"/></td>
+    <td><bean:message key="mediation.event.line"/></td>
+    <td><bean:message key="mediation.event.date"/></td>
+    <td><bean:message key="mediation.event.amount"/></td>
+    <td><bean:message key="mediation.event.quantity"/></td>
+    <td><bean:message key="mediation.event.Description"/></td>
+</tr>
+<%-- now each of the lines --%>
+<logic:iterate name='<%=Constants.SESSION_ORDER_CDR%>' 
+               scope="session"
+               id="line"
+               indexId="index">
+    
+    <c:choose>
+        <c:when test="${flag == 1}">
+            <tr class="listB">
+            <c:remove var="flag"/>
+        </c:when>
+        <c:otherwise>
+            <tr class="listA">
+            <c:set var="flag" value="1"/>
+        </c:otherwise>
+    </c:choose>
+    <td align="right" class="list">
+        <bean:write name="line" property="record.key"/>
+    </td>
+    <td align="right" class="list">
+        <bean:write name="line" property="orderLine.id"/>
+    </td>
+    <td class="list">
+        <bean:write name="line" property="eventDate" formatKey="format.timestamp"/>
+    </td>
+    <td class="list">
+        <bean:write name="line" property="amount" formatKey="format.money"/>
+    </td>
+    <td class="list">
+        <bean:write name="line" property="quantity" formatKey="format.double"/>
+    </td>
+    <td class="list">
+        <bean:write name="line" property="description"/>
+    </td>
+    
+    </tr>
+    
+</logic:iterate>	
 </table>		

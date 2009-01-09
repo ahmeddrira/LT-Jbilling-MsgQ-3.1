@@ -1217,6 +1217,8 @@ public class OrderBL extends ResultList
                     return new Integer(a.getId()).compareTo(new Integer(b.getId()));
                 }
             });
+            // save now the order, so all its lines are in the session
+            new OrderDAS().save(order);
             for (OrderLineDTO line : order.getLines()) {
                 int index = Collections.binarySearch(oldLines, line, new Comparator<OrderLineDTO>() {
                     public int compare(OrderLineDTO a, OrderLineDTO b) {
@@ -1232,8 +1234,8 @@ public class OrderBL extends ResultList
                         newLines.add(diffLine);
                     }
                 } else {
-                    // new line
-                    newLines.add(new OrderLineDTO(line));
+                    // new line, attached to session
+                    newLines.add(line);
                 }
             }
             

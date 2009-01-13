@@ -494,6 +494,10 @@ xmlvalidation="true">
        todir="${base_dir}/mediation"/>
         <copy file="${source.mediation.descriptor.dir}/asterisk-sample1.csv" 
        todir="${base_dir}/mediation"/>
+        <copy file="${source.mediation.descriptor.dir}/jbilling_cdr.script" 
+       todir="${base_dir}/mediation"/>
+        <copy file="${source.mediation.descriptor.dir}/jbilling_cdr.properties" 
+       todir="${base_dir}/mediation"/>
         <javac debug="on" destdir="${build.test.dir}"
         srcdir="${source.test.dir}/com/sapienter/jbilling/server/mediation">
             <classpath refid="run.classpath"/>

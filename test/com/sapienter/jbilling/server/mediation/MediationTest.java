@@ -36,13 +36,13 @@ public class MediationTest extends TestCase {
             remoteMediation.trigger();
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
-            assertEquals("There should be one process after running the mediation process", 1, all.size());
+            assertEquals("There should be two processes after running the mediation process", 2, all.size());
             assertEquals("The process has to touch seven orders", new Integer(7),
                     all.get(0).getOrdersAffected());
 
             List allCfg = remoteMediation.getAllConfigurations(1);
             assertNotNull("config list can't be null", allCfg);
-            assertEquals("There should be one configuration present", 1, allCfg.size());
+            assertEquals("There should be two configurations present", 2, allCfg.size());
 
             System.out.println("Validating one-time orders...");
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -66,7 +66,7 @@ public class MediationTest extends TestCase {
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1015))) {
                     foundFirst = true;
-                    assertEquals("Quantity of should be the combiend of all events", 1300.0, (double) order.getOrderLines()[0].getQuantity());
+                    assertEquals("Quantity of should be the combiend of all events", 2600.0, (double) order.getOrderLines()[0].getQuantity());
                 }
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1115))) {
@@ -83,7 +83,7 @@ public class MediationTest extends TestCase {
             for (OrderLineWS line : order.getOrderLines()) {
                 total += line.getAmount();
             }
-            assertEquals("Total of mixed price order", 6400, total);
+            assertEquals("Total of mixed price order", 12800, total);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());

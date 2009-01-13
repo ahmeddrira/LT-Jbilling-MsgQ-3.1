@@ -255,6 +255,10 @@ public class OrderDTO  implements java.io.Serializable {
         this.orderPeriodDTO = orderPeriodDTO;
     }
     
+    public void setOrderPeriodId(Integer id) {
+        setOrderPeriod(new OrderPeriodDAS().find(id));
+    }
+    
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="billing_type_id", nullable=false)
     public OrderBillingTypeDTO getOrderBillingType() {

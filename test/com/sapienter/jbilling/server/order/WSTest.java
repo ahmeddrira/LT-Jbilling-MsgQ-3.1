@@ -745,7 +745,7 @@ public class WSTest  extends TestCase {
         try {
             final Integer USER_ID = 1000;
 
-            // create an order an order for testing
+            // create an order for testing
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             // create a main subscription (current) order
@@ -802,6 +802,45 @@ public class WSTest  extends TestCase {
             api.deleteOrder(mainOrderId);
             api.deleteOrder(testOrderId);
             
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+    
+    public void testPlan() {
+        try {
+            final Integer USER_ID = 1000;
+
+            // create an order for testing
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            
+            // create an order with the plan item
+            OrderWS mainOrder = createMockOrder(USER_ID, 1, 10);
+            mainOrder.setPeriod(2);
+            mainOrder.getOrderLines()[0].setItemId(250);
+            mainOrder.getOrderLines()[0].setUseItem(true);
+            System.out.println("Creating plan order ...");
+            Integer mainOrderId = api.createOrder(mainOrder);
+            assertNotNull("The order was not created", mainOrderId);
+            
+            // take the last two orders
+            Integer orders[] = api.getLastOrders(USER_ID, 2);
+            // setup
+            OrderWS order = api.getOrder(orders[1]);
+            assertEquals("Setup fee order with one item", 1, order.getOrderLines().length);
+            assertEquals("Setup fee with item 251", 251, order.getOrderLines()[0].getItemId().intValue());
+            assertEquals("Setup fee order one-ime", 1, order.getPeriod().intValue());
+            
+            // subscription
+            order = api.getOrder(orders[0]);
+            assertEquals("subscription order with one item", 1, order.getOrderLines().length);
+            assertEquals("subscription with item 1", 1, order.getOrderLines()[0].getItemId().intValue());
+            assertEquals("subscription order monthly", 2, order.getPeriod().intValue());
+            
+            // clean up
+            api.deleteOrder(orders[0]);
+            api.deleteOrder(orders[1]);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

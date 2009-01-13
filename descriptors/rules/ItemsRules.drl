@@ -5,6 +5,7 @@ package ItemsRules3
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager
 
 #globals
@@ -16,6 +17,17 @@ rule "Lemon and Coffee discount"
 	    exists ItemDTO(id == 3) # Coffee
 	then
 	    order.addItem(14); # 10% discount
+end
+
+rule "Lemonade Plan"
+    when
+        ItemDTO(id == 250) # Plan
+    then
+        order.removeItem(250); # Plan is only for grouping
+        order.addItem(1); # The monthly lemonade subscription
+        OrderDTO newOrder = order.createOrder(251, 1.0);  # The setup fee
+        newOrder.setOrderPeriodId(1); # It should be one time
+        newOrder.setNotes("As part of plan. Order " + order.getOrder().getId());
 end
 
 rule 'rateOrder test1'

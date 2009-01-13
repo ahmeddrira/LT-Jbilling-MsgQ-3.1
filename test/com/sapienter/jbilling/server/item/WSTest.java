@@ -199,7 +199,7 @@ public class WSTest  extends TestCase {
             	}
             });
             assertNotNull("The items were not retrieved", items);
-            assertTrue("Wrong number of items", items.length == 7);
+            assertTrue("Wrong number of items", items.length == 9);
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", 
                     items[0].getDescription());
@@ -245,13 +245,14 @@ public class WSTest  extends TestCase {
 
             // item at index 5 tested in testCurrencyConvert() below
 
+            // this is alwyas the last item
+            int lastItem = items.length - 1;
             assertEquals("Description", "an item from ws", 
-                    items[6].getDescription());
-            assertEquals("Price", new Float(29.5), items[6].getPrice());
+                    items[lastItem].getDescription());
+            assertEquals("Price", new Float(29.5), items[lastItem].getPrice());
             assertEquals("Price Vector", new Float(29.5), 
-                    (getCurrencyPrice(items[6].getPrices(), 1).getPrice()));
-            assertEquals("ID", new Integer(250), items[6].getId());
-            assertEquals("Type 1", new Integer(1), items[6].getTypes()[0]);
+                    (getCurrencyPrice(items[lastItem].getPrices(), 1).getPrice()));
+            assertEquals("Type 1", new Integer(1), items[lastItem].getTypes()[0]);
 
             System.out.println("Done!");
             

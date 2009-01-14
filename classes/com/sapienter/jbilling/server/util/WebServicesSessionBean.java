@@ -1788,11 +1788,13 @@ public class WebServicesSessionBean implements SessionBean {
             OrderLineDTO line = (OrderLineDTO) it.next();
             LOG.info("copying line: " + line);
             if (line.getDeleted() == 0) {
-                OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-                        line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(),
-                        line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(),
-                        line.getEditable(), (line.getPurchaseOrder() != null ? line.getPurchaseOrder().getId() : null),
-                        null, line.getVersionNum());
+
+            	OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
+                		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), 
+                		line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
+                		line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
+                		null, line.getVersionNum(),line.getProvisioningStatus(),line.getProvisioningRequestId());
+              
                 lines.add(lineWS);
             }
         }

@@ -1,0 +1,34 @@
+package provisioning_commands
+import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.order.db.OrderLineDTO
+import 
+com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager
+
+global com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager command
+
+
+
+
+
+
+rule 'provisioning_activate'
+when
+$orderLine : OrderLineDTO(item.id == 2, provisioningStatus ==
+Constants.PROVISIONING_STATUS_INACTIVE)
+CommandManager(eventType == "activated")
+then
+command.addCommand("activate_something", $orderLine.getId());
+command.addParameter("parameter1", "value1");
+command.addParameter("parameter2", "value2");
+end
+
+rule 'provisioning_deactivate'
+when
+$orderLine : OrderLineDTO(item.id == 2, provisioningStatus ==Constants.PROVISIONING_STATUS_ACTIVE)
+CommandManager(eventType == "deactivated")
+then
+command.addCommand("deactivate_something", $orderLine.getId());
+command.addParameter("parameter1", "value1");
+command.addParameter("parameter2", "value2");
+
+end

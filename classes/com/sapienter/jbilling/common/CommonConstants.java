@@ -166,4 +166,14 @@ public interface CommonConstants {
     public final static Integer AUTH_LOCKED = new Integer(2);
     // the password is good, but too old. Needs to call update
     public final static Integer AUTH_EXPIRED = new Integer(3);
+    
+    /**
+     * @author othman
+     * provisioning status constants
+     */
+    public final static Integer PROVISIONING_STATUS_ACTIVE=new Integer(1);
+    public final static Integer PROVISIONING_STATUS_INACTIVE=new Integer(2);
+    public final static Integer PROVISIONING_STATUS_PENDING_ACTIVE=new Integer(3);
+    public final static Integer PROVISIONING_STATUS_PENDING_INACTIVE=new Integer(4);
+    public final static Integer PROVISIONING_STATUS_FAILED=new Integer(5);
 }

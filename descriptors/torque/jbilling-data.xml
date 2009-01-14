@@ -308,6 +308,9 @@
     <EventLogMessage Id="26"/>
     <EventLogMessage Id="27"/>
     <EventLogMessage Id="28"/>
+    <EventLogMessage Id="29"/>
+    <EventLogMessage Id="30"/>    
+    <EventLogMessage Id="31"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -322,6 +325,7 @@
     <EventLogModule Id="12"/>
     <EventLogModule Id="13"/>
     <EventLogModule Id="14"/>
+    <EventLogModule Id="15"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Manual invoice deletion"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Invoice maintenance"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Pluggable tasks maintenance"/>
@@ -2953,6 +2957,7 @@
     <PluggableTaskType Id="43" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.blacklist.tasks.BlacklistUserStatusTask" MinParameters="0"/>
     <PluggableTaskType Id="44" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.JDBCReader" MinParameters="0"/>
     <PluggableTaskType Id="45" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.MySQLReader" MinParameters="0"/>
+    <PluggableTaskType Id="46" CategoryId="17" ClassName="com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask" MinParameters="0"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

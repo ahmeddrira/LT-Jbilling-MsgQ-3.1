@@ -512,7 +512,24 @@ xmlvalidation="true">
             <test name="com.sapienter.jbilling.server.mediation.MediationTest"/>
         </junit>
     </target>
-    
+
+    <target name="test-provisioning">
+        <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
+              todir="${build.test.dir}"/>			  
+        <javac debug="on" destdir="${build.test.dir}"
+              srcdir="${source.test.dir}/com/sapienter/jbilling/server/provisioning">
+            <classpath refid="run.classpath"/>
+        </javac>
+        <junit printsummary="off" haltonfailure="true" fork="yes">
+            <jvmarg value="-Djava.security.manager" />
+            <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
+            <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
+            <classpath refid="run.classpath"/>
+            <formatter type="brief" usefile="false"/>
+            <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest"/>
+        </junit>
+    </target>
+
     <target name="test-process">
         <javac debug="on" destdir="${build.test.dir}"
                srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
@@ -526,7 +543,7 @@ xmlvalidation="true">
         </junit>
     </target>
     
-    <target name="test" depends="test-ws, test-process, test-mediation">
+    <target name="test" depends="test-ws, test-process, test-mediation, test-provisioning">
     </target>
     
     <!--
@@ -826,6 +843,13 @@ server="upload.sourceforge.net" userid="anonymous">
             classpathref="drools.run.classpath"
             binformat="package">
             <include name="PricingRules.drl" />
+        </rulebase>
+        <rulebase 
+        	srcdir="${source.rules.dir}" 		
+        	tofile="${source.rules.dir}/provisioning_commands.pkg"
+        	classpathref="drools.run.classpath"
+        	binformat="package">
+        	<include name="provisioning_commands.drl" />
         </rulebase>
     </target>
     

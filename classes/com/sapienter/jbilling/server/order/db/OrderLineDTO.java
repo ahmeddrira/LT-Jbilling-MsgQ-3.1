@@ -80,7 +80,9 @@ public class OrderLineDTO implements Serializable, Comparable {
     private Integer versionNum;
     private Boolean editable = null;
     private List<MediationRecordLineDTO> events = new Vector<MediationRecordLineDTO>(0);
-     
+     //provisioning fields
+     private Integer provisioningStatus;
+     private String provisioningRequestId;
      // other fields, non-persistent
      private String priceStr = null;
      private Boolean totalReadOnly = null;
@@ -111,7 +113,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.deleted = deleted;
     }
     public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, float amount, 
-    		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description) {
+    		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description,Integer provisioningStatus, String provisioningRequestId) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
        this.item = item;
@@ -123,6 +125,8 @@ public class OrderLineDTO implements Serializable, Comparable {
        this.createDatetime = createDatetime;
        this.deleted = deleted;
        this.description = description;
+       this.provisioningStatus=provisioningStatus;
+       this.provisioningRequestId=provisioningRequestId;
     }
    
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="order_line_GEN")
@@ -312,6 +316,36 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
 
 	
+	/**
+	 * @return the provisioningStatus
+	 */
+    @Column(name="provisioning_status")
+	public Integer getProvisioningStatus() {
+		return provisioningStatus;
+	}
+
+	/**
+	 * @param provisioningStatus the provisioningStatus to set
+	 */
+	public void setProvisioningStatus(Integer provisioningStatus) {
+		this.provisioningStatus = provisioningStatus;
+	}
+
+	/**
+	 * @return the provisioningRequestId
+	 */
+	@Column(name="provisioning_request_id")
+	public String getProvisioningRequestId() {
+		return provisioningRequestId;
+	}
+
+	/**
+	 * @param provisioningRequestId the provisioningRequestId to set
+	 */
+	public void setProvisioningRequestId(String provisioningRequestId) {
+		this.provisioningRequestId = provisioningRequestId;
+	}
+
 	public void touch() {
 		getCreateDatetime();
 		if (getItem() != null) {
@@ -347,6 +381,8 @@ public class OrderLineDTO implements Serializable, Comparable {
         " deleted=" + deleted  +
         " description=" + description + 
         " versionNum=" + versionNum  +
+        " provisioningStatus=" + provisioningStatus  +
+        " provisionningRequestId=" + provisioningRequestId  +        
         " editable=" + editable + "]";
 
     }

@@ -78,6 +78,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
+import com.sapienter.jbilling.server.provisioning.event.SubscriptionActiveEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -319,6 +320,15 @@ public class OrderBL extends ResultList
             
             if (order.getIsCurrent() != null && order.getIsCurrent().intValue() == 1) {
                 setMainSubscription(userAgentId);
+            }
+            //check if order is created with activeSince<= now (or null)
+            Date now=new Date();
+            Date activeSince=order.getActiveSince();
+           if(activeSince==null || activeSince.before(now)){
+            	 // generate SubscriptionActiveEvent for order                
+                SubscriptionActiveEvent newEvent = new SubscriptionActiveEvent(entityId, order);
+                EventManager.process(newEvent);
+                LOG.debug("OrderBL.create(): generated SubscriptionActiveEvent for order: "+order.getId());
             }
             
             // add a log row for convenience
@@ -1111,7 +1121,7 @@ public class OrderBL extends ResultList
         OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
         		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), line.getCreateDatetime(),
         		line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(), 
-        		line.getPurchaseOrder().getId(), null, line.getVersionNum());
+        		line.getPurchaseOrder().getId(), null, line.getVersionNum(),line.getProvisioningStatus(),line.getProvisioningRequestId());
         return retValue;
     }
     
@@ -1143,6 +1153,8 @@ public class OrderBL extends ResultList
     	dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
     	dto.setQuantity(ws.getQuantity());
     	dto.setVersionNum(ws.getVersionNum());
+    	dto.setProvisioningStatus(ws.getProvisioningStatus());
+    	dto.setProvisioningRequestId(ws.getProvisioningRequestId());
     	return dto;
     }
     
@@ -1162,6 +1174,8 @@ public class OrderBL extends ResultList
             line.setItemPrice(dto.getItemPrice());
             line.setPrice(dto.getPrice());
             line.setQuantity(dto.getQuantity());
+            line.setProvisioningStatus(dto.getProvisioningStatus());
+            line.setProvisioningRequestId(dto.getProvisioningRequestId());
         }
     }
     
@@ -1367,5 +1381,18 @@ public class OrderBL extends ResultList
     	}
     	
     	return retValue;
+    }
+    
+    public void setProvisioningStatus(Integer orderLineId,Integer provisioningStatus){
+    	OrderLineDTO line = getOrderLine(orderLineId);
+    	Integer oldStatus=line.getProvisioningStatus();
+    	line.setProvisioningStatus(provisioningStatus);
+    	LOG.debug("order line "+orderLineId+": updated provisioning status :"+line.getProvisioningStatus());
+    	
+    	// add a log for provisioning module
+		eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
+                Constants.TABLE_ORDER_LINE,  orderLineId,
+				EventLogger.MODULE_PROVISIONING, EventLogger.PROVISIONING_STATUS_CHANGE,
+				oldStatus, null, null);
     }
 }

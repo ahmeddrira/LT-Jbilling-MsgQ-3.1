@@ -667,7 +667,7 @@ public class WSTest  extends TestCase {
             assertEquals("Amount", new Float(-45), orderLine.getAmount());
 
             // order 2 - lemonade refund
-            order = api.getOrder(list[1]);
+            order = api.getOrder(list[2]);
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(1), orderLine.getItemId());
@@ -676,7 +676,7 @@ public class WSTest  extends TestCase {
             assertEquals("Amount", new Float(-20), orderLine.getAmount());
 
             // order 3 - cancel fee for lemonade (see the rule in CancelFees.drl)
-            order = api.getOrder(list[2]);
+            order = api.getOrder(list[1]);
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(24), orderLine.getItemId());

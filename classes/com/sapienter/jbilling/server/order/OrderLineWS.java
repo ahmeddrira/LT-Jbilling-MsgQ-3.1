@@ -58,6 +58,11 @@ public class OrderLineWS implements Serializable {
 
 	private Boolean editable = null;
 
+	//provisioning fields
+    private Integer provisioningStatus;
+    
+    private String provisioningRequestId;
+    
 	// other fields, non-persistent
 	private String priceStr = null;
 
@@ -89,7 +94,7 @@ public class OrderLineWS implements Serializable {
 	public OrderLineWS(Integer id, Integer itemId, String description,
 			Float amount, Double quantity, Float price, Integer itemPrice,
 			Date create, Integer deleted, Integer newTypeId, Boolean editable,
-			Integer orderId, Boolean useItem, Integer version) {
+			Integer orderId, Boolean useItem, Integer version,Integer provisioningStatus, String provisioningRequestId) {
 		setId(id);
 		setItemId(itemId);
 		setDescription(description);
@@ -104,6 +109,9 @@ public class OrderLineWS implements Serializable {
 		setOrderId(orderId);
 		setUseItem(useItem);
 		setVersionNum(version);
+		setProvisioningStatus(provisioningStatus);
+		setProvisioningRequestId(provisioningRequestId);
+		
 	}
 
 	/**
@@ -244,4 +252,34 @@ public class OrderLineWS implements Serializable {
 	public void setVersionNum(Integer versionNum) {
 		this.versionNum = versionNum;
 	}
+
+	/**
+	 * @return the provisioningStatus
+	 */
+	public Integer getProvisioningStatus() {
+		return provisioningStatus;
+	}
+
+	/**
+	 * @param provisioningStatus the provisioningStatus to set
+	 */
+	public void setProvisioningStatus(Integer provisioningStatus) {
+		this.provisioningStatus = provisioningStatus;
+	}
+
+	/**
+	 * @return the provisioningRequestId
+	 */
+	public String getProvisioningRequestId() {
+		return provisioningRequestId;
+	}
+
+	/**
+	 * @param provisioningRequestId the provisioningRequestId to set
+	 */
+	public void setProvisioningRequestId(String provisioningRequestId) {
+		this.provisioningRequestId = provisioningRequestId;
+	}
+	
+	
 }

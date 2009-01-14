@@ -55,6 +55,8 @@ import com.sapienter.jbilling.server.list.ListSession;
 import com.sapienter.jbilling.server.list.ListSessionHome;
 import com.sapienter.jbilling.server.mediation.MediationSession;
 import com.sapienter.jbilling.server.mediation.MediationSessionHome;
+import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSession;
+import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionHome;
 
 /**
  * @author Emil
@@ -202,7 +204,12 @@ public class Trigger implements Job {
                     MediationSessionHome.class,
                     MediationSessionHome.JNDI_NAME);
             MediationSession remoteMediation = mediationHome.create();
-
+            ProvisioningProcessSessionHome provisioningProcessHome=
+            	(ProvisioningProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(
+            			ProvisioningProcessSessionHome.class,
+            			ProvisioningProcessSessionHome.JNDI_NAME);
+            ProvisioningProcessSession remoteProvisioningProcess=provisioningProcessHome.create();
+            
             // determine the date for this run
             Date today = Calendar.getInstance().getTime();
             today = Util.truncateDate(today);
@@ -281,6 +288,16 @@ public class Trigger implements Job {
                     LOG.info("Starting credit card expiration at " + Calendar.getInstance().getTime());
                     remoteUser.notifyCreditCardExpiration(today);
                     LOG.info("Ended credit card expiration at " + Calendar.getInstance().getTime());
+                }
+             // run the provisioning process
+                if (Util.getSysPropBooleanTrue("process.run_provisioning")) {
+        			LOG.info("Running trigger for " + today);
+        			LOG.info("Starting provisioning process at " + 
+        					Calendar.getInstance().getTime());
+        			remoteProvisioningProcess.trigger();
+        			LOG.info("Ended provisioning process at " + 
+        					Calendar.getInstance().getTime());
+        			
                 }
             }
 

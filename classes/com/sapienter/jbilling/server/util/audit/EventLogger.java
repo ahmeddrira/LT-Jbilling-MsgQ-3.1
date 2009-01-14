@@ -67,6 +67,11 @@ public class EventLogger {
     // blacklist
     public static final Integer BLACKLIST_USER_ID_ADDED = new Integer(27);
     public static final Integer BLACKLIST_USER_ID_REMOVED = new Integer(28);
+    //provisioning
+    public static final Integer PROVISIONING_UUID = new Integer(29);
+    public static final Integer PROVISIONING_COMMAND=new Integer(30);
+    public static final Integer PROVISIONING_STATUS_CHANGE=new Integer(31);
+    
     // others
     public static final Integer ROW_CREATED = new Integer(25);
     public static final Integer ROW_DELETED = new Integer(7);
@@ -89,6 +94,7 @@ public class EventLogger {
     public static final Integer MODULE_WEBSERVICES = new Integer(12);
     public static final Integer MODULE_MEDIATION = new Integer(13);
     public static final Integer MODULE_BLACKLIST = new Integer(14);
+    public static final Integer MODULE_PROVISIONING=new Integer(15);
 
     
     // levels of logging    

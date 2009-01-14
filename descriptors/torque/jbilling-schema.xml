@@ -769,6 +769,8 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column name="description" size="1000" type="VARCHAR"/>
+        <column name="provisioning_status" type="INTEGER"/>
+        <column name="provisioning_request_id" size="50" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_order_line_order_id">
         	<index-column name="order_id"/>

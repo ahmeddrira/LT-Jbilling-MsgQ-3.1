@@ -51,6 +51,8 @@ process.run_list=true
 process.run_cc_expire=true
 # if the daily batch includes running the mediation process
 process.run_mediation=true
+# if the daily batch includes running the provisioning process
+process.run_provisioning=true
 # if the credit cards are stored encrypted or not
 credit_card_secure=true
 # a key used for the encryption of credit cards
@@ -64,3 +66,4 @@ password_encrypt_all=true
 lockout_password=totalSecret
 # if the rules base have to be cached or not. Cache for production, leave false for development
 cache_rules=true
+

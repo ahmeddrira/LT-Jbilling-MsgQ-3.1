@@ -26,7 +26,8 @@ package com.sapienter.jbilling.server.list;
 
 import java.io.Serializable;
 
-import com.sapienter.jbilling.server.entity.ListFieldDTO;
+import com.sapienter.jbilling.server.list.db.ListFieldDTO;
+
 
 /**
  * @author Emil

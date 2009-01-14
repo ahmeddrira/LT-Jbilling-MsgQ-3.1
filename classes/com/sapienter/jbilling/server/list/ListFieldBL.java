@@ -30,8 +30,8 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
-import com.sapienter.jbilling.interfaces.ListFieldEntityLocalHome;
+import com.sapienter.jbilling.server.list.db.ListFieldDAS;
+import com.sapienter.jbilling.server.list.db.ListFieldDTO;
 
 /**
  * @author Emil
@@ -39,8 +39,8 @@ import com.sapienter.jbilling.interfaces.ListFieldEntityLocalHome;
  */
 public class ListFieldBL {
     private JNDILookup EJBFactory = null;
-    private ListFieldEntityLocalHome listFieldHome = null;
-    private ListFieldEntityLocal listField = null;
+    private ListFieldDAS listFieldDas = null;
+    private ListFieldDTO listField = null;
     private Logger log = null;
 
     public ListFieldBL(Integer listFieldId) 
@@ -53,7 +53,7 @@ public class ListFieldBL {
         init();
     }
 
-    public ListFieldBL(ListFieldEntityLocal listField) throws NamingException {
+    public ListFieldBL(ListFieldDTO listField) throws NamingException {
         init();
         set(listField);
     }
@@ -61,25 +61,22 @@ public class ListFieldBL {
     private void init() throws NamingException {
         log = Logger.getLogger(ListFieldBL.class);     
         EJBFactory = JNDILookup.getFactory(false);
-        listFieldHome = (ListFieldEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                ListFieldEntityLocalHome.class,
-                ListFieldEntityLocalHome.JNDI_NAME);
+        listFieldDas = new ListFieldDAS();
     }
 
-    public ListFieldEntityLocal getEntity() {
+    public ListFieldDTO getEntity() {
         return listField;
     }
     
-    public ListFieldEntityLocalHome getHome() {
-        return listFieldHome;
+    public ListFieldDAS getHome() {
+        return listFieldDas;
     }
 
     public void set(Integer id) throws FinderException {
-        listField = listFieldHome.findByPrimaryKey(id);
+        listField = listFieldDas.find(id);
     }
     
-    public void set(ListFieldEntityLocal listField) {
+    public void set(ListFieldDTO listField) {
         this.listField = listField;
     }
 }

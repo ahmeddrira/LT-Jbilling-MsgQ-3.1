@@ -33,10 +33,10 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ListEntityEntityLocal;
-import com.sapienter.jbilling.interfaces.ListFieldEntityEntityLocal;
-import com.sapienter.jbilling.interfaces.ListFieldEntityEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
+import com.sapienter.jbilling.server.list.db.ListEntityDTO;
+import com.sapienter.jbilling.server.list.db.ListFieldDTO;
+import com.sapienter.jbilling.server.list.db.ListFieldEntityDAS;
+import com.sapienter.jbilling.server.list.db.ListFieldEntityDTO;
 
 /**
  * @author Emil
@@ -44,8 +44,8 @@ import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
  */
 public class ListFieldEntityBL {
     private JNDILookup EJBFactory = null;
-    private ListFieldEntityEntityLocalHome fieldEntityHome = null;
-    private ListFieldEntityEntityLocal fieldEntity = null;
+    private ListFieldEntityDAS fieldEntityDas = null;
+    private ListFieldEntityDTO fieldEntity = null;
     private Logger log = null;
 
     public ListFieldEntityBL(Integer fieldEntityId) 
@@ -58,7 +58,7 @@ public class ListFieldEntityBL {
         init();
     }
 
-    public ListFieldEntityBL(ListFieldEntityEntityLocal fieldEntity) throws NamingException {
+    public ListFieldEntityBL(ListFieldEntityDTO fieldEntity) throws NamingException {
         init();
         set(fieldEntity);
     }
@@ -66,49 +66,45 @@ public class ListFieldEntityBL {
     private void init() throws NamingException {
         log = Logger.getLogger(ListFieldEntityBL.class);     
         EJBFactory = JNDILookup.getFactory(false);
-        fieldEntityHome = (ListFieldEntityEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                ListFieldEntityEntityLocalHome.class,
-                ListFieldEntityEntityLocalHome.JNDI_NAME);
+        fieldEntityDas = new ListFieldEntityDAS();
     }
 
-    public ListFieldEntityEntityLocal getEntity() {
+    public ListFieldEntityDTO getEntity() {
         return fieldEntity;
     }
     
-    public ListFieldEntityEntityLocalHome getHome() {
-        return fieldEntityHome;
+    public ListFieldEntityDAS getHome() {
+        return fieldEntityDas;
     }
 
     public void set(Integer id) throws FinderException {
-        fieldEntity = fieldEntityHome.findByPrimaryKey(id);
+        fieldEntity = fieldEntityDas.find(id);
     }
     
-    public void set(ListFieldEntityEntityLocal fieldEntity) {
+    public void set(ListFieldEntityDTO fieldEntity) {
         this.fieldEntity = fieldEntity;
     }
     
     public void set(Integer fieldId, Integer listEntityId) 
             throws FinderException {
-        fieldEntity = fieldEntityHome.findByFieldEntity(fieldId, listEntityId);
+        fieldEntity = fieldEntityDas.findByFieldEntity(fieldId, listEntityId);
     }
 
-    public void createUpdate(ListFieldEntityLocal field, 
-            ListEntityEntityLocal entity, Integer min, Integer max, 
+    public void createUpdate(ListFieldDTO field, 
+            ListEntityDTO entity, Integer min, Integer max, 
             String minStr, String maxStr, Date minDate, Date maxDate) 
             throws CreateException {
-        try {
-            fieldEntity = fieldEntityHome.findByFieldEntity(field.getId(), 
+            fieldEntity = fieldEntityDas.findByFieldEntity(field.getId(), 
                     entity.getId());
-        } catch (FinderException e) {
-            fieldEntity = fieldEntityHome.create(entity, field);
-        }
+            if (fieldEntity == null) {
+                 fieldEntity = fieldEntityDas.create(entity, field);
+            }
 
-        fieldEntity.setMax(max);
-        fieldEntity.setMin(min);
-        fieldEntity.setMaxStr(maxStr);
-        fieldEntity.setMinStr(minStr);
-        fieldEntity.setMinDate(minDate);
-        fieldEntity.setMaxDate(maxDate);
+        fieldEntity.setMaxValue(max);
+        fieldEntity.setMinValue(min);
+        fieldEntity.setMaxStrValue(maxStr);
+        fieldEntity.setMinStrValue(minStr);
+        fieldEntity.setMinDateValue(minDate);
+        fieldEntity.setMaxDateValue(maxDate);
     }
 }

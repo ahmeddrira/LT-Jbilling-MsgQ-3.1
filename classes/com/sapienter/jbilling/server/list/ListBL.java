@@ -16,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 /*
  * Created on Nov 26, 2004
@@ -44,11 +44,12 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.ListEntityLocal;
-import com.sapienter.jbilling.interfaces.ListEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ListFieldEntityLocal;
 import com.sapienter.jbilling.server.customer.CustomerSQL;
 import com.sapienter.jbilling.server.invoice.InvoiceSQL;
+import com.sapienter.jbilling.server.list.db.ListDAS;
+import com.sapienter.jbilling.server.list.db.ListDTO;
+import com.sapienter.jbilling.server.list.db.ListFieldDAS;
+import com.sapienter.jbilling.server.list.db.ListFieldDTO;
 import com.sapienter.jbilling.server.order.OrderSQL;
 import com.sapienter.jbilling.server.payment.PaymentSQL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -57,18 +58,17 @@ import com.sapienter.jbilling.server.util.Constants;
 
 /**
  * @author Emil
- *
+ * 
  */
 public class ListBL {
     private static final String CUSTOM_PREFIX = "CUSTOM_";
     private JNDILookup EJBFactory = null;
-    private ListEntityLocalHome listHome = null;
-    private ListEntityLocal list = null;
+    private ListDAS listDas = null;
+    private ListDTO list = null;
     private Logger log = null;
     private Hashtable parameters = null;
 
-    public ListBL(Integer listId) 
-            throws NamingException, FinderException {
+    public ListBL(Integer listId) throws NamingException, FinderException {
         init();
         set(listId);
     }
@@ -77,42 +77,38 @@ public class ListBL {
         init();
     }
 
-    public ListBL(ListEntityLocal list) throws NamingException {
+    public ListBL(ListDTO list) throws NamingException {
         init();
         set(list);
     }
 
     private void init() throws NamingException {
-        log = Logger.getLogger(ListBL.class);     
+        log = Logger.getLogger(ListBL.class);
         EJBFactory = JNDILookup.getFactory(false);
-        listHome = (ListEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                ListEntityLocalHome.class,
-                ListEntityLocalHome.JNDI_NAME);
+        listDas = new ListDAS();
     }
 
-    public ListEntityLocal getEntity() {
+    public ListDTO getEntity() {
         return list;
     }
-    
-    public ListEntityLocalHome getHome() {
-        return listHome;
+
+    public ListDAS getHome() {
+        return listDas;
     }
 
     public void set(Integer id) throws FinderException {
-        list = listHome.findByPrimaryKey(id);
+        list = listDas.find(id);
     }
-    
-    public void set(ListEntityLocal list) {
+
+    public void set(ListDTO list) {
         this.list = list;
     }
-    
+
     public void set(String legacyName) throws FinderException {
-        list = listHome.findByName(legacyName);
+        list = listDas.findByName(legacyName);
     }
-    
-    public void updateStatistics() 
-            throws SessionInternalError {
+
+    public void updateStatistics() throws SessionInternalError {
         // for the statistics, the only relevant parameters is the entityId
         // still they have to be there for thw sql to run
         parameters = new Hashtable();
@@ -123,48 +119,46 @@ public class ListBL {
         // go through all the lists
         try {
             // make the counting
-            Connection conn = EJBFactory.lookUpDataSource().
-                    getConnection();
+            Connection conn = EJBFactory.lookUpDataSource().getConnection();
 
-            for (Iterator listsIt = listHome.findAll().iterator(); 
-                    listsIt.hasNext();) {
-                list = (ListEntityLocal) listsIt.next();
+            for (Iterator listsIt = listDas.findAll().iterator(); listsIt
+                    .hasNext();) {
+                list = (ListDTO) listsIt.next();
                 // now for each entity
-                for (Iterator entityIt = new CompanyDAS().findEntities().
-                        iterator(); entityIt.hasNext();) {
-                    CompanyDTO anEntity = (CompanyDTO) 
-                            entityIt.next();
+                for (Iterator entityIt = new CompanyDAS().findEntities()
+                        .iterator(); entityIt.hasNext();) {
+                    CompanyDTO anEntity = (CompanyDTO) entityIt.next();
 
                     parameters.put("entityId", anEntity.getId());
-                    PreparedStatement stmt = conn.prepareStatement(
-                            getCountSQL());
+                    PreparedStatement stmt = conn
+                            .prepareStatement(getCountSQL());
                     setSQLParameters(stmt, null);
                     ResultSet res = stmt.executeQuery();
                     res.next();
                     Integer count = new Integer(res.getInt(1));
-                    
+
                     // update/create the entity record for this list
                     ListEntityBL listEntityBl = new ListEntityBL();
-                    try {
-                        listEntityBl.set(list.getId(), anEntity.getId());
-                        listEntityBl.update(count);
-                    } catch (FinderException e3) {
+                    listEntityBl.set(list.getId(), anEntity.getId());
+                    
+                    if (getEntity() == null) {
                         // this entity has no records for this list
                         // create one
                         listEntityBl.create(list, anEntity.getId(), count);
+                    } else {
+                        listEntityBl.update(count);    
                     }
-                    
+
                     // now update each of the fields
                     int column = 2; // skip the count
-                    for (Iterator fieldIt = list.getListFields().iterator();
-                            fieldIt.hasNext();) {
-                        ListFieldEntityLocal field = (ListFieldEntityLocal) 
-                                fieldIt.next();
+                    for (Iterator fieldIt = list.getListFields().iterator(); fieldIt
+                            .hasNext();) {
+                        ListFieldDTO field = (ListFieldDTO) fieldIt.next();
                         if (field.getOrdenable().intValue() == 1) {
                             Integer min = null, max = null;
                             String minStr = null, maxStr = null;
                             Date minDate = null, maxDate = null;
-                            
+
                             if (field.getDataType().equals("integer")) {
                                 min = new Integer(res.getInt(column++));
                                 max = new Integer(res.getInt(column++));
@@ -175,179 +169,173 @@ public class ListBL {
                                 minDate = res.getDate(column++);
                                 maxDate = res.getDate(column++);
                             }
-                            ListFieldEntityBL fieldEntityBl = 
-                                    new ListFieldEntityBL();
-                            fieldEntityBl.createUpdate(field, 
-                                    listEntityBl.getEntity(), min, max, minStr, 
-                                    maxStr, minDate, maxDate);
+                            ListFieldEntityBL fieldEntityBl = new ListFieldEntityBL();
+                            fieldEntityBl.createUpdate(field, listEntityBl
+                                    .getEntity(), min, max, minStr, maxStr,
+                                    minDate, maxDate);
                         }
                     }
-                    
+
                     res.close();
                     stmt.close();
                 }
             }
-            
+
             conn.close();
-        }
-        catch (FinderException e) {
-            // seems that there are no lists .. ?
-        }
-        catch (NamingException e2) {
+        } catch (NamingException e2) {
             throw new SessionInternalError(e2);
-        }
-        catch (CreateException e2) {
+        } catch (CreateException e2) {
             throw new SessionInternalError(e2);
-        }
-        catch (SQLException e3) {
+        } catch (SQLException e3) {
             throw new SessionInternalError(e3);
         }
     }
-    
+
     /**
-     * I need this kind of hack to reuse the exiting SQL code written for
-     * 21 lists. Otherwise I'd have to move it all to the DB.
+     * I need this kind of hack to reuse the exiting SQL code written for 21
+     * lists. Otherwise I'd have to move it all to the DB.
+     * 
      * @param listId
      * @return
      */
     private String getSQL() {
         String retValue = null;
-        
+
         // these are very common parameters
-        Integer entityId =  (Integer) parameters.get("entityId");
+        Integer entityId = (Integer) parameters.get("entityId");
         Integer userType = (Integer) parameters.get("userType");
         Integer userId = (Integer) parameters.get("userId");
         Integer languageId = (Integer) parameters.get("languageId");
 
-        switch (list.getId().intValue()) {
+        switch (list.getId()) {
         case 1: // CUSTOMERS - standards
-            if(userType.equals(Constants.TYPE_INTERNAL) || 
-                    userType.equals(Constants.TYPE_ROOT) || 
-                    userType.equals(Constants.TYPE_CLERK)) {
+            if (userType.equals(Constants.TYPE_INTERNAL)
+                    || userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
                 retValue = CustomerSQL.listCustomers;
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
                 // partners only see their own
                 retValue = CustomerSQL.listPartner;
             }
             break;
         case 2: // INVOICES - standard
-            if(userType.equals(Constants.TYPE_ROOT) || 
-                    userType.equals(Constants.TYPE_CLERK)) {
+            if (userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
                 retValue = InvoiceSQL.rootClerkList;
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
                 retValue = InvoiceSQL.partnerList;
-            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+            } else if (userType.equals(Constants.TYPE_CUSTOMER)) {
                 retValue = InvoiceSQL.customerList;
             }
             break;
         case 3: // ORDERS - standard
-            if(userType.equals(Constants.TYPE_ROOT) ||
-                    userType.equals(Constants.TYPE_CLERK)) {
+            if (userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
                 retValue = OrderSQL.listInternal;
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
                 retValue = OrderSQL.listPartner;
-            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+            } else if (userType.equals(Constants.TYPE_CUSTOMER)) {
                 retValue = OrderSQL.listCustomer;
             }
             break;
-        case 4: // PAYMENTS  - standard
-            if(userType.equals(Constants.TYPE_ROOT) ||
-                    userType.equals(Constants.TYPE_CLERK)) {
+        case 4: // PAYMENTS - standard
+            if (userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
                 retValue = PaymentSQL.rootClerkList;
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
                 retValue = PaymentSQL.partnerList;
-            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+            } else if (userType.equals(Constants.TYPE_CUSTOMER)) {
                 retValue = PaymentSQL.customerList;
             }
             break;
         }
-        
+
         return retValue;
     }
-    
-    private int setSQLParameters(PreparedStatement stmt, Integer from) 
+
+    private int setSQLParameters(PreparedStatement stmt, Integer from)
             throws SQLException {
         int index = 1;
-        
+
         // these are very common parameters
-        Integer entityId =  (Integer) parameters.get("entityId");
+        Integer entityId = (Integer) parameters.get("entityId");
         Integer userType = (Integer) parameters.get("userType");
         Integer userId = (Integer) parameters.get("userId");
         Integer languageId = (Integer) parameters.get("languageId");
 
-        switch (list.getId().intValue()) {
+        switch (list.getId()) {
         case 1: // CUSTOMERS - standards
             stmt.setInt(index++, entityId.intValue());
-            if(userType.equals(Constants.TYPE_PARTNER)) {
+            if (userType.equals(Constants.TYPE_PARTNER)) {
                 stmt.setInt(index++, userId.intValue());
             }
             break;
         case 2: // INVOICES - standard
-            if(userType.equals(Constants.TYPE_ROOT) || 
-                    userType.equals(Constants.TYPE_CLERK)) {
+            if (userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
                 stmt.setInt(index++, entityId.intValue());
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
-                stmt.setInt(index++,entityId.intValue());
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
+                stmt.setInt(index++, entityId.intValue());
                 stmt.setInt(index++, userId.intValue());
-            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+            } else if (userType.equals(Constants.TYPE_CUSTOMER)) {
                 stmt.setInt(index++, userId.intValue());
             }
 
             break;
         case 3:// ORDER - standard
-            if(userType.equals(Constants.TYPE_ROOT) ||
-                    userType.equals(Constants.TYPE_CLERK)) {
-                stmt.setInt(index++,entityId.intValue());
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+            if (userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
+                stmt.setInt(index++, entityId.intValue());
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
                 stmt.setInt(index++, entityId.intValue());
                 stmt.setInt(index++, userId.intValue());
-            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+            } else if (userType.equals(Constants.TYPE_CUSTOMER)) {
                 stmt.setInt(index++, userId.intValue());
             }
             break;
         case 4: // PAYMENTS - standard
-            if(userType.equals(Constants.TYPE_ROOT) ||
-                    userType.equals(Constants.TYPE_CLERK)) {
+            if (userType.equals(Constants.TYPE_ROOT)
+                    || userType.equals(Constants.TYPE_CLERK)) {
                 stmt.setInt(index++, 0); // it is for payments, not refunds
                 stmt.setInt(index++, entityId.intValue());
                 stmt.setInt(index++, languageId.intValue());
-            } else if(userType.equals(Constants.TYPE_PARTNER)) {
+            } else if (userType.equals(Constants.TYPE_PARTNER)) {
                 stmt.setInt(index++, 0); // it is for payments, not refunds
-                stmt.setInt(index++,entityId.intValue());
+                stmt.setInt(index++, entityId.intValue());
                 stmt.setInt(index++, userId.intValue());
                 stmt.setInt(index++, languageId.intValue());
-            } else if(userType.equals(Constants.TYPE_CUSTOMER)) {
+            } else if (userType.equals(Constants.TYPE_CUSTOMER)) {
                 stmt.setInt(index++, 0); // it is for payments, not refunds
                 stmt.setInt(index++, userId.intValue());
                 stmt.setInt(index++, languageId.intValue());
             }
             break;
         }
-        
+
         if (from != null) {
-            stmt.setInt(index++, from.intValue()); 
+            stmt.setInt(index++, from.intValue());
         }
-        
+
         return index;
     }
-    
+
     private String createHeader() {
         StringBuffer header = new StringBuffer();
         header.append("select count(*) ");
-        
+
         // now go through each field
         for (Iterator it = list.getListFields().iterator(); it.hasNext();) {
-            ListFieldEntityLocal field = (ListFieldEntityLocal) it.next();
+            ListFieldDTO field = (ListFieldDTO) it.next();
             if (field.getOrdenable().intValue() == 1) {
                 header.append(", min(" + field.getColumnName() + ")");
                 header.append(", max(" + field.getColumnName() + ")");
             }
         }
         header.append(' ');
-        
+
         return header.toString();
     }
-    
+
     private String getCountSQL() {
         // first, get the normal SQL
         String sql = getSQL();
@@ -355,15 +343,14 @@ public class ListBL {
         sql = sql.substring(sql.indexOf("from"));
         // add the count select
         sql = createHeader() + sql;
-        
+
         return sql;
     }
-    
-    public CachedRowSet getPage(Integer start, Integer end, int size, 
-            Integer listId, Integer entityId, boolean direction, 
-            Integer fieldId, Hashtable parameters) 
-            throws SQLException, NamingException, FinderException,
-                SessionInternalError {
+
+    public CachedRowSet getPage(Integer start, Integer end, int size,
+            Integer listId, Integer entityId, boolean direction,
+            Integer fieldId, Hashtable parameters) throws SQLException,
+            NamingException, FinderException, SessionInternalError {
         this.parameters = parameters;
         // start by getting a connection to the db
         Connection conn = EJBFactory.lookUpDataSource().getConnection();
@@ -372,16 +359,16 @@ public class ListBL {
 
         set(listId);
         /*
-         * Find the right range to do the query, by counting with
-         * estimates based on the stats
+         * Find the right range to do the query, by counting with estimates
+         * based on the stats
          */
         StringBuffer sql = new StringBuffer();
         sql.append("select count(*) ");
-        
+
         // append the original sql
         String orgSql = getSQL();
         sql.append(orgSql.substring(orgSql.indexOf("from")));
-        
+
         // and the from limit is it is there
         ListFieldBL field = new ListFieldBL(fieldId);
         if (start != null) {
@@ -393,7 +380,7 @@ public class ListBL {
             }
             sql.append("? ");
         }
-        
+
         // calculate the cof based on the statistics
         boolean hasStats = true;
         long cof = 0;
@@ -404,27 +391,25 @@ public class ListBL {
             try {
                 ListEntityBL listEntityBl = new ListEntityBL();
                 listEntityBl.set(listId, entityId);
-                if (listEntityBl.getEntity().getTotalRecords().longValue() 
-                        == 0) {
+                if (listEntityBl.getEntity().getTotalRecords() == 0) {
                     // if counted 0, it is like not having any statistics
                     throw new FinderException("0 count");
                 }
-                
+
                 ListFieldEntityBL fieldEntity = new ListFieldEntityBL();
                 fieldEntity.set(fieldId, listEntityBl.getEntity().getId());
-                
+
                 if (field.getEntity().getDataType().equals("integer")) {
-                    min = fieldEntity.getEntity().getMin().longValue();
-                    max = fieldEntity.getEntity().getMax().longValue();
+                    min = fieldEntity.getEntity().getMinValue().longValue();
+                    max = fieldEntity.getEntity().getMaxValue().longValue();
                     cof = (max + 1 - min)
-                            / listEntityBl.getEntity().getTotalRecords()
-                                    .longValue();
+                            / listEntityBl.getEntity().getTotalRecords();
                     cof *= size;
                     if (cof <= 0) {
                         log.error("cof is " + cof);
                         throw new FinderException("cof is 0");
                     }
-                    if (start != null ) {
+                    if (start != null) {
                         limit = start.longValue();
                     } else {
                         if (direction) {
@@ -434,16 +419,16 @@ public class ListBL {
                         }
                     }
                 } else if (field.getEntity().getDataType().equals("string")) {
-                
+
                 } else if (field.getEntity().getDataType().equals("date")) {
-                    
+
                 }
-                
+
             } catch (FinderException e) {
                 hasStats = false;
             }
         }
-        
+
         // if there is an end value
         if (hasStats || end != null) {
             sql.append(" and " + field.getEntity().getColumnName());
@@ -467,7 +452,8 @@ public class ListBL {
             long count = 0;
             while (count < size && !lastPage) {
                 if (field.getEntity().getDataType().equals("integer")) {
-                    if ((direction && limit > max) || (!direction && limit < min)) {
+                    if ((direction && limit > max)
+                            || (!direction && limit < min)) {
                         // this is probably the last page. Remove the limit to
                         // avoid skipping any new rows
                         sql.delete(sql.lastIndexOf("and"), sql.length());
@@ -483,8 +469,9 @@ public class ListBL {
                         stmt.setLong(parameterIndex, limit);
                     }
                 } else {
-                    throw new SessionInternalError("Unsupported field data type " + 
-                            field.getEntity().getDataType());
+                    throw new SessionInternalError(
+                            "Unsupported field data type "
+                                    + field.getEntity().getDataType());
                 }
                 ResultSet res = stmt.executeQuery();
                 res.next();
@@ -492,27 +479,27 @@ public class ListBL {
                 attempts++;
                 cof *= 2;
             }
-            
-            log.debug("Done pageing. list " + listId + " entity " + entityId +
-                    " attempts " + attempts + " cof " + cof + " needed " + size +
-                    " got " + count);
-        }        
+
+            log.debug("Done pageing. list " + listId + " entity " + entityId
+                    + " attempts " + attempts + " cof " + cof + " needed "
+                    + size + " got " + count);
+        }
         // done, cook the final sql
         // replace the count by the original select
-        sql.replace(0, sql.indexOf("from"), orgSql.substring(0, 
-                orgSql.indexOf("from")));
+        sql.replace(0, sql.indexOf("from"), orgSql.substring(0, orgSql
+                .indexOf("from")));
         // add the order by
         sql.append(" order by " + field.getEntity().getColumnName());
         if (!direction) {
             sql.append(" desc");
         }
-        
+
         // run it
         CachedRowSet results = new CachedRowSet();
         stmt = conn.prepareStatement(sql.toString());
         stmt.setMaxRows(size);
         parameterIndex = setSQLParameters(stmt, start);
-        
+
         if (end != null) {
             stmt.setLong(parameterIndex, end.intValue());
         } else {
@@ -522,21 +509,21 @@ public class ListBL {
                 }
             }
         }
-        
-        //log.debug("query = " + sql);
+
+        // log.debug("query = " + sql);
         ResultSet res = stmt.executeQuery();
         results.populate(res);
-        
+
         // close the connection
         res.close();
         stmt.close();
         conn.close();
-        
+
         return results;
     }
-    
-    public CachedRowSet search(String start, String end, Integer fieldId, 
-            Integer listId, Integer entityId, Hashtable parameters) 
+
+    public CachedRowSet search(String start, String end, Integer fieldId,
+            Integer listId, Integer entityId, Hashtable parameters)
             throws FinderException, SQLException, NamingException {
         this.parameters = parameters;
         StringBuffer sql = new StringBuffer();
@@ -549,7 +536,8 @@ public class ListBL {
         ListFieldBL field = new ListFieldBL(fieldId);
         String columnName = field.getEntity().getColumnName();
         if (columnName.startsWith(CUSTOM_PREFIX)) {
-            sql.append(getCustomFilter(columnName.substring(CUSTOM_PREFIX.length())));
+            sql.append(getCustomFilter(columnName.substring(CUSTOM_PREFIX
+                    .length())));
         } else {
             sql.append(" and " + field.getEntity().getColumnName());
             if (field.getEntity().getDataType().equals("integer")) {
@@ -570,15 +558,15 @@ public class ListBL {
                     sql.append(" < ?");
                 }
             }
-    
+
             // and a courtesy order
             sql.append(" order by ");
             sql.append(field.getEntity().getColumnName());
         }
-        
+
         PreparedStatement stmt = conn.prepareStatement(sql.toString());
         int varIndex = setSQLParameters(stmt, null);
-        
+
         // set the values of the where
         if (field.getEntity().getDataType().equals("integer")) {
             // it is just an equal
@@ -595,55 +583,50 @@ public class ListBL {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(Util.parseDate(end));
                 cal.add(Calendar.DATE, 1);
-                
-                stmt.setDate(varIndex++, new java.sql.Date(cal.getTime().
-                        getTime()));
+
+                stmt.setDate(varIndex++, new java.sql.Date(cal.getTime()
+                        .getTime()));
             }
         }
-        
+
         // execute
         stmt.setMaxRows(500); // at no time we want more than 500 rows returned
         ResultSet res = stmt.executeQuery();
         CachedRowSet result = new CachedRowSet();
         result.populate(res);
-        
+
         // close the connection
         res.close();
         stmt.close();
         conn.close();
-        
+
         return result;
     }
-    
+
     /**
-     * Map a key to a sql string for a WHERE clause that isn't a simple
-     * column in the query
+     * Map a key to a sql string for a WHERE clause that isn't a simple column
+     * in the query
+     * 
      * @param key
      * @return
      */
-    private String getCustomFilter(String key) { 
+    private String getCustomFilter(String key) {
         if (key.equals("CC")) {
             return CustomerSQL.listCustomersCCFiler;
         } else {
-            throw new SessionInternalError("Custom filer " + key + " not supported");
+            throw new SessionInternalError("Custom filer " + key
+                    + " not supported");
         }
     }
-    
+
     /*
-    private Object convertData(String data, String type) 
-            throws SessionInternalError {
-        if (type.equals("integer")) {
-            return Integer.valueOf(data);
-        } else if (type.equals("string")) {
-            return data;
-        } else if (type.equals("date")) {
-            // the client will have to pass the milliseconds
-            long mils = Integer.valueOf(data).longValue();
-            return new Date(mils);
-        } else {
-            throw new SessionInternalError("Invalid data type " + type);
-        }
-    }
-    */
-    
+     * private Object convertData(String data, String type) throws
+     * SessionInternalError { if (type.equals("integer")) { return
+     * Integer.valueOf(data); } else if (type.equals("string")) { return data; }
+     * else if (type.equals("date")) { // the client will have to pass the
+     * milliseconds long mils = Integer.valueOf(data).longValue(); return new
+     * Date(mils); } else { throw new SessionInternalError("Invalid data type "
+     * + type); } }
+     */
+
 }

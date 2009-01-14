@@ -26,76 +26,60 @@ package com.sapienter.jbilling.server.list;
 
 import java.util.Calendar;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
+import com.sapienter.jbilling.server.list.db.ListDTO;
+import com.sapienter.jbilling.server.list.db.ListEntityDAS;
+import com.sapienter.jbilling.server.list.db.ListEntityDTO;
 
-import org.apache.log4j.Logger;
-
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ListEntityEntityLocal;
-import com.sapienter.jbilling.interfaces.ListEntityEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ListEntityLocal;
 
 /**
  * @author Emil
  *
  */
 public class ListEntityBL {
-    private JNDILookup EJBFactory = null;
-    private ListEntityEntityLocalHome listEntityHome = null;
-    private ListEntityEntityLocal listEntity = null;
-    private Logger log = null;
+    private ListEntityDAS listEntityDAS = null;
+    private ListEntityDTO listEntity = null;
 
-    public ListEntityBL(Integer listEntityId) 
-            throws NamingException, FinderException {
+    public ListEntityBL(Integer listEntityId) {
         init();
         set(listEntityId);
     }
 
-    public ListEntityBL() throws NamingException {
+    public ListEntityBL() {
         init();
     }
 
-    public ListEntityBL(ListEntityEntityLocal listEntity) throws NamingException {
+    public ListEntityBL(ListEntityDTO listEntity) {
         init();
         set(listEntity);
     }
 
-    private void init() throws NamingException {
-        log = Logger.getLogger(ListEntityBL.class);     
-        EJBFactory = JNDILookup.getFactory(false);
-        listEntityHome = (ListEntityEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                ListEntityEntityLocalHome.class,
-                ListEntityEntityLocalHome.JNDI_NAME);
+    private void init() {
+        listEntityDAS = new ListEntityDAS();
     }
 
-    public ListEntityEntityLocal getEntity() {
+    public ListEntityDTO getEntity() {
         return listEntity;
     }
     
-    public ListEntityEntityLocalHome getHome() {
-        return listEntityHome;
+    public ListEntityDAS getHome() {
+        return listEntityDAS;
     }
 
-    public void set(Integer id) throws FinderException {
-        listEntity = listEntityHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+        listEntity = listEntityDAS.find(id);
     }
     
-    public void set(Integer listId, Integer entityId)
-            throws FinderException {
-        listEntity = listEntityHome.findByEntity(listId, entityId);
+    public void set(Integer listId, Integer entityId) {
+        listEntity = listEntityDAS.findByEntity(listId, entityId);
     }
     
-    public void set(ListEntityEntityLocal listEntity) {
+    public void set(ListEntityDTO listEntity) {
         this.listEntity = listEntity;
     }
     
-    public void create(ListEntityLocal list, Integer entityId, 
-            Integer count) 
-            throws CreateException {
-        listEntity = listEntityHome.create(list, entityId, count);
+    public void create(ListDTO list, Integer entityId, 
+            Integer count) {
+        listEntity = listEntityDAS.create(list, entityId, count);
     }
     
     public void update(Integer count) {

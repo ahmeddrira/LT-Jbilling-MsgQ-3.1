@@ -24,7 +24,6 @@
  */
 package com.sapienter.jbilling.server.list;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -44,7 +43,7 @@ public class ListFieldBL {
     private Logger log = null;
 
     public ListFieldBL(Integer listFieldId) 
-            throws NamingException, FinderException {
+            throws NamingException {
         init();
         set(listFieldId);
     }
@@ -72,7 +71,7 @@ public class ListFieldBL {
         return listFieldDas;
     }
 
-    public void set(Integer id) throws FinderException {
+    public void set(Integer id) {
         listField = listFieldDas.find(id);
     }
     

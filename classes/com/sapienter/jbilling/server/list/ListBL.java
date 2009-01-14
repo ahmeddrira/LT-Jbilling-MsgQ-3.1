@@ -65,10 +65,10 @@ public class ListBL {
     private JNDILookup EJBFactory = null;
     private ListDAS listDas = null;
     private ListDTO list = null;
-    private Logger log = null;
+    private static final Logger LOG = Logger.getLogger(ListBL.class);;
     private Hashtable parameters = null;
 
-    public ListBL(Integer listId) throws NamingException, FinderException {
+    public ListBL(Integer listId) throws NamingException {
         init();
         set(listId);
     }
@@ -83,7 +83,6 @@ public class ListBL {
     }
 
     private void init() throws NamingException {
-        log = Logger.getLogger(ListBL.class);
         EJBFactory = JNDILookup.getFactory(false);
         listDas = new ListDAS();
     }
@@ -96,7 +95,7 @@ public class ListBL {
         return listDas;
     }
 
-    public void set(Integer id) throws FinderException {
+    public void set(Integer id) {
         list = listDas.find(id);
     }
 
@@ -104,7 +103,7 @@ public class ListBL {
         this.list = list;
     }
 
-    public void set(String legacyName) throws FinderException {
+    public void set(String legacyName) {
         list = listDas.findByName(legacyName);
     }
 
@@ -350,7 +349,7 @@ public class ListBL {
     public CachedRowSet getPage(Integer start, Integer end, int size,
             Integer listId, Integer entityId, boolean direction,
             Integer fieldId, Hashtable parameters) throws SQLException,
-            NamingException, FinderException, SessionInternalError {
+            NamingException, SessionInternalError {
         this.parameters = parameters;
         // start by getting a connection to the db
         Connection conn = EJBFactory.lookUpDataSource().getConnection();
@@ -388,13 +387,13 @@ public class ListBL {
         long min = 0;
         long max = 0;
         if (end == null) { // we'll try to guess it from the stats
-            try {
-                ListEntityBL listEntityBl = new ListEntityBL();
-                listEntityBl.set(listId, entityId);
-                if (listEntityBl.getEntity().getTotalRecords() == 0) {
-                    // if counted 0, it is like not having any statistics
-                    throw new FinderException("0 count");
-                }
+            ListEntityBL listEntityBl = new ListEntityBL();
+            listEntityBl.set(listId, entityId);
+            if (listEntityBl.getEntity() == null || listEntityBl.getEntity().getTotalRecords() == 0) {
+                // if counted 0, it is like not having any statistics
+                hasStats = false;
+
+            } else {
 
                 ListFieldEntityBL fieldEntity = new ListFieldEntityBL();
                 fieldEntity.set(fieldId, listEntityBl.getEntity().getId());
@@ -402,20 +401,20 @@ public class ListBL {
                 if (field.getEntity().getDataType().equals("integer")) {
                     min = fieldEntity.getEntity().getMinValue().longValue();
                     max = fieldEntity.getEntity().getMaxValue().longValue();
-                    cof = (max + 1 - min)
-                            / listEntityBl.getEntity().getTotalRecords();
+                    cof = (max + 1 - min) / listEntityBl.getEntity().getTotalRecords();
                     cof *= size;
                     if (cof <= 0) {
-                        log.error("cof is " + cof);
-                        throw new FinderException("cof is 0");
-                    }
-                    if (start != null) {
-                        limit = start.longValue();
+                        LOG.error("cof is " + cof);
+                        hasStats = false;
                     } else {
-                        if (direction) {
-                            limit = min;
+                        if (start != null) {
+                            limit = start.longValue();
                         } else {
-                            limit = max;
+                            if (direction) {
+                                limit = min;
+                            } else {
+                                limit = max;
+                            }
                         }
                     }
                 } else if (field.getEntity().getDataType().equals("string")) {
@@ -423,10 +422,8 @@ public class ListBL {
                 } else if (field.getEntity().getDataType().equals("date")) {
 
                 }
-
-            } catch (FinderException e) {
-                hasStats = false;
             }
+
         }
 
         // if there is an end value
@@ -480,7 +477,7 @@ public class ListBL {
                 cof *= 2;
             }
 
-            log.debug("Done pageing. list " + listId + " entity " + entityId
+            LOG.debug("Done pageing. list " + listId + " entity " + entityId
                     + " attempts " + attempts + " cof " + cof + " needed "
                     + size + " got " + count);
         }

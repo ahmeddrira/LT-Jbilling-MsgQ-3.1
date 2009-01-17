@@ -43,11 +43,12 @@ import org.apache.struts.action.ActionMapping;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
+import com.sapienter.jbilling.interfaces.OrderSession;
+import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  * @author Emil
@@ -74,9 +75,6 @@ public class NewOrderItemAction extends Action {
 
         // check if the ejb session is already there
         HttpSession session = request.getSession(false);
-        NewOrderSession remoteSession =
-            (NewOrderSession) session.getAttribute(
-                Constants.SESSION_ORDER_SESSION_KEY);
         
         itemID = ((OrderAddItemForm) form).getItemID();
         quantity = ((OrderAddItemForm) form).getQuantity();
@@ -94,36 +92,35 @@ public class NewOrderItemAction extends Action {
         
         // if not create new one
         try {
-            if (remoteSession == null) {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                NewOrderSessionHome newOrderHome =
-                        (NewOrderSessionHome) EJBFactory.lookUpHome(
-                        NewOrderSessionHome.class,
-                        NewOrderSessionHome.JNDI_NAME);
+            JNDILookup EJBFactory = JNDILookup.getFactory(false);
+            OrderSessionHome orderHome =
+                    (OrderSessionHome) EJBFactory.lookUpHome(
+                    OrderSessionHome.class,
+                    OrderSessionHome.JNDI_NAME);
+            OrderSession remoteOrder = orderHome.create();
 
-                summary = (OrderDTO) session.getAttribute(
-                        Constants.SESSION_ORDER_SUMMARY);   
-                        
+            summary = (OrderDTO) session.getAttribute(
+                    Constants.SESSION_ORDER_SUMMARY);   
+
+            // setup order if necessary
+            if (summary.getBaseUserByCreatedBy() == null) {
                 UserDTO user = new UserDTO();
                 user.setId((Integer) session.getAttribute(
                         Constants.SESSION_USER_ID));
                 summary.setBaseUserByCreatedBy(user);
-                remoteSession = newOrderHome.create(summary,
-                	   (Integer) session.getAttribute(Constants.SESSION_LANGUAGE));
-
-                // this is the way the server session is linked to the
-                // customer session
-                session.setAttribute(
-                        Constants.SESSION_ORDER_SESSION_KEY,
-                        remoteSession);
+                summary.setCurrency(new CurrencyDTO(
+                        (Integer) session.getAttribute(
+                        Constants.SESSION_CURRENCY)));
             }
 
             // call the ejb session with the item to add
             // and get the order DTO for the summary
             if (action.compareTo("delete") == 0) {
-                summary = remoteSession.deleteItem(itemID);
+                summary.removeLine(itemID);
             } else {
-                summary = remoteSession.addItem(itemID, quantity, 
+                summary = remoteOrder.addItem(itemID, quantity, summary,
+                        (Integer) session.getAttribute(
+                            Constants.SESSION_LANGUAGE),
                         (Integer) session.getAttribute(
                             Constants.SESSION_USER_ID),
                         (Integer) session.getAttribute(

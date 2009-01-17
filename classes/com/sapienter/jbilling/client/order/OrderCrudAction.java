@@ -34,7 +34,6 @@ import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
@@ -86,11 +85,8 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
 
     private static final String FIELD_PERIOD = "period";
 
-    private final NewOrderSession myNewOrderSession;
-
-    public OrderCrudAction(NewOrderSession newOrderSession) {
+    public OrderCrudAction() {
         super(FORM_ORDER, "order");
-        myNewOrderSession = newOrderSession;
     }
 
     @Override

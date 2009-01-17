@@ -22,6 +22,7 @@ package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.naming.NamingException;
@@ -40,8 +41,6 @@ import org.apache.struts.validator.DynaValidatorForm;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
@@ -51,7 +50,7 @@ import com.sapienter.jbilling.server.mediation.MediationSessionHome;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import java.util.List;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class MaintainAction extends Action {
     
@@ -63,7 +62,6 @@ public class MaintainAction extends Action {
         
         Logger log = Logger.getLogger(MaintainAction.class);
         OrderDTO summary;
-        NewOrderSession remoteSession;
         HttpSession session = request.getSession(false);
         Integer languageId = (Integer) session.getAttribute(
                 Constants.SESSION_LANGUAGE);
@@ -149,11 +147,6 @@ public class MaintainAction extends Action {
                 return mapping.findForward("cdr_list");
             }
             
-            NewOrderSessionHome newOrderHome =
-                    (NewOrderSessionHome) EJBFactory.lookUpHome(
-                    NewOrderSessionHome.class,
-                    NewOrderSessionHome.JNDI_NAME);
-
             summary = (OrderDTO) session.getAttribute(
                     Constants.SESSION_ORDER_SUMMARY);   
                         
@@ -162,17 +155,11 @@ public class MaintainAction extends Action {
                     Constants.SESSION_USER_ID));
             summary.setBaseUserByUserId(user);
             //summary.setBillingTypeId((Integer) ((DynaValidatorForm)form).get("billingType"));
-
-            remoteSession = newOrderHome.create(summary,
-                   (Integer) session.getAttribute(Constants.SESSION_LANGUAGE));
-
-            // this is the way the server session is linked to the
-            // customer session
-            session.setAttribute(
-                    Constants.SESSION_ORDER_SESSION_KEY,
-                    remoteSession);
+            summary.setCurrency(new CurrencyDTO(
+                    (Integer) session.getAttribute(
+                    Constants.SESSION_CURRENCY)));
             
-            OrderCrudAction delegate = new OrderCrudAction(remoteSession);
+            OrderCrudAction delegate = new OrderCrudAction();
             delegate.setServlet(getServlet());
             return delegate.execute(mapping, form, request, response);
         } catch (Exception e) {

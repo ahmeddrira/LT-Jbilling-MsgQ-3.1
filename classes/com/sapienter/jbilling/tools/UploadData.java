@@ -37,8 +37,8 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.ItemSession;
 import com.sapienter.jbilling.interfaces.ItemSessionHome;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
+import com.sapienter.jbilling.interfaces.OrderSession;
+import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -125,17 +125,20 @@ public class UploadData {
 			// open the file
 			BufferedReader file = new BufferedReader(new FileReader(fileName));
 			// get the remote interfaces
+            JNDILookup EJBFactory = JNDILookup.getFactory(true);
+
             UserSessionHome userHome =
-                (UserSessionHome) JNDILookup.getFactory(true).lookUpHome(
+                (UserSessionHome) EJBFactory.lookUpHome(
                 UserSessionHome.class,
                 UserSessionHome.JNDI_NAME);
             UserSession remoteSession = userHome.create();
-            NewOrderSessionHome nOrderHome = null;
+
+            OrderSessionHome orderHome = null;
             if (processOrders.booleanValue()) {
-	            nOrderHome =
-	                (NewOrderSessionHome) JNDILookup.getFactory(true).lookUpHome(
-	                NewOrderSessionHome.class,
-	                NewOrderSessionHome.JNDI_NAME); 
+                orderHome = 
+                        (OrderSessionHome) EJBFactory.lookUpHome(
+                        OrderSessionHome.class,
+                        OrderSessionHome.JNDI_NAME);
             }
 
 			String header = file.readLine();
@@ -394,13 +397,13 @@ public class UploadData {
                     }
 		            // this makes it prepaid (2 is pospaid)
 		            //summary.setBillingTypeId(new Integer(1));
-		            NewOrderSession nOrderS = nOrderHome.create(summary, 
-		            		languageId);
+                    OrderSession remoteOrder = orderHome.create(); 
 		            // add the item (quantity = 1)
 		            Integer itemId = Integer.valueOf((String) prop.getProperty(
         					"item_id"));
-		            OrderDTO thisOrder = nOrderS.addItem(
-		            		itemId, new Double(1), newUserId,entityId);
+		            OrderDTO thisOrder = remoteOrder.addItem(
+                            itemId, new Double(1), summary, languageId, 
+                            newUserId, entityId);
 		            // to edit the total I need to get the line ..
 		            OrderLineDTO thisLine = (OrderLineDTO) thisOrder.
 							getLine(itemId);
@@ -411,10 +414,10 @@ public class UploadData {
 		            thisLine.setPrice(price);
 		            thisLine.setDescription(prop.getProperty("order_description"));
 		            //System.out.println("desc = " + thisLine.getDescription());
-		            thisOrder = nOrderS.recalculate(thisOrder, entityId);
-		            Integer newOrderId = nOrderS.createUpdate(entityId, 
+		            thisOrder = remoteOrder.recalculate(thisOrder, entityId);
+		            Integer newOrderId = remoteOrder.createUpdate(entityId, 
 		            		Integer.valueOf((String) prop.getProperty(
-	            				"creator_id")), thisOrder);
+	            				"creator_id")), thisOrder, languageId);
 		            System.out.println("Order " + newOrderId + " created for" +
 		            		" user " + newUserId);
 					

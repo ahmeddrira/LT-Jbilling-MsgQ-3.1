@@ -54,8 +54,6 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CustomerSession;
 import com.sapienter.jbilling.interfaces.CustomerSessionHome;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
@@ -84,25 +82,22 @@ public class ReviewOrderAction extends Action {
         String action = request.getParameter("action");
         log.debug("Review. action = " + action);
 
-        NewOrderSession remoteSession =
-                (NewOrderSession) session.getAttribute(
-                Constants.SESSION_ORDER_SESSION_KEY);
-        if (remoteSession == null && !action.equals("read")) {
+        OrderSession remoteOrder = null;
+        if (!action.equals("read")) {
             try {
                 JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                NewOrderSessionHome sHome =
-                        (NewOrderSessionHome) EJBFactory.lookUpHome(
-                        NewOrderSessionHome.class,
-                        NewOrderSessionHome.JNDI_NAME);
-                remoteSession = sHome.create(newOrder, (Integer) session.
-                        getAttribute(Constants.SESSION_LANGUAGE));
+                OrderSessionHome orderHome =
+                        (OrderSessionHome) EJBFactory.lookUpHome(
+                        OrderSessionHome.class,
+                        OrderSessionHome.JNDI_NAME);
+                remoteOrder = orderHome.create();
             } catch (Exception e) {}
         }
 
         try {
             if (action.equals("setup")) {
                 // get the processing of this order, so the taxes, etc, show up
-                newOrder = remoteSession.recalculate(newOrder,
+                newOrder = remoteOrder.recalculate(newOrder,
                         (Integer) session.getAttribute(
                             Constants.SESSION_ENTITY_ID_KEY));
                 // initializing the wraping form to allow displaying and
@@ -123,12 +118,7 @@ public class ReviewOrderAction extends Action {
             } else if (action.equals("cancel")) {
                 // garbage collect the stuff from the session
                 FormHelper.cleanUpSession(session);
-                // cancel the remote session
-                try {
-                    remoteSession.remove();
-                } catch (Exception e) {
-                    log.error("Exception when removing the remote session", e);
-                }
+
                 forward ="list";
                 messages.add(ActionMessages.GLOBAL_MESSAGE, 
                         new ActionMessage("order.canceled"));
@@ -158,7 +148,7 @@ public class ReviewOrderAction extends Action {
                     }
 
                     if (errors.isEmpty()) {
-                        newOrder = remoteSession.recalculate(newOrder,
+                        newOrder = remoteOrder.recalculate(newOrder,
                                 (Integer) session.getAttribute(
                                     Constants.SESSION_ENTITY_ID_KEY));
                         forward = "show";
@@ -166,20 +156,16 @@ public class ReviewOrderAction extends Action {
                 } else if (request.getParameter("commit") != null) {
                     log.debug("commit !");
                     // create or update the order record
-                    Integer orderId = remoteSession.createUpdate(
+                    Integer orderId = remoteOrder.createUpdate(
                             (Integer) session.getAttribute(
                             Constants.SESSION_ENTITY_ID_KEY),
                             (Integer) session.getAttribute(
-                            Constants.SESSION_LOGGED_USER_ID), newOrder);
+                            Constants.SESSION_LOGGED_USER_ID), newOrder,
+                            (Integer) session.getAttribute(
+                            Constants.SESSION_LANGUAGE));
+
                     // garbage collect the stuff from the session
                     FormHelper.cleanUpSession(session);
-                    // cancel the remote session
-                    try {
-                        remoteSession.remove();
-                    } catch (Exception e) {
-                        log.error("Exception when removing the remote session",
-                                e);
-                    }
                     
                     if (orderId != null) {
                         // we are forwarding to the view page, so the order dto

@@ -33,6 +33,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
@@ -269,6 +270,65 @@ public class OrderSessionBean implements SessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
+    }
+
+    /**
+    * @ejb:interface-method view-type="remote"
+    */
+    public OrderDTO addItem(Integer itemID, Double quantity, OrderDTO order, 
+            Integer languageId, Integer userId, Integer entityId) 
+            throws SessionInternalError, ItemDecimalsException {
+
+        LOG.debug("Adding item " + itemID + " q:" + quantity);
+
+        OrderBL bl = new OrderBL(order);
+        bl.addItem(itemID, quantity, languageId, userId, entityId, 
+                order.getCurrencyId());
+        return order;
+    }
+    
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public OrderDTO addItem(Integer itemID, Integer quantity, OrderDTO order,
+             Integer languageId, Integer userId, Integer entityId) 
+             throws SessionInternalError, ItemDecimalsException {
+
+        return addItem(itemID, new Double(quantity), order, languageId, userId,
+                entityId);
+    }
+
+    /**
+    * @ejb:interface-method view-type="remote"
+    */
+    public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId) 
+            throws NamingException, ItemDecimalsException {
+        
+        OrderBL bl = new OrderBL();
+        bl.set(modifiedOrder);
+        bl.recalculate(entityId);
+        return bl.getDTO();
+    }
+
+    /**
+    * @ejb:interface-method view-type="remote"
+    */
+    public Integer createUpdate(Integer entityId, Integer executorId, 
+            OrderDTO order, Integer languageId) throws SessionInternalError {
+        Integer retValue = null;
+        try {
+        	OrderBL bl = new OrderBL();
+            if (order.getId() == null) {
+                retValue = bl.create(entityId, executorId, order);
+            } else {
+                bl.set(order.getId());
+                bl.update(executorId, order);
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+        
+        return retValue;
     }
 
     // EJB Callbacks -------------------------------------------------

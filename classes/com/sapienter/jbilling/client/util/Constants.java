@@ -60,8 +60,6 @@ public final class Constants implements PermissionConstants, CommonConstants {
     
     // order fields
     
-    // NewOrderSessionBeanHome
-    public static final String SESSION_ORDER_SESSION_KEY = "orderSession";
     // OrderDTO for new orders
     public static final String SESSION_ORDER_SUMMARY = "newOrderSummary";
     // OrderDTO

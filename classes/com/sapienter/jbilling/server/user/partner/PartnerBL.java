@@ -81,39 +81,37 @@ public class PartnerBL extends ResultList
     private PartnerPayout payout = null;
     private static final Logger LOG = Logger.getLogger(PartnerBL.class);
     private EventLogger eLogger = null;
-    private JNDILookup EJBFactory = JNDILookup.getFactory(false); 
+    private JNDILookup EJBFactory = null;
 
-    public PartnerBL(Integer partnerId) 
-            throws NamingException, FinderException {
+    public PartnerBL(Integer partnerId) throws NamingException  {
         init();
 
         set(partnerId);
     }
     
-    public PartnerBL() throws NamingException {
+    public PartnerBL() throws NamingException  {
         init();
     }
     
-    public PartnerBL(Partner entity) throws NamingException {
+    public PartnerBL(Partner entity) throws NamingException  {
         partner = entity;
         init();
     }
     
-    public void set(Integer partnerId) 
-            throws FinderException {
+    public void set(Integer partnerId) {
         partner = partnerDAS.find(partnerId);
     }
     
-    public void setPayout(Integer payoutId) 
-            throws FinderException {
+    public void setPayout(Integer payoutId) {
         payout = new PartnerPayoutDAS().find(payoutId);
     }
 
-    private void init() {
+    private void init() throws NamingException {
         eLogger = EventLogger.getInstance();        
         payout = null;
         partnerRange = null;
         partnerDAS = new PartnerDAS();
+        EJBFactory = JNDILookup.getFactory(false); 
     }
 
     public Partner getEntity() {
@@ -137,8 +135,7 @@ public class PartnerBL extends ResultList
         return partner.getId();
     }
     
-    public void update(Integer executorId, Partner dto) 
-            throws FinderException, NamingException {
+    public void update(Integer executorId, Partner dto) {
 
         eLogger.audit(executorId, Constants.TABLE_PARTNER, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 
@@ -158,9 +155,9 @@ public class PartnerBL extends ResultList
      * @param payoutDto
      */
     public void processPayout(Integer partnerId) 
-            throws CreateException, NamingException, SQLException, 
-                FinderException, SessionInternalError, PluggableTaskException,
-                TaskException {
+            throws CreateException, SQLException, 
+                SessionInternalError, PluggableTaskException,
+                TaskException, NamingException, FinderException {
         boolean notPaid;
         partner = partnerDAS.find(partnerId);
         // find out the date ranges for this payout
@@ -267,9 +264,7 @@ public class PartnerBL extends ResultList
         return payment.getResultId();
     }
     
-    public Date[] calculatePayoutDates() 
-            throws NamingException, SQLException, FinderException, 
-                SessionInternalError{
+    public Date[] calculatePayoutDates() throws NamingException, SQLException, SessionInternalError{
         Date retValue[] = new Date[2];        
         // for this I have to find the last payout for this partner
         Integer payoutId = getLastPayout(partner.getId());

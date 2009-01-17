@@ -39,13 +39,17 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.OrderBy;
 
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.list.db.ListEntityDTO;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
@@ -56,12 +60,8 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 import com.sapienter.jbilling.server.util.db.generated.BillingProcessConfiguration;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
-import com.sapienter.jbilling.server.util.db.generated.NotificationMessage;
 import com.sapienter.jbilling.server.util.db.generated.PaymentMethod;
 import com.sapienter.jbilling.server.util.db.generated.Report;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 @Entity
 @Table(name="entity")
@@ -83,7 +83,7 @@ public class CompanyDTO  implements java.io.Serializable {
      private Set<ContactTypeDTO> contactTypes = new HashSet<ContactTypeDTO>(0);
      private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
-     private Set<NotificationMessage> notificationMessages = new HashSet<NotificationMessage>(0);
+     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(0);
      private Set<Report> reports = new HashSet<Report>(0);
      private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
      private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
@@ -106,7 +106,7 @@ public class CompanyDTO  implements java.io.Serializable {
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessage> notificationMessages, Set<Report> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
+    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<Report> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.language = language;
@@ -275,11 +275,11 @@ public class CompanyDTO  implements java.io.Serializable {
     }
     
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")
-    public Set<NotificationMessage> getNotificationMessages() {
+    public Set<NotificationMessageDTO> getNotificationMessages() {
         return this.notificationMessages;
     }
     
-    public void setNotificationMessages(Set<NotificationMessage> notificationMessages) {
+    public void setNotificationMessages(Set<NotificationMessageDTO> notificationMessages) {
         this.notificationMessages = notificationMessages;
     }
 @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

@@ -34,9 +34,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.generated.NotificationMessage;
 
 @Entity
 @Table(name="language")
@@ -47,7 +47,7 @@ public class LanguageDTO  implements java.io.Serializable {
      private int id;
      private String code;
      private String description;
-     private Set<NotificationMessage> notificationMessages = new HashSet<NotificationMessage>(0);
+     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(0);
      private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
 
@@ -63,7 +63,7 @@ public class LanguageDTO  implements java.io.Serializable {
         this.code = code;
         this.description = description;
     }
-    public LanguageDTO(int id, String code, String description, Set<NotificationMessage> notificationMessages, Set<CompanyDTO> entities, Set<UserDTO> baseUsers) {
+    public LanguageDTO(int id, String code, String description, Set<NotificationMessageDTO> notificationMessages, Set<CompanyDTO> entities, Set<UserDTO> baseUsers) {
        this.id = id;
        this.code = code;
        this.description = description;
@@ -101,11 +101,11 @@ public class LanguageDTO  implements java.io.Serializable {
         this.description = description;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="language")
-    public Set<NotificationMessage> getNotificationMessages() {
+    public Set<NotificationMessageDTO> getNotificationMessages() {
         return this.notificationMessages;
     }
     
-    public void setNotificationMessages(Set<NotificationMessage> notificationMessages) {
+    public void setNotificationMessages(Set<NotificationMessageDTO> notificationMessages) {
         this.notificationMessages = notificationMessages;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="language")

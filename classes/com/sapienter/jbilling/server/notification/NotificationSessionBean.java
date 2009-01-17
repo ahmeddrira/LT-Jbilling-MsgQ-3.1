@@ -34,9 +34,9 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.NotificationMessageArchiveEntityLocal;
-import com.sapienter.jbilling.interfaces.NotificationMessageArchiveEntityLocalHome;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDAS;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -189,15 +189,13 @@ public class NotificationSessionBean implements SessionBean {
                 (NotificationTask) taskManager.getNextClass();
 
             JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            NotificationMessageArchiveEntityLocalHome messageHome =
-                    (NotificationMessageArchiveEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    NotificationMessageArchiveEntityLocalHome.class,
-                    NotificationMessageArchiveEntityLocalHome.JNDI_NAME);
+            NotificationMessageArchDAS messageHome =
+                    new NotificationMessageArchDAS();
             
             while (task != null) {
-                NotificationMessageArchiveEntityLocal messageRecord =
+                NotificationMessageArchDTO messageRecord =
                         messageHome.create(message.getTypeId(), sections);
-                messageRecord.setUserId(user.getId());
+                messageRecord.setBaseUser(user);
                 try {
                     task.deliver(user, message);
                 } catch (TaskException e) {
@@ -219,26 +217,26 @@ public class NotificationSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public MessageDTO getDTO(Integer typeId, Integer languageId, 
+    public MessageDTO getDTO(Integer typeId, Integer languageId,
             Integer entityId) throws SessionInternalError {
         try {
             NotificationBL notif = new NotificationBL();
             MessageDTO retValue = null;
-            try {
-                notif.set(typeId, languageId, entityId);
-                retValue =  notif.getDTO();
-            } catch (FinderException e1) {
+            notif.set(typeId, languageId, entityId);
+            if (notif.getEntity() != null) {
+                retValue = notif.getDTO();
+            } else {
                 retValue = new MessageDTO();
                 retValue.setTypeId(typeId);
                 retValue.setLanguageId(languageId);
-                MessageSection sections[] = 
+                MessageSection sections[] =
                         new MessageSection[notif.getSections(typeId)];
                 for (int f = 0; f < sections.length; f++) {
                     sections[f] = new MessageSection(new Integer(f + 1), "");
                 }
                 retValue.setContent(sections);
             }
-            
+
             return retValue;
         } catch (Exception e) {
             throw new SessionInternalError(e);

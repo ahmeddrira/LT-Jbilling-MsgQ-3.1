@@ -50,13 +50,11 @@ public class EntityBL extends ResultList
     private CompanyDAS das = null;
     private CompanyDTO entity = null;
     
-    public EntityBL() 
-            throws NamingException {
+    public EntityBL()  {
         init();
     }
     
-    public EntityBL(Integer id) 
-    		throws FinderException, NamingException {
+    public EntityBL(Integer id)  {
     	init();
     	entity = das.find(id);
     }
@@ -77,8 +75,7 @@ public class EntityBL extends ResultList
         return entity;
     }
     
-    public Locale getLocale() 
-    		throws NamingException, FinderException {
+    public Locale getLocale()  {
     	Locale retValue = null;
     	// get the language first
     	Integer languageId = entity.getLanguageId();

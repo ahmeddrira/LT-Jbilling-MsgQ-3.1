@@ -26,7 +26,7 @@ package com.sapienter.jbilling.server.notification;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.interfaces.NotificationMessageLineEntityLocal;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageLineDTO;
 
 /**
  * @author Emil
@@ -37,10 +37,10 @@ public class NotificationLineEntityComparator implements Comparator {
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object o1, Object o2) {
-        NotificationMessageLineEntityLocal parA = (NotificationMessageLineEntityLocal) o1;
-        NotificationMessageLineEntityLocal parB = (NotificationMessageLineEntityLocal) o2;
+        NotificationMessageLineDTO parA = (NotificationMessageLineDTO) o1;
+        NotificationMessageLineDTO parB = (NotificationMessageLineDTO) o2;
         
-        return parA.getId().compareTo(parB.getId());
+        return new Integer(parA.getId()).compareTo(new Integer(parB.getId()));
     }
 
 }

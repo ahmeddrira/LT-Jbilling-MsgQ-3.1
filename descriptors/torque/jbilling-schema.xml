@@ -708,6 +708,7 @@
         <column name="entity_id" required="true" type="INTEGER"/>
         <column name="language_id" required="true" type="INTEGER"/>
         <column default="1" name="use_flag" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="language">
             <reference foreign="id" local="language_id"/>
         </foreign-key>
@@ -724,12 +725,14 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="user_id" type="INTEGER"/>
         <column name="result_message" size="200" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
     <table name="notification_message_arch_line">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="message_archive_id" type="INTEGER"/>
         <column name="section" required="true" type="INTEGER"/>
         <column name="content" required="true" size="1000" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="notification_message_arch" name="notif_mess_arch_line_FK_1">
             <reference foreign="id" local="message_archive_id"/>
         </foreign-key>
@@ -738,6 +741,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="message_section_id" type="INTEGER"/>
         <column name="content" required="true" size="1000" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="notification_message_section">
             <reference foreign="id" local="message_section_id"/>
         </foreign-key>
@@ -746,6 +750,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="message_id" type="INTEGER"/>
         <column name="section" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="notification_message">
             <reference foreign="id" local="message_id"/>
         </foreign-key>
@@ -753,6 +758,7 @@
     <table name="notification_message_type">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="sections" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
     <table name="order_billing_type">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

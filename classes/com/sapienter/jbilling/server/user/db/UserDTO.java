@@ -46,6 +46,7 @@ import javax.persistence.Version;
 
 import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
@@ -55,7 +56,6 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
-import com.sapienter.jbilling.server.util.db.generated.NotificationMessageArch;
 import com.sapienter.jbilling.server.util.db.generated.Payment;
 import com.sapienter.jbilling.server.util.db.generated.Promotion;
 import com.sapienter.jbilling.server.util.db.generated.ReportUser;
@@ -98,7 +98,7 @@ public class UserDTO  implements java.io.Serializable {
      private Set<OrderDTO> purchaseOrdersForCreatedBy = new HashSet<OrderDTO>(0);
      private Set<OrderDTO> orders = new HashSet<OrderDTO>(0);
      private Set<CreditCard> creditCards = new HashSet<CreditCard>(0);
-     private Set<NotificationMessageArch> notificationMessageArchs = new HashSet<NotificationMessageArch>(0);
+     private Set<NotificationMessageArchDTO> notificationMessageArchs = new HashSet<NotificationMessageArchDTO>(0);
      private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
      private Set<Promotion> promotions = new HashSet<Promotion>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
@@ -156,7 +156,7 @@ public class UserDTO  implements java.io.Serializable {
     		Set<Ach> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUser> reportUsers,
     		Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
     		Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId, 
-    		Set<CreditCard> creditCards, Set<NotificationMessageArch> notificationMessageArchs, Set<RoleDTO> roles, 
+    		Set<CreditCard> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles, 
     		Set<Promotion> promotions, Set<EventLogDTO> eventLogs, Set<Invoice> invoices, 
     		Set<ItemUserPriceDTO> itemUserPrices) {
        this.id = id;
@@ -395,11 +395,11 @@ public class UserDTO  implements java.io.Serializable {
         this.creditCards = creditCards;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="baseUser")
-    public Set<NotificationMessageArch> getNotificationMessageArchs() {
+    public Set<NotificationMessageArchDTO> getNotificationMessageArchs() {
         return this.notificationMessageArchs;
     }
     
-    public void setNotificationMessageArchs(Set<NotificationMessageArch> notificationMessageArchs) {
+    public void setNotificationMessageArchs(Set<NotificationMessageArchDTO> notificationMessageArchs) {
         this.notificationMessageArchs = notificationMessageArchs;
     }
     

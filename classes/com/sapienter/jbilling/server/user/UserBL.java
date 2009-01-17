@@ -279,38 +279,34 @@ public class UserBL extends ResultList
             user.setPartner(partner.getEntity());
             partner.getEntity().setBaseUser(user);
         } else if (dto.getCustomer() != null) {
-            try {
-                // link the partner
-                PartnerBL partner = null;
-                if (dto.getCustomer().getPartner() != null) {
-                    partner = new PartnerBL(dto.getCustomer().
-                            getPartner().getId());
-                    // see that this partner is valid
-                    if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId()
-                            || partner.getEntity().getUser().getDeleted() == 1) {
-                        partner = null;
-                    }
+            // link the partner
+            PartnerBL partner = null;
+            if (dto.getCustomer().getPartner() != null) {
+                partner = new PartnerBL(dto.getCustomer().
+                        getPartner().getId());
+                // see that this partner is valid
+                if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId() || 
+                        partner.getEntity().getUser().getDeleted() == 1) {
+                    partner = null;
                 }
-                newId = create(dto.getEntityId(), dto.getUserName(), 
-                        dto.getPassword(), dto.getLanguageId(), 
-                        roles, dto.getCurrencyId(),
-						dto.getStatusId(), dto.getSubscriptionStatusId());
-                user.setCustomer(new CustomerDAS().create());
-                user.getCustomer().setBaseUser(user);
-                user.getCustomer().setReferralFeePaid(dto.getCustomer().
-                        getReferralFeePaid());
-                if (partner != null) {
-                    user.getCustomer().setPartner(partner.getEntity());
-                }
-                // set the sub-account fields
-                user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
-                if (dto.getCustomer().getParent() != null) {
-                    user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
-                    user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
-                } 
-            } catch (FinderException e) {
-                newId = null;
             }
+            newId = create(dto.getEntityId(), dto.getUserName(),
+                    dto.getPassword(), dto.getLanguageId(),
+                    roles, dto.getCurrencyId(),
+                    dto.getStatusId(), dto.getSubscriptionStatusId());
+            user.setCustomer(new CustomerDAS().create());
+            user.getCustomer().setBaseUser(user);
+            user.getCustomer().setReferralFeePaid(dto.getCustomer().
+                    getReferralFeePaid());
+            if (partner != null) {
+                user.getCustomer().setPartner(partner.getEntity());
+            }
+            // set the sub-account fields
+            user.getCustomer().setIsParent(dto.getCustomer().getIsParent());
+            if (dto.getCustomer().getParent() != null) {
+                user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
+                user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
+            } 
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
@@ -325,26 +321,21 @@ public class UserBL extends ResultList
     private Integer create(Integer entityId, String userName, String password,
             Integer languageId, Vector<Integer> roles, Integer currencyId, 
 			Integer statusId, Integer subscriberStatusId) 
-            throws CreateException, NamingException, SessionInternalError {
+           throws CreateException, NamingException, SessionInternalError {
         // Default the language and currency to that one of the entity         
-        try {
-			if (languageId == null) {
-				EntityBL entity = new EntityBL(entityId);
-				languageId = entity.getEntity().getLanguageId();
-			}
-			if (currencyId == null) {
-				EntityBL entity = new EntityBL(entityId);
-				currencyId = entity.getEntity().getCurrencyId();
-			}
-		} catch (FinderException e) {
-			throw new SessionInternalError("entity not found when creating " +
-					" user: " + entityId);
-		}
-		
+        if (languageId == null) {
+            EntityBL entity = new EntityBL(entityId);
+            languageId = entity.getEntity().getLanguageId();
+        }
+        if (currencyId == null) {
+            EntityBL entity = new EntityBL(entityId);
+            currencyId = entity.getEntity().getCurrencyId();
+        }
+
         // default the statuses
-		if (statusId == null) {
-			statusId = UserDTOEx.STATUS_ACTIVE;
-		}
+        if (statusId == null) {
+            statusId = UserDTOEx.STATUS_ACTIVE;
+        }
         if (subscriberStatusId == null) {
             subscriberStatusId = UserDTOEx.SUBSCRIBER_NONSUBSCRIBED;
         }
@@ -642,8 +633,7 @@ public class UserBL extends ResultList
         return result;
     }
 
-    public Locale getLocale() 
-            throws NamingException, FinderException {
+    public Locale getLocale() {
         Locale retValue = null;
         // get the language first
         Integer languageId = user.getLanguageIdField();

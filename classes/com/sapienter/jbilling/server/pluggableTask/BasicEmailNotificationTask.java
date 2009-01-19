@@ -47,10 +47,16 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import javax.mail.Address;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 public class BasicEmailNotificationTask extends PluggableTask
         implements NotificationTask {
 
+    private JavaMailSenderImpl sender = new JavaMailSenderImpl();
+    
+    private static final Logger LOG = Logger.getLogger(BasicEmailNotificationTask.class);
     // pluggable task parameters names
     public static final String PARAMETER_SMTP_SERVER = "smtp_server";
     public static final String PARAMETER_FROM = "from";
@@ -60,6 +66,7 @@ public class BasicEmailNotificationTask extends PluggableTask
     public static final String PARAMETER_PASSWORD = "password";
     public static final String PARAMETER_REPLYTO = "reply_to";
     public static final String PARAMETER_BCCTO = "bcc_to";
+    public static final String PARAMETER_HTML = "html";
 
     /* 
      * This will send an email to the main contant of the provided user
@@ -69,7 +76,6 @@ public class BasicEmailNotificationTask extends PluggableTask
      */
     public void deliver(UserDTO user, MessageDTO message) 
             throws TaskException {
-    	Logger log = Logger.getLogger(BasicEmailNotificationTask.class);
         
         // do not process paper invoices. So far, all the rest are emails
         // This if is necessary because an entity can have some customers
@@ -79,7 +85,6 @@ public class BasicEmailNotificationTask extends PluggableTask
             return;
         }
         
-        Properties prop = new Properties();   
         // verify that we've got the right number of sections
         MessageSection[] sections = message.getContent();
         if (sections.length != 2) {
@@ -96,11 +101,11 @@ public class BasicEmailNotificationTask extends PluggableTask
         int port = Integer.parseInt(Util.getSysProp("smtp_port"));
         String strPort = (String) parameters.get(PARAMETER_PORT);
         if (strPort != null && strPort.trim().length() > 0) {
-        	try {
-        		port = Integer.valueOf(strPort).intValue();
-        	} catch (NumberFormatException e) {
-        		log.error("The port is not a number", e);
-        	}
+            try {
+                port = Integer.valueOf(strPort).intValue();
+            } catch (NumberFormatException e) {
+                LOG.error("The port is not a number", e);
+            }
         }
         String username = (String) parameters.get(PARAMETER_USERNAME);
         if (username == null || username.length() == 0) {
@@ -112,40 +117,46 @@ public class BasicEmailNotificationTask extends PluggableTask
         }
         String replyTo = (String) parameters.get(PARAMETER_REPLYTO);
         
+        boolean doHTML = Boolean.valueOf((String) parameters.get(PARAMETER_HTML));
+        
         // create the session & message
-        prop.setProperty("mail.smtp.auth", "true");
-        Session session = Session.getInstance(prop);
-        Message msg = new MimeMessage(session);
+        sender.setHost(server);
+        sender.setUsername(username);
+        sender.setPassword(password);
+        sender.setPort(port);
+        if (username != null && username.length() > 0) {
+            sender.getJavaMailProperties().setProperty("mail.smtp.auth", "true");
+        }
+        
+        MimeMessage mimeMsg = sender.createMimeMessage();
+        MimeMessageHelper msg = new MimeMessageHelper(mimeMsg);
         
         // set the message's fields
         // the to address/es
         try {
             ContactBL contact = new ContactBL();
             Vector contacts = contact.getAll(user.getUserId());
+            boolean atLeastOne = false;
             for (int f = 0; f < contacts.size(); f++) {
                 ContactDTOEx record = (ContactDTOEx) contacts.get(f);
                 String address = record.getEmail();
                 if (record.getInclude() != null && 
                         record.getInclude().intValue() == 1 && 
                         address != null && address.trim().length() > 0) {
-                    msg.addRecipient(Message.RecipientType.TO,
-                            new InternetAddress(address, false));
+                    msg.setTo(new InternetAddress(address, false));
+                    atLeastOne = true;
                 }
             }
-            if (msg.getAllRecipients() == null || 
-                    msg.getAllRecipients().length == 0) {
+            if (!atLeastOne) {
                 // not a huge deal, but no way I can send anything
-                log.info("User without email address " + 
+                LOG.info("User without email address " + 
                         user.getUserId());
                 return;
             }
-
         } catch (Exception e) {
-            log.debug("Exception setting addresses ", e);
+            LOG.debug("Exception setting addresses ", e);
             throw new TaskException("Setting addresses");
         }
-        
-        
         
         // the from address
         String from = (String) parameters.get(PARAMETER_FROM);
@@ -166,23 +177,20 @@ public class BasicEmailNotificationTask extends PluggableTask
         } 
         // the reply to 
         if (replyTo != null && replyTo.length() > 0) {
-        	try {
-				InternetAddress rep[] = new InternetAddress[1];
-				rep[0] = new InternetAddress(replyTo);
-				msg.setReplyTo(rep);
-			} catch (Exception e5) {
-				log.error("Exception when setting the replyTo address: " + 
-						replyTo, e5);
-			}
+            try {
+                msg.setReplyTo(replyTo);
+            } catch (Exception e5) {
+                LOG.error("Exception when setting the replyTo address: " +
+                        replyTo, e5);
+            }
         }
         // the bcc if specified
         String bcc = (String) parameters.get(PARAMETER_BCCTO);
         if (bcc != null && bcc.length() > 0) {
             try {
-                msg.addRecipient(Message.RecipientType.BCC,
-                        new InternetAddress(bcc, false));
+                msg.setBcc(new InternetAddress(bcc, false));
             } catch (AddressException e5) {
-                log.warn("The bcc address " + bcc + " is not valid. " +
+                LOG.warn("The bcc address " + bcc + " is not valid. " +
                         "Sending without bcc", e5);
             } catch (MessagingException e5) {
                 throw new TaskException("Exception setting bcc " + 
@@ -196,31 +204,12 @@ public class BasicEmailNotificationTask extends PluggableTask
                 if (sections[f].getSection().intValue() == 1) {
                     msg.setSubject(sections[f].getContent());
                 } else { // it has to be two ..
-                    if (message.getAttachmentFile() == null) { 
-                        msg.setText(sections[f].getContent());
-                    } else {
-                        // because of the attachment
-                        // it is a 'multi part' email
-                        MimeMultipart mp = new MimeMultipart();
-                        
-                        // the text message is one part
-                        MimeBodyPart text = new MimeBodyPart();
-                        text.setDisposition(Part.INLINE);
-                        text.setContent(sections[f].getContent(), "text/plain");
-                        mp.addBodyPart(text);
-
-                        // the attachement is another.
-                        MimeBodyPart file_part = new MimeBodyPart();
+                    msg.setText(sections[f].getContent(), doHTML);
+                    if (message.getAttachmentFile() != null) { 
                         File file = (File) new File(message.getAttachmentFile());
                         FileDataSource fds = new FileDataSource(file);
-                        DataHandler dh = new DataHandler(fds);
-                        file_part.setFileName(file.getName());
-                        file_part.setDisposition(Part.ATTACHMENT);
-                        file_part.setDescription("Attached file: " + file.getName());
-                        file_part.setDataHandler(dh);
-                        mp.addBodyPart(file_part);
-
-                        msg.setContent(mp);
+                        
+                        msg.addAttachment(file.getName(), fds);
                     }
                 }
             }
@@ -239,35 +228,30 @@ public class BasicEmailNotificationTask extends PluggableTask
         // send the message
         try {
             String allEmails = "";
-            for (int f =0 ; f < msg.getAllRecipients().length; f++) {
-                allEmails = allEmails + " " + 
-                        msg.getAllRecipients()[f].toString();
+            for (Address address : msg.getMimeMessage().getAllRecipients()) {
+                allEmails = allEmails + " " + address.toString();
             }
-            log.debug(
+            LOG.debug(
                     "Sending email to " + allEmails + " bcc " + bcc + " server=" + server + 
                     " port=" + port + " username=" + username + " password=" +
                     password);
-        	Transport transport = session.getTransport("smtp");
-            transport.connect(server, port, username, password);
-            
-            transport.sendMessage(msg, msg.getAllRecipients());
+            sender.send(mimeMsg);
             //if there was an attachment, remove the file
             if (message.getAttachmentFile() != null) {
                 File file = new File(message.getAttachmentFile());
                 if (!file.delete()) {
-                    log.debug("Could not delete attachment file " + 
+                    LOG.debug("Could not delete attachment file " + 
                             file.getName());
                 }
             }
-        } catch (MessagingException e4) {
+        } catch (Throwable e4) { // need to catch a messaging exception plus spring's runtimes
             // send an emial to the entity to let it know about the failure
         	try {
                 String params[] = new String[6]; // five parameters for this message;
                 params[0] = (e4.getMessage() == null ? "No detailed exception message"  : e4.getMessage());
                 params[1] = "";
-                for (int f =0 ; f < msg.getAllRecipients().length; f++) {
-                    params[1] = params[1] + " " + 
-                            msg.getAllRecipients()[f].toString();
+                for (Address address : msg.getMimeMessage().getAllRecipients()) {
+                    params[1] = params[1] + " " + address.toString();
                 }
                 params[2] = server;
                 params[3] = port + " ";
@@ -278,7 +262,7 @@ public class BasicEmailNotificationTask extends PluggableTask
                         "notification.email.error", null, params);
                 
             } catch (Exception e5) {
-                log.warn("Exception sending error message to entity", e5);
+                LOG.warn("Exception sending error message to entity", e5);
             } 
             throw new TaskException("Exception sending the message" +
                     "." + e4.getMessage());

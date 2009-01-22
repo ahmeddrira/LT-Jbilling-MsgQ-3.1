@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<!--
+    Document   : jbilling-bean.xml
+    Created on : January 14, 2009, 4:33 PM
+    Author     : emilc
+    Description:
+        Configuration of stateless facade beans. These replace the EJB remote session beans
+-->
+
+<beans>
+    <bean id="itemBean" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
+</beans>

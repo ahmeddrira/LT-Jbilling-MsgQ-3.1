@@ -35,8 +35,6 @@ import java.util.Properties;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.ItemSession;
-import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
@@ -53,6 +51,9 @@ import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.util.Context;
+
 
 /**
  * @author Emil
@@ -442,11 +443,7 @@ public class UploadData {
             System.out.println("Now loading types " + fileName);
             file = new BufferedReader(new FileReader(fileName));
             // get the remote interfaces
-            ItemSessionHome itemHome =
-                (ItemSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                ItemSessionHome.class,
-                ItemSessionHome.JNDI_NAME);
-            ItemSession itemSession = itemHome.create();
+            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.ITEM_BEAN);
             
             header = file.readLine();
             // the types file has only one field with the description

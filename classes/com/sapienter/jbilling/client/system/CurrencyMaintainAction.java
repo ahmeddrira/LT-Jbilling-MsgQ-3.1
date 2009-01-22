@@ -42,30 +42,25 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ItemSession;
-import com.sapienter.jbilling.interfaces.ItemSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class CurrencyMaintainAction extends Action {
+    
+    private static final Logger LOG = Logger.getLogger(CurrencyMaintainAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         
-        Logger log = Logger.getLogger(CurrencyMaintainAction.class);
+        
         ActionMessages messages = new ActionMessages();
         ActionErrors errors = new ActionErrors();
         
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ItemSessionHome itemHome =
-                    (ItemSessionHome) EJBFactory.lookUpHome(
-                    ItemSessionHome.class,
-                    ItemSessionHome.JNDI_NAME);
-        
-            ItemSession itemSession = itemHome.create();
+            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.ITEM_BEAN);
             
             String action = request.getParameter("action");
             HttpSession session = request.getSession(false);
@@ -117,7 +112,7 @@ public class CurrencyMaintainAction extends Action {
             saveMessages(request, messages);
             return mapping.findForward("edit");
         } catch (Exception e) {
-            log.error("Exception ", e);
+            LOG.error("Exception ", e);
         }
         
         return mapping.findForward("error");

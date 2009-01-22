@@ -20,13 +20,7 @@
 
 package com.sapienter.jbilling.server.item;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 
-import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
@@ -36,40 +30,28 @@ import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
-/**
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+/*
  *
  * This is the session facade for the Item. All interaction from the client
  * to the server is made through calls to the methods of this class. This 
  * class uses helper classes (Business Logic -> BL) for the real logic.
  *
  * @author emilc
- * @ejb:bean name="com/sapienter/jbilling/server/item/ItemSession"
- *           display-name="The item session facade"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/item/ItemSession"
- * 
- * @ejb.resource-ref res-ref-name="jdbc/ApplicationDS"
- *                   res-type="javax.sql.DataSource"
- * 					 res-auth="Container"
- * 
- * @jboss.resource-ref res-ref-name="jdbc/ApplicationDS"
- *                     jndi-name="java:/ApplicationDS"
  * 
  */
 
-public class ItemSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class ItemSessionBean {
 
-    private Logger log = null;
-    private SessionContext mContext;
+    //private static final Logger LOG = Logger.getLogger(ItemSessionBean.class);
+
     // -------------------------------------------------------------------------
     // Methods
     // -------------------------------------------------------------------------  
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public Integer create(ItemDTO dto, Integer languageId) 
             throws SessionInternalError {
         try {
@@ -81,9 +63,6 @@ public class ItemSessionBean implements SessionBean {
     }
     
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public void update(Integer executorId, ItemDTO dto, Integer languageId) 
             throws SessionInternalError {
         try {
@@ -94,18 +73,12 @@ public class ItemSessionBean implements SessionBean {
         }
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public boolean validateDecimals( Integer hasDecimals, Integer itemId ) {
     	if( itemId == null ) { return true; }
         ItemBL bl = new ItemBL(itemId);
         return bl.validateDecimals( hasDecimals );
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public ItemDTO get(Integer id, Integer languageId, Integer userId,
             Integer currencyId, Integer entityId) 
             throws SessionInternalError {
@@ -117,9 +90,6 @@ public class ItemSessionBean implements SessionBean {
         }
     } 
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public void delete(Integer executorId, Integer id) 
             throws SessionInternalError {
         try {
@@ -131,9 +101,6 @@ public class ItemSessionBean implements SessionBean {
         
     } 
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public Integer createType(ItemTypeDTO dto) 
             throws SessionInternalError {
         try {
@@ -145,9 +112,6 @@ public class ItemSessionBean implements SessionBean {
         }
     }
     
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public ItemTypeDTO getType(Integer id) 
             throws SessionInternalError {
         try {            
@@ -164,9 +128,6 @@ public class ItemSessionBean implements SessionBean {
         }
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public void updateType(Integer executorId, ItemTypeDTO dto) 
             throws SessionInternalError {
         try {
@@ -178,9 +139,9 @@ public class ItemSessionBean implements SessionBean {
 
     }
 
-    /**
+    /*
      * For now, this will delete permanently
-     * @ejb:interface-method view-type="remote"
+     *
      */
      public void deleteType(Integer executorId, Integer itemTypeId) 
              throws SessionInternalError {
@@ -196,7 +157,6 @@ public class ItemSessionBean implements SessionBean {
 
 
     /**
-    * @ejb:interface-method view-type="remote"
     * @return the id if all good, null if the user/item combination already
     * exists.
     */
@@ -220,9 +180,6 @@ public class ItemSessionBean implements SessionBean {
         return retValue;
     }
     
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public ItemUserPriceDTO getPrice(Integer userId, Integer itemId)
             throws SessionInternalError {
         try {
@@ -235,9 +192,6 @@ public class ItemSessionBean implements SessionBean {
         }
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public ItemUserPriceDTO getPrice(Integer priceId)
             throws SessionInternalError {
         try {
@@ -248,9 +202,6 @@ public class ItemSessionBean implements SessionBean {
         }
     }
     
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public void updatePrice(Integer executorId, ItemUserPriceDTO dto) 
             throws SessionInternalError {
         try {
@@ -264,7 +215,6 @@ public class ItemSessionBean implements SessionBean {
 
     /**
      * For now, this will delete permanently
-     * @ejb:interface-method view-type="remote"
      */
      public void deletePrice(Integer executorId, Integer itemPriceId) 
              throws SessionInternalError {
@@ -279,9 +229,6 @@ public class ItemSessionBean implements SessionBean {
      }
 
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) 
             throws SessionInternalError {
         try {
@@ -292,9 +239,6 @@ public class ItemSessionBean implements SessionBean {
         }
     }
     
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public void setCurrencies(Integer entityId, CurrencyDTO[] currencies,
             Integer currencyId) 
             throws SessionInternalError {
@@ -308,9 +252,6 @@ public class ItemSessionBean implements SessionBean {
         
     }   
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public Integer getEntityCurrency(Integer entityId) 
             throws SessionInternalError {
         try {
@@ -321,46 +262,5 @@ public class ItemSessionBean implements SessionBean {
         }
         
     }   
-        
-    /**
-    * Create the Session Bean
-    *
-    * @throws CreateException 
-    *
-    * @ejb:create-method view-type="remote"
-    */
-    public void ejbCreate() throws CreateException {
-        if (log == null) {
-            log = Logger.getLogger(ItemSessionBean.class);
-        }
-    }
-
-    /**
-    * Describes the instance and its content for debugging purpose
-    *
-    * @return Debugging information about the instance and its content
-    */
-    public String toString() {
-        return "ItemSessionBean [ " + " ]";
-    }
-
-    // -------------------------------------------------------------------------
-    // Framework Callbacks
-    // -------------------------------------------------------------------------  
-
-    public void setSessionContext(SessionContext aContext)
-            throws EJBException {
-        log = Logger.getLogger(ItemSessionBean.class);
-        mContext = aContext;
-    }
-
-    public void ejbActivate() throws EJBException {
-    }
-
-    public void ejbPassivate() throws EJBException {
-    }
-
-    public void ejbRemove() throws EJBException {
-    }
-   
+           
 }

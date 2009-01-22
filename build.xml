@@ -390,6 +390,11 @@
                 <include name="*.jasper"/>
             </fileset>
         </copy>
+        <copy todir="${jboss.conf.dir}">
+            <fileset dir="${source.spring.descriptor.dir}">
+                <include name="*.xml"/>
+            </fileset>
+        </copy>
     </target>
     
     <!-- compile the Jasper design reports -->

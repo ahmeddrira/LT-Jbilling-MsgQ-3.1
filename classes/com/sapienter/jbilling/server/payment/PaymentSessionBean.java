@@ -59,6 +59,7 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import java.util.Vector;
 
 /**
  *
@@ -298,6 +299,9 @@ public class PaymentSessionBean implements SessionBean {
         try {
             if (dto.getIsRefund().intValue() == 0 && invoiceId != null) {
                 InvoiceBL bl = new InvoiceBL(invoiceId);
+                Vector inv = new Vector();
+                inv.add(invoiceId);
+                dto.setInvoiceIds(inv);
                 return processAndUpdateInvoice(dto, bl.getEntity());
             } else if (dto.getIsRefund().intValue() == 1 && 
                     dto.getPayment() != null && 

@@ -104,6 +104,16 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
         criteria.setProjection(Projections.count("id"));
         return (Integer) criteria.uniqueResult();
     }
+    
+    
+    public boolean isReleatedToItemType(Integer invoiceId, Integer itemTypeId) {
+        Criteria criteria = getSession().createCriteria(Invoice.class);
+        addItemCategoryCriteria(criteria, itemTypeId);
+        criteria.add(Restrictions.eq("deleted", 0))
+                .add(Restrictions.eq("id",invoiceId));
+        
+        return criteria.uniqueResult() != null;
+    }
 
     private void addUserCriteria(Criteria criteria, Integer userId) {
         criteria
@@ -128,7 +138,8 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
         criteria
             .createAlias("invoiceLines", "invoiceLines")
             .createAlias("invoiceLines.item", "item")
-            .createAlias("item.itemTypes", "itemTypes")
-            .add(Restrictions.eq("itemTypes.id", categoryId));
+            .add(Restrictions.eq("item.deleted", 0))
+                .createAlias("item.itemTypes", "itemTypes")
+                    .add(Restrictions.eq("itemTypes.id", categoryId));
     }
 }

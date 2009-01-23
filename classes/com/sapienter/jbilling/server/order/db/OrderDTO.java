@@ -105,7 +105,7 @@ public class OrderDTO  implements java.io.Serializable {
      private Integer isCurrent;
      private Integer versionNum;
      // other non-persitent fields
- 	 private Collection<OrderProcessDTO> nonReviewPeriods = null;
+     private Collection<OrderProcessDTO> nonReviewPeriods = null;
      private Collection<InvoiceDTO> invoices = null;
      private Collection<BillingProcessDTO> billingProcesses = null;
      private String periodStr = null;
@@ -256,7 +256,11 @@ public class OrderDTO  implements java.io.Serializable {
     }
     
     public void setOrderPeriodId(Integer id) {
-        setOrderPeriod(new OrderPeriodDAS().find(id));
+        if (id != null) {
+            setOrderPeriod(new OrderPeriodDAS().find(id));
+        } else {
+            setOrderPeriod(null);
+        }
     }
     
     @ManyToOne(fetch=FetchType.LAZY)

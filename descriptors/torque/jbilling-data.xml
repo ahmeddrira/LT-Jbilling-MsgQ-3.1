@@ -311,6 +311,7 @@
     <EventLogMessage Id="29"/>
     <EventLogMessage Id="30"/>    
     <EventLogMessage Id="31"/>
+    <EventLogMessage Id="32"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>

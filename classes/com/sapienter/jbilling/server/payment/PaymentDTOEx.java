@@ -233,7 +233,7 @@ public class PaymentDTOEx extends PaymentDTO {
     /**
      * @return
      */
-    public Vector getInvoiceIds() {
+    public Vector<Integer> getInvoiceIds() {
         return invoiceIds;
     }
 

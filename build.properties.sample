@@ -11,6 +11,7 @@ source.resources.descriptor.dir=${source.descriptor.dir}/resources
 source.mediation.descriptor.dir=${source.descriptor.dir}/mediation
 source.jboss.descriptor.dir=${source.descriptor.dir}/jboss
 source.torque.descriptor.dir=${source.descriptor.dir}/torque
+source.spring.descriptor.dir=${source.descriptor.dir}/spring
 source.server.package.dir=com/sapienter/jbilling/server
 source.client.package.dir=com/sapienter/jbilling/client
 source.common.package.dir=com/sapienter/jbilling/common

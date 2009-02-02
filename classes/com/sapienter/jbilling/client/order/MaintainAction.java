@@ -150,14 +150,19 @@ public class MaintainAction extends Action {
             summary = (OrderDTO) session.getAttribute(
                     Constants.SESSION_ORDER_SUMMARY);   
                         
+            UserSessionHome userHome =
+                    (UserSessionHome) EJBFactory.lookUpHome(
+                    UserSessionHome.class,
+                    UserSessionHome.JNDI_NAME);
+
+            UserSession remoteUser = userHome.create();
+            
             UserDTO user = new UserDTO();
             user.setId((Integer) session.getAttribute( //TODO this is known to have thrown a Null pointer exception
                     Constants.SESSION_USER_ID));
             summary.setBaseUserByUserId(user);
             //summary.setBillingTypeId((Integer) ((DynaValidatorForm)form).get("billingType"));
-            summary.setCurrency(new CurrencyDTO(
-                    (Integer) session.getAttribute(
-                    Constants.SESSION_CURRENCY)));
+            summary.setCurrency(remoteUser.getCurrency(user.getUserId())); 
             
             OrderCrudAction delegate = new OrderCrudAction();
             delegate.setServlet(getServlet());

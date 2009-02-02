@@ -58,6 +58,7 @@ import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
@@ -509,6 +510,14 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
         
         return dto;
+    }
+    
+    /**
+     * @ejb:interface-method view-type="remote"
+     */
+    public CurrencyDTO getCurrency(Integer userId) 
+            throws SessionInternalError{
+        return new UserDAS().find(userId).getCurrency();
     }
 
 

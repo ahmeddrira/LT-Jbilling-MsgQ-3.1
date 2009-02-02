@@ -108,9 +108,6 @@ public class NewOrderItemAction extends Action {
                 user.setId((Integer) session.getAttribute(
                         Constants.SESSION_USER_ID));
                 summary.setBaseUserByCreatedBy(user);
-                summary.setCurrency(new CurrencyDTO(
-                        (Integer) session.getAttribute(
-                        Constants.SESSION_CURRENCY)));
             }
 
             // call the ejb session with the item to add

@@ -1,10 +1,31 @@
-package com.sapienter.jbilling.server.provisioning;
+/*
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2008 Enterprise jBilling Software Ltd. and Emiliano Conde
 
+    This file is part of jbilling.
+
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+package com.sapienter.jbilling.server.provisioning;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import junit.framework.TestCase;
+
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -16,7 +37,7 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 public class ProvisioningTest extends TestCase {
     private static final int           ORDER_LINES_COUNT  = 6;
-    private static final Integer       USER_ID            = 1000;
+    private static final int           USER_ID            = 1000;
     private static Integer[]           itemIds            = {
         1, 2, 3, 24, 240, 14
     };
@@ -33,10 +54,10 @@ public class ProvisioningTest extends TestCase {
         super.setUp();
         api = JbillingAPIFactory.getAPI();
 
-        ProvisioningProcessSessionHome provisioningHome = (ProvisioningProcessSessionHome) JNDILookup.getFactory(
-                                                              true).lookUpHome(
-                                                              ProvisioningProcessSessionHome.class,
-                                                              ProvisioningProcessSessionHome.JNDI_NAME);
+        ProvisioningProcessSessionHome provisioningHome = 
+                (ProvisioningProcessSessionHome) JNDILookup.getFactory(true)
+                .lookUpHome(ProvisioningProcessSessionHome.class,
+                ProvisioningProcessSessionHome.JNDI_NAME);
 
         remoteProvisioning = provisioningHome.create();
     }
@@ -61,7 +82,7 @@ public class ProvisioningTest extends TestCase {
             provisioningStatus[4] = Constants.PROVISIONING_STATUS_PENDING_INACTIVE;
             provisioningStatus[5] = null;
 
-            OrderWS newOrder = createMockOrder(USER_ID.intValue(), ORDER_LINES_COUNT, 77f);
+            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, 77f);
 
             newOrder.setActiveSince(null);
 
@@ -132,7 +153,7 @@ public class ProvisioningTest extends TestCase {
             provisioningStatus[4] = Constants.PROVISIONING_STATUS_PENDING_INACTIVE;
             provisioningStatus[5] = null;
 
-            OrderWS newOrder = createMockOrder(USER_ID.intValue(), ORDER_LINES_COUNT, 77f);
+            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, 77f);
 
             // newOrder.setActiveSince(weeksFromToday(1));
             Calendar cal = Calendar.getInstance();
@@ -201,14 +222,14 @@ public class ProvisioningTest extends TestCase {
 
     public void testSubscriptionInActiveEvent() {
         try {
-            provisioningStatus[0] = Constants.PROVISIONING_STATUS_ACTIVE;
+            provisioningStatus[0] = Constants.PROVISIONING_STATUS_INACTIVE;
             provisioningStatus[1] = Constants.PROVISIONING_STATUS_ACTIVE;
             provisioningStatus[2] = null;
             provisioningStatus[3] = Constants.PROVISIONING_STATUS_PENDING_ACTIVE;
             provisioningStatus[4] = Constants.PROVISIONING_STATUS_PENDING_INACTIVE;
             provisioningStatus[5] = null;
 
-            OrderWS newOrder = createMockOrder(USER_ID.intValue(), ORDER_LINES_COUNT, 77f);
+            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, 77f);
 
             // newOrder.setActiveSince(weeksFromToday(1));
             Calendar cal = Calendar.getInstance();
@@ -237,7 +258,7 @@ public class ProvisioningTest extends TestCase {
             for (int i = 0; i < retLine.length; i++) {
                 if (i == 0) {
                     assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
-                                 Constants.PROVISIONING_STATUS_ACTIVE);
+                                 Constants.PROVISIONING_STATUS_INACTIVE);
                 }
 
                 if (i == 1) {
@@ -311,4 +332,44 @@ public class ProvisioningTest extends TestCase {
 
         return calendar.getTime();
     }*/
+
+    public void testExternalProvisioning() {
+        try {
+            // create the order
+            OrderWS order = new OrderWS();
+            order.setUserId(USER_ID);
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(1);
+            order.setCurrencyId(1);
+
+            OrderLineWS line = new OrderLineWS();
+            line.setItemId(251);
+            line.setQuantity(1);
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setUseItem(true);
+            line.setProvisioningStatus(Constants.PROVISIONING_STATUS_INACTIVE);
+
+            order.setOrderLines(new OrderLineWS[] { line });
+
+            System.out.println("Creating order ...");
+            Integer ret = api.createOrder(order);
+            assertNotNull("The order was not created", ret);
+
+            pause(4000); // wait for MDBs to complete
+            System.out.println("Getting back order " + ret);
+
+            // check TestExternalProvisioningMDB was successful
+            OrderWS retOrder = api.getOrder(ret); 
+            OrderLineWS orderLine = retOrder.getOrderLines()[0];
+            assertEquals("Order status should be active. Check log output " +
+                    "from TestExternalProvisioningMDB in jbilling.log for " + 
+                    "exact error.", Constants.PROVISIONING_STATUS_ACTIVE,
+                    orderLine.getProvisioningStatus());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+
+    }
 }

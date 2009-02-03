@@ -176,4 +176,5 @@ public interface CommonConstants {
     public final static Integer PROVISIONING_STATUS_PENDING_ACTIVE=new Integer(3);
     public final static Integer PROVISIONING_STATUS_PENDING_INACTIVE=new Integer(4);
     public final static Integer PROVISIONING_STATUS_FAILED=new Integer(5);
+    public final static Integer PROVISIONING_STATUS_UNAVAILABLE = new Integer(6);
 }

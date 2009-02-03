@@ -260,7 +260,6 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
          *
          */
 		private static final long serialVersionUID = 1L;
-		private int cnt = 0;
 		private OrderDTO order = null;
 		private LinkedList<LinkedList<StringPair>> commands = new LinkedList<LinkedList<StringPair>>();;
 		private LinkedList<StringPair> commandQueue;
@@ -281,7 +280,7 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 			LOG.debug("orderLineId=" + orderLineId.intValue());
 
 			// add current command queue to global queue
-			if ((commandQueue != null) && (cnt > 0)) {
+			if (commandQueue != null) {
 				commands.add(commandQueue);
 				LOG.debug("added command queue " + commandQueue);
 			}

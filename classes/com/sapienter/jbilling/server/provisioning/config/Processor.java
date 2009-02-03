@@ -17,27 +17,28 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.sapienter.jbilling.server.util;
 
-import org.springframework.context.ApplicationContext;
+package com.sapienter.jbilling.server.provisioning.config;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.util.List;
 
-public class Context {
+public class Processor {
+    private String id = null;
+    private List<Request> requests = null;
 
-    private static final ApplicationContext spring = 
-            new ClassPathXmlApplicationContext( new String[] {"/jbilling-beans.xml", 
-            "/jbilling-database.xml", "jbilling-provisioning.xml"});
-    
-    // all the managed beans
-    public static final String ITEM_BEAN = "itemBean";
-    public static final String PROVISIONING = "provisioning";
-
-    // should not be instantiated
-    private Context() {
+    public String getId() {
+        return id;
     }
-    
-    public static Object getBean(String bean) {
-        return spring.getBean(bean);
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
     }
 }

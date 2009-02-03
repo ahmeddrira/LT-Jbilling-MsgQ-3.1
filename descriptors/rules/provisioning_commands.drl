@@ -1,8 +1,7 @@
 package provisioning_commands
 import com.sapienter.jbilling.server.util.Constants
 import com.sapienter.jbilling.server.order.db.OrderLineDTO
-import 
-com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager
+import com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager
 
 global com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager command
 
@@ -13,22 +12,37 @@ global com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRules
 
 rule 'provisioning_activate'
 when
-$orderLine : OrderLineDTO(item.id == 2, provisioningStatus ==
-Constants.PROVISIONING_STATUS_INACTIVE)
-CommandManager(eventType == "activated")
+    $orderLine : OrderLineDTO(itemId == 2, provisioningStatus ==
+        Constants.PROVISIONING_STATUS_INACTIVE)
+    CommandManager(eventType == "activated")
 then
-command.addCommand("activate_something", $orderLine.getId());
-command.addParameter("parameter1", "value1");
-command.addParameter("parameter2", "value2");
+    command.addCommand("activate_user", $orderLine.getId());
+    command.addParameter("msisdn", "12345");
+    command.addParameter("imsi", "11111");
 end
 
 rule 'provisioning_deactivate'
 when
-$orderLine : OrderLineDTO(item.id == 2, provisioningStatus ==Constants.PROVISIONING_STATUS_ACTIVE)
-CommandManager(eventType == "deactivated")
+    $orderLine : OrderLineDTO(itemId == 2, provisioningStatus ==
+        Constants.PROVISIONING_STATUS_ACTIVE)
+    CommandManager(eventType == "deactivated")
 then
-command.addCommand("deactivate_something", $orderLine.getId());
-command.addParameter("parameter1", "value1");
-command.addParameter("parameter2", "value2");
-
+    // just use 'activate_user' command again
+    command.addCommand("activate_user", $orderLine.getId());
+    command.addParameter("msisdn", "12345");
 end
+
+rule 'external_provisioning_test'
+when
+    $orderLine : OrderLineDTO(itemId == 251, provisioningStatus ==
+        Constants.PROVISIONING_STATUS_INACTIVE)
+    CommandManager(eventType == "activated")
+then
+    command.addCommand("result_test", $orderLine.getId());
+    // should return 'sucess' then 'unavailable'
+    command.addParameter("msisdn", "98765"); 
+    command.addCommand("result_test", $orderLine.getId());
+    // should return 'fail'
+    command.addParameter("msisdn", "54321");
+end
+

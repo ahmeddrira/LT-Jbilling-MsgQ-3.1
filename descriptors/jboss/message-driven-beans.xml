@@ -43,8 +43,8 @@
 </message-driven>
 
 <message-driven>
-	<ejb-name>ProvisioningCommandsReply</ejb-name>
-	<ejb-class>com.sapienter.jbilling.server.provisioning.task.TestProvisioningCommandsMDB</ejb-class>
+	<ejb-name>ExternalProvisioning</ejb-name>
+	<ejb-class>com.sapienter.jbilling.server.provisioning.ExternalProvisioningMDB</ejb-class>
 	<transaction-type>Container</transaction-type>
 	<!-- 
 	<message-selector>
@@ -64,3 +64,24 @@
 	</resource-ref>
 </message-driven>  
 
+<message-driven>
+	<ejb-name>TestExternalProvisioning</ejb-name>
+	<ejb-class>com.sapienter.jbilling.server.provisioning.TestExternalProvisioningMDB</ejb-class>
+	<transaction-type>Container</transaction-type>
+	<!-- 
+	<message-selector>
+		<![CDATA[
+		    entityId = 1
+		]]>
+	</message-selector>
+	 -->
+	<acknowledge-mode>AUTO_ACKNOWLEDGE</acknowledge-mode>
+	<message-driven-destination>
+		<destination-type>javax.jms.Topic</destination-type>
+	</message-driven-destination>
+	<resource-ref>
+		<res-ref-name>jms/TCF</res-ref-name>
+		<res-type>javax.jms.TopicConnectionFactory</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+</message-driven>

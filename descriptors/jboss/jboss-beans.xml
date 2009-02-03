@@ -8,6 +8,7 @@
 		</jndi-name>
 	</resource-ref>
 </message-driven>
+
 <message-driven>
 	<ejb-name>ProvisioningCommandsResult</ejb-name>
 	<destination-jndi-name>topic/provisioning_commands_reply_topic</destination-jndi-name>
@@ -20,7 +21,7 @@
 </message-driven>
 
 <message-driven>
-	<ejb-name>ProvisioningCommandsReply</ejb-name>
+	<ejb-name>ExternalProvisioning</ejb-name>
 	<destination-jndi-name>queue/provisioning_commands_queue</destination-jndi-name>
 	<resource-ref>
 		<res-ref-name>jms/QCF</res-ref-name>
@@ -30,3 +31,13 @@
 	</resource-ref>
 </message-driven>  
 
+<message-driven>
+	<ejb-name>TestExternalProvisioning</ejb-name>
+	<destination-jndi-name>topic/provisioning_commands_reply_topic</destination-jndi-name>
+	<resource-ref>
+		<res-ref-name>jms/TCF</res-ref-name>
+		<jndi-name>
+			jnp://localhost:1099/UIL2ConnectionFactory
+		</jndi-name>
+	</resource-ref>
+</message-driven>

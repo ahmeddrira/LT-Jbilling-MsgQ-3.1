@@ -20,13 +20,16 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
-
 import java.rmi.RemoteException;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+import javax.jms.Message;
+
 import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
@@ -93,24 +96,56 @@ public class ProvisioningProcessSessionBean implements SessionBean {
 			order_bl.setProvisioningStatus(in_order_line_id,
 					Constants.PROVISIONING_STATUS_FAILED);
 			LOG.debug("Provisioning status set to 'FAILED' for order line : "
-					+ order_line);
+					+ order_line.getId());
+        } else if (result.equals("unavailable")) {
+			order_bl.setProvisioningStatus(in_order_line_id,
+					Constants.PROVISIONING_STATUS_UNAVAILABLE);
+			LOG.debug("Provisioning status set to 'UNAVAILABLE' for order line : "
+					+ order_line.getId());
 		} else if (result.equals("success")) {
 			if (order_line.getProvisioningStatus().equals(
 					Constants.PROVISIONING_STATUS_PENDING_ACTIVE)) {
 				order_bl.setProvisioningStatus(in_order_line_id,
 						Constants.PROVISIONING_STATUS_ACTIVE);
-
+                LOG.debug("Provisioning status set to 'ACTIVE' for order line : "
+                        + order_line.getId());
 			} else if (order_line.getProvisioningStatus().equals(
 					Constants.PROVISIONING_STATUS_PENDING_INACTIVE)) {
 				order_bl.setProvisioningStatus(in_order_line_id,
 						Constants.PROVISIONING_STATUS_INACTIVE);
-
-			}
+                LOG.debug("Provisioning status set to 'INACTIVE' for order line : "
+                        + order_line.getId());
+			} else {
+                throw new SessionInternalError("Invalid or unexpected " + 
+                        "provisioning status: " + 
+                        order_line.getProvisioningStatus());
+            }
 		} else {
-			LOG.error("Can not process message with result property value  "
-					+ result);
+			throw new SessionInternalError("Can not process message with " +
+                    "result property value " + result);
 		}
 	}
+
+    /**
+     * @ejb:interface-method view-type="remote"
+     * @ejb.transaction type="Required"
+     */
+    public void updateProvisioningStatus(Integer orderLineId, 
+            Integer provisioningStatus) {
+        OrderLineDTO orderLine = new OrderLineDAS().find(orderLineId);
+        OrderBL orderBL = new OrderBL(orderLine.getPurchaseOrder());
+        orderBL.setProvisioningStatus(orderLineId, provisioningStatus);
+    }
+
+    /**
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="Required"
+     * Runs the external provisioning code in a transation.
+     */
+	public void externalProvisioning(Message message) {
+        ExternalProvisioning provisioning = new ExternalProvisioning();
+        provisioning.onMessage(message);
+    }
 
 	/*
 	 * (non-Javadoc)

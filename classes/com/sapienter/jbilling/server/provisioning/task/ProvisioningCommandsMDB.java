@@ -76,7 +76,7 @@ public class ProvisioningCommandsMDB implements MessageDrivenBean, MessageListen
 
             LOG.debug("Message property in_order_id value : " + in_order_id);
 
-            String result = myMessage.getStringProperty("result");
+            String result = myMessage.getStringProperty("out_result");
 
             LOG.debug("Message property result value : " + result);
 

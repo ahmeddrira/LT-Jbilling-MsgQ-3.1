@@ -16,12 +16,11 @@
 
     You should have received a copy of the GNU General Public License
     along with jBilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package com.sapienter.jbilling.server.report.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.ReportType;
 
-public class ReportTypeDAS extends AbstractDAS<ReportType> {
+public class ReportTypeDAS extends AbstractDAS<ReportTypeDTO> {
 
 }

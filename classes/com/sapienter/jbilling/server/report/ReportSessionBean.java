@@ -28,7 +28,6 @@ import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
@@ -50,7 +49,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
  **/
 public class ReportSessionBean implements SessionBean {
 
-    Logger log = null;
+    //private static final Logger log = Logger.getLogger(ReportSessionBean.class);
 
     /**
     * Create the Session Bean
@@ -200,7 +199,6 @@ public class ReportSessionBean implements SessionBean {
      */
     public void setSessionContext(SessionContext arg0)
             throws EJBException, RemoteException {
-        log = Logger.getLogger(ReportSessionBean.class);
     }
 
 }

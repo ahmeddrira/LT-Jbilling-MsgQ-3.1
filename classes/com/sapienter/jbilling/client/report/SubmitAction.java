@@ -92,7 +92,7 @@ public class SubmitAction extends Action {
                 field.setIsShown(new Integer(
                         reportForm.getSelect(f) ? 1 : 0));
             }
-            if (field.getWherable().intValue() == 1) {
+            if (field.getWhereable().intValue() == 1) {
                 if (field.getDataType().equals(Field.TYPE_DATE)) {
                     if (reportForm.getYear(f).length() > 0 ||
                             reportForm.getMonth(f).length() > 0 ||
@@ -109,19 +109,19 @@ public class SubmitAction extends Action {
             }
             // the operator
             if (field.getOperatorable().intValue() == 1) {
-                field.setOperator(reportForm.getOperator(f));
+                field.setOperatorValue(reportForm.getOperator(f));
             }
             
             // the function/groupby
             if (field.getFunctionable().intValue() == 1) {
                 if (reportForm.getFunction(f).equals("none")) {
-                    field.setFunction(null);
+                    field.setFunctionName(null);
                     field.setIsGrouped(new Integer(0));
                 } else if (reportForm.getFunction(f).equals("grouped")) {
-                    field.setFunction(null);
+                    field.setFunctionName(null);
                     field.setIsGrouped(new Integer(1));
                 } else {
-                    field.setFunction(reportForm.getFunction(f));
+                    field.setFunctionName(reportForm.getFunction(f));
                     field.setIsGrouped(new Integer(0));
                 }
                 // since the report might have changed it's agregradtes status

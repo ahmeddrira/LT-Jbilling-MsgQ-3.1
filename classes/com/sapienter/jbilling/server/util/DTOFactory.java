@@ -39,13 +39,8 @@ import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.MenuOptionEntityLocal;
 import com.sapienter.jbilling.interfaces.MenuOptionEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ReportEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ReportFieldEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.ReportUserDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
@@ -53,6 +48,10 @@ import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.FieldComparator;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
 import com.sapienter.jbilling.server.report.db.ReportDAS;
+import com.sapienter.jbilling.server.report.db.ReportDTO;
+import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
+import com.sapienter.jbilling.server.report.db.ReportTypeDTO;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.EntityBL;
@@ -67,8 +66,6 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
-import com.sapienter.jbilling.server.util.db.generated.Report;
-import com.sapienter.jbilling.server.util.db.generated.ReportType;
 
 /**
  *
@@ -249,22 +246,17 @@ public class DTOFactory {
     }
     
     public static ReportDTOEx getReportDTOEx(Integer reportId, 
-            Integer entityId) 
-            throws NamingException, FinderException, SessionInternalError {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        ReportEntityLocalHome reportHome =
-                (ReportEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ReportEntityLocalHome.class,
-                ReportEntityLocalHome.JNDI_NAME);
+            Integer entityId) throws SessionInternalError {
+        ReportDAS reportHome = new ReportDAS();
 
-        ReportEntityLocal report = reportHome.findByPrimaryKey(reportId);
+        ReportDTO report = reportHome.find(reportId);
 
         EntityBL entity = new EntityBL(entityId);
         ReportDTOEx dto = getReportDTOEx(new ReportDAS().find(reportId), entity.getLocale());
-        Collection fields = report.getFields();
+        Collection fields = report.getReportFields();
         
         for (Iterator it = fields.iterator(); it.hasNext();) {
-            ReportFieldEntityLocal field = (ReportFieldEntityLocal) it.next();
+            ReportFieldDTO field = (ReportFieldDTO) it.next();
             Field fieldDto = getFieldDTO(field);
             fieldDto.setWhereValue(field.getWhereValue());
             
@@ -277,32 +269,32 @@ public class DTOFactory {
         return dto;
     }
     
-    public static Field getFieldDTO(ReportFieldEntityLocal field) {
-        Field dto = new Field(field.getTable(), field.getColumn(), 
+    public static Field getFieldDTO(ReportFieldDTO field) {
+        Field dto = new Field(field.getTableName(), field.getColumnName(), 
                 field.getDataType());
  
-        dto.setFunction(field.getFunction());
+        dto.setFunctionName(field.getFunctionName());
         dto.setFunctionable(field.getFunctionable());
         dto.setIsGrouped(field.getIsGrouped());
         dto.setIsShown(field.getIsShown());
-        dto.setOperator(field.getOperator());
+        dto.setOperatorValue(field.getOperatorValue());
         dto.setOperatorable(field.getOperatorable());
         dto.setOrdenable(field.getOrdenable());
         dto.setOrderPosition(field.getOrderPosition());
-        dto.setPosition(field.getPosition());
+        dto.setPositionNumber(field.getPositionNumber());
         dto.setSelectable(field.getSelectable());
         dto.setTitleKey(field.getTitleKey());
-        dto.setWherable(field.getWherable());
+        dto.setWherable(field.getWhereable());
         dto.setWhereValue(field.getWhereValue());
         
         return dto;
     }
  
-    public static ReportDTOEx getReportDTOEx(Report report,
+    public static ReportDTOEx getReportDTOEx(ReportDTO report,
             Locale locale) { 
     
-        ReportDTOEx dto = new ReportDTOEx(report.getTitlekey(), 
-                report.getInstructionskey(), report.getTablesList(),
+        ReportDTOEx dto = new ReportDTOEx(report.getTitleKey(), 
+                report.getInstructionsKey(), report.getTablesList(),
                 report.getWhereStr(), locale);
             
         dto.setIdColumn(report.getIdColumn());
@@ -312,14 +304,14 @@ public class DTOFactory {
         return dto;
     }
   
-    public static Collection<ReportDTOEx> reportEJB2DTOEx(Collection<Report> reports, 
+    public static Collection<ReportDTOEx> reportEJB2DTOEx(Collection<ReportDTO> reports, 
             boolean filter) {
         Vector<ReportDTOEx> dtos = new Vector<ReportDTOEx>();
         
-        for (Report report: reports) {
+        for (ReportDTO report: reports) {
             
             if (filter) {
-                for (ReportType type: report.getReportTypes()) {
+                for (ReportTypeDTO type: report.getReportTypes()) {
                     if (type.getShowable() == 1) {
                         dtos.add(getReportDTOEx(report, null));
                         break;
@@ -334,10 +326,10 @@ public class DTOFactory {
         return dtos;
     }
     
-    public static Collection reportEJB2DTO(Collection<Report> reports) {
+    public static Collection reportEJB2DTO(Collection<ReportDTO> reports) {
         Vector dtos = new Vector();
         
-        for (Report report: reports) {
+        for (ReportDTO report: reports) {
             dtos.add(getReportDTOEx(report, null));
         }
         
@@ -349,8 +341,8 @@ public class DTOFactory {
         Vector dtos = new Vector();
         
         for (Iterator it = reports.iterator(); it.hasNext();) {
-            ReportUserEntityLocal reportEJB = 
-                    (ReportUserEntityLocal) it.next();
+            ReportUserDTO reportEJB = 
+                    (ReportUserDTO) it.next();
             dtos.add(getReportUserDTO(reportEJB));
         }
         
@@ -358,9 +350,9 @@ public class DTOFactory {
     }
  
     public static ReportUserDTO getReportUserDTO(
-            ReportUserEntityLocal rUser) {
-        return new ReportUserDTO(rUser.getId(), 
-                rUser.getCreateDatetime(), rUser.getTitle(), rUser.getUserId());
+            ReportUserDTO rUser) {
+        return new ReportUserDTO(rUser.getId(), rUser.getBaseUser(), rUser.getReport(), 
+                rUser.getCreateDatetime(), rUser.getTitle());
     }
  
     public static MenuOption getMenuOption(Integer id, Integer languageId) 

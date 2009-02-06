@@ -66,6 +66,7 @@ import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.report.db.ReportUserDAS;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
@@ -90,7 +91,6 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.generated.Ach;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
-import com.sapienter.jbilling.server.util.db.generated.ReportUser;
 
 
 public class UserBL extends ResultList
@@ -695,7 +695,7 @@ public class UserBL extends ResultList
         // promotions
         user.getPromotions().clear();
         // user saved reports
-        for (ReportUser report: user.getReports()) {
+        for (ReportUserDTO report: user.getReports()) {
             new ReportUserDAS().delete(report);
         }
         user.getReports().clear();

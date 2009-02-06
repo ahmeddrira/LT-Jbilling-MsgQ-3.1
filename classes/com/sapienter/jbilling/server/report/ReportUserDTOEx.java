@@ -22,7 +22,8 @@ package com.sapienter.jbilling.server.report;
 
 import java.util.Date;
 
-import com.sapienter.jbilling.server.entity.ReportUserDTO;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
+
 
 public class ReportUserDTOEx extends ReportUserDTO {
 
@@ -36,7 +37,7 @@ public class ReportUserDTOEx extends ReportUserDTO {
     public ReportUserDTOEx(Integer id, Integer reportId, Date createDatetime, 
             String title) {
              
-        super(id, createDatetime, title, null);
+        super(id, null, null, createDatetime, title);
         this.reportId = reportId;
     }
 

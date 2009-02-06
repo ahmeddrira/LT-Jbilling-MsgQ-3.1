@@ -89,7 +89,7 @@ public class DownloadTag extends TagSupport {
             
             // print the column titles
             Vector fields = report.getFields();
-            int f = (report.getIdColumn().intValue() == 1) ? 1 : 0;
+            int f = (new Integer(report.getIdColumn()).intValue() == 1) ? 1 : 0;
             for ( ; f < fields.size(); f++) {
                 Field field = (Field) fields.get(f);
                 

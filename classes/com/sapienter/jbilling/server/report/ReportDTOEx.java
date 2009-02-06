@@ -26,10 +26,13 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.ReportDTO;
+import com.sapienter.jbilling.server.report.db.ReportDTO;
 
 
 public class ReportDTOEx extends ReportDTO {
+    
+    private static final Logger LOG = Logger.getLogger(ReportDTOEx.class);
+    
     /*
      * Constants that define a report, it has to stay in synch with 
      * the database ( saved_report_type ).
@@ -86,7 +89,7 @@ public class ReportDTOEx extends ReportDTO {
     /*
      * Private fields
      */
-    private Vector fields = null;
+    private Vector<Field> fields = null;
     private Integer userReportId = null; // for when this report has been loaded from a user's saved
     private Locale locale = null;
 
@@ -114,14 +117,14 @@ public class ReportDTOEx extends ReportDTO {
         this.locale = locale;
         setTitleKey(titleKey);
         setInstructionsKey(instructionsKey);
-        setTables(tables);
-        setWhere(where);
+        setTablesList(tables);
+        setWhereStr(where);
         isAgregated = new Boolean(false);
         selectable = new Boolean(false);
         ordenable = new Boolean(false);
         wherable = new Boolean(false);
         setIdColumn(new Integer(0));
-        fields = new Vector();
+        fields = new Vector<Field>();
         ordenableFields = new Integer(0);
         
         errorFields = new Vector();
@@ -155,30 +158,30 @@ public class ReportDTOEx extends ReportDTO {
     public int getFirstFieldIndex() {
         int retValue = 0;
         if (getAgregated().booleanValue() && 
-                getIdColumn().intValue() == 1) {
+                getIdColumn() == 1) {
             retValue = 1;
         }        
         
-        Logger.getLogger(ReportDTOEx.class).debug("first field = " + retValue);
+        LOG.debug("first field = " + retValue);
         return retValue;
     }
     
     public boolean validate() {
-        Logger log = Logger.getLogger(ReportDTO.class);
+        
         boolean retValue = true;
         int fieldsOrdered = 0;
         errorFields = new Vector();
         errorCodes = new Vector();
         
-        log.debug("validating report. aggregated=" + isAgregated);
+        LOG.debug("validating report. aggregated=" + isAgregated);
         
         int firstField = getFirstFieldIndex();
         
         if (getTitleKey() == null || getInstructionsKey() == null ||
-                fields == null || getTables() == null || getWhere() == null ) {
+                fields == null || getTablesList() == null || getWhereStr() == null ) {
             retValue = false;
             addError(ERROR_MISSING, -1);
-            log.info("Missing fields.");
+            LOG.info("Missing fields.");
         } else {
             // go over each field and validate it
             for (int f = firstField; f < fields.size(); f++) {
@@ -187,14 +190,14 @@ public class ReportDTOEx extends ReportDTO {
                 if (code != OK) {
                     retValue = false;
                     addError(code, f);
-                    log.info("Invalid field:" + field.getColumn());
+                    LOG.info("Invalid field:" + field.getColumnName());
                     break;
                 }
                 // verify that the select/group by is consistent
                 if (isAgregated.booleanValue()) {
                     if (!field.isAgregated() && 
                             field.getIsShown().intValue() == 1) {
-                        log.debug("Field " + field.getColumn() + " is not " +
+                        LOG.debug("Field " + field.getColumnName() + " is not " +
                                 "agregated for an agregated report");
                         addError(ERROR_AGREGATE, f);
                         retValue = false;
@@ -208,7 +211,7 @@ public class ReportDTOEx extends ReportDTO {
                     int val = field.getOrderPosition().intValue();
                     fieldsOrdered++;
                     if (val > ordenableFields.intValue() || val < 1) {
-                        log.debug("Field " + field.getColumn() + " order " +
+                        LOG.debug("Field " + field.getColumnName() + " order " +
                                 "position is out of bounds:" + val);   
                         addError(ERROR_ORDER_RANGE, f);
                         retValue = false;
@@ -239,7 +242,7 @@ public class ReportDTOEx extends ReportDTO {
                     }
                 }
                 if (f >= fields.size()) {
-                    log.debug("Order values are not consecutive");
+                    LOG.debug("Order values are not consecutive");
                     addError(ERROR_ORDER, -1);
                     retValue = false;
                     break;
@@ -255,7 +258,7 @@ public class ReportDTOEx extends ReportDTO {
         isAgregated = new Boolean(false);
         for (int f = 0; f < fields.size(); f++) {
             Field field = (Field) fields.get(f);
-            if (field.getFunction() != null || 
+            if (field.getFunctionName() != null || 
                     field.getIsGrouped().intValue() == 1) {
                 isAgregated = new Boolean(true);
                 break;
@@ -271,8 +274,6 @@ public class ReportDTOEx extends ReportDTO {
     public void addField(Field field) 
             throws SessionInternalError {
 
-        Logger log = Logger.getLogger(ReportDTO.class);
-        
         if (field.validate(locale) == OK) {
             if (field.getIsShown().intValue() == 1) {
                 if (!isAgregated.booleanValue()) {
@@ -281,8 +282,8 @@ public class ReportDTOEx extends ReportDTO {
                     }
                 } else {
                     if (!field.isAgregated()) {
-                        log.debug("Can't add a non agregated field " +
-                                field.getColumn() + " to this report");
+                        LOG.debug("Can't add a non agregated field " +
+                                field.getColumnName() + " to this report");
                         throw new SessionInternalError("Non agregated field" +
                                 " added to agregated report");
                     }
@@ -299,13 +300,13 @@ public class ReportDTOEx extends ReportDTO {
                     !selectable.booleanValue()) {
                 selectable = new Boolean(true);
             }
-            if (field.getWherable().intValue() == 1 &&
+            if (field.getWhereable().intValue() == 1 &&
                     !wherable.booleanValue()) {
                 wherable = new Boolean(true);
             }            
         } else {
             throw new SessionInternalError("Adding field " + 
-                    field.getTable() + "." + field.getColumn() + 
+                    field.getTableName() + "." + field.getColumnName() + 
                     " but it is not valid"); 
         }
         
@@ -313,7 +314,7 @@ public class ReportDTOEx extends ReportDTO {
      
     
 
-    public Vector getFields() {
+    public Vector<Field> getFields() {
         return fields;
     }
 
@@ -410,8 +411,8 @@ public class ReportDTOEx extends ReportDTO {
     public Field getField(String table, String column) {
         for (int f = 0; f < fields.size(); f++) {
             Field field = (Field) fields.get(f); 
-            if (field.getTable().equals(table) && 
-                    field.getColumn().equals(column)) {
+            if (field.getTableName().equals(table) && 
+                    field.getColumnName().equals(column)) {
                 return (Field) fields.get(f);
             }
         }

@@ -12,7 +12,7 @@
         <column name="account_name" required="true" size="100" type="VARCHAR"/>
         
         <index name="ach_i_2">
-        	<index-column name="user_id"/>
+            <index-column name="user_id"/>
         </index>
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
@@ -46,8 +46,8 @@
         <column name="failed_attempts" type="INTEGER" required="true" default="0"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_base_user_un">
-        	<index-column name="entity_id"/>
-        	<index-column name="user_name"/>
+            <index-column name="entity_id"/>
+            <index-column name="user_name"/>
         </index>
         <foreign-key foreignTable="user_status">
             <reference foreign="id" local="status_id"/>
@@ -103,7 +103,7 @@
         <column default="0" name="auto_payment" required="true" type="SMALLINT"/>
         <column default="1" name="maximum_periods" required="true" type="INTEGER"/>
         <column default="0" name="auto_payment_application"
-            required="true" type="INTEGER"/>
+                required="true" type="INTEGER"/>
         <foreign-key foreignTable="period_unit">
             <reference foreign="id" local="period_unit_id"/>
         </foreign-key>
@@ -120,7 +120,7 @@
         <column name="payment_finished" type="TIMESTAMP"/>
         <column name="invoices_generated" type="INTEGER"/>
         <index name="bp_run_process_ix">
-        	<index-column name="process_id"/>
+            <index-column name="process_id"/>
         </index>
         <foreign-key foreignTable="billing_process">
             <reference foreign="id" local="process_id"/>
@@ -134,7 +134,7 @@
         <column name="total_paid" type="DOUBLE"/>
         <column name="total_not_paid" type="DOUBLE"/>
         <index name="bp_run_total_run_ix">
-        	<index-column name="process_run_id"/>
+            <index-column name="process_run_id"/>
         </index>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
@@ -148,8 +148,8 @@
         <column name="process_run_total_id" type="INTEGER"/>
         <column name="payment_method_id" type="INTEGER"/>
         <column name="total" required="true" type="DOUBLE"/>
-		<index name="bp_pm_index_total">
-        	<index-column name="process_run_total_id"/>
+        <index name="bp_pm_index_total">
+            <index-column name="process_run_total_id"/>
         </index>
         <foreign-key foreignTable="payment_method">
             <reference foreign="id" local="payment_method_id"/>
@@ -180,18 +180,18 @@
         <column default="1" name="notification_include" type="SMALLINT"/>
         <column name="user_id" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
-
+        
         <index name="ix_contact_fname">
-        	<index-column name="first_name"/>
+            <index-column name="first_name"/>
         </index>
         <index name="ix_contact_lname">
-        	<index-column name="last_name"/>
+            <index-column name="last_name"/>
         </index>
         <index name="ix_contact_orgname">
-        	<index-column name="organization_name"/>
+            <index-column name="organization_name"/>
         </index>
         <index name="contact_i_del">
-        	<index-column name="deleted"/>
+            <index-column name="deleted"/>
         </index>
         <index name="ix_contact_fname_lname">
             <index-column name="first_name"/>
@@ -219,10 +219,10 @@
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="ix_contact_field_cid">
-        	<index-column name="contact_id"/>
+            <index-column name="contact_id"/>
         </index>
         <index name="ix_contact_field_content">
-        	<index-column name="content"/>
+            <index-column name="content"/>
         </index>
         <foreign-key foreignTable="contact">
             <reference foreign="id" local="contact_id"/>
@@ -238,7 +238,7 @@
         <column name="data_type" required="true" size="10" type="VARCHAR"/>
         <column name="customer_readonly" type="SMALLINT"/>
         <index name="ix_cf_type_entity">
-        	<index-column name="entity_id"/>
+            <index-column name="entity_id"/>
         </index>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
@@ -253,9 +253,9 @@
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="contact_map_i_3">
-        	<index-column name="table_id"/>
-        	<index-column name="foreign_id"/>
-        	<index-column name="type_id"/>
+            <index-column name="table_id"/>
+            <index-column name="foreign_id"/>
+            <index-column name="type_id"/>
         </index>
         <foreign-key foreignTable="jbilling_table">
             <reference foreign="id" local="table_id"/>
@@ -290,10 +290,10 @@
         <column name="security_code" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_cc_number">
-        	<index-column name="cc_number_plain"/>
+            <index-column name="cc_number_plain"/>
         </index>
         <index name="ix_cc_number_encrypted">
-        	<index-column name="cc_number"/>
+            <index-column name="cc_number"/>
         </index>
     </table>
     <table name="currency">
@@ -306,8 +306,8 @@
         <column name="currency_id" type="INTEGER"/>
         <column name="entity_id" type="INTEGER"/>
         <index name="currency_entity_map_i_2">
-        	<index-column name="currency_id"/>
-        	<index-column name="entity_id"/>
+            <index-column name="currency_id"/>
+            <index-column name="entity_id"/>
         </index>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
@@ -345,7 +345,7 @@
         <column name="current_order_id" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="customer_i_2">
-	        <index-column name="user_id"/>
+            <index-column name="user_id"/>
         </index>
         <foreign-key foreignTable="invoice_delivery_method">
             <reference foreign="id" local="invoice_delivery_method_id"/>
@@ -408,9 +408,9 @@
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="ix_el_main">
-        	<index-column name="module_id"/>
-        	<index-column name="message_id"/>
-        	<index-column name="create_datetime"/>
+            <index-column name="module_id"/>
+            <index-column name="message_id"/>
+            <index-column name="create_datetime"/>
         </index>
         <foreign-key foreignTable="event_log_module">
             <reference foreign="id" local="module_id"/>
@@ -438,16 +438,16 @@
         <column name="table_id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="foreign_id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="psudo_column" primaryKey="true" required="true"
-            size="20" type="VARCHAR"/>
+                size="20" type="VARCHAR"/>
         <column name="language_id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="content" required="true" size="4000" type="VARCHAR"/>
         <index name="international_description_i_2">
-        	<index-column name="table_id"/>
-        	<index-column name="foreign_id"/>
-        	<index-column name="language_id"/>
+            <index-column name="table_id"/>
+            <index-column name="foreign_id"/>
+            <index-column name="language_id"/>
         </index>
         <index name="int_description_i_lan">
-        	<index-column name="language_id"/>
+            <index-column name="language_id"/>
         </index>
         <foreign-key foreignTable="language">
             <reference foreign="id" local="language_id"/>
@@ -479,26 +479,26 @@
         <column name="overdue_step" type="INTEGER"/>
         <column name="create_timestamp" required="true" type="TIMESTAMP"/>
         <index name="ix_invoice_user_id">
-        	<index-column name="user_id"/>
-        	<index-column name="deleted"/>
+            <index-column name="user_id"/>
+            <index-column name="deleted"/>
         </index>
         <index name="ix_invoice_date">
-        	<index-column name="create_datetime"/>
+            <index-column name="create_datetime"/>
         </index>
         <index name="ix_invoice_number">
-        	<index-column name="user_id"/>
-        	<index-column name="public_number"/>
+            <index-column name="user_id"/>
+            <index-column name="public_number"/>
         </index>
         <index name="ix_invoice_due_date">
-        	<index-column name="user_id"/>
-        	<index-column name="due_date"/>
+            <index-column name="user_id"/>
+            <index-column name="due_date"/>
         </index>
         <index name="ix_invoice_ts">
-        	<index-column name="create_timestamp"/>
-        	<index-column name="user_id"/>
+            <index-column name="create_timestamp"/>
+            <index-column name="user_id"/>
         </index>
         <index name="ix_invoice_process">
-        	<index-column name="billing_process_id"/>
+            <index-column name="billing_process_id"/>
         </index>
         <foreign-key foreignTable="billing_process">
             <reference foreign="id" local="billing_process_id"/>
@@ -534,7 +534,7 @@
         <column name="source_user_id" type="INTEGER"/>
         <column default="0" name="is_percentage" required="true" type="SMALLINT"/>
         <index name="ix_invoice_line_invoice_id">
-        	<index-column name="invoice_id"/>
+            <index-column name="invoice_id"/>
         </index>
         
         <foreign-key foreignTable="invoice">
@@ -562,8 +562,8 @@
         <column default="0" name="has_decimals" required="true" type="SMALLINT"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_item_ent">
-        	<index-column name="entity_id"/>
-        	<index-column name="internal_number"/>
+            <index-column name="entity_id"/>
+            <index-column name="internal_number"/>
         </index>
         <foreign-key foreignTable="entity">
             <reference foreign="id" local="entity_id"/>
@@ -610,9 +610,9 @@
         <column name="currency_id" required="true" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="item_user_price_i_2">
-        	<index-column name="user_id"/>
-        	<index-column name="item_id"/>
-       	</index>
+            <index-column name="user_id"/>
+            <index-column name="item_id"/>
+        </index>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
         </foreign-key>
@@ -779,10 +779,10 @@
         <column name="provisioning_request_id" size="50" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_order_line_order_id">
-        	<index-column name="order_id"/>
+            <index-column name="order_id"/>
         </index>
         <index name="ix_order_line_item_id">
-        	<index-column name="item_id"/>
+            <index-column name="item_id"/>
         </index>
         <foreign-key foreignTable="item">
             <reference foreign="id" local="item_id"/>
@@ -825,15 +825,15 @@
         
         
         <index name="ix_uq_order_process_or_in">
-        	<index-column name="order_id"/>
-        	<index-column name="invoice_id"/>
+            <index-column name="order_id"/>
+            <index-column name="invoice_id"/>
         </index>
         <index name="ix_uq_order_process_or_bp">
-        	<index-column name="order_id"/>
-        	<index-column name="billing_process_id"/>
+            <index-column name="order_id"/>
+            <index-column name="billing_process_id"/>
         </index>
         <index name="ix_order_process_in">
-        	<index-column name="invoice_id"/>
+            <index-column name="invoice_id"/>
         </index>
         <foreign-key foreignTable="purchase_order">
             <reference foreign="id" local="order_id"/>
@@ -867,7 +867,7 @@
         <column name="related_clerk" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="partner_i_3">
-	        <index-column name="user_id"/>
+            <index-column name="user_id"/>
         </index>
         <foreign-key foreignTable="period_unit">
             <reference foreign="id" local="period_unit_id"/>
@@ -893,7 +893,7 @@
         <column name="partner_id" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="partner_payout_i_2">
-	        <index-column name="partner_id"/>
+            <index-column name="partner_id"/>
         </index>
         <foreign-key foreignTable="partner">
             <reference foreign="id" local="partner_id"/>
@@ -908,7 +908,7 @@
         <column name="range_to" required="true" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="partner_range_p">
-	        <index-column name="partner_id"/>
+            <index-column name="partner_id"/>
         </index>
     </table>
     <table name="payment">
@@ -931,12 +931,12 @@
         <column name="ach_id" type="INTEGER"/>
         <column name="balance" type="DOUBLE"/>
         <index name="payment_i_2">
-        	<index-column name="user_id"/>
-        	<index-column name="create_datetime"/>
+            <index-column name="user_id"/>
+            <index-column name="create_datetime"/>
         </index>
         <index name="payment_i_3">
-        	<index-column name="user_id"/>
-        	<index-column name="balance"/>
+            <index-column name="user_id"/>
+            <index-column name="balance"/>
         </index>
         <foreign-key foreignTable="ach">
             <reference foreign="id" local="ach_id"/>
@@ -977,13 +977,13 @@
         <column name="create_datetime" required="true" type="DATE"/>
         <column name="response_message" size="200" type="VARCHAR"/>
         <index name="create_datetime">
-        	<index-column name="create_datetime"/>
+            <index-column name="create_datetime"/>
         </index>
         <index name="transaction_id">
-        	<index-column name="transaction_id"/>
+            <index-column name="transaction_id"/>
         </index>
         <index name="ix_pa_payment">
-        	<index-column name="payment_id"/>
+            <index-column name="payment_id"/>
         </index>
         <foreign-key foreignTable="payment">
             <reference foreign="id" local="payment_id"/>
@@ -1006,8 +1006,8 @@
         <column name="amount" type="DOUBLE"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <index name="ix_uq_payment_inv_map_pa_in">
-        	<index-column name="payment_id"/>
-        	<index-column name="invoice_id"/>
+            <index-column name="payment_id"/>
+            <index-column name="invoice_id"/>
         </index>
         <foreign-key foreignTable="invoice">
             <reference foreign="id" local="invoice_id"/>
@@ -1037,8 +1037,8 @@
         <column name="permission_id" type="INTEGER"/>
         <column name="role_id" type="INTEGER"/>
         <index name="permission_role_map_i_2">
-        	<index-column name="permission_id"/>
-        	<index-column name="role_id"/>
+            <index-column name="permission_id"/>
+            <index-column name="role_id"/>
         </index>
         <foreign-key foreignTable="role">
             <reference foreign="id" local="role_id"/>
@@ -1057,8 +1057,8 @@
         <column name="is_grant" required="true" type="SMALLINT"/>
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <index name="permission_user_map_i_2">
-        	<index-column name="permission_id"/>
-        	<index-column name="user_id"/>
+            <index-column name="permission_id"/>
+            <index-column name="user_id"/>
         </index>
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
@@ -1136,8 +1136,8 @@
         <column name="since" type="DATE"/>
         <column name="until" type="DATE"/>
         <index name="ix_promotion_code">
-        	<index-column name="code"/>
-       	</index>
+            <index-column name="code"/>
+        </index>
         <foreign-key foreignTable="item">
             <reference foreign="id" local="item_id"/>
         </foreign-key>
@@ -1146,9 +1146,9 @@
         <column name="user_id" type="INTEGER"/>
         <column name="promotion_id" type="INTEGER"/>
         <index name="promotion_user_map_i_2">
-        	<index-column name="user_id"/>
-        	<index-column name="promotion_id"/>
-       	</index>
+            <index-column name="user_id"/>
+            <index-column name="promotion_id"/>
+        </index>
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
         </foreign-key>
@@ -1184,16 +1184,16 @@
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="purchase_order_i_user">
-        	<index-column name="user_id"/>
-        	<index-column name="deleted"/>
+            <index-column name="user_id"/>
+            <index-column name="deleted"/>
         </index>
         <index name="purchase_order_i_notif">
-        	<index-column name="active_until"/>
-        	<index-column name="notification_step"/>
+            <index-column name="active_until"/>
+            <index-column name="notification_step"/>
         </index>
         <index name="ix_purchase_order_date">
-        	<index-column name="user_id"/>
-        	<index-column name="create_datetime"/>
+            <index-column name="user_id"/>
+            <index-column name="create_datetime"/>
         </index>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
@@ -1222,13 +1222,14 @@
         <column name="where_str" required="true" size="1000" type="VARCHAR"/>
         <column name="id_column" required="true" type="SMALLINT"/>
         <column name="link" size="200" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
     <table name="report_entity_map">
         <column name="entity_id" type="INTEGER"/>
         <column name="report_id" type="INTEGER"/>
         <index name="report_entity_map_i_2">
-        	<index-column name="entity_id"/>
-        	<index-column name="report_id"/>
+            <index-column name="entity_id"/>
+            <index-column name="report_id"/>
         </index>
         <foreign-key foreignTable="report">
             <reference foreign="id" local="report_id"/>
@@ -1248,7 +1249,7 @@
         <column name="where_value" size="50" type="VARCHAR"/>
         <column name="title_key" size="50" type="VARCHAR"/>
         <column name="function_name" size="10" type="VARCHAR"/>
-        <column name="is_grouped" required="true" type="SMALLINT"/>
+        <column name="is_grouped" required="true" type="INTEGER"/>
         <column name="is_shown" required="true" type="SMALLINT"/>
         <column name="data_type" required="true" size="10" type="VARCHAR"/>
         <column name="operator_value" size="2" type="VARCHAR"/>
@@ -1257,6 +1258,7 @@
         <column name="ordenable" required="true" type="SMALLINT"/>
         <column name="operatorable" required="true" type="SMALLINT"/>
         <column name="whereable" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="report">
             <reference foreign="id" local="report_id"/>
         </foreign-key>
@@ -1264,6 +1266,7 @@
     <table name="report_type">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="showable" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
     <table name="report_type_map">
         <column name="report_id" type="INTEGER"/>
@@ -1281,13 +1284,14 @@
         <column name="report_id" type="INTEGER"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="title" size="50" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="base_user">
             <reference foreign="id" local="user_id"/>
         </foreign-key>
         <foreign-key foreignTable="report">
             <reference foreign="id" local="report_id"/>
         </foreign-key>
-    </table>
+    </table>    
     <table name="role">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
     </table>
@@ -1295,19 +1299,19 @@
         <column name="user_id" type="INTEGER"/>
         <column name="credit_card_id" type="INTEGER"/>
         <index name="user_credit_card_map_i_2">
-        	<index-column name="user_id"/>
-        	<index-column name="credit_card_id"/>
+            <index-column name="user_id"/>
+            <index-column name="credit_card_id"/>
         </index>
     </table>
     <table name="user_role_map">
         <column name="user_id" type="INTEGER"/>
         <column name="role_id" type="INTEGER"/>
         <index name="user_role_map_i_2">
-        	<index-column name="user_id"/>
-        	<index-column name="role_id"/>
+            <index-column name="user_id"/>
+            <index-column name="role_id"/>
         </index>
         <index name="user_role_map_i_role">
-        	<index-column name="role_id"/>
+            <index-column name="role_id"/>
         </index>
         <foreign-key foreignTable="role">
             <reference foreign="id" local="role_id"/>
@@ -1383,8 +1387,9 @@
         </foreign-key>
         <index name="ix_mrl_order_line">
             <index-column name="order_line_id"/>
-    	</index>
+        </index>
     </table>
+    
     <table name="blacklist">
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>
         <column name="entity_id" type="INTEGER" required="true"/>
@@ -1411,12 +1416,12 @@
             <reference foreign="id" local="user_id"/>
         </foreign-key>
         <index name="ix_blacklist_user_type">
-        	<index-column name="user_id"/>
-        	<index-column name="type"/>
+            <index-column name="user_id"/>
+            <index-column name="type"/>
         </index>
         <index name="ix_blacklist_entity_type">
-        	<index-column name="entity_id"/>
-        	<index-column name="type"/>
-    	</index>
+            <index-column name="entity_id"/>
+            <index-column name="type"/>
+        </index>
     </table>
 </database>

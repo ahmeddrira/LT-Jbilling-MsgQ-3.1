@@ -31,9 +31,9 @@ public class FieldComparator implements Comparator {
         Field a = (Field) o1;
         Field b = (Field) o2;
         
-        if (a.getPosition().intValue() > b.getPosition().intValue()) {
+        if (a.getPositionNumber() > b.getPositionNumber()) {
             return 1;
-        } else if (a.getPosition().intValue() < b.getPosition().intValue()) {
+        } else if (a.getPositionNumber() < b.getPositionNumber()) {
             return -1;
         }
         return 0;

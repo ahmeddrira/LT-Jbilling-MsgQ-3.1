@@ -52,6 +52,7 @@ import com.sapienter.jbilling.server.list.db.ListEntityDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.report.db.ReportDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
@@ -61,7 +62,9 @@ import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 import com.sapienter.jbilling.server.util.db.generated.BillingProcessConfiguration;
 import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 import com.sapienter.jbilling.server.util.db.generated.PaymentMethod;
-import com.sapienter.jbilling.server.util.db.generated.Report;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @Entity
 @Table(name="entity")
@@ -84,7 +87,7 @@ public class CompanyDTO  implements java.io.Serializable {
      private Set<ItemDTO> items = new HashSet<ItemDTO>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
      private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(0);
-     private Set<Report> reports = new HashSet<Report>(0);
+     private Set<ReportDTO> reports = new HashSet<ReportDTO>(0);
      private Set<ContactFieldTypeDTO> contactFieldTypes = new HashSet<ContactFieldTypeDTO>(0);
      private Set<CurrencyDTO> currencyDTOs = new HashSet<CurrencyDTO>(0);
      private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
@@ -106,7 +109,7 @@ public class CompanyDTO  implements java.io.Serializable {
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<Report> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
+    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStep> ageingEntitySteps, Set<PaymentMethod> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<ReportDTO> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfiguration> billingProcessConfigurations, Set<InvoiceDeliveryMethod> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.language = language;
@@ -286,11 +289,11 @@ public class CompanyDTO  implements java.io.Serializable {
     @JoinTable(name="report_entity_map",joinColumns = { 
         @JoinColumn(name="entity_id", updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="report_id", updatable=false) })
-    public Set<Report> getReports() {
+    public Set<ReportDTO> getReports() {
         return this.reports;
     }
     
-    public void setReports(Set<Report> reports) {
+    public void setReports(Set<ReportDTO> reports) {
         this.reports = reports;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="entity")

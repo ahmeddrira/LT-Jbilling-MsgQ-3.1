@@ -124,24 +124,24 @@ public class TriggerAction extends Action {
         String languageId = String.valueOf((Integer) 
                 session.getAttribute(Constants.SESSION_LANGUAGE));
         
-        
-        if (report.getId().equals(ReportDTOEx.REPORT_PAYMENT) ||
-                report.getId().equals(ReportDTOEx.REPORT_ORDER) || 
-                report.getId().equals(ReportDTOEx.REPORT_ORDER_LINE) ||
-                report.getId().equals(ReportDTOEx.REPORT_REFUND) ||
-                report.getId().equals(ReportDTOEx.REPORT_PARTNER) ||
-                report.getId().equals(ReportDTOEx.REPORT_PAYOUT) ||
-                report.getId().equals(ReportDTOEx.REPORT_USERS) ||
-                report.getId().equals(ReportDTOEx.REPORT_TRANSACTIONS) ||
-                report.getId().equals(ReportDTOEx.REPORT_SUBSCRIPTIONS) ||
-                report.getId().equals(ReportDTOEx.REPORT_STATUS_TRANSITIONS) ||
-                report.getId().equals(ReportDTOEx.REPORT_SUBSC_TRANSITIONS)) {
+        Integer compare = new Integer(report.getId());
+        if (compare.equals(ReportDTOEx.REPORT_PAYMENT) ||
+        		compare.equals(ReportDTOEx.REPORT_ORDER) || 
+        		compare.equals(ReportDTOEx.REPORT_ORDER_LINE) ||
+        		compare.equals(ReportDTOEx.REPORT_REFUND) ||
+        		compare.equals(ReportDTOEx.REPORT_PARTNER) ||
+        		compare.equals(ReportDTOEx.REPORT_PAYOUT) ||
+        		compare.equals(ReportDTOEx.REPORT_USERS) ||
+        		compare.equals(ReportDTOEx.REPORT_TRANSACTIONS) ||
+        		compare.equals(ReportDTOEx.REPORT_SUBSCRIPTIONS) ||
+        		compare.equals(ReportDTOEx.REPORT_STATUS_TRANSITIONS) ||
+        		compare.equals(ReportDTOEx.REPORT_SUBSC_TRANSITIONS)) {
         	//reports with both entity and language
             report.addDynamicParameter(entityId);
             report.addDynamicParameter(languageId);
             // the users need an additional parameter: the id for the primary
             // contact type
-            if(report.getId().equals(ReportDTOEx.REPORT_USERS)) {
+            if(compare.equals(ReportDTOEx.REPORT_USERS)) {
                 try {
                     JNDILookup EJBFactory = JNDILookup.getFactory(false);
                     UserSessionHome userHome =
@@ -159,14 +159,14 @@ public class TriggerAction extends Action {
                             e);
                 } 
             }
-        } else if(report.getId().equals(ReportDTOEx.REPORT_OVERDUE)) {
+        } else if(compare.equals(ReportDTOEx.REPORT_OVERDUE)) {
             report.addDynamicParameter(entityId);
             // compares the due_date with todays date
             report.addDynamicParameter(Util.parseDate(Calendar.getInstance().
                     getTime()));
-        } else if(report.getId().equals(ReportDTOEx.REPORT_PARTNER_ORDERS) ||
-                report.getId().equals(ReportDTOEx.REPORT_PARTNER_PAYMENTS) ||
-                report.getId().equals(ReportDTOEx.REPORT_PARTNER_REFUNDS)) {
+        } else if(compare.equals(ReportDTOEx.REPORT_PARTNER_ORDERS) ||
+        		compare.equals(ReportDTOEx.REPORT_PARTNER_PAYMENTS) ||
+        		compare.equals(ReportDTOEx.REPORT_PARTNER_REFUNDS)) {
             UserDTOEx loggedUser = (UserDTOEx) session.getAttribute(
                     Constants.SESSION_USER_DTO);
             if (loggedUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
@@ -191,32 +191,35 @@ public class TriggerAction extends Action {
      * @param session
      */
     void setFieldValues(ReportDTOEx report, String mode, HttpSession session) {
+    	
+    	Integer compare = new Integer(report.getId());
+    	
         if (mode.equals("customer")) {
         	// add some additional where conditions
-            if (report.getId().equals(ReportDTOEx.REPORT_ORDER) || 
-                    report.getId().equals(ReportDTOEx.REPORT_INVOICE) ||
-                    report.getId().equals(ReportDTOEx.REPORT_PAYMENT) ||
-                    report.getId().equals(ReportDTOEx.REPORT_REFUND)) {
+            if (compare.equals(ReportDTOEx.REPORT_ORDER) || 
+            		compare.equals(ReportDTOEx.REPORT_INVOICE) ||
+            		compare.equals(ReportDTOEx.REPORT_PAYMENT) ||
+            		compare.equals(ReportDTOEx.REPORT_REFUND)) {
                 UserDTOEx user = (UserDTOEx) session.getAttribute(
                         Constants.SESSION_CUSTOMER_DTO);
                 Field username = report.getField("base_user", "id");
-                username.setOperator(Field.OPERATOR_EQUAL);
+                username.setOperatorValue(Field.OPERATOR_EQUAL);
                 username.setWhereValue(user.getUserId().toString());
             }
             // add some basic ordering
-            if (report.getId().equals(ReportDTOEx.REPORT_ORDER)) {
+            if (compare.equals(ReportDTOEx.REPORT_ORDER)) {
                 Field id = report.getField("purchase_order", "id");
                 id.setOrderPosition(new Integer(1));
-            } else if (report.getId().equals(ReportDTOEx.REPORT_INVOICE)) {
+            } else if (compare.equals(ReportDTOEx.REPORT_INVOICE)) {
                 Field id = report.getField("invoice", "id");
                 id.setOrderPosition(new Integer(1));
-            } else if (report.getId().equals(ReportDTOEx.REPORT_PAYMENT) ||
-                    report.getId().equals(ReportDTOEx.REPORT_REFUND)) {
+            } else if (compare.equals(ReportDTOEx.REPORT_PAYMENT) ||
+            		compare.equals(ReportDTOEx.REPORT_REFUND)) {
                 Field id = report.getField("payment", "id");
                 id.setOrderPosition(new Integer(1));
             } 
             // remove columns not needed
-            if (report.getId().equals(ReportDTOEx.REPORT_PAYMENT)) {
+            if (compare.equals(ReportDTOEx.REPORT_PAYMENT)) {
             	Field field = report.getField("base_user", "user_name");
             	field.setIsShown(0);
             	field = report.getField("payment", "result_id");
@@ -226,9 +229,9 @@ public class TriggerAction extends Action {
             }
                 
         } else if (mode.equals("partner")) {
-            if (report.getId().equals(ReportDTOEx.REPORT_PARTNER)) {
+            if (compare.equals(ReportDTOEx.REPORT_PARTNER)) {
                 Field date = report.getField("partner", "next_payout_date");
-                date.setOperator(Field.OPERATOR_SM_EQ);
+                date.setOperatorValue(Field.OPERATOR_SM_EQ);
                 date.setWhereValue(Util.parseDate(Calendar.getInstance().
                         getTime()));
             }

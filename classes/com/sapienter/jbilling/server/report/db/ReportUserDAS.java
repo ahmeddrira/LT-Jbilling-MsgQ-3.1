@@ -19,9 +19,44 @@
 */
 package com.sapienter.jbilling.server.report.db;
 
+import java.util.Collection;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+
+import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.ReportUser;
+import java.util.Date;
 
-public class ReportUserDAS extends AbstractDAS<ReportUser> {
+public class ReportUserDAS extends AbstractDAS<ReportUserDTO> {
+	
+	public ReportUserDTO create(String title, ReportDTO report, Integer userId) {
+		ReportUserDTO newEntity = new ReportUserDTO();
+		
+		UserDAS userDas = new UserDAS();
+		newEntity.setBaseUser(userDas.find(userId));
+		newEntity.setTitle(title);
+		newEntity.setReport(report);
+                newEntity.setCreateDatetime(new Date());
+		
+		return save(newEntity);
+	}
 
+	public Collection findByTypeUser(Integer report, Integer userId) {
+		/*             query="SELECT OBJECT(a) 
+			 *                      FROM report_user a 
+			 *                     WHERE a.userId = ?2
+			 *                       AND a.report.id = ?1 "
+			 *             result-type-mapping="Local"
+			 */
+		Criteria criteria = getSession().createCriteria(
+				ReportUserDTO.class);
+		criteria.createAlias("report", "rep").add(
+				Restrictions.eq("rep.id", report.intValue()));
+		criteria.createAlias("baseUser", "baseUser").add(
+				Restrictions.eq("baseUser.id", userId.intValue()));
+		
+		return criteria.list();
+		
+	}
 }

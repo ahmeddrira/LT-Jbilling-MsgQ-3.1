@@ -54,11 +54,12 @@ import com.sapienter.jbilling.server.report.ReportDTOEx;
  */
 public class ReportSetUpTag extends TagSupport {
 
+    private static final Logger LOG = Logger.getLogger(ReportSetUpTag.class);
     
     public int doStartTag() throws JspException {
         int retValue = SKIP_BODY;
         
-        Logger log = Logger.getLogger(ReportSetUpTag.class);
+        
         ActionErrors errors = new ActionErrors();
         
         HttpSession session = pageContext.getSession();
@@ -86,18 +87,18 @@ public class ReportSetUpTag extends TagSupport {
                 Constants.REQUEST_USER_REPORT_ID + "=" + userReportId);
         }
 
-        log.debug("Running report setup rid:" + reportId + ":" + 
+        LOG.debug("Running report setup rid:" + reportId + ":" + 
                 (report != null ? report.getId() : null));
 
         String back = request.getParameter("back");
         
         // verify that this is not just a recall
         if ((reportId != null && report != null && 
-                report.getId().equals(reportId) && 
+                new Integer(report.getId()).equals(reportId) && 
                 report.getUserReportId() == null) ||
                 back != null) {
             // this is doing some caching
-            log.debug("Using a cached report");
+            LOG.debug("Using a cached report");
             return retValue;
         }
         
@@ -114,11 +115,11 @@ public class ReportSetUpTag extends TagSupport {
             if (reportId != null) {
                 Integer entityId = (Integer) session.getAttribute(
                         Constants.SESSION_ENTITY_ID_KEY);
-                log.debug("Fetching report " + reportId);
+                LOG.debug("Fetching report " + reportId);
                 report = myRemoteSession.getReportDTO(
                         reportId, entityId);
             } else if (userReportId != null) {
-                log.debug("Fetching user report " + userReportId);
+                LOG.debug("Fetching user report " + userReportId);
                 report = myRemoteSession.getReportDTO(
                         userReportId);
             } 
@@ -130,7 +131,7 @@ public class ReportSetUpTag extends TagSupport {
 
             // make it available in the session
             session.setAttribute(Constants.SESSION_REPORT_DTO, report);
-            log.debug("reportDto = " + report);
+            LOG.debug("reportDto = " + report);
             
             // create the dynamic form with the necessary fields
             Form form = new Form(report.getFields().size());
@@ -139,7 +140,7 @@ public class ReportSetUpTag extends TagSupport {
                 // set the flag of selected or not
                 form.setSelect(f, field.getIsShown().intValue() == 1);
                 // set the where fields if this field is wherable
-                if (field.getWherable().intValue() == 1) {
+                if (field.getWhereable().intValue() == 1) {
                     if (field.getWhereValue() != null) {
                         if (field.getDataType().equals(Field.TYPE_DATE)) {
                             // TODO: this will fail to put back an invalid
@@ -164,14 +165,14 @@ public class ReportSetUpTag extends TagSupport {
                     }
                     
                     // since it's wherable, the operator will be required
-                    form.setOperator(f, field.getOperator());
+                    form.setOperator(f, field.getOperatorValue());
                 }
                 
                 // set the functionable values
                 if (field.getIsShown().intValue() == 1 && 
                         field.getFunctionable().intValue() == 1) {
-                    if (field.getFunction() != null) {
-                        form.setFunction(f, field.getFunction());            
+                    if (field.getFunctionName() != null) {
+                        form.setFunction(f, field.getFunctionName());            
                     } else if (field.getIsGrouped().intValue() == 1) {
                         form.setFunction(f, "grouped"); 
                     }
@@ -187,10 +188,10 @@ public class ReportSetUpTag extends TagSupport {
                 }
             }
 
-            log.debug("Now form is " + form);
+            LOG.debug("Now form is " + form);
             session.setAttribute(Constants.SESSION_REPORT_FORM, form);
         } catch (Exception e) {
-            log.error("Exception: ", e);
+            LOG.error("Exception: ", e);
             errors.add(ActionErrors.GLOBAL_ERROR, 
                     new ActionError("all.internal"));
         }        

@@ -172,7 +172,7 @@
 							indexId="i">
 			
 				<logic:equal name="field"
-				             property="wherable"
+				             property="whereable"
 				             value="1">
 						<c:choose>
 							<c:when test="${flag == 1}">

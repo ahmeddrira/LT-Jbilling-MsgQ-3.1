@@ -24,79 +24,56 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.StringTokenizer;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ReportEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ReportFieldEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportFieldEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ReportTypeEntityLocalHome;
-import com.sapienter.jbilling.interfaces.ReportUserEntityLocal;
-import com.sapienter.jbilling.interfaces.ReportUserEntityLocalHome;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.report.db.ReportDAS;
+import com.sapienter.jbilling.server.report.db.ReportDTO;
+import com.sapienter.jbilling.server.report.db.ReportFieldDAS;
+import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
 import com.sapienter.jbilling.server.report.db.ReportTypeDAS;
+import com.sapienter.jbilling.server.report.db.ReportUserDAS;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.generated.Report;
 
 
 public class ReportBL extends ResultList {
     
-    Logger log = null;
-    ReportUserEntityLocalHome reportUserHome = null;
-    ReportUserEntityLocal report = null;
-    ReportEntityLocalHome reportHome = null;
-    ReportFieldEntityLocalHome reportFieldHome = null;
-    ReportTypeEntityLocalHome reportTypeHome = null;
+    private static final Logger LOG = Logger.getLogger(ReportBL.class);
+    ReportUserDAS reportUserDas = null;
+    ReportUserDTO report = null;
+    ReportDAS reportDas = null;
+    ReportFieldDAS reportFieldDas = null;
+    ReportTypeDAS reportTypeDas = null;
 
-    JNDILookup EJBFactory = null;
     
-    public ReportBL() throws NamingException {
-        log = Logger.getLogger(ReportBL.class);
-        EJBFactory = JNDILookup.getFactory(false);
+    public ReportBL() {
 
-        reportUserHome =
-                (ReportUserEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ReportUserEntityLocalHome.class,
-                ReportUserEntityLocalHome.JNDI_NAME);
+        reportUserDas = new ReportUserDAS();
 
-        reportHome =
-                (ReportEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ReportEntityLocalHome.class,
-                ReportEntityLocalHome.JNDI_NAME);
+        reportDas = new ReportDAS();
 
-        reportFieldHome =
-                (ReportFieldEntityLocalHome) EJBFactory.lookUpLocalHome(
-                ReportFieldEntityLocalHome.class,
-                ReportFieldEntityLocalHome.JNDI_NAME);
+        reportFieldDas = new ReportFieldDAS();
 
-        reportTypeHome =
-               (ReportTypeEntityLocalHome) EJBFactory.lookUpLocalHome(
-               ReportTypeEntityLocalHome.class,
-               ReportTypeEntityLocalHome.JNDI_NAME);
+        reportTypeDas = new ReportTypeDAS();
 
     }
     
     private String parseSQL(ReportDTOEx report) 
             throws SessionInternalError {
         StringBuffer select = new StringBuffer("select ");
-        StringBuffer from = new StringBuffer("from " + report.getTables());
-        StringBuffer where = new StringBuffer("where " + report.getWhere());
+        StringBuffer from = new StringBuffer("from " + report.getTablesList());
+        StringBuffer where = new StringBuffer("where " + report.getWhereStr());
         StringBuffer orderBy = new StringBuffer("order by ");
         StringBuffer groupBy = new StringBuffer("group by ");
         String selectSeparator = "";
@@ -112,7 +89,7 @@ public class ReportBL extends ResultList {
         // the first column has to be always the id column, due to the
         // insertRowTag. For agregated reports or those that don't have one,
         // a static 1 is added.
-        if (report.getIdColumn().intValue() != 1 || 
+        if (report.getIdColumn() != 1 || 
                 report.getAgregated().booleanValue()) {
             select.append("1,"); 
         }
@@ -127,20 +104,20 @@ public class ReportBL extends ResultList {
             // add the column to the select 
             if (field.getIsShown().intValue() == 1) {
                 
-                if (field.getFunction() != null) {
-                    columnHelper[f] = field.getFunction() + "(" +
-                            field.getTable() + "." + field.getColumn() + ")";
+                if (field.getFunctionName() != null) {
+                    columnHelper[f] = field.getFunctionName() + "(" +
+                            field.getTableName() + "." + field.getColumnName() + ")";
                 } else {
-                    columnHelper[f] = field.getTable() + "." + 
-                            field.getColumn();
+                    columnHelper[f] = field.getTableName() + "." + 
+                            field.getColumnName();
                 }
                 select.append(selectSeparator + columnHelper[f]);
                 selectSeparator = ",";
             }
             
             // add the condition to the where
-            if (report.getWhere() != null &&
-                    report.getWhere().length() > 0) {
+            if (report.getWhereStr() != null &&
+                    report.getWhereStr().length() > 0) {
                 whereSeparator = " and ";
             } else {
                 whereSeparator = "";
@@ -152,17 +129,17 @@ public class ReportBL extends ResultList {
                 if (field.getDataType().equals(Field.TYPE_INTEGER) &&
                         field.getWhereValue().indexOf(',') >= 0) {
                     String oper;
-                    if (field.getOperator().equals(Field.OPERATOR_EQUAL)) {
+                    if (field.getOperatorValue().equals(Field.OPERATOR_EQUAL)) {
                         oper = " in";
-                    } else if (field.getOperator().equals(
+                    } else if (field.getOperatorValue().equals(
                             Field.OPERATOR_DIFFERENT)) {
                         oper = " not in";
                     } else {
                         throw new SessionInternalError("operator mismatch for " +
                                 "null value");
                     }
-                    where.append(whereSeparator + field.getTable() + "." + 
-                            field.getColumn() + oper + "(");
+                    where.append(whereSeparator + field.getTableName() + "." + 
+                            field.getColumnName() + oper + "(");
                     StringTokenizer tok = new StringTokenizer(
                             field.getWhereValue().toString(), ",");
                     for (int ff = 0; ff < tok.countTokens(); ff++) {
@@ -173,12 +150,12 @@ public class ReportBL extends ResultList {
                     }
                     where.append(")");
                 } else {
-                    String oper = field.getOperator();
+                    String oper = field.getOperatorValue();
                     if (field.getWhereValue().equalsIgnoreCase("null")) {
                         
-                        if (field.getOperator().equals(Field.OPERATOR_EQUAL)) {
+                        if (field.getOperatorValue().equals(Field.OPERATOR_EQUAL)) {
                             oper = "is";
-                        } else if (field.getOperator().equals(
+                        } else if (field.getOperatorValue().equals(
                                 Field.OPERATOR_DIFFERENT)) {
                             oper = "is not";
                         } else {
@@ -186,8 +163,8 @@ public class ReportBL extends ResultList {
                                     "null value");
                         }
                     } 
-                    where.append(whereSeparator + field.getTable() + "." + 
-                            field.getColumn() + " " +
+                    where.append(whereSeparator + field.getTableName() + "." + 
+                            field.getColumnName() + " " +
                             oper + " ?");
                 }
                 whereSeparator = " and ";
@@ -201,8 +178,8 @@ public class ReportBL extends ResultList {
             // the group by
             if (field.getIsGrouped().intValue() == 1) {
                 isGrouped = true;
-                groupBy.append(groupBySeparator + field.getTable() + "." + 
-                        field.getColumn());
+                groupBy.append(groupBySeparator + field.getTableName() + "." + 
+                        field.getColumnName());
                 groupBySeparator = ",";
             }
         }
@@ -220,10 +197,10 @@ public class ReportBL extends ResultList {
                         if (field.getIsShown().intValue() == 1) {
                             orderByStr = columnHelper[f];
                         } else {
-                            orderByStr = field.getTable() + "." +
-                                    field.getColumn();
+                            orderByStr = field.getTableName() + "." +
+                                    field.getColumnName();
                         }
-                        log.debug("Adding to orderby " + orderBySeparator + orderByStr);
+                        LOG.debug("Adding to orderby " + orderBySeparator + orderByStr);
                         orderBy.append(orderBySeparator + orderByStr);    
                         orderBySeparator = ",";
                         break;
@@ -248,12 +225,12 @@ public class ReportBL extends ResultList {
         if (orderedColumns > 0) {
             completeQuery.append(" " + orderBy);
         }
-        log.debug("Generated:[" + completeQuery.toString() + "]");
+        LOG.debug("Generated:[" + completeQuery.toString() + "]");
         return completeQuery.toString();
     }
     
     protected CachedRowSet execute(ReportDTOEx reportDto) 
-            throws SQLException, NamingException, SessionInternalError,
+            throws SQLException, SessionInternalError,
             Exception {
         int index = 1;
         int dynamicVariableIndex = 0;
@@ -273,7 +250,7 @@ public class ReportBL extends ResultList {
                     dynamicVariableIndex++;
                 } 
 
-                log.debug("Setting " + field.getColumn() + " index " + index +
+                LOG.debug("Setting " + field.getColumnName() + " index " + index +
                         " value " + field.getWhereValue());
                 // see if this is just a null 
                 if (field.getWhereValue().equalsIgnoreCase("null")) {
@@ -290,7 +267,7 @@ public class ReportBL extends ResultList {
                                     field.getWhereValue(), ",");
                             int ff = 0;
                             for (;tok.hasMoreElements(); ff++) {
-                                log.debug("    in(...) value. index " + 
+                                LOG.debug("    in(...) value. index " + 
                                         (index + ff));
                                 cachedResults.setInt(index + ff, Integer.valueOf(
                                         tok.nextToken()).intValue());
@@ -318,21 +295,19 @@ public class ReportBL extends ResultList {
     
    
     public ReportDTOEx getReport(Integer reportId, Integer entityId) 
-            throws NamingException, FinderException, SessionInternalError {
-        log.debug("Getting report " + reportId + " for entity " + entityId);
+            throws SessionInternalError {
+        LOG.debug("Getting report " + reportId + " for entity " + entityId);
         return DTOFactory.getReportDTOEx(reportId, entityId);
     }
 
-    public ReportDTOEx getReport(Integer userReportId) 
-            throws NamingException, FinderException, SessionInternalError {
-        log.debug("Getting user report " + userReportId);
+    public ReportDTOEx getReport(Integer userReportId) throws SessionInternalError {
+        LOG.debug("Getting user report " + userReportId);
         ReportDTOEx reportDto = null;
         
-        ReportUserEntityLocal reportUser = reportUserHome.findByPrimaryKey(
-                userReportId);
+        ReportUserDTO reportUser = reportUserDas.find(userReportId);
         
         // create the initial report dto from the relationship
-        UserBL user = new UserBL(reportUser.getUser());
+        UserBL user = new UserBL(reportUser.getBaseUser());
         reportDto = DTOFactory.getReportDTOEx(new ReportDAS().find(reportUser.getReport().getId()),
                 user.getLocale());
         reportDto.setUserReportId(userReportId);
@@ -342,7 +317,7 @@ public class ReportBL extends ResultList {
         
         // convert these entities to dtos
         for (Iterator it = fields.iterator(); it.hasNext(); ){
-            ReportFieldEntityLocal field = (ReportFieldEntityLocal) it.next();
+            ReportFieldDTO field = (ReportFieldDTO) it.next();
             reportDto.addField(DTOFactory.getFieldDTO(field));
         }
 
@@ -354,56 +329,51 @@ public class ReportBL extends ResultList {
 
         CompanyDTO entity = new CompanyDAS().find(entityId);
         
-        Collection<Report> reports = entity.getReports();
+        Set<ReportDTO> reports = entity.getReports();
         return DTOFactory.reportEJB2DTOEx(reports, true);
 
     }
     
-    public Collection getListByType(Integer typeId) 
-            throws FinderException {
+    public Collection getListByType(Integer typeId) {
         return DTOFactory.reportEJB2DTOEx(new ReportTypeDAS().find(typeId).getReports(), false);
     }
     
-    public void save(ReportDTOEx report, Integer userId, String title) 
-            throws NamingException, FinderException, CreateException {
+    public void save(ReportDTOEx report, Integer userId, String title) {
         
-        ReportEntityLocal reportRow = reportHome.findByPrimaryKey(
-                report.getId());
+        ReportDTO reportRow = reportDas.find(report.getId());
         // create the report user row
-        ReportUserEntityLocal reportUser = reportUserHome.create(title,
+        ReportUserDTO reportUser = reportUserDas.create(title,
                 reportRow, userId);
         
         // now all the fields rows
         for (int f = 0; f < report.getFields().size(); f++) {
             Field field = (Field) report.getFields().get(f);
             
-            ReportFieldEntityLocal fieldRow = reportFieldHome.create(
-                    field.getPosition(), field.getTable(), field.getColumn(),
+            ReportFieldDTO fieldRow = reportFieldDas.create(
+                    field.getPositionNumber(), field.getTableName(), field.getColumnName(),
                     field.getIsGrouped(), field.getIsShown(), 
                     field.getDataType(), field.getFunctionable(),
                     field.getSelectable(), field.getOrdenable(),
-                    field.getOperatorable(), field.getWherable());
+                    field.getOperatorable(), field.getWhereable());
             
             fieldRow.setOrderPosition(field.getOrderPosition());
             fieldRow.setWhereValue(field.getWhereValue());
             fieldRow.setTitleKey(field.getTitleKey());
-            fieldRow.setFunction(field.getFunction());
-            fieldRow.setOperator(field.getOperator());
+            fieldRow.setFunctionName(field.getFunctionName());
+            fieldRow.setOperatorValue(field.getOperatorValue());
+            fieldRow.setReportUser(reportUser);
             
             reportUser.getFields().add(fieldRow);
         }
     }
     
-    public void delete(Integer userReportId) 
-            throws NamingException, FinderException, RemoveException {
-        report = reportUserHome.findByPrimaryKey(
-                userReportId);
-        report.remove();
+    public void delete(Integer userReportId) {
+        report = reportUserDas.find(userReportId);
+        reportUserDas.delete(report);
     }
     
-    public Collection getUserList(Integer report, Integer userId) 
-            throws FinderException {
-        Collection reports = reportUserHome.findByTypeUser(report, userId);
+    public Collection getUserList(Integer report, Integer userId) {
+        Collection reports = reportUserDas.findByTypeUser(report, userId);
         return DTOFactory.reportUserEJB2DTO(reports);
     }
     

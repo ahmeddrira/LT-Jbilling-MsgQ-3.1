@@ -30,10 +30,10 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.NotificationSession;
-import com.sapienter.jbilling.interfaces.NotificationSessionHome;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends CrudActionBase<MessageDTO> {
 
@@ -47,22 +47,19 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
 	private static final String FORWARD_EDIT = "notification_edit";
 	private static final String MESSAGE_UPDATE_OK = "notification.message.update.done";
 
-	private final NotificationSession myNotificationSession;
+	private final NotificationSessionBean myNotificationSession;
 
-	public MaintainAction() {
-		super(FORM, "notification");
-		LOG = Logger.getLogger(MaintainAction.class);
-		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			NotificationSessionHome notificationHome = (NotificationSessionHome) EJBFactory
-					.lookUpHome(NotificationSessionHome.class,
-							NotificationSessionHome.JNDI_NAME);
-			myNotificationSession = notificationHome.create();
-		} catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing notification CRUD action: " + e.getMessage());
-		}
-	}
+    public MaintainAction() {
+        super(FORM, "notification");
+        LOG = Logger.getLogger(MaintainAction.class);
+        try {
+            myNotificationSession = (NotificationSessionBean) Context.getBean(
+                    Context.NOTIFICATION_SESSION);
+        } catch (Exception e) {
+            throw new SessionInternalError(
+                    "Initializing notification CRUD action: " + e.getMessage());
+        }
+    }
 	
 	@Override
 	protected MessageDTO doEditFormToDTO() throws RemoteException {

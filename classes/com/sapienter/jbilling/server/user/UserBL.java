@@ -49,8 +49,6 @@ import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
@@ -59,6 +57,7 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
@@ -83,6 +82,7 @@ import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
 import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
 import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -407,13 +407,9 @@ public class UserBL extends ResultList
      public void sendLostPassword(Integer entityId, Integer userId, Integer languageId) throws NamingException, SessionInternalError, FinderException, NotificationNotFoundException, CreateException {
     	 NotificationBL notif = new NotificationBL();
     	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
-         JNDILookup EJBFactory = JNDILookup.getFactory(false);
-    	 NotificationSessionLocalHome notificationHome =
-    		 (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-    				 NotificationSessionLocalHome.class,
-    				 NotificationSessionLocalHome.JNDI_NAME);
-    	NotificationSessionLocal notificationSess = notificationHome.create();
-    	notificationSess.notify(userId, message);
+         NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);    	
+         notificationSess.notify(userId, message);
      }
      
      public UserDTO getEntity() {

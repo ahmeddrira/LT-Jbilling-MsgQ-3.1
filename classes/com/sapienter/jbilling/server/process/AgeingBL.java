@@ -48,12 +48,11 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.AgeingEntityStepEntityLocal;
 import com.sapienter.jbilling.interfaces.AgeingEntityStepEntityLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -68,6 +67,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.db.UserStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserStatusDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
@@ -151,13 +151,8 @@ public class AgeingBL {
                     user.getEntity().getEntity().getId(), 
                     user.getEntity().getLanguageIdField(), statusId, userId);
      
-            NotificationSessionLocalHome notificationHome =
-                    (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-                    NotificationSessionLocalHome.class,
-                    NotificationSessionLocalHome.JNDI_NAME);
-    
-            NotificationSessionLocal notificationSess = 
-                    notificationHome.create();
+            NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);
             notificationSess.notify(user.getEntity(), message);
         } catch (NotificationNotFoundException e) {
             LOG.warn("Changeing the satus of a user. An ageing notification " +

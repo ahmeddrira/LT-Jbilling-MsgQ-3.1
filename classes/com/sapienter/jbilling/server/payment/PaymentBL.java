@@ -43,8 +43,6 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 import com.sapienter.jbilling.interfaces.PaymentEntityLocalHome;
@@ -65,6 +63,7 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.event.AbstractPaymentEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
@@ -81,6 +80,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class PaymentBL extends ResultList 
@@ -702,18 +702,11 @@ public class PaymentBL extends ResultList
             NotificationBL notif = new NotificationBL();
             MessageDTO message = notif.getPaymentMessage(entityId, 
                     info, info.getResultId().equals(Constants.RESULT_OK)); 
-            NotificationSessionLocalHome notificationHome =
-                (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-                NotificationSessionLocalHome.class,
-                NotificationSessionLocalHome.JNDI_NAME);
-
-            NotificationSessionLocal notificationSess = 
-                    notificationHome.create();
+            NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);
             notificationSess.notify(info.getUserId(), message);
         } catch (NamingException e1) {
             throw new SessionInternalError(e1);
-        } catch (CreateException e2) {
-            throw new SessionInternalError(e2);
         } catch (NotificationNotFoundException e1) {
             // won't send anyting because the entity didn't specify the
             // notification

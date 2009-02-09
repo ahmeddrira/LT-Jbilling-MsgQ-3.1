@@ -60,7 +60,7 @@ public class CurrencyMaintainAction extends Action {
         ActionErrors errors = new ActionErrors();
         
         try {
-            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.ITEM_BEAN);
+            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.ITEM_SESSION);
             
             String action = request.getParameter("action");
             HttpSession session = request.getSession(false);

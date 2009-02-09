@@ -47,7 +47,7 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTO> {
 
     public PriceMaintainAction() {
         super(FORM_PRICE, "item price");
-        myItemSession = (ItemSessionBean) Context.getBean(Context.ITEM_BEAN);
+        myItemSession = (ItemSessionBean) Context.getBean(Context.ITEM_SESSION);
     }
 
     @Override

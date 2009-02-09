@@ -40,14 +40,13 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
 import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
 import com.sapienter.jbilling.interfaces.CreditCardUserEntityLocalHome;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -58,6 +57,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
@@ -187,13 +187,8 @@ public class CreditCardBL extends ResultList
                         getEntity().getId(), user.getEntity().getLanguageIdField(), 
                         userId, getDTO());
                 
-                NotificationSessionLocalHome notificationHome =
-                    (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-                    NotificationSessionLocalHome.class,
-                    NotificationSessionLocalHome.JNDI_NAME);
-    
-                NotificationSessionLocal notificationSess = 
-                    notificationHome.create();
+                NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);
                 notificationSess.notify(userId, message);
             } catch (NotificationNotFoundException e) {
                 LOG.warn("credit card message not set to user " + userId +

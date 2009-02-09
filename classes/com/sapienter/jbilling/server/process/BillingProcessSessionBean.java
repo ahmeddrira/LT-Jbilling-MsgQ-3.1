@@ -49,8 +49,6 @@ import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
 import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.entity.BillingProcessDTO;
@@ -61,6 +59,7 @@ import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
@@ -70,6 +69,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -470,12 +470,8 @@ public class BillingProcessSessionBean implements SessionBean {
                         processId, invoice.getEntity().getUser()
                                 .getLanguageIdField(), invoice.getEntity());
 
-                NotificationSessionLocalHome notificationHome = (NotificationSessionLocalHome) EJBFactory
-                        .lookUpLocalHome(NotificationSessionLocalHome.class,
-                                NotificationSessionLocalHome.JNDI_NAME);
-
-                NotificationSessionLocal notificationSess = notificationHome
-                        .create();
+                NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);
 
                 for (int msg = 0; msg < invoiceMessage.length; msg++) {
                     notificationSess.notify(userId, invoiceMessage[msg]);

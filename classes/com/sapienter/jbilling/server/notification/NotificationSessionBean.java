@@ -20,18 +20,12 @@
 
 package com.sapienter.jbilling.server.notification;
 
-import java.rmi.RemoteException;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -45,32 +39,16 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
-/**
- *
- * This is the session facade for the invoices in general. It is a statless
- * bean that provides services not directly linked to a particular operation
- *
- * @author emilc
- * @ejb:bean name="NotificationSession"
- *           display-name="A stateless bean for notifications"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/invoice/NotificationSession"
- * 
- **/
-public class NotificationSessionBean implements SessionBean {
+/*
+ * This is the session facade for notifications
+ */
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+@Transactional( propagation = Propagation.REQUIRED )
+public class NotificationSessionBean {
 
-    Logger log = null;
+    private static final Logger LOG = Logger.getLogger(NotificationSessionBean.class);
 
-    /**
-    * Create the Session Bean
-    * @throws CreateException
-    * @ejb:create-method view-type="remote"
-    */
-    public void ejbCreate() throws CreateException {
-        log = Logger.getLogger(NotificationSessionBean.class);
-    }
     
     /**
      * Sends an email with the invoice to a customer.
@@ -78,7 +56,6 @@ public class NotificationSessionBean implements SessionBean {
      * @param userId
      * @param invoiceId
      * @return
-     * @ejb:interface-method view-type="remote"
     */
     public Boolean emailInvoice(Integer invoiceId) 
             throws SessionInternalError {
@@ -93,10 +70,10 @@ public class NotificationSessionBean implements SessionBean {
                     languageId, invoice.getEntity());
             retValue = notify(user.getEntity(), message);
         } catch (NamingException e) {
-            log.error("Exception sending email invoice", e);
+            LOG.error("Exception sending email invoice", e);
             throw new SessionInternalError(e);
         } catch (FinderException e) {
-            log.error("Exception sending email invoice", e);
+            LOG.error("Exception sending email invoice", e);
             throw new SessionInternalError(e);
         } catch (NotificationNotFoundException e) {
             retValue = new Boolean(false);
@@ -111,7 +88,6 @@ public class NotificationSessionBean implements SessionBean {
      * @param userId
      * @param invoiceId
      * @return
-     * @ejb:interface-method view-type="remote"
     */
     public Boolean emailPayment(Integer paymentId) 
             throws SessionInternalError {
@@ -129,10 +105,10 @@ public class NotificationSessionBean implements SessionBean {
                             Constants.RESULT_OK));
             retValue = notify(user.getEntity(), message);
         } catch (NamingException e) {
-            log.error("Exception sending email payment", e);
+            LOG.error("Exception sending email payment", e);
             throw new SessionInternalError(e);
         } catch (FinderException e) {
-            log.error("Exception sending email payment", e);
+            LOG.error("Exception sending email payment", e);
             throw new SessionInternalError(e);
         } catch (NotificationNotFoundException e) {
             retValue = new Boolean(false);
@@ -141,10 +117,6 @@ public class NotificationSessionBean implements SessionBean {
         return retValue;
     }
 
-    /**
-    * @ejb:interface-method view-type="both"
-    * @ejb.transaction type="Required"
-    */
     public void notify(Integer userId, MessageDTO message) 
             throws SessionInternalError {
 
@@ -161,8 +133,6 @@ public class NotificationSessionBean implements SessionBean {
     * Sends a notification to a user. Returns true if no exceptions were
     * thrown, otherwise false. This return value could be considered
     * as if this message was sent or not for most notifications (emails).
-    * @ejb:interface-method view-type="local"
-    * @ejb.transaction type="Required"
     */
     public Boolean notify(UserDTO user, MessageDTO message) 
             throws SessionInternalError {
@@ -188,7 +158,6 @@ public class NotificationSessionBean implements SessionBean {
             NotificationTask task =
                 (NotificationTask) taskManager.getNextClass();
 
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
             NotificationMessageArchDAS messageHome =
                     new NotificationMessageArchDAS();
             
@@ -201,22 +170,19 @@ public class NotificationSessionBean implements SessionBean {
                 } catch (TaskException e) {
                     messageRecord.setResultMessage(Util.truncateString(
                             e.getMessage(), 200));
-                    log.error(e);
+                    LOG.error(e);
                     retValue = new Boolean(false);
                 }
                 task = (NotificationTask) taskManager.getNextClass();
             }
         } catch (Exception e) {
-            log.error("Exception in notify", e);
+            LOG.error("Exception in notify", e);
             throw new SessionInternalError(e);
         }   
         
         return retValue;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public MessageDTO getDTO(Integer typeId, Integer languageId,
             Integer entityId) throws SessionInternalError {
         try {
@@ -243,10 +209,6 @@ public class NotificationSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public Integer createUpdate(MessageDTO dto, 
             Integer entityId) throws SessionInternalError {
         try {
@@ -258,9 +220,6 @@ public class NotificationSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public String getEmails(Integer entityId, String separator) 
             throws SessionInternalError {
         try {
@@ -271,32 +230,4 @@ public class NotificationSessionBean implements SessionBean {
             throw new SessionInternalError(e);
         }
     }        
-    // EJB Callbacks -------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-     */
-    public void setSessionContext(SessionContext arg0)
-            throws EJBException, RemoteException {
-        log = Logger.getLogger(NotificationSessionBean.class);
-    }
-
 }

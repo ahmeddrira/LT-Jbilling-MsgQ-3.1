@@ -40,16 +40,16 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
@@ -474,13 +474,8 @@ public class PartnerBL extends ResultList
 	        MessageDTO message = notification.getPayoutMessage(entityId, 
 	                languageId, total, start, end, clerk, partner.getId());
 	 
-	        NotificationSessionLocalHome notificationHome =
-	                (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-	                NotificationSessionLocalHome.class,
-	                NotificationSessionLocalHome.JNDI_NAME);
-	
-	        NotificationSessionLocal notificationSess = 
-	                notificationHome.create();
+	        NotificationSessionBean notificationSess = 
+                        (NotificationSessionBean) Context.getBean(Context.NOTIFICATION_SESSION);
 	        if (!clerk) {
 	            notificationSess.notify(partner.getUser(), message);
 	        } else {

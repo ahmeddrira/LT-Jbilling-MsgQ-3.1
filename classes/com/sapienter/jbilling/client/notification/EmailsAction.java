@@ -36,8 +36,8 @@ import org.apache.struts.action.DynaActionForm;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.NotificationSession;
-import com.sapienter.jbilling.interfaces.NotificationSessionHome;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class EmailsAction extends Action {
     
@@ -47,12 +47,8 @@ public class EmailsAction extends Action {
         
         Logger log = Logger.getLogger(MaintainAction.class);
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            NotificationSessionHome notificationHome =
-                    (NotificationSessionHome) EJBFactory.lookUpHome(
-                    NotificationSessionHome.class,
-                    NotificationSessionHome.JNDI_NAME);
-            NotificationSession notificationSession = notificationHome.create();
+            NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
+                    Context.NOTIFICATION_SESSION);
         
             DynaActionForm myForm = (DynaActionForm) form;
             String separator = (String) myForm.get("separator");

@@ -39,10 +39,10 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
-import com.sapienter.jbilling.interfaces.NotificationSession;
-import com.sapienter.jbilling.interfaces.NotificationSessionHome;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends Action {
 
@@ -92,13 +92,9 @@ public class MaintainAction extends Action {
             }
             
             if (action != null && action.equals("notify")) {
-                NotificationSessionHome NotificationHome =
-                    (NotificationSessionHome) EJBFactory.lookUpHome(
-                    NotificationSessionHome.class,
-                    NotificationSessionHome.JNDI_NAME);
         
-                NotificationSession notificationSession = 
-                        NotificationHome.create();
+                NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
+                    Context.NOTIFICATION_SESSION);
                 Boolean result = notificationSession.emailInvoice(invoiceId);
                 String field;
                 if (result.booleanValue()) {

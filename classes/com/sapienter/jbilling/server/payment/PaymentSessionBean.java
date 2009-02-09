@@ -39,13 +39,12 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.entity.PaymentDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
@@ -57,6 +56,7 @@ import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.util.Vector;
@@ -642,13 +642,8 @@ public class PaymentSessionBean implements SessionBean {
                     NotificationBL notif = new NotificationBL();
                     MessageDTO message = notif.getPaymentMessage(entityId, 
                             payment, true);
-                    NotificationSessionLocalHome notificationHome =
-                        (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-                        NotificationSessionLocalHome.class,
-                        NotificationSessionLocalHome.JNDI_NAME);
-
-                    NotificationSessionLocal notificationSess = 
-                            notificationHome.create();
+                    NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);
                     notificationSess.notify(payment.getUserId(), message);
                     
                     // link to unpaid invoices

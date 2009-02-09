@@ -10,5 +10,6 @@
 -->
 
 <beans>
-    <bean id="itemBean" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
+    <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
+    <bean id="norificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
 </beans>

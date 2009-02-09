@@ -521,8 +521,6 @@ xmlvalidation="true">
     <target name="test-provisioning">
         <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
               todir="${build.test.dir}"/>			  
-        <copy file="${source.provisioning.descriptor.dir}/jbilling-provisioning.xml" 
-              todir="${jboss.conf.dir}"/>
         <javac debug="on" destdir="${build.test.dir}"
               srcdir="${source.test.dir}/com/sapienter/jbilling/server/provisioning">
             <classpath refid="run.classpath"/>

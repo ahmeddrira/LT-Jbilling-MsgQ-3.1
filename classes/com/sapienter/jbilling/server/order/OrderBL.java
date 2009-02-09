@@ -45,8 +45,6 @@ import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -57,6 +55,7 @@ import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDAS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -86,6 +85,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
@@ -810,13 +810,8 @@ public class OrderBL extends ResultList
     
     public void reviewNotifications(Date today) 
     		throws NamingException, FinderException, SQLException, Exception  {
-        NotificationSessionLocalHome notificationHome =
-            (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-            NotificationSessionLocalHome.class,
-            NotificationSessionLocalHome.JNDI_NAME);
-
-        NotificationSessionLocal notificationSess = 
-            	notificationHome.create();
+        NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                        Context.NOTIFICATION_SESSION);
 
     	for (CompanyDTO ent: new CompanyDAS().findEntities()) {
     		// find the orders for this entity

@@ -49,8 +49,6 @@ import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocalHome;
 import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocalHome;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocal;
-import com.sapienter.jbilling.interfaces.NotificationSessionLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -60,6 +58,7 @@ import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
@@ -76,6 +75,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -731,13 +731,8 @@ public class InvoiceBL extends ResultList
                                 invoice.getCreateDateTime(),
                                 invoice.getCurrencyId());
                         
-                        NotificationSessionLocalHome notificationHome =
-                            (NotificationSessionLocalHome) EJBFactory.lookUpLocalHome(
-                            NotificationSessionLocalHome.class,
-                            NotificationSessionLocalHome.JNDI_NAME);
-            
-                        NotificationSessionLocal notificationSess = 
-                            notificationHome.create();
+                        NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                                Context.NOTIFICATION_SESSION);
                         notificationSess.notify(invoice.getUser(), message);
                         
                         invoice.setLastReminder(today);

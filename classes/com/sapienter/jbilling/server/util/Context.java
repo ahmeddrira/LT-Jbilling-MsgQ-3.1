@@ -30,7 +30,12 @@ public class Context {
             "/jbilling-database.xml", "jbilling-provisioning.xml"});
     
     // all the managed beans
-    public static final String ITEM_BEAN = "itemBean";
+    //
+    // those that act as session facade, mostly for transaction demarcation
+    public static final String ITEM_SESSION = "itemSession";
+    public static final String NOTIFICATION_SESSION = "norificationSession";
+    
+    // other simple beans
     public static final String PROVISIONING = "provisioning";
 
     // should not be instantiated

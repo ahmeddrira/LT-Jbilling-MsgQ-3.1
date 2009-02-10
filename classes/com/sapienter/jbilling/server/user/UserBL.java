@@ -44,7 +44,6 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JBCrypto;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -1210,6 +1209,14 @@ public class UserBL extends ResultList
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
         }   
+    }
+    
+    public CreditCard getCreditCard() {
+        if (user.getCreditCards().isEmpty()) {
+            return null;
+        } else {
+            return (CreditCard) user.getCreditCards().toArray()[0];
+        }
     }
 
     public Integer getByEmail(String email) {

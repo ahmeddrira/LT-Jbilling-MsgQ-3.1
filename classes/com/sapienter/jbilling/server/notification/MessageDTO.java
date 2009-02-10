@@ -97,7 +97,7 @@ public class MessageDTO implements Serializable {
     /**
      * @param hashtable
      */
-    public void addParameter(String name, String value) {
+    public void addParameter(String name, Object value) {
     	parameters.put(name, value);
     }
 

@@ -305,12 +305,15 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     .getMethodId(), languageId));
             message.addParameter("total", Util.formatMoney(dto.getAmount(), dto
                     .getUserId(), dto.getCurrencyId(), true));
+            
+            message.addParameter("payment", payment.getEntity());
             // find an invoice in the list of invoices id
             if (dto.getInvoiceIds() != null && dto.getInvoiceIds().size() > 0) {
                 Integer invoiceId = (Integer) dto.getInvoiceIds().get(0);
                 InvoiceBL invoice = new InvoiceBL(invoiceId);
                 message.addParameter("invoice_number", invoice.getEntity()
                         .getNumber().toString());
+                message.addParameter("invoice", invoice.getEntity());
             }
         } catch (NamingException e) {
             throw new SessionInternalError(e);
@@ -390,10 +393,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         message.addParameter("due date", Util.formatDate(invoice.getDueDate(),
                 invoice.getUser().getUserId()));
         String notes = invoice.getCustomerNotes();
-        if (notes != null) {
-            notes = notes.replaceAll("<br/>", "\r\n");
-        }
+        
         message.addParameter("notes", notes);
+        message.addParameter("invoice", invoice);
 
         // if the entity has the preference of pdf attachment, do it
         try {
@@ -432,6 +434,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
                 message.addParameter("total", Util.float2string(invoice
                         .getEntity().getBalance(), user.getLocale()));
+                message.addParameter("invoice", invoice.getEntity());
             } else {
                 LOG.warn("user " + userId + " has no invoice but an ageing "
                         + "message is being sent");
@@ -1014,12 +1017,21 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             retValue.addParameter("password", user.getEntity().getPassword());
             retValue.addParameter("user_id", user.getEntity().getUserId()
                     .toString());
+            
+            // full objects for velocity
+            retValue.addParameter("contact", contact.getEntity());
+            retValue.addParameter("user", user.getEntity());
 
             // the entity info
             contact.setEntity(entityId);
             retValue.addParameter("company_id", entityId.toString());
             retValue.addParameter("company_name", contact.getEntity()
                     .getOrganizationName());
+            
+            // full objects for velocity
+            retValue.addParameter("company_contact", contact.getEntity());
+            retValue.addParameter("credit_card", user.getCreditCard());
+            
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

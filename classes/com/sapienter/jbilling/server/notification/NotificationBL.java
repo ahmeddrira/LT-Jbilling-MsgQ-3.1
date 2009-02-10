@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.activation.DataHandler;
@@ -94,8 +93,13 @@ import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
+import java.io.StringWriter;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 public class NotificationBL extends ResultList implements NotificationSQL {
     //
@@ -595,28 +599,20 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     static public String parseParameters(String content, HashMap parameters) {
-        StringBuffer result = new StringBuffer();
-
-        StringTokenizer tokens = new StringTokenizer(content, "|");
-        int toReplace = tokens.countTokens();
-        if (toReplace == 0) {
-            result.append(content);
-        } else {
-            while (tokens.hasMoreTokens()) {
-                String str = tokens.nextToken();
-                String value = (String) parameters.get(str);
-                if (value != null) {
-                    // the variable is present with content
-                    str = value;
-                } else if (parameters.containsKey(str)) {
-                    // the variable is present but void
-                    str = "";
-                }
-                result.append(str);
-            }
+        
+        // get the engine from Spring
+        VelocityEngine velocity = (VelocityEngine) Context.getBean(Context.VELOCITY);
+        VelocityContext velocityContext = new VelocityContext(parameters);
+        StringWriter result = new StringWriter();
+        
+        try {
+            velocity.evaluate(velocityContext, result, "Error template as string?", content);
+        } catch (Exception e) {
+            throw new SessionInternalError("Rendering email", NotificationBL.class, e);
         }
 
         return result.toString();
+
     }
 
     public int getSections(Integer typeId) {

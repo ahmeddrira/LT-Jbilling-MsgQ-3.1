@@ -37,6 +37,7 @@ public class Context {
     
     // other simple beans
     public static final String PROVISIONING = "provisioning";
+    public static final String VELOCITY = "velocityEngine";
 
     // should not be instantiated
     private Context() {

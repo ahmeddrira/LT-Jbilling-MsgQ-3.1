@@ -757,7 +757,6 @@
     </table>
     <table name="notification_message_type">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="sections" required="true" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
     <table name="order_billing_type">

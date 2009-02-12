@@ -73,6 +73,8 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDAS;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDAS;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageLineDAS;
@@ -80,11 +82,13 @@ import com.sapienter.jbilling.server.notification.db.NotificationMessageLineDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDAS;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDAS;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
+import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.EntityBL;
@@ -99,7 +103,6 @@ import com.sapienter.jbilling.server.util.Util;
 import java.io.StringWriter;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 public class NotificationBL extends ResultList implements NotificationSQL {
     //
@@ -107,7 +110,6 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     private NotificationMessageDAS messageDas = null;
     private NotificationMessageDTO messageRow = null;
     private NotificationMessageSectionDAS messageSectionHome = null;
-    private NotificationMessageTypeDAS messageTypeHome = null;
     private NotificationMessageLineDAS messageLineHome = null;
     private static final Logger LOG = Logger.getLogger(NotificationBL.class);
 
@@ -127,7 +129,6 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         messageDas = new NotificationMessageDAS();
         messageSectionHome = new NotificationMessageSectionDAS();
         messageLineHome = new NotificationMessageLineDAS();
-        messageTypeHome = new NotificationMessageTypeDAS();
     }
 
     public NotificationMessageDTO getEntity() {
@@ -618,9 +619,34 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
     }
 
-    public int getSections(Integer typeId) {
-        NotificationMessageTypeDTO type = messageTypeHome.find(typeId);
-        return type.getSections();
+    /**
+     * A rather expensive call for what it achieves. It looks suitable for caching, but then
+     * it is rarely called (only from the GUI)... and then the orm cache helps too.
+     * @param entityId
+     * @return
+     */
+    public int getSections(Integer entityId) {
+        int higherSection = 0;
+        try {
+            PluggableTaskManager taskManager =
+                    new PluggableTaskManager(
+                    entityId,
+                    Constants.PLUGGABLE_TASK_NOTIFICATION);
+            NotificationTask task =
+                    (NotificationTask) taskManager.getNextClass();
+
+            while (task != null) {
+                if (task.getSections() > higherSection) {
+                    higherSection = task.getSections();
+                }
+
+                task = (NotificationTask) taskManager.getNextClass();
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError("Finding number of sections for notificaitons", 
+                    NotificationBL.class, e);
+        }
+        return higherSection;
     }
 
     public CachedRowSet getTypeList(Integer languageId) throws SQLException,

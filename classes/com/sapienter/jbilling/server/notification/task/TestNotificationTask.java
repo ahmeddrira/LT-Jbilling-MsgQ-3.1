@@ -73,4 +73,7 @@ public class TestNotificationTask extends PluggableTask implements NotificationT
 
     }
 
+    public int getSections() {
+        return 2;
+    }
 }

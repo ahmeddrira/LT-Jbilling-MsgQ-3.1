@@ -34,4 +34,12 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 public interface NotificationTask {
     public void deliver(UserDTO user, MessageDTO sections)
             throws TaskException;
+    
+    /**
+     * The needed sections for a task to do its job. Plain text email will do with 2, but 
+     * HTML + text will need 3, for example. 
+     * This will tell the GUI how many section to display, and makes notification_message_type.sections obsolete.
+     * @return
+     */
+    public int getSections();
 }

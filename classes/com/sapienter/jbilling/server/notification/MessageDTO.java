@@ -166,4 +166,8 @@ public class MessageDTO implements Serializable {
     public void setAttachmentFile(String attachmentFile) {
         this.attachmentFile = attachmentFile;
     }
+    
+    public void setContentSize(int i) {
+        content.setSize(i);
+    }
 }

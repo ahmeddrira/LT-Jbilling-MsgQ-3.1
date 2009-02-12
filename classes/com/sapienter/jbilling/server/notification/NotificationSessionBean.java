@@ -42,6 +42,9 @@ import com.sapienter.jbilling.server.util.Constants;
 /*
  * This is the session facade for notifications
  */
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Vector;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 @Transactional( propagation = Propagation.REQUIRED )
@@ -188,6 +191,7 @@ public class NotificationSessionBean {
         try {
             NotificationBL notif = new NotificationBL();
             MessageDTO retValue = null;
+            int plugInSections = notif.getSections(entityId);
             notif.set(typeId, languageId, entityId);
             if (notif.getEntity() != null) {
                 retValue = notif.getDTO();
@@ -196,12 +200,23 @@ public class NotificationSessionBean {
                 retValue.setTypeId(typeId);
                 retValue.setLanguageId(languageId);
                 MessageSection sections[] =
-                        new MessageSection[notif.getSections(typeId)];
+                        new MessageSection[plugInSections];
                 for (int f = 0; f < sections.length; f++) {
                     sections[f] = new MessageSection(new Integer(f + 1), "");
                 }
                 retValue.setContent(sections);
             }
+            
+            if (retValue.getContent().length < plugInSections) {
+                // pad any missing sections, due to changes to a new plug-in with more sections
+                for (int f = retValue.getContent().length ; f < plugInSections; f++) {
+                    retValue.addSection(new MessageSection(new Integer(f + 1), ""));
+                }
+            } else if (retValue.getContent().length > plugInSections) {
+                // remove excess sections 
+                retValue.setContentSize(plugInSections);
+            }
+
 
             return retValue;
         } catch (Exception e) {

@@ -188,7 +188,7 @@ public class CreditCardBL extends ResultList
                         userId, getDTO());
                 
                 NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
                 notificationSess.notify(userId, message);
             } catch (NotificationNotFoundException e) {
                 LOG.warn("credit card message not set to user " + userId +

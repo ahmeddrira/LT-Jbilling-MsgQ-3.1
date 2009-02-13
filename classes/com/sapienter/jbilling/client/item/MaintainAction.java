@@ -61,7 +61,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
 
     public MaintainAction() {
         super(FORM, "item");
-        myItemSession = (ItemSessionBean) Context.getBean(Context.ITEM_SESSION);
+        myItemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
     }
 
     @Override

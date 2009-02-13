@@ -40,17 +40,16 @@ public class ItemTypeBL {
     private Logger log = null;
     private EventLogger eLogger = null;
     
-    public ItemTypeBL(Integer itemTypeId) 
-            throws NamingException, FinderException {
+    public ItemTypeBL(Integer itemTypeId)  {
         init();
         set(itemTypeId);
     }
     
-    public ItemTypeBL() throws NamingException {
+    public ItemTypeBL() {
         init();
     }
     
-    private void init() throws NamingException {
+    private void init() {
         log = Logger.getLogger(ItemTypeBL.class);     
         eLogger = EventLogger.getInstance();        
         itemTypeDas = new ItemTypeDAS();
@@ -60,7 +59,7 @@ public class ItemTypeBL {
         return itemType;
     }
     
-    public void set(Integer id) throws FinderException {
+    public void set(Integer id) {
         itemType = itemTypeDas.find(id);
     }
     

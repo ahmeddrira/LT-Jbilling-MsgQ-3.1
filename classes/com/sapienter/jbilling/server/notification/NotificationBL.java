@@ -65,7 +65,6 @@ import org.hibernate.collection.PersistentSet;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -73,20 +72,16 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.list.ResultList;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDAS;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDAS;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageLineDAS;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageLineDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDAS;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDTO;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDAS;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.NotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -101,12 +96,12 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
 import java.io.StringWriter;
+import javax.sql.DataSource;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 public class NotificationBL extends ResultList implements NotificationSQL {
     //
-    private JNDILookup EJBFactory = null;
     private NotificationMessageDAS messageDas = null;
     private NotificationMessageDTO messageRow = null;
     private NotificationMessageSectionDAS messageSectionHome = null;
@@ -123,9 +118,8 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         init();
     }
 
-    private void init() throws NamingException {
+    private void init() {
 
-        EJBFactory = JNDILookup.getFactory(false);
         messageDas = new NotificationMessageDAS();
         messageSectionHome = new NotificationMessageSectionDAS();
         messageLineHome = new NotificationMessageLineDAS();
@@ -605,7 +599,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     static public String parseParameters(String content, HashMap parameters) {
         
         // get the engine from Spring
-        VelocityEngine velocity = (VelocityEngine) Context.getBean(Context.VELOCITY);
+        VelocityEngine velocity = (VelocityEngine) Context.getBean(Context.Name.VELOCITY);
         VelocityContext velocityContext = new VelocityContext(parameters);
         StringWriter result = new StringWriter();
         
@@ -660,9 +654,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     public String getEmails(String separator, Integer entityId)
-            throws SQLException, NamingException {
+            throws SQLException {
         StringBuffer retValue = new StringBuffer();
-        conn = EJBFactory.lookUpDataSource().getConnection();
+        conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
         PreparedStatement stmt = conn
                 .prepareStatement(NotificationSQL.allEmails);
         stmt.setInt(1, entityId.intValue());

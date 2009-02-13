@@ -48,7 +48,7 @@ public class EmailsAction extends Action {
         Logger log = Logger.getLogger(MaintainAction.class);
         try {
             NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
-                    Context.NOTIFICATION_SESSION);
+                    Context.Name.NOTIFICATION_SESSION);
         
             DynaActionForm myForm = (DynaActionForm) form;
             String separator = (String) myForm.get("separator");

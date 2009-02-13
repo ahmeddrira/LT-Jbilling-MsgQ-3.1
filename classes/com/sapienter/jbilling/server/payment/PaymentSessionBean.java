@@ -643,7 +643,7 @@ public class PaymentSessionBean implements SessionBean {
                     MessageDTO message = notif.getPaymentMessage(entityId, 
                             payment, true);
                     NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
                     notificationSess.notify(payment.getUserId(), message);
                     
                     // link to unpaid invoices

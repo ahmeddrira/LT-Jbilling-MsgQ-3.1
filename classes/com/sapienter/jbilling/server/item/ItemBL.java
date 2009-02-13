@@ -91,7 +91,7 @@ public class ItemBL {
     }
 
     public Integer create(ItemDTO dto, Integer languageId) 
-            throws NamingException, FinderException {
+             {
         EntityBL entity = new EntityBL(dto.getEntityId());
         if (languageId == null) {
             languageId = entity.getEntity().getLanguageId();
@@ -113,7 +113,7 @@ public class ItemBL {
     }
     
     public void update(Integer executorId, ItemDTO dto, 
-            Integer languageId) throws NamingException, FinderException {
+            Integer languageId)  {
 
         eLogger.audit(executorId, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
@@ -130,7 +130,7 @@ public class ItemBL {
     }
     
     private void updateTypes(ItemDTO dto) 
-            throws NamingException, FinderException {
+            {
         // update the types relationship        
         Collection types = item.getItemTypes();
         types.clear();
@@ -143,8 +143,7 @@ public class ItemBL {
         }
     }
     
-    private void updateCurrencies(ItemDTO dto) 
-            throws NamingException,	FinderException {
+    private void updateCurrencies(ItemDTO dto) {
     	LOG.debug("updating prices. prices " + (dto.getPrices() != null) + 
     			" price = " + dto.getPrice());
         ItemPriceDAS itemPriceDas = new ItemPriceDAS();
@@ -586,8 +585,7 @@ public class ItemBL {
      * The id of the entity.
      * @return an array of all items
      */
-    public ItemDTOEx[] getAllItems(Integer entityId)
-            throws FinderException, NamingException {
+    public ItemDTOEx[] getAllItems(Integer entityId) {
         EntityBL entityBL = new EntityBL(entityId);
         CompanyDTO entity = entityBL.getEntity();
         Collection itemEntities = entity.getItems();

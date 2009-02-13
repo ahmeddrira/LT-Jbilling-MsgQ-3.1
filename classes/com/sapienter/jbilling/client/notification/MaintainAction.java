@@ -54,7 +54,7 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
         LOG = Logger.getLogger(MaintainAction.class);
         try {
             myNotificationSession = (NotificationSessionBean) Context.getBean(
-                    Context.NOTIFICATION_SESSION);
+                    Context.Name.NOTIFICATION_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError(
                     "Initializing notification CRUD action: " + e.getMessage());

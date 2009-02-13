@@ -152,7 +152,7 @@ public class AgeingBL {
                     user.getEntity().getLanguageIdField(), statusId, userId);
      
             NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
             notificationSess.notify(user.getEntity(), message);
         } catch (NotificationNotFoundException e) {
             LOG.warn("Changeing the satus of a user. An ageing notification " +

@@ -703,7 +703,7 @@ public class PaymentBL extends ResultList
             MessageDTO message = notif.getPaymentMessage(entityId, 
                     info, info.getResultId().equals(Constants.RESULT_OK)); 
             NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
             notificationSess.notify(info.getUserId(), message);
         } catch (NamingException e1) {
             throw new SessionInternalError(e1);

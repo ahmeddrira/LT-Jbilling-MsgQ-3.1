@@ -291,7 +291,7 @@ public class MaintainAction extends Action {
                 forward = "payment_view";
             } else if (action.equals("notify")) {
                 NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
                 Integer paymentId = Integer.valueOf(
                         request.getParameter("id"));
                 Boolean result = notificationSession.emailPayment(paymentId);

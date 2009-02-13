@@ -94,7 +94,7 @@ public class MaintainAction extends Action {
             if (action != null && action.equals("notify")) {
         
                 NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
-                    Context.NOTIFICATION_SESSION);
+                    Context.Name.NOTIFICATION_SESSION);
                 Boolean result = notificationSession.emailInvoice(invoiceId);
                 String field;
                 if (result.booleanValue()) {

@@ -19,6 +19,8 @@
 */
 package com.sapienter.jbilling.server.util;
 
+import java.util.EnumMap;
+import java.util.Map;
 import org.springframework.context.ApplicationContext;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,21 +31,33 @@ public class Context {
             new ClassPathXmlApplicationContext( new String[] {"/jbilling-beans.xml", 
             "/jbilling-database.xml", "jbilling-provisioning.xml"});
     
-    // all the managed beans
-    //
-    // those that act as session facade, mostly for transaction demarcation
-    public static final String ITEM_SESSION = "itemSession";
-    public static final String NOTIFICATION_SESSION = "norificationSession";
+    public enum Name {
+        ITEM_SESSION, 
+        NOTIFICATION_SESSION,
+        PROVISIONING,
+        VELOCITY,
+        DATA_SOURCE
+    }
     
-    // other simple beans
-    public static final String PROVISIONING = "provisioning";
-    public static final String VELOCITY = "velocityEngine";
-
+    private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
+    
+    // all the managed beans
+    static {
+        // those that act as session facade, mostly for transaction demarcation
+        springBeans.put(Name.ITEM_SESSION, "itemSession");
+        springBeans.put(Name.NOTIFICATION_SESSION, "norificationSession");
+        
+        // other simple beans
+        springBeans.put(Name.PROVISIONING, "provisioning");
+        springBeans.put(Name.VELOCITY, "velocityEngine");
+        springBeans.put(Name.DATA_SOURCE, "dataSource");
+    };
+    
     // should not be instantiated
     private Context() {
     }
     
-    public static Object getBean(String bean) {
-        return spring.getBean(bean);
+    public static Object getBean(Name bean) {
+        return spring.getBean(springBeans.get(bean));
     }
 }

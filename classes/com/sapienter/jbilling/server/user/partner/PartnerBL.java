@@ -475,7 +475,7 @@ public class PartnerBL extends ResultList
 	                languageId, total, start, end, clerk, partner.getId());
 	 
 	        NotificationSessionBean notificationSess = 
-                        (NotificationSessionBean) Context.getBean(Context.NOTIFICATION_SESSION);
+                        (NotificationSessionBean) Context.getBean(Context.Name.NOTIFICATION_SESSION);
 	        if (!clerk) {
 	            notificationSess.notify(partner.getUser(), message);
 	        } else {

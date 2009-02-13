@@ -85,7 +85,7 @@ public class ExternalProvisioning {
             message = (MapMessage) myMessage;
 
             Provisioning config = (Provisioning) Context.getBean(
-                    Context.PROVISIONING);
+                    Context.Name.PROVISIONING);
 
             List<Command> commandsConfig = config.getCommands();
             String command = message.getStringProperty("command");

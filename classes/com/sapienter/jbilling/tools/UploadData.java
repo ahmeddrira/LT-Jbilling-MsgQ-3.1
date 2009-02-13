@@ -443,7 +443,7 @@ public class UploadData {
             System.out.println("Now loading types " + fileName);
             file = new BufferedReader(new FileReader(fileName));
             // get the remote interfaces
-            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.ITEM_SESSION);
+            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
             
             header = file.readLine();
             // the types file has only one field with the description

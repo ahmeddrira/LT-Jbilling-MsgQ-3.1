@@ -42,9 +42,6 @@ import com.sapienter.jbilling.server.util.Constants;
 /*
  * This is the session facade for notifications
  */
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Vector;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 @Transactional( propagation = Propagation.REQUIRED )

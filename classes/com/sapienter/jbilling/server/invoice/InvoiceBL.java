@@ -732,7 +732,7 @@ public class InvoiceBL extends ResultList
                                 invoice.getCurrencyId());
                         
                         NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                                Context.NOTIFICATION_SESSION);
+                                Context.Name.NOTIFICATION_SESSION);
                         notificationSess.notify(invoice.getUser(), message);
                         
                         invoice.setLastReminder(today);

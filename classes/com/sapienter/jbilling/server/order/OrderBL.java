@@ -811,7 +811,7 @@ public class OrderBL extends ResultList
     public void reviewNotifications(Date today) 
     		throws NamingException, FinderException, SQLException, Exception  {
         NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
 
     	for (CompanyDTO ent: new CompanyDAS().findEntities()) {
     		// find the orders for this entity

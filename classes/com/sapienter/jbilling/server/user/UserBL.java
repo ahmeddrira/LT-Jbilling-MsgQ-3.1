@@ -407,7 +407,7 @@ public class UserBL extends ResultList
     	 NotificationBL notif = new NotificationBL();
     	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
          NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);    	
+                        Context.Name.NOTIFICATION_SESSION);    	
          notificationSess.notify(userId, message);
      }
      

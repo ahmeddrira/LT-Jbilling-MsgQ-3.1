@@ -40,7 +40,7 @@ public class TypeMaintainAction extends CrudActionBase<ItemTypeDTO> {
 
     public TypeMaintainAction() {
         super(FORM_ITEM_TYPE, "item type");
-        myItemSession = (ItemSessionBean) Context.getBean(Context.ITEM_SESSION);
+        myItemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
     }
 
     @Override

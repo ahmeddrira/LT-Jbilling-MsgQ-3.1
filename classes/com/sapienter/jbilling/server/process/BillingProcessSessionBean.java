@@ -471,7 +471,7 @@ public class BillingProcessSessionBean implements SessionBean {
                                 .getLanguageIdField(), invoice.getEntity());
 
                 NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.NOTIFICATION_SESSION);
+                        Context.Name.NOTIFICATION_SESSION);
 
                 for (int msg = 0; msg < invoiceMessage.length; msg++) {
                     notificationSess.notify(userId, invoiceMessage[msg]);

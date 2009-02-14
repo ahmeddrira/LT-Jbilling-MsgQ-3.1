@@ -145,9 +145,6 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         line.setTypeId(item.getOrderLineTypeId());
         line.setEditable(editable);
         line.setItem(item);
-        
-        // also add the JPA item (no proxy, or the gui will complain)
-        line.setItem(new ItemDAS().findNow(line.getItemId()));
     }
 
     public OrderLineDTO getLatestLine() {

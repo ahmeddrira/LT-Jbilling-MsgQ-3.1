@@ -82,6 +82,7 @@ public class ItemDTO extends AbstractDescription {
 
     // transient
     private Integer[] types = null;
+    private Collection<String> strTypes = null; // for rules 'contains' operator
     private String promoCode = null;
     private Integer currencyId = null;
     private Float price = null;
@@ -316,11 +317,7 @@ public class ItemDTO extends AbstractDescription {
      */
     @Transient
     public Collection<String> getStrTypes() {
-        Vector<String> retValue = new Vector<String>();
-        for (Integer i: types) {
-            retValue.add(i.toString());
-        }
-        return retValue;
+        return strTypes;
     }
 
     /**
@@ -329,6 +326,11 @@ public class ItemDTO extends AbstractDescription {
     @Transient
     public void setTypes(Integer[] vector) {
         types = vector;
+
+        strTypes = new Vector<String>(types.length);
+        for (Integer i: types) {
+            strTypes.add(i.toString());
+        }
     }
 
     /**

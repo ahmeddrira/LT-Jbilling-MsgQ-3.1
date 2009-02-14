@@ -204,7 +204,34 @@ public class RulesItemManager extends BasicItemManager {
 
             return updateLine;
         }
-        
+
+        /**
+         * Adds or updates an order line. Calculates a percentage item order
+         * line amount based on the amount of another order line. This is added
+         * to the existing percentage order line's amount. 
+         */
+        public OrderLineDTO percentageOnOrderLine(Integer percentageItemId, 
+                OrderLineDTO line) throws TaskException {
+            // try to get percentage item order line
+            OrderLineDTO percentageLine = order.getLine(percentageItemId);
+            if (percentageLine == null) {
+                // add percentage item
+                percentageLine = addItem(percentageItemId);
+                percentageLine.setAmount(0.0F);
+                percentageLine.setTotalReadOnly(true);
+            }
+
+            // now add the percentage amount based on the order line item amount
+            BigDecimal percentage = new BigDecimal(percentageLine.getItem().getPercentage().toString());
+            BigDecimal base = new BigDecimal(line.getPrice() * line.getQuantity());
+            BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE,
+                    Constants.BIGDECIMAL_ROUND).multiply(percentage).add(
+                        new BigDecimal(percentageLine.getAmount().toString()));
+            percentageLine.setAmount(result.floatValue());
+
+            return percentageLine;
+        }
+
         public OrderDTO createOrder(Integer itemId, Double quantity) 
                 throws TaskException {
             // copy the current order

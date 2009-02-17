@@ -168,6 +168,7 @@ public class ReportDTO implements Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "report")
+    @OrderBy( clause="position_number, id" )
     public Set<ReportFieldDTO> getReportFields() {
         return this.reportFields;
     }

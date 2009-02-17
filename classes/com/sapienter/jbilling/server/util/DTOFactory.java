@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.util;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
@@ -45,7 +44,6 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
 import com.sapienter.jbilling.server.report.Field;
-import com.sapienter.jbilling.server.report.FieldComparator;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
 import com.sapienter.jbilling.server.report.db.ReportDAS;
 import com.sapienter.jbilling.server.report.db.ReportDTO;
@@ -262,9 +260,8 @@ public class DTOFactory {
             
             dto.addField(fieldDto);
         }
-        // after the dto is complete, the fields have to be sorted
-        // acording to their position attribute        
-        Collections.sort(dto.getFields(), new FieldComparator());
+        
+        // the fields come sorted by position and id from the DB
 
         return dto;
     }

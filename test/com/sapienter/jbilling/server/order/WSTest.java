@@ -102,7 +102,9 @@ public class WSTest  extends TestCase {
             assertNotNull("The order was not created", ret);
             // create another one so we can test get by period.
             ret = api.createOrderAndInvoice(newOrder);
-            System.out.println("Created order " + ret);
+            System.out.println("Created invoice " + ret);
+            InvoiceWS newInvoice = api.getInvoiceWS(ret);
+            ret = newInvoice.getOrders()[0]; // this is the order that was also created
             
             /*
              * get
@@ -494,8 +496,8 @@ public class WSTest  extends TestCase {
     
     private Integer callcreateOrderAndInvoice(OrderWS order) throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
-    	return api.createOrderAndInvoice(order);
-    	
+    	InvoiceWS invoice = api.getInvoiceWS(api.createOrderAndInvoice(order));
+    	return invoice.getOrders()[0];
     }
     
 	public static OrderWS createMockOrder(int userId, int orderLinesCount, float linePrice) {

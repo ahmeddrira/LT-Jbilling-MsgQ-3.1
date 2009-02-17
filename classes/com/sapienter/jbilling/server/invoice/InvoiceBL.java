@@ -24,12 +24,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -51,6 +49,8 @@ import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocal;
 import com.sapienter.jbilling.interfaces.InvoiceLineEntityLocalHome;
 import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
 import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
+import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -79,6 +79,10 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
+import com.sapienter.jbilling.server.util.db.generated.PaymentInvoice;
+import java.util.Collections;
+import java.util.Locale;
 
 public class InvoiceBL extends ResultList 
         implements Serializable, InvoiceSQL {
@@ -784,15 +788,59 @@ public class InvoiceBL extends ResultList
 
     }
 
-    public InvoiceWS getWS() 
+    public InvoiceWS getWS(Invoice i) 
             throws SessionInternalError{
-        InvoiceDTOEx dto;
-        try {
-            dto = getDTOEx(null, false);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
+        if (i == null) return null;
+        InvoiceWS retValue = new InvoiceWS();
+        retValue.setId(i.getId());
+        retValue.setCreateDateTime(i.getCreateDatetime());
+        retValue.setCreateTimeStamp(i.getCreateTimestamp());
+        retValue.setLastReminder(i.getLastReminder());
+        retValue.setDueDate(i.getDueDate());
+        retValue.setTotal(new Float(i.getTotal()));
+        retValue.setToProcess(i.getToProcess());
+        retValue.setBalance(new Float(i.getBalance()));
+        retValue.setCarriedBalance(new Float(i.getCarriedBalance()));
+        retValue.setInProcessPayment(i.getInProcessPayment());
+        retValue.setDeleted(i.getDeleted());
+        retValue.setPaymentAttempts(i.getPaymentAttempts());
+        retValue.setIsReview(i.getIsReview());
+        retValue.setCurrencyId(i.getCurrency().getId());
+        retValue.setCustomerNotes(i.getCustomerNotes());
+        retValue.setNumber(i.getPublicNumber());
+        retValue.setOverdueStep(i.getOverdueStep());
+        retValue.setUserId(i.getBaseUser().getId());
+
+        Integer delegatedInvoiceId = i.getInvoice() == null ? null : i.getInvoice().getId();
+        Integer userId = i.getBaseUser().getId();
+        Integer payments[] = new Integer[i.getPaymentInvoices().size()];
+        InvoiceLineDTO invoiceLines[] = new InvoiceLineDTO[i.getInvoiceLines().size()];
+        Integer orders[] = new Integer[i.getOrderProcesses().size()];
+
+        int f;
+        f = 0;
+        for (PaymentInvoice p: i.getPaymentInvoices()) {
+            payments[f++] = p.getPayment().getId();
         }
-        return new InvoiceWS(dto);
+        f = 0;
+        for (OrderProcessDTO orderP : i.getOrderProcesses()) {
+            orders[f++] = orderP.getPurchaseOrder().getId();
+        }
+        f = 0;
+        for (InvoiceLine line: i.getInvoiceLines()) {
+            invoiceLines[f++] = new InvoiceLineDTO(new Integer(line.getId()), line.getDescription(), new Float(line.getAmount()),
+                    line.getPrice() == null ? null : new Float(line.getPrice()), line.getQuantity(), new Integer(line.getDeleted()), 
+                    line.getItem() == null ? null : line.getItem().getId(),
+                    line.getSourceUserId() , new Integer(line.getIsPercentage()));
+        }
+        
+        retValue.setDelegatedInvoiceId(delegatedInvoiceId);
+        retValue.setUserId(userId);
+        retValue.setPayments(payments);
+        retValue.setInvoiceLines(invoiceLines);
+        retValue.setOrders(orders);
+     
+        return retValue;
     }
     
     public InvoiceDTOEx getDTOEx(Integer languageId, boolean forDisplay) 

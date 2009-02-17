@@ -54,6 +54,8 @@ import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
@@ -129,14 +131,14 @@ public class WebServicesSessionBean implements SessionBean {
             if (invoiceId == null) {
                 return null;
             }
-            InvoiceBL bl = new InvoiceBL(invoiceId);
-            if (bl.getEntity().getDeleted().equals(new Integer(1)) ||
-                    bl.getEntity().getIsReview().equals(new Integer(1))) {
+            Invoice invoice = new InvoiceDAS().find(invoiceId);
+            
+            if (invoice.getDeleted() == 1 || invoice.getIsReview() == 1) {
                 return null;
             }
 
             LOG.debug("Done");
-            return bl.getWS();
+            return new InvoiceBL().getWS(invoice);
         } catch (Exception e) {
             LOG.error("WS - getInvoiceWS", e);
             throw new SessionInternalError("Error getting invoice");
@@ -157,8 +159,7 @@ public class WebServicesSessionBean implements SessionBean {
             InvoiceBL bl = new InvoiceBL();
             Integer invoiceId = bl.getLastByUser(userId);
             if (invoiceId != null) {
-                bl.set(invoiceId);
-                retValue = bl.getWS();
+                retValue = bl.getWS(new InvoiceDAS().find(invoiceId));
             }
             LOG.debug("Done");
             return retValue;
@@ -880,10 +881,10 @@ public class WebServicesSessionBean implements SessionBean {
 
         LOG.debug("Call to createOrderAndInvoice ");
         Integer orderId = doCreateOrder(order, true).getId();
-        doCreateInvoice(orderId);
+        InvoiceEntityLocal invoice = doCreateInvoice(orderId);
 
         LOG.debug("Done");
-        return orderId;
+        return invoice == null ? null : invoice.getId();
     }
 
     private void processItemLine(OrderWS order, Integer languageId,

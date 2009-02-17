@@ -68,6 +68,7 @@ public class InvoiceWS extends InvoiceDTO implements Serializable {
         }
     }
     
+    
     public String toString() {
         StringBuffer str = new StringBuffer();
         

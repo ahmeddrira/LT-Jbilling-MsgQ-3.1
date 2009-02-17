@@ -19,7 +19,6 @@
 */
 package com.sapienter.jbilling.server.user.event;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentProcessorUnavailableEvent;
@@ -30,8 +29,11 @@ import com.sapienter.jbilling.server.system.event.EventProcessor;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.tasks.ISubscriptionStatusManager;
 import com.sapienter.jbilling.server.util.Constants;
+import org.apache.log4j.Logger;
 
 public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscriptionStatusManager> {
+    
+    private static final Logger LOG = Logger.getLogger(SubscriptionStatusEventProcessor.class);
 
     public void process(Event event) {
         // get an instance of the pluggable task
@@ -39,9 +41,10 @@ public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscripti
                 Constants.PLUGGABLE_TASK_SUBSCRIPTION_STATUS);
         
         if (task == null) {
-            throw new SessionInternalError("There isn't a task configured " +
-                    "to handle subscription status");
+            LOG.debug("There isn't a task configured to handle subscription status");
+            return;
         }
+        
         // depending on the event, call the right method of the task
         if (event instanceof PaymentFailedEvent) {
             PaymentFailedEvent pfEvent = (PaymentFailedEvent) event;

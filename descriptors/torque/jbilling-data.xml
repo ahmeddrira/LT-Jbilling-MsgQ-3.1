@@ -2374,26 +2374,26 @@
     <MenuOption Id="95" Link="/mediation/processList.do" LevelField="2" ParentId="37"/>
     <MenuOption Id="96" Link="/mediation/configuration.do?action=setup" LevelField="2" ParentId="4"/>
     <MenuOption Id="97" Link="/system/blacklist.jsp" LevelField="2" ParentId="4"/>
-    <NotificationMessageType Id="1" Sections="2"/>
-    <NotificationMessageType Id="2" Sections="2"/>
-    <NotificationMessageType Id="3" Sections="2"/>
-    <NotificationMessageType Id="4" Sections="2"/>
-    <NotificationMessageType Id="5" Sections="2"/>
-    <NotificationMessageType Id="6" Sections="2"/>
-    <NotificationMessageType Id="7" Sections="2"/>
-    <NotificationMessageType Id="8" Sections="2"/>
-    <NotificationMessageType Id="9" Sections="2"/>
-    <NotificationMessageType Id="10" Sections="2"/>
-    <NotificationMessageType Id="11" Sections="2"/>
-    <NotificationMessageType Id="12" Sections="2"/>
-    <NotificationMessageType Id="13" Sections="2"/>
-    <NotificationMessageType Id="14" Sections="2"/>
-    <NotificationMessageType Id="15" Sections="2"/>
-    <NotificationMessageType Id="16" Sections="2"/>
-    <NotificationMessageType Id="17" Sections="2"/>
-    <NotificationMessageType Id="18" Sections="2"/>
-    <NotificationMessageType Id="19" Sections="2"/>
-    <NotificationMessageType Id="20" Sections="2"/>
+    <NotificationMessageType Id="1" />
+    <NotificationMessageType Id="2" />
+    <NotificationMessageType Id="3" />
+    <NotificationMessageType Id="4" />
+    <NotificationMessageType Id="5" />
+    <NotificationMessageType Id="6" />
+    <NotificationMessageType Id="7" />
+    <NotificationMessageType Id="8" />
+    <NotificationMessageType Id="9" />
+    <NotificationMessageType Id="10" />
+    <NotificationMessageType Id="11" />
+    <NotificationMessageType Id="12" />
+    <NotificationMessageType Id="13" />
+    <NotificationMessageType Id="14" />
+    <NotificationMessageType Id="15" />
+    <NotificationMessageType Id="16" />
+    <NotificationMessageType Id="17" />
+    <NotificationMessageType Id="18" />
+    <NotificationMessageType Id="19" />
+    <NotificationMessageType Id="20" />
     <OrderBillingType Id="1"/>
     <OrderBillingType Id="2"/>
     <OrderLineType Id="1" Editable="1"/>

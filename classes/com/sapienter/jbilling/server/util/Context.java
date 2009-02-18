@@ -29,7 +29,7 @@ public class Context {
 
     private static final ApplicationContext spring = 
             new ClassPathXmlApplicationContext( new String[] {"/jbilling-beans.xml", 
-            "/jbilling-database.xml", "jbilling-provisioning.xml"});
+            "/jbilling-database.xml", "/jbilling-provisioning.xml"});
     
     public enum Name {
         ITEM_SESSION, 
@@ -45,7 +45,7 @@ public class Context {
     static {
         // those that act as session facade, mostly for transaction demarcation
         springBeans.put(Name.ITEM_SESSION, "itemSession");
-        springBeans.put(Name.NOTIFICATION_SESSION, "norificationSession");
+        springBeans.put(Name.NOTIFICATION_SESSION, "notificationSession");
         
         // other simple beans
         springBeans.put(Name.PROVISIONING, "provisioning");

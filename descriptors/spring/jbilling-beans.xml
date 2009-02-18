@@ -11,7 +11,7 @@
 
 <beans>
     <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
-    <bean id="norificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
+    <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
     
     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean"/>
 </beans>

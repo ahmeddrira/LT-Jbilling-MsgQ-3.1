@@ -36,6 +36,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @TableGenerator(
@@ -46,6 +50,7 @@ import javax.persistence.Version;
         pkColumnValue = "notification_message_section", 
         allocationSize = 10)
 @Table(name = "notification_message_section")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationMessageSectionDTO implements Serializable {
 
     private int id;
@@ -103,6 +108,8 @@ public class NotificationMessageSectionDTO implements Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "notificationMessageSection")
+    @Fetch( FetchMode.JOIN  )
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Set<NotificationMessageLineDTO> getNotificationMessageLines() {
         return this.notificationMessageLines;
     }

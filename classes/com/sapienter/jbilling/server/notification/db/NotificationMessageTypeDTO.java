@@ -34,6 +34,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -44,10 +46,10 @@ import javax.persistence.Version;
         pkColumnValue = "notification_message_type", 
         allocationSize = 10)
 @Table(name = "notification_message_type")
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class NotificationMessageTypeDTO implements Serializable {
 
     private int id;
-    private int sections;
     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(
             0);
     private int versionNum;
@@ -55,15 +57,13 @@ public class NotificationMessageTypeDTO implements Serializable {
     public NotificationMessageTypeDTO() {
     }
 
-    public NotificationMessageTypeDTO(int id, int sections) {
+    public NotificationMessageTypeDTO(int id) {
         this.id = id;
-        this.sections = sections;
     }
 
-    public NotificationMessageTypeDTO(int id, int sections,
+    public NotificationMessageTypeDTO(int id,
             Set<NotificationMessageDTO> notificationMessages) {
         this.id = id;
-        this.sections = sections;
         this.notificationMessages = notificationMessages;
     }
 

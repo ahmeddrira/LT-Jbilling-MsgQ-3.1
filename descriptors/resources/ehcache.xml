@@ -353,6 +353,54 @@
             overflowToDisk="false"
      />                       
 
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO"
+            maxElementsInMemory="20"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
+            overflowToDisk="false"
+     />   
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.notification.db.NotificationMessageLineDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="300"
+            overflowToDisk="false"
+     />
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.notification.db.NotificationMessageDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.notification.db.NotificationMessageDTO.notificationMessageSections"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDTO"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />
+     <!-- Level 2: objects that hardly ever change, but are constatly queried.-->
+     <cache name="com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDTO.notificationMessageLines"
+            maxElementsInMemory="100"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />
      
      <!-- Query cache regions -->
      <cache name="org.hibernate.cache.StandardQueryCache"

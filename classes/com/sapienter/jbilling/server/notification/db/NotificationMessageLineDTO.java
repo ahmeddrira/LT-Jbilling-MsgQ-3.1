@@ -32,6 +32,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -42,6 +44,7 @@ import javax.persistence.Version;
         pkColumnValue = "notification_message_line", 
         allocationSize = 10)
 @Table(name = "notification_message_line")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationMessageLineDTO implements Serializable {
 
     private int id;

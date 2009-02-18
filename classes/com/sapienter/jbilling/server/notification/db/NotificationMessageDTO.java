@@ -37,10 +37,13 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Cascade;
 
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OrderBy;
 
 @Entity
@@ -52,6 +55,7 @@ import org.hibernate.annotations.OrderBy;
         pkColumnValue = "notification_message", 
         allocationSize = 10)
 @Table(name = "notification_message")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationMessageDTO implements Serializable {
 
     private int id;
@@ -140,6 +144,8 @@ public class NotificationMessageDTO implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "notificationMessage")
     @OrderBy(clause="section")
+    @Fetch( FetchMode.JOIN )
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Set<NotificationMessageSectionDTO> getNotificationMessageSections() {
         return this.notificationMessageSections;
     }

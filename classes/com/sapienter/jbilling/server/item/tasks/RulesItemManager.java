@@ -39,6 +39,7 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 public class RulesItemManager extends BasicItemManager {
 
@@ -68,6 +69,14 @@ public class RulesItemManager extends BasicItemManager {
         session = ruleBase.newStatefulSession();
         Vector<Object> rulesMemoryContext = new Vector<Object>();
         rulesMemoryContext.add(helperOrder);
+
+        // add OrderDTO to rules memory context
+        newOrder.setCurrency(new CurrencyDAS().find(newOrder.getCurrency().getId()));
+        if (newOrder.getCreateDate() == null) {
+            newOrder.setCreateDate(new Date());
+        }
+        rulesMemoryContext.add(newOrder);
+
         for (OrderLineDTO line : newOrder.getLines()) {
             if (line.getItem() != null) {
                 ItemBL item = new ItemBL(line.getItemId());

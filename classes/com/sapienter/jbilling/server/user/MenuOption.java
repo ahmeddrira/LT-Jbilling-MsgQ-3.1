@@ -23,7 +23,8 @@ package com.sapienter.jbilling.server.user;
 import java.util.Comparator;
 import java.util.Vector;
 
-import com.sapienter.jbilling.server.entity.MenuOptionDTO;
+import com.sapienter.jbilling.server.util.db.MenuOptionDTO;
+
 
 public class MenuOption extends MenuOptionDTO implements Comparator {
     private String display;
@@ -39,8 +40,8 @@ public class MenuOption extends MenuOptionDTO implements Comparator {
     // a consitent displaying
     public int compare(Object o1, Object o2) {
         
-        return ((MenuOption)o1).getId().compareTo(
-                ((MenuOption)o2).getId());
+        return new Integer(((MenuOption)o1).getId()).compareTo(
+                new Integer(((MenuOption)o2).getId()));
     }
     /**
      * @return

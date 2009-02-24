@@ -32,10 +32,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
 @Entity
 @Table(name = "pluggable_task_type")
@@ -71,26 +70,21 @@ public class PluggableTaskTypeDTO implements Serializable {
     }
 
     // Custom field accessors --------------------------------------------------
-    private DescriptionEntityLocal getDescriptionObject(
-            Integer language,
+    private InternationalDescriptionDTO getDescriptionObject(Integer language,
             String column) {
-            try {
-
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                DescriptionEntityLocalHome descriptionHome =
-                    (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                        DescriptionEntityLocalHome.class,
-                        DescriptionEntityLocalHome.JNDI_NAME);
-
-                return descriptionHome.findIt(
-                    Constants.TABLE_PLUGGABLE_TASK_TYPE,
-                    getId(),
-                    column,
-                    language);
-            } catch (Exception e) {
-                LOG.warn("Exception while looking for pluggable_task_type inter. field", e);
+    	
+    	InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(
+                Constants.TABLE_PLUGGABLE_TASK_TYPE,
+                getId(),
+                column,
+                language);
+    	
+            if (inter == null) {
+                LOG.warn("Exception while looking for pluggable_task_type inter. field");
                 return null;
             }
+            
+            return inter;
 
         }
 
@@ -98,7 +92,7 @@ public class PluggableTaskTypeDTO implements Serializable {
      * @ejb:interface-method view-type="local"
      */
     public String getTitle(Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language, "title");
+    	InternationalDescriptionDTO desc = getDescriptionObject(language, "title");
         if (desc == null) {
             return "Title not set for this rule";
         } else {
@@ -106,7 +100,7 @@ public class PluggableTaskTypeDTO implements Serializable {
         }
     }
     public void setTitle(String title, Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language, "title");
+    	InternationalDescriptionDTO desc = getDescriptionObject(language, "title");
         if (desc == null) {
             LOG.error("Can't update a non existing record");
         } else {
@@ -119,7 +113,7 @@ public class PluggableTaskTypeDTO implements Serializable {
      * @ejb:interface-method view-type="local"
      */
     public String getDescription(Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language, "description");
+    	InternationalDescriptionDTO desc = getDescriptionObject(language, "description");
         if (desc == null) {
             return "Description not set for this rule";
         } else {
@@ -127,7 +121,7 @@ public class PluggableTaskTypeDTO implements Serializable {
         }
     }
     public void setDescription(String description, Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language, "description");
+    	InternationalDescriptionDTO desc = getDescriptionObject(language, "description");
         if (desc == null) {
             LOG.error("Can't update a non existing record");
         } else {

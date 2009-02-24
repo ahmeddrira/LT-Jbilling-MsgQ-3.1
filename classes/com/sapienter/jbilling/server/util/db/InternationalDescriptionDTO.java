@@ -33,7 +33,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name="international_description")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class InternationalDescription  implements java.io.Serializable {
+public class InternationalDescriptionDTO  implements java.io.Serializable {
 
 
      private InternationalDescriptionId id;
@@ -42,10 +42,10 @@ public class InternationalDescription  implements java.io.Serializable {
      // parent level (the entity that delegates the column to this one).
      // OR, the content is simple readonly
 
-    public InternationalDescription() {
+    public InternationalDescriptionDTO() {
     }
 
-    public InternationalDescription(InternationalDescriptionId id, String content) {
+    public InternationalDescriptionDTO(InternationalDescriptionId id, String content) {
        this.id = id;
        this.content = content;
     }

@@ -122,7 +122,7 @@ public class Menu implements Serializable {
             return retValue;
         }
         
-        int level = option.getLevel().intValue();
+        int level = option.getLevelField();
         switch (level) {
         case 1: // redefine the suboptions
             setVector(option, subOptions);

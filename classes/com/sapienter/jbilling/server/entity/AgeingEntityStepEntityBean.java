@@ -31,21 +31,20 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
-import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocal;
 import com.sapienter.jbilling.interfaces.SequenceSessionLocalHome;
 import com.sapienter.jbilling.server.process.db.AgeingEntityStepDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
 /**
  * @ejb:bean name="AgeingEntityStepEntity" 
@@ -123,29 +122,21 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
         
     }
 
-    private DescriptionEntityLocal getDescriptionObject(Integer language, String column) 
-            throws FinderException, NamingException {
-        JNDILookup EJBFactory = null;
-        EJBFactory = JNDILookup.getFactory(false);
-        DescriptionEntityLocalHome descriptionHome =
-            (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                DescriptionEntityLocalHome.class,
-                DescriptionEntityLocalHome.JNDI_NAME);
-
-        return descriptionHome.findIt(Constants.TABLE_AGEING_ENTITY_STEP,
+    private InternationalDescriptionDTO getDescriptionObject(Integer language, String column) {
+    	InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(Constants.TABLE_AGEING_ENTITY_STEP,
                 getId(), column, language);
+        
+        if (inter == null) {
+            LOG.warn("Dont found the description");
+            return null;
+        }
+        
+        return inter;
     }
 
     private void createDescription(Integer language, String column, 
-            String message) throws CreateException, NamingException {
-        JNDILookup EJBFactory = null;
-        EJBFactory = JNDILookup.getFactory(false);
-        DescriptionEntityLocalHome descriptionHome =
-                (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                DescriptionEntityLocalHome.class,
-                DescriptionEntityLocalHome.JNDI_NAME);
-
-        descriptionHome.create(Constants.TABLE_AGEING_ENTITY_STEP,
+            String message) {
+    	new InternationalDescriptionDAS().create(Constants.TABLE_AGEING_ENTITY_STEP,
                 getId(), column, language, message);
     }
     
@@ -177,13 +168,8 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
     /**
       * @ejb:interface-method view-type="local"
       */
-    public String getWelcomeMessage(Integer languageId) 
-            throws NamingException {
-        try {
+    public String getWelcomeMessage(Integer languageId) {
             return getDescriptionObject(languageId, "welcome_message").getContent();
-        } catch (FinderException e) {
-            return null;
-        } 
     }
     
     /**
@@ -191,28 +177,23 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
       */
     public void setWelcomeMessage(Integer languageId, String message) 
             throws NamingException, CreateException {
-        try {
-            if (message == null) {
-                message = "";
-            }
-            DescriptionEntityLocal row = getDescriptionObject(languageId, 
-                    "welcome_message");
-            row.setContent(message);
-        } catch (FinderException e) {
-            createDescription(languageId, "welcome_message", message);
-        } 
+        if (message == null) {
+            message = "";
+        }
+        InternationalDescriptionDTO row = getDescriptionObject(languageId, 
+                "welcome_message");
+        if (row == null) {
+        	createDescription(languageId, "welcome_message", message);
+        } else {
+        	row.setContent(message);
+        }
     }
     
     /**
       * @ejb:interface-method view-type="local"
       */
-    public String getFailedLoginMessage(Integer languageId) 
-            throws NamingException {
-        try {
+    public String getFailedLoginMessage(Integer languageId) {
             return getDescriptionObject(languageId, "failed_login_message").getContent();
-        } catch (FinderException e) {
-            return null;
-        } 
     }
     
     /**
@@ -220,16 +201,16 @@ public abstract class AgeingEntityStepEntityBean implements EntityBean {
       */
     public void setFailedLoginMessage(Integer languageId, String message) 
             throws NamingException, CreateException {
-        try {
-            if (message == null) {
-                message = "";
-            }
-            DescriptionEntityLocal row = getDescriptionObject(languageId, 
-                    "failed_login_message");
-            row.setContent(message);
-        } catch (FinderException e) {
-            createDescription(languageId, "failed_login_message", message);
-        } 
+        if (message == null) {
+            message = "";
+        }
+        InternationalDescriptionDTO row = getDescriptionObject(languageId, 
+                "failed_login_message");
+        if (row == null) {
+        	createDescription(languageId, "failed_login_message", message);	
+        } else {
+            row.setContent(message);            	
+        }
     }
     
     // CMR fields --------------------------------------------------

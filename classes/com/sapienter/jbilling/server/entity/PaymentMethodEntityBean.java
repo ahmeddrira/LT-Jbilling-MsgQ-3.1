@@ -30,12 +30,11 @@ import javax.ejb.RemoveException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
 /**
  * @ejb:bean name="PaymentMethodEntity" 
@@ -61,21 +60,16 @@ public abstract class PaymentMethodEntityBean implements EntityBean {
 
     private Logger log = null;
 
-    private DescriptionEntityLocal getDescriptionObject(Integer language) {
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            DescriptionEntityLocalHome descriptionHome =
-                (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    DescriptionEntityLocalHome.class,
-                    DescriptionEntityLocalHome.JNDI_NAME);
-
-            return descriptionHome.findIt(Constants.TABLE_PAYMENT_METHOD, 
-                    getId(), "description", language);
-        } catch (Exception e) {
-            log.warn("Exception while looking for a payment method " +
-                    "description", e);
+    private InternationalDescriptionDTO getDescriptionObject(Integer language) {
+    	
+    	InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(Constants.TABLE_PAYMENT_METHOD, 
+                getId(), "description", language);
+        if(inter == null) {
+            log.warn("Exception while looking for a payment method description");
             return null;
         }
+        
+        return inter;
     }
 
 
@@ -110,7 +104,7 @@ public abstract class PaymentMethodEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public String getDescription(Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language);
+    	InternationalDescriptionDTO desc = getDescriptionObject(language);
         if (desc == null) {
             return "Description not set for this record";
         } else {

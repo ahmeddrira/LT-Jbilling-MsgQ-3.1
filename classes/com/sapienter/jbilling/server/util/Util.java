@@ -38,9 +38,10 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
 /**
  * @author Emil
@@ -123,24 +124,16 @@ public class Util {
     
     public static String getPeriodUnitStr(Integer id, Integer language) {
         Logger log = Logger.getLogger(Util.class);
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            DescriptionEntityLocalHome descriptionHome =
-                    (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    DescriptionEntityLocalHome.class,
-                    DescriptionEntityLocalHome.JNDI_NAME);
-            
+        InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(Constants.TABLE_PERIOD_UNIT, id,
+                "description", language);
+        
+       if (inter == null) {
+    	   log.debug("Description not set for period unit " + id + " language" +
+                   " " + language);
+           return null;   
+       }
 
-            return descriptionHome.findIt(Constants.TABLE_PERIOD_UNIT, id,
-                "description", language).getContent();
-        } catch (FinderException e) {
-            log.debug("Description not set for period unit " + id + " language" +
-                    " " + language);
-            return null;
-        } catch (Exception e) {
-            log.error("Exception while looking for an item description", e);
-            return null;
-        }
+        return inter.getContent();
     }
     
     public static double round(double val, int places) {

@@ -22,32 +22,23 @@ package com.sapienter.jbilling.server.util;
 
 import java.util.Collection;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
 
 public class DescriptionBL {
-    JNDILookup EJBFactory = null;
-    DescriptionEntityLocalHome descriptionHome;
+    InternationalDescriptionDAS descriptionDas;
     
-    public DescriptionBL() throws NamingException {
+    public DescriptionBL() {
         init(); 
     }
     
-    void init() throws NamingException {
-        EJBFactory = JNDILookup.getFactory(false); 
-        descriptionHome =
-                (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                DescriptionEntityLocalHome.class,
-                DescriptionEntityLocalHome.JNDI_NAME);
+    void init()  {
+        descriptionDas =new InternationalDescriptionDAS();
         
     }
     
-    public void delete(String table, Integer foreignId) 
-            throws FinderException {
-        Collection toDelete = descriptionHome.findByTable_Row(table, 
+    public void delete(String table, Integer foreignId) {
+        Collection toDelete = descriptionDas.findByTable_Row(table, 
                 foreignId);
                 
         toDelete.clear(); // this would be cool if it works.

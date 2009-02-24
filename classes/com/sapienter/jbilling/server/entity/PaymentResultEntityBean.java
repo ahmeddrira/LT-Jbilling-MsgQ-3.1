@@ -29,10 +29,9 @@ import javax.ejb.RemoveException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
 /**
  * @ejb:bean name="PaymentResultEntity" 
@@ -58,21 +57,18 @@ public abstract class PaymentResultEntityBean implements EntityBean {
 
     private Logger log = null;
 
-    private DescriptionEntityLocal getDescriptionObject(Integer language) {
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            DescriptionEntityLocalHome descriptionHome =
-                (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    DescriptionEntityLocalHome.class,
-                    DescriptionEntityLocalHome.JNDI_NAME);
-
-            return descriptionHome.findIt(Constants.TABLE_PAYMENT_RESULT, 
-                    getId(), "description", language);
-        } catch (Exception e) {
+    private InternationalDescriptionDTO getDescriptionObject(Integer language) {
+    	
+    	InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(Constants.TABLE_PAYMENT_RESULT, 
+                getId(), "description", language);
+    	
+        if (inter == null) {
             log.warn("Exception while looking for a payment result " +
-                    "description", e);
+                    "description");
             return null;
         }
+        
+        return inter;
     }
 
 
@@ -92,7 +88,7 @@ public abstract class PaymentResultEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public String getDescription(Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language);
+    	InternationalDescriptionDTO desc = getDescriptionObject(language);
         if (desc == null) {
             return "Description not set for this record";
         } else {

@@ -51,7 +51,7 @@ public abstract class AbstractDescription implements Serializable {
         DescriptionDAS de = new DescriptionDAS();
         InternationalDescriptionId iid = new InternationalDescriptionId(jt.findByName(
                 getTable()).getId(), getId(), label, languageId);
-        InternationalDescription desc = de.findNow(iid);
+        InternationalDescriptionDTO desc = de.findNow(iid);
         
         if (desc != null) {
             return desc.getContent();
@@ -70,7 +70,7 @@ public abstract class AbstractDescription implements Serializable {
         
         InternationalDescriptionId iid = new InternationalDescriptionId(jt.findByName(
         		getTable()).getId(), getId(), "description", languageId);
-        InternationalDescription desc = new InternationalDescription(iid, labelProperty);
+        InternationalDescriptionDTO desc = new InternationalDescriptionDTO(iid, labelProperty);
         
         DescriptionDAS de = new DescriptionDAS();
         de.save(desc);

@@ -30,12 +30,11 @@ import javax.ejb.RemoveException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocal;
-import com.sapienter.jbilling.interfaces.DescriptionEntityLocalHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
+import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
 /**
  * @ejb:bean name="InvoiceDeliveryMethodEntity" 
@@ -61,21 +60,11 @@ public abstract class InvoiceDeliveryMethodEntityBean implements EntityBean {
 
     private Logger log = null;
 
-    private DescriptionEntityLocal getDescriptionObject(Integer language) {
-        try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            DescriptionEntityLocalHome descriptionHome =
-                    (DescriptionEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    DescriptionEntityLocalHome.class,
-                    DescriptionEntityLocalHome.JNDI_NAME);
-
-            return descriptionHome.findIt(Constants.TABLE_INVOICE_DELIVERY_METHOD, 
-                    getId(), "description", language);
-        } catch (Exception e) {
-            log.warn("Exception while looking for a invoice_delivery method " +
-                    "description", e);
-            return null;
-        }
+    private InternationalDescriptionDTO getDescriptionObject(Integer language) {
+    	
+    	 return new InternationalDescriptionDAS().findIt(Constants.TABLE_AGEING_ENTITY_STEP,
+                 getId(), "description", language);
+       
     }
 
 
@@ -110,7 +99,7 @@ public abstract class InvoiceDeliveryMethodEntityBean implements EntityBean {
      * @ejb:interface-method view-type="local"
      */
     public String getDescription(Integer language) {
-        DescriptionEntityLocal desc = getDescriptionObject(language);
+    	InternationalDescriptionDTO desc = getDescriptionObject(language);
         if (desc == null) {
             return "Description not set for this record";
         } else {

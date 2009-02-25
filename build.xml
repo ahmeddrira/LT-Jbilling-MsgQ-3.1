@@ -32,7 +32,7 @@
     </path>
     
     <path id="drools.classpath">
-        <fileset dir="${source.dir}/libs/drools">
+        <fileset dir="${libs.dir}/drools">
             <include name="**/*.jar" />
         </fileset>
     </path>
@@ -438,6 +438,9 @@ xmlvalidation="true">
         <delete includeemptydirs="true" failonerror="false">
             <fileset dir="${build.dir}" includes="**/*"/>
         </delete>
+        <delete>
+            <fileset dir="${base_dir}/rules" includes="*.pkg"/>
+        </delete>
     </target>
     
     <!-- Builds from scratch -->
@@ -449,11 +452,6 @@ xmlvalidation="true">
     
     
     <target name="prepare-test" depends="compile-rules">
-        <echo>Copying the binary rules</echo>
-        <delete dir="${base_dir}/rules"/>
-        <copy todir="${base_dir}/rules">
-            <fileset dir="${source.rules.dir}" includes="*.pkg"/>
-        </copy>
         <echo>Copying the development base</echo>
         <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
             <fileset dir="${basedir}/sql" includes="localDB.*" />
@@ -548,7 +546,7 @@ xmlvalidation="true">
         </junit>
     </target>
     
-    <target name="test" depends="test-ws, test-process, test-mediation, test-provisioning">
+    <target name="test" depends="prepare-test, test-ws, test-process, test-mediation, test-provisioning">
     </target>
     
     <!--
@@ -816,42 +814,46 @@ server="upload.sourceforge.net" userid="anonymous">
         </hibernatetool>
     </target>
     
-    <target name="compile-rules" description="compile rule files">
+    <target name="compile-rules" description="compile rules files">
+        <echo>Compiling the binary rules</echo>
+
+        <delete dir="${base_dir}/rules"/>
+        <mkdir dir="${base_dir}/rules"/>
         <taskdef name="rulebase" 
                  classname="org.drools.contrib.DroolsCompilerAntTask" 
                  classpathref="drools.classpath" />
         
         <rulebase 
             srcdir="${source.rules.dir}" 		
-            tofile="${source.rules.dir}/CancelFees.pkg"
+            tofile="${base_dir}/rules/CancelFees.pkg"
             classpathref="drools.run.classpath"
             binformat="package">
             <include name="CancelFees.drl" />
         </rulebase>
         <rulebase 
             srcdir="${source.rules.dir}" 		
-            tofile="${source.rules.dir}/ItemsRules.pkg"
+            tofile="${base_dir}/rules/ItemsRules.pkg"
             classpathref="drools.run.classpath"
             binformat="package">
             <include name="ItemsRules.drl" />
         </rulebase>
         <rulebase 
             srcdir="${source.rules.dir}" 		
-            tofile="${source.rules.dir}/Mediation.pkg"
+            tofile="${base_dir}/rules/Mediation.pkg"
             classpathref="drools.run.classpath"
             binformat="package">
             <include name="Mediation.drl" />
         </rulebase>
         <rulebase 
             srcdir="${source.rules.dir}" 		
-            tofile="${source.rules.dir}/PricingRules.pkg"
+            tofile="${base_dir}/rules/PricingRules.pkg"
             classpathref="drools.run.classpath"
             binformat="package">
             <include name="PricingRules.drl" />
         </rulebase>
         <rulebase 
         	srcdir="${source.rules.dir}" 		
-        	tofile="${source.rules.dir}/provisioning_commands.pkg"
+        	tofile="${base_dir}/rules/provisioning_commands.pkg"
         	classpathref="drools.run.classpath"
         	binformat="package">
         	<include name="provisioning_commands.drl" />

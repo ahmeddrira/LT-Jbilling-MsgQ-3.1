@@ -461,8 +461,6 @@ public class BillingProcessSessionBean implements SessionBean {
                     invoiceId);
             // last but not least, let this user know about his/her new
             // invoice.
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-
             NotificationBL notif = new NotificationBL();
             
             try {
@@ -501,10 +499,12 @@ public class BillingProcessSessionBean implements SessionBean {
                     }
                 }
 
-                if (processPayment) {
+                if (processPayment && dto.getBalance() != 0) {
                     ProcessPaymentEvent event = new ProcessPaymentEvent(invoiceId,
                             processId, null, entityId);
                     EventManager.process(event);
+                } else {
+                    LOG.debug("Not processing a payment, balance of invoice is " + dto.getBalance());
                 }
             }
         } catch (Exception e) {

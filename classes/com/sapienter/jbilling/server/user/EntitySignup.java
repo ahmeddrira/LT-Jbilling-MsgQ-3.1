@@ -729,17 +729,18 @@ public final class EntitySignup {
             "i_type_id",
             "i_entity_id",
             "i_language_id",
+            "i_optlock"
         };
         // we provide at least those for english
         String messageData[][] = { 
-            { "1", String.valueOf(newEntityId), "1"},  // invoice email
-            { "2", String.valueOf(newEntityId), "1"},  // user reactivatesd
-            { "3", String.valueOf(newEntityId), "1"},  // user overdue
-            { "13", String.valueOf(newEntityId), "1"}, // order expiring
-            { "16", String.valueOf(newEntityId), "1"}, // payment ok
-            { "17", String.valueOf(newEntityId), "1"}, // payment failed
-            { "18", String.valueOf(newEntityId), "1"}, // invoice reminder
-            { "19", String.valueOf(newEntityId), "1"}, // credit card expi
+            { "1", String.valueOf(newEntityId), "1", "1"},  // invoice email
+            { "2", String.valueOf(newEntityId), "1", "1"},  // user reactivatesd
+            { "3", String.valueOf(newEntityId), "1", "1"},  // user overdue
+            { "13", String.valueOf(newEntityId), "1", "1"}, // order expiring
+            { "16", String.valueOf(newEntityId), "1", "1"}, // payment ok
+            { "17", String.valueOf(newEntityId), "1", "1"}, // payment failed
+            { "18", String.valueOf(newEntityId), "1", "1"}, // invoice reminder
+            { "19", String.valueOf(newEntityId), "1", "1"}, // credit card expi
         };
         table = addTable(Constants.TABLE_NOTIFICATION_MESSAGE, messageColumns, 
                 messageData, false);
@@ -751,24 +752,25 @@ public final class EntitySignup {
             "i_id",
             "i_message_id",
             "i_section",
+            "i_optlock"
         };
         String sectionData[][] = { 
-            { String.valueOf(messageId), "1"},
-            { String.valueOf(messageId), "2"},  
-            { String.valueOf(messageId + 1), "1"},
-            { String.valueOf(messageId + 1), "2"},  
-            { String.valueOf(messageId + 2), "1"},
-            { String.valueOf(messageId + 2), "2"},  
-            { String.valueOf(messageId + 3), "1"},
-            { String.valueOf(messageId + 3), "2"},  
-            { String.valueOf(messageId + 4), "1"},
-            { String.valueOf(messageId + 4), "2"},  
-            { String.valueOf(messageId + 5), "1"},
-            { String.valueOf(messageId + 5), "2"},  
-            { String.valueOf(messageId + 6), "1"},
-            { String.valueOf(messageId + 6), "2"},  
-            { String.valueOf(messageId + 7), "1"},
-            { String.valueOf(messageId + 7), "2"},  
+            { String.valueOf(messageId), "1", "1"},
+            { String.valueOf(messageId), "2", "1"},  
+            { String.valueOf(messageId + 1), "1", "1"},
+            { String.valueOf(messageId + 1), "2", "1"},  
+            { String.valueOf(messageId + 2), "1", "1"},
+            { String.valueOf(messageId + 2), "2", "1"},  
+            { String.valueOf(messageId + 3), "1", "1"},
+            { String.valueOf(messageId + 3), "2", "1"},  
+            { String.valueOf(messageId + 4), "1", "1"},
+            { String.valueOf(messageId + 4), "2", "1"},  
+            { String.valueOf(messageId + 5), "1", "1"},
+            { String.valueOf(messageId + 5), "2", "1"},  
+            { String.valueOf(messageId + 6), "1", "1"},
+            { String.valueOf(messageId + 6), "2", "1"},  
+            { String.valueOf(messageId + 7), "1", "1"},
+            { String.valueOf(messageId + 7), "2", "1"},  
         };
         table = addTable(Constants.TABLE_NOTIFICATION_MESSAGE_SECTION,
                 sectionColumns, sectionData, false);
@@ -780,24 +782,25 @@ public final class EntitySignup {
             "i_id",
             "i_message_section_id",
             "s_content",
+            "i_optlock"
         };
         String lineData[][] = { 
-            { String.valueOf(sectionId), "Billing Statement from $company_name"},
-            { String.valueOf(sectionId + 1), "Dear $first_name $last_name,\n\n This is to notify you that your latest invoice (number $number) is now available. The total amount due is: $total. You can view it by login in to:\n\n" + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=$company_id\n\nFor security reasons, your statement is password protected.\nTo login in, you will need your user name: $username and your account password: $password\n \n After logging in, please click on the menu option  �List�, to see all your invoices.  You can also see your payment history, your current purchase orders, as well as update your payment information and submit online payments.\n\n\nThank you for choosing $company_name, we appreciate your business,\n\nBilling Department\n$company_name"},
-            { String.valueOf(sectionId + 2), "You account is now up to date"},
-            { String.valueOf(sectionId + 3), "Dear $first_name $last_name,\n\n  This email is to notify you that we have received your latest payment and your account no longer has an overdue balance.\n\n  Thank you for keeping your account up to date,\n\n\nBilling Department\n$company_name"},  
-            { String.valueOf(sectionId + 4), "Overdue Balance"},
-            { String.valueOf(sectionId + 5), "Dear $first_name $last_name,\n\nOur records show that you have an overdue balance on your account. Please submit a payment as soon as possible.\n\nBest regards,\n\nBilling Department\n$company_name"},  
-            { String.valueOf(sectionId + 6), "Your service from $company_name is about to expire"},
-            { String.valueOf(sectionId + 7), "Dear $first_name $last_name,\n\nYour service with us will expire on $period_end. Please make sure to contact customer service for a renewal.\n\nRegards,\n\nBilling Department\n$company_name"},  
-            { String.valueOf(sectionId + 8), "Thank you for your payment"},
-            { String.valueOf(sectionId + 9), "Dear $first_name $last_name\n\n   We have received your payment made with $method for a total of $total.\n\n   Thank you, we appreciate your business,\n\nBilling Department\n$company_name"},  
-            { String.valueOf(sectionId + 10), "Payment failed"},
-            { String.valueOf(sectionId + 11), "Dear $first_name $last_name\n\n   A payment with $method was attempted for a total of $total, but it has been rejected by the payment processor.\nYou can update your payment information and submit an online payment by login into :\n" + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=$company_id\n\nFor security reasons, your statement is password protected.\nTo login in, you will need your user name: $username and your account password: $password\n\nThank you,\n\nBilling Department\n$company_name"},  
-            { String.valueOf(sectionId + 12), "Invoice reminder"},
-            { String.valueOf(sectionId + 13), "Dear $first_name $last_name\n\n   This is a reminder that the invoice number $number remains unpaid. It was sent to you on $date, and its total is $total. Although you still have $days days to pay it (its due date is $dueDate), we would greatly appreciate if you can pay it at your earliest convenience.\n\nYours truly,\n\nBilling Department\n$company_name"},  
-            { String.valueOf(sectionId + 14), "It is time to update your credit card"},
-            { String.valueOf(sectionId + 15), "Dear $first_name $last_name,\n\nWe want to remind you that the credit card that we have in our records for your account is about to expire. Its expiration date is $expiry_date.\n\nUpdating your credit card is easy. Just login into " + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=$company_id. using your user name: $username and password: $password. After logging in, click on 'Account' and then 'Edit Credit Card'. \nThank you for keeping your account up to date.\n\nBilling Department\n$company_name"},  
+            { String.valueOf(sectionId), "Billing Statement from $company_name", "1"},
+            { String.valueOf(sectionId + 1), "Dear $first_name $last_name,\n\n This is to notify you that your latest invoice (number $number) is now available. The total amount due is: $total. You can view it by login in to:\n\n" + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=$company_id\n\nFor security reasons, your statement is password protected.\nTo login in, you will need your user name: $username and your account password: $password\n \n After logging in, please click on the menu option  �List�, to see all your invoices.  You can also see your payment history, your current purchase orders, as well as update your payment information and submit online payments.\n\n\nThank you for choosing $company_name, we appreciate your business,\n\nBilling Department\n$company_name", "1"},
+            { String.valueOf(sectionId + 2), "You account is now up to date", "1"},
+            { String.valueOf(sectionId + 3), "Dear $first_name $last_name,\n\n  This email is to notify you that we have received your latest payment and your account no longer has an overdue balance.\n\n  Thank you for keeping your account up to date,\n\n\nBilling Department\n$company_name", "1"},  
+            { String.valueOf(sectionId + 4), "Overdue Balance", "1"},
+            { String.valueOf(sectionId + 5), "Dear $first_name $last_name,\n\nOur records show that you have an overdue balance on your account. Please submit a payment as soon as possible.\n\nBest regards,\n\nBilling Department\n$company_name", "1"},  
+            { String.valueOf(sectionId + 6), "Your service from $company_name is about to expire", "1"},
+            { String.valueOf(sectionId + 7), "Dear $first_name $last_name,\n\nYour service with us will expire on $period_end. Please make sure to contact customer service for a renewal.\n\nRegards,\n\nBilling Department\n$company_name", "1"},  
+            { String.valueOf(sectionId + 8), "Thank you for your payment", "1"},
+            { String.valueOf(sectionId + 9), "Dear $first_name $last_name\n\n   We have received your payment made with $method for a total of $total.\n\n   Thank you, we appreciate your business,\n\nBilling Department\n$company_name", "1"},  
+            { String.valueOf(sectionId + 10), "Payment failed", "1"},
+            { String.valueOf(sectionId + 11), "Dear $first_name $last_name\n\n   A payment with $method was attempted for a total of $total, but it has been rejected by the payment processor.\nYou can update your payment information and submit an online payment by login into :\n" + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=$company_id\n\nFor security reasons, your statement is password protected.\nTo login in, you will need your user name: $username and your account password: $password\n\nThank you,\n\nBilling Department\n$company_name", "1"},  
+            { String.valueOf(sectionId + 12), "Invoice reminder", "1"},
+            { String.valueOf(sectionId + 13), "Dear $first_name $last_name\n\n   This is a reminder that the invoice number $number remains unpaid. It was sent to you on $date, and its total is $total. Although you still have $days days to pay it (its due date is $dueDate), we would greatly appreciate if you can pay it at your earliest convenience.\n\nYours truly,\n\nBilling Department\n$company_name", "1"},  
+            { String.valueOf(sectionId + 14), "It is time to update your credit card", "1"},
+            { String.valueOf(sectionId + 15), "Dear $first_name $last_name,\n\nWe want to remind you that the credit card that we have in our records for your account is about to expire. Its expiration date is $expiry_date.\n\nUpdating your credit card is easy. Just login into " + Util.getSysProp("url") + "/billing/user/login.jsp?entityId=$company_id. using your user name: $username and password: $password. After logging in, click on 'Account' and then 'Edit Credit Card'. \nThank you for keeping your account up to date.\n\nBilling Department\n$company_name", "1"},  
         };
         table = addTable(Constants.TABLE_NOTIFICATION_MESSAGE_LINE,
                 lineColumns, lineData, false);

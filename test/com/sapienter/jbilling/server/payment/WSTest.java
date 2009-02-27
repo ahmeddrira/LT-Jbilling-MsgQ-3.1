@@ -212,7 +212,9 @@ public class WSTest extends TestCase {
 
                 // create the order and invoice it
                 System.out.println("Creating and invoicing order ...");
-                Integer orderId = api.createOrderAndInvoice(order);
+                Integer thisInvoiceId = api.createOrderAndInvoice(order);
+                InvoiceWS newInvoice = api.getInvoiceWS(thisInvoiceId);
+                Integer orderId = newInvoice.getOrders()[0]; // this is the order that was also created
                 assertNotNull("The order was not created", orderId);
 
                 // get invoice id

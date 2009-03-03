@@ -573,7 +573,7 @@ public class ListBL {
         } else if (field.getEntity().getDataType().equals("date")) {
             // it is a date range
             if (start != null) {
-                stmt.setString(varIndex++, start);
+                stmt.setDate(varIndex++, new java.sql.Date(Util.parseDate(start).getTime()));
             }
             if (end != null) {
                 // we need to move it one day ahead to make it inclusive

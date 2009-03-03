@@ -45,6 +45,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.Util;
+import java.text.SimpleDateFormat;
 
 
 public class ReportBL extends ResultList {
@@ -257,8 +258,10 @@ public class ReportBL extends ResultList {
                     cachedResults.setNull(index, toSQLType(
                             field.getDataType()));
                 } else {
-                    if (field.getDataType().equals(Field.TYPE_DATE) ||
-                            field.getDataType().equals(Field.TYPE_STRING)) {
+                    if (field.getDataType().equals(Field.TYPE_DATE)) {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        cachedResults.setDate(index, new java.sql.Date(format.parse(field.getWhereValue()).getTime()));
+                    } else if (field.getDataType().equals(Field.TYPE_STRING)) {
                         cachedResults.setString(index, field.getWhereValue());
                     } else if (field.getDataType().equals(Field.TYPE_INTEGER)) {
                         if (field.getWhereValue().indexOf(',') >= 0) {

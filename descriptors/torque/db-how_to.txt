@@ -49,7 +49,7 @@ Ubuntu notes:
   Install:
     sudo apt-get install postgres
     (follow here the instructions from the web page: add permissions to user postgres and create database)
-    sudo -u postgres /usr/lib/postgresql/8.3/bin/createdb betty
+    sudo -u postgres createdb betty
 
 - To startup/shutdown : pg_ctl start/stop            
    Ubuntu: use service: 

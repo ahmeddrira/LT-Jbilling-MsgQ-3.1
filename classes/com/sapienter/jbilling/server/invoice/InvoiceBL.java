@@ -652,6 +652,11 @@ public class InvoiceBL extends ResultList
         log.debug("user with overdue: " + retValue);
         return retValue;
     }
+
+    public Integer[] getUsersOverdueInvoices(Integer userId, Date date) {
+        List<Integer> result = new InvoiceDAS().findIdsOverdueForUser(userId, date);
+        return result.toArray(new Integer[result.size()]);
+    }
    
     public Integer[] getManyWS(Integer userId, Integer number)
             throws NamingException, FinderException, SessionInternalError {

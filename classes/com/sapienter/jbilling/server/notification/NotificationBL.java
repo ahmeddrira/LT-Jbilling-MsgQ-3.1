@@ -423,7 +423,18 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             setContent(message, message.getTypeId(), entityId, languageId);
             UserBL user = new UserBL(userId);
             InvoiceBL invoice = new InvoiceBL();
-            Integer invoiceId = invoice.getLastByUser(userId);
+            Integer invoiceId = null;
+
+            Integer overdueInvoiceIds[] = invoice.getUsersOverdueInvoices(
+                    userId, new Date());
+            if (overdueInvoiceIds.length > 0) {
+                // choose latest one
+                invoiceId = overdueInvoiceIds[0];
+            } else {
+                LOG.warn("Didn't find overdue invoice. Getting last invoice.");
+                invoiceId = invoice.getLastByUser(userId);
+            }
+
             if (invoiceId != null) {
                 invoice.set(invoiceId);
 

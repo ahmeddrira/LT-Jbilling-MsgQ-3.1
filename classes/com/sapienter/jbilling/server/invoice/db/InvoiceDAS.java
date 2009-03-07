@@ -142,4 +142,16 @@ public class InvoiceDAS extends AbstractDAS<Invoice> {
                 .createAlias("item.itemTypes", "itemTypes")
                     .add(Restrictions.eq("itemTypes.id", categoryId));
     }
+
+    public List<Integer> findIdsOverdueForUser(Integer userId, Date date) {
+        Criteria criteria = getSession().createCriteria(Invoice.class);
+        addUserCriteria(criteria, userId);
+        criteria
+            .add(Restrictions.lt("dueDate", date))
+            .add(Restrictions.eq("toProcess", 1))
+            .add(Restrictions.eq("isReview", 0))
+            .setProjection(Projections.id())
+            .addOrder(Order.desc("id"));
+        return criteria.list();
+    }
 }

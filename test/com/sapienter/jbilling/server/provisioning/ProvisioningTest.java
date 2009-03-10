@@ -344,7 +344,7 @@ public class ProvisioningTest extends TestCase {
 
             OrderLineWS line = new OrderLineWS();
             line.setItemId(251);
-            line.setQuantity(1);
+            line.setQuantity(1); // trigger 'external_provisioning_test' rule
             line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
             line.setUseItem(true);
             line.setProvisioningStatus(Constants.PROVISIONING_STATUS_INACTIVE);
@@ -355,7 +355,7 @@ public class ProvisioningTest extends TestCase {
             Integer ret = api.createOrder(order);
             assertNotNull("The order was not created", ret);
 
-            pause(4000); // wait for MDBs to complete
+            pause(12000); // wait for MDBs to complete
             System.out.println("Getting back order " + ret);
 
             // check TestExternalProvisioningMDB was successful
@@ -371,5 +371,44 @@ public class ProvisioningTest extends TestCase {
             fail("Exception caught:" + e);
         }
 
+    }
+
+    public void testCAIProvisioning() {
+        try {
+            // create the order
+            OrderWS order = new OrderWS();
+            order.setUserId(USER_ID);
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(1);
+            order.setCurrencyId(1);
+
+            OrderLineWS line = new OrderLineWS();
+            line.setItemId(251);
+            line.setQuantity(2); // trigger 'cai_test' rule
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setUseItem(true);
+            line.setProvisioningStatus(Constants.PROVISIONING_STATUS_INACTIVE);
+
+            order.setOrderLines(new OrderLineWS[] { line });
+
+            System.out.println("Creating order ...");
+            Integer ret = api.createOrder(order);
+            assertNotNull("The order was not created", ret);
+
+            pause(6000); // wait for MDBs to complete
+            System.out.println("Getting back order " + ret);
+
+            // check TestExternalProvisioningMDB was successful
+            OrderWS retOrder = api.getOrder(ret); 
+            OrderLineWS orderLine = retOrder.getOrderLines()[0];
+            assertEquals("Order status should be active. Check log output " +
+                    "from TestExternalProvisioningMDB in jbilling.log for " + 
+                    "exact error.", Constants.PROVISIONING_STATUS_ACTIVE,
+                    orderLine.getProvisioningStatus());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
     }
 }

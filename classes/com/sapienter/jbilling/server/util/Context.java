@@ -36,7 +36,8 @@ public class Context {
         NOTIFICATION_SESSION,
         PROVISIONING,
         VELOCITY,
-        DATA_SOURCE
+        DATA_SOURCE,
+        CAI
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -51,6 +52,7 @@ public class Context {
         springBeans.put(Name.PROVISIONING, "provisioning");
         springBeans.put(Name.VELOCITY, "velocityEngine");
         springBeans.put(Name.DATA_SOURCE, "dataSource");
+        springBeans.put(Name.CAI, "cai");
     };
     
     // should not be instantiated

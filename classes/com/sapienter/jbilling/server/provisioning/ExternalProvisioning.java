@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -189,7 +191,13 @@ public class ExternalProvisioning {
             try {
                 result = task.sendRequest(id, submitString);
             } catch (Exception e) {
-                LOG.error(e);
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                pw.close();
+                LOG.error("External provisioning processor error: " + 
+                        e.getMessage() + "\n" + sw.toString());
+
                 error = e.toString();
             }
 

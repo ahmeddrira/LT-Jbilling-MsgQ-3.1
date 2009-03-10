@@ -2960,6 +2960,7 @@
     <PluggableTaskType Id="45" CategoryId="15" ClassName="com.sapienter.jbilling.server.mediation.task.MySQLReader" MinParameters="0"/>
     <PluggableTaskType Id="46" CategoryId="17" ClassName="com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask" MinParameters="0"/>
     <PluggableTaskType Id="47" CategoryId="18" ClassName="com.sapienter.jbilling.server.provisioning.task.TestExternalProvisioningTask" MinParameters="0"/>
+    <PluggableTaskType Id="48" CategoryId="18" ClassName="com.sapienter.jbilling.server.provisioning.task.CAIProvisioningTask" MinParameters="2"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

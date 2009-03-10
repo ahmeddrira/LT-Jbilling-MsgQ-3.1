@@ -25,7 +25,7 @@
           <property name="processors">
             <list>
               <bean class="com.sapienter.jbilling.server.provisioning.config.Processor">
-                <property name="id" value="cai" />
+                <property name="id" value="test" />
                 <property name="requests">
                   <list>
                     <bean class="com.sapienter.jbilling.server.provisioning.config.Request">
@@ -61,7 +61,7 @@
           <property name="processors">
             <list>
               <bean class="com.sapienter.jbilling.server.provisioning.config.Processor">
-                <property name="id" value="cai" />
+                <property name="id" value="test" />
                 <property name="requests">
                   <list>
                     <bean class="com.sapienter.jbilling.server.provisioning.config.Request">
@@ -81,7 +81,42 @@
             </list>
           </property>
         </bean>
+        <bean class="com.sapienter.jbilling.server.provisioning.config.Command">
+          <property name="id" value="cai_test" />
+          <property name="fields">
+            <list>
+              <bean class="com.sapienter.jbilling.server.provisioning.config.Field">
+                <property name="name" value="msisdn" />
+              </bean>
+              <bean class="com.sapienter.jbilling.server.provisioning.config.Field">
+                <property name="name" value="imsi" />
+              </bean>
+            </list>
+          </property>
+          <property name="processors">
+            <list>
+              <bean class="com.sapienter.jbilling.server.provisioning.config.Processor">
+                <property name="id" value="cai" />
+                <property name="requests">
+                  <list>
+                    <bean class="com.sapienter.jbilling.server.provisioning.config.Request">
+                      <property name="order" value="1" />
+                      <property name="submit" value="CREATE:HLRSUB:MSISDN,|msisdn|:IMSI,|imsi|;" />
+                      <property name="postResult" value="true" />
+                    </bean>
+                  </list>
+                </property>
+              </bean>
+            </list>
+          </property>
+        </bean>
       </list>
     </property>
+  </bean>
+<!--
+  <bean id="cai" class="com.sapienter.jbilling.server.provisioning.task.TelnetCommunication">
+  </bean>
+-->
+  <bean id="cai" class="com.sapienter.jbilling.server.provisioning.task.TestCommunication">
   </bean>
 </beans>

@@ -36,7 +36,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 public class TestExternalProvisioningTask extends PluggableTask 
         implements IExternalProvisioning {
 	public static final String PARAM_ID = "id";
-	public static final String PARAM_ID_DEFAULT = "cai";
+	public static final String PARAM_ID_DEFAULT = "test";
 
 
     private static final Logger LOG = Logger.getLogger(

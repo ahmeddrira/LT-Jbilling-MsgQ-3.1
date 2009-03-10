@@ -34,8 +34,8 @@ end
 
 rule 'external_provisioning_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, provisioningStatus ==
-        Constants.PROVISIONING_STATUS_INACTIVE)
+    $orderLine : OrderLineDTO(itemId == 251, quantity == 1, 
+        provisioningStatus == Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then
     command.addCommand("result_test", $orderLine.getId());
@@ -46,3 +46,14 @@ then
     command.addParameter("msisdn", "54321");
 end
 
+rule 'cai_test'
+when
+    $orderLine : OrderLineDTO(itemId == 251, quantity == 2, 
+        provisioningStatus == Constants.PROVISIONING_STATUS_INACTIVE)
+    CommandManager(eventType == "activated")
+then
+    command.addCommand("cai_test", $orderLine.getId());
+    command.addParameter("msisdn", "98765");
+    // should be removed from command
+    command.addParameter("imsi", "VOID");
+end

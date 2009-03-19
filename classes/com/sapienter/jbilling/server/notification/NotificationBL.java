@@ -99,6 +99,18 @@ import java.io.StringWriter;
 import javax.sql.DataSource;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.tools.generic.DateTool;
+import org.apache.velocity.tools.generic.MathTool;
+import org.apache.velocity.tools.generic.NumberTool;
+import org.apache.velocity.tools.generic.RenderTool;
+import org.apache.velocity.tools.generic.EscapeTool;
+import org.apache.velocity.tools.generic.ResourceTool;
+import org.apache.velocity.tools.generic.AlternatorTool;
+import org.apache.velocity.tools.generic.ValueParser;
+import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.tools.generic.SortTool;
+import org.apache.velocity.tools.generic.IteratorTool;
+
 
 public class NotificationBL extends ResultList implements NotificationSQL {
     //
@@ -310,6 +322,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                         .getNumber().toString());
                 message.addParameter("invoice", invoice.getEntity());
             }
+            message.addParameter("payment", dto);
         } catch (NamingException e) {
             throw new SessionInternalError(e);
         } catch (FinderException e2) {
@@ -1062,6 +1075,20 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // full objects for velocity
             retValue.addParameter("company_contact", contact.getEntity());
             retValue.addParameter("credit_card", user.getCreditCard());
+
+            //velocity tools
+            retValue.addParameter("tools-date", new DateTool());
+            retValue.addParameter("tools-math", new MathTool());
+            retValue.addParameter("tools-number", new NumberTool());
+            retValue.addParameter("tools-render", new RenderTool());
+            retValue.addParameter("tools-escape", new EscapeTool());
+            retValue.addParameter("tools-resource", new ResourceTool());
+            retValue.addParameter("tools-alternator", new AlternatorTool());
+            retValue.addParameter("tools-valueParser", new ValueParser());
+            retValue.addParameter("tools-list", new ListTool());
+            retValue.addParameter("tools-sort", new SortTool());
+            retValue.addParameter("tools-iterator", new IteratorTool());
+
             
         } catch (Exception e) {
             throw new SessionInternalError(e);

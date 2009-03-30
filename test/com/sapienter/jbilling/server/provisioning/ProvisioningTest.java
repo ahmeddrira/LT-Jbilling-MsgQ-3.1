@@ -105,31 +105,34 @@ public class ProvisioningTest extends TestCase {
 
             for (int i = 0; i < retLine.length; i++) {
                 if (i == 0) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_ACTIVE);
                 }
 
                 if (i == 1) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_ACTIVE);
                 }
 
                 if (i == 2) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(), null);
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
+                                 Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
 
                 if (i == 3) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_PENDING_ACTIVE);
                 }
 
                 if (i == 4) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_PENDING_INACTIVE);
                 }
 
                 if (i == 5) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(), null);
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
+                                 Constants.PROVISIONING_STATUS_INACTIVE); // default
+
                 }
             }
         } catch (JbillingAPIException e) {
@@ -181,31 +184,33 @@ public class ProvisioningTest extends TestCase {
 
             for (int i = 0; i < retLine.length; i++) {
                 if (i == 0) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_ACTIVE);
                 }
 
                 if (i == 1) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_ACTIVE);
                 }
 
                 if (i == 2) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(), null);
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
+                                 Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
 
                 if (i == 3) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_PENDING_ACTIVE);
                 }
 
                 if (i == 4) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_PENDING_INACTIVE);
                 }
 
                 if (i == 5) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(), null);
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
+                                 Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
             }
         } catch (JbillingAPIException e) {
@@ -257,31 +262,33 @@ public class ProvisioningTest extends TestCase {
 
             for (int i = 0; i < retLine.length; i++) {
                 if (i == 0) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_INACTIVE);
                 }
 
                 if (i == 1) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_INACTIVE);
                 }
 
                 if (i == 2) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(), null);
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
+                                 Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
 
                 if (i == 3) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_PENDING_ACTIVE);
                 }
 
                 if (i == 4) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(),
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
                                  Constants.PROVISIONING_STATUS_PENDING_INACTIVE);
                 }
 
                 if (i == 5) {
-                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatus(), null);
+                    assertEquals("order line " + (i + 1) + "", retLine[i].getProvisioningStatusId(),
+                                 Constants.PROVISIONING_STATUS_INACTIVE); // default
                 }
             }
         } catch (JbillingAPIException e) {
@@ -315,7 +322,7 @@ public class ProvisioningTest extends TestCase {
             nextLine.setQuantity(1);
             nextLine.setPrice(linePrice);
             nextLine.setAmount(nextLine.getQuantity().floatValue() * linePrice);
-            nextLine.setProvisioningStatus(provisioningStatus[i]);
+            nextLine.setProvisioningStatusId(provisioningStatus[i]);
             lines.add(nextLine);
         }
 
@@ -347,7 +354,7 @@ public class ProvisioningTest extends TestCase {
             line.setQuantity(1); // trigger 'external_provisioning_test' rule
             line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
             line.setUseItem(true);
-            line.setProvisioningStatus(Constants.PROVISIONING_STATUS_INACTIVE);
+            line.setProvisioningStatusId(Constants.PROVISIONING_STATUS_INACTIVE);
 
             order.setOrderLines(new OrderLineWS[] { line });
 
@@ -364,7 +371,7 @@ public class ProvisioningTest extends TestCase {
             assertEquals("Order status should be active. Check log output " +
                     "from TestExternalProvisioningMDB in jbilling.log for " + 
                     "exact error.", Constants.PROVISIONING_STATUS_ACTIVE,
-                    orderLine.getProvisioningStatus());
+                    orderLine.getProvisioningStatusId());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -387,7 +394,7 @@ public class ProvisioningTest extends TestCase {
             line.setQuantity(2); // trigger 'cai_test' rule
             line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
             line.setUseItem(true);
-            line.setProvisioningStatus(Constants.PROVISIONING_STATUS_INACTIVE);
+            line.setProvisioningStatusId(Constants.PROVISIONING_STATUS_INACTIVE);
 
             order.setOrderLines(new OrderLineWS[] { line });
 
@@ -404,7 +411,7 @@ public class ProvisioningTest extends TestCase {
             assertEquals("Order status should be active. Check log output " +
                     "from TestExternalProvisioningMDB in jbilling.log for " + 
                     "exact error.", Constants.PROVISIONING_STATUS_ACTIVE,
-                    orderLine.getProvisioningStatus());
+                    orderLine.getProvisioningStatusId());
 
         } catch (Exception e) {
             e.printStackTrace();

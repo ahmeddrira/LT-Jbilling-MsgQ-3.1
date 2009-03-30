@@ -408,6 +408,11 @@
 			<td><bean:message key="item.prompt.number"/></td>
 			<td><bean:message key="item.prompt.internalNumber"/></td>
 			<td><bean:message key="item.prompt.description"/></td>
+            <jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_PROVISIONING%>'
+                beanName="preference"/> 
+            <logic:equal name="preference" value="1">
+			<td><bean:message key="order.line.prompt.provisioningStatus"/></td>
+            </logic:equal>
 			<td><bean:message key="item.list.quantity"/></td>
 			<td><bean:message key="item.prompt.price"/></td>
 			<td><bean:message key="order.summary.total"/></td>
@@ -440,6 +445,15 @@
 				<td class="list">
 					<bean:write name="line" property="description"/>
 				</td>
+                <jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_PROVISIONING%>'
+			beanName="preference"/> 
+                <logic:equal name="preference" value="1">
+                <td class="list">
+					<logic:present name="line" property="provisioningStatusStr">
+						<bean:write name="line" property="provisioningStatusStr"/>
+					</logic:present>
+                </td>
+                </logic:equal>
 				<td align="right" class="list">
 					<logic:present name="line" property="item">
 					<logic:notPresent name="line" 
@@ -470,6 +484,12 @@
 		</logic:iterate>	
 		<tr class="listH">
 			<td></td><td></td><td></td><td></td><td></td>
+            <jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_PROVISIONING%>'
+			        beanName="preference"/> 
+            <logic:equal name="preference" value="1">
+                <td></td>
+            </logic:equal>     
+
 			<td>
 				<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
 							property="currencySymbol" 

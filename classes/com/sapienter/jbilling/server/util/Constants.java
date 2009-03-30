@@ -121,6 +121,9 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_LIST_FIELD_ENTITY = "list_field_entity";
     public static final String TABLE_MEDIATION_CFG = "mediation_cfg";
     public static final String TABLE_BLACKLIST = "blacklist";
+    public static final String TABLE_GENERIC_STATUS_TYPE = "generic_status_type";
+    public static final String TABLE_GENERIC_STATUS = "generic_status";
+    public static final String TABLE_ORDER_LINE_PROVISIONING_STATUS = "order_line_provisioning_status";
      
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);

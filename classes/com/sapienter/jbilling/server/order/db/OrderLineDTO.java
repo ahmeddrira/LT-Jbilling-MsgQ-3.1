@@ -23,8 +23,11 @@ package com.sapienter.jbilling.server.order.db;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,6 +35,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -40,16 +44,15 @@ import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import java.util.List;
-import java.util.Vector;
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
+import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
 
 @Entity
 @TableGenerator(
@@ -81,11 +84,12 @@ public class OrderLineDTO implements Serializable, Comparable {
     private Boolean editable = null;
     private List<MediationRecordLineDTO> events = new Vector<MediationRecordLineDTO>(0);
      //provisioning fields
-     private Integer provisioningStatus;
+     private ProvisioningStatusDTO provisioningStatus;
      private String provisioningRequestId;
      // other fields, non-persistent
      private String priceStr = null;
      private Boolean totalReadOnly = null;
+     private String provisioningStatusStr;
 
      
     public OrderLineDTO() {
@@ -113,7 +117,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.deleted = deleted;
     }
     public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, float amount, 
-    		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description,Integer provisioningStatus, String provisioningRequestId) {
+    		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description, ProvisioningStatusDTO provisioningStatus, String provisioningRequestId) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
        this.item = item;
@@ -301,6 +305,15 @@ public class OrderLineDTO implements Serializable, Comparable {
 	}
 
     @Transient
+    public String getProvisioningStatusStr() {
+        return provisioningStatusStr;
+    }
+
+    public void setProvisioningStatusStr(String provisioningStatusStr) {
+        this.provisioningStatusStr = provisioningStatusStr;
+    }
+
+    @Transient
 	public Integer getTypeId() {
 		return getOrderLineType() == null ? null : getOrderLineType().getId();
 	}
@@ -319,16 +332,28 @@ public class OrderLineDTO implements Serializable, Comparable {
 	/**
 	 * @return the provisioningStatus
 	 */
-    @Column(name="provisioning_status")
-	public Integer getProvisioningStatus() {
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="provisioning_status")
+	public ProvisioningStatusDTO getProvisioningStatus() {
 		return provisioningStatus;
 	}
 
 	/**
 	 * @param provisioningStatus the provisioningStatus to set
 	 */
-	public void setProvisioningStatus(Integer provisioningStatus) {
+	public void setProvisioningStatus(ProvisioningStatusDTO provisioningStatus) {
 		this.provisioningStatus = provisioningStatus;
+	}
+
+    @Transient
+	public Integer getProvisioningStatusId() {
+		return getProvisioningStatus() == null ? null : 
+                getProvisioningStatus().getId();
+	}
+
+	public void setProvisioningStatusId(Integer provisioningStatusId) {
+		ProvisioningStatusDAS das = new ProvisioningStatusDAS();
+		setProvisioningStatus(das.find(provisioningStatusId));
 	}
 
 	/**
@@ -345,6 +370,13 @@ public class OrderLineDTO implements Serializable, Comparable {
 	public void setProvisioningRequestId(String provisioningRequestId) {
 		this.provisioningRequestId = provisioningRequestId;
 	}
+
+    public void addExtraFields(Integer languageId) {
+        if (getProvisioningStatus() != null) {
+            provisioningStatusStr = getProvisioningStatus()
+                    .getDescription(languageId);
+        }
+    }
 
 	public void touch() {
 		getCreateDatetime();

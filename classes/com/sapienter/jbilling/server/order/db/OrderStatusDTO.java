@@ -19,44 +19,36 @@
 */
 package com.sapienter.jbilling.server.order.db;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import com.sapienter.jbilling.server.util.db.AbstractGenericStatus;
 
 
 @Entity
-@Table(name="order_status")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class OrderStatusDTO  extends AbstractDescription  implements java.io.Serializable{
+@DiscriminatorValue("order_status")
+public class OrderStatusDTO  extends AbstractGenericStatus implements java.io.Serializable {
 
 
-     private int id;
      private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
 
     public OrderStatusDTO() {
     }
 
 	
-    public OrderStatusDTO(int id) {
-        this.id = id;
+    public OrderStatusDTO(int statusValue) {
+        this.statusValue = statusValue;
     }
-    public OrderStatusDTO(int id, Set<OrderDTO> orderDTOs) {
-       this.id = id;
+    public OrderStatusDTO(int statusValue, Set<OrderDTO> orderDTOs) {
+       this.statusValue = statusValue;
        this.orderDTOs = orderDTOs;
     }
 
@@ -64,15 +56,7 @@ public class OrderStatusDTO  extends AbstractDescription  implements java.io.Ser
     protected String getTable() {
     	return Constants.TABLE_ORDER_STATUS;
     }
-    @Id 
-    @Column(name="id", unique=true, nullable=false)
-    public int getId() {
-        return this.id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
-    }
+
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderStatus")
     public Set<OrderDTO> getPurchaseOrders() {
         return this.orderDTOs;

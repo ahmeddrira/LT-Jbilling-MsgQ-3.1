@@ -1058,6 +1058,12 @@
     <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="1" Content="Plug-ins"/>
     <InternationalDescription TableId="63" ForeignId="94" PsudoColumn="display" LanguageId="1" Content="Logo"/>
     <InternationalDescription TableId="63" ForeignId="97" PsudoColumn="display" LanguageId="1" Content="Blacklist"/>
+    <InternationalDescription TableId="88" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Active"/>
+    <InternationalDescription TableId="88" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Inactive"/>
+    <InternationalDescription TableId="88" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Pending Active"/>
+    <InternationalDescription TableId="88" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Pending Inactive"/>
+    <InternationalDescription TableId="88" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Failed"/>
+    <InternationalDescription TableId="88" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Unavailable"/>
     <InternationalDescription TableId="50" ForeignId="20" PsudoColumn="description" LanguageId="2" Content="Eliminação manual de facturas"/>
     <InternationalDescription TableId="46" ForeignId="9" PsudoColumn="description" LanguageId="2" Content="Manutenção de facturas"/>
     <InternationalDescription TableId="46" ForeignId="11" PsudoColumn="description" LanguageId="2" Content="Manutenção de tarefas de plug-ins"/>
@@ -1876,6 +1882,8 @@
     <JbillingTable Id="83" Name="mediation_process" NextId="1"/>
     <JbillingTable Id="85" Name="blacklist" NextId="1"/>
     <JbillingTable Id="86" Name="mediation_record_line" NextId="1"/>
+    <JbillingTable Id="87" Name="generic_status" NextId="26"/>
+    <JbillingTable Id="88" Name="order_line_provisioning_status" NextId="1"/>
     <JbillingTableColumn TableId="0" Id="0" Name="id"/>
     <JbillingTableColumn TableId="0" Id="1" Name="titleKey"/>
     <JbillingTableColumn TableId="0" Id="2" Name="instructionsKey"/>
@@ -2400,10 +2408,6 @@
     <OrderLineType Id="2" Editable="0"/>
     <OrderLineType Id="3" Editable="0"/>
     <OrderPeriod Id="1" Optlock="1"/>
-    <OrderStatus Id="1"/>
-    <OrderStatus Id="2"/>
-    <OrderStatus Id="3"/>
-    <OrderStatus Id="4"/>
     <PaymentMethod Id="1"/>
     <PaymentMethod Id="2"/>
     <PaymentMethod Id="3"/>
@@ -4237,19 +4241,33 @@
     <Role Id="3"/>
     <Role Id="4"/>
     <Role Id="5"/>
-    <UserStatus Id="1" CanLogin="1"/>
-    <UserStatus Id="2" CanLogin="1"/>
-    <UserStatus Id="3" CanLogin="1"/>
-    <UserStatus Id="4" CanLogin="1"/>
-    <UserStatus Id="5" CanLogin="0"/>
-    <UserStatus Id="6" CanLogin="0"/>
-    <UserStatus Id="7" CanLogin="0"/>
-    <UserStatus Id="8" CanLogin="0"/>
-    <SubscriberStatus Id="1"/>
-    <SubscriberStatus Id="2"/>
-    <SubscriberStatus Id="3"/>
-    <SubscriberStatus Id="4"/>
-    <SubscriberStatus Id="5"/>
-    <SubscriberStatus Id="6"/>
-    <SubscriberStatus Id="7"/>
+    <GenericStatusType Id="order_line_provisioning_status"/>
+    <GenericStatusType Id="order_status"/>
+    <GenericStatusType Id="subscriber_status"/>
+    <GenericStatusType Id="user_status"/>
+    <GenericStatus Id="1" Dtype="user_status" StatusValue="1" CanLogin="1"/>
+    <GenericStatus Id="2" Dtype="user_status" StatusValue="2" CanLogin="1"/>
+    <GenericStatus Id="3" Dtype="user_status" StatusValue="3" CanLogin="1"/>
+    <GenericStatus Id="4" Dtype="user_status" StatusValue="4" CanLogin="1"/>
+    <GenericStatus Id="5" Dtype="user_status" StatusValue="5" CanLogin="0"/>
+    <GenericStatus Id="6" Dtype="user_status" StatusValue="6" CanLogin="0"/>
+    <GenericStatus Id="7" Dtype="user_status" StatusValue="7" CanLogin="0"/>
+    <GenericStatus Id="8" Dtype="user_status" StatusValue="8" CanLogin="0"/>
+    <GenericStatus Id="9" Dtype="subscriber_status" StatusValue="1"/>
+    <GenericStatus Id="10" Dtype="subscriber_status" StatusValue="2"/>
+    <GenericStatus Id="11" Dtype="subscriber_status" StatusValue="3"/>
+    <GenericStatus Id="12" Dtype="subscriber_status" StatusValue="4"/>
+    <GenericStatus Id="13" Dtype="subscriber_status" StatusValue="5"/>
+    <GenericStatus Id="14" Dtype="subscriber_status" StatusValue="6"/>
+    <GenericStatus Id="15" Dtype="subscriber_status" StatusValue="7"/>
+    <GenericStatus Id="16" Dtype="order_status" StatusValue="1"/>
+    <GenericStatus Id="17" Dtype="order_status" StatusValue="2"/>
+    <GenericStatus Id="18" Dtype="order_status" StatusValue="3"/>
+    <GenericStatus Id="19" Dtype="order_status" StatusValue="4"/>
+    <GenericStatus Id="20" Dtype="order_line_provisioning_status" StatusValue="1"/>
+    <GenericStatus Id="21" Dtype="order_line_provisioning_status" StatusValue="2"/>
+    <GenericStatus Id="22" Dtype="order_line_provisioning_status" StatusValue="3"/>
+    <GenericStatus Id="23" Dtype="order_line_provisioning_status" StatusValue="4"/>
+    <GenericStatus Id="24" Dtype="order_line_provisioning_status" StatusValue="5"/>
+    <GenericStatus Id="25" Dtype="order_line_provisioning_status" StatusValue="6"/>
 </dataset>

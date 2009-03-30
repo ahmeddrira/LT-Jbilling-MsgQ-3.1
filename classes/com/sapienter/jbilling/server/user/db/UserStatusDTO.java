@@ -25,27 +25,21 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import com.sapienter.jbilling.server.util.db.AbstractGenericStatus;
 import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 
 @Entity
-@Table(name="user_status")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class UserStatusDTO extends AbstractDescription implements java.io.Serializable {
+@DiscriminatorValue("user_status")
+public class UserStatusDTO extends AbstractGenericStatus implements java.io.Serializable {
 
 
-     private int id;
      private int canLogin;
      private Set<AgeingEntityStep> ageingEntitySteps = new HashSet<AgeingEntityStep>(0);
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
@@ -54,13 +48,13 @@ public class UserStatusDTO extends AbstractDescription implements java.io.Serial
     }
 
 	
-    public UserStatusDTO(int id, int canLogin) {
-        this.id = id;
+    public UserStatusDTO(int statusValue, int canLogin) {
+        this.statusValue = statusValue;
         this.canLogin = canLogin;
     }
     
-    public UserStatusDTO(int id, int canLogin, Set<AgeingEntityStep> ageingEntitySteps, Set<UserDTO> baseUsers) {
-       this.id = id;
+    public UserStatusDTO(int statusValue, int canLogin, Set<AgeingEntityStep> ageingEntitySteps, Set<UserDTO> baseUsers) {
+       this.statusValue = statusValue;
        this.canLogin = canLogin;
        this.ageingEntitySteps = ageingEntitySteps;
        this.baseUsers = baseUsers;
@@ -69,16 +63,6 @@ public class UserStatusDTO extends AbstractDescription implements java.io.Serial
     @Transient
     protected String getTable() {
         return Constants.TABLE_USER_STATUS;
-    }
-   
-    @Id 
-    @Column(name="id", unique=true, nullable=false)
-    public int getId() {
-        return this.id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
     }
     
     @Column(name="can_login", nullable=false)

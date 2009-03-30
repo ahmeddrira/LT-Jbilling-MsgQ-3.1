@@ -72,7 +72,8 @@ public interface OrderSQL {
     	"where active_until >= ? " +
     	"  and active_until <= ? " +
     	"  and notify = 1 " +
-    	"  and purchase_order.status_id = 1 " +
+    	"  and purchase_order.status_id = (select id from generic_status " +
+        "    where dtype = 'order_status' AND status_value = 1 )" +
     	"  and user_id = base_user.id " +
     	"  and entity_id = ? " +
         "  and (notification_step is null or notification_step < ?)";

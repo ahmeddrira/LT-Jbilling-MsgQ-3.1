@@ -24,38 +24,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.AbstractDescription;
-
+import com.sapienter.jbilling.server.util.db.AbstractGenericStatus;
 
 @Entity
-@Table(name="subscriber_status")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class SubscriberStatusDTO extends AbstractDescription implements java.io.Serializable {
+@DiscriminatorValue("subscriber_status")
+public class SubscriberStatusDTO extends AbstractGenericStatus implements java.io.Serializable {
 
-     private int id;
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
 
     public SubscriberStatusDTO() {
     }
 
 	
-    public SubscriberStatusDTO(int id) {
-        this.id = id;
+    public SubscriberStatusDTO(int statusValue) {
+        this.statusValue = statusValue;
     }
-    public SubscriberStatusDTO(int id, Set<UserDTO> baseUsers) {
-       this.id = id;
+    public SubscriberStatusDTO(int statusValue, Set<UserDTO> baseUsers) {
+       this.statusValue = statusValue;
        this.baseUsers = baseUsers;
     }
 
@@ -64,15 +56,6 @@ public class SubscriberStatusDTO extends AbstractDescription implements java.io.
         return Constants.TABLE_USER_SUBSCRIBER_STATUS;
     }
    
-    @Id 
-    @Column(name="id", unique=true, nullable=false)
-    public int getId() {
-        return this.id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
-    }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="subscriberStatus")
     public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;

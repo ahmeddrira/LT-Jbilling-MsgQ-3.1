@@ -77,6 +77,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
+import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
 import com.sapienter.jbilling.server.provisioning.event.SubscriptionActiveEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -101,6 +102,7 @@ public class OrderBL extends ResultList
     private OrderPeriodDAS orderPeriodDAS = null;
     private OrderDAS orderDas = null;
     private OrderBillingTypeDAS orderBillingTypeDas = null;
+    private ProvisioningStatusDAS provisioningStatusDas = null;
     
     private static final Logger LOG = Logger.getLogger(OrderBL.class);
     private EventLogger eLogger = null;
@@ -131,6 +133,7 @@ public class OrderBL extends ResultList
         orderPeriodDAS = new OrderPeriodDAS();
         orderDas = new OrderDAS();
         orderBillingTypeDas = new OrderBillingTypeDAS();
+        provisioningStatusDas = new ProvisioningStatusDAS();
     }
 
     public OrderDTO getEntity() {
@@ -312,6 +315,17 @@ public class OrderBL extends ResultList
             // create the record
             orderDto.setBaseUserByUserId(user.find(orderDto.getBaseUserByUserId().getId()));
             orderDto.setOrderPeriod(orderPeriodDAS.find(orderDto.getOrderPeriod().getId()));
+            // set the provisioning status
+            for (OrderLineDTO line : orderDto.getLines()) {
+                // set default provisioning status id for order lines
+                if (line.getProvisioningStatus() == null) {
+                    line.setProvisioningStatus(provisioningStatusDas.find(
+                            Constants.PROVISIONING_STATUS_INACTIVE));
+                } else {
+                    line.setProvisioningStatus(provisioningStatusDas.find(
+                            line.getProvisioningStatus().getId()));
+                }
+            }
             order = orderDas.save(orderDto);
             // link the lines to the new order
             for (OrderLineDTO line: order.getLines()) {
@@ -471,6 +485,19 @@ public class OrderBL extends ResultList
             audit(executorId, order.getOrderPeriod().getId());
             order.setOrderPeriod(orderPeriodDAS.find(dto.getOrderPeriod().getId()));
         }
+
+        // set the provisioning status
+        for (OrderLineDTO line : dto.getLines()) {
+            // set default provisioning status id for order lines
+            if (line.getProvisioningStatus() == null) {
+                line.setProvisioningStatus(provisioningStatusDas.find(
+                        Constants.PROVISIONING_STATUS_INACTIVE));
+            } else {
+                line.setProvisioningStatus(provisioningStatusDas.find(
+                        line.getProvisioningStatus().getId()));
+            }
+        }
+
         // this should not be necessary any more, since the order is a pojo...
         order.setOrderBillingType(dto.getOrderBillingType());
         order.setNotify(dto.getNotify());
@@ -730,7 +757,7 @@ public class OrderBL extends ResultList
         NewStatusEvent event = new NewStatusEvent(
                 order.getId(), order.getStatusId(), statusId);
         EventManager.process(event);
-        order.setStatusId(statusId);
+    	order.setOrderStatus(new OrderStatusDAS().find(statusId));
 
     }
     
@@ -1116,7 +1143,7 @@ public class OrderBL extends ResultList
         OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
         		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), line.getCreateDatetime(),
         		line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(), 
-        		line.getPurchaseOrder().getId(), null, line.getVersionNum(),line.getProvisioningStatus(),line.getProvisioningRequestId());
+        		line.getPurchaseOrder().getId(), null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
         return retValue;
     }
     
@@ -1148,7 +1175,8 @@ public class OrderBL extends ResultList
     	dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
     	dto.setQuantity(ws.getQuantity());
     	dto.setVersionNum(ws.getVersionNum());
-    	dto.setProvisioningStatus(ws.getProvisioningStatus());
+    	dto.setProvisioningStatus(provisioningStatusDas.find(
+                ws.getProvisioningStatusId()));
     	dto.setProvisioningRequestId(ws.getProvisioningRequestId());
     	return dto;
     }
@@ -1169,7 +1197,8 @@ public class OrderBL extends ResultList
             line.setItemPrice(dto.getItemPrice());
             line.setPrice(dto.getPrice());
             line.setQuantity(dto.getQuantity());
-            line.setProvisioningStatus(dto.getProvisioningStatus());
+            line.setProvisioningStatus(provisioningStatusDas.find(
+                    dto.getProvisioningStatusId()));
             line.setProvisioningRequestId(dto.getProvisioningRequestId());
         }
     }
@@ -1380,9 +1409,9 @@ public class OrderBL extends ResultList
     
     public void setProvisioningStatus(Integer orderLineId,Integer provisioningStatus){
     	OrderLineDTO line = getOrderLine(orderLineId);
-    	Integer oldStatus=line.getProvisioningStatus();
-    	line.setProvisioningStatus(provisioningStatus);
-    	LOG.debug("order line "+orderLineId+": updated provisioning status :"+line.getProvisioningStatus());
+    	Integer oldStatus=line.getProvisioningStatusId();
+    	line.setProvisioningStatus(provisioningStatusDas.find(provisioningStatus));
+    	LOG.debug("order line "+orderLineId+": updated provisioning status :"+line.getProvisioningStatusId());
     	
     	// add a log for provisioning module
 		eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 

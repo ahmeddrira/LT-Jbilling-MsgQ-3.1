@@ -103,13 +103,13 @@ public class ProvisioningProcessSessionBean implements SessionBean {
 			LOG.debug("Provisioning status set to 'UNAVAILABLE' for order line : "
 					+ order_line.getId());
 		} else if (result.equals("success")) {
-			if (order_line.getProvisioningStatus().equals(
+			if (order_line.getProvisioningStatusId().equals(
 					Constants.PROVISIONING_STATUS_PENDING_ACTIVE)) {
 				order_bl.setProvisioningStatus(in_order_line_id,
 						Constants.PROVISIONING_STATUS_ACTIVE);
                 LOG.debug("Provisioning status set to 'ACTIVE' for order line : "
                         + order_line.getId());
-			} else if (order_line.getProvisioningStatus().equals(
+			} else if (order_line.getProvisioningStatusId().equals(
 					Constants.PROVISIONING_STATUS_PENDING_INACTIVE)) {
 				order_bl.setProvisioningStatus(in_order_line_id,
 						Constants.PROVISIONING_STATUS_INACTIVE);
@@ -118,7 +118,7 @@ public class ProvisioningProcessSessionBean implements SessionBean {
 			} else {
                 throw new SessionInternalError("Invalid or unexpected " + 
                         "provisioning status: " + 
-                        order_line.getProvisioningStatus());
+                        order_line.getProvisioningStatusId());
             }
 		} else {
 			throw new SessionInternalError("Can not process message with " +

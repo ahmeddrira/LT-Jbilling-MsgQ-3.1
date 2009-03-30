@@ -204,6 +204,15 @@ public class GetSelectableOptions {
                 "   and b.language_id = ?  " +
                 "   and b.psudo_column = 'description' " + 
                 "order by 1";
+            } else if (type.equals("provisioningStatus")) {
+                sql =
+                "select b.foreign_id, b.content " +
+                "  from international_description b, jbilling_table c " +  
+                " where b.table_id = c.id  " +
+                "   and c.name = 'order_line_provisioning_status' " + 
+                "   and b.language_id = ?  " +
+                "   and b.psudo_column = 'description' " + 
+                "order by 1";
             } else {
                 throw new SessionInternalError("type " + type + " is not supported");
             }

@@ -105,8 +105,8 @@ public class ProvisioningProcessBL {
         for (Iterator<OrderLineDTO> it = orderLines.iterator(); it.hasNext(); ) {
             OrderLineDTO line = (OrderLineDTO) it.next();
 
-            if ((line != null) && (line.getProvisioningStatus() != null)
-                    && line.getProvisioningStatus().equals(Constants.PROVISIONING_STATUS_INACTIVE)) {
+            if ((line != null) && (line.getProvisioningStatusId() != null)
+                    && line.getProvisioningStatusId().equals(Constants.PROVISIONING_STATUS_INACTIVE)) {
                 LOG.debug(line + ": order line status is PROVISIONING_STATUS_INACTIVE-> Activate it!");
                 doActivate = true;
 
@@ -148,8 +148,8 @@ public class ProvisioningProcessBL {
                 continue;
             }
 
-            if ((line != null) && (line.getProvisioningStatus() != null)
-                    && line.getProvisioningStatus().equals(Constants.PROVISIONING_STATUS_ACTIVE)) {
+            if ((line != null) && (line.getProvisioningStatusId() != null)
+                    && line.getProvisioningStatusId().equals(Constants.PROVISIONING_STATUS_ACTIVE)) {
                 LOG.debug(line + ": order line status is PROVISIONING_STATUS_ACTIVE-> DeActivate it!");
                 doInActivate = true;
 

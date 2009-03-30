@@ -607,7 +607,10 @@ public class OrderDTO  implements java.io.Serializable {
     	
     	currencySymbol = getCurrency().getSymbol();
     	currencyName = getCurrency().getDescription(languageId);
-    	
+
+    	for (OrderLineDTO line : getLines()) {
+            line.addExtraFields(languageId);
+        } 
     }
     
     @Transient
@@ -684,6 +687,7 @@ public class OrderDTO  implements java.io.Serializable {
 		}
 		getOrderBillingType().getId();
 		getOrderPeriod().getId();
+        getOrderStatus().getId();
 	}
 	
 	public String toString() {

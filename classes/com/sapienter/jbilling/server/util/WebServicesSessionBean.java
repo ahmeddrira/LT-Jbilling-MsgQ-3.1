@@ -1794,7 +1794,7 @@ public class WebServicesSessionBean implements SessionBean {
                 		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), 
                 		line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
                 		line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
-                		null, line.getVersionNum(),line.getProvisioningStatus(),line.getProvisioningRequestId());
+                		null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
               
                 lines.add(lineWS);
             }

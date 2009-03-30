@@ -12,7 +12,7 @@ global com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRules
 
 rule 'provisioning_activate'
 when
-    $orderLine : OrderLineDTO(itemId == 2, provisioningStatus ==
+    $orderLine : OrderLineDTO(itemId == 2, provisioningStatusId ==
         Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then
@@ -23,7 +23,7 @@ end
 
 rule 'provisioning_deactivate'
 when
-    $orderLine : OrderLineDTO(itemId == 2, provisioningStatus ==
+    $orderLine : OrderLineDTO(itemId == 2, provisioningStatusId ==
         Constants.PROVISIONING_STATUS_ACTIVE)
     CommandManager(eventType == "deactivated")
 then
@@ -35,7 +35,7 @@ end
 rule 'external_provisioning_test'
 when
     $orderLine : OrderLineDTO(itemId == 251, quantity == 1, 
-        provisioningStatus == Constants.PROVISIONING_STATUS_INACTIVE)
+        provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then
     command.addCommand("result_test", $orderLine.getId());
@@ -49,7 +49,7 @@ end
 rule 'cai_test'
 when
     $orderLine : OrderLineDTO(itemId == 251, quantity == 2, 
-        provisioningStatus == Constants.PROVISIONING_STATUS_INACTIVE)
+        provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then
     command.addCommand("cai_test", $orderLine.getId());

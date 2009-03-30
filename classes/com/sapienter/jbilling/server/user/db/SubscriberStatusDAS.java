@@ -19,8 +19,9 @@
 */
 package com.sapienter.jbilling.server.user.db;
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import com.sapienter.jbilling.server.util.db.AbstractGenericStatusDAS;
 
-public class SubscriberStatusDAS extends AbstractDAS<SubscriberStatusDTO> {
+public class SubscriberStatusDAS 
+        extends AbstractGenericStatusDAS<SubscriberStatusDTO> {
 
 }

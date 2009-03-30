@@ -161,24 +161,6 @@
      />                       
 
      <!-- Level 3: objects that do not change at all: purely static data -->
-     <cache name="com.sapienter.jbilling.server.user.db.SubscriberStatusDTO"
-            maxElementsInMemory="10"
-            eternal="true"
-            timeToIdleSeconds="1800"
-            timeToLiveSeconds="100000"
-            overflowToDisk="false"
-     />                       
-
-     <!-- Level 3: objects that do not change at all: purely static data -->
-     <cache name="com.sapienter.jbilling.server.user.db.UserStatusDTO"
-            maxElementsInMemory="10"
-            eternal="true"
-            timeToIdleSeconds="1800"
-            timeToLiveSeconds="100000"
-            overflowToDisk="false"
-     />                       
-
-     <!-- Level 3: objects that do not change at all: purely static data -->
      <cache name="com.sapienter.jbilling.server.util.db.generated.JbillingTable"
             maxElementsInMemory="100"
             eternal="true"
@@ -241,14 +223,6 @@
             overflowToDisk="false"
      />                       
 
-     <!-- Level 3: objects that do not change at all: purely static data -->
-     <cache name="com.sapienter.jbilling.server.order.db.OrderStatusDTO"
-            maxElementsInMemory="100"
-            eternal="true"
-            timeToIdleSeconds="3200"
-            timeToLiveSeconds="100000"
-            overflowToDisk="false"
-     />                       
      <!-- Level 3: objects that do not change at all: purely static data -->
      <cache name="com.sapienter.jbilling.server.order.db.OrderLineTypeDTO"
             maxElementsInMemory="100"
@@ -399,6 +373,14 @@
             eternal="false"
             timeToIdleSeconds="300"
             timeToLiveSeconds="600"
+            overflowToDisk="false"
+     />
+     <!-- Level 3: objects that do not change at all: purely static data -->
+     <cache name="com.sapienter.jbilling.server.util.db.AbstractGenericStatus"
+            maxElementsInMemory="100"
+            eternal="true"
+            timeToIdleSeconds="3200"
+            timeToLiveSeconds="100000"
             overflowToDisk="false"
      />
      

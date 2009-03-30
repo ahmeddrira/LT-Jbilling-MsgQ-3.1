@@ -46,7 +46,7 @@ public class TestExternalProvisioningTask extends PluggableTask
             throws TaskException {
 
         // wait for command rules task transaction to complete
-        pause(2000);
+        pause(1000);
 
         LOG.debug("id: " + id);
         LOG.debug("command: " + command);

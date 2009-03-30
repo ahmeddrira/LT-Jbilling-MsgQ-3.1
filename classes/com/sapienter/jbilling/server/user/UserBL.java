@@ -967,6 +967,7 @@ public class UserBL extends ResultList
                 EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.SUBSCRIPTION_STATUS_CHANGE,
                 user.getSubscriberStatus().getId(), id.toString(), null);
+
         try {
             user.setSubscriberStatus(new SubscriberStatusDAS().find(id));
         } catch (Exception e) {

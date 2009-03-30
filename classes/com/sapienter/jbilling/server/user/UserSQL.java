@@ -35,7 +35,8 @@ public interface UserSQL {
     static final String findActiveWithOpenInvoices =
         "SELECT a.id "+ 
         "FROM base_user a, customer c "+
-        "WHERE a.status_id = 1 "+
+        "WHERE a.status_id = (select id from generic_status " +
+        "    WHERE dtype = 'user_status' AND status_value = 1) "+
         "AND c.exclude_aging = 0 "+
         "AND a.deleted = 0 " +
         "AND a.id = c.user_id " +
@@ -81,7 +82,8 @@ public interface UserSQL {
     static final String findInStatus = 
         "SELECT id " +
         "  FROM base_user a " + 
-        " WHERE a.status_id = ? " +
+        " WHERE a.status_id = (select id from generic_status " +
+        "    WHERE dtype = 'user_status' AND status_value = ?) " +
         "   AND a.entity_id = ?" +
         "   AND a.deleted = 0" +
         " ORDER BY 1";
@@ -89,7 +91,8 @@ public interface UserSQL {
     static final String findNotInStatus = 
         "SELECT id " +
         "  FROM base_user a " + 
-        " WHERE a.status_id <> ? " +
+        " WHERE a.status_id <> (select id from generic_status " +
+        "    WHERE dtype = 'user_status' AND status_value = ?) " +
         "   AND a.entity_id = ?" +
         "   AND a.deleted = 0" +
         " ORDER BY 1";

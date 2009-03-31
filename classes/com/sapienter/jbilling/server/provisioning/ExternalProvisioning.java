@@ -208,8 +208,8 @@ public class ExternalProvisioning {
 
             // only continue with other requests if correct result
             String continueOnType = request.getContinueOnType();
-            if (continueOnType != null && !result.get("result").equals(
-                        continueOnType)) {
+            if (continueOnType != null && (result == null || 
+                    !result.get("result").equals(continueOnType))) {
                 LOG.debug("Skipping other results.");
                 break;
             }

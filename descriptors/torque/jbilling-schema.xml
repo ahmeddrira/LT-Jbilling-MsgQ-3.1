@@ -1414,11 +1414,11 @@
         </index>
     </table>
     <table name="generic_status_type">
-        <column name="id" primaryKey="true" size="20" type="VARCHAR" required="true"/>
+        <column name="id" primaryKey="true" size="40" type="VARCHAR" required="true"/>
     </table>
     <table name="generic_status">
         <column name="id" primaryKey="true" type="INTEGER" required="true"/>
-        <column name="dtype" size="20" type="VARCHAR" required="true"/>
+        <column name="dtype" size="40" type="VARCHAR" required="true"/>
         <column name="status_value" type="INTEGER" required="true"/>
         <column name="can_login" type="SMALLINT"/>
         <foreign-key foreignTable="generic_status_type">

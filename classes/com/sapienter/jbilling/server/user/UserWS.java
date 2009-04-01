@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 
 /**
  * @author Emil
@@ -61,6 +62,7 @@ public class UserWS implements Serializable {
     private Integer mainOrderId = null;
     private String[] blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
+    private Integer[] childIds = null;
 
     public Integer getPartnerId() {
         return partnerId;
@@ -99,6 +101,12 @@ public class UserWS implements Serializable {
                 dto.getCustomer().getIsParent().equals(new Integer(1));
             invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : 
                 dto.getCustomer().getInvoiceChild().equals(new Integer(1));
+            childIds = new Integer[dto.getCustomer().getChildren().size()];
+            int index = 0;
+            for (CustomerDTO customer : dto.getCustomer().getChildren()) {
+                childIds[index] = customer.getBaseUser().getId();
+                index++;
+            }
         }
         blacklistMatches = dto.getBlacklistMatches() != null ? 
                 dto.getBlacklistMatches().toArray(new String[0]) : null;
@@ -316,5 +324,13 @@ public class UserWS implements Serializable {
 
     public void setUserIdBlacklisted(Boolean userIdBlacklisted) {
         this.userIdBlacklisted = userIdBlacklisted;
+    }
+
+    public Integer[] getChildIds() {
+        return childIds;
+    }
+
+    public void setChildIds(Integer[] childIds) {
+        this.childIds = childIds;
     }
 }

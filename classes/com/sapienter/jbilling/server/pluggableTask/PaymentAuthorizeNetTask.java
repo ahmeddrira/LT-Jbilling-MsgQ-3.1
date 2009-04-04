@@ -31,11 +31,12 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
@@ -102,7 +103,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             
             
-            if (paymentInfo.getIsRefund().intValue() == 1 &&
+            if (paymentInfo.getIsRefund() == 1 &&
                     (paymentInfo.getPayment() == null ||
                         paymentInfo.getPayment().getAuthorization() ==null)) {
                 log.error("Can't process refund without a payment with an" +
@@ -132,7 +133,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             // find the currency code of this payment
             CurrencyBL currencyBL = new CurrencyBL(
-                    paymentInfo.getCurrencyId());
+                    paymentInfo.getCurrency().getId());
             String currencyCode = currencyBL.getEntity().getCode();
             
             log.debug("making call with " + login + " " + transaction + 
@@ -140,7 +141,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             NameValuePair[] data;
             if (method == 1) {
-	            if (paymentInfo.getIsRefund().intValue() == 0) {
+	            if (paymentInfo.getIsRefund() == 0) {
 	                data = getChargeData(login, transaction, isTest, 
 	                        paymentInfo.getAmount(), 
 	                        paymentInfo.getCreditCard().getNumber(), expiry,
@@ -153,7 +154,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
 	                            getTransactionId());
 	            }
             } else {
-	            if (paymentInfo.getIsRefund().intValue() == 0) {
+	            if (paymentInfo.getIsRefund() == 0) {
 	                data = getACHChargeData(login, transaction, isTest, 
 	                        paymentInfo.getAmount(), 
 	                        paymentInfo.getAch().getAbaRouting(),
@@ -188,13 +189,13 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             // the result of this request goes in the dto
             if (Integer.valueOf(response.getPaymentAuthorizationDTO().
                     getCode1()).intValue() == 1) {
-                paymentInfo.setResultId(Constants.RESULT_OK);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
                 log.debug("result is ok");
             } else {
                 // there are actually two other codes, 2 is decalined, but
                 // 3 is just 'error' may be for a 3 it should just return true
                 // to try another processor. Now we only do that for exceptions
-                paymentInfo.setResultId(Constants.RESULT_FAIL);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
                 log.debug("result is fail");
             }
             
@@ -206,11 +207,11 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
         } catch (HttpException e) {
             log.warn("Http exception when calling Authorize.net", e);
-            paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);            
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));            
             retValue = true;
         } catch (IOException e) {
             log.warn("IO exception when calling Authorize.net", e);
-            paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);            
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));            
             retValue = true;
         } catch (Exception e) {
             log.error("Exception", e);
@@ -221,7 +222,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         if (isTest) {
             log.debug("Running Authorize.net task in test mode!");
             Random rand = new Random();
-            paymentInfo.setResultId(new Integer(rand.nextInt(3) + 1));
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(new Integer(rand.nextInt(3) + 1)));
             retValue = false;
         }
         log.debug("returning "  + retValue);
@@ -449,7 +450,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         }
         
         try {
-            CurrencyBL currencyBL = new CurrencyBL(payment.getCurrencyId());
+            CurrencyBL currencyBL = new CurrencyBL(payment.getCurrency().getId());
             String currencyCode = currencyBL.getEntity().getCode();
 
             NameValuePair data[] = getChargeData(login, transaction, false, 
@@ -461,20 +462,12 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             // save this authorization into the DB
             PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-            PaymentAuthorizationDTOEx  authDto = new PaymentAuthorizationDTOEx(
+            PaymentAuthorizationDTO  authDto = new PaymentAuthorizationDTO(
                     response.getPaymentAuthorizationDTO());
             authDto.setProcessor("Authorize.net");
             bl.create(authDto, payment.getId());
             // since this is just an authorization, without a related payment
             // we leave it like this, no links to the payment table
-            
-            // prepare the return info
-            if (Integer.valueOf(response.getPaymentAuthorizationDTO().
-                    getCode1()).intValue() == 1) {
-                authDto.setResult(new Boolean(true));
-            } else {
-                authDto.setResult(new Boolean(false));
-            }
             
             payment.setAuthorization(authDto);
             return false;

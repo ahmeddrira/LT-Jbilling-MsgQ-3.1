@@ -38,8 +38,9 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import org.hibernate.annotations.OrderBy;
+
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 @Entity
 @TableGenerator(
@@ -48,7 +49,7 @@ import org.hibernate.annotations.OrderBy;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "report", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "report")
 public class ReportDTO implements Serializable {
 

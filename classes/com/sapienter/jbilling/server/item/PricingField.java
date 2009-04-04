@@ -24,8 +24,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
-import com.sapienter.jbilling.common.SessionInternalError;
-
 /**
  * @author Emil
  */

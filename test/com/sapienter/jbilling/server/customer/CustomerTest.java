@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.CustomerSession;
 import com.sapienter.jbilling.interfaces.CustomerSessionHome;
-import com.sapienter.jbilling.server.entity.ContactDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 
 public class CustomerTest extends TestCase {
 

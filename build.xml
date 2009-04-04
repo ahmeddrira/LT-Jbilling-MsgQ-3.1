@@ -390,7 +390,7 @@
                 <include name="*.jasper"/>
             </fileset>
         </copy>
-        <copy todir="${jboss.conf.dir}">
+        <copy todir="${jboss.conf.dir}" overwrite="yes">
             <fileset dir="${source.spring.descriptor.dir}">
                 <include name="*.xml"/>
             </fileset>
@@ -452,10 +452,10 @@ xmlvalidation="true">
     
     
     <target name="prepare-test" depends="compile-rules">
-        <echo>Copying the development base</echo>
-        <copy todir="${jboss.server.dir}/data/hypersonic" overwrite="true">
-            <fileset dir="${basedir}/sql" includes="localDB.*" />
-        </copy>
+        <echo>Importing test data</echo>
+        <exec executable="psql" failonerror="true">
+            <arg line=" -U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test"/>
+        </exec>
         <echo>Ready. Start-up JBoss and run 'ant test'</echo>
     </target>
     

@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -48,14 +50,12 @@ import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
-import com.sapienter.jbilling.server.invoice.db.Invoice;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
@@ -72,6 +72,7 @@ import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
@@ -86,10 +87,14 @@ import com.sapienter.jbilling.server.user.UserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * @author Emil
@@ -131,7 +136,7 @@ public class WebServicesSessionBean implements SessionBean {
             if (invoiceId == null) {
                 return null;
             }
-            Invoice invoice = new InvoiceDAS().find(invoiceId);
+            InvoiceDTO invoice = new InvoiceDAS().find(invoiceId);
             
             if (invoice.getDeleted() == 1 || invoice.getIsReview() == 1) {
                 return null;
@@ -283,8 +288,12 @@ public class WebServicesSessionBean implements SessionBean {
                 if (newUser.getCreditCard() != null) {
                     newUser.getCreditCard().setId(null);
                     CreditCardBL ccBL = new CreditCardBL();
-                    ccBL.create(newUser.getCreditCard());
-                    ccBL.getEntity().setUserId(userId);
+                    ccBL.create(new CreditCardDTO(newUser.getCreditCard()));
+                    
+                    UserDTO userD = new UserDAS().find(userId);
+                    userD.getCreditCards().add(ccBL.getEntity());
+                    ccBL.getEntity().getBaseUsers().add(userD);
+                    
                 }
                 LOG.debug("Done");
                 return userId;
@@ -399,7 +408,7 @@ public class WebServicesSessionBean implements SessionBean {
             if (user.getCreditCard() != null) {
                 UserSessionBean sess = new UserSessionBean();
                 sess.updateCreditCard(executorId, user.getUserId(),
-                        user.getCreditCard());
+                        new CreditCardDTO(user.getCreditCard()));
             }
 
         } catch (Exception e) {
@@ -556,6 +565,14 @@ public class WebServicesSessionBean implements SessionBean {
         }
     }
 
+    private Integer[] getByCCNumber(Integer entityId, String number) {
+    	List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
+        
+        Integer[] ids = new Integer[usersIds.size()];
+        return usersIds.toArray(ids);
+        
+    }
+    
     /**
      * Retrieves an array of users in the required status 
      * @ejb:interface-method view-type="both"
@@ -570,15 +587,18 @@ public class WebServicesSessionBean implements SessionBean {
             bl.setRoot(root);
             Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
 
-            CachedRowSet users = bl.getByCCNumber(entityId, number);
-            LOG.debug("getUsersByCreditCard - got collection. Now converting");
-            Integer[] ret = new Integer[users.size()];
-            int f = 0;
-            while (users.next()) {
-                ret[f] = users.getInt(1);
-                f++;
-            }
-            users.close();
+//            CachedRowSet users = bl.getByCCNumber(entityId, number);
+//            LOG.debug("getUsersByCreditCard - got collection. Now converting");
+//            
+//            Integer[] ret = new Integer[users.size()];
+//            int f = 0;
+//            while (users.next()) {
+//                ret[f] = users.getInt(1);
+//                f++;
+//            }
+//            users.close();
+            
+            Integer[] ret = getByCCNumber(entityId, number);
             LOG.debug("done");
             return ret;
         } catch (Exception e) {
@@ -650,12 +670,12 @@ public class WebServicesSessionBean implements SessionBean {
 
             //the payment, if we have a credit card
             if (user.getCreditCard() != null) {
-                InvoiceEntityLocal invoice = findInvoice(lastInvoiceId);
-                PaymentDTOEx payment = doPayInvoice(invoice, user.getCreditCard());
+                InvoiceDTO invoice = findInvoice(lastInvoiceId);
+                PaymentDTOEx payment = doPayInvoice(invoice, new CreditCardDTO(user.getCreditCard()));
                 PaymentAuthorizationDTOEx result = null;
                 if (payment != null) {
-                    result = new PaymentAuthorizationDTOEx(payment.getAuthorization());
-                    result.setResult(payment.getResultId().equals(Constants.RESULT_OK));
+                    result = new PaymentAuthorizationDTOEx(payment.getAuthorization().getOldDTO());
+                    result.setResult(new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_OK));
                 }
                 retValue.setPaymentResult(result);
                 retValue.setPaymentId(payment.getId());
@@ -735,22 +755,25 @@ public class WebServicesSessionBean implements SessionBean {
      */
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError {
         LOG.debug("Call to payInvoice " + invoiceId);
+        
         if (invoiceId == null) {
             throw new SessionInternalError("Can not pay null invoice");
         }
 
-        final InvoiceEntityLocal invoice = findInvoice(invoiceId);
-        CreditCardDTO creditCard = getCreditCard(invoice.getUser().getUserId());
+        final InvoiceDTO invoice = findInvoice(invoiceId);
+        CreditCardDTO creditCard = getCreditCard(invoice.getBaseUser().getUserId());
         if (creditCard == null) {
             return null;
         }
 
         PaymentDTOEx payment = doPayInvoice(invoice, creditCard);
+        
         PaymentAuthorizationDTOEx result = null;
         if (payment != null) {
-            result = new PaymentAuthorizationDTOEx(payment.getAuthorization());
-            result.setResult(payment.getResultId().equals(Constants.RESULT_OK));
+            result = new PaymentAuthorizationDTOEx(payment.getAuthorization().getOldDTO());
+            result.setResult(new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_OK));
         }
+        
         LOG.debug("Done");
         return result;
     }
@@ -763,7 +786,7 @@ public class WebServicesSessionBean implements SessionBean {
      * @param creditCard
      * The credit card data to be updated. 
      */
-    public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
+    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
             throws SessionInternalError {
         LOG.debug("Call to updateCreditCard " + userId);
         try {
@@ -777,8 +800,9 @@ public class WebServicesSessionBean implements SessionBean {
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
             UserSessionBean sess = new UserSessionBean();
-            sess.updateCreditCard(executorId, userId, creditCard);
+            CreditCardDTO cc = creditCard != null ? new CreditCardDTO(creditCard) : null;
 
+            sess.updateCreditCard(executorId, userId, cc);
         } catch (Exception e) {
             LOG.error("WS - updateCreditCard: ", e);
             throw new SessionInternalError("Error updating user's credit card");
@@ -881,7 +905,7 @@ public class WebServicesSessionBean implements SessionBean {
 
         LOG.debug("Call to createOrderAndInvoice ");
         Integer orderId = doCreateOrder(order, true).getId();
-        InvoiceEntityLocal invoice = doCreateInvoice(orderId);
+        InvoiceDTO invoice = doCreateInvoice(orderId);
 
         LOG.debug("Done");
         return invoice == null ? null : invoice.getId();
@@ -1156,7 +1180,7 @@ public class WebServicesSessionBean implements SessionBean {
 
             PaymentBL bl = new PaymentBL(paymentId);
             LOG.debug("Done");
-            return new PaymentWS(bl.getDTOEx(languageId));
+            return PaymentBL.getWS(bl.getDTOEx(languageId));
         } catch (Exception e) {
             LOG.error("WS - getPayment", e);
             throw new SessionInternalError("Error getting payment");
@@ -1180,7 +1204,7 @@ public class WebServicesSessionBean implements SessionBean {
             Integer paymentId = bl.getLatest(userId);
             if (paymentId != null) {
                 bl.set(paymentId);
-                retValue = new PaymentWS(bl.getDTOEx(languageId));
+                retValue = PaymentBL.getWS(bl.getDTOEx(languageId));
             }
             LOG.debug("Done");
             return retValue;
@@ -1554,10 +1578,10 @@ public class WebServicesSessionBean implements SessionBean {
         if (payment == null) {
             throw new SessionInternalError("Null parameter");
         }
-        payment.setUserId(zero2null(payment.getUserId()));
-        payment.setMethodId(zero2null(payment.getMethodId()));
-        payment.setCurrencyId(zero2null(payment.getCurrencyId()));
-        payment.setPaymentId(zero2null(payment.getPaymentId()));
+        payment.setBaseUserId(payment.getBaseUserId());
+        payment.setMethodId(payment.getMethodId());
+        payment.setCurrencyId(payment.getCurrencyId());
+        payment.setPaymentId(payment.getPaymentId());
 
         try {
             GatewayBL valid = new GatewayBL();
@@ -1616,10 +1640,10 @@ public class WebServicesSessionBean implements SessionBean {
         context = arg0;
     }
 
-    private InvoiceEntityLocal doCreateInvoice(Integer orderId) {
+    private InvoiceDTO doCreateInvoice(Integer orderId) {
         try {
             BillingProcessBL process = new BillingProcessBL();
-            InvoiceEntityLocal invoice = process.generateInvoice(orderId, null);
+            InvoiceDTO invoice = process.generateInvoice(orderId, null);
             invoiceId = invoice == null ? null : invoice.getId();
             return invoice;
         } catch (Exception e) {
@@ -1639,7 +1663,7 @@ public class WebServicesSessionBean implements SessionBean {
         }
     }
 
-    private PaymentDTOEx doPayInvoice(InvoiceEntityLocal invoice, CreditCardDTO creditCard)
+    private PaymentDTOEx doPayInvoice(InvoiceDTO invoice, CreditCardDTO creditCard)
             throws SessionInternalError {
 
         if (invoice.getBalance() == null || invoice.getBalance() <= 0) {
@@ -1653,11 +1677,11 @@ public class WebServicesSessionBean implements SessionBean {
             paymentDto.setIsRefund(0);
             paymentDto.setAmount(invoice.getBalance());
             paymentDto.setCreditCard(creditCard);
-            paymentDto.setCurrencyId(invoice.getCurrencyId());
-            paymentDto.setUserId(invoice.getUser().getUserId());
-            paymentDto.setMethodId(
+            paymentDto.setCurrency(new CurrencyDAS().find(invoice.getCurrency().getId()));
+            paymentDto.setUserId(invoice.getBaseUser().getUserId());
+            paymentDto.setPaymentMethod( new PaymentMethodDAS().find(
                     com.sapienter.jbilling.common.Util.getPaymentMethod(
-                    creditCard.getNumber()));
+                    creditCard.getNumber())));
             paymentDto.setPaymentDate(new Date());
 
             // make the call
@@ -1739,7 +1763,7 @@ public class WebServicesSessionBean implements SessionBean {
                     PreferenceBL preferenceBL = new PreferenceBL();
                     try {
                         preferenceBL.set(entityId, Constants.PREFERENCE_USE_CURRENT_ORDER);
-                    } catch (FinderException e) {
+                    } catch (EmptyResultDataAccessException e) {
                     // default preference will be used
                     }
                     if (preferenceBL.getInt() != 0) {
@@ -1804,17 +1828,14 @@ public class WebServicesSessionBean implements SessionBean {
         return retValue;
     }
 
-    private InvoiceEntityLocal findInvoice(Integer invoiceId) {
-        final InvoiceEntityLocal invoice;
+    private InvoiceDTO findInvoice(Integer invoiceId) {
+        final InvoiceDTO invoice;
         try {
             invoice = new InvoiceBL(invoiceId).getEntity();
-        } catch (NamingException e) {
+        } catch (Exception e) {
             LOG.error("WS: findInvoice error: ", e);
             throw new SessionInternalError("Configuration problems");
-        } catch (FinderException e) {
-            LOG.error("WS: findInvoice error: ", e);
-            throw new SessionInternalError("Unknown invoice : " + invoiceId);
-        }
+        } 
         return invoice;
     }
 }

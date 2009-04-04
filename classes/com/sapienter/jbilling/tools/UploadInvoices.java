@@ -35,8 +35,14 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineTypeDTO;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.math.BigDecimal;
 
 /**
  * @author Emil
@@ -113,7 +119,7 @@ public class UploadInvoices {
                 Integer userId = null;
 				
 				if (number >= 0) {
-					invoice.setNumber(fields[number].trim());
+					invoice.setPublicNumber(fields[number].trim());
 				}
 				if (date >= 0) {
 					invoice.setBillingDate(Util.parseDate(fields[date].trim()));
@@ -125,7 +131,7 @@ public class UploadInvoices {
 					invoice.setDueDate(Util.parseDate(fields[due_date].trim()));
 				}
 				if (total >= 0) {
-					invoice.setTotal(Float.valueOf(fields[total].trim()));
+					invoice.setTotal(new BigDecimal(fields[total].trim()));
 				}
 				if (payable >= 0) {
 					invoice.setToProcess(Integer.valueOf(fields[payable].trim()));
@@ -134,7 +140,8 @@ public class UploadInvoices {
                     invoice.setBalance(Float.valueOf(fields[balance].trim()));
                 }
 				if (currency_id >= 0) {
-                    invoice.setCurrencyId(Integer.valueOf(fields[currency_id].trim()));
+					CurrencyDTO currency = new CurrencyDAS().find(Integer.valueOf(fields[currency_id].trim()));
+                    invoice.setCurrency(currency);
 				}
 				if (notes >= 0) {
                     invoice.setCustomerNotes(fields[notes].trim());
@@ -173,19 +180,21 @@ public class UploadInvoices {
 
         while (record != null) {
             String fields[] = record.split("\t");
-            if (invoice.getNumber().equals(fields[0].trim())) {
-                InvoiceLineDTOEx line = new InvoiceLineDTOEx();
+            if (invoice.getPublicNumber().equals(fields[0].trim())) {
+                InvoiceLineDTO line = new InvoiceLineDTO();
 
                 line.setAmount(Float.valueOf(fields[1].trim()));
                 line.setQuantity(Double.valueOf(fields[2].trim()));
                 line.setPrice(Float.valueOf(fields[3].trim()));
                 if (fields[4].trim().length() > 0) {
-                    line.setItemId(Integer.valueOf(fields[4].trim()));
+                	ItemDTO item = new ItemDAS().find(Integer.valueOf(fields[4].trim()));
+                    line.setItem(item);
                 } else {
-                    line.setItemId(null);
+                	
+                    line.setItem(null);
                 }
                 line.setDescription(fields[5].trim());
-                line.setTypeId(Integer.valueOf(fields[6].trim()));
+                line.setInvoiceLineType(new InvoiceLineTypeDTO(Integer.valueOf(fields[6].trim())));
                 
                 invoice.getResultLines().add(line);
             }

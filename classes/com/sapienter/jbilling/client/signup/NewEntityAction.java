@@ -47,10 +47,10 @@ import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
 /**
  * @author Emil
@@ -130,7 +130,7 @@ public class NewEntityAction extends Action {
             user.setPassword((String) myForm.get("password"));
             user.setMainRoleId(Constants.TYPE_ROOT);
             CustomerDTO cust = new CustomerDTO();
-            cust.setInvoiceDeliveryMethod(new InvoiceDeliveryMethod(Constants.D_METHOD_EMAIL));
+            cust.setInvoiceDeliveryMethod(new InvoiceDeliveryMethodDTO(Constants.D_METHOD_EMAIL));
             user.setCustomer(cust);
             
             try {

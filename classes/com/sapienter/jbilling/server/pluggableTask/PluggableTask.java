@@ -65,8 +65,7 @@ public abstract class PluggableTask {
         this.task = task;
         if (DBparameters.size() < 
                 task.getType().getMinParameters().intValue()) {
-            throw new PluggableTaskException("Type [" + task.getType().getTitle(
-                    new Integer(1)) + "] requires at least " + 
+            throw new PluggableTaskException("Type [" + task.getType().getClassName() + "] requires at least " +
                     task.getType().getMinParameters() + " parameters." +
                     DBparameters.size() + " found.");
         }

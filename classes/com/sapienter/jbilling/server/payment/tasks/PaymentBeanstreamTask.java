@@ -28,9 +28,10 @@ import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -84,7 +85,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 			}
 
             if (paymentInfo.getAmount() < 0 && 
-                    paymentInfo.getIsRefund().intValue() == 0) {
+                    paymentInfo.getIsRefund() == 0) {
 
 				String error = "Credits not linked to a previous transaction " +
                         " (refund) not supported by Beanstream processing API";
@@ -100,14 +101,14 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 
 			if (paymentDTO.getCode1().equals("1")) {
 
-				paymentInfo.setResultId(Constants.RESULT_OK);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
 				paymentInfo.setAuthorization(paymentDTO);
 				PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 				bl.create(paymentDTO, paymentInfo.getId());
 				return false;
 			} else {
 
-				paymentInfo.setResultId(Constants.RESULT_FAIL);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
 				paymentInfo.setAuthorization(paymentDTO);
 				PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 				bl.create(paymentDTO, paymentInfo.getId());
@@ -116,7 +117,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 		} catch (Exception e) {
 
 			LOG.error(e);
-			paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+			paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
 			return true;
 		}
 	}
@@ -132,14 +133,14 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 
 			if (paymentDTO.getCode1().equals("1")) {
 
-				paymentInfo.setResultId(Constants.RESULT_OK);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
 				paymentInfo.setAuthorization(paymentDTO);
 				PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 				bl.create(paymentDTO, paymentInfo.getId());
 				return false;
 			} else {
 
-				paymentInfo.setResultId(Constants.RESULT_FAIL);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
 				paymentInfo.setAuthorization(paymentDTO);
 				PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 				bl.create(paymentDTO, paymentInfo.getId());
@@ -147,7 +148,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 			}
 		} catch (Exception e) {
 
-			paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+			paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
 			return true;
 		}
 	}
@@ -164,14 +165,14 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 
 			if (newPaymentDTO.getCode1().equals("1")) {
 
-				paymentInfo.setResultId(Constants.RESULT_OK);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
 				paymentInfo.setAuthorization(newPaymentDTO);
 				PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 				bl.create(newPaymentDTO, paymentInfo.getId());
 				return false;
 			} else {
 
-				paymentInfo.setResultId(Constants.RESULT_FAIL);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
 				paymentInfo.setAuthorization(newPaymentDTO);
 				PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 				bl.create(newPaymentDTO, paymentInfo.getId());
@@ -179,7 +180,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 			}
 		} catch (Exception e) {
 
-			paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+			paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
 			return true;
 		}
 	}
@@ -220,7 +221,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 			contact.set(paymentInfo.getUserId());
 
 			Calendar cal = Calendar.getInstance();
-			cal.setTime(paymentInfo.getCreditCard().getExpiry());
+			cal.setTime(paymentInfo.getCreditCard().getCcExpiry());
 
 			StringBuffer postVars = new StringBuffer("requestType=BACKEND&");
 			postVars.append("merchant_id=" + merchantId + "&");
@@ -427,7 +428,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 				paymentDTO.setTransactionId(responseDTO.trnId);
 				paymentDTO.setProcessor("Beanstream");
 				paymentDTO.setApprovalCode(responseDTO.authCode);
-				paymentDTO.setAVS(responseDTO.avsResult);
+				paymentDTO.setAvs(responseDTO.avsResult);
 				paymentDTO.setMD5(responseDTO.hCode);
 				// paymentDTO.setCardCode( ??? );
 				paymentDTO.setCreateDate(Calendar.getInstance().getTime());

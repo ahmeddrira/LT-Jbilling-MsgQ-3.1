@@ -29,9 +29,10 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 
@@ -51,87 +52,88 @@ import com.sapienter.jbilling.server.user.ContactBL;
  * @author Narinder
  */
 public class PaymentACHCommerceTask extends PaymentTaskBase {
-	private final static String PAYMENT_SUCCESS_CODE = "000";
-	private final static String PROCESSOR_NAME = "ACHCommerce";
-	private final static String RESPONSE_DELIMITER = "[|]";
+
+    private final static String PAYMENT_SUCCESS_CODE = "000";
+    private final static String PROCESSOR_NAME = "ACHCommerce";
+    private final static String RESPONSE_DELIMITER = "[|]";
     private static final int timeOut = 10000; // in millisec
-    
-	private Logger logger;
-	
-	public PaymentACHCommerceTask(){
-		logger = Logger.getLogger(PaymentACHCommerceTask.class);
-	}
+    private Logger logger;
 
-	/* 
-	 * This method has not been implemented as this pluggable task is only processing
-	 * Debit card transactions and therefore simply returns false.
-	 */
-	public boolean confirmPreAuth(PaymentAuthorizationDTO auth,
-			PaymentDTOEx paymentInfo) throws PluggableTaskException {
-		return false;
-	}
+    public PaymentACHCommerceTask() {
+        logger = Logger.getLogger(PaymentACHCommerceTask.class);
+    }
 
-	/* 
-	 * (non-Javadoc)
-	 * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#failure(java.lang.Integer, java.lang.Integer)
-	 */
-	public void failure(Integer userId, Integer retry) {}
+    /* 
+     * This method has not been implemented as this pluggable task is only processing
+     * Debit card transactions and therefore simply returns false.
+     */
+    public boolean confirmPreAuth(PaymentAuthorizationDTO auth,
+            PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        return false;
+    }
 
-	/* 
-	 * This method has not been implemented as this pluggable task is only processing
-	 * Debit card transactions and therefore simply returns false.
-	 * 
-	 * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#preAuth(com.sapienter.jbilling.server.payment.PaymentDTOEx)
-	 */
-	public boolean preAuth(PaymentDTOEx paymentInfo)
-			throws PluggableTaskException {
-		return false;
-	}
+    /* 
+     * (non-Javadoc)
+     * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#failure(java.lang.Integer, java.lang.Integer)
+     */
+    public void failure(Integer userId, Integer retry) {
+    }
 
-	/* (non-Javadoc)
-	 * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#process(com.sapienter.jbilling.server.payment.PaymentDTOEx)
-	 */
-	public boolean process(PaymentDTOEx paymentInfo)
-			throws PluggableTaskException {
-		try{
-            if (paymentInfo.getAch() == null || 
+    /* 
+     * This method has not been implemented as this pluggable task is only processing
+     * Debit card transactions and therefore simply returns false.
+     * 
+     * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#preAuth(com.sapienter.jbilling.server.payment.PaymentDTOEx)
+     */
+    public boolean preAuth(PaymentDTOEx paymentInfo)
+            throws PluggableTaskException {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see com.sapienter.jbilling.server.pluggableTask.PaymentTask#process(com.sapienter.jbilling.server.payment.PaymentDTOEx)
+     */
+    public boolean process(PaymentDTOEx paymentInfo)
+            throws PluggableTaskException {
+        try {
+            if (paymentInfo.getAch() == null ||
                     paymentInfo.getAch().getBankAccount() == null ||
                     paymentInfo.getAch().getBankAccount().length() == 0) {
                 // this payment is not for ach, might be for credit cards
                 return true;
             }
-			PaymentAuthorizationDTOEx paymentAuthDTO = processACHRequest(paymentInfo);
-	        super.storeProcessedAuthorization(paymentInfo,paymentAuthDTO);
-	        paymentInfo.setAuthorization(paymentAuthDTO);
-	        if(paymentAuthDTO.getCode1().equals(PAYMENT_SUCCESS_CODE)){
-	        	paymentInfo.setResultId(Constants.RESULT_OK);
-	        }else{
-	        	paymentInfo.setResultId(Constants.RESULT_FAIL);
-	        }
-			return false;
-		}catch(HttpException he){
-			logger.error("Error during payment processing",he);
-        	paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
-			return true;
-		}catch(IOException ie){
-        	paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
-			logger.error("Error during payment processing",ie);
-			return true;
-		}
-	}
-	
-	/**
-	 * Executes an http payment proessing request to the ACHCommerce gateway. The request is constructed and sent using the
-	 * ACH Transit guide documented at http://gateway.achcommerce.com/achgate/achgate.html
-	 * @param paymentInfo
-	 * @return
-	 * @throws HttpException
-	 * @throws IOException
-	 * @throws PluggableTaskException
-	 */
-	private PaymentAuthorizationDTOEx processACHRequest(PaymentDTOEx paymentInfo) throws HttpException, IOException, PluggableTaskException {
-		
-		String url = super.ensureGetParameter("gatewayUrl");
+            PaymentAuthorizationDTO paymentAuthDTO = processACHRequest(paymentInfo);
+            super.storeProcessedAuthorization(paymentInfo, paymentAuthDTO);
+            paymentInfo.setAuthorization(paymentAuthDTO);
+            if (paymentAuthDTO.getCode1().equals(PAYMENT_SUCCESS_CODE)) {
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
+            } else {
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
+            }
+            return false;
+        } catch (HttpException he) {
+            logger.error("Error during payment processing", he);
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            return true;
+        } catch (IOException ie) {
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            logger.error("Error during payment processing", ie);
+            return true;
+        }
+    }
+
+    /**
+     * Executes an http payment proessing request to the ACHCommerce gateway. The request is constructed and sent using the
+     * ACH Transit guide documented at http://gateway.achcommerce.com/achgate/achgate.html
+     * @param paymentInfo
+     * @return
+     * @throws HttpException
+     * @throws IOException
+     * @throws PluggableTaskException
+     */
+    private PaymentAuthorizationDTO processACHRequest(PaymentDTOEx paymentInfo) throws HttpException, IOException, PluggableTaskException {
+
+        String url = super.ensureGetParameter("gatewayUrl");
         //create a singular HttpClient object
         HttpClient client = new HttpClient();
         client.setConnectionTimeout(timeOut);
@@ -144,36 +146,36 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
         client.executeMethod(post);
         String responseBody = post.getResponseBodyAsString();
         logger.debug("Got response:" + responseBody);
-        
-        PaymentAuthorizationDTOEx paymentAuthDTO = processResponse(responseBody);
+
+        PaymentAuthorizationDTO paymentAuthDTO = processResponse(responseBody);
         post.releaseConnection();
         post.recycle();
         return paymentAuthDTO;
-	}
-	
-	/**
-	 * Constructs HttpClient request data for a payment request to be sent to ACHCommerce gateway.
-	 * @param paymentInfo
-	 * @return
-	 * @throws PluggableTaskException if any of the required parameters for this pluggable task are not configured.
-	 */
-	private NameValuePair[] getChargeData(PaymentDTOEx paymentInfo) throws PluggableTaskException{
-		ContactBL contact = null;
-		String firstName = null;
-		String lastName = null;
-		try{
-	        contact = new ContactBL();
-	        contact.set(paymentInfo.getUserId());
+    }
+
+    /**
+     * Constructs HttpClient request data for a payment request to be sent to ACHCommerce gateway.
+     * @param paymentInfo
+     * @return
+     * @throws PluggableTaskException if any of the required parameters for this pluggable task are not configured.
+     */
+    private NameValuePair[] getChargeData(PaymentDTOEx paymentInfo) throws PluggableTaskException {
+        ContactBL contact = null;
+        String firstName = null;
+        String lastName = null;
+        try {
+            contact = new ContactBL();
+            contact.set(paymentInfo.getUserId());
             // this gateway requires a first and last name
             // but all the customers here are companies ... 
             String companyName = contact.getEntity().getOrganizationName();
-        	firstName = companyName.substring(0, companyName.indexOf(' '));
-        	lastName = companyName.substring(companyName.indexOf(' '));
-		}catch(Exception e){
-			throw new PluggableTaskException("Error loading Contact for user id " + 
-                    paymentInfo.getUserId(),e);
-		}
-			
+            firstName = companyName.substring(0, companyName.indexOf(' '));
+            lastName = companyName.substring(companyName.indexOf(' '));
+        } catch (Exception e) {
+            throw new PluggableTaskException("Error loading Contact for user id " +
+                    paymentInfo.getUserId(), e);
+        }
+
         NameValuePair[] data = {
             new NameValuePair("usermode", "cgi"),
             new NameValuePair("action", "submit"),
@@ -187,33 +189,32 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
             new NameValuePair("amount", paymentInfo.getAmount().toString()),
             new NameValuePair("fname", firstName),
             new NameValuePair("lname", lastName),
-            new NameValuePair("individualid", paymentInfo.getId().toString()),
+            new NameValuePair("individualid", paymentInfo.getId() + ""),
             // it defaults to 27 "Debit to checking account"
             new NameValuePair("trancode", getOptionalParameter("trancode", "27")),
             new NameValuePair("sec", "PPD"),
             new NameValuePair("replymode", "csv")
         };
-        
+
         return data;
     }
-	
-	/**
-	 * Parses data returned by ACHCommerce gateway which is expected to be in the
-	 * following formate: -
-	 * 
-	 * REPLYCODE|DESCRIPTION|TRANSACTIONID|REQUESTID|BANKNAME|EOTXXX
 
-	 * @param gatewayResponse
-	 */
-	private PaymentAuthorizationDTOEx processResponse(String gatewayResponse) throws PluggableTaskException{
-		String[] returnData = gatewayResponse.split(RESPONSE_DELIMITER);
-		if(returnData.length<2){
-			throw new PluggableTaskException("Received invalid response " + gatewayResponse + 
-					" from ACHCommerce Gateway");
-		}
-		String replyCode = returnData[0];
-		String description = returnData[1];
-        PaymentAuthorizationDTOEx paymentAuthDTO = new PaymentAuthorizationDTOEx();
+    /**
+     * Parses data returned by ACHCommerce gateway which is expected to be in the
+     * following formate: -
+     * 
+     * REPLYCODE|DESCRIPTION|TRANSACTIONID|REQUESTID|BANKNAME|EOTXXX
+     * @param gatewayResponse
+     */
+    private PaymentAuthorizationDTO processResponse(String gatewayResponse) throws PluggableTaskException {
+        String[] returnData = gatewayResponse.split(RESPONSE_DELIMITER);
+        if (returnData.length < 2) {
+            throw new PluggableTaskException("Received invalid response " + gatewayResponse +
+                    " from ACHCommerce Gateway");
+        }
+        String replyCode = returnData[0];
+        String description = returnData[1];
+        PaymentAuthorizationDTO paymentAuthDTO = new PaymentAuthorizationDTO();
         paymentAuthDTO.setCode1(replyCode);
         paymentAuthDTO.setResponseMessage(description);
         paymentAuthDTO.setProcessor(PROCESSOR_NAME);
@@ -221,7 +222,6 @@ public class PaymentACHCommerceTask extends PaymentTaskBase {
             String txnId = returnData[2];
             paymentAuthDTO.setTransactionId(txnId);
         }
-        paymentAuthDTO.setResult(replyCode.equals(PAYMENT_SUCCESS_CODE));
-		return paymentAuthDTO;
-	}
+        return paymentAuthDTO;
+    }
 }

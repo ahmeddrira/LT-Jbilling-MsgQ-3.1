@@ -35,9 +35,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -85,14 +86,14 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
             if (paymentDTO.getCode1().equals("1")) {
 
-                paymentInfo.setResultId(Constants.RESULT_OK);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
                 paymentInfo.setAuthorization(paymentDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
                 bl.create(paymentDTO, paymentInfo.getId());
                 return false;
             } else {
 
-                paymentInfo.setResultId(Constants.RESULT_FAIL);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
                 paymentInfo.setAuthorization(paymentDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
                 bl.create(paymentDTO, paymentInfo.getId());
@@ -101,7 +102,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
         } catch (Exception e) {
 
             LOG.error(e);
-            paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return true;
         }
     }
@@ -118,14 +119,14 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
             if (paymentDTO.getCode1().equals("1")) {
 
-                paymentInfo.setResultId(Constants.RESULT_OK);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
                 paymentInfo.setAuthorization(paymentDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
                 bl.create(paymentDTO, paymentInfo.getId());
                 return false;
             } else {
 
-                paymentInfo.setResultId(Constants.RESULT_FAIL);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
                 paymentInfo.setAuthorization(paymentDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
                 bl.create(paymentDTO, paymentInfo.getId());
@@ -133,7 +134,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
             }
         } catch (Exception e) {
             LOG.error(e);
-            paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return true;
         }
     }
@@ -151,14 +152,14 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
             if (paymentDTO.getCode1().equals("1")) {
 
-                paymentInfo.setResultId(Constants.RESULT_OK);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
                 paymentInfo.setAuthorization(paymentDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
                 bl.create(paymentDTO, paymentInfo.getId());
                 return false;
             } else {
 
-                paymentInfo.setResultId(Constants.RESULT_FAIL);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
                 paymentInfo.setAuthorization(paymentDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
                 bl.create(paymentDTO, paymentInfo.getId());
@@ -167,7 +168,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
         } catch (Exception e) {
 
             LOG.error(e);
-            paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return true;
         }
 
@@ -358,7 +359,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
             String response = directResponseNodeLst.item(0).getNodeValue();
             String[] responseList = response.split("\\|", -2);
             paymentDTO.setApprovalCode(responseList[4]);
-            paymentDTO.setAVS(responseList[5]);
+            paymentDTO.setAvs(responseList[5]);
             paymentDTO.setProcessor("PaymentAuthorizeNetCIMTask");
             paymentDTO.setCode1(responseList[0]);
             paymentDTO.setCode2(responseList[1]);

@@ -25,16 +25,16 @@ import java.io.Serializable;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
+import com.sapienter.jbilling.server.util.Context;
 
 public abstract class AbstractDescription implements Serializable {
 	
     private static final Logger LOG = Logger.getLogger(AbstractDescription.class);
 	private String description = null;
-	
+    // do not add not Serializable fields here... or feel the pain.
 	abstract public int getId();
 	abstract protected String getTable();
-	
+
     /**
      * Returns the description.
      * @return String
@@ -47,9 +47,9 @@ public abstract class AbstractDescription implements Serializable {
         if (label == null || languageId == null) {
             throw new SessionInternalError("Null parameters " + label + " " + languageId);
         }
-        JbillingTableDAS jt = new JbillingTableDAS();
         DescriptionDAS de = new DescriptionDAS();
-        InternationalDescriptionId iid = new InternationalDescriptionId(jt.findByName(
+        JbillingTableDAS jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
+        InternationalDescriptionId iid = new InternationalDescriptionId(jbDAS.findByName(
                 getTable()).getId(), getId(), label, languageId);
         InternationalDescriptionDTO desc = de.findNow(iid);
         
@@ -65,15 +65,18 @@ public abstract class AbstractDescription implements Serializable {
      * Sets the description.
      * @param description The description to set
      */
-    public void setDescription(String labelProperty, Integer languageId) {
-        JbillingTableDAS jt = new JbillingTableDAS();
-        
-        InternationalDescriptionId iid = new InternationalDescriptionId(jt.findByName(
-        		getTable()).getId(), getId(), "description", languageId);
-        InternationalDescriptionDTO desc = new InternationalDescriptionDTO(iid, labelProperty);
+    public void setDescription(String labelProperty, Integer languageId, String content) {
+        JbillingTableDAS jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
+        InternationalDescriptionId iid = new InternationalDescriptionId(jbDAS.findByName(
+        		getTable()).getId(), getId(), labelProperty, languageId);
+        InternationalDescriptionDTO desc = new InternationalDescriptionDTO(iid, content);
         
         DescriptionDAS de = new DescriptionDAS();
         de.save(desc);
+    }
+
+    public void setDescription(String content, Integer languageId) {
+        setDescription("description", languageId, content);
     }
     
     public String getDescription() {

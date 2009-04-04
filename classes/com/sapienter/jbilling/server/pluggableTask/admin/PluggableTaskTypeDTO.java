@@ -33,18 +33,17 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
-import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 @Entity
 @Table(name = "pluggable_task_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PluggableTaskTypeDTO implements Serializable {
+public class PluggableTaskTypeDTO extends AbstractDescription implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(PluggableTaskTypeDTO.class);
     
     @Id
-    private Integer Id;
+    private int Id;
 
     @Column(name = "class_name")
     private String className;
@@ -69,73 +68,17 @@ public class PluggableTaskTypeDTO implements Serializable {
     	category = otherDto.getCategory();
     }
 
-    // Custom field accessors --------------------------------------------------
-    private InternationalDescriptionDTO getDescriptionObject(Integer language,
-            String column) {
-    	
-    	InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(
-                Constants.TABLE_PLUGGABLE_TASK_TYPE,
-                getId(),
-                column,
-                language);
-    	
-            if (inter == null) {
-                LOG.warn("Exception while looking for pluggable_task_type inter. field");
-                return null;
-            }
-            
-            return inter;
-
-        }
-
-    /**
-     * @ejb:interface-method view-type="local"
-     */
-    public String getTitle(Integer language) {
-    	InternationalDescriptionDTO desc = getDescriptionObject(language, "title");
-        if (desc == null) {
-            return "Title not set for this rule";
-        } else {
-            return desc.getContent();
-        }
-    }
-    public void setTitle(String title, Integer language) {
-    	InternationalDescriptionDTO desc = getDescriptionObject(language, "title");
-        if (desc == null) {
-            LOG.error("Can't update a non existing record");
-        } else {
-            desc.setContent(title);
-        }
+    protected String getTable() {
+        return Constants.TABLE_PLUGGABLE_TASK_TYPE;
     }
 
-
-    /**
-     * @ejb:interface-method view-type="local"
-     */
-    public String getDescription(Integer language) {
-    	InternationalDescriptionDTO desc = getDescriptionObject(language, "description");
-        if (desc == null) {
-            return "Description not set for this rule";
-        } else {
-            return desc.getContent();
-        }
-    }
-    public void setDescription(String description, Integer language) {
-    	InternationalDescriptionDTO desc = getDescriptionObject(language, "description");
-        if (desc == null) {
-            LOG.error("Can't update a non existing record");
-        } else {
-            desc.setContent(description);
-        }
-    }
-    
     public String getClassName() {
         return className;
     }
     public void setClassName(String className) {
         this.className = className;
     }
-    public Integer getId() {
+    public int getId() {
         return Id;
     }
     public void setId(Integer id) {

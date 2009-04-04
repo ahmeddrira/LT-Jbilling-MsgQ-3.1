@@ -37,6 +37,11 @@ public class Context {
         PROVISIONING,
         VELOCITY,
         DATA_SOURCE,
+        HIBERNATE_TEMPLATE,
+        DESCRIPTION_DAS,
+        JBILLING_TABLE_DAS,
+        PLUGGABLE_TASK_DAS,
+        CACHE,
         CAI
     }
     
@@ -47,11 +52,18 @@ public class Context {
         // those that act as session facade, mostly for transaction demarcation
         springBeans.put(Name.ITEM_SESSION, "itemSession");
         springBeans.put(Name.NOTIFICATION_SESSION, "notificationSession");
+
+        // data access service
+        springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");
+        springBeans.put(Name.JBILLING_TABLE_DAS, "jbillingTableDAS");
         
         // other simple beans
         springBeans.put(Name.PROVISIONING, "provisioning");
         springBeans.put(Name.VELOCITY, "velocityEngine");
         springBeans.put(Name.DATA_SOURCE, "dataSource");
+        springBeans.put(Name.HIBERNATE_TEMPLATE, "hibernateTemplate");
+        springBeans.put(Name.PLUGGABLE_TASK_DAS, "pluggableTaskDAS");
+        springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CAI, "cai");
     };
     

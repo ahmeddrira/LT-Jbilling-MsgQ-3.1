@@ -41,12 +41,6 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
  *           view-type="remote"
  *           jndi-name="com/sapienter/jbilling/server/item/CustomerSession"
  * 
- * @ejb.resource-ref res-ref-name="jdbc/ApplicationDS"
- *                   res-type="javax.sql.DataSource"
- * 					 res-auth="Container"
- * 
- * @jboss.resource-ref res-ref-name="jdbc/ApplicationDS"
- *                     jndi-name="java:/ApplicationDS"
  */
 public class CustomerSessionBean implements SessionBean {
     // -------------------------------------------------------------------------

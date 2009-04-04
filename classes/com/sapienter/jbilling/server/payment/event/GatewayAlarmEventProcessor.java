@@ -38,7 +38,7 @@ public class GatewayAlarmEventProcessor extends EventProcessor<ProcessorAlarm> {
         // the alarm does not care about entered payments. Filter them out
         if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent success = (PaymentSuccessfulEvent) event;
-            if (success.getPayment().getResultId().equals(Constants.RESULT_ENTERED)) {
+            if (new Integer(success.getPayment().getPaymentResult().getId()).equals(Constants.RESULT_ENTERED)) {
                 return;
             }
         }

@@ -29,12 +29,8 @@ import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
-import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -42,10 +38,13 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
 /**
  * A web services implementation of JbillingAPI. All api implementations
@@ -145,13 +144,13 @@ public class AxisAPI implements JbillingAPI {
                 InvoiceLineDTO.class, qn);
         call.registerTypeMapping(InvoiceLineDTO.class, qn, ser1, ser2); 
 
-        // InvoiceLineDTOEx            
-        qn = new QName(QNAME, "InvoiceLineDTOEx");
+        // InvoiceLineDTO            
+        qn = new QName(QNAME, "InvoiceLineDTO");
         ser1 = new BeanSerializerFactory(
-                InvoiceLineDTOEx.class, qn);
+                InvoiceLineDTO.class, qn);
         ser2 = new BeanDeserializerFactory (
-                InvoiceLineDTOEx.class, qn);
-        call.registerTypeMapping(InvoiceLineDTOEx.class, qn, ser1, ser2); 
+                InvoiceLineDTO.class, qn);
+        call.registerTypeMapping(InvoiceLineDTO.class, qn, ser1, ser2); 
         
         // UserWS            
         qn = new QName(QNAME, "UserWS");

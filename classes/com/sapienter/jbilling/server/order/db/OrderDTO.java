@@ -53,8 +53,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OrderBy;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -69,7 +69,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="purchase_order",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="purchase_order")
 // No cache, mutable and critical
@@ -105,9 +105,9 @@ public class OrderDTO  implements java.io.Serializable {
      private Integer isCurrent;
      private Integer versionNum;
      // other non-persitent fields
-     private Collection<OrderProcessDTO> nonReviewPeriods = null;
-     private Collection<InvoiceDTO> invoices = null;
-     private Collection<BillingProcessDTO> billingProcesses = null;
+     private Collection<OrderProcessDTO> nonReviewPeriods = new Vector<OrderProcessDTO>(0);
+     private Collection<InvoiceDTO> invoices = new Vector<InvoiceDTO>(0);
+     private Collection<BillingProcessDTO> billingProcesses = new Vector<BillingProcessDTO>(0);
      private String periodStr = null;
      private String billingTypeStr = null;
      private String statusStr = null;
@@ -436,6 +436,7 @@ public class OrderDTO  implements java.io.Serializable {
     		value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN
     		)
     @Fetch (FetchMode.SUBSELECT)
+    @OrderBy(clause="id")
     public List<OrderLineDTO> getLines() {
         return this.lines;
     }
@@ -539,7 +540,7 @@ public class OrderDTO  implements java.io.Serializable {
     }
 
     @Transient
-    public Collection getInvoices() {
+    public Collection<InvoiceDTO> getInvoices() {
     	return invoices;
     	
     }
@@ -685,6 +686,9 @@ public class OrderDTO  implements java.io.Serializable {
 		for (OrderLineDTO line: getLines()) {
 			line.touch();
 		}
+        for (InvoiceDTO invoice: getInvoices()) {
+            invoice.getCreateDatetime();
+        }
 		getOrderBillingType().getId();
 		getOrderPeriod().getId();
         getOrderStatus().getId();

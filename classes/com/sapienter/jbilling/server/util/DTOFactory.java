@@ -33,11 +33,6 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.server.entity.BillingProcessDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
@@ -49,11 +44,11 @@ import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
 import com.sapienter.jbilling.server.report.db.ReportTypeDTO;
 import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.AchBL;
-import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.MenuOption;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
@@ -62,8 +57,6 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.MenuOptionDAS;
 import com.sapienter.jbilling.server.util.db.MenuOptionDTO;
-import com.sapienter.jbilling.server.util.db.generated.Ach;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 /**
  * 
@@ -175,13 +168,11 @@ public class DTOFactory {
 
 		// add a credit card if available
 		if (!user.getCreditCards().isEmpty()) {
-			dto.setCreditCard(getCreditCardDTO(new CreditCardBL(
-					((CreditCard) user.getCreditCards().iterator().next())
-							.getId()).getEntity()));
+			dto.setCreditCard(user.getCreditCards().iterator().next());
 		}
 
 		if (!user.getAchs().isEmpty()) {
-			AchBL ach = new AchBL(((Ach) user.getAchs().toArray()[0]).getId());
+			AchBL ach = new AchBL(((AchDTO)user.getAchs().toArray()[0]).getId());
 			dto.setAch(ach.getDTO());
 		}
 
@@ -215,34 +206,6 @@ public class DTOFactory {
 		}
 
 		return dto;
-	}
-
-	public static CreditCardDTO getCreditCardDTO(CreditCardEntityLocal cc) {
-		return new CreditCardDTO(cc.getId(), cc.getNumber(), cc.getExpiry(), cc
-				.getName(), cc.getType(), cc.getDeleted(), cc.getSecurityCode());
-	}
-
-	public static BillingProcessDTO getBillingProcessDTO(
-			BillingProcessEntityLocal process) {
-		return new BillingProcessDTO(process.getId(), process.getEntityId(),
-				process.getBillingDate(), process.getPeriodUnitId(), process
-						.getPeriodValue(), process.getIsReview(), process
-						.getRetriesToDo());
-	}
-
-	public static Vector invoiceEJB2DTO(Collection invoices) {
-		Vector dtos = new Vector();
-
-		for (Iterator it = invoices.iterator(); it.hasNext();) {
-			InvoiceEntityLocal invoiceEJB = (InvoiceEntityLocal) it.next();
-			try {
-				InvoiceBL invoice = new InvoiceBL(invoiceEJB);
-				dtos.add(invoice.getDTO());
-			} catch (Exception e) {
-			}
-		}
-
-		return dtos;
 	}
 
 	public static ReportDTOEx getReportDTOEx(Integer reportId, Integer entityId)

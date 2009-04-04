@@ -34,8 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -49,7 +47,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="contact",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="contact", uniqueConstraints = @UniqueConstraint(columnNames="user_id"))
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -320,7 +318,6 @@ public class ContactDTO  implements java.io.Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="create_datetime", nullable=false, length=29)
     public Date getCreateDate() {
         return this.createDate;

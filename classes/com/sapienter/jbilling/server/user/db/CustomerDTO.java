@@ -42,10 +42,10 @@ import javax.persistence.Version;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
-import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
 @Entity
 @TableGenerator(
@@ -54,7 +54,7 @@ import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="customer",
-        allocationSize=10
+        allocationSize = 100
         )
 // No cache, mutable and critical
 @Table(name="customer")
@@ -64,7 +64,7 @@ public class CustomerDTO  implements java.io.Serializable {
 
      private int id;
      private UserDTO baseUser;
-     private InvoiceDeliveryMethod invoiceDeliveryMethod;
+     private InvoiceDeliveryMethodDTO invoiceDeliveryMethod;
      private Partner partner;
      private Integer referralFeePaid;
      private String notes;
@@ -87,12 +87,12 @@ public class CustomerDTO  implements java.io.Serializable {
         this.id = id;
     }
 	
-    public CustomerDTO(int id, InvoiceDeliveryMethod invoiceDeliveryMethod, int excludeAging) {
+    public CustomerDTO(int id, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, int excludeAging) {
         this.id = id;
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
         this.excludeAging = excludeAging;
     }
-    public CustomerDTO(int id, UserDTO baseUser, InvoiceDeliveryMethod invoiceDeliveryMethod, Partner partner, 
+    public CustomerDTO(int id, UserDTO baseUser, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, Partner partner, 
     		Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, 
     		Integer dueDateValue, Integer dfFm, CustomerDTO parent, Integer isParent, int excludeAging, Integer invoiceChild, Integer currentOrderId) {
        this.id = id;
@@ -153,11 +153,11 @@ public class CustomerDTO  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="invoice_delivery_method_id", nullable=false)
-    public InvoiceDeliveryMethod getInvoiceDeliveryMethod() {
+    public InvoiceDeliveryMethodDTO getInvoiceDeliveryMethod() {
         return this.invoiceDeliveryMethod;
     }
     
-    public void setInvoiceDeliveryMethod(InvoiceDeliveryMethod invoiceDeliveryMethod) {
+    public void setInvoiceDeliveryMethod(InvoiceDeliveryMethodDTO invoiceDeliveryMethod) {
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
     }
 @ManyToOne(fetch=FetchType.LAZY)

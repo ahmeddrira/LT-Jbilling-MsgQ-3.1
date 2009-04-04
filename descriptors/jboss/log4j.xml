@@ -92,11 +92,16 @@
       <appender-ref ref="jbillingAppender"/>
   </category>
 
-  <!--
-  <category name="org.hibernate">
+<!--
+  <category name="org.hibernate.SQL">
       <appender-ref ref="SQL-FILE"/>
   </category>
-  -->
+
+
+  <category name="org.springmodules.cache">
+      <appender-ref ref="jbillingAppender"/>
+  </category>
+-->
   
 
   <!-- ======================= -->

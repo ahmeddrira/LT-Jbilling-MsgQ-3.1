@@ -24,6 +24,9 @@ package com.sapienter.jbilling.server.provisioning;
 
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -31,7 +34,6 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.provisioning.event.SubscriptionActiveEvent;
 import com.sapienter.jbilling.server.provisioning.event.SubscriptionInactiveEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
-import org.apache.log4j.Logger;
 
 
 /**

@@ -26,15 +26,15 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.util.GregorianCalendar;
 
-import javax.ejb.FinderException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * @author Emil
@@ -45,15 +45,15 @@ public class OrderFilterAnticipatedTask extends BasicOrderFilterTask {
     private static final Logger LOG = Logger.getLogger(OrderFilterAnticipatedTask.class);
     
     public boolean isApplicable(OrderDTO order, 
-            BillingProcessEntityLocal process) throws TaskException {
+            BillingProcessDTO process) throws TaskException {
         // by default, keep it in null 
         billingUntil = null;
         try {
             PreferenceBL preference = new PreferenceBL();
             try {
-                preference.set(process.getEntityId(), 
+                preference.set(process.getEntity().getId(), 
                         Constants.PREFERENCE_USE_ORDER_ANTICIPATION);
-            } catch (FinderException e) {
+            } catch (EmptyResultDataAccessException e) {
                 // I like the default
             }
             if (preference.getInt() == 0 ) {

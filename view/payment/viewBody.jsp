@@ -80,7 +80,7 @@
 		<td class="infoprompt"><bean:message key="payment.amount"/></td>
 		<td class="infodata">	
 			 <bean:define id="index" name="dto"
-				  property="currencyId"/>
+				  property="currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -106,7 +106,7 @@
 		<td class="infoprompt"><bean:message key="payment.balance"/></td>
 		<td class="infodata">	
 			 <bean:define id="index" name="dto"
-				  property="currencyId"/>
+				  property="currency.id"/>
 			 <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   property='<%= "symbols[" + index + "].symbol" %>'
 				   scope="application"
@@ -271,7 +271,7 @@
 			<td class="infoprompt"><bean:message key="payment.cc.date"/></td>
 			<td class="infodata">	
 				<bean:write name="dto" 
-							property="creditCard.expiry"
+							property="creditCard.ccExpiry"
 							scope="page"
 							formatKey="format.date"/>
 			</td>

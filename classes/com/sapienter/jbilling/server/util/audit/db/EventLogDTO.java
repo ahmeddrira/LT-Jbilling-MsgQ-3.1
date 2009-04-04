@@ -39,7 +39,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
+import com.sapienter.jbilling.server.util.db.JbillingTable;
 
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="event_log",
-        allocationSize=10
+        allocationSize = 1000
         )
 @Table(name="event_log")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)

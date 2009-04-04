@@ -31,10 +31,10 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -59,7 +59,7 @@ public class BasicOrderFilterTask
      * @see com.sapienter.jbilling.server.pluggableTask.OrderFilterTask#isApplicable(com.sapienter.betty.interfaces.OrderEntityLocal)
      */
     public boolean isApplicable(OrderDTO order, 
-            BillingProcessEntityLocal process) throws TaskException {
+            BillingProcessDTO process) throws TaskException {
 
         boolean retValue = true;
         
@@ -98,7 +98,7 @@ public class BasicOrderFilterTask
                 if(activeSince.
                         after(billingUntil)) {
                     // didn't start yet
-                    eLog.info(process.getEntityId(), order.getId(), 
+                    eLog.info(process.getEntity().getId(), order.getId(), 
                             EventLogger.MODULE_BILLING_PROCESS,
                             EventLogger.BILLING_PROCESS_NOT_ACTIVE_YET,
                             Constants.TABLE_PUCHASE_ORDER);
@@ -113,7 +113,7 @@ public class BasicOrderFilterTask
                              order.getOrderPeriod().getValue().intValue());
                     Date firstBillingDate = thisOrActiveUntil(cal.getTime(), activeUntil);
                     if (!firstBillingDate.before(billingUntil)) {
-                        eLog.info(process.getEntityId(), order.getId(), 
+                        eLog.info(process.getEntity().getId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_ONE_PERIOD_NEEDED,
                                 Constants.TABLE_PUCHASE_ORDER);
@@ -129,7 +129,7 @@ public class BasicOrderFilterTask
                              order.getOrderPeriod().getValue().intValue());
                     Date endOfNextPeriod = thisOrActiveUntil(cal.getTime(), activeUntil);                
                     if (endOfNextPeriod.after(billingUntil)) {
-                        eLog.info(process.getEntityId(), order.getId(), 
+                        eLog.info(process.getEntity().getId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_RECENTLY_BILLED,
                                 Constants.TABLE_PUCHASE_ORDER);
@@ -142,7 +142,7 @@ public class BasicOrderFilterTask
                             // this situation shouldn't have happened
                             LOG.warn("Order " + order.getId() + " should've been" +
                                 " flagged out in the previous process");
-                            eLog.warning(process.getEntityId(), order.getId(), 
+                            eLog.warning(process.getEntity().getId(), order.getId(), 
                                     EventLogger.MODULE_BILLING_PROCESS,
                                     EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
                                     Constants.TABLE_PUCHASE_ORDER);
@@ -166,7 +166,7 @@ public class BasicOrderFilterTask
                             order.getNextBillableDay() + " bu = " + billingUntil);
                     if (order.getNextBillableDay().compareTo(billingUntil) >= 0) {
                         retValue = false;
-                        eLog.info(process.getEntityId(), order.getId(), 
+                        eLog.info(process.getEntity().getId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_RECENTLY_BILLED,
                                 Constants.TABLE_PUCHASE_ORDER);
@@ -180,7 +180,7 @@ public class BasicOrderFilterTask
                         LOG.warn("Order " + order.getId() + " was set to be" +
                                 " processed but the next billable date is " +
                                 "after the active until");
-                        eLog.warning(process.getEntityId(), order.getId(), 
+                        eLog.warning(process.getEntity().getId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_EXPIRED,
                                 Constants.TABLE_PUCHASE_ORDER);
@@ -193,7 +193,7 @@ public class BasicOrderFilterTask
                     retValue = false;
                     OrderBL orderBL = new OrderBL(order);
                     orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
-                    eLog.warning(process.getEntityId(), order.getId(), 
+                    eLog.warning(process.getEntity().getId(), order.getId(), 
                             EventLogger.MODULE_BILLING_PROCESS,
                             EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
                             Constants.TABLE_PUCHASE_ORDER);
@@ -209,7 +209,7 @@ public class BasicOrderFilterTask
                         // This process is not including the time this order
                         // starts
                         retValue = false;
-                        eLog.info(process.getEntityId(), order.getId(), 
+                        eLog.info(process.getEntity().getId(), order.getId(), 
                                 EventLogger.MODULE_BILLING_PROCESS,
                                 EventLogger.BILLING_PROCESS_NOT_ACTIVE_YET,
                                 Constants.TABLE_PUCHASE_ORDER);
@@ -223,7 +223,7 @@ public class BasicOrderFilterTask
                         // how come this order has some period yet to be billed, but
                         // the active is already history ? It should've been billed
                         // in a previous process
-                        eLog.warning(process.getEntityId(), order.getId(), 
+                        eLog.warning(process.getEntity().getId(), order.getId(), 
                                  EventLogger.MODULE_BILLING_PROCESS,
                                  EventLogger.BILLING_PROCESS_EXPIRED,
                                 Constants.TABLE_PUCHASE_ORDER);

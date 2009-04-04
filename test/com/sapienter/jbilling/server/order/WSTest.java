@@ -344,8 +344,8 @@ public class WSTest  extends TestCase {
     	assertTrue(before == null || before.getId() != null);
     	
     	OrderWS order = createMockOrder(USER_ID, 3, 42);
-    	Integer orderId = callcreateOrderAndInvoice(order);
-        assertNotNull(orderId);
+    	Integer invoiceId = callcreateOrderAndInvoice(order);
+        assertNotNull(invoiceId);
         
         InvoiceWS afterNormalOrder = callGetLatestInvoice(USER_ID);
         assertNotNull("createOrderAndInvoice should create invoice", afterNormalOrder);
@@ -668,15 +668,6 @@ public class WSTest  extends TestCase {
             assertEquals("Price", new Float(15), orderLine.getPrice());
             assertEquals("Amount", new Float(-45), orderLine.getAmount());
 
-            // order 2 - lemonade refund
-            order = api.getOrder(list[2]);
-            assertEquals("No. of order lines", 1, order.getOrderLines().length);
-            orderLine = order.getOrderLines()[0];
-            assertEquals("Item Id", new Integer(1), orderLine.getItemId());
-            assertEquals("Quantity", new Double(-2), orderLine.getQuantity());
-            assertEquals("Price", new Float(10), orderLine.getPrice());
-            assertEquals("Amount", new Float(-20), orderLine.getAmount());
-
             // order 3 - cancel fee for lemonade (see the rule in CancelFees.drl)
             order = api.getOrder(list[1]);
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
@@ -685,6 +676,15 @@ public class WSTest  extends TestCase {
             assertEquals("Quantity", new Double(2), orderLine.getQuantity());
             assertEquals("Price", new Float(5), orderLine.getPrice());
             assertEquals("Amount", new Float(10), orderLine.getAmount());
+
+            // order 2 - lemonade refund
+            order = api.getOrder(list[2]);
+            assertEquals("No. of order lines", 1, order.getOrderLines().length);
+            orderLine = order.getOrderLines()[0];
+            assertEquals("Item Id", new Integer(1), orderLine.getItemId());
+            assertEquals("Quantity", new Double(-2), orderLine.getQuantity());
+            assertEquals("Price", new Float(10), orderLine.getPrice());
+            assertEquals("Amount", new Float(-20), orderLine.getAmount());
 
             // create a new order like the first one
             System.out.println("Creating order ...");

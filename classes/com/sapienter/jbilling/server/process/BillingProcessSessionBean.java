@@ -33,7 +33,6 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
@@ -43,36 +42,39 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocalHome;
-import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
-import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
-import com.sapienter.jbilling.server.entity.BillingProcessDTO;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import org.hibernate.ScrollableResults;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -90,7 +92,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 public class BillingProcessSessionBean implements SessionBean {
 
     private static final Logger LOG = Logger.getLogger(BillingProcessSessionBean.class);
-    SessionContext ctx = null;
+    private SessionContext ctx = null;
 
     /**
     * @ejb:create-method view-type="remote"
@@ -100,40 +102,26 @@ public class BillingProcessSessionBean implements SessionBean {
 
     /**
      * Gets the invoices for the specified process id. The returned collection
-     * is of extended dtos (InvoiceDTOEx).
+     * is of extended dtos (InvoiceDTO).
      * @param processId
-     * @return A collection of InvoiceDTOEx objects
+     * @return A collection of InvoiceDTO objects
      * @throws SessionInternalError
      * @ejb:interface-method view-type="remote"
      * @ejb.transaction type="Required"
      */
-    public Collection getGeneratedInvoices(Integer processId) 
-            throws SessionInternalError {
-        Vector invoices = new Vector();
-        try {
+    public Collection getGeneratedInvoices(Integer processId) {
+        // find the billing_process home interface
+        BillingProcessDAS processHome = new BillingProcessDAS();
+        // find the record
+        BillingProcessDTO record = processHome.find(processId);
         
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            // find the billing_process home interface
-            BillingProcessEntityLocalHome processHome =
-                (BillingProcessEntityLocalHome) EJBFactory.lookUpLocalHome(
-                    BillingProcessEntityLocalHome.class,
-                    BillingProcessEntityLocalHome.JNDI_NAME);
-            // find the record 
-            BillingProcessEntityLocal record = processHome.
-                    findByPrimaryKey(processId);
-        
-            // get the invoices and convert them to DTOs
-            Collection records = record.getInvoices();
-            for (Iterator it = records.iterator(); it.hasNext();) {
-                InvoiceEntityLocal invoice = (InvoiceEntityLocal) it.next();
-                InvoiceBL invoiceBl = new InvoiceBL(invoice);
-                invoices.add(invoiceBl.getDTOEx(null, false));
-            }
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
+        for (InvoiceDTO invoice : record.getInvoices()) {
+            invoice.getOrderProcesses().iterator().next().getId(); // it is a touch
         }
+
+        return record.getInvoices();
+
         
-        return invoices;
     }
     
     /**
@@ -209,8 +197,7 @@ public class BillingProcessSessionBean implements SessionBean {
     public Integer createProcessRecord(Integer entityId, Date billingDate,
             Integer periodType, Integer periodValue, boolean isReview,
             Integer retries) 
-            throws NamingException, CreateException, RemoveException,
-                FinderException, SQLException {
+            throws  SQLException {
         BillingProcessBL bpBL = new BillingProcessBL();
         BillingProcessDTO dto = new BillingProcessDTO();
 
@@ -218,9 +205,16 @@ public class BillingProcessSessionBean implements SessionBean {
         // delete the previous one too            
         bpBL.purgeReview(entityId, isReview);
         
-        dto.setEntityId(entityId);
+        //I need to find the entity
+        CompanyDAS comDas = new CompanyDAS();
+        CompanyDTO company = comDas.find(entityId);
+        //I need to find the PeriodUnit
+        PeriodUnitDAS periodDas = new PeriodUnitDAS();
+        PeriodUnitDTO period = periodDas.find(periodType);
+        
+        dto.setEntity(company);
         dto.setBillingDate(Util.truncateDate(billingDate));
-        dto.setPeriodUnitId(periodType);
+        dto.setPeriodUnit(period);
         dto.setPeriodValue(periodValue);
         dto.setIsReview(isReview ? new Integer(1) : new Integer(0));
         dto.setRetriesToDo(retries);
@@ -233,13 +227,11 @@ public class BillingProcessSessionBean implements SessionBean {
      * @ejb:interface-method view-type="local"
      * @ejb.transaction type="RequiresNew"
      */
-    public Integer createRetryRun(Integer processId) 
-            throws NamingException, FinderException, CreateException {
+    public Integer createRetryRun(Integer processId) {
         BillingProcessBL process = new BillingProcessBL(processId);
         // create a new run record
         BillingProcessRunBL runBL = new BillingProcessRunBL();
-        runBL.create(process.getEntity().getBillingDate());
-        process.getEntity().getRuns().add(runBL.getEntity());
+        runBL.create(process.getEntity(), process.getEntity().getBillingDate());
 
         return runBL.getEntity().getId();
     }
@@ -283,8 +275,11 @@ public class BillingProcessSessionBean implements SessionBean {
             LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
             boolean allGood = true;
 
-            for (Integer userId : new UserDAS().findByEntityId(entityId)) {
-                //UserDTO user = new UserDAS().find(userId);
+            BillingProcessDAS bpDas = new BillingProcessDAS();
+            ScrollableResults userCursor =  bpDas.findUsersToProcess(entityId);
+            int count = 0;
+            while (userCursor.next()) {
+                Integer userId = (Integer) userCursor.get(0);
                 Integer result[] = local.processUser(billingProcessId, userId, 
                         isReview, onlyRecurring);
                 if (result != null) {
@@ -302,14 +297,27 @@ public class BillingProcessSessionBean implements SessionBean {
                     LOG.debug("User " + userId + " NOT done");
                     allGood = false;
                 }
+
+                // make sure the memory doesn't get flooded
+                if ( ++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
+                    bpDas.reset();
+                }
             }
+            userCursor.close(); // done with the cursor, needs manual closing
+            // restore the configuration in the session, the reset removed it
+            conf.set(entityId);
+
+            // update the totals
+            BillingProcessRunBL runBL = new BillingProcessRunBL();
+            runBL.setProcess(billingProcessId);
+            runBL.updateTotals(billingProcessId);
             
             if (allGood) { // only if all got well processed
                 // if some of the invoices were paper invoices, a new file with all
                 // of them has to be generated
                 try {
                     BillingProcessBL process = new BillingProcessBL(billingProcessId);
-                    PaperInvoiceBatchEntityLocal batch = process.getEntity().getBatch(); 
+                    PaperInvoiceBatchDTO batch = process.getEntity().getPaperInvoiceBatch(); 
                     if (totalInvoices > 0 && batch != null) {
                         PaperInvoiceBatchBL batchBl = new PaperInvoiceBatchBL(batch);
                         batchBl.compileInvoiceFilesForProcess(entityId);
@@ -320,29 +328,25 @@ public class BillingProcessSessionBean implements SessionBean {
                 } catch (Exception e) {
                     LOG.error("Error generetaing batch file", e);
                 }
-            }
-            
-            if (allGood) {
                 // now update the billing proces record 
-                BillingProcessRunBL runBL = new BillingProcessRunBL();
-                runBL.setProcess(billingProcessId);
-                runBL.update(billingDate);
-                // the payment processing is happening in parallel
-                // this event marks the end of it
-                EndProcessPaymentEvent event = new EndProcessPaymentEvent(
-                        runBL.getEntity().getId(), entityId);
-                EventManager.process(event);
+                
+                runBL.updateFinished();
+                if (!isReview) {
+                    // the payment processing is happening in parallel
+                    // this event marks the end of it
+                    EndProcessPaymentEvent event = new EndProcessPaymentEvent(
+                            runBL.getEntity().getId(), entityId);
+                    EventManager.process(event);
+                    // and finally the next run date in the config
+                    GregorianCalendar cal = new GregorianCalendar();
+                    cal.setTime(billingDate);
+                    cal.add(MapPeriodToCalendar.map(periodType),
+                            periodValue.intValue());
+                    conf.getEntity().setNextRunDate(cal.getTime());
+                    LOG.debug("Updated run date to " + cal.getTime());
+                }
             }
             
-            // and finally the next run date in the config
-            if (allGood && !isReview) {
-                GregorianCalendar cal = new GregorianCalendar();
-                cal.setTime(billingDate);
-                cal.add(MapPeriodToCalendar.map(periodType),
-                        periodValue.intValue());
-                conf.getEntity().setNextRunDate(cal.getTime());
-                LOG.debug("Updated run date to " + cal.getTime());
-            }
 
             LOG.debug("**** ENTITY " + entityId + " DONE");
         } catch (Exception e) {
@@ -368,6 +372,19 @@ public class BillingProcessSessionBean implements SessionBean {
         }
     }
 
+        /**
+     * This method marks the end of payment processing. It is a wrapper
+     * so it runs in its own transaction
+     * @ejb:interface-method view-type="local"
+     * @ejb.transaction type="RequiresNew"
+     */
+    public void endPayments(Integer runId) {
+        BillingProcessRunBL run = new BillingProcessRunBL(runId);
+        run.updatePaymentsFinished();
+        
+    }
+
+
     /**
      * @ejb:interface-method view-type="local"
      * @ejb.transaction type="RequiresNew"
@@ -378,8 +395,8 @@ public class BillingProcessSessionBean implements SessionBean {
         // find the last run date
         BillingProcessBL process = new BillingProcessBL(processId);
         BillingProcessRunBL runBL = new BillingProcessRunBL();
-        BillingProcessRunEntityLocal lastRun = (BillingProcessRunEntityLocal) 
-                Collections.max(process.getEntity().getRuns(),
+        ProcessRunDTO lastRun = (ProcessRunDTO) 
+                Collections.max(process.getEntity().getProcessRuns(),
                     runBL.new DateComparator());
         cal.setTime(Util.truncateDate(lastRun.getStarted()));
         LOG.debug("Retry evaluation lastrun = " + cal.getTime());
@@ -410,13 +427,13 @@ public class BillingProcessSessionBean implements SessionBean {
                 LOG.debug("Retring process " + processId);
                 Integer runId = process.createRetryRun(processId); 
                 BillingProcessRunBL runBL = new BillingProcessRunBL(runId);
-                Integer entityId = runBL.getEntity().getProcess().getEntityId();
+                Integer entityId = runBL.getEntity().getBillingProcess().getEntity().getId();
 
                 // get the invoices yet to be paid from this process
                 InvoiceBL invoiceBL = new InvoiceBL();
                 for (Iterator it = invoiceBL.getHome().findProccesableByProcess(
                         processId).iterator(); it.hasNext();) {
-                    InvoiceEntityLocal invoice = (InvoiceEntityLocal) it.next();
+                    InvoiceDTO invoice = (InvoiceDTO) it.next();
                     LOG.debug("Retrying invoice " + invoice.getId());
 
                     // post the need a a payment process, it'll be done asynchronusly
@@ -427,7 +444,7 @@ public class BillingProcessSessionBean implements SessionBean {
 
                 // update the run record with the results of the run
                 runBL.getEntity().setFinished(Calendar.getInstance().getTime());
-                runBL.getEntity().setInvoiceGenerated(new Integer(0));
+                runBL.getEntity().setInvoicesGenerated(new Integer(0));
                 // the payment processing is happening in parallel
                 // this event marks the end of it
                 EndProcessPaymentEvent event = new EndProcessPaymentEvent(
@@ -437,7 +454,7 @@ public class BillingProcessSessionBean implements SessionBean {
                 
                 // update the process: one less retry to do
                 BillingProcessBL bl = new BillingProcessBL(processId);
-                int now = bl.getEntity().getRetriesToDo().intValue();
+                int now = bl.getEntity().getRetriesToDo();
                 now--;
                 bl.getEntity().setRetriesToDo(new Integer(now));
             }
@@ -455,7 +472,7 @@ public class BillingProcessSessionBean implements SessionBean {
             Integer processId, boolean processPayment) {
         try {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
-            Integer userId = invoice.getEntity().getUser().getUserId();
+            Integer userId = invoice.getEntity().getBaseUser().getUserId();
  
             LOG.debug("email and payment for user " + userId + " invoice " +
                     invoiceId);
@@ -465,7 +482,7 @@ public class BillingProcessSessionBean implements SessionBean {
             
             try {
                 MessageDTO[] invoiceMessage = notif.getInvoiceMessages(entityId,
-                        processId, invoice.getEntity().getUser()
+                        processId, invoice.getEntity().getBaseUser()
                                 .getLanguageIdField(), invoice.getEntity());
 
                 NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
@@ -489,7 +506,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     try {
                         preferenceBL.set(entityId, 
                                 Constants.PREFERENCE_DELAY_NEGATIVE_PAYMENTS);
-                    } catch (FinderException fe) {
+                    } catch (EmptyResultDataAccessException fe) {
                         // use default
                     }
                     if (preferenceBL.getInt() == 1) {
@@ -535,11 +552,11 @@ public class BillingProcessSessionBean implements SessionBean {
             }
 
             BillingProcessBL processBL = new BillingProcessBL(processId);
-            BillingProcessEntityLocal process = processBL.getEntity();
+            BillingProcessDTO process = processBL.getEntity();
             
             // payment and notification only needed if this user gets a 
             // new invoice.
-            InvoiceEntityLocal newInvoices[] = processBL.generateInvoice(
+            InvoiceDTO newInvoices[] = processBL.generateInvoice(
                     process, user.getEntity(), isReview, onlyRecurring);
             if (newInvoices == null) {
             	if (!isReview) {
@@ -555,17 +572,11 @@ public class BillingProcessSessionBean implements SessionBean {
             for (int f = 0; f < newInvoices.length; f++) {
                 retValue[f] = newInvoices[f].getId();
                 
-                // update this run total for the currency of the new invoice
-                BillingProcessRunBL run = new BillingProcessRunBL();
-                run.setProcess(processId);
-                run.updateNewInvoice(newInvoices[f].getCurrencyId(), 
-                        newInvoices[f].getTotal());
-                
                 invoiceGenerated++;
             }
             LOG.info("The user " + userId + " has been processed."
                     + invoiceGenerated);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error("Exception caught when processing the user " + 
                     userId, e);
             // rollback !
@@ -579,16 +590,12 @@ public class BillingProcessSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public BillingProcessDTOEx getDto(Integer processId, Integer languageId) 
-            throws SessionInternalError {
+    public BillingProcessDTOEx getDto(Integer processId, Integer languageId) {
         BillingProcessDTOEx retValue = null;
         
-        try {
-            BillingProcessBL process = new BillingProcessBL(processId);
-            retValue = process.getDtoEx(languageId);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }            
+        BillingProcessBL process = new BillingProcessBL(processId);
+        retValue = process.getDtoEx(languageId);
+        if (retValue != null) retValue.toString(); // as a form of touch
            
         return retValue;            
     }
@@ -649,15 +656,11 @@ public class BillingProcessSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public BillingProcessDTOEx getReviewDto(Integer entityId, 
-            Integer languageId) throws SessionInternalError {
+    public BillingProcessDTOEx getReviewDto(Integer entityId, Integer languageId) {
         BillingProcessDTOEx dto = null;
-        try {
-            BillingProcessBL process = new BillingProcessBL();
-            dto = process.getReviewDTO(entityId, languageId);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        } 
+        BillingProcessBL process = new BillingProcessBL();
+        dto = process.getReviewDTO(entityId, languageId);
+        if (dto != null) dto.toString(); // as a touch
         
         return dto;           
     }    
@@ -721,8 +724,8 @@ public class BillingProcessSessionBean implements SessionBean {
                 	LOG.debug("A process has to be done for entity " + entityId);
                     // check that: the configuration requires a review
                     // AND, there is no partial run already there (failed)
-                    if (config.getGenerateReport().intValue() == 1 && 
-                            processBL.present(entityId, new Integer(0), 
+                    if (config.getGenerateReport() == 1 && 
+                            new BillingProcessDAS().isPresent(entityId, new Integer(0),
                                     config.getNextRunDate()) == null) {
                         // a review had to be done for the run to go ahead
                         boolean reviewPresent = processBL.isReviewPresent(entityId); 
@@ -735,11 +738,11 @@ public class BillingProcessSessionBean implements SessionBean {
                                     Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
                             
                             generateReview(entityId, config.getNextRunDate(), 
-                                    config.getPeriodUnitId(), config.
+                                    config.getPeriodUnit().getId(), config.
                                         getPeriodValue());
 
                             doRun = false;
-                        } else if (config.getReviewStatus().
+                        } else if (new Integer(config.getReviewStatus()).
                                 equals(Constants.REVIEW_STATUS_GENERATED)) {
                             // the review has to be reviewd yet
                             GregorianCalendar now = new GregorianCalendar();
@@ -763,13 +766,13 @@ public class BillingProcessSessionBean implements SessionBean {
                                         e);
                             }
                             doRun = false;
-                        } else if (config.getReviewStatus().
+                        } else if (new Integer(config.getReviewStatus()).
                                 equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
                             // is has been disapproved, let's regenerate
                             LOG.debug("The process should run, but the review " +
                                     "has been disapproved");
                             generateReview(entityId, config.getNextRunDate(), 
-                                    config.getPeriodUnitId(), config.
+                                    config.getPeriodUnit().getId(), config.
                                         getPeriodValue());
                             doRun = false;
                         }
@@ -778,7 +781,7 @@ public class BillingProcessSessionBean implements SessionBean {
                     // do the run
                     if (doRun) {
                         local.processEntity(entityId, config.getNextRunDate(), 
-                                config.getPeriodUnitId(), config.getPeriodValue(),
+                                config.getPeriodUnit().getId(), config.getPeriodValue(),
                                 false);
                     }
                 } else {
@@ -788,20 +791,20 @@ public class BillingProcessSessionBean implements SessionBean {
                     /*
                      * Review generation
                      */
-                    if (config.getGenerateReport().intValue() == 1) {
+                    if (config.getGenerateReport() == 1) {
                         cal.setTime(config.getNextRunDate());
                         cal.add(GregorianCalendar.DAY_OF_MONTH, 
                                -config.getDaysForReport().intValue());
                         if (!cal.getTime().after(today)) {
                             boolean reviewPresent = processBL.isReviewPresent(entityId);
-                            if (reviewPresent && !config.getReviewStatus().
+                            if (reviewPresent && !new Integer(config.getReviewStatus()).
                                     equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
                                 // there's already a review there, and it's been
                                 // either approved or not yet reviewed
                             } else {
                                 LOG.debug("Review disapproved. Regeneratting.");
                                 generateReview(entityId, config.getNextRunDate(),
-                                        config.getPeriodUnitId(), config.
+                                        config.getPeriodUnit().getId(), config.
                                             getPeriodValue());
                             }
                         }
@@ -811,7 +814,7 @@ public class BillingProcessSessionBean implements SessionBean {
                 /*
                  * Retries, only if automatic payment is set
                  */
-                if (config.getAutoPayment().intValue() == 1) {
+                if (config.getAutoPayment() == 1) {
                     // get the last process
                     try {
                         Integer[] processToRetry = processBL.getToRetry(entityId);
@@ -836,21 +839,17 @@ public class BillingProcessSessionBean implements SessionBean {
      * @ejb.transaction type="Required"
      * @return the id of the invoice generated
      */
-    public InvoiceDTOEx generateInvoice(Integer orderId, Integer invoiceId,
+    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId,
             Integer languageId) 
             throws SessionInternalError {
         
         try {
-            InvoiceDTOEx dto = null;
-            BillingProcessBL process = new BillingProcessBL();
-            InvoiceEntityLocal invoice = process.generateInvoice(orderId,
-                    invoiceId);
-            if (invoice != null) {
-                InvoiceBL invoiceBl = new InvoiceBL(invoice);
-                dto = invoiceBl.getDTOEx(languageId, true);
-            }
             
-            return dto;
+            BillingProcessBL process = new BillingProcessBL();
+            InvoiceDTO invoice = process.generateInvoice(orderId,
+                    invoiceId);
+            
+            return invoice;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         } 

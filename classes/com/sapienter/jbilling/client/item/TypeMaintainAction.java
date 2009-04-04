@@ -19,10 +19,9 @@ import java.rmi.RemoteException;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public class TypeMaintainAction extends CrudActionBase<ItemTypeDTO> {

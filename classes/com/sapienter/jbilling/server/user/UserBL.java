@@ -48,7 +48,6 @@ import com.sapienter.jbilling.common.PermissionConstants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
@@ -66,7 +65,9 @@ import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.report.db.ReportUserDAS;
 import com.sapienter.jbilling.server.report.db.ReportUserDTO;
 import com.sapienter.jbilling.server.user.db.AchDAS;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDAS;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
@@ -88,8 +89,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.util.db.generated.Ach;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 
 public class UserBL extends ResultList
@@ -553,7 +553,7 @@ public class UserBL extends ResultList
                 preference.set(user.getEntity().getId(), 
                         Constants.PREFERENCE_CUSTOMER_CONTACT_EDIT);
                 retValue = (preference.getInt() == 1);
-            } catch (FinderException e) {
+            } catch (EmptyResultDataAccessException e) {
                 // It doesn't matter, I will take the default
             } catch (Exception e) {
                 LOG.error("Exception ", e);
@@ -588,7 +588,7 @@ public class UserBL extends ResultList
             PreferenceBL pref = new PreferenceBL();
             try {
                 pref.set(dto.getEntityId(), Constants.PREFERENCE_HIDE_CC_NUMBERS);
-            } catch (FinderException e) {
+            } catch (EmptyResultDataAccessException e) {
                 // the default is good for me
             }
             
@@ -666,14 +666,13 @@ public class UserBL extends ResultList
      * with all her orders, etc ...
      * Not deleted for reporting reasong: invoices, payments
      */
-    public void delete(Integer executorId) 
-            throws RemoveException{
+    public void delete(Integer executorId) {
         user.setDeleted(1);
         user.setUserStatus(new UserStatusDAS().find(UserDTOEx.STATUS_DELETED));
         user.setLastStatusChange(Calendar.getInstance().getTime());
         
         // credit cards
-        for (CreditCard cc: user.getCreditCards()) {
+        for (CreditCardDTO cc: user.getCreditCards()) {
             cc.setDeleted(1);
         }
         // item prices
@@ -687,8 +686,6 @@ public class UserBL extends ResultList
         }
         // permisions
         user.getPermissions().clear();
-        // promotions
-        user.getPromotions().clear();
         // user saved reports
         for (ReportUserDTO report: user.getReports()) {
             new ReportUserDAS().delete(report);
@@ -747,17 +744,13 @@ public class UserBL extends ResultList
     		throws NamingException, CreateException, SessionInternalError {
     	AchBL bl = new AchBL();
     	// let's see if this guy already has an ach record
-    	Set<Ach> rows = user.getAchs();
+    	Set<AchDTO> rows = user.getAchs();
     	if (rows.size() == 0) {
     		bl.create(ach);
             rows.add(new AchDAS().find(bl.getEntity().getId()));
     	} else { // its an update
-    		try {
-                bl.set(((Ach)rows.toArray()[0]).getId());
+                bl.set(((AchDTO)rows.toArray()[0]).getId());
                 bl.update(executorId, ach);
-            } catch (FinderException e) {
-                e.printStackTrace();
-            }
     	}
     }
     
@@ -802,8 +795,7 @@ public class UserBL extends ResultList
         }
     }
     
-    public UserWS entity2WS() 
-            throws NamingException, FinderException {
+    public UserWS entity2WS()  {
         UserWS retValue = new UserWS();
         retValue.setCreateDatetime(user.getCreateDatetime());
         retValue.setCurrencyId(getCurrencyId());
@@ -827,9 +819,7 @@ public class UserBL extends ResultList
         // the credit card
         Collection ccs = user.getCreditCards();
         if (ccs.size() > 0) {
-            CreditCardBL cc = new CreditCardBL(((CreditCard) 
-                    ccs.toArray()[0]).getId());
-            retValue.setCreditCard(cc.getDTO());
+            retValue.setCreditCard(((CreditCardDTO) ccs.toArray()[0]).getOldDTO());
         }
         return retValue;
     }
@@ -981,7 +971,7 @@ public class UserBL extends ResultList
             try {
                 link.set(user.getEntity().getId(), 
                         Constants.PREFERENCE_LINK_AGEING_TO_SUBSCRIPTION);
-            } catch (FinderException e) {
+            } catch (EmptyResultDataAccessException e) {
                 // i'll use the default
             }
             if (link.getInt() == 1) {
@@ -1038,7 +1028,7 @@ public class UserBL extends ResultList
             try {
                 pref.set(user.getEntity().getId(), Constants.PREFERENCE_PASSWORD_EXPIRATION);
                 expirationDays = pref.getInt();
-            } catch (FinderException e) {
+            } catch (EmptyResultDataAccessException e) {
                 expirationDays = pref.getInt();
             } 
             
@@ -1082,7 +1072,7 @@ public class UserBL extends ResultList
         try {
             pref.set(user.getEntity().getId(), Constants.PREFERENCE_FAILED_LOGINS_LOCKOUT);
             allowedRetries = pref.getInt();
-        } catch (FinderException e) {
+        } catch (EmptyResultDataAccessException e) {
             allowedRetries = pref.getInt();
         } 
         
@@ -1148,7 +1138,7 @@ public class UserBL extends ResultList
             if (id != null) {
                 invoice = new InvoiceBL(id);
                 for(OrderProcessDTO period: 
-                    (Collection<OrderProcessDTO>)invoice.getEntity().getOrders()) {
+                    (Collection<OrderProcessDTO>)invoice.getEntity().getOrderProcesses()) {
                     
                     LOG.debug("testing from " + period.getPeriodStart() +
                             " tp " + period.getPeriodEnd() + " for " + forDate);
@@ -1201,23 +1191,25 @@ public class UserBL extends ResultList
 
     public CachedRowSet getByCCNumber(Integer entityId, String number) {
         try {
+        	
             prepareStatement(UserSQL.findByCreditCard);
             cachedResults.setString(1, number);
             cachedResults.setInt(2, entityId.intValue());
             execute();
             conn.close();
+            
             return cachedResults;
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
         }   
     }
     
-    public CreditCard getCreditCard() {
-        if (user.getCreditCards().isEmpty()) {
-            return null;
-        } else {
-            return (CreditCard) user.getCreditCards().toArray()[0];
-        }
+    public CreditCardDTO getCreditCard() {
+    	if (user.getCreditCards().isEmpty()) {
+    		return null;
+    	} else {
+    		return (CreditCardDTO) user.getCreditCards().toArray()[0];
+    	}
     }
 
     public Integer getByEmail(String email) {

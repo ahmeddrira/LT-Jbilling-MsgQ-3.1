@@ -27,12 +27,13 @@ package com.sapienter.jbilling.server.process;
 
 import java.util.Hashtable;
 
-import com.sapienter.jbilling.server.entity.BillingProcessRunTotalDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  * @author Emil
  */
-public class BillingProcessRunTotalDTOEx extends BillingProcessRunTotalDTO {
+public class BillingProcessRunTotalDTOEx extends ProcessRunTotalDTO {
 
     private Hashtable pmTotals = null;
     private String currencyName = null;
@@ -49,21 +50,13 @@ public class BillingProcessRunTotalDTOEx extends BillingProcessRunTotalDTO {
      * @param total
      * @param currencyId
      */
-    public BillingProcessRunTotalDTOEx(Integer id, Integer currencyId,
+    public BillingProcessRunTotalDTOEx(Integer id, CurrencyDTO currency,
             Float totalInvoiced, Float totalPaid, Float totalNotPaid) {
-        super(id, currencyId, totalInvoiced, totalPaid, totalNotPaid);
+        super(id == null? 0: id, null, currency, totalInvoiced, totalPaid, totalNotPaid);
         pmTotals = new Hashtable();
     }
 
     /**
-     * @param otherValue
-     */
-    public BillingProcessRunTotalDTOEx(BillingProcessRunTotalDTO otherValue) {
-        super(otherValue);
-        pmTotals = new Hashtable();
-    }
-
-   /**
      * @return
      */
     public Hashtable getPmTotals() {
@@ -91,4 +84,12 @@ public class BillingProcessRunTotalDTOEx extends BillingProcessRunTotalDTO {
         this.currencyName = currencyName;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer ret = new StringBuffer(super.toString());
+        ret.append(" currencyName: " + currencyName);
+        ret.append(" pmTotals " + pmTotals);
+
+        return ret.toString();
+    }
 }

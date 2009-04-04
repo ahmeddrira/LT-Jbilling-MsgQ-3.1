@@ -33,7 +33,9 @@ public final class Constants implements CommonConstants {
      * InitDataBase program and remain static.
      */
     // the agreed maximum length for a varchar.
-    public static final int MAX_VARCHAR_LENGTH = 1000; 
+    public static final int MAX_VARCHAR_LENGTH = 1000;
+    // this should be equal to hibernate.jdbc.batch_size
+    public static final int HIBERNATE_BATCH_SIZE = 100;
     // tables
     public static final String TABLE_ITEM = "item";
     public static final String TABLE_PUCHASE_ORDER = "purchase_order";

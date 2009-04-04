@@ -26,21 +26,20 @@ import java.util.Collection;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
 
 public class DescriptionBL {
-    InternationalDescriptionDAS descriptionDas;
+    private InternationalDescriptionDAS descriptionDas;
     
     public DescriptionBL() {
         init(); 
     }
     
     void init()  {
-        descriptionDas =new InternationalDescriptionDAS();
-        
+        descriptionDas = (InternationalDescriptionDAS) Context.getBean(Context.Name.DESCRIPTION_DAS);
     }
     
     public void delete(String table, Integer foreignId) {
         Collection toDelete = descriptionDas.findByTable_Row(table, 
                 foreignId);
                 
-        toDelete.clear(); // this would be cool if it works.
+        toDelete.clear(); // this would be cool if it worked.
     }
 }

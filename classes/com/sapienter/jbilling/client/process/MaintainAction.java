@@ -44,11 +44,10 @@ import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 
 public class MaintainAction extends Action {
 
@@ -150,7 +149,7 @@ public class MaintainAction extends Action {
                 }
                 Integer languageId = (Integer) session.getAttribute(
                         Constants.SESSION_LANGUAGE);
-                InvoiceDTOEx invoice = processSession.generateInvoice(
+                InvoiceDTO invoice = processSession.generateInvoice(
                         order.getId(), null, languageId);
                 
                 if (invoice != null) {
@@ -193,7 +192,7 @@ public class MaintainAction extends Action {
                 
                 Integer languageId = (Integer) session.getAttribute(
                         Constants.SESSION_LANGUAGE);
-                InvoiceDTOEx invoiceEx  = processSession.generateInvoice(
+                InvoiceDTO invoiceEx  = processSession.generateInvoice(
                         order.getId(), invoice.getId(), languageId);
                 
                 if (invoiceEx == null) {

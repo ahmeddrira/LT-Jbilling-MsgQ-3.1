@@ -50,7 +50,6 @@ import com.sapienter.jbilling.server.mediation.MediationSessionHome;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class MaintainAction extends Action {
     

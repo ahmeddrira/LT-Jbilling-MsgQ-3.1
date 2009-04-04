@@ -25,8 +25,9 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -45,7 +46,7 @@ public class PaymentPartnerTestTask
         if (paymentInfo.getPayoutId() == null) {
             return true;
         }
-        paymentInfo.setResultId(Constants.RESULT_OK);
+        paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
         return false;
     }
 

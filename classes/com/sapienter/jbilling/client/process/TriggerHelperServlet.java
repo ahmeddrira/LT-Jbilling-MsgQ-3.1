@@ -74,8 +74,6 @@ public class TriggerHelperServlet extends HttpServlet {
             throw new ServletException(e);
         }
         
-        // request a table to force the load
-        Util.getTableId("entity");
     }
     
     private void validateJava() {

@@ -30,7 +30,9 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.server.entity.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 public class ConfigurationMaintainAction extends
 		UpdateOnlyCrudActionBase<BillingProcessConfigurationDTO> {
@@ -81,7 +83,8 @@ public class ConfigurationMaintainAction extends
 	protected BillingProcessConfigurationDTO doEditFormToDTO()
 			throws RemoteException {
 		BillingProcessConfigurationDTO dto = new BillingProcessConfigurationDTO();
-		dto.setEntityId(entityId);
+		//we need to find the entity by id(entityId)
+		dto.setEntity(new CompanyDTO(entityId));
 
 		dto.setRetries(getIntegerFieldValue(FIELD_RETRIES));
 		dto.setNextRunDate(parseDate(FIELD_GROUP_RUN,
@@ -94,7 +97,9 @@ public class ConfigurationMaintainAction extends
 		dto.setInvoiceDateProcess(getCheckBoxValue(FIELD_INVOICE_DATE));
 		dto.setAutoPayment(getCheckBoxValue(FIELD_AUTO_PAYMENT));
 		dto.setAutoPaymentApplication(getCheckBoxValue(FIELD_APPLY_PAYMENT));
-		dto.setPeriodUnitId(getIntegerFieldValue(FIELD_PERIOD_UNIT));
+		
+		//we need to find the periodUnit by id
+		dto.setPeriodUnit(new PeriodUnitDTO(getIntegerFieldValue(FIELD_PERIOD_UNIT)));
 		dto.setPeriodValue(getIntegerFieldValue(FIELD_PERIOD_VALUE));
 		dto.setDueDateUnitId(getIntegerFieldValue(FIELD_DUE_DATE_UNIT));
 		dto.setDueDateValue(getIntegerFieldValue(FIELD_DUE_DATE_VALUE));
@@ -139,10 +144,10 @@ public class ConfigurationMaintainAction extends
 		myForm.set(FIELD_REPORT_DAYS, stringMayBeNull(dto.getDaysForReport()));
 		myForm.set(FIELD_MAX_PEROIDS, stringMayBeNull(dto.getMaximumPeriods()));
 
-		myForm.set(FIELD_PERIOD_UNIT, dto.getPeriodUnitId().toString());
-		myForm.set(FIELD_PERIOD_VALUE, dto.getPeriodValue().toString());
-		myForm.set(FIELD_DUE_DATE_UNIT, dto.getDueDateUnitId().toString());
-		myForm.set(FIELD_DUE_DATE_VALUE, dto.getDueDateValue().toString());
+		myForm.set(FIELD_PERIOD_UNIT, dto.getPeriodUnit().getId() + "");
+		myForm.set(FIELD_PERIOD_VALUE, dto.getPeriodValue() + "");
+		myForm.set(FIELD_DUE_DATE_UNIT, dto.getDueDateUnitId() + "");
+		myForm.set(FIELD_DUE_DATE_VALUE, dto.getDueDateValue() + "");
 
 		return getForwardEdit();
 	}

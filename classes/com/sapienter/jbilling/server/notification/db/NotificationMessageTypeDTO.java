@@ -44,7 +44,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_type", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "notification_message_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class NotificationMessageTypeDTO implements Serializable {

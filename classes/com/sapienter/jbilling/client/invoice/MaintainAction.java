@@ -39,7 +39,7 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
-import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
@@ -117,7 +117,7 @@ public class MaintainAction extends Action {
                 forward = "invoice_list";
             } else if (invoiceId != null ) {
             
-                InvoiceDTOEx dto = invoiceSession.getInvoiceEx(invoiceId,
+                InvoiceDTO dto = invoiceSession.getInvoiceEx(invoiceId,
                         (Integer) session.getAttribute(
                             Constants.SESSION_LANGUAGE));
                 // just put the dto in the session for viewing

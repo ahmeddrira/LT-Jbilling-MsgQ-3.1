@@ -98,7 +98,7 @@ public interface UserSQL {
         " ORDER BY 1";
 
     static final String findByCustomField= 
-        "SELECT id " +
+        "SELECT a.id " +
         "  FROM base_user a, contact c, contact_field cf " + 
         " WHERE c.user_id = a.id " +
         "    AND c.id = cf.contact_id " +

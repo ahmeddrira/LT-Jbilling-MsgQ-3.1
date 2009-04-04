@@ -20,17 +20,19 @@
 
 package com.sapienter.jbilling.server.payment;
 
-import java.util.Date;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
-import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
-import com.sapienter.jbilling.server.util.db.generated.Payment;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PaymentDTOEx extends PaymentDTO {
     
@@ -47,37 +49,80 @@ public class PaymentDTOEx extends PaymentDTO {
     // now we only support one of these
     private PaymentAuthorizationDTO authorization = null; // useful in refuds
 
-    public PaymentDTOEx(Payment dto) {
+    public PaymentDTOEx(PaymentDTO dto) {
         // TODO: this is not complete
         userId = dto.getBaseUser().getId();
         setId(dto.getId());
         setAmount(new Float(dto.getAmount()));
         setAttempt(dto.getAttempt());
-        setBalance(dto.getBalance() == null ? null : dto.getBalance().floatValue());
-        setCreateDateTime(dto.getCreateDatetime());
-        setCurrencyId(dto.getCurrency().getId());
+        setBalance(dto.getBalance());
+        setCreateDatetime(dto.getCreateDatetime());
+        setCurrency(dto.getCurrency());
         setDeleted(dto.getDeleted());
         setIsPreauth(dto.getIsPreauth());
         setIsRefund(dto.getIsRefund());
         if (dto.getPaymentMethod() != null) {
-            setMethodId(dto.getPaymentMethod().getId());
+            setPaymentMethod(dto.getPaymentMethod());
         }
         setPaymentDate(dto.getPaymentDate());
         if (dto.getPaymentResult() != null) {
-            setResultId(dto.getPaymentResult().getId());
+            setPaymentResult(dto.getPaymentResult());
         }
-        setUpdateDateTime(dto.getUpdateDatetime());
+        setUpdateDatetime(dto.getUpdateDatetime());
         
         invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
     }
     public PaymentDTOEx(PaymentWS dto) {
-        super(dto);
+        setId(dto.getId());
+        setAmount(new Float(dto.getAmount()));
+        setAttempt(dto.getAttempt());
+        setBalance(dto.getBalance());
+        setCreateDatetime(dto.getCreateDatetime());
+        setCurrency(new CurrencyDTO(dto.getCurrencyId()));
+        setDeleted(dto.getDeleted());
+        setIsPreauth(dto.getIsPreauth());
+        setIsRefund(dto.getIsRefund());
+        setPaymentMethod(new PaymentMethodDTO(dto.getMethodId()));
+        setPaymentDate(dto.getPaymentDate());
+        setUpdateDatetime(dto.getUpdateDatetime());
+        
+        setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
+		
         userId = dto.getUserId();
-        cheque = dto.getCheque();
-        creditCard = dto.getCreditCard();
+        
+        if (dto.getCheque() != null) {
+            PaymentInfoChequeDTO chqDTO = new PaymentInfoChequeDTO();
+            chqDTO.setBank(dto.getCheque().getBank());
+            chqDTO.setDate(dto.getCheque().getDate());
+            chqDTO.setId(dto.getCheque().getId() == null ? 0 : dto.getCheque().getId());
+            chqDTO.setNumber(dto.getCheque().getNumber());
+            cheque = chqDTO;
+        } else {
+            cheque = null;
+        }
+        
+        if (dto.getCreditCard() != null) {
+            creditCard = new CreditCardDTO(dto.getCreditCard());
+        } else {
+            creditCard = null;
+        }
+        
         method = dto.getMethod();
-        ach = dto.getAch();
+        
+        if (dto.getAch() != null) {
+            AchDTO achDTO = new AchDTO();
+            achDTO.setAbaRouting(dto.getAch().getAbaRouting());
+            achDTO.setAccountName(dto.getAch().getAccountName());
+            achDTO.setAccountType(dto.getAch().getAccountType());
+            achDTO.setBankAccount(dto.getAch().getBankAccount());
+            achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setId(dto.getAch().getId());
+            ach = achDTO;
+        } else {
+            ach = null;
+        }
+
         invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
         
@@ -94,7 +139,7 @@ public class PaymentDTOEx extends PaymentDTO {
             payment = null;
         }
         
-        authorization = dto.getAuthorization();
+        authorization = new PaymentAuthorizationDAS().find(dto.getAuthorizationId());
             
     }    
     /**
@@ -114,32 +159,32 @@ public class PaymentDTOEx extends PaymentDTO {
      * @param deleted
      * @param methodId
      */
-    public PaymentDTOEx(Integer id, Float amount, Date createDateTime,
-            Date updateDateTime,
-            Date paymentDate, Integer attempt, Integer deleted,
-            Integer methodId, Integer resultId, Integer isRefund,
-            Integer isPreauth, Integer currencyId, Float balance) {
-        super(id, amount, balance, createDateTime, updateDateTime,
-                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
-                isPreauth, currencyId, null);
-        invoiceIds = new Vector<Integer>();
-        paymentMaps = new Vector();
-    }
+//    public PaymentDTOEx(Integer id, Float amount, Date createDateTime,
+//            Date updateDateTime,
+//            Date paymentDate, Integer attempt, Integer deleted,
+//            Integer methodId, Integer resultId, Integer isRefund,
+//            Integer isPreauth, Integer currencyId, Float balance) {
+//        super(id, amount, balance, createDateTime, updateDateTime,
+//                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
+//                isPreauth, currencyId, null, null);
+//        invoiceIds = new Vector<Integer>();
+//        paymentMaps = new Vector();
+//    }
 
     /**
      * @param otherValue
      */
-    public PaymentDTOEx(PaymentDTO otherValue) {
-        super(otherValue);
-        invoiceIds = new Vector<Integer>();
-        paymentMaps = new Vector();
-    }
+//    public PaymentDTOEx(PaymentDTO otherValue) {
+//        super(otherValue);
+//        invoiceIds = new Vector<Integer>();
+//        paymentMaps = new Vector();
+//    }
 
     public boolean validate() {
         boolean retValue = true;
         
         // check some mandatory fields
-        if (getMethodId() == null || getResultId() == null) {
+        if (getPaymentMethod() == null || getPaymentResult() == null) {
             retValue = false;
         }
         
@@ -160,9 +205,9 @@ public class PaymentDTOEx extends PaymentDTO {
         StringBuffer cc = new StringBuffer("{");
         if (creditCard != null) {
             cc.append("id=" + creditCard.getId() + " " + "expiry="
-                    + creditCard.getExpiry() + " " + "name="
+                    + creditCard.getCcExpiry() + " " + "name="
                     + creditCard.getName() + " " + "type="
-                    + creditCard.getType() + " " + "deleted="
+                    + creditCard.getCcType() + " " + "deleted="
                     + creditCard.getDeleted() + " " + "securityCode="
                     + creditCard.getSecurityCode());
         }        

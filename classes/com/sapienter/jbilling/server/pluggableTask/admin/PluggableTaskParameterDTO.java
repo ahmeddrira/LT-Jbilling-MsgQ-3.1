@@ -52,7 +52,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="pluggable_task_parameter",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name = "pluggable_task_parameter")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

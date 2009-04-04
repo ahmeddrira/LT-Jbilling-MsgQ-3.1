@@ -48,7 +48,6 @@ import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
  * @author Emil

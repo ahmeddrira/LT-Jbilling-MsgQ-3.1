@@ -25,8 +25,6 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ItemSession;
-import com.sapienter.jbilling.interfaces.ItemSessionHome;
 
 public class ItemTest extends TestCase {
 

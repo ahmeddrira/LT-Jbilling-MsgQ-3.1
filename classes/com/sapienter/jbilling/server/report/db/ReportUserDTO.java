@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.report.db;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -37,9 +38,9 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
-import com.sapienter.jbilling.server.user.db.UserDTO;
-import java.util.HashSet;
 import org.hibernate.annotations.OrderBy;
+
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 @Entity
 @TableGenerator(
@@ -48,7 +49,7 @@ import org.hibernate.annotations.OrderBy;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "report_user", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "report_user")
 public class ReportUserDTO implements Serializable {
 
@@ -147,4 +148,3 @@ public class ReportUserDTO implements Serializable {
     }
 
 }
-

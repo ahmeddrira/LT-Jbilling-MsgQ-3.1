@@ -20,8 +20,20 @@
 package com.sapienter.jbilling.server.user.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.Ach;
 
-public class AchDAS extends AbstractDAS<Ach> {
+public class AchDAS extends AbstractDAS<AchDTO> {
+
+	public AchDTO create(String abaRouting, String bankAccount,
+			Integer accountType, String bankName, String accountName) {
+		
+		AchDTO ach = new AchDTO();
+		ach.setAbaRouting(abaRouting);
+		ach.setBankAccount(bankAccount);
+		ach.setAccountType(accountType);
+		ach.setBankName(bankName);
+		ach.setAccountName(accountName);
+		
+		return save(ach);
+	}
 
 }

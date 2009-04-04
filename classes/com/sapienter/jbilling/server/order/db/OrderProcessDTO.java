@@ -37,7 +37,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.sapienter.jbilling.server.invoice.db.Invoice;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 
 @Entity
@@ -47,7 +47,7 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="order_process",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="order_process")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -57,7 +57,7 @@ public class OrderProcessDTO  implements java.io.Serializable {
      private int id;
      private BillingProcessDTO billingProcessDTO;
      private OrderDTO orderDTO;
-     private Invoice invoiceDTO;
+     private InvoiceDTO invoiceDTO;
      private Integer periodsIncluded;
      private Date periodStart;
      private Date periodEnd;
@@ -74,7 +74,7 @@ public class OrderProcessDTO  implements java.io.Serializable {
         this.id = id;
         this.isReview = isReview;
     }
-    public OrderProcessDTO(int id, BillingProcessDTO billingProcessDTO, OrderDTO orderDTO, Invoice invoice, 
+    public OrderProcessDTO(int id, BillingProcessDTO billingProcessDTO, OrderDTO orderDTO, InvoiceDTO invoice, 
     		Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
        this.id = id;
        this.billingProcessDTO = billingProcessDTO;
@@ -119,11 +119,11 @@ public class OrderProcessDTO  implements java.io.Serializable {
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="invoice_id")
-    public Invoice getInvoice() {
+    public InvoiceDTO getInvoice() {
         return this.invoiceDTO;
     }
     
-    public void setInvoice(Invoice invoice) {
+    public void setInvoice(InvoiceDTO invoice) {
         this.invoiceDTO = invoice;
     }
     

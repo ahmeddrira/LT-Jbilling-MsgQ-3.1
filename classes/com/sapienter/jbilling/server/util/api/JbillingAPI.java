@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.util.api;
 
 import java.util.Date;
 
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -34,6 +33,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
 public interface JbillingAPI {
     public InvoiceWS getInvoiceWS(Integer invoiceId)

@@ -33,13 +33,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import com.sapienter.jbilling.server.entity.PaymentDTO;
-import com.sapienter.jbilling.server.util.db.generated.Payment;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 
 @Entity
 @TableGenerator(
@@ -54,7 +51,7 @@ import com.sapienter.jbilling.server.util.db.generated.Payment;
 public class PartnerPayout  implements java.io.Serializable {
 
      private int id;
-     private Payment payment;
+     private PaymentDTO payment;
      private Partner partner;
      private Date startingDate;
      private Date endingDate;
@@ -68,7 +65,7 @@ public class PartnerPayout  implements java.io.Serializable {
      private PaymentDTO paymentDTO = null;
 
     public PartnerPayout() {
-        payment = new Payment();
+        payment = new PaymentDTO();
     }
 
 	
@@ -80,7 +77,7 @@ public class PartnerPayout  implements java.io.Serializable {
         this.refundsAmount = refundsAmount;
         this.balanceLeft = balanceLeft;
     }
-    public PartnerPayout(int id, Payment payment, Partner partner, Date startingDate, Date endingDate, double paymentsAmount, double refundsAmount, double balanceLeft) {
+    public PartnerPayout(int id, PaymentDTO payment, Partner partner, Date startingDate, Date endingDate, double paymentsAmount, double refundsAmount, double balanceLeft) {
        this.id = id;
        this.payment = payment;
        this.partner = partner;
@@ -102,11 +99,11 @@ public class PartnerPayout  implements java.io.Serializable {
     }
 @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="payment_id")
-    public Payment getPayment() {
+    public PaymentDTO getPayment() {
         return this.payment;
     }
     
-    public void setPayment(Payment payment) {
+    public void setPayment(PaymentDTO payment) {
         this.payment = payment;
     }
 @ManyToOne(fetch=FetchType.LAZY)
@@ -118,7 +115,6 @@ public class PartnerPayout  implements java.io.Serializable {
     public void setPartner(Partner partner) {
         this.partner = partner;
     }
-    @Temporal(TemporalType.DATE)
     @Column(name="starting_date", nullable=false, length=13)
     public Date getStartingDate() {
         return this.startingDate;
@@ -127,7 +123,6 @@ public class PartnerPayout  implements java.io.Serializable {
     public void setStartingDate(Date startingDate) {
         this.startingDate = startingDate;
     }
-    @Temporal(TemporalType.DATE)
     @Column(name="ending_date", nullable=false, length=13)
     public Date getEndingDate() {
         return this.endingDate;

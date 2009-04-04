@@ -53,6 +53,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -66,11 +67,9 @@ import org.hibernate.collection.PersistentSet;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDAS;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
@@ -90,6 +89,7 @@ import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
@@ -99,6 +99,7 @@ import java.io.StringWriter;
 import javax.sql.DataSource;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
@@ -112,6 +113,7 @@ import org.apache.velocity.tools.generic.SortTool;
 import org.apache.velocity.tools.generic.IteratorTool;
 
 
+
 public class NotificationBL extends ResultList implements NotificationSQL {
     //
     private NotificationMessageDAS messageDas = null;
@@ -120,13 +122,13 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     private NotificationMessageLineDAS messageLineHome = null;
     private static final Logger LOG = Logger.getLogger(NotificationBL.class);
 
-    public NotificationBL(Integer messageId) throws NamingException {
+    public NotificationBL(Integer messageId)  {
         init();
         LOG.debug("Constructor ...");
         messageRow = messageDas.find(messageId);
     }
 
-    public NotificationBL() throws NamingException {
+    public NotificationBL() {
         init();
     }
 
@@ -216,22 +218,22 @@ public class NotificationBL extends ResultList implements NotificationSQL {
      */
 
     public MessageDTO[] getInvoiceMessages(Integer entityId, Integer processId,
-            Integer languageId, InvoiceEntityLocal invoice)
+            Integer languageId, InvoiceDTO invoice)
             throws SessionInternalError, NamingException,
             NotificationNotFoundException {
         MessageDTO retValue[] = null;
         Integer deliveryMethod;
         // now see what kind of invoice this customers wants
-        if (invoice.getUser().getCustomer() == null) {
+        if (invoice.getBaseUser().getCustomer() == null) {
             // this shouldn't be necessary. The only reason is here is
             // because the test data has invoices for root users. In
             // reality, all users that will get an invoice have to be
             // customers
             deliveryMethod = Constants.D_METHOD_EMAIL;
             LOG.warn("A user that is not a customer is getting an invoice."
-                    + " User id = " + invoice.getUser().getUserId());
+                    + " User id = " + invoice.getBaseUser().getUserId());
         } else {
-            deliveryMethod = invoice.getUser().getCustomer()
+            deliveryMethod = invoice.getBaseUser().getCustomer()
                     .getInvoiceDeliveryMethod().getId();
         }
 
@@ -259,7 +261,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     public MessageDTO getInvoicePaperMessage(Integer entityId,
-            Integer processId, Integer languageId, InvoiceEntityLocal invoice)
+            Integer processId, Integer languageId, InvoiceDTO invoice)
             throws SessionInternalError, NamingException {
         MessageDTO retValue = new MessageDTO();
 
@@ -268,7 +270,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
         // put the whole invoice as a parameter
         InvoiceBL invoiceBl = new InvoiceBL(invoice);
-        InvoiceDTOEx invoiceDto = invoiceBl.getDTOEx(languageId, true);
+        InvoiceDTO invoiceDto = invoiceBl.getDTOEx(languageId, true);
         retValue.getParameters().put("invoiceDto", invoiceDto);
         // the process id is needed to maintain the batch record
         if (processId != null) {
@@ -309,9 +311,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // find the description for the payment method
             PaymentBL payment = new PaymentBL();
             message.addParameter("method", payment.getMethodDescription(dto
-                    .getMethodId(), languageId));
+                    .getPaymentMethod(), languageId));
             message.addParameter("total", Util.formatMoney(dto.getAmount(), dto
-                    .getUserId(), dto.getCurrencyId(), true));
+                    .getUserId(), dto.getCurrency().getId(), true));
             
             message.addParameter("payment", payment.getEntity());
             // find an invoice in the list of invoices id
@@ -319,22 +321,20 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                 Integer invoiceId = (Integer) dto.getInvoiceIds().get(0);
                 InvoiceBL invoice = new InvoiceBL(invoiceId);
                 message.addParameter("invoice_number", invoice.getEntity()
-                        .getNumber().toString());
-                message.addParameter("invoice", invoice.getEntity());
+                        .getPublicNumber().toString());
+                message.addParameter("invoice", invoice);
             }
             message.addParameter("payment", dto);
         } catch (NamingException e) {
             throw new SessionInternalError(e);
-        } catch (FinderException e2) {
-            throw new SessionInternalError(e2);
-        }
+        } 
 
         return message;
     }
 
     public MessageDTO getInvoiceRemainderMessage(Integer entityId,
             Integer userId, Integer days, Date dueDate, String number,
-            Float total, Date date, Integer currencyId)
+            BigDecimal total, Date date, Integer currencyId)
             throws SessionInternalError, NotificationNotFoundException {
         UserBL user = null;
         Integer languageId = null;
@@ -349,7 +349,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             message.addParameter("days", days.toString());
             message.addParameter("dueDate", Util.formatDate(dueDate, userId));
             message.addParameter("number", number);
-            message.addParameter("total", Util.formatMoney(total, userId,
+            message.addParameter("total", Util.formatMoney(total.floatValue(), userId,
                     currencyId, true));
             message.addParameter("date", Util.formatDate(date, userId));
 
@@ -378,9 +378,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     public MessageDTO getInvoiceEmailMessage(Integer entityId,
-            Integer languageId, InvoiceEntityLocal invoice)
+            Integer languageId, InvoiceDTO invoice)
             throws SessionInternalError, NotificationNotFoundException {
-        MessageDTO message = initializeMessage(entityId, invoice.getUser()
+        MessageDTO message = initializeMessage(entityId, invoice.getBaseUser()
                 .getUserId());
 
         message.setTypeId(MessageDTO.TYPE_INVOICE_EMAIL);
@@ -392,14 +392,14 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             throw new SessionInternalError(e);
         }
 
-        message.addParameter("total", Util.formatMoney(invoice.getTotal(),
-                invoice.getUser().getUserId(), invoice.getCurrencyId(), true));
-        message.addParameter("id", invoice.getId().toString());
-        message.addParameter("number", invoice.getNumber());
+        message.addParameter("total", Util.formatMoney(invoice.getTotal().floatValue(),
+                invoice.getBaseUser().getUserId(), invoice.getCurrency().getId(), true));
+        message.addParameter("id", invoice.getId() + "");
+        message.addParameter("number", invoice.getPublicNumber());
         // format the date depending of the customers locale
 
         message.addParameter("due date", Util.formatDate(invoice.getDueDate(),
-                invoice.getUser().getUserId()));
+                invoice.getBaseUser().getUserId()));
         String notes = invoice.getCustomerNotes();
         
         message.addParameter("notes", notes);
@@ -411,7 +411,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             try {
                 pref.set(entityId, Constants.PREFERENCE_PDF_ATTACHMENT);
-            } catch (FinderException e1) {
+            } catch (EmptyResultDataAccessException e1) {
                 // no problem, I'll get the defaults
             }
             if (pref.getInt() == 1) {
@@ -427,7 +427,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
     public MessageDTO getAgeingMessage(Integer entityId, Integer languageId,
             Integer statusId, Integer userId) throws SessionInternalError,
-            NotificationNotFoundException, FinderException {
+            NotificationNotFoundException {
         MessageDTO message = initializeMessage(entityId, userId);
         message.setTypeId(new Integer(MessageDTO.TYPE_AGEING.intValue()
                 + statusId.intValue() - 1));
@@ -436,18 +436,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             setContent(message, message.getTypeId(), entityId, languageId);
             UserBL user = new UserBL(userId);
             InvoiceBL invoice = new InvoiceBL();
-            Integer invoiceId = null;
-
-            Integer overdueInvoiceIds[] = invoice.getUsersOverdueInvoices(
-                    userId, new Date());
-            if (overdueInvoiceIds.length > 0) {
-                // choose latest one
-                invoiceId = overdueInvoiceIds[0];
-            } else {
-                LOG.warn("Didn't find overdue invoice. Getting last invoice.");
-                invoiceId = invoice.getLastByUser(userId);
-            }
-
+            Integer invoiceId = invoice.getLastByUser(userId);
             if (invoiceId != null) {
                 invoice.set(invoiceId);
 
@@ -554,7 +543,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             setContent(message, message.getTypeId(), entityId, languageId);
             SimpleDateFormat format = new SimpleDateFormat("MM/yy");
             message.addParameter("expiry_date", format.format(creditCard
-                    .getExpiry()));
+                    .getCcExpiry()));
         } catch (NamingException e) {
             throw new SessionInternalError(e);
         }
@@ -704,7 +693,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     public static byte[] generatePaperInvoiceAsStream(String design,
-            InvoiceDTOEx invoice, ContactDTOEx from, ContactDTOEx to,
+            InvoiceDTO invoice, ContactDTOEx from, ContactDTOEx to,
             String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
@@ -719,7 +708,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     public static String generatePaperInvoiceAsFile(String design,
-            InvoiceDTOEx invoice, ContactDTOEx from, ContactDTOEx to,
+            InvoiceDTO invoice, ContactDTOEx from, ContactDTOEx to,
             String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
@@ -742,7 +731,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
     }
 
     private static JasperPrint generatePaperInvoice(String design,
-            InvoiceDTOEx invoice, ContactDTOEx from, ContactDTOEx to,
+            InvoiceDTO invoice, ContactDTOEx from, ContactDTOEx to,
             String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
@@ -761,7 +750,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             // add all the invoice data
             HashMap<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("invoiceNumber", invoice.getNumber());
+            parameters.put("invoiceNumber", invoice.getPublicNumber());
             parameters.put("entityName", printable(from.getOrganizationName()));
             parameters.put("entityAddress", printable(from.getAddress1()));
             parameters.put("entityPostalCode", printable(from.getPostalCode()));
@@ -781,7 +770,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             parameters.put("customerPassword", password);
             parameters.put("customerId", invoice.getUserId().toString());
             parameters.put("invoiceDate", Util.formatDate(invoice
-                    .getCreateDateTime(), invoice.getUserId()));
+                    .getCreateDatetime(), invoice.getUserId()));
             parameters.put("invoiceDueDate", Util.formatDate(invoice
                     .getDueDate(), invoice.getUserId()));
             LOG.debug("m1 = " + message1 + " m2 = " + message2);
@@ -806,16 +795,16 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                 try {
                     parameters.put("paid", Util.formatMoney(new Float(invoiceBL
                             .getTotalPaid()), invoice.getUserId(), invoice
-                            .getCurrencyId(), false));
+                            .getCurrency().getId(), false));
                     // find the previous invoice and its payment for extra info
                     invoiceBL.setPrevious();
                     parameters.put("prevInvoiceTotal", Util.formatMoney(
-                            invoiceBL.getEntity().getTotal(), invoice
-                                    .getUserId(), invoice.getCurrencyId(),
+                            invoiceBL.getEntity().getTotal().floatValue(), invoice
+                                    .getUserId(), invoice.getCurrency().getId(),
                             false));
                     parameters.put("prevInvoicePaid", Util.formatMoney(
                             new Float(invoiceBL.getTotalPaid()), invoice
-                                    .getUserId(), invoice.getCurrencyId(),
+                                    .getUserId(), invoice.getCurrency().getId(),
                             false));
                 } catch (FinderException e1) {
                     parameters.put("prevInvoiceTotal", "0");
@@ -854,16 +843,18 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // we need to extract the taxes from them, put the taxes as
             // an independent parameter, and add the taxes rates as more
             // parameters
-            Vector lines = invoice.getInvoiceLines();
             BigDecimal taxTotal = new BigDecimal(0);
             int taxItemIndex = 0;
-            for (int f = 0; f < lines.size(); f++) {
-                InvoiceLineDTOEx line = (InvoiceLineDTOEx) lines.get(f);
+            // I need a copy, so to not affect the real invoice
+            Vector<InvoiceLineDTO> lines = new Vector<InvoiceLineDTO>(invoice.getInvoiceLines());
+           // Collections.copy(lines, invoice.getInvoiceLines());
+            
+            for (InvoiceLineDTO line: lines) {
                 // log.debug("Processing line " + line);
                 // process the tax, if this line is one
-                if (line.getTypeId() != null && // for headers/footers
-                        line.getTypeId()
-                                .equals(Constants.INVOICE_LINE_TYPE_TAX)) {
+                if (line.getInvoiceLineType() != null && // for headers/footers
+                        line.getInvoiceLineType().getId() == 
+                                Constants.INVOICE_LINE_TYPE_TAX) {
                     // update the total tax variable
                     taxTotal = taxTotal.add(new BigDecimal(line.getAmount()
                             .toString()));
@@ -872,8 +863,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                             .float2string(line.getPrice(), locale));
                     taxItemIndex++;
                     // taxes are not displayed as invoice lines
-                    lines.remove(f);
-                    f = 0; // has to start all over again
+                    lines.remove(line);
                 } else if (line.getIsPercentage().intValue() == 1) {
                     // if the line is a percentage, remove the price
                     line.setPrice(null);
@@ -884,14 +874,14 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // now add the tax
             parameters.put("tax", Util.formatMoney(new Float(taxTotal
                     .floatValue()), invoice.getUserId(), invoice
-                    .getCurrencyId(), false));
-            parameters.put("totalWithTax", Util.formatMoney(invoice.getTotal(),
-                    invoice.getUserId(), invoice.getCurrencyId(), false));
+                    .getCurrency().getId(), false));
+            parameters.put("totalWithTax", Util.formatMoney(invoice.getTotal().floatValue(),
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
             parameters.put("totalWithoutTax", Util.formatMoney(new Float(
                     invoice.getTotal().floatValue() - taxTotal.floatValue()),
-                    invoice.getUserId(), invoice.getCurrencyId(), false));
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
             parameters.put("balance", Util.formatMoney(invoice.getBalance(),
-                    invoice.getUserId(), invoice.getCurrencyId(), false));
+                    invoice.getUserId(), invoice.getCurrency().getId(), false));
 
             LOG.debug("Parameter tax = " + parameters.get("tax")
                     + " totalWithTax = " + parameters.get("totalWithTax")
@@ -1096,21 +1086,21 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         return retValue;
     }
 
-    public String generatePaperInvoiceAsFile(InvoiceEntityLocal invoice)
+    public String generatePaperInvoiceAsFile(InvoiceDTO invoice)
             throws SessionInternalError {
 
         try {
-            Integer entityId = invoice.getUser().getEntity().getId();
+            Integer entityId = invoice.getBaseUser().getEntity().getId();
 
             // the language doesn't matter when getting a paper invoice
             MessageDTO paperMsg = getInvoicePaperMessage(entityId, null,
-                    invoice.getUser().getLanguageIdField(), invoice);
+                    invoice.getBaseUser().getLanguageIdField(), invoice);
             PaperInvoiceNotificationTask task = new PaperInvoiceNotificationTask();
             PluggableTaskBL taskBL = new PluggableTaskBL();
             taskBL.set(entityId, Constants.PLUGGABLE_TASK_T_PAPER_INVOICE);
             task.initializeParamters(taskBL.getDTO());
 
-            String filename = task.getPDFFile(invoice.getUser(), paperMsg);
+            String filename = task.getPDFFile(invoice.getBaseUser(), paperMsg);
 
             return filename;
         } catch (Exception e) {

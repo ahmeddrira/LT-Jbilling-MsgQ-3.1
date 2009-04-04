@@ -21,21 +21,23 @@
 /*
  * Created on Oct 7, 2003
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.process;
 
 import java.util.Date;
+
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import java.util.Vector;
 
-import com.sapienter.jbilling.server.entity.BillingProcessDTO;
+
 
 /**
  * @author Emil
  */
 public class BillingProcessDTOEx extends BillingProcessDTO {
 
-    private Vector<BillingProcessRunDTOEx> runs = null; 
+    private Vector<BillingProcessRunDTOEx> runs = null;
     private BillingProcessRunDTOEx grandTotal = null;
     private Integer retries = null;
     private Date billingDateEnd = null;
@@ -57,19 +59,19 @@ public class BillingProcessDTOEx extends BillingProcessDTO {
      * @param periodUnitId
      * @param periodValue
      */
-    public BillingProcessDTOEx(Integer id, Integer entityId, Date billingDate,
-            Integer periodUnitId, Integer periodValue, Integer isReview,
-            Integer retries) {
-        super(id, entityId, billingDate, periodUnitId, periodValue, isReview,
-                retries);
-    }
+//    public BillingProcessDTOEx(Integer id, Integer entityId, Date billingDate,
+//            Integer periodUnitId, Integer periodValue, Integer isReview,
+//            Integer retries) {
+//        super(id, entityId, billingDate, periodUnitId, periodValue, isReview,
+//                retries);
+//    }
 
     /**
      * @param otherValue
      */
-    public BillingProcessDTOEx(BillingProcessDTO otherValue) {
-        super(otherValue);
-    }
+//    public BillingProcessDTOEx(BillingProcessDTO otherValue) {
+//        super(otherValue);
+//    }
 
     /**
      * @return
@@ -130,6 +132,18 @@ public class BillingProcessDTOEx extends BillingProcessDTO {
      */
     public void setOrdersProcessed(Integer ordersProcessed) {
         this.ordersProcessed = ordersProcessed;
-    }    
+    }
+
+    public String toString() {
+        StringBuffer ret = new StringBuffer(super.toString() + " grandTotal = " + grandTotal +
+                " retries: " + retries + " date end: " + billingDateEnd +
+                " ordersProcessed: " + ordersProcessed);
+        
+        for (BillingProcessRunDTOEx run: runs) {
+            ret.append(run.toString());
+        }
+
+        return ret.toString();
+    }
 
 }

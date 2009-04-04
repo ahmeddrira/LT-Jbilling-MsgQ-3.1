@@ -18,22 +18,17 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on 27-Feb-2003
- *
- * Copyright Sapienter Enterprise Software
- */
 package com.sapienter.jbilling.server.list;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.naming.NamingException;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.server.util.Context;
+import javax.sql.DataSource;
 
 /**
  * Makes a JDBC query using the sql string got as a parameter.
@@ -46,35 +41,32 @@ import com.sapienter.jbilling.common.JNDILookup;
  * is considered. This is ment for list that are small enough to
  * fit in memory in the web server tier.
  * 
- * @author Emil
+ * @author Emil Created on 27-Feb-2003
  */
-
-
 public class ResultList {
-	protected CachedRowSet cachedResults;
-	protected Connection conn = null;
-	
-	protected ResultList() {
+
+    protected CachedRowSet cachedResults;
+    protected Connection conn = null;
+
+    protected ResultList() {
     }
-	
-	protected void prepareStatement(String SQL) throws SQLException, NamingException {
-	    
-	    // the default is TYPE_SCROLL_INSENSITIVE and CONCUR_READ_ONLY
-	    // which is good
+
+    protected void prepareStatement(String SQL) throws SQLException {
+
+        // the default is TYPE_SCROLL_INSENSITIVE and CONCUR_READ_ONLY
+        // which is good
         cachedResults = new CachedRowSet();
-        
+
         cachedResults.setCommand(SQL);
         cachedResults.setFetchDirection(ResultSet.FETCH_UNKNOWN);
-        // the BL list class will set the parameters of the query
-	}
-	
-    protected void execute() throws SQLException, NamingException {
-        JNDILookup jndi = JNDILookup.getFactory();
+    // the BL list class will set the parameters of the query
+    }
+
+    protected void execute() throws SQLException {
         // the connection will be closed by the RowSet as soon as it
         // finished executing the command
-        conn = jndi.lookUpDataSource().getConnection();
-        
-		cachedResults.execute(conn);	    
-	}
+        conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
 
+        cachedResults.execute(conn);
+    }
 }

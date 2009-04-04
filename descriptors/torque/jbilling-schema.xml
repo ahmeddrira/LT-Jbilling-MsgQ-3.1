@@ -10,6 +10,7 @@
         <column name="account_type" required="true" type="INTEGER"/>
         <column name="bank_name" required="true" size="50" type="VARCHAR"/>
         <column name="account_name" required="true" size="100" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="ach_i_2">
             <index-column name="user_id"/>
@@ -23,6 +24,7 @@
         <column name="entity_id" type="INTEGER"/>
         <column name="status_id" type="INTEGER"/>
         <column name="days" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="generic_status">
             <reference foreign="id" local="status_id"/>
         </foreign-key>
@@ -74,6 +76,7 @@
         <column name="is_review" required="true" type="INTEGER"/>
         <column name="paper_invoice_batch_id" type="INTEGER"/>
         <column default="0" name="retries_to_do" required="true" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="period_unit">
             <reference foreign="id" local="period_unit_id"/>
         </foreign-key>
@@ -100,6 +103,7 @@
         <column name="df_fm" type="SMALLINT"/>
         <column default="1" name="only_recurring" required="true" type="SMALLINT"/>
         <column name="invoice_date_process" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <column default="0" name="auto_payment" required="true" type="SMALLINT"/>
         <column default="1" name="maximum_periods" required="true" type="INTEGER"/>
         <column default="0" name="auto_payment_application"
@@ -119,6 +123,7 @@
         <column name="finished" type="TIMESTAMP"/>
         <column name="payment_finished" type="TIMESTAMP"/>
         <column name="invoices_generated" type="INTEGER"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="bp_run_process_ix">
             <index-column name="process_id"/>
         </index>
@@ -133,6 +138,7 @@
         <column name="total_invoiced" type="DOUBLE"/>
         <column name="total_paid" type="DOUBLE"/>
         <column name="total_not_paid" type="DOUBLE"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="bp_run_total_run_ix">
             <index-column name="process_run_id"/>
         </index>
@@ -148,6 +154,7 @@
         <column name="process_run_total_id" type="INTEGER"/>
         <column name="payment_method_id" type="INTEGER"/>
         <column name="total" required="true" type="DOUBLE"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="bp_pm_index_total">
             <index-column name="process_run_total_id"/>
         </index>
@@ -253,6 +260,9 @@
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="contact_map_i_3">
+            <index-column name="contact_id"/>
+        </index>
+        <index name="contact_map_i_1">
             <index-column name="table_id"/>
             <index-column name="foreign_id"/>
             <index-column name="type_id"/>
@@ -478,6 +488,7 @@
         <column name="last_reminder" type="DATE"/>
         <column name="overdue_step" type="INTEGER"/>
         <column name="create_timestamp" required="true" type="TIMESTAMP"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_invoice_user_id">
             <index-column name="user_id"/>
             <index-column name="deleted"/>
@@ -533,6 +544,7 @@
         <column name="description" size="1000" type="VARCHAR"/>
         <column name="source_user_id" type="INTEGER"/>
         <column default="0" name="is_percentage" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_invoice_line_invoice_id">
             <index-column name="invoice_id"/>
         </index>
@@ -627,14 +639,6 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="name" required="true" size="50" type="VARCHAR"/>
         <column default="0" name="next_id" required="true" type="INTEGER"/>
-    </table>
-    <table name="jbilling_table_column">
-        <column name="table_id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="name" required="true" size="50" type="VARCHAR"/>
-        <foreign-key foreignTable="jbilling_table">
-            <reference foreign="id" local="table_id"/>
-        </foreign-key>
     </table>
     <table name="language">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
@@ -843,6 +847,7 @@
         <column name="total_invoices" required="true" type="INTEGER"/>
         <column name="delivery_date" type="DATE"/>
         <column name="is_self_managed" required="true" type="SMALLINT"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
     </table>
     <table name="partner">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
@@ -926,6 +931,7 @@
         <column name="payout_id" type="INTEGER"/>
         <column name="ach_id" type="INTEGER"/>
         <column name="balance" type="DOUBLE"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="payment_i_2">
             <index-column name="user_id"/>
             <index-column name="create_datetime"/>
@@ -961,10 +967,10 @@
     <table name="payment_authorization">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="payment_id" type="INTEGER"/>
-        <column name="processor" required="true" size="20" type="VARCHAR"/>
-        <column name="code1" required="true" size="20" type="VARCHAR"/>
-        <column name="code2" size="20" type="VARCHAR"/>
-        <column name="code3" size="20" type="VARCHAR"/>
+        <column name="processor" required="true" size="40" type="VARCHAR"/>
+        <column name="code1" required="true" size="40" type="VARCHAR"/>
+        <column name="code2" size="40" type="VARCHAR"/>
+        <column name="code3" size="40" type="VARCHAR"/>
         <column name="approval_code" size="20" type="VARCHAR"/>
         <column name="avs" size="20" type="VARCHAR"/>
         <column name="transaction_id" size="20" type="VARCHAR"/>
@@ -972,6 +978,7 @@
         <column name="card_code" size="100" type="VARCHAR"/>
         <column name="create_datetime" required="true" type="DATE"/>
         <column name="response_message" size="200" type="VARCHAR"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="create_datetime">
             <index-column name="create_datetime"/>
         </index>
@@ -991,6 +998,7 @@
         <column name="bank" size="50" type="VARCHAR"/>
         <column name="cheque_number" size="50" type="VARCHAR"/>
         <column name="cheque_date" type="DATE"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="payment">
             <reference foreign="id" local="payment_id"/>
         </foreign-key>
@@ -1001,6 +1009,7 @@
         <column name="invoice_id" type="INTEGER"/>
         <column name="amount" type="DOUBLE"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_uq_payment_inv_map_pa_in">
             <index-column name="payment_id"/>
             <index-column name="invoice_id"/>
@@ -1099,7 +1108,7 @@
     </table>
     <table name="pluggable_task_type_category">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="description" required="true" size="30" type="VARCHAR"/>
+        <column name="description" required="true" size="50" type="VARCHAR"/>
         <column name="interface_name" required="true" size="200" type="VARCHAR"/>
     </table>
     <table name="preference">

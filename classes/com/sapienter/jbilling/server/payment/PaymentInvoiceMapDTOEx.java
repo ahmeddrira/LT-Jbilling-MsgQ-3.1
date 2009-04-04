@@ -22,7 +22,8 @@ package com.sapienter.jbilling.server.payment;
 
 import java.util.Date;
 
-import com.sapienter.jbilling.server.entity.PaymentInvoiceMapDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
+
 
 
 public class PaymentInvoiceMapDTOEx extends PaymentInvoiceMapDTO {
@@ -41,7 +42,7 @@ public class PaymentInvoiceMapDTOEx extends PaymentInvoiceMapDTO {
         this.paymentId = paymentId;
     }
 
-    public Integer getInvoiceId() {
+    public int getInvoiceId() {
         return invoiceId;
     }
 
@@ -61,6 +62,6 @@ public class PaymentInvoiceMapDTOEx extends PaymentInvoiceMapDTO {
                 " invoiceId=" + invoiceId +
                 " currencyId=" + currencyId +
                 " amount=" + getAmount() +
-                " date=" + getCreateDateTime();
+                " date=" + getCreateDatetime();
     }
 }

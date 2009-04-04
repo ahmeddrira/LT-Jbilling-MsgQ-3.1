@@ -33,9 +33,10 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
 @TableGenerator(
@@ -44,7 +45,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="item_price",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="item_price")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

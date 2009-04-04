@@ -25,7 +25,6 @@ import java.util.GregorianCalendar;
 import java.util.ResourceBundle;
 
 import javax.ejb.FinderException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
@@ -207,12 +206,7 @@ public class CurrentOrder {
         
         // create the order
         if (order == null) {
-            try {
-                order = new OrderBL();
-            } catch (NamingException e) {
-                throw new SessionInternalError("Error creating order", 
-                        CurrentOrder.class, e);
-            }
+            order = new OrderBL();
         }
         order.set(currentOrder);
         order.addRelationships(userId, Constants.ORDER_PERIOD_ONCE, currencyId);

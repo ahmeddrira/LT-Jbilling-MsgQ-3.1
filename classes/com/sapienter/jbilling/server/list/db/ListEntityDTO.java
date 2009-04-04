@@ -48,7 +48,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "list_entity", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "list_entity", uniqueConstraints = @UniqueConstraint(columnNames = {
         "list_id", "entity_id" }))
 public class ListEntityDTO implements Serializable {

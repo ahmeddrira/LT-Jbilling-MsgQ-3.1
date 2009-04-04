@@ -245,7 +245,7 @@ public class BasicOrderPeriodTask
     protected Date getViewLimit(Integer entityId, Date processDate) {
         try {
 			ConfigurationBL config = new ConfigurationBL(entityId);
-			Integer periodUnitId = config.getEntity().getPeriodUnitId();
+			Integer periodUnitId = config.getEntity().getPeriodUnit().getId();
 			Integer periodValue = config.getEntity().getPeriodValue();
 			Calendar cal = Calendar.getInstance();
    

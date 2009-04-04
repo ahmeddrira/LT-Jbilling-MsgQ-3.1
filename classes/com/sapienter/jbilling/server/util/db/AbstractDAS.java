@@ -30,7 +30,6 @@ import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -39,8 +38,11 @@ import org.hibernate.ejb.HibernateEntityManager;
 import org.hibernate.ejb.HibernateEntityManagerFactory;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import org.hibernate.LockMode;
 
 
+// TODO: extend HibernateDaoSupport and get the sessionFactory from the spring context
+// (no need for a template)
 public abstract class AbstractDAS<T> {
 
     private static final Logger LOG = Logger.getLogger(AbstractDAS.class);
@@ -92,6 +94,9 @@ public abstract class AbstractDAS<T> {
         getSession().delete(entity);
     }
 
+    public void refresh(T entity) {
+    	getSession().refresh(entity);
+    }
     protected Session getSession() {
         Session mySession = null;
         if (em != null) {
@@ -134,7 +139,23 @@ public abstract class AbstractDAS<T> {
         T entity = (T) getSession().get(getPersistentClass(), id);
 
         return entity;
-    }    
+    }
+
+    /**
+     * This will lock the row for the duration of this transaction. Or wait until the row is
+     * unlocked if it is already locked. It genererates a select ... for update
+     * @param id
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public T findForUpdate(Serializable id) {
+        if (id == null) {
+            return null;
+        }
+        T entity = (T) getSession().get(getPersistentClass(), id, LockMode.UPGRADE);
+
+        return entity;
+    }
 
     @SuppressWarnings("unchecked")
     public List<T> findAll() {

@@ -41,7 +41,7 @@
 	 		<td class="infoprompt"><bean:message key="payment.amount"/></td>
 	 	    <td class="infodata align="right">
 			    <bean:define id="index" name='<%=Constants.SESSION_PAYMENT_DTO%>'
-				      property="currencyId"/>
+				      property="currency.id"/>
 			    <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -55,7 +55,7 @@
 	 		<td class="infoprompt"><bean:message key="payment.date"/></td>
 	 	    <td class="infodata align="right">
 	 	    	<bean:write name='<%=Constants.SESSION_PAYMENT_DTO%>'
-	  	                    property="createDateTime" formatKey="format.timestamp"/>
+	  	                    property="createDatetime" formatKey="format.timestamp"/>
 	  	     </td>
 	 </tr>
 </logic:present>

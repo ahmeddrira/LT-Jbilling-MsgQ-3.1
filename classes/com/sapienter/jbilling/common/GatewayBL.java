@@ -63,18 +63,20 @@ import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
@@ -453,7 +455,7 @@ public class GatewayBL {
                 InvoiceDTO invoice = processSession.generateInvoice(newOrderId, null,
                         new Integer(1));
                 if (invoice != null) {
-                    ret = new RetValue("r_invoice_id", invoice.getId().toString());
+                    ret = new RetValue("r_invoice_id", invoice.getId() + "");
                     resultFields.add(ret);
                 } else {
                     code = RES_CODE_ERROR;
@@ -492,9 +494,9 @@ public class GatewayBL {
                 }
                 payment.setCreditCard(cc);
                 payment.setAmount(getFloatPar("s_amount"));
-                payment.setCurrencyId(getIntPar("s_currency_id"));
+                payment.setCurrency(new CurrencyDAS().find(getIntPar("s_currency_id")));
                 payment.setIsRefund(new Integer(0));
-                payment.setMethodId(Util.getPaymentMethod(cc.getNumber()));
+                payment.setPaymentMethod(new PaymentMethodDAS().find(Util.getPaymentMethod(cc.getNumber())));
                 payment.setAttempt(new Integer(1));
                 payment.setPaymentDate(Calendar.getInstance().getTime());
                 invoiceId = getIntPar("s_invoice_id");
@@ -543,7 +545,7 @@ public class GatewayBL {
         GregorianCalendar cal = new GregorianCalendar();
         cal.clear();
         cal.set(year.intValue() + 2000, month.intValue() - 1, 1);
-        creditCard.setExpiry(cal.getTime());
+        creditCard.setCcExpiry(cal.getTime());
 
         return creditCard;
     }

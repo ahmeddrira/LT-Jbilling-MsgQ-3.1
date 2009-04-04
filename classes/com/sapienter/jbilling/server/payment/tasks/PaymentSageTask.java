@@ -31,16 +31,17 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -215,7 +216,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
         }
 		boolean result = doProcess(payment, transaction, null)
 				.shouldCallOtherProcessors();
-		LOG.debug("Processing result is " + payment.getResultId()
+		LOG.debug("Processing result is " + payment.getPaymentResult().getId()
 				+ ", return value of process is " + result);
 		return result;
 	}
@@ -301,13 +302,13 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 					+ (isAch ? "ACH" : "credit card"));
 			SageAuthorization wrapper = new SageAuthorization(makeCall(request,
 					isAch), isAch);
-			payment.setResultId(wrapper.getJBResultId());
+			payment.setPaymentResult(new PaymentResultDAS().find(wrapper.getJBResultId()));
 			storeProcessedAuthorization(payment, wrapper.getDTO());
 			return new Result(wrapper.getDTO(), wrapper
 					.isCommunicationProblem());
 		} catch (Exception e) {
 			LOG.error("Couldn't handle payment request due to error", e);
-			payment.setResultId(Constants.RESULT_UNAVAILABLE);
+			payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
 			return NOT_APPLICABLE;
 		}
 	}
@@ -423,7 +424,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 			CreditCardDTO card = payment.getCreditCard();
 			request.add(SageParams.CreditCard.CARD_NUMBER, card.getNumber());
 			request.add(SageParams.CreditCard.CARD_EXPIRATION_DATE,
-					new SimpleDateFormat(DATE_FORMAT).format(card.getExpiry()));
+					new SimpleDateFormat(DATE_FORMAT).format(card.getCcExpiry()));
 			if (card.getSecurityCode() != null) {
 				request.add(SageParams.CreditCard.CARD_CVV, String
 						.valueOf(payment.getCreditCard().getSecurityCode()));
@@ -504,9 +505,9 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 			paymentAuthDTO.setCode2(responseParser
 					.getValue(responseParser.cvvIndicator));
 			LOG.debug("cvvIndicator [" + paymentAuthDTO.getCode2() + "]");
-			paymentAuthDTO.setAVS(responseParser
+			paymentAuthDTO.setAvs(responseParser
 					.getValue(responseParser.avsIndicator));
-			LOG.debug("avsIndicator [" + paymentAuthDTO.getAVS() + "]");
+			LOG.debug("avsIndicator [" + paymentAuthDTO.getAvs() + "]");
 			paymentAuthDTO.setCode3(responseParser
 					.getValue(responseParser.riskIndicator));
 			LOG.debug("riskIndicator [" + paymentAuthDTO.getCode3() + "]");

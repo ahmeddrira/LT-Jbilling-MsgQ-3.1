@@ -19,9 +19,6 @@
 */
 package com.sapienter.jbilling.client.util;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import java.io.IOException;
 
 import javax.naming.NamingException;
@@ -30,7 +27,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
+
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.interfaces.UserSession;
+import com.sapienter.jbilling.interfaces.UserSessionHome;
 
 
 /**

@@ -19,7 +19,6 @@
 */
 package com.sapienter.jbilling.server.user.contact.db;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 

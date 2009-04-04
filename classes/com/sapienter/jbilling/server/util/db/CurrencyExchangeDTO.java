@@ -45,7 +45,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="currency_exchange",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="currency_exchange")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

@@ -34,7 +34,6 @@ import com.sapienter.jbilling.server.user.EntityBL;
  * Client miscelaneous utility functions
  */
 public class Util {
-    private static HashMap<String,Integer> tables = null;
     private static final Logger LOG = Logger.getLogger(Util.class);
     /**
      * Creates a date object with the given parameters only if they belong to a
@@ -178,6 +177,7 @@ public class Util {
     
     static public Integer getPaymentMethod(String creditCardNumber) {
         Integer retValue = null;
+        
         char firstDigit = creditCardNumber.charAt(0);
         
         switch (firstDigit) {
@@ -199,7 +199,6 @@ public class Util {
             retValue = Constants.PAYMENT_METHOD_DISCOVERY;
             break;
         }
-        
         return retValue;
     }     
 
@@ -219,7 +218,7 @@ public class Util {
         try {
             return SystemProperties.getSystemProperties().get(key);
         } catch (Exception e) {
-            Logger.getLogger(Util.class).error("Can't ready sys property " + 
+            LOG.error("Can't ready sys property " +
                     key, e);
             return null;
         }
@@ -236,28 +235,10 @@ public class Util {
         try {
             retValue = Boolean.parseBoolean(SystemProperties.getSystemProperties().get(key, "true"));
         } catch (Exception e) {
-            Logger.getLogger(Util.class).warn("Exception getting system property " + key);
+            LOG.warn("Exception getting system property " + key);
         }
         
         return retValue;
     }
 
-    public static Integer getTableId(String tableName) {
-        if (tables == null) {
-            LOG.debug("Loading cache of tables...");
-            tables = new HashMap<String, Integer>();
-            try {
-                EntityBL bl = new EntityBL();
-                CachedRowSet rows = bl.getTables();
-                while(rows.next()) {
-                    tables.put(rows.getString(1), rows.getInt(2));
-                }
-                rows.close();
-            } catch (Exception e) {
-                throw new SessionInternalError("Error loading tables", Util.class,e);
-            } 
-        } 
-        
-        return tables.get(tableName);
-    }
 }

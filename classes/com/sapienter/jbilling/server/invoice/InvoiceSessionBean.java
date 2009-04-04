@@ -28,8 +28,6 @@ import java.util.ResourceBundle;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import javax.naming.NamingException;
@@ -40,9 +38,11 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.InvoiceSessionLocal;
 import com.sapienter.jbilling.interfaces.InvoiceSessionLocalHome;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
 import com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -52,6 +52,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -73,31 +74,29 @@ public class InvoiceSessionBean implements SessionBean {
     private SessionContext context = null;
 
     /**
-    * Create the Session Bean
-    * @throws CreateException
-    * @ejb:create-method view-type="remote"
-    */
+     * Create the Session Bean
+     * @throws CreateException
+     * @ejb:create-method view-type="remote"
+     */
     public void ejbCreate() throws CreateException {
     }
 
     /**
-    * @ejb:interface-method view-type="remote"
-    */
+     * @ejb:interface-method view-type="remote"
+     */
     public InvoiceDTO getInvoice(Integer invoiceId) throws SessionInternalError {
-        try {
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
-            return invoice.getDTO();
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
+        InvoiceBL invoice = new InvoiceBL(invoiceId);
+        InvoiceDTO dto =  invoice.getDTO();
+        dto.getBalance(); // touch
+        return dto;
     }
-    
+
     /**
      * @ejb:interface-method view-type="remote"
      * @ejb.transaction type="Required"
      */
-    public void create(Integer entityId, Integer userId, 
-            NewInvoiceDTO newInvoice) 
+    public void create(Integer entityId, Integer userId,
+            NewInvoiceDTO newInvoice)
             throws SessionInternalError {
         try {
             InvoiceBL invoice = new InvoiceBL();
@@ -117,22 +116,22 @@ public class InvoiceSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-     public String getFileName(Integer invoiceId) throws SessionInternalError {
-         try {
-             InvoiceBL invoice = new InvoiceBL(invoiceId);
-             UserBL user = new UserBL(invoice.getEntity().getUser());
-             ResourceBundle bundle = ResourceBundle.getBundle(
-                     "entityNotifications", user.getLocale());
+    public String getFileName(Integer invoiceId) throws SessionInternalError {
+        try {
+            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            UserBL user = new UserBL(invoice.getEntity().getBaseUser());
+            ResourceBundle bundle = ResourceBundle.getBundle(
+                    "entityNotifications", user.getLocale());
 
-             String ret = bundle.getString("invoice.file.name") + '-' +
-                     invoice.getEntity().getNumber().replaceAll(
-                             "[\\\\~!@#\\$%\\^&\\*\\(\\)\\+`=\\]\\[';/\\.,<>\\?:\"{}\\|]", "_");
-             log.debug("name = " + ret);
-             return ret;
-         } catch (Exception e) {
-             throw new SessionInternalError(e);
-         }
-     }
+            String ret = bundle.getString("invoice.file.name") + '-' +
+                    invoice.getEntity().getPublicNumber().replaceAll(
+                    "[\\\\~!@#\\$%\\^&\\*\\(\\)\\+`=\\]\\[';/\\.,<>\\?:\"{}\\|]", "_");
+            log.debug("name = " + ret);
+            return ret;
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
 
     /**
      * The transaction requirements of this are not big. The 'atom' is 
@@ -159,22 +158,23 @@ public class InvoiceSessionBean implements SessionBean {
         try {
             JNDILookup EJBFactory = JNDILookup.getFactory(false);
             InvoiceSessionLocalHome home =
-                (InvoiceSessionLocalHome) EJBFactory.lookUpLocalHome(
-                InvoiceSessionLocalHome.class,
-                InvoiceSessionLocalHome.JNDI_NAME);
-            InvoiceSessionLocal invoiceSession = home.create();;
-
+                    (InvoiceSessionLocalHome) EJBFactory.lookUpLocalHome(
+                    InvoiceSessionLocalHome.class,
+                    InvoiceSessionLocalHome.JNDI_NAME);
+            InvoiceSessionLocal invoiceSession = home.create();
+            
             // go over all the entities
             for (Iterator it = new CompanyDAS().findEntities().iterator();
-                    it.hasNext(); ){
+                    it.hasNext();) {
                 CompanyDTO thisEntity = (CompanyDTO) it.next();
                 Integer entityId = thisEntity.getId();
                 PreferenceBL pref = new PreferenceBL();
                 try {
-                    pref.set(entityId, 
+                    pref.set(entityId,
                             Constants.PREFERENCE_USE_OVERDUE_PENALTY);
-                } catch (FinderException e) {}
-                if (pref.getInt() == 1) {    
+                } catch (EmptyResultDataAccessException e) {
+                }
+                if (pref.getInt() == 1) {
                     invoiceSession.processOverdue(today, entityId);
                 }
             }
@@ -182,7 +182,7 @@ public class InvoiceSessionBean implements SessionBean {
             throw new SessionInternalError(e);
         }
     }
-    
+
     /**
      * Again, this is only to allow the demarcation of a transaction.
      * @ejb:interface-method view-type="local"
@@ -190,56 +190,56 @@ public class InvoiceSessionBean implements SessionBean {
      */
     public void processOverdue(Date today, Integer entityId)
             throws NamingException, SessionInternalError, SQLException,
-                PluggableTaskException {
+            PluggableTaskException {
         InvoiceBL invoice = new InvoiceBL();
         invoice.processOverdue(today, entityId);
     }
- 
+
     /**
-    * @ejb:interface-method view-type="remote"
-    */
-    public InvoiceDTOEx getInvoiceEx(Integer invoiceId, Integer languageId) 
-            throws SessionInternalError {
-        try {
-            if (invoiceId == null) {
-                return null;
-            }
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
-            return invoice.getDTOEx(languageId, true);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
+     * @ejb:interface-method view-type="remote"
+     */
+    public InvoiceDTO getInvoiceEx(Integer invoiceId, Integer languageId)  {
+        if (invoiceId == null) {
+            return null;
         }
+        InvoiceBL invoice = new InvoiceBL(invoiceId);
+        InvoiceDTO ret = invoice.getDTOEx(languageId, true);
+        for (PaymentInvoiceMapDTO map : ret.getPaymentMap()) {
+            map.getPayment().getCreateDatetime(); // thouch
+        }
+        for (OrderProcessDTO process : ret.getOrderProcesses()) {
+            process.getPurchaseOrder().getCreateDate(); // thouch
+        }
+        return ret;
     }
 
     /**
      * @ejb:interface-method view-type="remote"
      */
     public byte[] getPDFInvoice(Integer invoiceId)
-    		throws SessionInternalError {
+            throws SessionInternalError {
         try {
             if (invoiceId == null) {
                 return null;
             }
             NotificationBL notification = new NotificationBL();
             InvoiceBL invoiceBl = new InvoiceBL(invoiceId);
-            Integer entityId = invoiceBl.getEntity().getUser().
-					getEntity().getId();
+            Integer entityId = invoiceBl.getEntity().getBaseUser().
+                    getEntity().getId();
             // the language doesn't matter when getting a paper invoice
             MessageDTO message = notification.getInvoicePaperMessage(
-            		entityId, null, invoiceBl.getEntity().getUser().
-                        getLanguageIdField(), invoiceBl.getEntity());
-            PaperInvoiceNotificationTask task = 
-            		new PaperInvoiceNotificationTask();
+                    entityId, null, invoiceBl.getEntity().getBaseUser().
+                    getLanguageIdField(), invoiceBl.getEntity());
+            PaperInvoiceNotificationTask task =
+                    new PaperInvoiceNotificationTask();
             PluggableTaskBL taskBL = new PluggableTaskBL();
             taskBL.set(entityId, Constants.PLUGGABLE_TASK_T_PAPER_INVOICE);
             task.initializeParamters(taskBL.getDTO());
-            return task.getPDF(invoiceBl.getEntity().getUser(), message);
+            return task.getPDF(invoiceBl.getEntity().getBaseUser(), message);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-    
-
 
     /**
      * @ejb:interface-method view-type="remote"
@@ -247,17 +247,8 @@ public class InvoiceSessionBean implements SessionBean {
      */
     public void delete(Integer invoiceId, Integer executorId)
             throws SessionInternalError {
-        try {
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
-            invoice.delete(executorId);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        } catch (FinderException e) {
-            throw new SessionInternalError("Can not find the invoice" +
-                    invoiceId + ". Nothing to delete.");
-        } catch (RemoveException e) {
-            throw new SessionInternalError(e);
-        }
+        InvoiceBL invoice = new InvoiceBL(invoiceId);
+        invoice.delete(executorId);
     }
     // EJB Callbacks -------------------------------------------------
 
@@ -287,81 +278,71 @@ public class InvoiceSessionBean implements SessionBean {
         log = Logger.getLogger(InvoiceSessionBean.class);
         context = aContext;
     }
-    
-	/**
+
+    /**
      * The real path is known only to the web server
      * It should have the token _FILE_NAME_ to be replaced by the generated file
-	 * @ejb:interface-method view-type="remote"
-	 */
-	public String generatePDFFile(java.util.Map map, String realPath) throws SessionInternalError {
-		Integer operationType = (Integer) map.get("operationType");
+     * @ejb:interface-method view-type="remote"
+     */
+    public String generatePDFFile(java.util.Map map, String realPath) throws SessionInternalError {
+        Integer operationType = (Integer) map.get("operationType");
 
-		try {
-			InvoiceBL invoiceBL = new InvoiceBL();
-			sun.jdbc.rowset.CachedRowSet cachedRowSet = null;
-			Integer entityId = (Integer) map.get("entityId");
+        try {
+            InvoiceBL invoiceBL = new InvoiceBL();
+            sun.jdbc.rowset.CachedRowSet cachedRowSet = null;
+            Integer entityId = (Integer) map.get("entityId");
 
-			if (operationType
-					.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_CUSTOMER)) {
-				Integer customer = (Integer) map.get("customer");
-				
-				//security check is done here for speed
-				UserBL customerUserBL = null;
-				customerUserBL = new UserBL(customer);
-				if ((customerUserBL != null) && customerUserBL.getEntity().getEntity().getId() == entityId) {
-					cachedRowSet = invoiceBL.getInvoicesByUserId(customer);
-				}				
-			} else if (operationType
-					.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_RANGE)) {
-				//security check is done in SQL
-				cachedRowSet = invoiceBL.getInvoicesByIdRange(
-						(Integer) map.get("from"), 
-						(Integer) map.get("to"),
-						entityId);
-			} else if (operationType
-					.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_PROCESS)) {
-				Integer process = (Integer) map.get("process");
-				
-				//security check is done here for speed
-				BillingProcessBL billingProcessBL = null;
-				try {
-					billingProcessBL = new BillingProcessBL(process);
-				} catch(FinderException e) {		
-				}				
-				if ((billingProcessBL!= null) && billingProcessBL.getEntity().getEntityId().equals(entityId)) {
-					cachedRowSet = invoiceBL.getInvoicesToPrintByProcessId(process);	
-				}				
-			} else if (operationType
-                    .equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_DATE)) {
+            if (operationType.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_CUSTOMER)) {
+                Integer customer = (Integer) map.get("customer");
+
+                //security check is done here for speed
+                UserBL customerUserBL = null;
+                customerUserBL = new UserBL(customer);
+                if ((customerUserBL != null) && customerUserBL.getEntity().getEntity().getId() == entityId) {
+                    cachedRowSet = invoiceBL.getInvoicesByUserId(customer);
+                }
+            } else if (operationType.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_RANGE)) {
+                //security check is done in SQL
+                cachedRowSet = invoiceBL.getInvoicesByIdRange(
+                        (Integer) map.get("from"),
+                        (Integer) map.get("to"),
+                        entityId);
+            } else if (operationType.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_PROCESS)) {
+                Integer process = (Integer) map.get("process");
+
+                //security check is done here for speed
+                BillingProcessBL billingProcessBL = null;
+                billingProcessBL = new BillingProcessBL(process);
+                if ((billingProcessBL != null) && new Integer(billingProcessBL.getEntity().getEntity().getId()).equals(entityId)) {
+                    cachedRowSet = invoiceBL.getInvoicesToPrintByProcessId(process);
+                }
+            } else if (operationType.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_DATE)) {
                 Date from = (Date) map.get("date_from");
                 Date to = (Date) map.get("date_to");
-                
+
                 cachedRowSet = invoiceBL.getInvoicesByCreateDate(entityId, from, to);
-            } else if (operationType
-                    .equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_NUMBER)) {
+            } else if (operationType.equals(com.sapienter.jbilling.common.Constants.OPERATION_TYPE_NUMBER)) {
                 String from = (String) map.get("number_from");
                 String to = (String) map.get("number_to");
                 Integer from_id = invoiceBL.convertNumberToID(entityId, from);
                 Integer to_id = invoiceBL.convertNumberToID(entityId, to);
-                
-                if (from_id != null && to_id != null && 
+
+                if (from_id != null && to_id != null &&
                         from_id.compareTo(to_id) <= 0) {
                     cachedRowSet = invoiceBL.getInvoicesByIdRange(
                             from_id, to_id, entityId);
                 }
             }
-			
-			if (cachedRowSet == null) {
-				return null;
-			} else {
-				PaperInvoiceBatchBL paperInvoiceBatchBL = new PaperInvoiceBatchBL();
-				return paperInvoiceBatchBL.generateFile(cachedRowSet, entityId, realPath);
-			}
 
-		} catch (Exception e) {
-			throw new SessionInternalError(e);
-		}
-	}
-	
+            if (cachedRowSet == null) {
+                return null;
+            } else {
+                PaperInvoiceBatchBL paperInvoiceBatchBL = new PaperInvoiceBatchBL();
+                return paperInvoiceBatchBL.generateFile(cachedRowSet, entityId, realPath);
+            }
 
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
 }    

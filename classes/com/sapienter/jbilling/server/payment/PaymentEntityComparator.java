@@ -26,18 +26,19 @@ package com.sapienter.jbilling.server.payment;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 
 /**
  * @author Emil
  */
-public class PaymentEntityComparator implements Comparator<PaymentEntityLocal> {
+public class PaymentEntityComparator implements Comparator<PaymentDTO> {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(PaymentEntityLocal o1, PaymentEntityLocal o2) {
-        return o1.getId().compareTo(o2.getId());
+    public int compare(PaymentDTO o1, PaymentDTO o2) {
+        return new Integer(o1.getId()).compareTo(new Integer(o2.getId()));
+        
     }
 
 }

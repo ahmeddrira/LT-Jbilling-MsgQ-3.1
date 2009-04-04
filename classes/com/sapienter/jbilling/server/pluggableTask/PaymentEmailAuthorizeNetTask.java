@@ -49,7 +49,7 @@ public class PaymentEmailAuthorizeNetTask extends PaymentAuthorizeNetTask {
         try {
             UserBL user = new UserBL(paymentInfo.getUserId());
             String message;
-            if (paymentInfo.getResultId().equals(Constants.RESULT_OK)) {
+            if (new Integer(paymentInfo.getPaymentResult().getId()).equals(Constants.RESULT_OK)) {
                 message = "payment.success";
             } else {
                 message = "payment.fail";
@@ -57,7 +57,7 @@ public class PaymentEmailAuthorizeNetTask extends PaymentAuthorizeNetTask {
             String params[] = new String[6];
             params[0] = paymentInfo.getUserId().toString();
             params[1] = user.getEntity().getUserName();
-            params[2] = paymentInfo.getId().toString();
+            params[2] = paymentInfo.getId() + "";
             params[3] = paymentInfo.getAmount().toString();
             if (paymentInfo.getAuthorization() != null) {
                 params[4] = paymentInfo.getAuthorization().getTransactionId();

@@ -25,19 +25,20 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.AddressFilter;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistFilter;
-import com.sapienter.jbilling.server.payment.blacklist.NameFilter;
 import com.sapienter.jbilling.server.payment.blacklist.CreditCardFilter;
 import com.sapienter.jbilling.server.payment.blacklist.IpAddressFilter;
+import com.sapienter.jbilling.server.payment.blacklist.NameFilter;
 import com.sapienter.jbilling.server.payment.blacklist.PhoneFilter;
 import com.sapienter.jbilling.server.payment.blacklist.UserIdFilter;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskBase;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
 
 /**
@@ -90,21 +91,20 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
             if (result.isBlacklisted()) {
                 // payment failed a blacklist filter, return result failed
                 LOG.debug("Blacklisted result: " + result.getMessage());
-        		PaymentAuthorizationDTOEx authInfo = new PaymentAuthorizationDTOEx();
+        		PaymentAuthorizationDTO authInfo = new PaymentAuthorizationDTO();
         		authInfo.setProcessor(PAYMENT_PROCESSOR_NAME);
-		        authInfo.setResult(false);
         		authInfo.setCode1(filter.getName());
                 authInfo.setResponseMessage(result.getMessage());
 		        storeProcessedAuthorization(paymentInfo, authInfo);
 		        paymentInfo.setAuthorization(authInfo);
-                paymentInfo.setResultId(Constants.RESULT_FAIL);
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
                 return false;
             } 
         }
         // All filters passed, continue onto a real payment processor
         // next in the chain.
         LOG.debug("Payment continuing on to next processor");
-        paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+        paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
         return true;
     }
 

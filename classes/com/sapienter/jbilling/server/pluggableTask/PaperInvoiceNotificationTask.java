@@ -23,10 +23,10 @@ package com.sapienter.jbilling.server.pluggableTask;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
+import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -46,7 +46,7 @@ public class PaperInvoiceNotificationTask
     private ContactBL contact;
     private ContactDTOEx to;
     private Integer entityId;
-    private InvoiceDTOEx invoice;
+    private InvoiceDTO invoice;
     private ContactDTOEx from;
 
     /* (non-Javadoc)
@@ -55,7 +55,7 @@ public class PaperInvoiceNotificationTask
     private void init(UserDTO user, MessageDTO message)
             throws TaskException {
         design = (String) parameters.get(PARAMETER_DESIGN);
-        invoice = (InvoiceDTOEx) message.getParameters().get(
+        invoice = (InvoiceDTO) message.getParameters().get(
                 "invoiceDto");
         try {
             contact = new ContactBL();
@@ -85,9 +85,8 @@ public class PaperInvoiceNotificationTask
             Integer processId = (Integer) message.getParameters().get(
                     "processId");
             PaperInvoiceBatchBL batchBL = new PaperInvoiceBatchBL();
-            PaperInvoiceBatchEntityLocal record = batchBL.createGet(processId);
-            record.setTotalInvoices(new Integer(record.getTotalInvoices().
-                    intValue() + 1));
+            PaperInvoiceBatchDTO record = batchBL.createGet(processId);
+            record.setTotalInvoices(record.getTotalInvoices() + 1);
             // link the batch to this invoice
             InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
             record.getInvoices().add(invoiceBL.getEntity());

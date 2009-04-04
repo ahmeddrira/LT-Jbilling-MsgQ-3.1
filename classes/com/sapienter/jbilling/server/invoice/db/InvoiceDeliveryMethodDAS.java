@@ -20,8 +20,7 @@
 package com.sapienter.jbilling.server.invoice.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
-public class InvoiceDeliveryMethodDAS extends AbstractDAS<InvoiceDeliveryMethod> {
+public class InvoiceDeliveryMethodDAS extends AbstractDAS<InvoiceDeliveryMethodDTO> {
 
 }

@@ -33,8 +33,8 @@ public class RouterAsyncParameters extends PluggableTask implements IAsyncPaymen
     public void addParameters(MapMessage message) throws TaskException {
         try {
             InvoiceBL invoice = new InvoiceBL(message.getInt("invoiceId"));
-            Integer entityId = invoice.getEntity().getUser().getEntity().getId();
-            Integer userId = invoice.getEntity().getUser().getUserId();
+            Integer entityId = invoice.getEntity().getBaseUser().getEntity().getId();
+            Integer userId = invoice.getEntity().getBaseUser().getUserId();
             
             PluggableTaskManager taskManager = new PluggableTaskManager(entityId, 
                     Constants.PLUGGABLE_TASK_PAYMENT);

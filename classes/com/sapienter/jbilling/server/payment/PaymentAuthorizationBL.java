@@ -22,69 +22,55 @@ package com.sapienter.jbilling.server.payment;
 
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentEntityLocalHome;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 
 public class PaymentAuthorizationBL {
-    private JNDILookup EJBFactory = null;
-    private PaymentAuthorizationEntityLocalHome paymentAuthorizationHome = null;
-    private PaymentAuthorizationEntityLocal paymentAuthorization = null;
+    private PaymentAuthorizationDAS paymentAuthorizationDas = null;
+    private PaymentAuthorizationDTO paymentAuthorization = null;
     private static final Logger LOG = Logger.getLogger(PaymentAuthorizationBL.class); 
 
-    public PaymentAuthorizationBL(Integer paymentAuthorizationId) 
-            throws NamingException, FinderException {
+    public PaymentAuthorizationBL(Integer paymentAuthorizationId) {
         init();
         set(paymentAuthorizationId);
     }
     
-    public PaymentAuthorizationBL(PaymentAuthorizationEntityLocal entity) 
-            throws NamingException {
+    public PaymentAuthorizationBL(PaymentAuthorizationDTO entity) {
         init();
         paymentAuthorization = entity;
     }
 
-    public PaymentAuthorizationBL() throws NamingException {
+    public PaymentAuthorizationBL() {
         init();
     }
 
-    private void init() throws NamingException {
-        EJBFactory = JNDILookup.getFactory(false);
-        paymentAuthorizationHome = (PaymentAuthorizationEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaymentAuthorizationEntityLocalHome.class,
-                PaymentAuthorizationEntityLocalHome.JNDI_NAME);
+    private void init() {
+        paymentAuthorizationDas = new PaymentAuthorizationDAS();
 
     }
 
-    public PaymentAuthorizationEntityLocal getEntity() {
+    public PaymentAuthorizationDTO getEntity() {
         return paymentAuthorization;
     }
     
-    public void set(Integer id) throws FinderException {
-        paymentAuthorization = paymentAuthorizationHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+        paymentAuthorization = paymentAuthorizationDas.find(id);
     }
     
-    public void create(PaymentAuthorizationDTO dto, Integer paymentId) 
-            throws CreateException {
+    public void create(PaymentAuthorizationDTO dto, Integer paymentId) {
         // create the record, there's no need for an event to be logged 
         // since the timestamp and the user are already in the paymentAuthorization row
-        paymentAuthorization = paymentAuthorizationHome.create(
+        paymentAuthorization = paymentAuthorizationDas.create(
                 dto.getProcessor(), dto.getCode1());
             
         paymentAuthorization.setApprovalCode(dto.getApprovalCode());
-        paymentAuthorization.setAVS(dto.getAVS());
+        paymentAuthorization.setAvs(dto.getAvs());
         paymentAuthorization.setCardCode(dto.getCardCode());
         paymentAuthorization.setCode2(dto.getCode2());
         paymentAuthorization.setCode3(dto.getCode3());
@@ -101,11 +87,10 @@ public class PaymentAuthorizationBL {
         }
     }
     
-    public PaymentAuthorizationDTO getDTO() 
-            throws FinderException {
+    public PaymentAuthorizationDTO getDTO() {
         PaymentAuthorizationDTO dto = new PaymentAuthorizationDTO();
         dto.setApprovalCode(paymentAuthorization.getApprovalCode());
-        dto.setAVS(paymentAuthorization.getAVS());
+        dto.setAvs(paymentAuthorization.getAvs());
         dto.setCardCode(paymentAuthorization.getCardCode());
         dto.setCode1(paymentAuthorization.getCode1());
         dto.setCode2(paymentAuthorization.getCode2());
@@ -122,20 +107,16 @@ public class PaymentAuthorizationBL {
     public PaymentAuthorizationDTO getPreAuthorization(Integer userId) {
         PaymentAuthorizationDTO auth = null;
         try {
-            EJBFactory = JNDILookup.getFactory(false);
-            PaymentEntityLocalHome paymentHome = (PaymentEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PaymentEntityLocalHome.class,
-                    PaymentEntityLocalHome.JNDI_NAME);
+            PaymentDAS paymentHome = new PaymentDAS();
 
             Collection payments = paymentHome.findPreauth(userId);
             // at the time, use the very first one
             if (!payments.isEmpty()) {
-                PaymentEntityLocal payment = (PaymentEntityLocal) payments.toArray()[0];
-                Collection auths = payment.getAuthorizations();
+                PaymentDTO payment = (PaymentDTO) payments.toArray()[0];
+                Collection auths = payment.getPaymentAuthorizations();
                 if (!auths.isEmpty()) {
                     paymentAuthorization = 
-                            (PaymentAuthorizationEntityLocal) auths.toArray()[0];
+                            (PaymentAuthorizationDTO) auths.toArray()[0];
                     auth = getDTO();
                 } else {
                     LOG.warn("Auth payment found, but without auth record?");

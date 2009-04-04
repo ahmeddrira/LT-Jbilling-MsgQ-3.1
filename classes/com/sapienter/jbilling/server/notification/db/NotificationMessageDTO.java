@@ -37,14 +37,14 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
-
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OrderBy;
+
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 @Entity
 @TableGenerator(
@@ -53,7 +53,7 @@ import org.hibernate.annotations.OrderBy;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "notification_message")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationMessageDTO implements Serializable {

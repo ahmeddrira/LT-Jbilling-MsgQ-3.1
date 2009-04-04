@@ -42,10 +42,10 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class CurrencyMaintainAction extends Action {
     

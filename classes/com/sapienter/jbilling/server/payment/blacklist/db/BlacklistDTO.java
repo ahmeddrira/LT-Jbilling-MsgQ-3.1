@@ -36,13 +36,11 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
-//import org.hibernate.annotations.Cache;
-//import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 @Entity
 @TableGenerator(
@@ -51,7 +49,7 @@ import com.sapienter.jbilling.server.util.db.generated.CreditCard;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="blacklist",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name = "blacklist")
 //@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -95,7 +93,7 @@ public class BlacklistDTO implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="credit_card_id")
-    private CreditCard creditCard;
+    private CreditCardDTO creditCard;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="contact_id")
@@ -113,7 +111,7 @@ public class BlacklistDTO implements Serializable {
     }
 
     public BlacklistDTO(Integer id, CompanyDTO company, Date createDate, 
-            Integer type, Integer source, CreditCard creditCard,
+            Integer type, Integer source, CreditCardDTO creditCard,
             ContactDTO contact, UserDTO user) {
         this.id = id;
         this.company = company;
@@ -165,11 +163,11 @@ public class BlacklistDTO implements Serializable {
         return source;
     }
 
-    public void setCreditCard(CreditCard creditCard) {
+    public void setCreditCard(CreditCardDTO creditCard) {
         this.creditCard = creditCard;
     }
 
-    public CreditCard getCreditCard() {
+    public CreditCardDTO getCreditCard() {
         return creditCard;
     }
 

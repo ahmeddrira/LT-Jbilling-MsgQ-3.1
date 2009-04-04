@@ -42,14 +42,25 @@ Hypersonic getting started:
   
 PostgreSQL getting started:
 ----------------------------------------
-Ubuntu notes:
+Ubuntu notes: (from https://help.ubuntu.com/community/PostgreSQL)
 ------------
-  - PGDATA is not set, but its value should be /etc/postgresql/8.2/main/pgdata
-  - Example of running pg_ctl:  sudo -u postgres /usr/lib/postgresql/8.2/bin/pg_ctl reload -D /etc/postgresql/8.2/main/pgdata
-  Install:
-    sudo apt-get install postgres
-    (follow here the instructions from the web page: add permissions to user postgres and create database)
-    sudo -u postgres createdb betty
+sudo apt-get install postgresql-8.3
+sudo -u postgres createuser --superuser jbilling -P
+createdb jbilling
+
+Then, just type 'psql' to login. No password needed from the command line, but it is needed for
+the java data source configuration.
+The db configuration file is /etc/postgresql/8.3/main/postgresql.conf
+
+Other more lengthly mehtod. Login with postgres:
+psql -U postgres postgres
+Create a user, database, and grant all privileges
+ create user jbilling;
+ create database jbilling_test;
+ grant all on database jbilling_test to jbilling;
+
+Create a dump of the test database:
+pg_dump -U jbilling --clean jbilling_test > jbilling_test.sql
 
 - To startup/shutdown : pg_ctl start/stop            
    Ubuntu: use service: 

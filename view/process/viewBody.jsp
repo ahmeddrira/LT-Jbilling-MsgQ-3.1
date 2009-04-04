@@ -121,7 +121,7 @@
 		<td class="infoprompt"><bean:message key="process.run.prompt.invoicesGenerated"/></td>
 		<td class="infodata">	
             <bean:write name='<%=Constants.SESSION_PROCESS_DTO%>' 
-                        property="grandTotal.invoiceGenerated"
+                        property="grandTotal.invoicesGenerated"
                         scope="session"/>
             <html:link page="/invoice/listProcess.jsp">
             	<bean:message key="process.prompt.viewList"/>
@@ -145,7 +145,7 @@
 		<td class="infoprompt"><bean:message key="process.run.prompt.totalInvoiced"/></td>
 		<td class="infodata">	
 			<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 			<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -165,7 +165,7 @@
 		<td class="infoprompt"><bean:message key="process.run.prompt.totalPaid"/></td>
 		<td class="infodata">	
 			<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 			<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -179,7 +179,7 @@
 		<td class="infoprompt"><bean:message key="process.run.prompt.totalNotPaid"/></td>
 		<td class="infodata">	
 			<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 			<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -210,7 +210,7 @@
 			<td><bean:write name="methodTotal" property="key"/></td>
 			<td>
 			<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 			<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -269,7 +269,7 @@
 			<td class="infoprompt"><bean:message key="process.run.prompt.invoicesGenerated"/></td>
 			<td class="infodata">	
 				<bean:write name="run" 
-							property="invoiceGenerated" />
+							property="invoicesGenerated" />
 			</td>
 		</tr>
 		
@@ -289,7 +289,7 @@
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalInvoiced"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 				<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -304,7 +304,7 @@
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalPaid"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 				<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -318,7 +318,7 @@
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalNotPaid"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 				<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"
@@ -349,7 +349,7 @@
 				<td><bean:write name="methodTotal" property="key"/></td>
 			<td>
 			    <bean:define id="index" name="total"
-				      property="currencyId"/>
+				      property="currency.id"/>
 			    <bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				      property='<%= "symbols[" + index + "].symbol" %>'
 				      scope="application"

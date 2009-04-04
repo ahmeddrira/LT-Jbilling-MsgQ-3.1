@@ -16,27 +16,42 @@
 
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package com.sapienter.jbilling.server.process.db;
 
 import org.hibernate.Query;
 
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.UserStatusDAS;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 
-
-public class AgeingEntityStepDAS extends AbstractDAS<AgeingEntityStep> {
+public class AgeingEntityStepDAS extends AbstractDAS<AgeingEntityStepDTO> {
 
     private static final String findStepSQL = 
-        "SELECT a " + 
-        "  FROM AgeingEntityStep a " + 
-        " WHERE a.company.id = :entity " +
-        "   AND a.userStatus.id = :status ";
-        
-    public AgeingEntityStep findStep(Integer entityId, Integer stepId) {
+            "SELECT a " + 
+            "  FROM AgeingEntityStepDTO a " + 
+            " WHERE a.company.id = :entity " + 
+            "   AND a.userStatus.id = :status ";
+
+    public AgeingEntityStepDTO findStep(Integer entityId, Integer stepId) {
         Query query = getSession().createQuery(findStepSQL);
         query.setParameter("entity", entityId);
         query.setParameter("status", stepId);
-        return (AgeingEntityStep) query.uniqueResult();
+        return (AgeingEntityStepDTO) query.uniqueResult();
+    }
+
+    public void create(Integer entityId, Integer statusId,
+            String welcomeMessage, String failedLoginMessage,
+            Integer languageId, int days) {
+
+        AgeingEntityStepDTO ageing = new AgeingEntityStepDTO();
+        ageing.setCompany(new CompanyDAS().find(entityId));
+        ageing.setUserStatus(new UserStatusDAS().find(statusId));
+
+        ageing.setWelcomeMessage(languageId, welcomeMessage);
+        ageing.setFailedLoginMessage(languageId, failedLoginMessage);
+        ageing.setDays(days);
+
+        save(ageing);
     }
 }

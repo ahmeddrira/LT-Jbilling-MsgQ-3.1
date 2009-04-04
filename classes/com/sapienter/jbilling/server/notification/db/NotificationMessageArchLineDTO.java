@@ -40,7 +40,7 @@ import javax.persistence.Version;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_arch_line", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "notification_message_arch_line")
 public class NotificationMessageArchLineDTO implements Serializable {
 

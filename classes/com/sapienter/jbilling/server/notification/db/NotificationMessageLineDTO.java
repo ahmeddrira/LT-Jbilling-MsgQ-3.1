@@ -42,7 +42,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_line", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "notification_message_line")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationMessageLineDTO implements Serializable {

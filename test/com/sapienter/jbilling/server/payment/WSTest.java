@@ -105,7 +105,7 @@ public class WSTest extends TestCase {
             assertTrue("invoice not related to payment", 
                     retInvoice.getPayments().length == 1);
             assertEquals("invoice not related to payment", 
-                    retInvoice.getPayments()[0], retPayment.getId());
+                    retInvoice.getPayments()[0].intValue(), retPayment.getId());
             
             /*
              * get latest
@@ -114,7 +114,7 @@ public class WSTest extends TestCase {
             System.out.println("Getting latest");
             retPayment = api.getLatestPayment(new Integer(2));
             assertNotNull("didn't get payment ", retPayment);
-            assertEquals("latest id", ret, retPayment.getId());
+            assertEquals("latest id", ret.intValue(), retPayment.getId());
             assertEquals("created payment result", retPayment.getResultId(),
                     payment.getResultId());
             assertEquals("created payment cheque ", retPayment.getCheque().getNumber(),

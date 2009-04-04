@@ -560,7 +560,7 @@
 					</html:link>
 				</td>
 				<td class="list">
-					<bean:write name="invoice" property="createDateTime"
+					<bean:write name="invoice" property="createDatetime"
 						        formatKey="format.timestamp"/>
 				</td>
 				<td class="list" align="right">

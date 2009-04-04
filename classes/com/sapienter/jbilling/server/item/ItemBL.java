@@ -24,9 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -441,10 +438,6 @@ public class ItemBL {
             dto.setPrice(getPrice(userId, currencyId, entityId));
         }
         
-        if (item.getPromotion() != null) {
-            dto.setPromoCode(item.getPromotion().getCode());
-        }
-    
         // set the types
         Integer types[] = new Integer[item.getItemTypes().size()];
         int index = 0;

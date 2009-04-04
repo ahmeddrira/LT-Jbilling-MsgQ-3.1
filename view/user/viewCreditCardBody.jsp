@@ -65,7 +65,7 @@
    <tr class="infoA">
  	   <td class="infoprompt"><bean:message key="payment.cc.date"/></td>
 	   <td class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>' 
-	   		           property="creditCard.expiry"
+	   		           property="creditCard.ccExpiry"
 	   		           formatKey="format.date"/>
 	   </td>
    </tr>

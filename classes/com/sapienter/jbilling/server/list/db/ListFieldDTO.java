@@ -44,7 +44,7 @@ import javax.persistence.Version;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "list_field", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "list_field")
 public class ListFieldDTO implements Serializable, Comparable<ListFieldDTO> {
 

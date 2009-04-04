@@ -20,8 +20,8 @@
 
 package com.sapienter.jbilling.client.user;
 
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 
 
 public class PaymentMethodCrudContext<DTO> {

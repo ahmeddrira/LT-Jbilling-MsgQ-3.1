@@ -21,19 +21,18 @@
 /*
  * Created on Oct 12, 2003
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.process;
 
 import java.util.Date;
 import java.util.Vector;
 
-import com.sapienter.jbilling.server.entity.BillingProcessRunDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 
 /**
  * @author Emil
  */
-public class BillingProcessRunDTOEx extends BillingProcessRunDTO {
+public class BillingProcessRunDTOEx extends ProcessRunDTO {
 
     Vector<BillingProcessRunTotalDTOEx> totals = null;
     /**
@@ -42,7 +41,7 @@ public class BillingProcessRunDTOEx extends BillingProcessRunDTO {
     public BillingProcessRunDTOEx() {
         super();
         totals = new Vector<BillingProcessRunTotalDTOEx>();
-        setInvoiceGenerated(new Integer(0));
+        setInvoicesGenerated(0);
     }
 
     /**
@@ -57,9 +56,14 @@ public class BillingProcessRunDTOEx extends BillingProcessRunDTO {
      */
     public BillingProcessRunDTOEx(Integer id, Date runDate, Date started,
             Date finished, Date paymentFinished, Integer invoiceGenerated) {
-        super(id, runDate, started, finished, paymentFinished, invoiceGenerated);
-        totals = new Vector<BillingProcessRunTotalDTOEx>();
+        setId(id);
+        setRunDate(runDate);
+        setStarted(started);
+        setFinished(finished);
+        setPaymentFinished(paymentFinished);
+        setInvoicesGenerated(invoiceGenerated);
         
+        totals = new Vector<BillingProcessRunTotalDTOEx>();
     }
 
     public Vector<BillingProcessRunTotalDTOEx> getTotals() {
@@ -70,4 +74,14 @@ public class BillingProcessRunDTOEx extends BillingProcessRunDTO {
         this.totals = totals;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer ret = new StringBuffer(super.toString());
+        ret.append(" totals: ");
+        for (BillingProcessRunTotalDTOEx x : totals) {
+            ret.append(x.toString());
+        }
+
+        return ret.toString();
+    }
 }

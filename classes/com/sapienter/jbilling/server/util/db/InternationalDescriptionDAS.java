@@ -21,12 +21,9 @@ package com.sapienter.jbilling.server.util.db;
 
 import java.util.Collection;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.Restrictions;
 
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
+import com.sapienter.jbilling.server.util.Util;
 
 /**
  * 
@@ -35,27 +32,42 @@ import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
  */
 public class InternationalDescriptionDAS extends AbstractDAS<InternationalDescriptionDTO> {
 
+    private JbillingTableDAS jtDAS; // injected by Spring
+
+    // should only be created from Spring
+    protected InternationalDescriptionDAS() {
+        super();
+    }
+
     private final String QUERY = "SELECT a " +
             "FROM description a, jbilling_table b " +
             "WHERE a.tableId = b.id " +
             "AND b.name = :table " +
             "AND a.foreignId = :foreing ";
 
+    public void setJbDAS(JbillingTableDAS util) {
+        this.jtDAS = util;
+    }
+
     public InternationalDescriptionDTO findIt(String table,
             Integer foreignId, String column, Integer language) {
 
+        if (foreignId == null || foreignId == 0) {
+            return null;
+        }
+        
         InternationalDescriptionId idi =
-                new InternationalDescriptionId(Util.getTableId(table), (foreignId == null) ? 0 : foreignId, column, (language == null) ? 0 : language);
+                new InternationalDescriptionId(jtDAS.findByName(table).getId(),
+                (foreignId == null) ? 0 : foreignId, column, (language == null) ? 0 : language);
 
-        Criteria crit = getSession().createCriteria(InternationalDescriptionDTO.class);
-        crit.add(Restrictions.eq("id", idi));
-
-        return (InternationalDescriptionDTO) crit.uniqueResult();
+        return find(idi); // this should cache ok
     }
 
-    public InternationalDescriptionDTO create(String table, Integer foreignId, String column, Integer language, String message) {
+    public InternationalDescriptionDTO create(String table, Integer foreignId, String column,
+            Integer language, String message) {
 
-        InternationalDescriptionId idi = new InternationalDescriptionId(Util.getTableId(table), foreignId, column, language);
+        InternationalDescriptionId idi = new InternationalDescriptionId(
+                jtDAS.findByName(table).getId(), foreignId, column, language);
 
         InternationalDescriptionDTO inter = new InternationalDescriptionDTO();
         inter.setId(idi);
@@ -66,10 +78,13 @@ public class InternationalDescriptionDAS extends AbstractDAS<InternationalDescri
     }
 
     public Collection<InternationalDescriptionDTO> findByTable_Row(String table, Integer foreignId) {
-
         Query query = getSession().createQuery(QUERY);
         query.setParameter("table", table);
         query.setParameter("foreing", foreignId);
         return query.list();
+    }
+
+    public static InternationalDescriptionDAS getInstance() {
+        return new InternationalDescriptionDAS();
     }
 }

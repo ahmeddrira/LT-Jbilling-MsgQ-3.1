@@ -51,7 +51,7 @@
 	 		<td class="infoprompt"><bean:message key="invoice.total"/></td>
 	 	    <td class="infodata">
 	 	    	<bean:define id="index" name='<%=Constants.SESSION_INVOICE_DTO%>'
-	 	    		 property="currencyId"/>
+	 	    		 property="currency.id"/>
 	 	    	<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 	 	    		  property='<%= "symbols[" + index + "].symbol" %>'
 	 	    		  scope="application"

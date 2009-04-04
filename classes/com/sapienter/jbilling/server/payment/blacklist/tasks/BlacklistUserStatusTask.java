@@ -28,7 +28,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistBL;
-import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.process.event.NewUserStatusEvent;
@@ -39,10 +38,9 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 /**
  * Blacklists users and all their data when their status moves to 
@@ -134,11 +132,11 @@ public class BlacklistUserStatusTask extends PluggableTask
         }
 
         // blacklist cc numbers
-        Collection<CreditCard> creditCards = user.getCreditCards();
-        for (CreditCard cc : creditCards) {
-            if (cc.getCcNumber() != null) {
-                CreditCard creditCard = new CreditCard();
-                creditCard.setCcNumber(cc.getCcNumber());
+        Collection<CreditCardDTO> creditCards = user.getCreditCards();
+        for (CreditCardDTO cc : creditCards) {
+            if (cc.getNumber() != null) {
+                CreditCardDTO creditCard = new CreditCardDTO();
+                creditCard.setNumber(cc.getNumber());
                 creditCard.setDeleted(0);
                 creditCard.setCcType(cc.getCcType()); // not null
                 creditCard.setCcExpiry(cc.getCcExpiry()); // not null

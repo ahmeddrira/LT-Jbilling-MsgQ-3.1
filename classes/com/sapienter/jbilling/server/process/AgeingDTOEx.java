@@ -25,7 +25,8 @@
  */
 package com.sapienter.jbilling.server.process;
 
-import com.sapienter.jbilling.server.entity.AgeingEntityStepDTO;
+import com.sapienter.jbilling.server.process.db.AgeingEntityStepDTO;
+
 
 /**
  * @author Emil

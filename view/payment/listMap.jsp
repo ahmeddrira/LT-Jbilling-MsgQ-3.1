@@ -70,7 +70,7 @@
 					</html:link>
 				</td>
 				<td class="list">
-					<bean:write name="map" property="createDateTime"
+					<bean:write name="map" property="createDatetime"
 						        formatKey="format.timestamp"/>
 				</td>
 				<td class="list" align="right">

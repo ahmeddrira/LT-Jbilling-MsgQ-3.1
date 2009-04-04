@@ -30,9 +30,9 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import com.sapienter.jbilling.server.entity.ContactDTO;
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.invoice.InvoiceDTOEx;
+import com.sapienter.jbilling.server.invoice.InvoiceDTO;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 
 /**
  * @author Emil
@@ -42,7 +42,7 @@ public class JReportTest extends TestCase {
 
 	public void testGeneratePaperInvoice() {
 		try {
-			InvoiceDTOEx invoice = new InvoiceDTOEx();
+			InvoiceDTO invoice = new InvoiceDTO();
 			invoice.setId(new Integer(2910));
 			GregorianCalendar cal = new GregorianCalendar();
 			invoice.setCreateDateTime(cal.getTime());

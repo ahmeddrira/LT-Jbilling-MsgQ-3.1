@@ -27,7 +27,8 @@ package com.sapienter.jbilling.server.invoice;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+
 
 /**
  * @author Emil
@@ -41,7 +42,7 @@ public class InvoiceIdComparator implements Comparator {
         InvoiceDTO perA = (InvoiceDTO) arg0;
         InvoiceDTO perB = (InvoiceDTO) arg1;
         
-        return perA.getId().compareTo(perB.getId());
+        return new Integer(perA.getId()).compareTo(new Integer(perB.getId()));
     }
 
 }

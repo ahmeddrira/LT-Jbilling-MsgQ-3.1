@@ -24,10 +24,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
 
 import org.apache.log4j.Logger;
 
@@ -49,6 +47,7 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.GetSelectableOptions;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * 
@@ -380,7 +379,7 @@ public class ListSessionBean implements javax.ejb.SessionBean {
             PreferenceBL pref = new PreferenceBL();
             try {
                 pref.setForUser(userId, Constants.PREFERENCE_PAGE_SIZE);
-            } catch (FinderException e) {
+            } catch (EmptyResultDataAccessException e) {
                 // use the defaults
             }
             retValue.setPageSize(new Integer(pref.getInt()));

@@ -19,7 +19,6 @@
 */
 package com.sapienter.jbilling.server.payment.event;
 
-import java.util.Calendar;
 
 import javax.ejb.EJBException;
 import javax.ejb.MessageDrivenBean;
@@ -33,7 +32,6 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocal;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
-import com.sapienter.jbilling.server.process.BillingProcessRunBL;
 
 /*
  * This message bean is not configured using xdoclet.
@@ -82,8 +80,7 @@ public class ProcessPaymentMDB implements MessageDrivenBean, MessageListener {
                         (myMessage.getInt("invoiceId") == -1) ? null : myMessage.getInt("invoiceId"));
                 LOG.debug("Done");
             } else if (type.equals("ender")) {
-                BillingProcessRunBL run = new BillingProcessRunBL(myMessage.getInt("runId"));
-                run.getEntity().setPaymentFinished(Calendar.getInstance().getTime());
+                process.endPayments(myMessage.getInt("runId"));
             } else {
                 LOG.error("Can not process message of type " + type);
             }

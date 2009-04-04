@@ -53,7 +53,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="order_period",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="order_period")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

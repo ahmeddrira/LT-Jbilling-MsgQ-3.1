@@ -34,10 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -49,14 +45,13 @@ import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.SimpleBookmark;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocal;
-import com.sapienter.jbilling.interfaces.PaperInvoiceBatchEntityLocalHome;
+import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -65,47 +60,36 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
  * @author Emil
  */
 public class PaperInvoiceBatchBL {
-    private JNDILookup EJBFactory = null;
-    private PaperInvoiceBatchEntityLocalHome batchHome = null;
-    private PaperInvoiceBatchEntityLocal batch = null;
+    private PaperInvoiceBatchDTO batch = null;
     private static final Logger LOG = Logger.getLogger(PaperInvoiceBatchBL.class);
     private EventLogger eLogger = null;
+    private PaperInvoiceBatchDAS batchHome = null;
 
-    public PaperInvoiceBatchBL(Integer batchId) 
-            throws NamingException, FinderException {
+    public PaperInvoiceBatchBL(Integer batchId) {
         init();
         set(batchId);
     }
     
-    public PaperInvoiceBatchBL(PaperInvoiceBatchEntityLocal batch) 
-    		throws NamingException {
+    public PaperInvoiceBatchBL(PaperInvoiceBatchDTO batch) {
     	init();
     	this.batch = batch;
     }
 
-    public PaperInvoiceBatchBL() throws NamingException {
+    public PaperInvoiceBatchBL() {
         init();
     }
 
-    private void init() throws NamingException {
-        eLogger = EventLogger.getInstance();        
-        EJBFactory = JNDILookup.getFactory(false);
-        batchHome = (PaperInvoiceBatchEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaperInvoiceBatchEntityLocalHome.class,
-                PaperInvoiceBatchEntityLocalHome.JNDI_NAME);
+    private void init() {
+        eLogger = EventLogger.getInstance();
+        batchHome = new PaperInvoiceBatchDAS();
     }
 
-    public PaperInvoiceBatchEntityLocal getEntity() {
+    public PaperInvoiceBatchDTO getEntity() {
         return batch;
     }
     
-    public PaperInvoiceBatchEntityLocalHome getHome() {
-        return batchHome;
-    }
-
-    public void set(Integer id) throws FinderException {
-        batch = batchHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+        batch = batchHome.find(id);
     }
 
     /**
@@ -114,17 +98,16 @@ public class PaperInvoiceBatchBL {
      * @param processId
      * @return
      */
-    public PaperInvoiceBatchEntityLocal createGet(Integer processId) 
-            throws NamingException, FinderException, CreateException {
+    public PaperInvoiceBatchDTO createGet(Integer processId) {
         BillingProcessBL process = new BillingProcessBL(processId);
-        batch = process.getEntity().getBatch();
+        batch = process.getEntity().getPaperInvoiceBatch();
         if (batch == null) {
             PreferenceBL preference = new PreferenceBL();
-            preference.set(process.getEntity().getEntityId(), 
+            preference.set(process.getEntity().getEntity().getId(), 
                     Constants.PREFERENCE_PAPER_SELF_DELIVERY);
             batch = batchHome.create(new Integer(0), 
                     preference.getEntity().getIntValue());
-            process.getEntity().setBatch(batch);
+            process.getEntity().setPaperInvoiceBatch(batch);
         }
         return batch;
     }
@@ -146,11 +129,11 @@ public class PaperInvoiceBatchBL {
 
 
     	for (int f = 0; f < invoices.size(); f++) {
-    		InvoiceEntityLocal invoice = (InvoiceEntityLocal) invoices.get(f);
+    		InvoiceDTO invoice = (InvoiceDTO) invoices.get(f);
             invoicesIds[f] = invoice.getId();
     	}
         
-        compileInvoiceFiles(filePrefix, batch.getId().toString(), entityId, 
+        compileInvoiceFiles(filePrefix, new Integer(batch.getId()).toString(), entityId,
                 invoicesIds);
     }
 
@@ -219,15 +202,18 @@ public class PaperInvoiceBatchBL {
         if (!master.isEmpty())
             writer.setOutlines(master);
         // step 5: we close the document
-        document.close();
+        if (document != null) {
+        	document.close();
+        } else {
+        	LOG.warn("document == null");
+        }
 
         LOG.debug("PDF batch file is ready " + outFile);
     }
 
     
-    public void sendEmail() 
-    		throws FinderException, NamingException {
-    	Integer entityId = batch.getProcess().getEntityId();
+    public void sendEmail() {
+    	Integer entityId = batch.getProcess().getEntity().getId();
     	
     	PreferenceBL prefBL = new PreferenceBL();
     	prefBL.set(entityId, Constants.PREFERENCE_PAPER_SELF_DELIVERY);
@@ -252,8 +238,8 @@ public class PaperInvoiceBatchBL {
     
     public String generateFile(CachedRowSet cachedRowSet, Integer entityId, 
             String realPath) throws SQLException,
-            SessionInternalError, NamingException, DocumentException,
-            IOException, FinderException {
+            SessionInternalError, DocumentException,
+            IOException {
         NotificationBL notif = new NotificationBL();
         Vector invoices = new Vector();
 

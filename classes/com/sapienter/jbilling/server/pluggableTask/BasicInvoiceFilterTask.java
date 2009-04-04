@@ -23,8 +23,8 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 
 /**
  * This filter simply verifies that this invoice is being process after
@@ -34,8 +34,8 @@ public class BasicInvoiceFilterTask
     extends PluggableTask
     implements InvoiceFilterTask {
 
-    public boolean isApplicable(InvoiceEntityLocal invoice, 
-            BillingProcessEntityLocal process) throws TaskException {
+    public boolean isApplicable(InvoiceDTO invoice, 
+            BillingProcessDTO process) throws TaskException {
 
         /*
         if (process.getBillingDate().after(Util.truncateDate(

@@ -20,10 +20,10 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 
 public interface OrderFilterTask {
     boolean isApplicable(OrderDTO order, 
-            BillingProcessEntityLocal process) throws TaskException;
+            BillingProcessDTO process) throws TaskException;
 }

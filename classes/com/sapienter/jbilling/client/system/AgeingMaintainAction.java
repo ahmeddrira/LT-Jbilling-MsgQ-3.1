@@ -153,16 +153,14 @@ public class AgeingMaintainAction extends Action {
                             if (line.getStatusId().equals(UserDTOEx.STATUS_ACTIVE) ||
                                     line.getStatusId().equals(UserDTOEx.STATUS_DELETED)) {
                                 // nothing ... :)
-                            } else if ((line.getDays() == null || 
-                                    line.getDays().intValue() <= 0) && f != lastSelected) {
+                            } else if ((line.getDays() <= 0) && f != lastSelected) {
                                 String field = Resources.getMessage(request, 
                                         "system.ageing.days"); 
                                 errors.add(ActionErrors.GLOBAL_ERROR,
                                         new ActionError("errors.required.line", field,
                                             line.getStatusId()));
                             } else if (f == lastSelected && 
-                                    (line.getDays() == null || 
-                                            line.getDays().intValue() != 0)) {
+                                    (line.getDays() != 0)) {
                                 errors.add(ActionErrors.GLOBAL_ERROR,
                                         new ActionError("system.ageing.error.lastDay"));              
                             }

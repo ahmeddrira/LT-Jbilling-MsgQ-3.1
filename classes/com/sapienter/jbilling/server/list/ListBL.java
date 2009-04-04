@@ -48,7 +48,6 @@ import com.sapienter.jbilling.server.customer.CustomerSQL;
 import com.sapienter.jbilling.server.invoice.InvoiceSQL;
 import com.sapienter.jbilling.server.list.db.ListDAS;
 import com.sapienter.jbilling.server.list.db.ListDTO;
-import com.sapienter.jbilling.server.list.db.ListFieldDAS;
 import com.sapienter.jbilling.server.list.db.ListFieldDTO;
 import com.sapienter.jbilling.server.order.OrderSQL;
 import com.sapienter.jbilling.server.payment.PaymentSQL;

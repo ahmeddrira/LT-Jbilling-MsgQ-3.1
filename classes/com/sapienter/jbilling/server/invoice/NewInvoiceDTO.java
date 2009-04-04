@@ -21,46 +21,48 @@
 /*
  * Created on 20-Apr-2003
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.invoice;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
 
 public class NewInvoiceDTO extends InvoiceDTO {
-	private Vector<OrderDTO> orders= null;
-    private Vector<InvoiceDTO> invoices= null;
-    private Vector<InvoiceLineDTOEx> resultLines = null;
+
+    private Vector<OrderDTO> orders = null;
+    private Set<InvoiceDTO> invoices = null;
+    private Vector<InvoiceLineDTO> resultLines = null;
     private Vector<Vector<PeriodOfTime>> periods = new Vector<Vector<PeriodOfTime>>();
     private Integer entityId = null;
     private Date billingDate = null;
     private TimePeriod dueDatePeriod = null;
     boolean dateIsRecurring;
-
     private static final Logger LOG = Logger.getLogger(NewInvoiceDTO.class);
 
     public NewInvoiceDTO() {
         orders = new Vector<OrderDTO>();
-        invoices = new Vector<InvoiceDTO>();
-        resultLines = new Vector<InvoiceLineDTOEx>();
+        invoices = new HashSet<InvoiceDTO>();
+        resultLines = new Vector<InvoiceLineDTO>();
         LOG.debug("New invoice object with date = " + billingDate);
     }
-    
+
     public void setDate(Date newDate) {
         billingDate = newDate;
     }
-    
+
     /**
      * Use the earliest day, with priority to recurring orders
      * Used only for the parameter invoice date = begining of period invoiced
@@ -83,72 +85,71 @@ public class NewInvoiceDTO extends InvoiceDTO {
             }
         }
     }
-    
+
     public void addOrder(OrderDTO order, Date start, Date end, Vector<PeriodOfTime> periods) throws SessionInternalError {
-    	Logger.getLogger(NewInvoiceDTO.class).debug("Adding order " + 
+        Logger.getLogger(NewInvoiceDTO.class).debug("Adding order " +
                 order.getId() + " to new invoice");
         orders.add(order);
         if (start != null && end != null && start.after(end)) {
             // how come it starts after it ends ???
             throw new SessionInternalError("Adding " +
-                    "order " + order.getId() + " with a period that" 
-                    + " starts after it ends:" + start + " " +
+                    "order " + order.getId() + " with a period that" + " starts after it ends:" + start + " " +
                     end);
-        }        
+        }
         this.periods.add(periods);
     }
-    
+
     public void addInvoice(InvoiceDTO line) {
         invoices.add(line);
     }
-    
+
     public Vector getOrders() {
-    	return orders;
+        return orders;
     }
-    
-    
-    public Vector getInvoices() {
-    	return invoices;
+
+    public Set<InvoiceDTO> getInvoices() {
+        return invoices;
     }
-    
-	public Vector getResultLines() {
-		return resultLines;
-	}
-	
-	public void addResultLine(InvoiceLineDTOEx line) {
-		resultLines.add(line);
-	}
-	
-	/**
-	 * 
-	 * @return If this object holds any order lines or invoice lines,
-	 * therefore if it makes sense to apply invoice composition tasks to it.
-	 */
-	public boolean isEmpty() {
-		return orders.isEmpty() && invoices.isEmpty();
-	}
-	
-	/**
+
+    public Vector getResultLines() {
+        return resultLines;
+    }
+
+    public void addResultLine(InvoiceLineDTO line) {
+        resultLines.add(line);
+    }
+
+    /**
+     * 
+     * @return If this object holds any order lines or invoice lines,
+     * therefore if it makes sense to apply invoice composition tasks to it.
+     */
+    public boolean isEmpty() {
+        return orders.isEmpty() && invoices.isEmpty();
+    }
+
+    /**
      * @return If after the invoice composition tasks lines have
      * been inserted in the resultLines vector.
      */
     public boolean areLinesGeneratedEmpty() {
-		return resultLines.isEmpty();
-	}
-	
-	public String validate() {
-		String message = null;
-		
-		if (getDueDate() == null) {
+        return resultLines.isEmpty();
+    }
+
+    public String validate() {
+        String message = null;
+
+        if (getDueDate() == null) {
             // due date is mandaroty
-			message = "Due date is null";
-		} else if (getDueDate().before(getBillingDate())) {
+            message = "Due date is null";
+        } else if (getDueDate().before(getBillingDate())) {
             // the due date has to be after the invoice's billing date
             message = "Due date has to be past the billing date";
-		}
-		
-		return message;
-	}
+        }
+
+        return message;
+    }
+
     /**
      * @return
      */
@@ -162,16 +163,16 @@ public class NewInvoiceDTO extends InvoiceDTO {
     public void setBillingDate(Date date) {
         billingDate = date;
     }
-    
+
     public void calculateTotal() {
         Iterator lines = resultLines.iterator();
         BigDecimal total = new BigDecimal(0);
         while (lines.hasNext()) {
-            InvoiceLineDTOEx line = (InvoiceLineDTOEx) lines.next();
+            InvoiceLineDTO line = (InvoiceLineDTO) lines.next();
             total = total.add(new BigDecimal(line.getAmount().toString()));
         }
-        
-        setTotal(new Float(total.floatValue()));
+
+        setTotal(total);
     }
 
     /**
@@ -187,15 +188,18 @@ public class NewInvoiceDTO extends InvoiceDTO {
     public Integer getEntityId() {
         return entityId;
     }
+
     /**
      * @param entityId The entityId to set.
      */
     public void setEntityId(Integer entityId) {
         this.entityId = entityId;
     }
+
     public TimePeriod getDueDatePeriod() {
         return dueDatePeriod;
     }
+
     public void setDueDatePeriod(TimePeriod dueDatePeriod) {
         this.dueDatePeriod = dueDatePeriod;
     }

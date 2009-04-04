@@ -25,7 +25,6 @@ import javax.ejb.MessageDrivenBean;
 import javax.ejb.MessageDrivenContext;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 

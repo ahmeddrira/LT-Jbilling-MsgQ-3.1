@@ -27,7 +27,7 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.user.PaymentMethodCrudContext.AchContext;
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.entity.AchDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 
 public class AchMaintainAction extends
 		AbstractPaymentMethodMaintainAction<AchContext> {

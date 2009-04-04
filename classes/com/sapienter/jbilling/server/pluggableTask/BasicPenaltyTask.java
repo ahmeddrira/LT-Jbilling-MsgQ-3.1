@@ -33,8 +33,8 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
@@ -82,11 +82,11 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
         } catch (Exception e2) {
             throw new TaskException(e2);
         }
-        InvoiceEntityLocal invoice = invoiceBL.getEntity();
-        Integer userId = invoice.getUser().getUserId();
-        Integer languageId = invoice.getUser().getLanguageIdField();
-        Integer currencyId = invoice.getCurrencyId();
-        Integer entityId = invoice.getUser().getEntity().getId();
+        InvoiceDTO invoice = invoiceBL.getEntity();
+        Integer userId = invoice.getBaseUser().getUserId();
+        Integer languageId = invoice.getBaseUser().getLanguageIdField();
+        Integer currencyId = invoice.getCurrency().getId();
+        Integer entityId = invoice.getBaseUser().getEntity().getId();
 
         // find the item to base the penalty on
         Integer itemId = (Integer) parameters.get(PARAMETER_ITEM);
@@ -125,12 +125,12 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
             // start by getting the invoice total
             BigDecimal penaltyBase = null;
             // not delegated: pure
-            if (invoice.getDelegatedInvoice() == null) {
+            if (invoice.getInvoice() == null) {
                 penaltyBase = new BigDecimal(invoice.getBalance().toString());
             } else {
                 // has been delegated, the balance will be 0
                 InvoiceBL newInvoice = new InvoiceBL(
-                        invoice.getDelegatedInvoice());
+                        invoice.getInvoice());
                 penaltyBase = new BigDecimal(invoice.getTotal().toString());
                 penaltyBase = penaltyBase.subtract(new BigDecimal(newInvoice.getTotalPaid()));
                 penaltyBase = penaltyBase.subtract(new BigDecimal(invoiceBL.getTotalPaid()));
@@ -166,7 +166,7 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
             // find the locale if not there yet
             Locale locale;
             try {
-                UserBL userBl = new UserBL(invoice.getUser());
+                UserBL userBl = new UserBL(invoice.getBaseUser());
                 locale = userBl.getLocale();
             } catch (Exception e) {
                 log.debug("Exception finding locale to add delegated invoice " +
@@ -181,7 +181,7 @@ public class BasicPenaltyTask extends PluggableTask implements PenaltyTask {
             StringBuffer delLine = new StringBuffer();
             delLine.append(" - ");
             delLine.append(bundle.getString("invoice.line.delegated"));
-            delLine.append(" " + invoice.getNumber() + " ");
+            delLine.append(" " + invoice.getPublicNumber() + " ");
             delLine.append(bundle.getString("invoice.line.delegated.due"));
             delLine.append(" " + df.format(invoice.getDueDate()));
  

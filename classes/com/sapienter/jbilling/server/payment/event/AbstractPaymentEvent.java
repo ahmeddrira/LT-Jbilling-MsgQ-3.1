@@ -19,8 +19,8 @@
 */
 package com.sapienter.jbilling.server.payment.event;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -29,7 +29,7 @@ public abstract class AbstractPaymentEvent implements Event {
     private final Integer entityId;
     
     public static AbstractPaymentEvent forPaymentResult(Integer entityId, PaymentDTOEx payment){
-		Integer result = payment.getResultId();
+		Integer result = payment.getPaymentResult().getId();
         // some processors don't do anything (fake), only pass to the next 
         // processor in the chain
 		if (result == null){

@@ -45,15 +45,14 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Context;
-import com.sapienter.jbilling.server.util.db.generated.Payment;
 
 public class MaintainAction extends Action {
 
@@ -135,7 +134,7 @@ public class MaintainAction extends Action {
                                 payout.getStartingDate(), 
                                 payout.getEndingDate(), partner.getId(),
                                 new Boolean(true));
-                        payout.setPayment(new Payment(paymentDto));
+                        payout.setPayment(new PaymentDTO(paymentDto));
                     }
                     
                     if (result == null) {
@@ -155,8 +154,7 @@ public class MaintainAction extends Action {
                     if (!isPayout) {
                         log.debug("sending payment. Id = " + paymentDto.getId() +
                                 " refund " + paymentDto.getIsRefund());
-                        if (paymentDto.getId() != null && 
-                                paymentDto.getIsRefund().intValue() == 0) {
+                        if (paymentDto.getId() != 0 && paymentDto.getIsRefund() == 0) {
                             // it is an update
                             myRemoteSession.update((Integer) session.getAttribute(
                                     Constants.SESSION_LOGGED_USER_ID), paymentDto);
@@ -254,7 +252,7 @@ public class MaintainAction extends Action {
                 PaymentDTOEx dto = ((PaymentSession) myRemoteSession).getPayment(
                         paymentId, languageId);
                 log.debug("my dto is " + dto);
-                if (dto.getIsRefund().intValue() == 1) {
+                if (dto.getIsRefund() == 1) {
                     session.setAttribute(Constants.SESSION_PAYMENT_DTO_REFUND, 
                             dto);
                     if (dto.getPayment() != null) {

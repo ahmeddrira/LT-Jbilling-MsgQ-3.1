@@ -24,15 +24,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
-import com.sapienter.jbilling.common.JBCrypto;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 /**
  * Filters credit card numbers.
@@ -41,12 +39,11 @@ public class CreditCardFilter implements BlacklistFilter {
 
     public Result checkPayment(PaymentDTOEx paymentInfo) {
         if (paymentInfo.getCreditCard() != null) {
-            List<CreditCard> creditCards = new Vector<CreditCard>(1);
+            List<CreditCardDTO> creditCards = new Vector<CreditCardDTO>(1);
             // need to convert EJB 2 entity DTO type to Hibernate DTO type
-            CreditCard creditCard = new CreditCard();
+            CreditCardDTO creditCard = new CreditCardDTO();
             // DB compares encrypted data
-            creditCard.setCcNumber(JBCrypto.getCreditCardCrypto().encrypt(
-                    paymentInfo.getCreditCard().getNumber()));
+            creditCard.setNumber(paymentInfo.getCreditCard().getNumber());
             creditCards.add(creditCard);
 
             return checkCreditCard(paymentInfo.getUserId(), 
@@ -61,15 +58,16 @@ public class CreditCardFilter implements BlacklistFilter {
         return checkCreditCard(userId, user.getCreditCards());
     }
 
-    public Result checkCreditCard(Integer userId, Collection<CreditCard> creditCards) {
+    public Result checkCreditCard(Integer userId, Collection<CreditCardDTO> creditCards) {
         if (creditCards.isEmpty()) {
             return new Result(false, null);
         }
 
         // create a list of credit card numbers
         List<String> ccNumbers = new Vector<String>(creditCards.size());
-        for (CreditCard cc : creditCards) {
-            ccNumbers.add(cc.getCcNumber());
+        for (CreditCardDTO cc : creditCards) {
+            // it needs the encrypted numbers because it will use a query with them later
+            ccNumbers.add(cc.getRawNumber());
         }
 
         Integer entityId = new UserDAS().find(userId).getCompany().getId();

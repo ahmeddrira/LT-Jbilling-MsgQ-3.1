@@ -36,7 +36,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
+import com.sapienter.jbilling.server.util.db.JbillingTable;
 
 @Entity
 @TableGenerator(
@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.util.db.generated.JbillingTable;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="contact_map",
-        allocationSize=10
+        allocationSize = 100
         )
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name="contact_map"

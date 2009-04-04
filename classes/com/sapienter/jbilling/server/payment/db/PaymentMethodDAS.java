@@ -20,8 +20,7 @@
 package com.sapienter.jbilling.server.payment.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.PaymentMethod;
 
-public class PaymentMethodDAS extends AbstractDAS<PaymentMethod> {
+public class PaymentMethodDAS extends AbstractDAS<PaymentMethodDTO> {
 
 }

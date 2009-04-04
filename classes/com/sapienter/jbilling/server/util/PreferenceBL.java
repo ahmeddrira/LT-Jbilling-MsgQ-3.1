@@ -22,18 +22,17 @@ package com.sapienter.jbilling.server.util;
 
 import java.util.Locale;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
-import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
+import javax.ejb.FinderException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 public class PreferenceBL {
     
@@ -45,6 +44,7 @@ public class PreferenceBL {
     private PreferenceTypeDTO type = null;
     private static Logger LOG = Logger.getLogger(PreferenceBL.class);
     private Locale locale = null;
+    private JbillingTableDAS jbDAS = null;
     
     public PreferenceBL(Integer preferenceId) {
         init();
@@ -58,6 +58,7 @@ public class PreferenceBL {
     private void init() {
         preferenceDas = new PreferenceDAS();
         typeDas = new PreferenceTypeDAS();
+        jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
     }
     
     /**
@@ -69,8 +70,7 @@ public class PreferenceBL {
      * @param typeId
      * @throws FinderException
      */
-    public void set(Integer entityId, Integer typeId) 
-            throws FinderException {
+    public void set(Integer entityId, Integer typeId)  {
         LOG.debug("Now looking for preference " + typeId + " ent " +
                 entityId + " table " + Constants.TABLE_ENTITY);
         if (entityId != null) {
@@ -84,14 +84,12 @@ public class PreferenceBL {
                 typeId, entityId, Constants.TABLE_ENTITY);
         if (preference == null) {
             type = typeDas.find(typeId);
-            // TODO: refactor code so there is no need to rely on this obsolete exception
-            throw new FinderException("Could not find preference " + typeId);
+            throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
         }
             
     }
 
-    public void setForUser(Integer userId, Integer typeId) 
-            throws FinderException {
+    public void setForUser(Integer userId, Integer typeId) {
         try {
             UserBL us = new UserBL(userId);
             locale = us.getLocale();
@@ -101,15 +99,13 @@ public class PreferenceBL {
                 Constants.TABLE_BASE_USER);
         if (preference == null) {
             type = typeDas.find(typeId);
-            // TODO: refactor code so there is no need to rely on this obsolete exception
-            throw new FinderException("Could not find preference " + typeId);
+            throw new EmptyResultDataAccessException("Could not find preference " + typeId, 1);
         }
 
     }
 
     public void createUpdateForEntity(Integer entityId, Integer preferenceId, 
-            Integer intValue, String strValue, Float fValue) 
-            throws CreateException {
+            Integer intValue, String strValue, Float fValue) {
         // lets see first if this exists
         try {
             set(entityId, preferenceId);
@@ -117,22 +113,21 @@ public class PreferenceBL {
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
             preference.setFloatValue((fValue == null) ? null : fValue.doubleValue());
-        } catch (FinderException e) {
+        } catch (EmptyResultDataAccessException e) {
             // we need a new one
             preference = new PreferenceDTO();
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
             preference.setFloatValue(fValue == null ? null : fValue.doubleValue());
             preference.setForeignId(entityId);
-            preference.setJbillingTable(new JbillingTableDAS().findByName(Constants.TABLE_ENTITY));
+            preference.setJbillingTable(jbDAS.findByName(Constants.TABLE_ENTITY));
             preference.setPreferenceType(new PreferenceTypeDAS().find(preferenceId));
             preference = preferenceDas.save(preference);
         }
     }
 
     public void createUpdateForUser(Integer userId, Integer typeId, 
-            Integer intValue, String strValue, Float fValue) 
-            throws CreateException {
+            Integer intValue, String strValue, Float fValue) {
         // lets see first if this exists
         try {
             setForUser(userId, typeId);
@@ -140,14 +135,14 @@ public class PreferenceBL {
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
             preference.setFloatValue((fValue == null) ? null : fValue.doubleValue());
-        } catch (FinderException e) {
+        } catch (EmptyResultDataAccessException e) {
             // we need a new one
             preference = new PreferenceDTO();
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
             preference.setFloatValue(fValue == null ? null : fValue.doubleValue());
             preference.setForeignId(userId);
-            preference.setJbillingTable(new JbillingTableDAS().findByName(Constants.TABLE_BASE_USER));
+            preference.setJbillingTable(jbDAS.findByName(Constants.TABLE_BASE_USER));
             preference.setPreferenceType(new PreferenceTypeDAS().find(typeId));
             preference = preferenceDas.save(preference);
 

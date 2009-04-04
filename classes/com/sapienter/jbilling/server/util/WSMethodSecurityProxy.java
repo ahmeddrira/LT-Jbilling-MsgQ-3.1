@@ -34,7 +34,6 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
@@ -48,6 +47,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
 /**
  * @author Emil
@@ -242,7 +242,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                 
                 if (arg != null) {
                     InvoiceBL bl = new InvoiceBL(arg);
-                    validate(bl.getEntity().getUser().getUserId());
+                    validate(bl.getEntity().getBaseUser().getUserId());
                 }
             } else if (m.getName().equals("getLatestInvoice") || 
                     m.getName().equals("getLastInvoices")) {
@@ -340,7 +340,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                 
                 if (arg != null) {
                     PaymentBL bl = new PaymentBL(arg);
-                    validate(bl.getEntity().getUser().getUserId());
+                    validate(bl.getEntity().getBaseUser().getUserId());
                 }
             } else if (m.getName().equals("getLatestPayment") ||
                     m.getName().equals("getLastPayments")) {
@@ -378,10 +378,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
         } catch (NamingException e) {
             log.error("Exception ", e);
             throw new SecurityException(e.getMessage());
-        } catch (FinderException e) {
-            // no need to log, this simply means that the request is rejected
-            throw new SecurityException(e.getMessage());
-        }
+        } 
         LOG.debug("Done");
     }
 }

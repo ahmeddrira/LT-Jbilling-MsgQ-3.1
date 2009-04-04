@@ -123,13 +123,13 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
     }
 
     public List<BlacklistDTO> filterByCcNumbers(Integer entityId, 
-            Collection<String> ccNumbers) {
+            Collection<String> rawNumbers) {
         Criteria criteria = getSession().createCriteria(BlacklistDTO.class)
                 .createAlias("company", "c")
                     .add(Restrictions.eq("c.id", entityId))
                 .add(Restrictions.eq("type", BlacklistDTO.TYPE_CC_NUMBER))
                 .createAlias("creditCard", "cc")
-                    .add(Restrictions.in("cc.ccNumber", ccNumbers));
+                    .add(Restrictions.in("cc.rawNumber", rawNumbers));
 
         return criteria.list();
     }

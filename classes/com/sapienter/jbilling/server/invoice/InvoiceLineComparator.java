@@ -25,6 +25,7 @@
  */
 package com.sapienter.jbilling.server.invoice;
 
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import java.util.Comparator;
 
 import org.apache.log4j.Logger;
@@ -35,24 +36,22 @@ import com.sapienter.jbilling.server.util.Constants;
 /**
  * @author Emil
  */
-public class InvoiceLineComparator implements Comparator {
+public class InvoiceLineComparator implements Comparator<InvoiceLineDTO> {
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare(Object arg0, Object arg1) {
-        InvoiceLineDTOEx perA = (InvoiceLineDTOEx) arg0;
-        InvoiceLineDTOEx perB = (InvoiceLineDTOEx) arg1;
+    public int compare(InvoiceLineDTO perA, InvoiceLineDTO perB) {
         int retValue;
         
         // the line type should tell first
-        if (perA.getOrderPosition().equals(perB.getOrderPosition())) {
+        if (perA.getOrderPosition() == perB.getOrderPosition()) {
             
             try {
-                if (perA.getTypeId().equals(
-                        Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT) &&
-                        perB.getTypeId().equals(
-                            Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT)) {
+                if (perA.getTypeId() ==
+                        Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT &&
+                        perB.getTypeId() ==
+                            Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT) {
                     // invoice lines have to be grouped by user
                     // find out both users
                     retValue = perA.getSourceUserId().compareTo(perB.getSourceUserId());
@@ -69,14 +68,13 @@ public class InvoiceLineComparator implements Comparator {
                     }
                 } 
                 // use the number
-                if (perA.getItemId() != null && perB.getItemId() 
-                        != null) {
-                    ItemBL itemA = new ItemBL(perA.getItemId());
-                    ItemBL itemB = new ItemBL(perB.getItemId());
+                if (perA.getItem() != null && perB.getItem() != null) {
+                    ItemBL itemA = new ItemBL(perA.getItem());
+                    ItemBL itemB = new ItemBL(perB.getItem());
                     if (itemA.getEntity().getNumber() == null &&
                             itemB.getEntity().getNumber() == null) {
-                        retValue = perA.getItemId().compareTo(
-                                perB.getItemId());
+                        retValue = new Integer(perA.getItem().getId()).compareTo(
+                                new Integer(perB.getItem().getId()));
                     } else if (itemA.getEntity().getNumber() == null) {
                         retValue = 1;
                     } else if (itemB.getEntity().getNumber() == null) {
@@ -95,7 +93,7 @@ public class InvoiceLineComparator implements Comparator {
                 retValue = 0;
             }
         } else {
-            retValue = perA.getOrderPosition().compareTo(perB.getOrderPosition());
+            retValue = new Integer(perA.getOrderPosition()).compareTo(perB.getOrderPosition());
         }
 /*        
         Logger.getLogger(InvoiceLineComparator.class).debug(

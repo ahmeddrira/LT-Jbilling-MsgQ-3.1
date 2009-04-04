@@ -39,11 +39,9 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
-/*
- * This is the session facade for notifications
- */
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 @Transactional( propagation = Propagation.REQUIRED )
 public class NotificationSessionBean {
 
@@ -62,22 +60,21 @@ public class NotificationSessionBean {
         Boolean retValue;
         try {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
-            UserBL user = new UserBL(invoice.getEntity().getUser());
+            UserBL user = new UserBL(invoice.getEntity().getBaseUser());
             Integer entityId = user.getEntity().getEntity().getId();
             Integer languageId = user.getEntity().getLanguageIdField();
             NotificationBL notif = new NotificationBL();
             MessageDTO message = notif.getInvoiceEmailMessage(entityId, 
                     languageId, invoice.getEntity());
             retValue = notify(user.getEntity(), message);
-        } catch (NamingException e) {
-            LOG.error("Exception sending email invoice", e);
-            throw new SessionInternalError(e);
-        } catch (FinderException e) {
-            LOG.error("Exception sending email invoice", e);
-            throw new SessionInternalError(e);
+        
         } catch (NotificationNotFoundException e) {
             retValue = new Boolean(false);
         } 
+//        catch (FinderException e) {
+//            log.error("Exception sending email invoice", e);
+//            throw new SessionInternalError(e);
+//        } 
         
         return retValue;
     }
@@ -94,14 +91,14 @@ public class NotificationSessionBean {
         Boolean retValue;
         try {
             PaymentBL payment = new PaymentBL(paymentId);
-            UserBL user = new UserBL(payment.getEntity().getUser());
+            UserBL user = new UserBL(payment.getEntity().getBaseUser());
             Integer entityId = user.getEntity().getEntity().getId();
             NotificationBL notif = new NotificationBL();
             MessageDTO message = notif.getPaymentMessage(entityId, 
                     payment.getDTOEx(user.getEntity().getLanguageIdField()),
-                    payment.getEntity().getResultId().equals(
+                    new Integer(payment.getEntity().getPaymentResult().getId()).equals(
                             Constants.RESULT_ENTERED) ||
-                    payment.getEntity().getResultId().equals(
+                    new Integer(payment.getEntity().getPaymentResult().getId()).equals(
                             Constants.RESULT_OK));
             retValue = notify(user.getEntity(), message);
         } catch (NamingException e) {

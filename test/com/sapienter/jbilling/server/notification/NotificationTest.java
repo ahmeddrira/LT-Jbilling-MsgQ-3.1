@@ -23,8 +23,6 @@ package com.sapienter.jbilling.server.notification;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.NotificationSession;
-import com.sapienter.jbilling.interfaces.NotificationSessionHome;
 
 public class NotificationTest extends TestCase {
 

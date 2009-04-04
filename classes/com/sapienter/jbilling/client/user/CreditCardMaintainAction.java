@@ -30,8 +30,8 @@ import org.apache.struts.action.ActionErrors;
 import com.sapienter.jbilling.client.user.PaymentMethodCrudContext.CCContext;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 
 public class CreditCardMaintainAction extends
 		AbstractPaymentMethodMaintainAction<CCContext> {
@@ -61,7 +61,7 @@ public class CreditCardMaintainAction extends
 		if (dto != null) { // it could be that the user has no cc yet
 			String ccNumber = maskCreditCardNumberIfNeeded(dto);
 			myForm.set(FIELD_NUMBER, ccNumber);
-			setFormDate(FIELD_GROUP_EXPIRY, dto.getExpiry());
+			setFormDate(FIELD_GROUP_EXPIRY, dto.getCcExpiry());
 			myForm.set(FIELD_NAME, dto.getName());
 			myForm.set(FIELD_USE_CARD, use);
 		} else {
@@ -76,12 +76,12 @@ public class CreditCardMaintainAction extends
 		dto.setName((String) myForm.get(FIELD_NAME));
 		dto.setNumber((String) myForm.get(FIELD_NUMBER));
 		myForm.set(FIELD_GROUP_EXPIRY + "_day", "01"); // to complete the date
-		dto.setExpiry(parseDate(FIELD_GROUP_EXPIRY, "payment.cc.date"));
+		dto.setCcExpiry(parseDate(FIELD_GROUP_EXPIRY, "payment.cc.date"));
 
 		// validate the expiry date
-		if (dto.getExpiry() != null) {
+		if (dto.getCcExpiry() != null) {
 			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTime(dto.getExpiry());
+			cal.setTime(dto.getCcExpiry());
 			cal.add(GregorianCalendar.MONTH, 1); // add 1 month
 			if (Calendar.getInstance().getTime().after(cal.getTime())) {
 				errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(

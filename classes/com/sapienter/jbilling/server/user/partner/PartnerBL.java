@@ -40,7 +40,6 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -53,6 +52,7 @@ import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.PartnerRangeComparator;
@@ -66,6 +66,7 @@ import com.sapienter.jbilling.server.user.partner.db.PartnerPayoutDAS;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRangeDAS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
@@ -204,7 +205,7 @@ public class PartnerBL extends ResultList
                 notPaid = true;
             } else {
                 payment.setAmount(new Float(dto.getPayment().getAmount()));
-                payment.setCurrencyId(currencyId);
+                payment.setCurrency(partner.getUser().getCurrency());
                 payment.setUserId(userId);
                 payment.setPaymentDate(partner.getNextPayoutDate());
                 notPaid = !processPayment(payment, entityId, dto, true);
@@ -223,7 +224,7 @@ public class PartnerBL extends ResultList
                     getLanguageIdField(), dto.getPayment().
                         getAmount(), startDate, endDate, true);
             // set the partner due payout
-            partner.setDuePayout(dto.getPayment().getAmount());
+            partner.setDuePayout(new Double(dto.getPayment().getAmount()));
         }
 
     }
@@ -254,14 +255,14 @@ public class PartnerBL extends ResultList
         
         // get the total for this payout
         PartnerPayout dto = calculatePayout(start, end, 
-                payment.getCurrencyId());
+                payment.getCurrency().getId());
     
         // finish the payment
         payment.setIsRefund(new Integer(1));
         payment.setAttempt(new Integer(1));
         processPayment(payment, partner.getUser().getEntity().getId(), dto,
                 process.booleanValue());
-        return payment.getResultId();
+        return payment.getPaymentResult().getId();
     }
     
     public Date[] calculatePayoutDates() throws NamingException, SQLException, SessionInternalError{
@@ -333,7 +334,7 @@ public class PartnerBL extends ResultList
         } else {
             retValue = false;
         }
-        payment.setResultId(result);
+        payment.setPaymentResult(new PaymentResultDAS().find(result));
 
         return retValue;
     }
@@ -365,7 +366,7 @@ public class PartnerBL extends ResultList
         // since esql doesn't support dates, a direct call is necessary
         while (result.next()) {
             PaymentBL payment = new PaymentBL(new Integer(result.getInt(1)));
-            Integer paymentCurrencyId = payment.getEntity().getCurrencyId();
+            Integer paymentCurrencyId = payment.getEntity().getCurrency().getId();
             Integer entityId = partner.getUser().getEntity().getId();
             
             // the amount will have to be in the requested currency
@@ -375,11 +376,11 @@ public class PartnerBL extends ResultList
                     currencyId, payment.getEntity().getAmount(), entityId).toString());
             LOG.debug("payment amount = " + paymentAmount);
             BigDecimal amount = new BigDecimal(calculateCommission(paymentAmount.floatValue(), currencyId, 
-                    payment.getEntity().getUser(), payout != null)); 
+                    payment.getEntity().getBaseUser(), payout != null)); 
             LOG.debug("commission = " + amount);
             
             // payments add, refunds take
-            if (payment.getEntity().getIsRefund().intValue() == 0) {
+            if (payment.getEntity().getIsRefund() == 0) {
                 total = total.add(amount);
                 paymentTotal = paymentTotal.add(amount);
             } else {
@@ -403,7 +404,7 @@ public class PartnerBL extends ResultList
         
         LOG.debug("total " + total + " currency = " + currencyId);
         PartnerPayout retValue = new PartnerPayout();
-        retValue.getPayment().setAmount(total.doubleValue());
+        retValue.getPayment().setAmount(total.floatValue());
         retValue.getPayment().setCurrency(new CurrencyDAS().find(currencyId));
         retValue.getPayment().setBaseUser(partner.getBaseUser());
         retValue.setRefundsAmount(new Float(refundTotal.floatValue()));

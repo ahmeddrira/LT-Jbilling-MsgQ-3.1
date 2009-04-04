@@ -20,77 +20,61 @@
 
 package com.sapienter.jbilling.server.user;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.AchEntityLocal;
-import com.sapienter.jbilling.interfaces.AchEntityLocalHome;
-import com.sapienter.jbilling.server.entity.AchDTO;
+import com.sapienter.jbilling.server.user.db.AchDAS;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class AchBL {
-    private JNDILookup EJBFactory = null;
-    private AchEntityLocalHome achHome = null;
-    private AchEntityLocal ach = null;
+    private AchDAS achDas = null;
+    private AchDTO ach = null;
     private Logger log = null;
     private EventLogger eLogger = null;
     
-    public AchBL(Integer achId) 
-            throws NamingException, FinderException {
+    public AchBL(Integer achId) {
         init();
         set(achId);
     }
     
-    public AchBL() throws NamingException {
+    public AchBL() {
         init();
     }
     
-    public AchBL(AchEntityLocal row)
-            throws NamingException {
+    public AchBL(AchDTO row) {
         init();
         ach = row;
     }
     
-    private void init() throws NamingException {
+    private void init() {
         log = Logger.getLogger(AchBL.class);     
         eLogger = EventLogger.getInstance();        
-        EJBFactory = JNDILookup.getFactory(false);
-        achHome = (AchEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                AchEntityLocalHome.class,
-                AchEntityLocalHome.JNDI_NAME);
+        achDas = new AchDAS();
     }
 
-    public AchEntityLocal getEntity() {
+    public AchDTO getEntity() {
         return ach;
     }
     
-    public void set(Integer id) throws FinderException {
-        ach = achHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+        ach = achDas.find(id);
     }
     
-    public void set(AchEntityLocal pEntity) {
+    public void set(AchDTO pEntity) {
         ach = pEntity;
     }
     
-    public Integer create(AchDTO dto) 
-            throws CreateException {
-        ach = achHome.create(dto.getAbaRouting(), dto.getBankAccount(),
+    public Integer create(AchDTO dto) {
+        ach = achDas.create(dto.getAbaRouting(), dto.getBankAccount(),
         		dto.getAccountType(), dto.getBankName(),
 				dto.getAccountName()); 
                 
         return ach.getId();       
     }
     
-    public void update(Integer executorId, AchDTO dto) 
-            throws SessionInternalError {
+    public void update(Integer executorId, AchDTO dto) {
         if (executorId != null) {
             eLogger.audit(executorId, Constants.TABLE_ACH, 
                     ach.getId(),
@@ -105,15 +89,14 @@ public class AchBL {
         ach.setBankName(dto.getBankName());
     }
     
-    public void delete(Integer executorId) 
-            throws RemoveException, NamingException, FinderException {
+    public void delete(Integer executorId) {
         // now delete this ach record
         eLogger.audit(executorId, Constants.TABLE_ACH, 
                 ach.getId(),
                 EventLogger.MODULE_CREDIT_CARD_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
         
-        ach.remove();
+        achDas.delete(ach);
     }
     
     public AchDTO getDTO() {

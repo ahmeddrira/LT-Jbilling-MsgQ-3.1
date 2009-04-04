@@ -27,11 +27,12 @@ import javax.naming.NamingException;
 
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogMessageDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogModuleDAS;
-import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
+import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
 
 public class EventLogger {
     
@@ -108,6 +109,7 @@ public class EventLogger {
     private EventLogDAS eventLogDAS = null;
     private EventLogMessageDAS eventLogMessageDAS = null;
     private EventLogModuleDAS eventLogModuleDAS = null;
+    private JbillingTableDAS jbDAS = null;
     
     //private static final Logger LOG = Logger.getLogger(EventLogger.class);
     
@@ -115,6 +117,7 @@ public class EventLogger {
         eventLogDAS = new EventLogDAS();
         eventLogMessageDAS = new EventLogMessageDAS();
         eventLogModuleDAS = new EventLogModuleDAS();
+        jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
     }
     
     public static EventLogger getInstance() {
@@ -123,9 +126,8 @@ public class EventLogger {
     
     public void log(Integer level, Integer entity, Integer rowId, Integer module, 
             Integer message, String table)  {
-        JbillingTableDAS tableDas = new JbillingTableDAS();
         CompanyDAS company = new CompanyDAS();
-        EventLogDTO dto = new EventLogDTO(null, tableDas.findByName(table), null, 
+        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), null,
                 eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
                 company.find(entity), rowId, level, null, null, null);
         eventLogDAS.save(dto);
@@ -164,10 +166,9 @@ public class EventLogger {
             Integer module, Integer message, Integer oldInt, String oldStr,
             Date oldDate) {
 
-        JbillingTableDAS tableDas = new JbillingTableDAS();
         UserDAS user= new UserDAS();
         
-        EventLogDTO dto = new EventLogDTO(null, tableDas.findByName(table), user.find(userExecutingId), 
+        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), user.find(userExecutingId),
                 eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
                 user.find(userExecutingId).getCompany(), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
         eventLogDAS.save(dto);
@@ -182,9 +183,8 @@ public class EventLogger {
     public void auditBySystem(Integer entityId, String table, Integer rowId,
             Integer module, Integer message, Integer oldInt, String oldStr,
             Date oldDate) {
-        JbillingTableDAS tableDas = new JbillingTableDAS();
         CompanyDAS company = new CompanyDAS();
-        EventLogDTO dto = new EventLogDTO(null, tableDas.findByName(table), null, 
+        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), null,
                 eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
                 company.find(entityId), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
         eventLogDAS.save(dto);

@@ -25,23 +25,22 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import javax.persistence.DiscriminatorValue;
 
+import com.sapienter.jbilling.server.process.db.AgeingEntityStepDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractGenericStatus;
-import com.sapienter.jbilling.server.util.db.generated.AgeingEntityStep;
 
 @Entity
 @DiscriminatorValue("user_status")
 public class UserStatusDTO extends AbstractGenericStatus implements java.io.Serializable {
 
-
      private int canLogin;
-     private Set<AgeingEntityStep> ageingEntitySteps = new HashSet<AgeingEntityStep>(0);
+     private Set<AgeingEntityStepDTO> ageingEntitySteps = new HashSet<AgeingEntityStepDTO>(0);
      private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
 
     public UserStatusDTO() {
@@ -53,7 +52,7 @@ public class UserStatusDTO extends AbstractGenericStatus implements java.io.Seri
         this.canLogin = canLogin;
     }
     
-    public UserStatusDTO(int statusValue, int canLogin, Set<AgeingEntityStep> ageingEntitySteps, Set<UserDTO> baseUsers) {
+    public UserStatusDTO(int statusValue, int canLogin, Set<AgeingEntityStepDTO> ageingEntitySteps, Set<UserDTO> baseUsers) {
        this.statusValue = statusValue;
        this.canLogin = canLogin;
        this.ageingEntitySteps = ageingEntitySteps;
@@ -74,11 +73,11 @@ public class UserStatusDTO extends AbstractGenericStatus implements java.io.Seri
         this.canLogin = canLogin;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="userStatus")
-    public Set<AgeingEntityStep> getAgeingEntitySteps() {
+    public Set<AgeingEntityStepDTO> getAgeingEntitySteps() {
         return this.ageingEntitySteps;
     }
     
-    public void setAgeingEntitySteps(Set<AgeingEntityStep> ageingEntitySteps) {
+    public void setAgeingEntitySteps(Set<AgeingEntityStepDTO> ageingEntitySteps) {
         this.ageingEntitySteps = ageingEntitySteps;
     }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="userStatus")

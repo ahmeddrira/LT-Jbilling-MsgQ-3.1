@@ -31,6 +31,7 @@ import com.sapienter.jbilling.server.pluggableTask.BasicOrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 public class ProRateOrderPeriodTask extends BasicOrderPeriodTask {
 
@@ -61,7 +62,7 @@ public class ProRateOrderPeriodTask extends BasicOrderPeriodTask {
 		try {
 			pref.set(order.getUser().getEntity().getId(),
 					Constants.PREFERENCE_USE_PRO_RATING);
-		} catch (FinderException e1) {
+		} catch (EmptyResultDataAccessException e1) {
 			// the defaults are fine
 		}
 		if (pref.getInt() == 0) {

@@ -20,10 +20,10 @@
 
 package com.sapienter.jbilling.server.pluggableTask;
 
-import com.sapienter.jbilling.interfaces.BillingProcessEntityLocal;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 
 public interface InvoiceFilterTask {
-    boolean isApplicable(InvoiceEntityLocal invoice, 
-            BillingProcessEntityLocal process) throws TaskException;
+    boolean isApplicable(InvoiceDTO invoice, 
+            BillingProcessDTO process) throws TaskException;
 }

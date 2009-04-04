@@ -27,9 +27,6 @@ package com.sapienter.jbilling.server.order;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Vector;
-
-import com.sapienter.jbilling.server.item.PricingField;
 
 /**
  * @author Emil

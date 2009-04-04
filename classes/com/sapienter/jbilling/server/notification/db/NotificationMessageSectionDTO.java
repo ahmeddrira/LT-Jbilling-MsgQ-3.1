@@ -48,7 +48,7 @@ import org.hibernate.annotations.FetchMode;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_section", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "notification_message_section")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class NotificationMessageSectionDTO implements Serializable {

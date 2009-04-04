@@ -26,7 +26,7 @@ package com.sapienter.jbilling.server.invoice;
 
 import java.util.Comparator;
 
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 
 /**
  * @author Emil
@@ -37,10 +37,10 @@ public class InvoiceEntityComparator implements Comparator {
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare(Object o1, Object o2) {
-        InvoiceEntityLocal parA = (InvoiceEntityLocal) o1;
-        InvoiceEntityLocal parB = (InvoiceEntityLocal) o2;
+        InvoiceDTO parA = (InvoiceDTO) o1;
+        InvoiceDTO parB = (InvoiceDTO) o2;
         
-        return parA.getId().compareTo(parB.getId());
+        return new Integer(parA.getId()).compareTo(new Integer(parB.getId()));
     }
 
 }

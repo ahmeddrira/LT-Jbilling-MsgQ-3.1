@@ -28,11 +28,11 @@ import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 import javax.security.auth.login.LoginContext;
 
+import org.apache.log4j.Logger;
 import org.jboss.security.auth.callback.UsernamePasswordHandler;
 
 import com.sapienter.jbilling.interfaces.WebServicesSession;
 import com.sapienter.jbilling.interfaces.WebServicesSessionHome;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -44,6 +44,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
 public class EJBAPI implements JbillingAPI {
 
@@ -350,6 +351,8 @@ public class EJBAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+    
+    private static final Logger LOG = Logger.getLogger(EJBAPI.class);
 
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
             throws JbillingAPIException {

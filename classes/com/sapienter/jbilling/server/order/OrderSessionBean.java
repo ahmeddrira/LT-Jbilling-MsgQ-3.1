@@ -216,14 +216,10 @@ public class OrderSessionBean implements SessionBean {
     /**
      * @ejb:interface-method view-type="remote"
      */
-    public void setPeriods(Integer languageId, OrderPeriodDTO[] periods) 
+    public void setPeriods(Integer languageId, OrderPeriodDTO[] periods)
             throws SessionInternalError {
-        try {
-			OrderBL bl = new OrderBL();
-			bl.updatePeriods(languageId, periods);
-		} catch (NamingException e) {
-			throw new SessionInternalError(e);
-		}
+        OrderBL bl = new OrderBL();
+        bl.updatePeriods(languageId, periods);
     }
 
     /**

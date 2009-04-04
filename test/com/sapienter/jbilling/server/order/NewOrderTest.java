@@ -25,8 +25,6 @@ import javax.ejb.FinderException;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.NewOrderSession;
-import com.sapienter.jbilling.interfaces.NewOrderSessionHome;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Constants;
 

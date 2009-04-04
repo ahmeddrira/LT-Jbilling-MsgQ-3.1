@@ -106,7 +106,7 @@
 		<td class="infoprompt"><bean:message key="invoice.createDateTime.prompt"/></td>
 		<td class="infodata">	
             <bean:write name='<%=Constants.SESSION_INVOICE_DTO%>' 
-                        property="createDateTime"
+                        property="createDatetime"
                         scope="session"
                         formatKey="format.date"/>
         </td>
@@ -229,25 +229,25 @@
 				<td class="infodata">
 				<html:link page="/paymentMaintain.do?action=view" paramId="id" 
 					       paramName="payment"
-					       paramProperty="paymentId">
-					<bean:write name="payment" property="paymentId"/>
+					       paramProperty="payment.id">
+					<bean:write name="payment" property="payment.id"/>
 				</html:link>
 				</td>
 				<td class="infodata">
 				<bean:write name="payment" 
-                        property="createDateTime"
+                        property="payment.createDatetime"
                         scope="page"
                         formatKey="format.date"/>
                 </td>
                 <td class="infodata">
                 	<bean:define id="index" name="payment"
-					  property="currencyId"/>
+					  property="payment.currency.id"/>
 					<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 				   		property='<%= "symbols[" + index + "].symbol" %>'
 					    scope="application"
 				   		filter="false"/>
             		<bean:write name="payment" 
-                        property="amount"
+                        property="payment.amount"
                         scope="page"
                         formatKey="format.money"/>
                 	
@@ -270,17 +270,17 @@
 		<logic:iterate name='<%=Constants.SESSION_INVOICE_DTO%>' 
 						   scope="session"
 						   id="order"
-						   property="orders">
+						   property="orderProcesses">
 		  <tr class="infoA">
 			<td class="infodata">
 				<html:link page="/orderMaintain.do?action=view" paramId="id" 
 						   paramName="order"
-						   paramProperty="id">
-					<bean:write name="order" property="id"/>
+						   paramProperty="purchaseOrder.id">
+					<bean:write name="order" property="purchaseOrder.id"/>
 				</html:link>
 			</td>
 			<td class="infodata">
-				<bean:write name="order" property="createDate" formatKey="format.date"/>
+				<bean:write name="order" property="purchaseOrder.createDate" formatKey="format.date"/>
 			</td>
 		  </tr>	
 		</logic:iterate>

@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class PluggableTaskBL<T> {
@@ -49,7 +50,7 @@ public class PluggableTaskBL<T> {
     
     private void init() {
         eLogger = EventLogger.getInstance();        
-        das = new PluggableTaskDAS();
+        das = (PluggableTaskDAS) Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
         dasParameter = new PluggableTaskParameterDAS();
     }
 
@@ -99,6 +100,7 @@ public class PluggableTaskBL<T> {
                 EventLogger.ROW_UPDATED, null, null, null);
         // clear the rules cache (just in case this plug-in was ruled based)
         PluggableTask.invalidateRuleCache(dto.getId());
+        das.invalidateCache(); // 3rd level cache
     }
     
     public void delete(Integer executor) {

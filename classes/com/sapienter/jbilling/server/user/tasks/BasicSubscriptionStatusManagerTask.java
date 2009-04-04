@@ -24,14 +24,11 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         ISubscriptionStatusManager {
@@ -125,46 +122,18 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
     }
     
     private boolean isPaymentApplicable(boolean failed) {
-        boolean retValue = false;
-        
-        if (payment != null && payment.getIsRefund() != null && 
-                payment.getIsRefund().intValue() == 0) {
+        if (payment != null && payment.getIsRefund() == 0) {
             if (failed) {
                 if (payment.getAttempt() != null) {
-                     retValue = true;
+                     return true;
                 } else {
-                    retValue = false;
-                }
-            } else {
-                if (payment.getInvoiceIds() == null || payment.getInvoiceIds().size() == 0) {
-                    return retValue;
-                }
-                String typeStr = (String) parameters.get(PARAMETER_ITEM_TYPE_ID);
-                
-                if (typeStr == null || typeStr.length() == 0) {
-                    throw new SessionInternalError("parameter " + PARAMETER_ITEM_TYPE_ID + 
-                            " is required");
-                }
-                // validate that this payment is for a subscription item
-                for(Integer invoiceId : payment.getInvoiceIds()) {
-                    if (new InvoiceDAS().isReleatedToItemType(invoiceId, Integer.valueOf(typeStr))) {
-                        retValue = true;
-                    }
-                }
-                
-                if (retValue == false) {
-                    new EventLogger().auditBySystem(entityId, 
-                        Constants.TABLE_BASE_USER, payment.getUserId(), 
-                        EventLogger.MODULE_USER_MAINTENANCE,
-                        EventLogger.SUBSCRIPTION_STATUS_NO_CHANGE,
-                        payment.getId(), typeStr, null);
-                    LOG.debug("Payment did not change subscription status to active." +
-                            "Invoice with item category " + typeStr + " not found");
+                    return false;
                 }
             }
+            return true;
         }
-
-        return retValue;
+        
+        return false;
     }
     
     private boolean isLastRetry() {

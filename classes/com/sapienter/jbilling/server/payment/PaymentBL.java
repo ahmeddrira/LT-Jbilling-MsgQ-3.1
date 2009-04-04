@@ -16,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sapienter.jbilling.server.payment;
 
@@ -29,10 +29,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
 
@@ -40,31 +39,24 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocal;
-import com.sapienter.jbilling.interfaces.CreditCardEntityLocalHome;
-import com.sapienter.jbilling.interfaces.InvoiceEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentAuthorizationEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentInfoChequeEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentInfoChequeEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentInvoiceMapEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentResultEntityLocal;
-import com.sapienter.jbilling.interfaces.PaymentResultEntityLocalHome;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
-import com.sapienter.jbilling.server.entity.PaymentDTO;
-import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
 import com.sapienter.jbilling.server.payment.event.AbstractPaymentEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
@@ -77,27 +69,27 @@ import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
-public class PaymentBL extends ResultList 
-        implements PaymentSQL {
+public class PaymentBL extends ResultList implements PaymentSQL {
+
     private JNDILookup EJBFactory = null;
-    private PaymentEntityLocalHome paymentHome = null;
-    private PaymentInfoChequeEntityLocalHome chequeHome = null;
-    private CreditCardEntityLocalHome ccHome = null;
-    private PaymentMethodEntityLocalHome methodHome = null;
-    private PaymentResultEntityLocalHome resultHome = null;
-    private PaymentInvoiceMapEntityLocalHome mapHome = null;
-    private PaymentEntityLocal payment = null;
-    private static final Logger LOG = Logger.getLogger(PaymentBL.class); 
+    private PaymentDAS paymentDas = null;
+    private PaymentInfoChequeDAS chequeDas = null;
+    private CreditCardDAS ccDas = null;
+    private PaymentMethodDAS methodDas = null;
+    private PaymentInvoiceMapDAS mapDas = null;
+    private PaymentDTO payment = null;
+    private static final Logger LOG = Logger.getLogger(PaymentBL.class);
     private EventLogger eLogger = null;
 
-    public PaymentBL(Integer paymentId) 
-            throws NamingException, FinderException {
+    public PaymentBL(Integer paymentId) {
         init();
         set(paymentId);
     }
@@ -105,216 +97,188 @@ public class PaymentBL extends ResultList
     public PaymentBL() {
         init();
     }
-    
-    public PaymentBL(PaymentEntityLocal payment) {
+
+    public PaymentBL(PaymentDTO payment) {
         init();
         this.payment = payment;
     }
-    
-    public void set(PaymentEntityLocal payment) {
+
+    public void set(PaymentDTO payment) {
         this.payment = payment;
     }
 
     private void init() {
         try {
-            eLogger = EventLogger.getInstance();        
+            eLogger = EventLogger.getInstance();
             EJBFactory = JNDILookup.getFactory(false);
-            paymentHome = (PaymentEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PaymentEntityLocalHome.class,
-                    PaymentEntityLocalHome.JNDI_NAME);
-   
-            chequeHome = (PaymentInfoChequeEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PaymentInfoChequeEntityLocalHome.class,
-                    PaymentInfoChequeEntityLocalHome.JNDI_NAME);
- 
-            ccHome = (CreditCardEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    CreditCardEntityLocalHome.class,
-                    CreditCardEntityLocalHome.JNDI_NAME);
+            paymentDas = new PaymentDAS();
 
-            methodHome = (PaymentMethodEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PaymentMethodEntityLocalHome.class,
-                    PaymentMethodEntityLocalHome.JNDI_NAME);
+            chequeDas = new PaymentInfoChequeDAS();
 
-            resultHome = (PaymentResultEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PaymentResultEntityLocalHome.class,
-                    PaymentResultEntityLocalHome.JNDI_NAME);
+            ccDas = new CreditCardDAS();
 
-            mapHome = (PaymentInvoiceMapEntityLocalHome) 
-                    EJBFactory.lookUpLocalHome(
-                    PaymentInvoiceMapEntityLocalHome.class,
-                    PaymentInvoiceMapEntityLocalHome.JNDI_NAME);
+            methodDas = new PaymentMethodDAS();
+
+            mapDas = new PaymentInvoiceMapDAS();
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
 
-    public PaymentEntityLocal getEntity() {
+    public PaymentDTO getEntity() {
         return payment;
     }
-    
-    public PaymentEntityLocalHome getHome() {
-        return paymentHome;
+
+    public PaymentDAS getHome() {
+        return paymentDas;
     }
-    
-    public String getMethodDescription(Integer methodId, Integer languageId) 
-            throws FinderException {
-        PaymentMethodEntityLocal method = methodHome.findByPrimaryKey(
-                methodId);
+
+    public String getMethodDescription(PaymentMethodDTO method,
+            Integer languageId) {
         return method.getDescription(languageId);
     }
-    
-    public void set(Integer id) throws FinderException {
-        payment = paymentHome.findByPrimaryKey(id);
+
+    public void set(Integer id) {
+        payment = paymentDas.find(id);
     }
-    
-    
-    
-    public void create(PaymentDTOEx dto) 
-            throws CreateException, NamingException, FinderException {
+
+    public void create(PaymentDTOEx dto) {
         // create the record
-        payment = paymentHome.create(dto.getAmount(),
-                dto.getMethodId(), dto.getUserId(), 
-                dto.getAttempt(), dto.getResultId(), dto.getCurrencyId());
-            
+        payment = paymentDas.create(dto.getAmount(), dto.getPaymentMethod(),
+                dto.getUserId(), dto.getAttempt(), dto.getPaymentResult(), dto.getCurrency());
+
         payment.setPaymentDate(dto.getPaymentDate());
         payment.setBalance(dto.getBalance());
         // now verify if an info record should be created as well
         if (dto.getCheque() != null) {
             // create the db record
-            PaymentInfoChequeEntityLocal cheque = chequeHome.create();
+            PaymentInfoChequeDTO cheque = chequeDas.create();
             cheque.setBank(dto.getCheque().getBank());
             cheque.setNumber(dto.getCheque().getNumber());
             cheque.setDate(dto.getCheque().getDate());
-                
+
             // update the relationship dto-info
-            payment.setChequeInfo(cheque);
+            payment.setPaymentInfoCheque(cheque);
         }
-        
+
         if (dto.getCreditCard() != null) {
-            CreditCardEntityLocal cc = ccHome.create(dto.getCreditCard().
-                    getNumber(), dto.getCreditCard().getExpiry());
-            cc.setName(dto.getCreditCard().getName());
-            payment.setCreditCardInfo(cc);
+            CreditCardBL cc = new CreditCardBL();
+            cc.create(dto.getCreditCard());
+            payment.setCreditCard(cc.getEntity());
         }
-        
+
         if (dto.getAch() != null) {
-        	AchBL achBl = new AchBL();
+            AchBL achBl = new AchBL();
             achBl.create(dto.getAch());
-            payment.setAchInfo(achBl.getEntity());
+            payment.setAch(achBl.getEntity());
         }
-        
+
         // may be this is a refund
-        if (dto.getIsRefund().intValue() == 1) {
+        if (dto.getIsRefund() == 1) {
             payment.setIsRefund(new Integer(1));
             // now all refunds have balance = 0
             payment.setBalance(new Float(0));
             if (dto.getPayment() != null) {
                 // this refund is link to a payment
-                PaymentBL linkedPayment = new PaymentBL(dto.getPayment().
-                        getId());
+                PaymentBL linkedPayment = new PaymentBL(dto.getPayment().getId());
                 payment.setPayment(linkedPayment.getEntity());
             }
         }
-        
+
         // preauth payments
         if (dto.getIsPreauth() != null && dto.getIsPreauth().intValue() == 1) {
             payment.setIsPreauth(1);
         }
-        
+
         dto.setId(payment.getId());
+        paymentDas.save(payment);
         // add a log row for convenience
         UserDAS user = new UserDAS();
-        eLogger.auditBySystem(user.find(dto.getUserId()).getCompany().getId(), 
-        		Constants.TABLE_PAYMENT, dto.getId(),
-        		EventLogger.MODULE_PAYMENT_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+        eLogger.auditBySystem(user.find(dto.getUserId()).getCompany().getId(),
+                Constants.TABLE_PAYMENT, dto.getId(),
+                EventLogger.MODULE_PAYMENT_MAINTENANCE,
+                EventLogger.ROW_CREATED, null, null, null);
+
+
     }
-    
-    void createMap(InvoiceEntityLocal invoice, Float amount) 
-            throws CreateException {
+
+    void createMap(InvoiceDTO invoice, Float amount) {
         Float realAmount;
-        if (payment.getResultId().equals(Constants.RESULT_FAIL) ||
-                payment.getResultId().equals(Constants.RESULT_UNAVAILABLE)) {
+        if (new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_FAIL) || new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_UNAVAILABLE)) {
             realAmount = new Float(0);
         } else {
             realAmount = amount;
         }
-        mapHome.create(invoice, payment, realAmount);
+        mapDas.create(invoice, payment, realAmount);
     }
-    
+
     /**
      * Updates a payment record, including related cheque or credit card
      * records. Only valid for entered payments not linked to an invoice.
-     * @param dto The DTO with all the information of the new payment record.
+     * 
+     * @param dto
+     *            The DTO with all the information of the new payment record.
      */
-    public void update(Integer executorId, PaymentDTOEx dto) 
+    public void update(Integer executorId, PaymentDTOEx dto)
             throws FinderException, NamingException, SessionInternalError {
         // the payment should've been already set when constructing this
         // object
         if (payment == null) {
             throw new FinderException("Payment to update not set");
         }
-        
+
         // we better log this, so this change can be traced
-        eLogger.audit(executorId, Constants.TABLE_PAYMENT, 
-                payment.getId(),
-                EventLogger.MODULE_PAYMENT_MAINTENANCE, 
-                EventLogger.ROW_UPDATED, null,  
-                payment.getAmount().toString(), null);
-        
+        eLogger.audit(executorId, Constants.TABLE_PAYMENT, payment.getId(),
+                EventLogger.MODULE_PAYMENT_MAINTENANCE,
+                EventLogger.ROW_UPDATED, null, payment.getAmount().toString(),
+                null);
+
         // start with the payment's own fields
-        payment.setUpdateDateTime(Calendar.getInstance().getTime());
+        payment.setUpdateDatetime(Calendar.getInstance().getTime());
         payment.setAmount(dto.getAmount());
         // since the payment can't be linked to an invoice, the balance
         // has to be equal to the total of the payment
         payment.setBalance(dto.getAmount());
         payment.setPaymentDate(dto.getPaymentDate());
-        
+
         // now the records related to the method
         if (dto.getCheque() != null) {
-            PaymentInfoChequeEntityLocal cheque = payment.getChequeInfo();
+            PaymentInfoChequeDTO cheque = payment.getPaymentInfoCheque();
             cheque.setBank(dto.getCheque().getBank());
             cheque.setNumber(dto.getCheque().getNumber());
             cheque.setDate(dto.getCheque().getDate());
         } else if (dto.getCreditCard() != null) {
-            CreditCardBL cc = new CreditCardBL(payment.getCreditCardInfo());
+            CreditCardBL cc = new CreditCardBL(payment.getCreditCard());
             cc.update(executorId, dto.getCreditCard(), null);
         } else if (dto.getAch() != null) {
-            AchBL achBl = new AchBL(payment.getAchInfo());
+            AchBL achBl = new AchBL(payment.getAch());
             achBl.update(executorId, dto.getAch());
         }
     }
-    
+
     /**
-     * Goes through the payment pluggable tasks, and calls them with the
-     * payment information to get the payment processed.
-     * If a call fails because of the availability of the processor, it
-     * will try with the next task. Otherwise it will return the result
-     * of the process (approved or declined).
-     * @return the constant of the result
-     * allowing for the caller to attempt it again with different payment
-     * information (like another cc number) 
+     * Goes through the payment pluggable tasks, and calls them with the payment
+     * information to get the payment processed. If a call fails because of the
+     * availability of the processor, it will try with the next task. Otherwise
+     * it will return the result of the process (approved or declined).
+     * 
+     * @return the constant of the result allowing for the caller to attempt it
+     *         again with different payment information (like another cc number)
      */
-    public Integer processPayment(Integer entityId, PaymentDTOEx info) 
+    public Integer processPayment(Integer entityId, PaymentDTOEx info)
             throws SessionInternalError {
         Integer retValue = null;
         try {
-            PluggableTaskManager taskManager =
-                    new PluggableTaskManager(entityId,
-                    Constants.PLUGGABLE_TASK_PAYMENT);
+            PluggableTaskManager taskManager = new PluggableTaskManager(
+                    entityId, Constants.PLUGGABLE_TASK_PAYMENT);
             PaymentTask task = (PaymentTask) taskManager.getNextClass();
-            
+
             if (task == null) {
                 // at least there has to be one task configurated !
-                LOG.warn("No payment pluggable" +
-                        "tasks configurated for entity " + entityId);
+                LOG.warn("No payment pluggable" + "tasks configurated for entity " + entityId);
                 return null;
             }
-            
+
             create(info);
             boolean processorUnavailable = true;
             while (task != null && processorUnavailable) {
@@ -324,7 +288,7 @@ public class PaymentBL extends ResultList
                 if (auth != null) {
                     processorUnavailable = task.confirmPreAuth(auth, info);
                     if (!processorUnavailable) {
-                        if (info.getResultId() == Constants.RESULT_FAIL) {
+                        if (new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_FAIL)) {
                             processorUnavailable = task.process(info);
                         }
                         // in any case, don't use this preAuth again
@@ -334,171 +298,246 @@ public class PaymentBL extends ResultList
                     // get this payment processed
                     processorUnavailable = task.process(info);
                 }
-                
-                // allow the pluggable task to do something if the payment 
+
+                // allow the pluggable task to do something if the payment
                 // failed (like notification, suspension, etc ... )
-                if (!processorUnavailable && info.getResultId() == 
-                        Constants.RESULT_FAIL) {
-                    task.failure(info.getUserId(), info.getAttempt());  
+                if (!processorUnavailable && new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_FAIL)) {
+                    task.failure(info.getUserId(), info.getAttempt());
                 }
                 // trigger an event
-                AbstractPaymentEvent event = 
-                		AbstractPaymentEvent.forPaymentResult(entityId, info);
-                		
-                if (event != null){
-                	EventManager.process(event);
+                AbstractPaymentEvent event = AbstractPaymentEvent.forPaymentResult(entityId, info);
+
+                if (event != null) {
+                    EventManager.process(event);
                 }
 
                 // get the next task
                 task = (PaymentTask) taskManager.getNextClass();
             }
-            
-            // if after all the tasks, the processor in unavailable, 
+
+            // if after all the tasks, the processor in unavailable,
             // return that
             if (processorUnavailable) {
                 retValue = Constants.RESULT_UNAVAILABLE;
             } else {
-                retValue = info.getResultId();
+                retValue = info.getPaymentResult().getId();
             }
-            
+
             // the balance of the payment depends on the result
-            if (retValue.equals(Constants.RESULT_OK) || 
-                    retValue.equals(Constants.RESULT_ENTERED)) {
+            if (retValue.equals(Constants.RESULT_OK) || retValue.equals(Constants.RESULT_ENTERED)) {
                 payment.setBalance(payment.getAmount());
             } else {
                 payment.setBalance(new Float(0));
             }
         } catch (Exception e) {
             LOG.fatal("Problems handling payment task.", e);
-            throw new SessionInternalError(
-                "Problems handling payment task.");
-        }  
-        
+            throw new SessionInternalError("Problems handling payment task.");
+        }
+
         // add a notification to the user if the payment was good or bad
-        if (retValue.equals(Constants.RESULT_OK) || 
-                retValue.equals(Constants.RESULT_FAIL)) {
+        if (retValue.equals(Constants.RESULT_OK) || retValue.equals(Constants.RESULT_FAIL)) {
             sendNotification(info, entityId);
         }
-        return retValue;      
+        return retValue;
     }
-    
+
     public PaymentDTO getDTO() {
-        return new PaymentDTO(payment.getId(), payment.getAmount(), 
-		        payment.getBalance(),
-                payment.getCreateDateTime(), 
-                payment.getUpdateDateTime(),payment.getPaymentDate(),
-                payment.getAttempt(), payment.getDeleted(), 
-                payment.getMethodId(), payment.getResultId(), 
-                payment.getIsRefund(), payment.getIsPreauth(),
-                payment.getCurrencyId(), payment.getUserId());
+        return new PaymentDTO(payment.getId(), payment.getAmount(), payment.getBalance(), payment.getCreateDatetime(), payment.getUpdateDatetime(), payment.getPaymentDate(), payment.getAttempt(), payment.getDeleted(),
+                payment.getPaymentMethod(), payment.getPaymentResult(), payment.getIsRefund(), payment.getIsPreauth(), payment.getCurrency(), payment.getBaseUser());
     }
-    
-    public PaymentDTOEx getDTOEx(Integer language) 
-            throws FinderException, NamingException {
+
+    public PaymentDTOEx getDTOEx(Integer language) throws FinderException,
+            NamingException {
         PaymentDTOEx dto = new PaymentDTOEx(getDTO());
-        dto.setUserId(payment.getUser().getUserId());
+        dto.setUserId(payment.getBaseUser().getUserId());
         // now add all the invoices that were paid by this payment
         Iterator it = payment.getInvoicesMap().iterator();
         while (it.hasNext()) {
-            PaymentInvoiceMapEntityLocal map = 
-                    (PaymentInvoiceMapEntityLocal) it.next();
-            dto.getInvoiceIds().add(map.getInvoice().getId());
-            
+            PaymentInvoiceMapDTO map = (PaymentInvoiceMapDTO) it.next();
+            dto.getInvoiceIds().add(map.getInvoiceEntity().getId());
+
             dto.addPaymentMap(getMapDTO(map.getId()));
-        } 
-        
+        }
+
         // cheque info if applies
         PaymentInfoChequeDTO chequeDto = null;
-        if (payment.getChequeInfo() != null) {
+        if (payment.getPaymentInfoCheque() != null) {
             chequeDto = new PaymentInfoChequeDTO();
-            chequeDto.setBank(payment.getChequeInfo().getBank());
-            chequeDto.setDate(payment.getChequeInfo().getDate());
-            chequeDto.setId(payment.getChequeInfo().getId());
-            chequeDto.setNumber(payment.getChequeInfo().getNumber());
+            chequeDto.setBank(payment.getPaymentInfoCheque().getBank());
+            chequeDto.setDate(payment.getPaymentInfoCheque().getDate());
+            chequeDto.setId(payment.getPaymentInfoCheque().getId());
+            chequeDto.setNumber(payment.getPaymentInfoCheque().getNumber());
         }
         dto.setCheque(chequeDto);
 
-        // credit card info if applies        
+        // credit card info if applies
         CreditCardDTO ccDto = null;
-        if (payment.getCreditCardInfo() != null) {
+        if (payment.getCreditCard() != null) {
             ccDto = new CreditCardDTO();
-            ccDto.setNumber(payment.getCreditCardInfo().getNumber());
-            ccDto.setExpiry(payment.getCreditCardInfo().getExpiry());
-            ccDto.setName(payment.getCreditCardInfo().getName());
-            ccDto.setType(payment.getCreditCardInfo().getType());
+            ccDto.setNumber(payment.getCreditCard().getNumber());
+            ccDto.setCcExpiry(payment.getCreditCard().getCcExpiry());
+            ccDto.setName(payment.getCreditCard().getName());
+            ccDto.setCcType(payment.getCreditCard().getCcType());
         }
         dto.setCreditCard(ccDto);
-        
+
         // ach if applies
-        if (payment.getAchInfo() != null) {
-        	AchBL achBl = new AchBL(payment.getAchInfo());
+        if (payment.getAch() != null) {
+            AchBL achBl = new AchBL(payment.getAch());
             dto.setAch(achBl.getDTO());
         } else {
-        	dto.setAch(null);
+            dto.setAch(null);
         }
-        
+
         // payment method (international)
-        PaymentMethodEntityLocal method = methodHome.findByPrimaryKey(payment.getMethodId());
+        PaymentMethodDTO method = payment.getPaymentMethod();
         dto.setMethod(method.getDescription(language));
 
         // refund fields if applicable
         dto.setIsRefund(payment.getIsRefund());
-        if (payment.getPayment() != null) {
-            PaymentBL linkedPayment = new PaymentBL(payment.getPayment().
-                    getId());
+        if (payment.getPayment() != null && payment.getId() != payment.getPayment().getId()) {
+            PaymentBL linkedPayment = new PaymentBL(payment.getPayment().getId());
             dto.setPayment(linkedPayment.getDTOEx(language));
-        }      
-        
+        }
+
         // the first authorization if any
-        if (!payment.getAuthorizations().isEmpty()) {
+        if (!payment.getPaymentAuthorizations().isEmpty()) {
             PaymentAuthorizationBL authBL = new PaymentAuthorizationBL(
-                    (PaymentAuthorizationEntityLocal) payment.
-                        getAuthorizations().iterator().next());
+                    (PaymentAuthorizationDTO) payment.getPaymentAuthorizations().iterator().next());
             dto.setAuthorization(authBL.getDTO());
-        }  
-        
+        }
+
         // the result in string mode (international)
-        if (payment.getResultId() != null) {
-            PaymentResultEntityLocal result = resultHome.findByPrimaryKey(
-                    payment.getResultId()); 
+        if (payment.getPaymentResult() != null) {
+            PaymentResultDTO result = payment.getPaymentResult();
             dto.setResultStr(result.getDescription(language));
         }
-        
+
         // to which payout this payment has been included
-        if (payment.getPayout().size() > 0) {
-            dto.setPayoutId(((PartnerPayout) payment.getPayout().toArray()[0]).getId());
+        if (payment.getPartnerPayouts().size() > 0) {
+            dto.setPayoutId(((PartnerPayout) payment.getPartnerPayouts().toArray()[0]).getId());
         }
-        
+
         return dto;
     }
-        
 
-    public CachedRowSet getList(Integer entityID, Integer languageId, 
-            Integer userRole, Integer userId, boolean isRefund) 
+    public static PaymentWS getWS(PaymentDTOEx dto) {
+        PaymentWS ws = new PaymentWS();
+        ws.setId(dto.getId());
+        ws.setAmount(new Float(dto.getAmount()));
+        ws.setAttempt(dto.getAttempt());
+        ws.setBalance(dto.getBalance());
+        ws.setCreateDatetime(dto.getCreateDatetime());
+        ws.setCurrencyId(dto.getCurrency().getId());
+        ws.setDeleted(dto.getDeleted());
+        ws.setIsPreauth(dto.getIsPreauth());
+        ws.setIsRefund(dto.getIsRefund());
+        ws.setMethodId(dto.getPaymentMethod().getId());
+        ws.setPaymentDate(dto.getPaymentDate());
+        ws.setUpdateDatetime(dto.getUpdateDatetime());
+        ws.setResultId(dto.getPaymentResult().getId());
+
+        if (dto.getCreditCard() != null) {
+            com.sapienter.jbilling.server.entity.CreditCardDTO ccDTO = new com.sapienter.jbilling.server.entity.CreditCardDTO();
+            ccDTO.setDeleted(dto.getCreditCard().getDeleted());
+            ccDTO.setExpiry(dto.getCreditCard().getCcExpiry());
+            ccDTO.setId(dto.getCreditCard().getId());
+            ccDTO.setName(dto.getCreditCard().getName());
+            ccDTO.setNumber(dto.getCreditCard().getCcNumberPlain());
+            ccDTO.setSecurityCode(dto.getCreditCard().getSecurityCode());
+            ccDTO.setType(dto.getCreditCard().getCcType());
+            ws.setCreditCard(ccDTO);
+        } else {
+            ws.setCreditCard(null);
+        }
+
+        ws.setUserId(dto.getUserId());
+
+        if (dto.getCheque() != null) {
+            com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO chqDTO = new com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO();
+            chqDTO.setBank(dto.getCheque().getBank());
+            chqDTO.setDate(dto.getCheque().getDate());
+            chqDTO.setId(dto.getCheque().getId());
+            chqDTO.setNumber(dto.getCheque().getNumber());
+            ws.setCheque(chqDTO);
+        } else {
+            ws.setCheque(null);
+        }
+
+        ws.setMethod(dto.getMethod());
+
+        if (dto.getAch() != null) {
+            com.sapienter.jbilling.server.entity.AchDTO achDTO = new com.sapienter.jbilling.server.entity.AchDTO();
+            achDTO.setAbaRouting(dto.getAch().getAbaRouting());
+            achDTO.setAccountName(dto.getAch().getAccountName());
+            achDTO.setAccountType(dto.getAch().getAccountType());
+            achDTO.setBankAccount(dto.getAch().getBankAccount());
+            achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setId(dto.getAch().getId());
+            ws.setAch(achDTO);
+        } else {
+            ws.setAch(null);
+        }
+
+        if (dto.getAuthorization() != null) {
+            com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO authDTO = new com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO();
+            authDTO.setAVS(dto.getAuthorization().getAvs());
+            authDTO.setApprovalCode(dto.getAuthorization().getApprovalCode());
+            authDTO.setCardCode(dto.getAuthorization().getCardCode());
+            authDTO.setCode1(dto.getAuthorization().getCode1());
+            authDTO.setCode2(dto.getAuthorization().getCode2());
+            authDTO.setCode3(dto.getAuthorization().getCode3());
+            authDTO.setCreateDate(dto.getAuthorization().getCreateDate());
+            authDTO.setId(dto.getAuthorization().getId());
+            authDTO.setMD5(dto.getAuthorization().getMD5());
+            authDTO.setProcessor(dto.getAuthorization().getProcessor());
+            authDTO.setResponseMessage(dto.getAuthorization().getResponseMessage());
+            authDTO.setTransactionId(dto.getAuthorization().getTransactionId());
+
+            ws.setAuthorization(authDTO);
+        } else {
+            ws.setAuthorization(null);
+        }
+
+        Integer invoiceIds[] = new Integer[dto.getInvoiceIds().size()];
+
+        for (int f = 0; f < dto.getInvoiceIds().size(); f++) {
+            invoiceIds[f] = (Integer) dto.getInvoiceIds().get(f);
+        }
+        ws.setInvoiceIds(invoiceIds);
+
+        if (dto.getPayment() != null) {
+            ws.setPaymentId(dto.getPayment().getId());
+        } else {
+            ws.setPaymentId(null);
+        }
+        return ws;
+    }
+
+    public CachedRowSet getList(Integer entityID, Integer languageId,
+            Integer userRole, Integer userId, boolean isRefund)
             throws SQLException, Exception {
-                
-        // the first variable specifies if this is a normal payment or 
+
+        // the first variable specifies if this is a normal payment or
         // a refund list
-        if(userRole.equals(Constants.TYPE_ROOT) ||
-                userRole.equals(Constants.TYPE_CLERK)) {
+        if (userRole.equals(Constants.TYPE_ROOT) || userRole.equals(Constants.TYPE_CLERK)) {
             prepareStatement(PaymentSQL.rootClerkList);
             cachedResults.setInt(1, isRefund ? 1 : 0);
             cachedResults.setInt(2, entityID.intValue());
             cachedResults.setInt(3, languageId.intValue());
-        } else if(userRole.equals(Constants.TYPE_PARTNER)) {
+        } else if (userRole.equals(Constants.TYPE_PARTNER)) {
             prepareStatement(PaymentSQL.partnerList);
             cachedResults.setInt(1, isRefund ? 1 : 0);
-            cachedResults.setInt(2,entityID.intValue());
+            cachedResults.setInt(2, entityID.intValue());
             cachedResults.setInt(3, userId.intValue());
             cachedResults.setInt(4, languageId.intValue());
-        } else if(userRole.equals(Constants.TYPE_CUSTOMER)) {
+        } else if (userRole.equals(Constants.TYPE_CUSTOMER)) {
             prepareStatement(PaymentSQL.customerList);
             cachedResults.setInt(1, isRefund ? 1 : 0);
             cachedResults.setInt(2, userId.intValue());
             cachedResults.setInt(3, languageId.intValue());
         } else {
-            throw new Exception("The payments list for the type " + userRole + 
-                    " is not supported");
+            throw new Exception("The payments list for the type " + userRole + " is not supported");
         }
 
         execute();
@@ -506,40 +545,37 @@ public class PaymentBL extends ResultList
         return cachedResults;
     }
 
-    
     /**
      * Does the actual work of deleteing the payment
+     * 
      * @throws SessionInternalError
      */
-    
     public void delete() throws SessionInternalError {
-    	
-    	try {
+
+        try {
             LOG.debug("Deleting payment " + payment.getId());
-            payment.setUpdateDateTime(Calendar.getInstance().getTime());
+            payment.setUpdateDatetime(Calendar.getInstance().getTime());
             payment.setDeleted(new Integer(1));
-            
-            eLogger.auditBySystem(payment.getUser().getEntity().getId(),
+
+            eLogger.auditBySystem(payment.getBaseUser().getEntity().getId(),
                     Constants.TABLE_PAYMENT, payment.getId(),
-                    EventLogger.MODULE_PAYMENT_MAINTENANCE, 
+                    EventLogger.MODULE_PAYMENT_MAINTENANCE,
                     EventLogger.ROW_DELETED, null, null, null);
 
         } catch (Exception e) {
             LOG.warn("Problem deleteing payment.", e);
             throw new SessionInternalError("Problem deleteing payment.");
         }
-     }
-    
+    }
+
     /*
-     * This is the list of payment that are refundable. It shows when
-     * entering a refund.
+     * This is the list of payment that are refundable. It shows when entering a
+     * refund.
      */
-    
-    public CachedRowSet getRefundableList(Integer languageId, 
-            Integer userId) 
+    public CachedRowSet getRefundableList(Integer languageId, Integer userId)
             throws SQLException, Exception {
-        prepareStatement(PaymentSQL.refundableList); 
-        cachedResults.setInt(1, 0); // is not a refund   
+        prepareStatement(PaymentSQL.refundableList);
+        cachedResults.setInt(1, 0); // is not a refund
         cachedResults.setInt(2, userId.intValue());
         cachedResults.setInt(3, languageId.intValue());
         execute();
@@ -547,16 +583,14 @@ public class PaymentBL extends ResultList
         return cachedResults;
     }
 
-    public boolean isMethodAccepted(Integer entityId, 
-            Integer paymentMethodId) 
+    public boolean isMethodAccepted(Integer entityId, Integer paymentMethodId)
             throws FinderException {
-            
+
         boolean retValue = false;
-        
-        PaymentMethodEntityLocal method = methodHome.findByPrimaryKey(
-            paymentMethodId);
-        
-        for (Iterator it = method.getEntitys().iterator(); it.hasNext();) {
+
+        PaymentMethodDTO method = methodDas.find(paymentMethodId);
+
+        for (Iterator it = method.getEntities().iterator(); it.hasNext();) {
             if (((CompanyDTO) it.next()).getId() == entityId) {
                 retValue = true;
                 break;
@@ -565,55 +599,53 @@ public class PaymentBL extends ResultList
         return retValue;
     }
 
-    public static PaymentDTOEx findPaymentInstrument(Integer entityId, Integer userId) 
-            throws PluggableTaskException, SessionInternalError, TaskException {
-        
+    public static PaymentDTOEx findPaymentInstrument(Integer entityId,
+            Integer userId) throws PluggableTaskException,
+            SessionInternalError, TaskException {
+
         PluggableTaskManager taskManager = new PluggableTaskManager(entityId,
                 Constants.PLUGGABLE_TASK_PAYMENT_INFO);
         PaymentInfoTask task = (PaymentInfoTask) taskManager.getNextClass();
-            
+
         if (task == null) {
             // at least there has to be one task configurated !
-            Logger.getLogger(PaymentBL.class).fatal("No payment info pluggable" +
-                    "tasks configurated for entity " + entityId);
-            throw new SessionInternalError("No payment info pluggable" +
-                    "tasks configurated for entity " + entityId);
+            Logger.getLogger(PaymentBL.class).fatal(
+                    "No payment info pluggable" + "tasks configurated for entity " + entityId);
+            throw new SessionInternalError("No payment info pluggable" + "tasks configurated for entity " + entityId);
         }
-            
+
         // get this payment information. Now we only expect one pl.tsk
         // to get the info, I don't see how more could help
         return task.getPaymentInfo(userId);
 
     }
-    
-    
+
     public static boolean validate(PaymentWS dto) {
         boolean retValue = true;
-        
-        if (dto.getAmount() == null || dto.getMethodId() == null ||
-                dto.getIsRefund() == null || dto.getResultId() == null ||
-                dto.getUserId() == null || (dto.getCheque() == null &&
-                    dto.getCreditCard() == null)) {
+
+        if (dto.getAmount() == null || dto.getMethodId() == null || dto.getIsRefund() == 0 || dto.getResultId() == null || dto.getUserId() == null || (dto.getCheque() == null && dto.getCreditCard() == null)) {
             retValue = false;
         } else if (dto.getCreditCard() != null) {
-            retValue = CreditCardBL.validate(dto.getCreditCard());
+            PaymentDTOEx ex = new PaymentDTOEx(dto);
+            retValue = CreditCardBL.validate(ex.getCreditCard());
         } else if (dto.getCheque() != null) {
-            retValue = validate(dto.getCheque());
+            PaymentDTOEx ex = new PaymentDTOEx(dto);
+            retValue = validate(ex.getCheque());
         }
-        
+
         return retValue;
     }
-    
+
     public static boolean validate(PaymentInfoChequeDTO dto) {
         boolean retValue = true;
-        
+
         if (dto.getDate() == null || dto.getNumber() == null) {
             retValue = false;
         }
-    
+
         return retValue;
-    }    
-    
+    }
+
     public Integer getLatest(Integer userId) throws SessionInternalError {
         Integer retValue = null;
         try {
@@ -635,48 +667,47 @@ public class PaymentBL extends ResultList
         return retValue;
     }
 
-    public Integer[] getManyWS(Integer userId, Integer number, 
-            Integer languageId) 
-            throws NamingException, FinderException {
-        List<Integer> result = new PaymentDAS().findIdsByUserLatestFirst(userId, number);
+    public Integer[] getManyWS(Integer userId, Integer number,
+            Integer languageId) throws NamingException, FinderException {
+        List<Integer> result = new PaymentDAS().findIdsByUserLatestFirst(
+                userId, number);
         return result.toArray(new Integer[result.size()]);
 
     }
 
-    private Vector<PaymentEntityLocal> getPaymentsWithBalance(Integer userId) {
+    private Vector<PaymentDTO> getPaymentsWithBalance(Integer userId) {
         // this will usually return 0 or 1 records, rearly a few more
-        Vector<PaymentEntityLocal> paymentsVector = null;
-        try {
-            Collection payments = paymentHome.findWithBalance(userId);
-            paymentsVector = new Vector<PaymentEntityLocal>(payments); // needed for the sort
+        Vector<PaymentDTO> paymentsVector = null;
+        Collection payments = paymentDas.findWithBalance(userId);
+
+        if (payments != null) {
+            paymentsVector = new Vector<PaymentDTO>(payments); // needed for the
+            // sort
             Collections.sort(paymentsVector, new PaymentEntityComparator());
             Collections.reverse(paymentsVector);
-        } catch (FinderException e) {
-            paymentsVector = new Vector<PaymentEntityLocal>(); // empty
+        } else {
+            paymentsVector = new Vector<PaymentDTO>(); // empty
         }
 
         return paymentsVector;
     }
-    
+
     /**
-     * make sure to call this only with the configuration for 
-     * automatic application of unsued payments is set
+     * make sure to call this only with the configuration for automatic
+     * application of unsued payments is set
      */
-    public void automaticPaymentApplication(InvoiceEntityLocal invoice) 
-            throws RemoveException, CreateException, SessionInternalError,
-                FinderException, NamingException, SQLException {
-        Vector payments = getPaymentsWithBalance(invoice.getUser().getUserId());
-        
-        for (int f = 0; f < payments.size() && 
-                invoice.getBalance().floatValue() > 0; f++) {
-            payment = (PaymentEntityLocal) payments.get(f);
-            if (payment.getResultId().equals(Constants.RESULT_FAIL) ||
-                    payment.getResultId().equals(Constants.RESULT_UNAVAILABLE)) {
+    public void automaticPaymentApplication(InvoiceDTO invoice)
+            throws SQLException {
+        Vector payments = getPaymentsWithBalance(invoice.getBaseUser().getUserId());
+
+        for (int f = 0; f < payments.size() && invoice.getBalance().floatValue() > 0; f++) {
+            payment = (PaymentDTO) payments.get(f);
+            if (new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_FAIL) || new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_UNAVAILABLE)) {
                 continue;
             }
             // this is not actually getting de Ex, so it is faster
-            PaymentDTOEx dto = new PaymentDTOEx(getDTO()); 
-            
+            PaymentDTOEx dto = new PaymentDTOEx(getDTO());
+
             // not pretty, but the methods are there
             PaymentSessionBean psb = new PaymentSessionBean();
             // make the link between the payment and the invoice
@@ -684,47 +715,46 @@ public class PaymentBL extends ResultList
             createMap(invoice, paidAmount);
 
             // notify the customer
-            dto.setUserId(invoice.getUser().getUserId()); // needed for the notification
-            // the notification only understands ok or not, if the payment is entered
+            dto.setUserId(invoice.getBaseUser().getUserId()); // needed for the
+            // notification
+            // the notification only understands ok or not, if the payment is
+            // entered
             // it has to show as ok
-            dto.setResultId(Constants.RESULT_OK);
-            sendNotification(dto, payment.getUser().getEntity().getId());
-                
+            dto.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
+            sendNotification(dto, payment.getBaseUser().getEntity().getId());
+
         }
     }
 
     /**
      * sends an notification with a payment
      */
-    public void sendNotification(PaymentDTOEx info, Integer entityId)
-            throws SessionInternalError {
+    public void sendNotification(PaymentDTOEx info, Integer entityId) {
         try {
             NotificationBL notif = new NotificationBL();
-            MessageDTO message = notif.getPaymentMessage(entityId, 
-                    info, info.getResultId().equals(Constants.RESULT_OK)); 
+            MessageDTO message = notif.getPaymentMessage(entityId, info,
+                    new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_OK));
+
             NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.Name.NOTIFICATION_SESSION);
+                    Context.Name.NOTIFICATION_SESSION);
             notificationSess.notify(info.getUserId(), message);
-        } catch (NamingException e1) {
-            throw new SessionInternalError(e1);
         } catch (NotificationNotFoundException e1) {
             // won't send anyting because the entity didn't specify the
             // notification
-            LOG.warn("Can not notify a customer about a payment " +
+            LOG.warn("Can not notify a customer about a payment " + 
                     "beacuse the entity lacks the notification. " +
                     "entity = " + entityId);
         }
     }
-    
+
     /*
-     * The payment doesn't have to be set. 
-     * It adjusts the balances of both the payment and the invoice and
-     * deletes the map row.
+     * The payment doesn't have to be set. It adjusts the balances of both the
+     * payment and the invoice and deletes the map row.
      */
     public void removeInvoiceLink(Integer mapId) {
         try {
             // find the map
-            PaymentInvoiceMapEntityLocal map = mapHome.findByPrimaryKey(mapId);
+            PaymentInvoiceMapDTO map = mapDas.find(mapId);
             // start returning the money to the payment's balance
             BigDecimal amount = new BigDecimal(map.getAmount().toString());
             payment = map.getPayment();
@@ -732,75 +762,79 @@ public class PaymentBL extends ResultList
             payment.setBalance(new Float(amount.floatValue()));
             // the balace of the invoice also increases
             amount = new BigDecimal(map.getAmount().toString());
-            InvoiceEntityLocal invoice = map.getInvoice();
+            InvoiceDTO invoice = map.getInvoiceEntity();
             amount = amount.add(new BigDecimal(invoice.getBalance().toString()));
             invoice.setBalance(new Float(amount.floatValue()));
             // this invoice probably has to be paid now
             if (invoice.getBalance().floatValue() >= 0.01) {
                 invoice.setToProcess(new Integer(1));
             }
-            
-            // get rid of the map all together
-            map.remove();
-            
-            // log that this was deleted, otherwise there will be no trace
-            eLogger.info(invoice.getUser().getEntity().getId(), mapId,
-                    EventLogger.MODULE_PAYMENT_MAINTENANCE, 
-                    EventLogger.ROW_DELETED, Constants.TABLE_PAYMENT_INVOICE_MAP);
 
+            // log that this was deleted, otherwise there will be no trace
+            eLogger.info(invoice.getBaseUser().getEntity().getId(), mapId,
+                    EventLogger.MODULE_PAYMENT_MAINTENANCE,
+                    EventLogger.ROW_DELETED,
+                    Constants.TABLE_PAYMENT_INVOICE_MAP);
+
+            // get rid of the map all together
+            mapDas.delete(map);
+
+
+
+        } catch (EntityNotFoundException enfe) {
+            LOG.error("Exception removing payment-invoice link: EntityNotFoundException", enfe);
         } catch (Exception e) {
             LOG.error("Exception removing payment-invoice link", e);
             throw new SessionInternalError(e);
-        } 
+        }
     }
 
-    public PaymentInvoiceMapDTOEx getMapDTO(Integer mapId) 
-            throws FinderException {
-        //      find the map
-        PaymentInvoiceMapEntityLocal map = mapHome.findByPrimaryKey(mapId);
+    public PaymentInvoiceMapDTOEx getMapDTO(Integer mapId) {
+        // find the map
+        PaymentInvoiceMapDTO map = mapDas.find(mapId);
         PaymentInvoiceMapDTOEx dto = new PaymentInvoiceMapDTOEx(map.getId(),
-                map.getAmount(), map.getCreateDateTime());
+                map.getAmount(), map.getCreateDatetime());
         dto.setPaymentId(map.getPayment().getId());
-        dto.setInvoiceId(map.getInvoice().getId());
-        dto.setCurrencyId(map.getPayment().getCurrencyId());
+        dto.setInvoiceId(map.getInvoiceEntity().getId());
+        dto.setCurrencyId(map.getPayment().getCurrency().getId());
         return dto;
     }
 
     /**
-     * Checks first if the configuration is for automatic linking.
-     * Looks for any invoice with balance, and then links it with any payment with balance.
+     * Checks first if the configuration is for automatic linking. Looks for any
+     * invoice with balance, and then links it with any payment with balance.
+     * 
      * @return
      */
     public boolean linkPaymentsWithInvoice(Integer userId) {
-    	LOG.debug("Attempting to link payments to invoices. User " + userId);
-    	boolean retValue = false;
-    	try {
-			UserBL user = new UserBL(userId);
-			Integer entityId = user.getEntityId(userId);
-			ConfigurationBL conf = new ConfigurationBL(entityId);
-			if (conf.getEntity().getAutoPaymentApplication() != null &&
-					conf.getEntity().getAutoPaymentApplication().intValue() == 1) {
-				// now find an invoice
-				InvoiceBL invBl = new InvoiceBL();
-				Integer invoiceId = null;
-				CachedRowSet set = invBl.getPayableInvoicesByUser(userId);
-				if (set.next()) {
-					invoiceId = set.getInt(1);
-					invBl.set(invoiceId);
-					automaticPaymentApplication(invBl.getEntity());
-					LOG.debug("done");
-				} else {
-					set.close();
-					LOG.debug("Can't find any invoice to pay");
-				}
-				
-			} else {
-				LOG.debug("Configuration set to not link payments");
-			}
-		} catch (Exception e) {
-			throw new SessionInternalError("Linking payments to invoices", PaymentBL.class, e);
-		}
-    	return retValue;
+        LOG.debug("Attempting to link payments to invoices. User " + userId);
+        boolean retValue = false;
+        try {
+            UserBL user = new UserBL(userId);
+            Integer entityId = user.getEntityId(userId);
+            ConfigurationBL conf = new ConfigurationBL(entityId);
+            if (conf.getEntity().getAutoPaymentApplication() == 1) {
+                // now find an invoice
+                InvoiceBL invBl = new InvoiceBL();
+                Integer invoiceId = null;
+                CachedRowSet set = invBl.getPayableInvoicesByUser(userId);
+                if (set.next()) {
+                    invoiceId = set.getInt(1);
+                    invBl.set(invoiceId);
+                    automaticPaymentApplication(invBl.getEntity());
+                    LOG.debug("done");
+                } else {
+                    set.close();
+                    LOG.debug("Can't find any invoice to pay");
+                }
+
+            } else {
+                LOG.debug("Configuration set to not link payments");
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError("Linking payments to invoices",
+                    PaymentBL.class, e);
+        }
+        return retValue;
     }
 }
-

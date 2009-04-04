@@ -29,18 +29,17 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.interfaces.AchEntityLocal;
-import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.generated.Ach;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 
 /**
  * This creates payment dto. It now only goes and fetches the credit card
@@ -84,28 +83,28 @@ public class PaymentInfoNoValidateTask
 	                // to the processor
 	                for (Iterator it = userBL.getEntity().getCreditCards().
 	                        iterator(); it.hasNext(); ) {
-                        ccBL.set(((CreditCard) it.next()).getId());
+                        ccBL.set(((CreditCardDTO) it.next()).getId());
 	                    // takes the first one, no validation
                         retValue = new PaymentDTOEx();
                         retValue.setCreditCard(ccBL.getDTO());
-                        retValue.setMethodId(ccBL.getPaymentMethod());
+                        retValue.setPaymentMethod(new PaymentMethodDAS().find(ccBL.getPaymentMethod()));
                         break;
 	                }
 	            }
             } else if (method.equals(Constants.AUTO_PAYMENT_TYPE_ACH)) {
-                AchEntityLocal ach =  null;
+                AchDTO ach =  null;
                 if (userBL.getEntity().getAchs().size() > 0) {
-                    AchBL bl = new AchBL(((Ach)userBL.getEntity().getAchs().toArray()[0]).getId());
+                    AchBL bl = new AchBL(((AchDTO)userBL.getEntity().getAchs().toArray()[0]).getId());
                     ach = bl.getEntity();
                 }
                 if (ach == null) {
                     // no info, no payment
                 } else {
                     retValue = new PaymentDTOEx();
-                    retValue.setAch(new AchDTO(null, ach.getAbaRouting(),
+                    retValue.setAch(new AchDTO(0, ach.getAbaRouting(),
                             ach.getBankAccount(), ach.getAccountType(),
                             ach.getBankName(), ach.getAccountName()));
-                    retValue.setMethodId(Constants.PAYMENT_METHOD_ACH);
+                    retValue.setPaymentMethod(new PaymentMethodDAS().find(Constants.PAYMENT_METHOD_ACH));
                 }
             }
         } catch (Exception e) {

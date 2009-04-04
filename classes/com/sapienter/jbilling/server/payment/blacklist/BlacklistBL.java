@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
@@ -33,14 +32,15 @@ import com.sapienter.jbilling.server.payment.tasks.PaymentFilterTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * Business logic class for the blacklist module.
@@ -116,7 +116,7 @@ public class BlacklistBL {
         PreferenceBL preferenceBL = new PreferenceBL();
         try {
             preferenceBL.set(entityId, Constants.PREFERENCE_USE_BLACKLIST);
-        } catch (FinderException fe) { 
+        } catch (EmptyResultDataAccessException fe) { 
             // use default
         }
 
@@ -139,7 +139,7 @@ public class BlacklistBL {
      * Creates an entry in the blacklist.
      */
     public Integer create(CompanyDTO company, Integer type, Integer source, 
-            CreditCard creditCard, ContactDTO contact, UserDTO user) {
+            CreditCardDTO creditCard, ContactDTO contact, UserDTO user) {
         BlacklistDTO entry = new BlacklistDTO();
         entry.setCompany(company);
         entry.setCreateDate(new Date());
@@ -182,8 +182,8 @@ public class BlacklistBL {
 
         // instantiate blacklist payment filter plug-in &
         // initialize its parameters
-        PluggableTaskDTO blacklistPluginInfo = new PluggableTaskDAS().find(
-            blacklistPluginId);
+        PluggableTaskDTO blacklistPluginInfo = ((PluggableTaskDAS) Context.getBean(
+                Context.Name.PLUGGABLE_TASK_DAS)).find(blacklistPluginId);
         PaymentFilterTask blacklist = new PaymentFilterTask();
         try {
             blacklist.initializeParamters(blacklistPluginInfo);

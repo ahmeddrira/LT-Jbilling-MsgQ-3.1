@@ -15,7 +15,6 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.sapienter.jbilling.server.mediation.db;
 
-import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -32,6 +31,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 
 /**
  * This table links a mediation record (CDR) to one or more order lines. It specified how much each
@@ -50,7 +51,7 @@ import javax.persistence.Version;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="mediation_record_line",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name = "mediation_record_line")
 // no cache : it is hardly ever re-read 

@@ -43,12 +43,13 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
@@ -60,8 +61,7 @@ import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
-import com.sapienter.jbilling.server.util.db.generated.Ach;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -531,7 +531,14 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             CreditCardBL ccBL = new CreditCardBL();
             ccBL.create(dto);
             // now find this user to add the cc to it
-            ccBL.getEntity().setUserId(userId);
+//            ccBL.getEntity().setUserId(userId);
+            
+            UserDTO user = new UserDAS().find(userId);
+            ccBL.getEntity().getBaseUsers().add(user);
+            user.getCreditCards().add(ccBL.getEntity());
+            
+            new UserDAS().save(user);
+            new CreditCardDAS().save(ccBL.getEntity());
             
             return ccBL.getEntity().getId();
         } catch (Exception e) {
@@ -582,8 +589,10 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             userBL.set(user);
             // if it starts with a *, it is passing a masked cc, which means no update
             if (dto != null && (dto.getNumber() == null || dto.getNumber().charAt(0) != '*')) { // it is providing a new cc
+            	
                 if (!userBL.getEntity().getCreditCards().isEmpty()) {
-                    CreditCardBL ccBL = new CreditCardBL(((CreditCard)
+                	
+                    CreditCardBL ccBL = new CreditCardBL(((CreditCardDTO)
                             userBL.getEntity().getCreditCards().iterator().next()).getId());
                     ccBL.update(executorId, dto, user.getId());
                 } else { // this is really a create
@@ -668,9 +677,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 			throws SessionInternalError {
 		try {
 			UserBL user = new UserBL(userId);
-			Set<Ach> ach = user.getEntity().getAchs();
+			Set<AchDTO> ach = user.getEntity().getAchs();
 			if (ach.size() > 0) {
-				AchBL bl = new AchBL(((Ach)ach.toArray()[0]).getId());
+				AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
 				return bl.getDTO();
 			} 
 			return null;
@@ -687,9 +696,9 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 			throws SessionInternalError {
 		try {
 			UserBL user = new UserBL(userId);
-            Set<Ach> ach = user.getEntity().getAchs();
+            Set<AchDTO> ach = user.getEntity().getAchs();
             if (ach.size() > 0) {
-                AchBL bl = new AchBL(((Ach)ach.toArray()[0]).getId());
+                AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
 				bl.delete(executorId);
 			}
 		} catch (Exception e) {
@@ -709,7 +718,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             // find this user and get the first cc
             UserBL userBL = new UserBL(userId);
             if (!userBL.getEntity().getCreditCards().isEmpty()) {
-                CreditCardBL ccBL = new CreditCardBL(((CreditCard)
+                CreditCardBL ccBL = new CreditCardBL(((CreditCardDTO)
                         userBL.getEntity().getCreditCards().toArray()[0]).getId());
                 retValue = ccBL.getDTO();
             } else { // return a blank one
@@ -734,7 +743,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             try {
                 preference.set(entityId, preferenceId);
                 result = preference.getValueAsString();
-            } catch (FinderException e) { 
+            } catch (EmptyResultDataAccessException e) { 
                 // it is missing, so it will pick up the default
             }
 
@@ -814,7 +823,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
                 try {
                     preference.set(entityId, ids[f]);
                     retValue.put(ids[f], preference.getValueAsString());
-                } catch (FinderException e1) {
+                } catch (EmptyResultDataAccessException e1) {
                     // use a default
                     retValue.put(ids[f], 
                             preference.getDefaultAsString(ids[f]));
@@ -914,7 +923,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             UserBL userBL = new UserBL(userId);
             Iterator it = userBL.getEntity().getCreditCards().iterator();
             while (it.hasNext()) {
-                CreditCardBL bl = new CreditCardBL(((CreditCard)
+                CreditCardBL bl = new CreditCardBL(((CreditCardDTO)
                         it.next()).getId());
                 bl.delete(executorId);
             } 

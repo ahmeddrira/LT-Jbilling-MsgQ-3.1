@@ -36,8 +36,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -49,7 +47,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_arch", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "notification_message_arch")
 public class NotificationMessageArchDTO implements Serializable {
 
@@ -111,7 +109,6 @@ public class NotificationMessageArchDTO implements Serializable {
         this.typeId = typeId;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_datetime", nullable = false, length = 29)
     public Date getCreateDatetime() {
         return this.createDatetime;

@@ -35,10 +35,12 @@ import javax.persistence.Table;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "menu_option")
-public class MenuOptionDTO implements java.io.Serializable {
+public class MenuOptionDTO extends AbstractDescription implements java.io.Serializable {
 
 	private int id;
 	private MenuOptionDTO menuOption;
@@ -64,6 +66,11 @@ public class MenuOptionDTO implements java.io.Serializable {
 		this.levelField = levelField;
 		this.menuOptions = menuOptions;
 	}
+
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_MENU_OPTION;
+    }
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
@@ -113,32 +120,8 @@ public class MenuOptionDTO implements java.io.Serializable {
 	}
 
 	public String getDisplay(Integer language) {
-		InternationalDescriptionDTO desc = getDescriptionObject(language);
-
-		if (desc == null) {
-			// default to english
-			desc = getDescriptionObject(new Integer(1));
-		}
-		if (desc == null) {
-			return "Display not set for this permission";
-		}
-
-		return desc.getContent();
+		return getDescription(language, "display");
 	}
 
-	private InternationalDescriptionDTO getDescriptionObject(Integer language) {
-
-		InternationalDescriptionDTO inter = new InternationalDescriptionDAS()
-				.findIt(Constants.TABLE_MENU_OPTION, getId(), "display",
-						language);
-
-		if (inter == null) {
-			LOG.warn("Description for menu " + getId()
-					+ " not found for language " + language);
-			return null;
-		}
-
-		return inter;
-	}
 
 }

@@ -22,7 +22,8 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.io.Serializable;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+
 
 public class AuthorizeNetResponseDTO implements Serializable {
     private PaymentAuthorizationDTO dbRow = null;
@@ -37,7 +38,7 @@ public class AuthorizeNetResponseDTO implements Serializable {
         dbRow.setCode3(fields[2]); // reason code
         dbRow.setResponseMessage(fields[3]); // a string with plain text with a reason for this result
         dbRow.setApprovalCode(fields[4]); 
-        dbRow.setAVS(fields[5]);
+        dbRow.setAvs(fields[5]);
         dbRow.setTransactionId(fields[6]);
         dbRow.setMD5(fields[37]);
         dbRow.setCardCode(fields[38]);        
@@ -50,7 +51,7 @@ public class AuthorizeNetResponseDTO implements Serializable {
         "reasonCode=" + dbRow.getCode3() + "," +
         "reasonText=" + dbRow.getResponseMessage() + "," +
         "approvalCode=" + dbRow.getApprovalCode() + "," +
-        "AVSResultCode=" + dbRow.getAVS() + "," +
+        "AVSResultCode=" + dbRow.getAvs() + "," +
         "transactionId=" + dbRow.getTransactionId() + "," +
         "MD5Hash=" + dbRow.getMD5() + "," +
         "cardCode=" + dbRow.getCardCode() + 

@@ -143,18 +143,9 @@ public class JNDILookup {
 
     }
     
-    public DataSource lookUpDataSource() throws NamingException {
-        DataSource jdbc;
-        
-        jdbc = (DataSource) ejbHomes.get(DATABASE_JNDI);
-        if (jdbc == null) {
-            log.info("Looking up the datasource for the first time." + DATABASE_JNDI);
-            jdbc = (DataSource) PortableRemoteObject.narrow(
-            		ctx.lookup(DATABASE_JNDI), DataSource.class);
-            ejbHomes.put(DATABASE_JNDI, jdbc);
-        }
-        
-        return jdbc;
+    public DataSource lookUpDataSource() {
+        return (DataSource) com.sapienter.jbilling.server.util.Context.getBean(
+                com.sapienter.jbilling.server.util.Context.Name.DATA_SOURCE);
     }
 
 }

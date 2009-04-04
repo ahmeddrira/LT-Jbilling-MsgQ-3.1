@@ -21,8 +21,6 @@
 package com.sapienter.jbilling.server.payment.blacklist;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
@@ -45,9 +43,9 @@ import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
 import com.sapienter.jbilling.server.util.Util;
 
 /** 
@@ -282,7 +280,7 @@ public class CsvProcessor {
     private void createCcRecord(BlacklistDTO entry) throws ParseException {
         checkForEmptyRecord("CC_NUMBER", Column.CC_NUMBER);
 
-        CreditCard creditCard = new CreditCard();
+        CreditCardDTO creditCard = new CreditCardDTO();
 
         creditCard.setNumber(getString(Column.CC_NUMBER));
         creditCard.setDeleted(0);

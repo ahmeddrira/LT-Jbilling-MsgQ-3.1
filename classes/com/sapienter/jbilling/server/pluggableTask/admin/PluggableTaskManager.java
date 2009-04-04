@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.util.Context;
 
 public class PluggableTaskManager<T> {
 
@@ -47,9 +48,9 @@ public class PluggableTaskManager<T> {
         try {
             lastProcessingOrder = 0;
 
-            PluggableTaskDAS das = new PluggableTaskDAS();
             classes = new Vector<PluggableTaskDTO>();
-            classes.addAll(das.findByEntityCategory(entityId, taskCategory));
+            classes.addAll(((PluggableTaskDAS) Context.getBean(Context.Name.PLUGGABLE_TASK_DAS)).findByEntityCategory(
+                    entityId, taskCategory));
 
             it = classes.iterator();
             LOG.debug("total classes = " + classes.size());

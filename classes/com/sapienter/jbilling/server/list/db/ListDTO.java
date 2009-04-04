@@ -42,7 +42,7 @@ import javax.persistence.Version;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "list", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "list")
 public class ListDTO implements Serializable {
 

@@ -35,13 +35,6 @@ public interface ProcessSQL {
         " where entity_id = ?" +
         "   and is_review = 0 ";
     
-    static final String findTodays =
-        "select id " +
-        "  from billing_process" +
-        " where entity_id = ? " +
-        "   and is_review = ? " +
-        "   and billing_date = ?";
-
     // needed to avoid getting into a trasaction in the billingProcess.trigger
     // since Collections have to be in transactions
     static String findToRetry =
@@ -51,12 +44,6 @@ public interface ProcessSQL {
         "  and is_review = 0 " +
         "  and retries_to_do > 0";
     
-    static String findRuns = 
-        "select r.id " +
-        "  from process_run r, billing_process bp " +
-        " where r.process_id = bp.id " +
-        "   and bp.id = ?";
-
 }
 
 

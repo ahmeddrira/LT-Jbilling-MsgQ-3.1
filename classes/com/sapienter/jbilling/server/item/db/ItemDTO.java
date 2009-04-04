@@ -36,20 +36,19 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
-import com.sapienter.jbilling.server.util.db.generated.InvoiceLine;
-import com.sapienter.jbilling.server.util.db.generated.Promotion;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
@@ -58,7 +57,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="item",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="item")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -72,10 +71,9 @@ public class ItemDTO extends AbstractDescription {
     private Integer priceManual;
     private Integer deleted;
     private Integer hasDecimals;
-    private Promotion promotion;
     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
-    private Set<InvoiceLine> invoiceLines = new HashSet<InvoiceLine>(0);
+    private Set<InvoiceLineDTO> invoiceLines = new HashSet<InvoiceLineDTO>(0);
     private Set<ItemUserPriceDTO> itemUserPrices = new HashSet<ItemUserPriceDTO>(0);
     private Set<ItemPriceDTO> itemPrices = new HashSet<ItemPriceDTO>(0);
     private int versionNum;
@@ -115,7 +113,7 @@ public class ItemDTO extends AbstractDescription {
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(int id, CompanyDTO entity, String internalNumber, Float percentage, Integer priceManual, Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Promotion promotion, Set<ItemTypeDTO> itemTypes, Set<InvoiceLine> invoiceLines, Set<ItemUserPriceDTO> itemUserPrices, Set<ItemPriceDTO> itemPrices) {
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, Float percentage, Integer priceManual, Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes, Set<InvoiceLineDTO> invoiceLines, Set<ItemUserPriceDTO> itemUserPrices, Set<ItemPriceDTO> itemPrices) {
        this.id = id;
        this.entity = entity;
        this.internalNumber = internalNumber;
@@ -124,7 +122,6 @@ public class ItemDTO extends AbstractDescription {
        this.deleted = deleted;
        this.hasDecimals = hasDecimals;
        this.orderLineDTOs = orderLineDTOs;
-       this.promotion = promotion;
        this.itemTypes = itemTypes;
        this.invoiceLines = invoiceLines;
        this.itemUserPrices = itemUserPrices;
@@ -226,15 +223,6 @@ public class ItemDTO extends AbstractDescription {
         this.orderLineDTOs = orderLineDTOs;
     }
 
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")
-    public Promotion getPromotion() {
-        return this.promotion;
-    }
-    
-    public void setPromotion(Promotion promotion) {
-        this.promotion = promotion;
-    }
-
     @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinTable(name="item_type_map", joinColumns = { 
         @JoinColumn(name="item_id", updatable=false) }, inverseJoinColumns = { 
@@ -248,11 +236,11 @@ public class ItemDTO extends AbstractDescription {
     }
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")
-    public Set<InvoiceLine> getInvoiceLines() {
+    public Set<InvoiceLineDTO> getInvoiceLines() {
         return this.invoiceLines;
     }
     
-    public void setInvoiceLines(Set<InvoiceLine> invoiceLines) {
+    public void setInvoiceLines(Set<InvoiceLineDTO> invoiceLines) {
         this.invoiceLines = invoiceLines;
     }
 

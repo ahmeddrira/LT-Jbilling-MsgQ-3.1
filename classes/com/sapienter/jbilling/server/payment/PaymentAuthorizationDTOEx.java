@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 
+
 /**
  * @author Emil
  * @jboss-net.xml-schema urn="sapienter:PaymentAuthorizationDTOEx"

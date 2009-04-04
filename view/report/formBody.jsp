@@ -32,13 +32,13 @@
 
 <p class="title">
 <bean:message name='<%=Constants.SESSION_REPORT_DTO%>'
-	                              property="titleKey"
+	                              property="titlekey"
 	                              scope="session"/> 
 </p>
 
 <p class="instr">
 <bean:message name='<%=Constants.SESSION_REPORT_DTO%>'
-	                              property="instructionsKey"
+	                              property="instructionskey"
 	                              scope="session"/> 
 </p>
 

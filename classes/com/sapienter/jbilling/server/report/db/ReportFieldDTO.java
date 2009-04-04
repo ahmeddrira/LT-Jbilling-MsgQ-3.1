@@ -40,7 +40,7 @@ import javax.persistence.Version;
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "report_field", 
-        allocationSize = 10)
+        allocationSize = 100)
 @Table(name = "report_field")
 public class ReportFieldDTO implements Serializable {
 

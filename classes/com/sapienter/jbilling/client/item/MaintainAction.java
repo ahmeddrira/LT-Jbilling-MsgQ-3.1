@@ -32,12 +32,11 @@ import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Context;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
 
 public class MaintainAction extends CrudActionBase<ItemDTO> {
 

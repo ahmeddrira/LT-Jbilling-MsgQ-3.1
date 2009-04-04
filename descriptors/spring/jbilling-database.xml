@@ -23,4 +23,35 @@
     <jee:jndi-lookup id="dataSource" jndi-name="java:/ApplicationDS"/>
     
     <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" lazy-init="true">
+        <property name="dataSource" ref="dataSource" />
+        <!-- Scan for annotated classes -->
+        <property name="packagesToScan" value="com.sapienter.jbilling.server"/>
+        <property name="hibernateProperties">
+            <props>
+                <!--
+                    Choose your dialect:
+                      org.hibernate.dialect.HSQLDialect
+                      org.hibernate.dialect.MySQLDialect
+                      org.hibernate.dialect.Oracle9Dialect
+                -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+
+                <!--  Cache settings -->
+                <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+                <prop key="SecondLevelCacheEnabled">true</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
+
+                 <!-- This should be equal to Constants.HIBERNATE_BATCH_SIZE -->
+                <prop key="hibernate.jdbc.batch_size">100</prop>
+
+                <!--  Debugger helpers -->
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.use_sql_comments">true</prop>
+            </props>
+        </property>
+    </bean>
+    
 </beans>

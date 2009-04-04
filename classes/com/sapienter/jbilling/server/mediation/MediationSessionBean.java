@@ -15,6 +15,7 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.sapienter.jbilling.server.mediation;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.List;
@@ -55,8 +56,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
-import java.math.BigDecimal;
 
 /**
  *
@@ -235,7 +236,7 @@ public class MediationSessionBean implements SessionBean {
             for (MediationConfiguration cfg : configurations) {
                 // if the configuration is new, the task needs to be loaded
                 if (cfg.getPluggableTask().getEntityId() == null) {
-                    PluggableTaskDAS pt = new PluggableTaskDAS();
+                    PluggableTaskDAS pt = (PluggableTaskDAS) Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
                     PluggableTaskDTO task = pt.find(cfg.getPluggableTask().getId());
                     if (task != null && task.getEntityId().equals(cfg.getEntityId())) {
                         cfg.setPluggableTask(task);

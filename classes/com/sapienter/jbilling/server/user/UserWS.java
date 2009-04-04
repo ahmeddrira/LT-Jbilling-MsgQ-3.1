@@ -86,7 +86,7 @@ public class UserWS implements Serializable {
         failedAttempts = dto.getFailedAttempts();
         languageId = dto.getLanguageId();
 
-        creditCard = dto.getCreditCard();
+        creditCard = dto.getCreditCard() == null ? null : dto.getCreditCard().getOldDTO();
         role = dto.getMainRoleStr();
         mainRoleId = dto.getMainRoleId();
         language = dto.getLanguageStr();

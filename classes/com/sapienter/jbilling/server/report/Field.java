@@ -34,8 +34,9 @@ import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
 
 
 public class Field extends ReportFieldDTO {
-    private static final Logger LOG = Logger.getLogger(Field.class);
     
+	private static final Logger LOG = Logger.getLogger(Field.class);
+	
     /*
      * Supported data types
      */
@@ -84,7 +85,7 @@ public class Field extends ReportFieldDTO {
     }
     
     public  String getOperatorKey() {
-        
+        Logger log = Logger.getLogger(Field.class);
         if (getOperatorValue().equals(OPERATOR_DIFFERENT)) {
             return "reports.operator.prompt.notequal";
         } else if (getOperatorValue().equals(OPERATOR_EQUAL)) {
@@ -98,14 +99,15 @@ public class Field extends ReportFieldDTO {
         } else if (getOperatorValue().equals(OPERATOR_SMALLER)) {
             return "reports.operator.prompt.smaller";
         } else {
-            LOG.fatal("unable to map " + getOperatorValue());
+            log.fatal("unable to map " + getOperatorValue());
             return null;
         }
     }
     
     public String getTitleKey() {
+        Logger log = Logger.getLogger(Field.class);
         if (super.getTitleKey() == null) {
-            LOG.debug("Creating the titleKey for " + getColumnName());
+            log.debug("Creating the titleKey for " + getColumnName());
             return "report.prompt." + getTableName() + "." + getColumnName();
         } else {
             return super.getTitleKey();
@@ -139,22 +141,23 @@ public class Field extends ReportFieldDTO {
      * Validation funcitons
      */
     public int validate(Locale locale) {
+        Logger log = Logger.getLogger(Field.class);
         int retValue = ReportDTOEx.OK;
         
         if (getTableName() == null) {
-            LOG.debug("Validation:" + "table" + " can't be null");
+            log.debug("Validation:" + "table" + " can't be null");
             retValue = ReportDTOEx.ERROR_ISNULL;
         }
         if (getColumnName() == null) {
-            LOG.debug("Validation:" + "column" + " can't be null");
+            log.debug("Validation:" + "column" + " can't be null");
             retValue = ReportDTOEx.ERROR_ISNULL;
         }
         if (getIsShown() == null) {
-            LOG.debug("Validation:" + "isShown" + " can't be null");
+            log.debug("Validation:" + "isShown" + " can't be null");
             retValue = ReportDTOEx.ERROR_ISNULL;
         }
         if (getDataType() == null) {
-            LOG.debug("Validation:" + "data type" + " can't be null");
+            log.debug("Validation:" + "data type" + " can't be null");
             retValue = ReportDTOEx.ERROR_ISNULL;
         }
         if (getFunctionName() != null && 
@@ -169,7 +172,7 @@ public class Field extends ReportFieldDTO {
             // then we need an operator
             // it has to be consistent with the data type
             if (getOperatorValue() == null) {
-                LOG.debug("Operator is required when where value is specified.");
+                log.debug("Operator is required when where value is specified.");
                 retValue = ReportDTOEx.ERROR_NO_OPERATOR;
             } 
             
@@ -186,13 +189,13 @@ public class Field extends ReportFieldDTO {
         }
         
         if (getFunctionName()!= null && getIsGrouped().intValue() == 1){
-            LOG.debug("A field can't have a function and be grouped by at " +
+            log.debug("A field can't have a function and be grouped by at " +
                     "the same time");
             retValue = ReportDTOEx.ERROR_FUNCTION;
         }
         
         if (getWhereable().intValue() == 1 && super.getTitleKey() == null) {
-            LOG.debug("Can't be whereable and not have a title key");
+            log.debug("Can't be whereable and not have a title key");
             retValue = ReportDTOEx.ERROR_WHERE;
         }
         
@@ -292,3 +295,4 @@ public class Field extends ReportFieldDTO {
         return false;
     }
 }
+

@@ -34,6 +34,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  *
@@ -90,7 +91,7 @@ public class PluggableTaskSessionBean implements SessionBean {
     public PluggableTaskDTO[] getAllDTOs(Integer entityId) 
             throws SessionInternalError {
             
-        PluggableTaskDAS das = new PluggableTaskDAS();
+        PluggableTaskDAS das = (PluggableTaskDAS) Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
         Collection tasks = das.findAllByEntity(entityId);
         PluggableTaskDTO[] retValue = 
             new PluggableTaskDTO[tasks.size()];

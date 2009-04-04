@@ -26,8 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.Column;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,13 +43,12 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
 import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
@@ -61,7 +60,7 @@ import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="order_line",
-        allocationSize=10
+        allocationSize = 100
         )
 @Table(name="order_line")
 //No cache, mutable and critical

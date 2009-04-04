@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import sun.jdbc.rowset.CachedRowSet;

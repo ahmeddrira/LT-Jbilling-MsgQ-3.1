@@ -45,6 +45,7 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -53,7 +54,6 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.util.db.generated.InvoiceDeliveryMethod;
 
 public class MaintainAction extends Action {
 
@@ -254,7 +254,7 @@ public class MaintainAction extends Action {
                     
                     if (dto.getMainRoleId().equals(Constants.TYPE_CUSTOMER)) {
                         dto.setCustomer(new CustomerDTO());
-                        dto.getCustomer().setInvoiceDeliveryMethod(new InvoiceDeliveryMethod(
+                        dto.getCustomer().setInvoiceDeliveryMethod(new InvoiceDeliveryMethodDTO(
                                 (Integer) userForm.get("deliveryMethodId")));
                         dto.getCustomer().setDueDateUnitId(
                                 (Integer) userForm.get("due_date_unit_id"));

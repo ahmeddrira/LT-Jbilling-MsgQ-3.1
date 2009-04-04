@@ -32,21 +32,22 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.ejb.FinderException;
+
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
 
+
 /**
  * @author Emil
  */
 public class Util {
+
     
     public static final String[] hexLookupTable = {
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
@@ -124,7 +125,8 @@ public class Util {
     
     public static String getPeriodUnitStr(Integer id, Integer language) {
         Logger log = Logger.getLogger(Util.class);
-        InternationalDescriptionDTO inter = new InternationalDescriptionDAS().findIt(Constants.TABLE_PERIOD_UNIT, id,
+        InternationalDescriptionDTO inter = ((InternationalDescriptionDAS)
+                Context.getBean(Context.Name.DESCRIPTION_DAS)).findIt(Constants.TABLE_PERIOD_UNIT, id,
                 "description", language);
         
        if (inter == null) {
@@ -238,4 +240,5 @@ public class Util {
 
         return fields.toArray(new String[0]);
     }
+
 }

@@ -1,3 +1,4 @@
+
 /*
     jBilling - The Enterprise Open Source Billing System
     Copyright (C) 2003-2008 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -18,11 +19,6 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Created on 27-Apr-2003
- *
- * Copyright Sapienter Enterprise Software
- */
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.math.BigDecimal;
@@ -38,10 +34,10 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.InvoiceLineDTOEx;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
@@ -57,46 +53,44 @@ import com.sapienter.jbilling.server.util.Util;
  * lines that are taxes.
  * The quantity and total of each line will be multiplied by the
  * amount of periods.
- * @author Emil
+ * @author Emil Created on 27-Apr-2003
  */
 public class BasicCompositionTask extends PluggableTask
         implements InvoiceCompositionTask {
-
 
     private static final Logger LOG = Logger.getLogger(BasicCompositionTask.class);
     // this could be a pluggable task parameter if some entities require
     // more digits
     private final int DECIMAL_DIGITS = 2;
-    
     private Locale locale = null;
     /* (non-Javadoc)
      * @see com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask#apply(com.sapienter.betty.server.invoice.NewInvoiceDTO, com.sapienter.betty.server.entity.BillingProcessDTO)
      */
+
     public void apply(NewInvoiceDTO invoiceDTO, Integer userId)
             throws TaskException {
         /*
          *  go over the orders first
          */
-        
-        for (int orderIndex=0; orderIndex < invoiceDTO.getOrders().size(); orderIndex++) {
-            OrderDTO order = (OrderDTO) invoiceDTO.
-                    getOrders().get(orderIndex);
+
+        for (int orderIndex = 0; orderIndex < invoiceDTO.getOrders().size(); orderIndex++) {
+            OrderDTO order = (OrderDTO) invoiceDTO.getOrders().get(orderIndex);
             // check if this order has notes that should make it into the invoice
             if (order.getNotesInInvoice() != null &&
                     order.getNotesInInvoice().intValue() == 1 &&
                     order.getNotes() != null && order.getNotes().length() > 0) {
-                 if (invoiceDTO.getCustomerNotes() == null) {
+                if (invoiceDTO.getCustomerNotes() == null) {
                     invoiceDTO.setCustomerNotes(new String());
-                 }
-                 invoiceDTO.setCustomerNotes(invoiceDTO.getCustomerNotes() + 
-                         " " + order.getNotes());
+                }
+                invoiceDTO.setCustomerNotes(invoiceDTO.getCustomerNotes() +
+                        " " + order.getNotes());
             }
-            
+
             // now go over the lines of this order, and generate the invoice
             // lines from them, excluding the tax ones.
             Iterator orderLines = order.getLines().iterator();
             while (orderLines.hasNext()) {
-                OrderLineDTO orderLine = 
+                OrderLineDTO orderLine =
                         (OrderLineDTO) orderLines.next();
                 // skip deleted lines
                 if (orderLine.getDeleted() == 1) {
@@ -109,12 +103,12 @@ public class BasicCompositionTask extends PluggableTask
                     // this would probably have to exlude taxes, calculate
                     // interests, then recalculate taxes, etc...
                     // now the whole orders is just copied. 
-                    InvoiceLineDTOEx invoiceLine = null;
-                    if (orderLine.getOrderLineType().getId() == 
+                    InvoiceLineDTO invoiceLine = null;
+                    if (orderLine.getOrderLineType().getId() ==
                             Constants.ORDER_LINE_TYPE_ITEM) {
                         String desc;
                         try {
-                            desc = composeDescription(userId,  order, 
+                            desc = composeDescription(userId, order,
                                     orderLine.getDescription(), period.getPosition(),
                                     period.getStart(), period.getEnd());
                         } catch (SessionInternalError e) {
@@ -126,59 +120,55 @@ public class BasicCompositionTask extends PluggableTask
                         } else {
                             type = Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT;
                         }
-                        invoiceLine = new InvoiceLineDTOEx(null, desc,
-                                calculatePeriodAmount(orderLine.getAmount(), period), 
+                        invoiceLine = new InvoiceLineDTO(null, desc,
+                                calculatePeriodAmount(orderLine.getAmount(), period),
                                 orderLine.getPrice(), orderLine.getQuantity(),
                                 type, new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);
-                        
+
                     } else if (orderLine.getOrderLineType().getId() ==
-                            Constants.ORDER_LINE_TYPE_TAX){
+                            Constants.ORDER_LINE_TYPE_TAX) {
                         // tax lines have to be consolidated
-                        int taxLine = taxLinePresent(invoiceDTO.getResultLines(), 
+                        int taxLine = taxLinePresent(invoiceDTO.getResultLines(),
                                 orderLine.getDescription());
                         if (taxLine >= 0) {
-							// we have this tax already: add up the total
-							invoiceLine = (InvoiceLineDTOEx) invoiceDTO
-									.getResultLines().get(taxLine);
-							BigDecimal tmpDec = new BigDecimal(invoiceLine
-									.getAmount().toString());
-							tmpDec = tmpDec.add(calculatePeriodAmount(
-									new BigDecimal(orderLine.getAmount()
-											.toString()), period));
-							invoiceLine
-									.setAmount(new Float(tmpDec.floatValue()));
-							continue;
-						} 
+                            // we have this tax already: add up the total
+                            invoiceLine = (InvoiceLineDTO) invoiceDTO.getResultLines().get(taxLine);
+                            BigDecimal tmpDec = new BigDecimal(invoiceLine.getAmount().toString());
+                            tmpDec = tmpDec.add(calculatePeriodAmount(
+                                    new BigDecimal(orderLine.getAmount().toString()), period));
+                            invoiceLine.setAmount(new Float(tmpDec.floatValue()));
+                            continue;
+                        }
                         // it is not there yet: add
-                        invoiceLine = new InvoiceLineDTOEx(null,
+                        invoiceLine = new InvoiceLineDTO(null,
                                 orderLine.getDescription(),
-                                calculatePeriodAmount(orderLine.getAmount(), period), 
-                                orderLine.getPrice(), 
-                                null, Constants.INVOICE_LINE_TYPE_TAX, 
+                                calculatePeriodAmount(orderLine.getAmount(), period),
+                                orderLine.getPrice(),
+                                null, Constants.INVOICE_LINE_TYPE_TAX,
                                 new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);
                     } else if (orderLine.getOrderLineType().getId() ==
                             Constants.ORDER_LINE_TYPE_PENALTY) {
-                        invoiceLine = new InvoiceLineDTOEx(null, 
+                        invoiceLine = new InvoiceLineDTO(null,
                                 orderLine.getDescription(),
-                                calculatePeriodAmount(orderLine.getAmount(), period), 
+                                calculatePeriodAmount(orderLine.getAmount(), period),
                                 null, null,
-                                Constants.INVOICE_LINE_TYPE_PENALTY, 
+                                Constants.INVOICE_LINE_TYPE_PENALTY,
                                 new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);
                     }
-                    
+
                     // for the invoice to make sense when it is displayed,
                     // each line has to be rounded to the decimals shown
                     invoiceLine.setAmount(new Float(Util.round(
-                            invoiceLine.getAmount().floatValue(), 
+                            invoiceLine.getAmount().floatValue(),
                             DECIMAL_DIGITS)));
                     invoiceDTO.addResultLine(invoiceLine);
                 }
             }
         }
-        
+
         /*
          * now the invoices
          */
@@ -188,13 +178,13 @@ public class BasicCompositionTask extends PluggableTask
             // the whole invoice will be added as a single line
             // this will probably will have a good deal of logic, to 
             // take the taxes out, etc ...
-            
+
             // The text of this line has to be i18n
             // find the locale if not there yet
             try {
                 if (locale == null) {
                     InvoiceBL bl = new InvoiceBL(invoice.getId());
-                    UserBL user = new UserBL(bl.getEntity().getUser());
+                    UserBL user = new UserBL(bl.getEntity().getBaseUser());
                     locale = user.getLocale();
                 }
             } catch (Exception e) {
@@ -202,39 +192,39 @@ public class BasicCompositionTask extends PluggableTask
                         "line", e);
                 throw new TaskException(e);
             }
-            
-            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+
+            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications",
                     locale);
             SimpleDateFormat df = new SimpleDateFormat(
                     bundle.getString("format.date"));
             StringBuffer delLine = new StringBuffer();
             delLine.append(bundle.getString("invoice.line.delegated"));
-            delLine.append(" " + invoice.getNumber() + " ");
+            delLine.append(" " + invoice.getPublicNumber() + " ");
             delLine.append(bundle.getString("invoice.line.delegated.due"));
             delLine.append(" " + df.format(invoice.getDueDate()));
-            
-            InvoiceLineDTOEx invoiceLine = new InvoiceLineDTOEx(null, 
-                    delLine.toString(), invoice.getBalance(), null, null, 
+
+            InvoiceLineDTO invoiceLine = new InvoiceLineDTO(null,
+                    delLine.toString(), invoice.getBalance(), null, null,
                     Constants.INVOICE_LINE_TYPE_DUE_INVOICE, new Integer(0),
                     null, null, new Integer(0));
             invoiceDTO.addResultLine(invoiceLine);
         }
     }
-    
+
     private String composeDescription(Integer userId,
             OrderDTO order, String desc,
-            int period, Date start, Date end) throws SessionInternalError{
+            int period, Date start, Date end) throws SessionInternalError {
         StringBuffer retValue = new StringBuffer();
-        
+
         retValue.append(desc);
-        
+
         if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
             // take one day from the end date, so both dates are in the range
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(end);
             cal.add(Calendar.DAY_OF_MONTH, -1);
             Date to = cal.getTime();
-            
+
             // now add this to the line
             if (locale == null) {
                 try {
@@ -244,13 +234,13 @@ public class BasicCompositionTask extends PluggableTask
                     throw new SessionInternalError(e);
                 }
             }
-            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications",
                     locale);
 
             Logger.getLogger(BasicCompositionTask.class).debug(
                     "Composing for period " + period + " from " + start +
                     " to " + to + " format:" + bundle.getString("format.date"));
-           
+
             retValue.append(" ");
             retValue.append(bundle.getString("invoice.line.period"));
             retValue.append(" ");
@@ -261,17 +251,17 @@ public class BasicCompositionTask extends PluggableTask
             retValue.append(bundle.getString("invoice.line.to"));
             retValue.append(" ");
             retValue.append(df.format(to));
-            
+
         }
 
         // if the entity wants, add the order ID to the end of the line
-        PreferenceBL pref = null; 
+        PreferenceBL pref = null;
         try {
             pref = new PreferenceBL();
-            pref.set(order.getUser().getEntity().getId(), 
+            pref.set(order.getUser().getEntity().getId(),
                     Constants.PREFERENCE_ORDER_IN_INVOICE_LINE);
         } catch (Exception e) { // the default is good 
-        } 
+        }
 
         if (pref.getInt() == 1) {
             // get the string from the i18n file
@@ -283,12 +273,12 @@ public class BasicCompositionTask extends PluggableTask
                     throw new SessionInternalError(e);
                 }
             }
-            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
+            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications",
                     locale);
             retValue.append(bundle.getString("invoice.line.orderNumber"));
             retValue.append(" ");
             retValue.append(order.getId().toString());
-       }
+        }
 
 
         return retValue.toString();
@@ -296,24 +286,24 @@ public class BasicCompositionTask extends PluggableTask
 
     private int taxLinePresent(Vector lines, String desc) {
         for (int f = 0; f < lines.size(); f++) {
-            InvoiceLineDTOEx line = (InvoiceLineDTOEx) lines.get(f);
-            if (line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+            InvoiceLineDTO line = (InvoiceLineDTO) lines.get(f);
+            if (line.getTypeId() == Constants.ORDER_LINE_TYPE_TAX) {
                 if (line.getDescription().equals(desc)) {
                     return f;
                 }
             }
         }
-        
+
         return -1;
     }
-    
+
     // for this basic plug-in, there is any calculation done or pro-rating
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
-    	return fullPrice;
+        return fullPrice;
     }
-    
+
     // convenience method, since all is done in Floats
     public Float calculatePeriodAmount(Float fullPrice, PeriodOfTime period) {
-    	return calculatePeriodAmount(new BigDecimal(fullPrice.toString()), period).floatValue();
+        return calculatePeriodAmount(new BigDecimal(fullPrice.toString()), period).floatValue();
     }
 }

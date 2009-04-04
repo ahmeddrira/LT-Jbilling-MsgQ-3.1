@@ -16,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sapienter.jbilling.server.user;
 
@@ -25,7 +25,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
@@ -44,7 +43,9 @@ import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.db.generated.JbillingTableDAS;
+import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
+import javax.ejb.CreateException;
 
 public class ContactBL {
     private static final Logger LOG = Logger.getLogger(ContactBL.class);             
@@ -57,6 +58,7 @@ public class ContactBL {
     private ContactFieldDAS contactFieldDas = null;
     private ContactDTO contact = null;
     private Integer entityId = null;
+    private JbillingTableDAS jbDAS = null;
     
     public ContactBL(Integer contactId) 
             throws NamingException, FinderException {
@@ -70,7 +72,7 @@ public class ContactBL {
     
     public void set(Integer userId) {
         contact = contactDas.findPrimaryContact(userId);
-        LOG.debug("Found " + contact + " for " + userId);
+        //LOG.debug("Found " + contact + " for " + userId);
         setEntityFromUser(userId);
     }
     
@@ -96,30 +98,18 @@ public class ContactBL {
     	contact = contactDas.findEntityContact(entityId);
     }
 
-    
     public boolean setInvoice(Integer invoiceId) throws FinderException {
         boolean retValue = false;
-        try {
-            contact = contactDas.findInvoiceContact(invoiceId);
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
-            // this is needed to fetch the entity's custom fields
-            entityId = invoice.getEntity().getUser().getEntity().getId();
+        contact = contactDas.findInvoiceContact(invoiceId);
+        InvoiceBL invoice = new InvoiceBL(invoiceId);
+        if (contact == null) {
+            set(invoice.getEntity().getBaseUser().getUserId());
+
+        } else {
+            entityId = invoice.getEntity().getBaseUser().getCompany().getId();
             retValue = true;
-        } catch (FinderException e) {
-            // the invoice doesn't have a explicit contact.
-            // Use the user's primary
-            try {
-                InvoiceBL invoice = new InvoiceBL(invoiceId);
-                set(invoice.getEntity().getUser().getUserId());
-            } catch (NamingException e1) {
-                LOG.error("Exception finding contact for invoice " + 
-                        invoiceId, e1);
-            } 
-        } catch (NamingException e1) {
-            LOG.error("Exception finding entity for invoice " + 
-                    invoiceId, e1);
-        } 
-        
+        }
+
         return retValue;
     }
 
@@ -237,6 +227,7 @@ public class ContactBL {
     private void init() {
         contactDas = new ContactDAS();
         contactFieldDas = new ContactFieldDAS();
+        jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
     }
     
     public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) 
@@ -287,8 +278,7 @@ public class ContactBL {
         }
     }
     
-    public Integer createForInvoice(ContactDTOEx dto, Integer invoiceId) 
-            throws NamingException, FinderException, CreateException {
+    public Integer createForInvoice(ContactDTOEx dto, Integer invoiceId) {
         return create(dto, Constants.TABLE_INVOICE, invoiceId, new Integer(1));
     }
     
@@ -307,7 +297,7 @@ public class ContactBL {
             Integer foreignId, Integer typeId) {
         // first thing is to create the map to the user
         ContactMapDTO map = new ContactMapDTO();
-        map.setJbillingTable(new JbillingTableDAS().findByName(table));
+        map.setJbillingTable(jbDAS.findByName(table));
         map.setContactType(new ContactTypeDAS().find(typeId));
         map.setForeignId(foreignId);
         map = new ContactMapDAS().save(map);

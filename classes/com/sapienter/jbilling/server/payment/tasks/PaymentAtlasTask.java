@@ -32,10 +32,11 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -82,7 +83,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 				throw new TaskException("Can't process ACH charge");
 			}
 
-			if (paymentInfo.getIsRefund().intValue() == 1
+			if (paymentInfo.getIsRefund() == 1
 					&& (paymentInfo.getPayment() == null || paymentInfo
 							.getPayment().getAuthorization() == null)) {
 				log
@@ -92,7 +93,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 			validateParameters();
 
 			Map<String, Object> data;
-			if (paymentInfo.getIsRefund().intValue() == 0) {
+			if (paymentInfo.getIsRefund() == 0) {
 				data = getChargeData(paymentInfo);
 			} else {
 				data = getRefundData(paymentInfo);
@@ -107,10 +108,10 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 			paymentInfo.setAuthorization(response);
 
 			if ("1".equals(response.getCode1())) {
-				paymentInfo.setResultId(Constants.RESULT_OK);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
 				log.debug("result is ok");
 			} else {
-				paymentInfo.setResultId(Constants.RESULT_FAIL);
+				paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
 				log.debug("result is fail");
 			}
 
@@ -119,11 +120,11 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 
 		} catch (MalformedURLException e) {
 			log.error("MalformedURLException exception when calling Atlas", e);
-			paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+			paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
 			retValue = true;
 		} catch (XmlRpcException e) {
 			log.error("XmlRpcException exception when calling Atlas", e);
-			paymentInfo.setResultId(Constants.RESULT_UNAVAILABLE);
+			paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
 			retValue = false;
 		} catch (PluggableTaskException e) {
 			log.error("PluggableTaskException", e);
@@ -164,7 +165,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 		data.put("expirationDate", CreditCardBL.get4digitExpiry(paymentInfo
 				.getCreditCard()));
 		data.put("transactionDate", paymentInfo.getPaymentDate());
-		data.put("transactionCode", paymentInfo.getId().toString());
+		data.put("transactionCode", paymentInfo.getId() + "");
 		return data;
 	}
 
@@ -277,7 +278,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 				.get("responseMessage"));
 		dbRow.setApprovalCode((String) transactionResponseMap
 				.get("processorCode"));
-		dbRow.setAVS((String) transactionResponseMap.get("avsResultCode"));
+		dbRow.setAvs((String) transactionResponseMap.get("avsResultCode"));
 		dbRow.setTransactionId((String) transactionResponseMap
 				.get("referenceNumber"));
 		dbRow.setProcessor("Intrannuity");
@@ -291,16 +292,10 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 			Map<String, Object> data = getChargeData(payment);
 			PaymentAuthorizationDTO response = makeCall(data, false);
 
-			PaymentAuthorizationDTOEx authDtoEx = new PaymentAuthorizationDTOEx(
+			PaymentAuthorizationDTO authDtoEx = new PaymentAuthorizationDTO(
 					response);
 			PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
 			bl.create(authDtoEx, payment.getId());
-
-			if ("1".equals(response.getCode1())) {
-				authDtoEx.setResult(Boolean.TRUE);
-			} else {
-				authDtoEx.setResult(Boolean.FALSE);
-			}
 
 			payment.setAuthorization(authDtoEx);
 			return false;

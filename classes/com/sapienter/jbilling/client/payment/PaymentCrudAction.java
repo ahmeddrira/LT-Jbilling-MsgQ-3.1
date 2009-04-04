@@ -39,12 +39,15 @@ import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.server.entity.AchDTO;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
-import com.sapienter.jbilling.server.entity.InvoiceDTO;
-import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	private static final String CREDIT_CARD_MASK = "************";
@@ -107,7 +110,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	protected ForwardAndMessage doCreate(PaymentDTOEx dto) throws RemoteException {
         // this is not an update, it's the previous step of the review
         // payments have no updates (unmodifiable transactions).
-        if (dto.getIsRefund().intValue() == 1) {
+        if (dto.getIsRefund() == 1) {
             session.setAttribute(Constants.SESSION_PAYMENT_DTO_REFUND, dto);
         } else {
             session.setAttribute(Constants.SESSION_PAYMENT_DTO, dto);
@@ -140,14 +143,14 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             myForm.set(FIELD_AMOUNT, float2string(invoiceDto.getBalance()));
             //paypal can't take i18n amounts
             session.setAttribute("jsp_paypay_amount", invoiceDto.getBalance());
-            myForm.set(FIELD_CURRENCY, invoiceDto.getCurrencyId());
+            myForm.set(FIELD_CURRENCY, invoiceDto.getCurrency().getId());
         } else if (paymentDto != null) {
             // this works for both refunds and payouts
             LOG.debug("setting form with payment:" + paymentDto.getId());
             myForm.set(FIELD_ID, paymentDto.getId());
             myForm.set(FIELD_AMOUNT, float2string(paymentDto.getAmount()));
             setFormDate(FIELD_GROUP_DATE, paymentDto.getPaymentDate());
-            myForm.set(FIELD_CURRENCY, paymentDto.getCurrencyId());
+            myForm.set(FIELD_CURRENCY, paymentDto.getCurrency().getId());
             ccDto = paymentDto.getCreditCard();
             achDto = paymentDto.getAch();
             chequeDto = paymentDto.getCheque();
@@ -183,7 +186,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             myForm.set(FIELD_CC_NUMBER, ccNumber);
             myForm.set(FIELD_CC_NAME, ccDto.getName());
             GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(ccDto.getExpiry());
+            cal.setTime(ccDto.getCcExpiry());
             myForm.set(FIELD_GROUP_CC_EXPIRY + "_month", String.valueOf(cal.get(
                     GregorianCalendar.MONTH) + 1));
             myForm.set(FIELD_GROUP_CC_EXPIRY + "_year", String.valueOf(cal.get(
@@ -231,7 +234,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	protected PaymentDTOEx doEditFormToDTO() throws RemoteException {
 		PaymentDTOEx dto = new PaymentDTOEx();
         // the id, only for payment edits
-        dto.setId((Integer) myForm.get(FIELD_ID));
+        dto.setId((Integer) myForm.get(FIELD_ID) == null ? 0 : (Integer) myForm.get(FIELD_ID));
         // set the amount
         dto.setAmount(string2float((String) myForm.get(FIELD_AMOUNT)));
         // set the date
@@ -245,13 +248,13 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             chequeDto.setDate(parseDate(FIELD_GROUP_CHEQUE_DATE, "payment.cheque.date"));
             // set the cheque
             dto.setCheque(chequeDto);
-            dto.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
+            dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_CHEQUE));
             // validate required fields        
             required(chequeDto.getNumber(),"payment.cheque.number");
             required(chequeDto.getDate(), "payment.cheque.date");
             // cheques now are never process realtime (may be later will support
             // electronic cheques
-            dto.setResultId(Constants.RESULT_ENTERED);
+            dto.setPaymentResult(new PaymentResultDTO(Constants.RESULT_ENTERED));
             session.setAttribute("tmp_process_now", new Boolean(false));                
             
         } else if ("cc".equals(payMethod)) {
@@ -292,11 +295,11 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             ccDto.setNumber(ccNumber);
             ccDto.setName((String) myForm.get(FIELD_CC_NAME));
             myForm.set(FIELD_GROUP_CC_EXPIRY + "_day", "01"); // to complete the date
-            ccDto.setExpiry(parseDate(FIELD_GROUP_CC_EXPIRY, "payment.cc.date"));
-            if (ccDto.getExpiry() != null) {
+            ccDto.setCcExpiry(parseDate(FIELD_GROUP_CC_EXPIRY, "payment.cc.date"));
+            if (ccDto.getCcExpiry() != null) {
                 // the expiry can't be past today
                 GregorianCalendar cal = new GregorianCalendar();
-                cal.setTime(ccDto.getExpiry());
+                cal.setTime(ccDto.getCcExpiry());
                 cal.add(GregorianCalendar.MONTH, 1); // add 1 month
                 if (Calendar.getInstance().getTime().after(cal.getTime())) {
                     errors.add(ActionErrors.GLOBAL_ERROR,
@@ -310,13 +313,13 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             session.setAttribute("tmp_process_now", (Boolean) myForm.get(FIELD_PROCESS_NOW));
             // validate required fields        
             required(ccDto.getNumber(), "payment.cc.number");
-            required(ccDto.getExpiry(), "payment.cc.date");
+            required(ccDto.getCcExpiry(), "payment.cc.date");
             required(ccDto.getName(), "payment.cc.name");
 
             // make sure that the cc is valid before trying to get
             // the payment method from it
             if (errors.isEmpty()) {
-                dto.setMethodId(Util.getPaymentMethod(ccDto.getNumber()));
+                dto.setPaymentMethod(new PaymentMethodDTO(Util.getPaymentMethod(ccDto.getNumber())));
             }
 
         } else if ("ach".equals(payMethod)) {
@@ -338,7 +341,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             required(ach.getAccountName(), "ach.account_name.prompt");
             
             if (errors.isEmpty()) {
-                dto.setMethodId(Constants.PAYMENT_METHOD_ACH);
+                dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
             }
         }
 
@@ -348,7 +351,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         dto.setIsRefund(session.getAttribute("jsp_is_refund") == null ? 0 : 1);
         LOG.debug("refund = " + dto.getIsRefund());
         // set the selected payment for refunds
-        if (dto.getIsRefund().intValue() == 1) {
+        if (dto.getIsRefund() == 1) {
             PaymentDTOEx refundPayment = (PaymentDTOEx) session.getAttribute(
                     Constants.SESSION_PAYMENT_DTO); 
             /*
@@ -366,7 +369,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
                 if (refundPayment == null || 
                 	refundPayment.getCreditCard() == null ||
                     refundPayment.getAuthorization() == null ||
-                    !Constants.RESULT_OK.equals(refundPayment.getResultId())) {
+                    !Constants.RESULT_OK.equals(refundPayment.getPaymentResult().getId())) {
                 	
                 	realTimeNoPayment = new ActionError(//
                 			"refund.error.realtimeNoPayment", 
@@ -390,10 +393,11 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         //If a related document is
         // set (invoice/payment) it'll take it from there. Otherwise it
         // wil inherite the one from the user
-        dto.setCurrencyId((Integer) myForm.get(FIELD_CURRENCY));
-        if (dto.getCurrencyId() == null) {
+        Integer currencyId = (Integer) myForm.get(FIELD_CURRENCY);
+        dto.setCurrency( currencyId != null ? new CurrencyDTO((Integer) myForm.get(FIELD_CURRENCY)) : null);
+        if (dto.getCurrency() == null) {
             try {
-                dto.setCurrencyId(getUser(dto.getUserId()).getCurrencyId());
+                dto.setCurrency(getUser(dto.getUserId()).getCurrency());
             } catch (FinderException e) {
                 throw new SessionInternalError(e);
             }
@@ -404,7 +408,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             //payment method
             if (!myPaymentSession.isMethodAccepted((Integer)
                     session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
-                    dto.getMethodId())) {
+                    dto.getPaymentMethod().getId())) {
             	
                 errors.add(ActionErrors.GLOBAL_ERROR,
                         new ActionError("payment.error.notAccepted", 
@@ -412,7 +416,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             }
         }
 
-        LOG.debug("now payment methodId = " + dto.getMethodId());
+        //LOG.debug("now payment methodId = " + dto.getPaymentMethod().getId());
         LOG.debug("now paymentDto = " + dto);
 
         return dto;

@@ -19,9 +19,27 @@
 */
 package com.sapienter.jbilling.server.user.db;
 
+import java.util.List;
+
+
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import com.sapienter.jbilling.server.util.db.generated.CreditCard;
+import org.hibernate.Query;
 
-public class CreditCardDAS extends AbstractDAS<CreditCard> {
+public class CreditCardDAS extends AbstractDAS<CreditCardDTO> {
 
+    private static final String findByLastDigits =
+            " select b.id " +
+            "   from UserDTO b join b.creditCards c " +
+            "  where b.company.id = :entity " +
+            "    and c.ccNumberPlain = :plain " +
+            "    and b.deleted = 0 " +
+            "    and c.deleted = 0";
+
+    public List<Integer> findByLastDigits(Integer entityId, String plain) {
+        Query query = getSession().createQuery(findByLastDigits);
+        query.setParameter("entity", entityId);
+        query.setParameter("plain", plain);
+        query.setComment("CreditCardDAS.findByLastDigits " + entityId + " " + plain);
+        return query.list();
+    }
 }

@@ -39,7 +39,7 @@ import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -49,9 +49,9 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 
@@ -323,16 +323,16 @@ public class UploadData {
                 
                 // the credit card
                 CreditCardDTO cc = new CreditCardDTO();
-                cc.setExpiry(new Date());
+                cc.setCcExpiry(new Date());
                 if (credit_card_number >= 0 && 
                         fields[credit_card_number].trim().length() > 0) {
                     cc.setNumber(fields[credit_card_number].trim());
                     if (expiry_month >= 0) {
-                        cc.getExpiry().setMonth(Integer.valueOf(fields[expiry_month].trim()).intValue());
-                        cc.getExpiry().setDate(1);
+                        cc.getCcExpiry().setMonth(Integer.valueOf(fields[expiry_month].trim()).intValue());
+                        cc.getCcExpiry().setDate(1);
                     }
                     if (expiry_year >= 0) {
-                        cc.getExpiry().setYear(Integer.valueOf(fields[expiry_year].trim()).
+                        cc.getCcExpiry().setYear(Integer.valueOf(fields[expiry_year].trim()).
                                 intValue() - 1900);
                     }
                     if (name_on_card >= 0) {

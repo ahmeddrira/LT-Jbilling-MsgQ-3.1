@@ -27,31 +27,27 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessRunEntityLocalHome;
-import com.sapienter.jbilling.interfaces.BillingProcessRunTotalEntityLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessRunTotalEntityLocalHome;
-import com.sapienter.jbilling.interfaces.BillingProcessRunTotalPMEntityLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessRunTotalPMEntityLocalHome;
-import com.sapienter.jbilling.interfaces.PaymentMethodEntityLocalHome;
 import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
+import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunTotalDAS;
+import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDAS;
+import com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDTO;
+import javax.ejb.CreateException;
 
 public class BillingProcessRunBL {
-    private JNDILookup EJBFactory = null;
-    private BillingProcessRunEntityLocalHome billingProcessRunHome = null;
-    private BillingProcessRunTotalEntityLocalHome billingProcessRunTotalHome = null;
-    private BillingProcessRunTotalPMEntityLocalHome billingProcessRunTotalPMHome = null;
-    private BillingProcessRunEntityLocal billingProcessRun = null;
+    private ProcessRunDAS processRunDas = null;
+    private ProcessRunTotalDAS processRunTotalDas = null;
+    private ProcessRunTotalPmDAS billingProcessRunTotalPmDas = null;
+    private ProcessRunDTO billingProcessRun = null;
     private static final Logger LOG = Logger.getLogger(BillingProcessRunBL.class);
 
     public class DateComparator implements Comparator {
@@ -60,8 +56,8 @@ public class BillingProcessRunBL {
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         public int compare(Object o1, Object o2) {
-            BillingProcessRunEntityLocal a = (BillingProcessRunEntityLocal) o1;
-            BillingProcessRunEntityLocal b = (BillingProcessRunEntityLocal) o2;
+            ProcessRunDTO a = (ProcessRunDTO) o1;
+            ProcessRunDTO b = (ProcessRunDTO) o2;
         
             if (a.getStarted().after(b.getStarted())) {
                 return 1;
@@ -73,84 +69,59 @@ public class BillingProcessRunBL {
 
     }
     
-    public BillingProcessRunBL(Integer billingProcessRunId) 
-            throws NamingException, FinderException {
+    public BillingProcessRunBL(Integer billingProcessRunId) {
         init();
         set(billingProcessRunId);
     }
     
-    public BillingProcessRunBL() throws NamingException {
+    public BillingProcessRunBL() {
         init();
     }
     
-    public BillingProcessRunBL(BillingProcessRunEntityLocal run) 
-            throws NamingException {
+    public BillingProcessRunBL(ProcessRunDTO run)  {
         init();
         billingProcessRun = run;
     }
     
-    private void init() throws NamingException {
-        EJBFactory = JNDILookup.getFactory(false);
-        billingProcessRunHome = (BillingProcessRunEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                BillingProcessRunEntityLocalHome.class,
-                BillingProcessRunEntityLocalHome.JNDI_NAME);
+    private void init() {
+        processRunDas = new ProcessRunDAS();
 
-        billingProcessRunTotalHome = (BillingProcessRunTotalEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                BillingProcessRunTotalEntityLocalHome.class,
-                BillingProcessRunTotalEntityLocalHome.JNDI_NAME);
+        processRunTotalDas = new ProcessRunTotalDAS();
 
-        billingProcessRunTotalPMHome = (BillingProcessRunTotalPMEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                BillingProcessRunTotalPMEntityLocalHome.class,
-                BillingProcessRunTotalPMEntityLocalHome.JNDI_NAME);
+        billingProcessRunTotalPmDas = new ProcessRunTotalPmDAS();
 
     }
 
-    public BillingProcessRunEntityLocal getEntity() {
+    public ProcessRunDTO getEntity() {
         return billingProcessRun;
     }
     
-    public void set(Integer id) throws FinderException {
-        billingProcessRun = billingProcessRunHome.findByPrimaryKey(id);
+    public void set(Integer id) {
+        billingProcessRun = processRunDas.find(id);
     }
 
     /**
      * Finds the run based on the process id. Assumes that there is
      * only one run associated with the process.
-     * It now uses direct SQL to avoid running into deadlocks with the 
-     * billing process. This method is called asynch by the MDBs.
+     * This method is called asynch by the MDBs.
      * @param id
      */
     public void setProcess(Integer id) {
-        try {
-            BillingProcessBL bl = new BillingProcessBL();
-            CachedRowSet rows = bl.getRuns(id);
-            if (rows.next()) {
-                set(rows.getInt(1));
-            } else {
-                throw new SessionInternalError("Process " + id +
-                        " should have 1 run. It has none" );
-            }
-            if (rows.next()) {
-                throw new SessionInternalError("Process " + id +
-                        " should have 1 run. It has more" );
-            }
-            rows.close();
-        } catch (Exception e) {
-            throw new SessionInternalError("Error finding run of process", 
-                    BillingProcessRunBL.class, e);
-        } 
+        BillingProcessBL bl = new BillingProcessBL(id);
+        if (bl.getEntity().getProcessRuns().size() != 1) {
+            throw new SessionInternalError("Process " + id +
+                        " should have 1 run. It has " + bl.getEntity().getProcessRuns().size());
+        } else {
+            billingProcessRun = bl.getEntity().getProcessRuns().iterator().next();
+        }
     }
     
-    public Integer create(Date runDate) 
-            throws CreateException {
+    public Integer create(BillingProcessDTO process, Date runDate) {
         if (runDate == null) {
-            throw new CreateException("run date can't ge null");
+            throw new SessionInternalError("run date can't be null");
         }
 
-        billingProcessRun = billingProcessRunHome.create(runDate);
+        billingProcessRun = processRunDas.create(process, runDate, 0);
         return billingProcessRun.getId();
     }
     
@@ -162,127 +133,107 @@ public class BillingProcessRunBL {
      * @param ok
      * @throws CreateException
      */
-    public void updateNewPayment(Integer currencyId, Integer methodId, 
-            Float total, boolean ok) 
-            throws CreateException, NamingException, FinderException {
+    public void updateNewPayment(Integer currencyId, Integer methodId,
+            BigDecimal total, boolean ok) {
         // update the payments total
-        BillingProcessRunTotalEntityLocal totalRow = findOrCreateTotal(currencyId);
-        
+        ProcessRunTotalDTO totalRow = findOrCreateTotal(currencyId);
+
         BigDecimal tmpValue = null;
         if (ok) {
-        	tmpValue = new BigDecimal(totalRow.getTotalPaid().toString());
-        	tmpValue = tmpValue.add(new BigDecimal(total.toString()));
+            tmpValue = new BigDecimal(totalRow.getTotalPaid().toString());
+            tmpValue = tmpValue.add(total);
             totalRow.setTotalPaid(new Float(tmpValue.toString()));
             // the payment is good, update the method total as well
-            BillingProcessRunTotalPMEntityLocal pm = findOrCreateTotalPM(
+            ProcessRunTotalPmDTO pm = findOrCreateTotalPM(
                     methodId, totalRow);
-            tmpValue = new BigDecimal(pm.getTotal().toString());
-            tmpValue = tmpValue.add(new BigDecimal(total.toString()));
+            tmpValue = new BigDecimal(pm.getTotal() + "");
+            tmpValue = tmpValue.add(total);
             pm.setTotal(new Float(tmpValue.toString()));
-            PaymentMethodEntityLocalHome paymentMethodHome = 
-                (PaymentMethodEntityLocalHome) 
-                EJBFactory.lookUpLocalHome(
-                PaymentMethodEntityLocalHome.class,
-                PaymentMethodEntityLocalHome.JNDI_NAME);
+            PaymentMethodDAS paymentMethodHome = new PaymentMethodDAS();
             // link it to the payment method table
-            pm.setPaymentMethod(paymentMethodHome.findByPrimaryKey(methodId));
-            
+            pm.setPaymentMethod(paymentMethodHome.find(methodId));
         } else {
-        	tmpValue = new BigDecimal(totalRow.getTotalNotPaid().toString());
-        	tmpValue = tmpValue.add(new BigDecimal(total.toString()));
+            tmpValue = new BigDecimal(totalRow.getTotalNotPaid().toString());
+            tmpValue = tmpValue.add(total);
             totalRow.setTotalNotPaid(new Float(tmpValue.toString()));
         }
-       
     }
+
     
     /**
      * Adds an invoice to the run totals
      */
-    public void updateNewInvoice(Integer currencyId, Float invoiceTotal) 
-            throws CreateException {
-        // add one to the number of invoices generated
-        Integer alreadyDone = billingProcessRun.getInvoiceGenerated();
-        if (alreadyDone == null) { // first invoice
-            billingProcessRun.setInvoiceGenerated(new Integer(1));
-        } else {  // new invoice
-            billingProcessRun.setInvoiceGenerated(new Integer(alreadyDone.
-                    intValue() + 1));
+    public void updateTotals(Integer billingProcessId) {
+
+        for (Iterator it = new BillingProcessDAS().getCountAndSum(billingProcessId); it.hasNext();) {
+            Object[] row = (Object[]) it.next();
+            // add the total to the total invoiced
+            ProcessRunTotalDTO totalRow = findOrCreateTotal((Integer) row[2]);
+
+
+            billingProcessRun.setInvoicesGenerated(((Long) row[0]).intValue());
+            totalRow.setTotalInvoiced(((BigDecimal) row[1]).floatValue());
+            LOG.debug("updating invoice run total version " + totalRow.getVersionNum());
         }
-        
-        // add the total to the total invoiced
-        BillingProcessRunTotalEntityLocal totalRow = findOrCreateTotal(currencyId);
-        BigDecimal tmpValue = new BigDecimal(totalRow.getTotalInvoiced().toString());
-        tmpValue = tmpValue.add(new BigDecimal(invoiceTotal.toString()));
-        totalRow.setTotalInvoiced(new Float( tmpValue.toString() ));
     }
-    
-    private BillingProcessRunTotalEntityLocal findOrCreateTotal(Integer currencyId) 
-            throws CreateException {
-        BillingProcessRunTotalEntityLocal ret = null;
-        for (Iterator it = billingProcessRun.getTotals().iterator(); it.hasNext(); ) {
-            BillingProcessRunTotalEntityLocal row = 
-                (BillingProcessRunTotalEntityLocal) it.next();
-            if (row.getCurrencyId().equals(currencyId)) {
-                ret = row;
-                break;
-            }
-        }
+
+    private ProcessRunTotalDTO findOrCreateTotal(Integer currencyId) {
+        ProcessRunTotalDTO ret = processRunTotalDas.getByCurrency(billingProcessRun, currencyId);
         
         if (ret == null) { // not present for this currency
-            ret = billingProcessRunTotalHome.create(
+            ret = processRunTotalDas.create(billingProcessRun,
                 new Float(0), new Float(0), 
                 new Float(0), currencyId);
-            billingProcessRun.getTotals().add(ret);
         }
         return ret;
     }
 
-    private BillingProcessRunTotalPMEntityLocal findOrCreateTotalPM(
-            Integer methodId, BillingProcessRunTotalEntityLocal total) 
-            throws CreateException {
-        BillingProcessRunTotalPMEntityLocal ret = null;
-        for (Iterator it = total.getTotalsPaymentMethod().iterator(); it
-                .hasNext();) {
-            BillingProcessRunTotalPMEntityLocal row = (BillingProcessRunTotalPMEntityLocal) it
-                    .next();
-            if (row.getPaymentMethod().getId().equals(methodId)) {
-                ret = row;
-                break;
-            }
-        }
+    private ProcessRunTotalPmDTO findOrCreateTotalPM(Integer methodId, ProcessRunTotalDTO total) {
+        ProcessRunTotalPmDTO ret = billingProcessRunTotalPmDas.getByMethod(methodId, total);
 
         if (ret == null) { // not present for this currency
-            ret = billingProcessRunTotalPMHome.create(new Float(0));
+            ret = billingProcessRunTotalPmDas.create(new Float(0));
             // link it to the total row
             total.getTotalsPaymentMethod().add(ret);
+            ret.setProcessRunTotal(total);
         }
         return ret;
     }
 
     // called when the run is over, to update the dates only
-    public void update(Date runDate) {
-        billingProcessRun.setRunDate(runDate);
+    public void updateFinished() {
+        // get the very latest version
+        billingProcessRun = processRunDas.findForUpdate(billingProcessRun.getId());
         billingProcessRun.setFinished(Calendar.getInstance().getTime());
+        LOG.debug("updating run version " + billingProcessRun.getVersionNum());
+        billingProcessRun = processRunDas.save(billingProcessRun);
+    }
+    
+    public void updatePaymentsFinished() {
+        // get the very latest version
+        billingProcessRun = processRunDas.findForUpdate(billingProcessRun.getId());
+        billingProcessRun.setPaymentFinished(Calendar.getInstance().getTime());
+        LOG.debug("updating payments run version " + billingProcessRun.getVersionNum());
+        billingProcessRun = processRunDas.save(billingProcessRun);
     }
     
     
-    
-    public BillingProcessRunDTOEx getDTO(Integer language) 
-            throws NamingException, FinderException {
+    public BillingProcessRunDTOEx getDTO(Integer language) {
+
         BillingProcessRunDTOEx dto = new BillingProcessRunDTOEx();
         
         dto.setId(billingProcessRun.getId());
         dto.setFinished(billingProcessRun.getFinished());
-        dto.setInvoiceGenerated(billingProcessRun.getInvoiceGenerated());
+        dto.setInvoicesGenerated(billingProcessRun.getInvoicesGenerated());
         dto.setStarted(billingProcessRun.getStarted());
         dto.setRunDate(billingProcessRun.getRunDate());
         dto.setPaymentFinished(billingProcessRun.getPaymentFinished());
         // now the totals
-        if (!billingProcessRun.getTotals().isEmpty()) {
-            for (Iterator tIt = billingProcessRun.getTotals().iterator(); 
+        if (!billingProcessRun.getProcessRunTotals().isEmpty()) {
+            for (Iterator tIt = billingProcessRun.getProcessRunTotals().iterator(); 
                     tIt.hasNext();) {
-                BillingProcessRunTotalEntityLocal totalRow = 
-                        (BillingProcessRunTotalEntityLocal) tIt.next();
+                ProcessRunTotalDTO totalRow = 
+                        (ProcessRunTotalDTO) tIt.next();
                 BillingProcessRunTotalDTOEx totalDto = getTotalDTO(totalRow,
                         language);
                 dto.getTotals().add(totalDto);
@@ -293,11 +244,10 @@ public class BillingProcessRunBL {
     }
     
     public BillingProcessRunTotalDTOEx getTotalDTO(
-            BillingProcessRunTotalEntityLocal row, Integer languageId) 
-            throws NamingException, FinderException {
+            ProcessRunTotalDTO row, Integer languageId) {
         BillingProcessRunTotalDTOEx retValue = 
                 new BillingProcessRunTotalDTOEx();
-        retValue.setCurrencyId(row.getCurrencyId());
+        retValue.setCurrency(row.getCurrency());
         retValue.setId(row.getId());
         retValue.setTotalInvoiced(row.getTotalInvoiced());
         retValue.setTotalNotPaid(row.getTotalNotPaid());
@@ -307,8 +257,8 @@ public class BillingProcessRunBL {
         Hashtable totals = new Hashtable();
         for (Iterator it = row.getTotalsPaymentMethod().iterator(); 
                 it.hasNext();) {
-            BillingProcessRunTotalPMEntityLocal pmTotal =
-                    (BillingProcessRunTotalPMEntityLocal) it.next();
+            ProcessRunTotalPmDTO pmTotal =
+                    (ProcessRunTotalPmDTO) it.next();
             totals.put(pmTotal.getPaymentMethod().getDescription(languageId),
                     pmTotal.getTotal());
                     
@@ -316,7 +266,7 @@ public class BillingProcessRunBL {
         retValue.setPmTotals(totals);
         
         // add the currency name, it's handy on the client side
-        CurrencyBL currency = new CurrencyBL(retValue.getCurrencyId());
+        CurrencyBL currency = new CurrencyBL(retValue.getCurrency().getId());
         retValue.setCurrencyName(currency.getEntity().getDescription(
                 languageId));
         

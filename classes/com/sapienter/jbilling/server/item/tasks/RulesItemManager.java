@@ -248,7 +248,7 @@ public class RulesItemManager extends BasicItemManager {
             newOrder.setId(0);
             newOrder.setVersionNum(null);
             // the period needs to be in the session
-            newOrder.setOrderPeriodId(order.getOrderPeriod().getId());
+            newOrder.setOrderPeriod(order.getOrderPeriod());
             // but without the lines
             newOrder.getLines().clear();
             // but do get the new line in

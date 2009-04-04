@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.CommonConstants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -90,13 +89,13 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * @author Emil
  */
 public class OrderBL extends ResultList 
         implements OrderSQL {
-    private JNDILookup EJBFactory = null;
     private OrderDTO order = null;
     private OrderLineDAS orderLineDAS = null;
     private OrderPeriodDAS orderPeriodDAS = null;
@@ -107,27 +106,21 @@ public class OrderBL extends ResultList
     private static final Logger LOG = Logger.getLogger(OrderBL.class);
     private EventLogger eLogger = null;
 
-    public OrderBL(Integer orderId) 
-            throws NamingException, FinderException {
+    public OrderBL(Integer orderId) {
         init();
         set(orderId);
     }
 
-    public OrderBL() throws NamingException {
+    public OrderBL() {
         init();
     }
     
     public OrderBL (OrderDTO order) {
-        try {
-            init();
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
+        init();
         this.order = order;
     }
     
-    private void init() throws NamingException {
-        EJBFactory = JNDILookup.getFactory(false);
+    private void init() {
         eLogger = EventLogger.getInstance();        
         orderLineDAS = new OrderLineDAS();
         orderPeriodDAS = new OrderPeriodDAS();
@@ -657,7 +650,6 @@ public class OrderBL extends ResultList
     static public Boolean lookUpEditable(Integer type)
         throws SessionInternalError {
         Boolean editable = null;
-        Logger LOG = Logger.getLogger(OrderBL.class);
 
         try {
         	OrderLineTypeDAS das = new OrderLineTypeDAS();
@@ -867,7 +859,7 @@ public class OrderBL extends ResultList
                         	minStep = f;
                         }
                     }
-        	    } catch (FinderException e) {
+        	    } catch (EmptyResultDataAccessException e) {
                     stepDays[f] = -1;
         	    }
             }
@@ -972,8 +964,7 @@ public class OrderBL extends ResultList
         }
     }
     
-    public TimePeriod getDueDate() 
-            throws NamingException, FinderException {
+    public TimePeriod getDueDate() {
         TimePeriod retValue = new TimePeriod();
         if (order.getDueDateValue() == null) {
             // let's go see the customer
@@ -998,7 +989,7 @@ public class OrderBL extends ResultList
         try {
             preference.set(order.getUser().getEntity().getId(), 
                     Constants.PREFERENCE_USE_DF_FM);
-        } catch (FinderException e) {
+        } catch (EmptyResultDataAccessException e) {
             // no problem go ahead use the defualts
         }
         if (preference.getInt() == 1) {

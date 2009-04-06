@@ -178,6 +178,8 @@ public class BillingProcessDTO implements Serializable {
         this.orderProcesses = orderProcesses;
     }
 
+    // this is useful for the cascade, but any call to it will be very expensive and even
+    // inacurate. Use InvoiceDAS.findByProcess instead
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "billingProcess")
     @Fetch( FetchMode.JOIN)
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

@@ -71,7 +71,7 @@ public class BillingProcessTest extends TestCase {
     PaymentSession remotePayment = null;
     GregorianCalendar cal;
     Date processDate = null;
-    Integer entityId = null;
+    final Integer entityId = new Integer(1);
     Integer languageId = null;
     Date runDate = null;
 
@@ -113,7 +113,6 @@ public class BillingProcessTest extends TestCase {
                     PaymentSessionHome.JNDI_NAME);
         remotePayment= paymentHome.create();
 
-        entityId = new Integer(1);
         languageId = new Integer(1);
         cal = new GregorianCalendar();
         cal.clear();

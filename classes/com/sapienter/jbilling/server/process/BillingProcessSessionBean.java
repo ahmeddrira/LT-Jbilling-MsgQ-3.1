@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -47,6 +46,7 @@ import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
 import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -67,7 +67,6 @@ import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
@@ -112,14 +111,13 @@ public class BillingProcessSessionBean implements SessionBean {
     public Collection getGeneratedInvoices(Integer processId) {
         // find the billing_process home interface
         BillingProcessDAS processHome = new BillingProcessDAS();
-        // find the record
-        BillingProcessDTO record = processHome.find(processId);
+        Collection<InvoiceDTO> invoices =  new InvoiceDAS().findByProcess(processHome.find(processId));
         
-        for (InvoiceDTO invoice : record.getInvoices()) {
+        for (InvoiceDTO invoice : invoices) {
             invoice.getOrderProcesses().iterator().next().getId(); // it is a touch
         }
 
-        return record.getInvoices();
+        return invoices;
 
         
     }

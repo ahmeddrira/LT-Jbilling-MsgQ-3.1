@@ -224,7 +224,10 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 		if (process != null) {
 			entity.setBillingProcess(process);
 			InvoiceDTO saved = save(entity);
-			process.getInvoices().add(saved);
+			// The next line is theoretically necessary. However, it will slow down the billing
+            // process to a crawl. Since the column for the association is in the invoice table,
+            // the DB is updated correctly wihout this line.
+            // process.getInvoices().add(saved);
 			return saved;
 		} 
 

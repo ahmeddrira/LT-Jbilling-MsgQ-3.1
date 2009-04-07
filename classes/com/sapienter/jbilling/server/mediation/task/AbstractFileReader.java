@@ -48,6 +48,7 @@ public abstract class AbstractFileReader extends AbstractReader {
     private String suffix;
     private boolean rename;
     private SimpleDateFormat dateFormat;
+    private boolean removeQuote;
 
     public AbstractFileReader() {
     }
@@ -65,6 +66,8 @@ public abstract class AbstractFileReader extends AbstractReader {
                 ? "false" : (String) parameters.get("rename"));
         dateFormat = new SimpleDateFormat(((String) parameters.get("date_format") == null) 
                 ? "yyyyMMdd-HHmmss" : (String) parameters.get("date_format"));
+        removeQuote = Boolean.parseBoolean(((String) parameters.get("removeQuote") == null)
+                ? "true" : (String) parameters.get("removeQuote"));
 
         if (directory == null) {
             messages.add("The plug-in parameter 'directory' is mandatory");
@@ -157,13 +160,27 @@ public abstract class AbstractFileReader extends AbstractReader {
             if (line == null) {
                 throw new NoSuchElementException();
             }
-            
+
+            // get the raw fields from the line
             String tokens[] = splitFields(line);
             if (tokens.length != format.getFields().size()) {
                 throw new SessionInternalError("Mismatch of number of fields between " +
                         "the format and the file for line " + line + " Expected " + 
-                        format.getFields().size());
+                        format.getFields().size() + " found " + tokens.length);
                 
+            }
+            // remove quotes if needed
+            if (removeQuote) {
+                for (int f = 0; f < tokens.length; f++) {
+                    if (tokens[f].length() < 2) {
+                        continue;
+                    }
+                    // remove first and last char, if they are quotes
+                    if ((tokens[f].charAt(0) == '\"' || tokens[f].charAt(0) == '\'') &&
+                            (tokens[f].charAt(tokens[f].length() - 1) == '\"' ||tokens[f].charAt(tokens[f].length() - 1) == '\'')) {
+                        tokens[f] = tokens[f].substring(1, tokens[f].length() - 1);
+                    }
+                }
             }
             
             // create the record

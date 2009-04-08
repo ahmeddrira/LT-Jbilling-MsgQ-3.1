@@ -49,6 +49,8 @@ public abstract class AbstractFileReader extends AbstractReader {
     private boolean rename;
     private SimpleDateFormat dateFormat;
     private boolean removeQuote;
+    private boolean autoID;
+    private static final Logger LOG = Logger.getLogger(AbstractFileReader.class);
 
     public AbstractFileReader() {
     }
@@ -68,11 +70,17 @@ public abstract class AbstractFileReader extends AbstractReader {
                 ? "yyyyMMdd-HHmmss" : (String) parameters.get("date_format"));
         removeQuote = Boolean.parseBoolean(((String) parameters.get("removeQuote") == null)
                 ? "true" : (String) parameters.get("removeQuote"));
+        autoID = Boolean.parseBoolean(((String) parameters.get("autoID") == null)
+                ? "false" : (String) parameters.get("autoID"));
 
         if (directory == null) {
             messages.add("The plug-in parameter 'directory' is mandatory");
             retValue = false;
         }
+
+        LOG.debug("Started with " + " directory: " + directory + " suffix " + suffix + " rename " +
+                rename + " date  format " + dateFormat.toPattern() + " removeQuote " + removeQuote +
+                " autoID " + autoID);
        
         return retValue;
     }
@@ -94,6 +102,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         private BufferedReader reader = null;
         private String line;
         private int groupPosition;
+        private int counter;
         private final GroupRecordComparator groupComparator;
         private final Format format;
         
@@ -116,6 +125,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                 LOG.debug("Files to process = " + files.length);
                 format = getFormat();
                 groupComparator = new GroupRecordComparator(format);
+                counter = 0;
             }
         }
        
@@ -129,6 +139,7 @@ public abstract class AbstractFileReader extends AbstractReader {
             
             try {
                 line = reader.readLine();
+                counter++;
                 if (line == null) {
                     // we are done with this file
                     reader.close();
@@ -144,7 +155,8 @@ public abstract class AbstractFileReader extends AbstractReader {
                         return false; // all done then
                     } else {
                         // read the first line from the next file
-                        line = reader.readLine(); 
+                        line = reader.readLine();
+                        counter = 1;
                     }
                 }
             } catch (Exception e) {
@@ -163,7 +175,7 @@ public abstract class AbstractFileReader extends AbstractReader {
 
             // get the raw fields from the line
             String tokens[] = splitFields(line);
-            if (tokens.length != format.getFields().size()) {
+            if (tokens.length != format.getFields().size() && !autoID) {
                 throw new SessionInternalError("Mismatch of number of fields between " +
                         "the format and the file for line " + line + " Expected " + 
                         format.getFields().size() + " found " + tokens.length);
@@ -177,7 +189,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                     }
                     // remove first and last char, if they are quotes
                     if ((tokens[f].charAt(0) == '\"' || tokens[f].charAt(0) == '\'') &&
-                            (tokens[f].charAt(tokens[f].length() - 1) == '\"' ||tokens[f].charAt(tokens[f].length() - 1) == '\'')) {
+                            (tokens[f].charAt(tokens[f].length() - 1) == '\"' || tokens[f].charAt(tokens[f].length() - 1) == '\'')) {
                         tokens[f] = tokens[f].substring(1, tokens[f].length() - 1);
                     }
                 }
@@ -187,21 +199,29 @@ public abstract class AbstractFileReader extends AbstractReader {
             Record record = new Record();
             int tkIdx = 0;
             for (FormatField field:format.getFields()) {
+
+                if (autoID && field.getIsKey()) {
+                    record.addField(new PricingField(field.getName(),
+                                files[fileIndex].getName() + "-" + counter ), field.getIsKey());
+                    continue;
+                }
+                
                 switch (PricingField.mapType(field.getType())) {
                     case STRING:
                         record.addField(new PricingField(field.getName(), 
                                 tokens[tkIdx++]), field.getIsKey());
                         break;
                     case INTEGER:
+                        String intStr = tokens[tkIdx++].trim();
                         if (field.getDurationFormat() != null && field.getDurationFormat().length() > 0) {
                             // requires hour/minute conversion
-                            record.addField(new PricingField(field.getName(), 
-                                    convertDuration(tokens[tkIdx++], field.getDurationFormat())),
+                            record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
+                                    convertDuration(intStr, field.getDurationFormat()) : null),
                                     	field.getIsKey());
                         } else {
                             try {
-                                record.addField(new PricingField(field.getName(), 
-                                        Integer.valueOf(tokens[tkIdx++].trim())), field.getIsKey());
+                                record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
+                                        Integer.valueOf(intStr.trim()) : null), field.getIsKey());
                             } catch (NumberFormatException e) {
                                 throw new SessionInternalError("Converting to integer " + field + 
                                         " line " + line, AbstractFileReader.class, e);
@@ -210,8 +230,9 @@ public abstract class AbstractFileReader extends AbstractReader {
                         break;
                     case DATE:
                         try {
-                            record.addField(new PricingField(field.getName(), 
-                                    dateFormat.parse(tokens[tkIdx++])), field.getIsKey());
+                            String dateStr = tokens[tkIdx++];
+                            record.addField(new PricingField(field.getName(), dateStr.length() > 0 ?
+                                    dateFormat.parse(dateStr) : null), field.getIsKey());
                         } catch (ParseException e) {
                             throw new SessionInternalError("Using format: " + dateFormat + "[" +
                                     parameters.get("date_format") + "]", 
@@ -219,8 +240,9 @@ public abstract class AbstractFileReader extends AbstractReader {
                         }
                         break;
                     case FLOAT:
-                        record.addField(new PricingField(field.getName(), 
-                                Double.valueOf(tokens[tkIdx++].trim())), field.getIsKey());
+                        String floatStr = tokens[tkIdx++].trim();
+                        record.addField(new PricingField(field.getName(), floatStr.length() > 0 ?
+                                Double.valueOf(floatStr) : null), field.getIsKey());
                         break;
                 }
             }

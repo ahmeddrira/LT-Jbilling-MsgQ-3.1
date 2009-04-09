@@ -360,8 +360,8 @@ public class MediationSessionBean implements SessionBean {
                 recordLine.setDescription(processTask.getDescription());
 
                 recordLine = new MediationRecordLineDAS().save(recordLine);
-                // linke to the parent record
-                record.getLines().add(recordLine);
+                // no need to link to the parent record. The association is completed already
+                // record.getLines().add(recordLine);
             }
         }
 

@@ -64,6 +64,7 @@ public class BasicEmailNotificationTask extends PluggableTask
     public static final String PARAMETER_REPLYTO = "reply_to";
     public static final String PARAMETER_BCCTO = "bcc_to";
     public static final String PARAMETER_HTML = "html";
+    public static final String PARAMETER_TLS = "tls";
 
     private static final Logger LOG = Logger.getLogger(BasicEmailNotificationTask.class);
 
@@ -75,6 +76,7 @@ public class BasicEmailNotificationTask extends PluggableTask
     private String password;
     private String replyTo;
     private boolean doHTML;
+    private boolean tls;
     
     private void init() {
                 // set some parameters
@@ -104,6 +106,7 @@ public class BasicEmailNotificationTask extends PluggableTask
 
         doHTML = Boolean.valueOf((String) parameters.get(PARAMETER_HTML));
 
+        tls = Boolean.valueOf((String) parameters.get(PARAMETER_TLS));
     }
 
     public void deliver(UserDTO user, MessageDTO message)
@@ -133,6 +136,9 @@ public class BasicEmailNotificationTask extends PluggableTask
         sender.setPort(port);
         if (username != null && username.length() > 0) {
             sender.getJavaMailProperties().setProperty("mail.smtp.auth", "true");
+        }
+        if (tls) {
+            sender.getJavaMailProperties().setProperty("mail.smtp.starttls.enable", "true");
         }
 
         MimeMessage mimeMsg = sender.createMimeMessage();

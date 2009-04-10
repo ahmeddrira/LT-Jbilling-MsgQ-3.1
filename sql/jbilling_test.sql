@@ -10849,6 +10849,12 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 81	5	description	1	Expired
 81	6	description	1	Nonsubscriber
 81	7	description	1	Discontinued
+88	1	description	1	Active
+88	2	description	1	Inactive
+88	3	description	1	Pending Active
+88	4	description	1	Pending Inactive
+88	5	description	1	Failed
+88	6	description	1	Unavailable
 \.
 
 
@@ -11080,6 +11086,8 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 84	mediation_record	1
 85	blacklist	1
 86	mediation_record_line	1
+87	generic_status	26
+88	order_line_provisioning_status	1
 \.
 
 
@@ -14507,6 +14515,7 @@ COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM st
 45	0	\N	\N
 46	0	\N	\N
 47	0	\N	\N
+48	1	\N	\N
 \.
 
 

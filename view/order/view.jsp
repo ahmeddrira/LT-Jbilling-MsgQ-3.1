@@ -46,14 +46,6 @@
 		</td>
 	</tr>
 	<tr class="infoA">
-		<td class="infoprompt"><bean:message key="order.prompt.promotion"/></td>
-		<td class="infodata">
-			<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' 
-				                    property="promoCode" 
-				                    scope="session"/>
-		</td>
-	</tr>
-	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.activeSince"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' 
@@ -62,7 +54,7 @@
 				                    formatKey="format.date"/>
 		</td>
 	</tr>
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.activeUntil"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' 
@@ -71,7 +63,7 @@
 				                    formatKey="format.date"/>
 		</td>
 	</tr>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="order.prompt.cycleStart"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_SUMMARY%>' 

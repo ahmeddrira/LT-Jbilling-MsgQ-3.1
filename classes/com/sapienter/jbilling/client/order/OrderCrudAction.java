@@ -53,8 +53,6 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
 
     private static final String FORWARD_ITEMS = "order_items";
 
-    private static final String FIELD_PROMO_CODE = "promotion_code";
-
     private static final String FIELD_BILLING_TYPE = "billingType";
 
     private static final String FIELD_ANTICIPATE_PERIODS = "anticipate_periods";
@@ -108,9 +106,6 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
         myForm.set(FIELD_ANTICIPATE_PERIODS, getStringOrNull(dto.getAnticipatePeriods()));
         myForm.set(FIELD_BILLING_TYPE, dto.getBillingTypeId());
         myForm.set(FIELD_IS_CURRENT, isIntegerTrue(dto.getIsCurrent()));
-        if (dto.getPromoCode() != null) {
-            myForm.set(FIELD_PROMO_CODE, dto.getPromoCode());
-        }
 
         return new ForwardAndMessage(FORWARD_EDIT);
     }
@@ -140,7 +135,6 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
         OrderBillingTypeDTO type = new OrderBillingTypeDTO();
         type.setId((Integer) myForm.get(FIELD_BILLING_TYPE));
         summary.setOrderBillingType(type);
-        summary.setPromoCode((String) myForm.get(FIELD_PROMO_CODE));
 
         summary.setNotify(fromCheckBox(FIELD_NOTIFY));
         summary.setDfFm(fromCheckBox(FIELD_DF_FM));

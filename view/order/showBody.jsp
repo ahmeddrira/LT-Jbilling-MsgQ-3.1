@@ -83,15 +83,6 @@
 		</td>
 	</tr>
 	<tr class="infoA">
-		<td class="infoprompt"><bean:message key="order.prompt.promotion"/></td>
-		<td class="infodata">
-			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
-				                    property="promoCode" 
-				                    scope="session"/>
-		</td>
-	</tr>
-	
-	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.activeSince"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -100,7 +91,7 @@
 				                    formatKey="format.date"/>
 		</td>
 	</tr>
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.activeUntil"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -109,7 +100,7 @@
 				                    formatKey="format.date"/>
 		</td>
 	</tr>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="user.prompt.number"/></td>
 		<td class="infodata">
 			<%-- customers don't see a link to themselves --%>
@@ -138,7 +129,7 @@
 			
 		</td>
 	</tr>
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="user.prompt.username"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -146,7 +137,7 @@
 				                    scope="session"/>
 		</td>
 	</tr>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="order.prompt.created"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -155,7 +146,7 @@
 				                    formatKey="format.timestamp"/>
 		</td>
 	</tr>
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.nextBillableDay"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -164,7 +155,7 @@
 				                    formatKey="format.date"/>
 		</td>
 	</tr>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="order.prompt.createBy"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -172,7 +163,7 @@
 				                    scope="session" />
 		</td>
 	</tr>
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="currency.external.prompt.name"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -180,7 +171,7 @@
 				                    scope="session"/>
 		</td>
 	</tr>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="order.prompt.notify"/></td>
 		<td class="infodata">
 			<logic:equal name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -202,7 +193,7 @@
 			</logic:notPresent>			
 		</td>
 	</tr>
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.notificationStep"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -210,7 +201,7 @@
 				                    scope="session"/>
 		</td>
 	</tr>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="order.prompt.lastNotified"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -220,7 +211,7 @@
 		</td>
 	</tr>
 
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="invoice.dueDate.prompt"/></td>
 		<td class="infodata">
 	      <table><tr>
@@ -251,7 +242,7 @@
 			beanName="preference"/> 
 	<logic:equal name="preference" value="1">
 
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="process.configuration.prompt.df_fm"/></td>
 		<td class="infodata">
 			<logic:equal name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -279,7 +270,7 @@
 			beanName="preference"/> 
 	<logic:equal name="preference" value="1">
 
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.anticipate"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -294,7 +285,7 @@
 			beanName="preference"/> 
 	<logic:equal name="preference" value="1">
 
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="process.configuration.prompt.own_invoice"/></td>
 		<td class="infodata">
 			<logic:equal name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -323,7 +314,7 @@
 					 property="mainRoleId"
 					 scope="session"
 					 value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
-	<tr class="infoB">
+	<tr class="infoA">
 		<td class="infoprompt"><bean:message key="order.prompt.notes"/></td>
 		<td class="infodata">
 			<bean:write name='<%=Constants.SESSION_ORDER_DTO%>' 
@@ -332,7 +323,7 @@
 		</td>
 	</tr>
 	
-	<tr class="infoA">
+	<tr class="infoB">
 		<td class="infoprompt"><bean:message key="order.prompt.notesInInvoice"/></td>
 		<td class="infodata">
 			<logic:equal name='<%=Constants.SESSION_ORDER_DTO%>' 

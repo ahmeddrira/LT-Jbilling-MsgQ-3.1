@@ -92,17 +92,6 @@
 		        </logic:equal>
              </td>
 		</tr>
-		<tr class="form">
-			<td>
-				 <jbilling:help page="orders" anchor="promoCode">
-					 <img border="0" src="/billing/graphics/help.gif"/>
-				 </jbilling:help>
-			</td>
-			<td class="form_prompt"><bean:message key="order.prompt.promotion"/></td>
-			<td>
-				<html:text property="promotion_code"/>
-			</td>
-		</tr>
 
 		<jbilling:getPreference preferenceId='<%=Constants.PREFERENCE_USE_PRO_RATING%>'
 				beanName="preference"/> 

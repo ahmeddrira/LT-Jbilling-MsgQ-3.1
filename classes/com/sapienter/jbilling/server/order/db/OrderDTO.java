@@ -114,7 +114,6 @@ public class OrderDTO  implements java.io.Serializable {
      private String timeUnitStr = null;
      private String currencySymbol = null;
      private String currencyName = null;
-     private String promoCode = null;
      private BigDecimal total = null;
      private Vector<PricingField> pricingFields = null;
 
@@ -629,14 +628,6 @@ public class OrderDTO  implements java.io.Serializable {
     	return (getBaseUserByCreatedBy() == null) ? null : getBaseUserByCreatedBy().getId();
     }
 
-    @Transient
-    public String getPromoCode() {
-    	return promoCode;
-    }
-	public void setPromoCode(String promoCode) {
-		this.promoCode = promoCode;
-	}
-	
 	@Transient
 	public OrderLineDTO getLine(Integer itemId) {
 		for (OrderLineDTO line : lines) {

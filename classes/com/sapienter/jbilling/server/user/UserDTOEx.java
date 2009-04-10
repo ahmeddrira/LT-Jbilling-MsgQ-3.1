@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 
 /**
@@ -123,7 +124,8 @@ public final class UserDTOEx extends UserDTO {
         setLastStatusChange(dto.getLastStatusChange());
         setLastLogin(dto.getLastLogin());
         setUserName(dto.getUserName());
-        setFailedAttempts(dto.getFailedAttempts());        
+        setFailedAttempts(dto.getFailedAttempts());
+        setCurrency(dto.getCurrencyId() == null ? null : new CurrencyDTO(dto.getCurrencyId()));
         creditCard = dto.getCreditCard() == null ? null : new CreditCardDTO(dto.getCreditCard());
         mainRoleStr = dto.getRole();
         mainRoleId = dto.getMainRoleId();

@@ -75,7 +75,7 @@ public class WSTest extends TestCase {
             /*
              * Create - This passes the password validation routine.
              */
-            UserWS newUser = createUser(true, 43);
+            UserWS newUser = createUser(true, 43, null);
             Integer newUserId = newUser.getUserId();
             String newUserName = newUser.getUserName();
             assertNotNull("The user was not created", newUserId);
@@ -489,7 +489,7 @@ public class WSTest extends TestCase {
         }
     }
     
-    private UserWS createUser(boolean goodCC, Integer parentId) throws JbillingAPIException, IOException {
+    private UserWS createUser(boolean goodCC, Integer parentId, Integer currencyId) throws JbillingAPIException, IOException {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             
             /*
@@ -502,6 +502,7 @@ public class WSTest extends TestCase {
             newUser.setMainRoleId(new Integer(5));
             newUser.setParentId(parentId); // this parent exists
             newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+            newUser.setCurrencyId(currencyId);
             
             // add a contact
             ContactWS contact = new ContactWS();
@@ -579,6 +580,29 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
     	}
     }
+
+    public void testCurrency() {
+     	try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+            UserWS myUser = createUser(true, null, 11);
+            Integer myId = myUser.getUserId();
+            System.out.println("Checking currency of new user");
+            myUser = api.getUserWS(myId);
+            assertEquals("Currency should be A$", 11, myUser.getCurrencyId().intValue());
+            myUser.setCurrencyId(1);
+            System.out.println("Updating currency to US$");
+            myUser.setPassword(null); // otherwise it will try the encrypted password
+            api.updateUser(myUser);
+            System.out.println("Checking currency ...");
+            myUser = api.getUserWS(myId);
+            assertEquals("Currency should be US$", 1, myUser.getCurrencyId().intValue());
+            System.out.println("Removing");
+            api.deleteUser(myId);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
     
     // name changed so it is not called in normal test runs
     public void XXtestLoad() {
@@ -586,7 +610,7 @@ public class WSTest extends TestCase {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             for (int i = 0; i < 1000; i++) {
                 Random rnd = new Random();
-                UserWS newUser = createUser(rnd.nextBoolean(), null);
+                UserWS newUser = createUser(rnd.nextBoolean(), null, null);
                 OrderWS newOrder = getOrder();
                 // change the quantities for viarety
                 newOrder.getOrderLines()[0].setQuantity(rnd.nextInt(100) + 1);

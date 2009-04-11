@@ -191,6 +191,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         dto.setId(payment.getId());
+        dto.setCurrency(payment.getCurrency());
         paymentDas.save(payment);
         // add a log row for convenience
         UserDAS user = new UserDAS();

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -3068,6 +3068,8 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 1070	1	eee0f3c319c7bdaf6311559eec5058e1	0	1	1	14	1	2007-09-12 12:15:03.601	\N	\N	testUserName-1189624503486	0	1
 1071	1	eee0f3c319c7bdaf6311559eec5058e1	0	1	1	14	1	2007-09-12 12:15:04.028	\N	\N	testUserName-1189624503830	0	1
 1072	1	eee0f3c319c7bdaf6311559eec5058e1	0	1	1	14	1	2007-09-12 12:15:04.533	\N	\N	testUserName-1189624504355	0	1
+10730	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-04-08 22:00:53.823	\N	\N	payment-router-currency-1	0	2
+10731	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	11	2009-04-08 22:01:32.259	\N	\N	payment-router-currency-2	0	2
 \.
 
 
@@ -4132,6 +4134,8 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 1126	\N	123 Main Rd.	\N	Vancouver	BC	V6B2E2	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 1127	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	61	2	55512345	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 1128	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
+112500	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-1@test.com	2009-04-08 22:00:53.927	0	1	10730	4
+112501	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-2@test.com	2009-04-08 22:01:32.286	0	1	10731	4
 \.
 
 
@@ -6147,6 +6151,12 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 2047	3	1057	123.123.123.123	1
 2048	3	1128	123.123.123.123	1
 2049	3	1058	124.124.124.124	1
+202100	3	112500		0
+202101	2	112500	CURRENCY_ROUTER	0
+202102	1	112500		0
+202103	3	112501		0
+202104	2	112501	CURRENCY_ROUTER	0
+202105	1	112501		0
 \.
 
 
@@ -7184,6 +7194,8 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 7901	1122	2	10	1070	1
 7902	1123	2	10	1071	1
 7903	1124	2	10	1072	1
+790400	112500	2	10	10730	1
+790401	112501	2	10	10731	1
 \.
 
 
@@ -8452,6 +8464,8 @@ COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, dele
 1011	a14159733ae22ce5191aa6581adbba919b5a2c13644c41d8	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
 1012	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	ea4d589626fcac984227f4657e3ec7b3	2	0	\N	1
 1013	1411cc96f356985d8d08b6b6a0e64c3b898f4d626891ac18	\N	2100-09-12	\N	2	0	\N	1
+101300	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cfdb7296a638472486	2	0	\N	0
+101301	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cf6dfff96e1e08386c	2	0	\N	0
 \.
 
 
@@ -9516,6 +9530,8 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1059	1070	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1
 1060	1071	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1
 1061	1072	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1
+106200	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2
+106201	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2
 \.
 
 
@@ -11009,9 +11025,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 7	invoice_delivery_method	4
 8	entity_delivery_method_map	4
 9	user_status	9
-10	base_user	1073
 11	partner	1
-12	customer	1062
 13	item_type	22
 14	item	26
 15	item_price	16
@@ -11024,11 +11038,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 22	order_line	2076
 23	pluggable_task_type_category	10
 24	pluggable_task_type	20
-25	pluggable_task	51
-26	pluggable_task_parameter	70
-27	contact	1125
 28	contact_type	4
-29	contact_map	7904
 30	invoice_line_type	6
 31	paper_invoice_batch	1
 32	billing_process	32
@@ -11043,7 +11053,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 41	payment_result	5
 42	payment	16
 43	payment_info_cheque	14
-44	credit_card	1013
 45	user_credit_card_map	5
 46	event_log_module	11
 47	event_log_message	17
@@ -11075,7 +11084,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 73	report_type	10
 74	report_type_map	19
 75	ach	1
-76	contact_field	2021
 77	list_entity	15
 78	list_field_entity	15
 79	partner_range	1
@@ -11088,6 +11096,14 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 86	mediation_record_line	1
 87	generic_status	26
 88	order_line_provisioning_status	1
+25	pluggable_task	53
+10	base_user	1074
+12	customer	1063
+29	contact_map	7905
+27	contact	1126
+26	pluggable_task_parameter	76
+76	contact_field	2022
+44	credit_card	1014
 \.
 
 
@@ -14263,9 +14279,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 17	2	10	1	1
 18	2	12	2	1
 19	1	20	1	1
-20	1	21	3	1
 21	1	22	2	1
-22	1	21	4	1
 23	1	23	1	1
 31	1	26	1	1
 410	1	31	1	1
@@ -14280,6 +14294,10 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 480	1	44	1	1
 490	1	46	1	2
 500	1	47	1	1
+510	1	48	2	1
+520	1	49	3	1
+20	1	21	4	1
+22	1	21	5	1
 \.
 
 
@@ -14333,6 +14351,12 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 670	460	ip_address_ccf_id	3	\N	\N	1
 680	490	file	\N	provisioning_commands.pkg	\N	1
 690	23	item_type_id	\N	1	\N	1
+700	510	username	\N	test-username	\N	1
+710	510	password	\N	test-password	\N	1
+720	510	remove	\N	VOID	\N	1
+730	520	USD	\N	20	\N	1
+740	520	AUD	\N	22	\N	1
+750	21	CURRENCY_ROUTER	\N	520	\N	1
 \.
 
 
@@ -14362,7 +14386,6 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 19	6	com.sapienter.jbilling.server.pluggableTask.PaymentEmailAuthorizeNetTask	1
 20	10	com.sapienter.jbilling.server.pluggableTask.ProcessorEmailAlarmTask	3
 21	6	com.sapienter.jbilling.server.pluggableTask.PaymentFakeTask	0
-22	6	com.sapienter.jbilling.server.pluggableTask.PaymentRouterTask	2
 23	11	com.sapienter.jbilling.server.user.tasks.BasicSubscriptionStatusManagerTask	0
 24	6	com.sapienter.jbilling.server.user.tasks.PaymentACHCommerceTask	5
 25	12	com.sapienter.jbilling.server.payment.tasks.NoAsyncParameters	0
@@ -14386,6 +14409,9 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 45	15	com.sapienter.jbilling.server.mediation.task.MySQLReader	0
 46	17	com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask	0
 47	18	com.sapienter.jbilling.server.provisioning.task.TestExternalProvisioningTask	0
+22	6	com.sapienter.jbilling.server.payment.tasks.PaymentRouterCCFTask	2
+48	18	com.sapienter.jbilling.server.provisioning.task.CAIProvisioningTask	2
+49	6	com.sapienter.jbilling.server.payment.tasks.PaymentRouterCurrencyTask	2
 \.
 
 
@@ -17900,6 +17926,10 @@ COPY user_credit_card_map (user_id, credit_card_id) FROM stdin;
 1072	1012
 868	808
 1006	946
+10730	101300
+10730	101300
+10731	101301
+10731	101301
 \.
 
 
@@ -18917,6 +18947,8 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 1070	5
 1071	5
 1072	5
+10730	5
+10731	5
 \.
 
 

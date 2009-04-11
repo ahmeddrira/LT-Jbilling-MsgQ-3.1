@@ -332,4 +332,77 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+
+    /**
+     * Tests the PaymentRouterCurrencyTask. 
+     */
+    public void testPaymentRouterCurrencyTask() {
+        try {
+            final Integer USER_USD = 10730;
+            final Integer USER_AUD = 10731;
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create a new order
+            OrderWS order = new OrderWS();            
+            order.setUserId(USER_USD);
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(2);
+            order.setCurrencyId(new Integer(1));
+
+            // add a line
+            OrderLineWS lines[] = new OrderLineWS[1];
+            OrderLineWS line;
+            line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setQuantity(new Integer(1));
+            line.setItemId(new Integer(1));
+            line.setUseItem(new Boolean(true));
+            lines[0] = line;
+
+            order.setOrderLines(lines);
+
+            // create the order and invoice it
+            System.out.println("Creating and invoicing order ...");
+            Integer invoiceIdUSD = api.createOrderAndInvoice(order);
+            Integer orderIdUSD = api.getLastOrders(USER_USD, 1)[0];
+
+            // try paying the invoice in USD
+            System.out.println("Making payment in USD...");
+            PaymentAuthorizationDTOEx authInfo = api.payInvoice(invoiceIdUSD);
+
+            assertTrue("USD Payment should be successful", 
+                    authInfo.getResult().booleanValue());
+            assertEquals("Should be processed by 'first_fake_processor'", 
+                    authInfo.getProcessor(), "first_fake_processor");
+
+            // create a new order in AUD and invoice it
+            order.setUserId(USER_AUD);
+            order.setCurrencyId(11);
+
+            System.out.println("Creating and invoicing order ...");
+            Integer invoiceIdAUD = api.createOrderAndInvoice(order);
+            Integer orderIdAUD = api.getLastOrders(USER_AUD, 1)[0];
+
+            // try paying the invoice in AUD
+            System.out.println("Making payment in AUD...");
+            authInfo = api.payInvoice(invoiceIdAUD);
+
+            assertTrue("AUD Payment should be successful", 
+                    authInfo.getResult().booleanValue());
+            assertEquals("Should be processed by 'second_fake_processor'", 
+                    authInfo.getProcessor(), "second_fake_processor");
+
+            // remove invoices and orders
+            System.out.println("Deleting invoices and orders.");
+            api.deleteInvoice(invoiceIdUSD);
+            api.deleteInvoice(invoiceIdAUD);
+            api.deleteOrder(orderIdUSD);
+            api.deleteOrder(orderIdAUD);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

@@ -190,6 +190,7 @@ public class WSTest  extends TestCase {
             retOrderLine.setQuantity(new Integer(0));
             api.updateOrderLine(retOrderLine);
             int totalLines = retOrder.getOrderLines().length;
+            pause(2000); // pause while provisioning status is being updated
             retOrder = api.getOrder(retOrder.getId());
             // the order has to have one less line now
             assertEquals("order should have one less line", totalLines, 
@@ -846,6 +847,14 @@ public class WSTest  extends TestCase {
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
+        }
+    }
+
+    private void pause(long t) {
+        System.out.println("pausing for " + t + " ms...");
+        try {
+            Thread.sleep(t);
+        } catch (InterruptedException e) {
         }
     }
 }

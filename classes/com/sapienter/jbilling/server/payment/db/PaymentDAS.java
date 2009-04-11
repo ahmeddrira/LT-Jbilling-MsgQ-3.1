@@ -31,6 +31,7 @@ import org.hibernate.criterion.Restrictions;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
@@ -54,7 +55,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 		payment.setBaseUser(new UserDAS().find(userId));
 		payment.setAttempt(attempt);
 		payment.setPaymentResult(paymentResult);
-		payment.setCurrency(currency);
+		payment.setCurrency(new CurrencyDAS().find(currency.getId()));
 		payment.setCreateDatetime(Calendar.getInstance().getTime());
 		payment.setDeleted(new Integer(0));
 		payment.setIsRefund(new Integer(0));

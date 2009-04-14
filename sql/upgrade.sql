@@ -2,6 +2,119 @@
 -- to the code currently at the tip of the trunk.
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
 
+alter table item add optlock integer;
+update item set optlock = 1;
+alter table item_price add optlock integer;
+update item_price set optlock = 1;
+alter table item_type add optlock integer;
+update item_type set optlock = 1;
+alter table item_user_price add optlock integer;
+update item_user_price set optlock = 1;
+alter table list add optlock integer;
+update list set optlock = 1;
+alter table list_entity add optlock integer;
+update list_entity set optlock = 1;
+alter table list_field add optlock integer;
+update list_field set optlock = 1;
+alter table list_field_entity add optlock integer;
+update list_field_entity set optlock = 1;
+alter table order_line add provisioning_status integer;
+alter table order_line add provisioning_request_id VARCHAR(50);
+CREATE TABLE mediation_record_line
+(
+    id INTEGER NOT NULL,
+    mediation_record_id VARCHAR(100) NOT NULL,
+    order_line_id INTEGER NOT NULL,
+    event_date TIMESTAMP NOT NULL,
+    amount DOUBLE PRECISION NOT NULL,
+    quantity DOUBLE PRECISION NOT NULL,
+    description VARCHAR(200),
+    OPTLOCK INTEGER NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX ix_mrl_order_line ON mediation_record_line (order_line_id);
+
+ALTER TABLE mediation_record_line
+    ADD CONSTRAINT mediation_record_line_FK_1 FOREIGN KEY (mediation_record_id)
+    REFERENCES mediation_record (id_key)
+;
+ALTER TABLE mediation_record_line
+    ADD CONSTRAINT mediation_record_line_FK_2 FOREIGN KEY (order_line_id)
+    REFERENCES order_line (id)
+;
+INSERT INTO event_log_message (id) VALUES (29);
+INSERT INTO event_log_message (id) VALUES (30);
+INSERT INTO event_log_message (id) VALUES (31);
+INSERT INTO event_log_module (id) VALUES (15);
+INSERT INTO jbilling_table (id,name,next_id)
+    VALUES (86,'mediation_record_line',1);
+
+INSERT INTO pluggable_task_type (id,category_id,class_name,min_parameters)
+    VALUES (44,15,'com.sapienter.jbilling.server.mediation.task.JDBCReader',0);
+INSERT INTO pluggable_task_type (id,category_id,class_name,min_parameters)
+    VALUES (45,15,'com.sapienter.jbilling.server.mediation.task.MySQLReader',0);
+INSERT INTO pluggable_task_type (id,category_id,class_name,min_parameters)
+    VALUES (46,17,'com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask',0);
+
+INSERT INTO preference_type (id,int_def_value) VALUES (47,0);
+
+alter table notification_message add optlock integer;
+update notification_message set optlock = 1;
+alter table notification_message_arch add optlock integer;
+update notification_message_arch set optlock = 1;
+alter table notification_message_arch_line add optlock integer;
+update notification_message_arch_line set optlock = 1;
+alter table notification_message_line add optlock integer;
+update notification_message_line set optlock = 1;
+alter table notification_message_section add optlock integer;
+update notification_message_section set optlock = 1;
+alter table notification_message_type add optlock integer;
+update notification_message_type set optlock = 1;
+
+INSERT INTO event_log_message (id) VALUES (32);
+
+
+alter table notification_message_type drop column sections;
+alter table report add optlock integer;
+update report set optlock = 1;
+alter table report_field add optlock integer;
+update report_field set optlock = 1;
+alter table report_type add optlock integer;
+update report_type set optlock = 1;
+alter table report_user add optlock integer;
+update report_user set optlock = 1;
+
+
+alter table ach add optlock integer;
+update ach set optlock = 1;
+alter table ageing_entity_step add optlock integer;
+update ageing_entity_step set optlock = 1;
+alter table billing_process add optlock integer;
+update billing_process set optlock = 1;
+alter table billing_process_configuration add optlock integer;
+update billing_process_configuration set optlock = 1;
+alter table process_run add optlock integer;
+update process_run set optlock = 1;
+alter table process_run_total add optlock integer;
+update process_run_total set optlock = 1;
+alter table process_run_total_pm add optlock integer;
+update process_run_total_pm set optlock = 1;
+alter table invoice add optlock integer;
+update invoice set optlock = 1;
+alter table invoice_line add optlock integer;
+update invoice_line set optlock = 1;
+alter table payment add optlock integer;
+update payment set optlock = 1;
+alter table payment_authorization add optlock integer;
+update payment_authorization set optlock = 1;
+alter table payment_info_cheque add optlock integer;
+update payment_info_cheque set optlock = 1;
+alter table payment_invoice add optlock integer;
+update payment_invoice set optlock = 1;
+alter table paper_invoice_batch add optlock integer;
+update paper_invoice_batch set optlock = 1;
+
+
 -- PaymentRouterTask has become PaymentRouterCCFTask
 UPDATE pluggable_task_type 
 SET class_name = 'com.sapienter.jbilling.server.payment.tasks.PaymentRouterCCFTask' 

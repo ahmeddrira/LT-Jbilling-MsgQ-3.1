@@ -30,11 +30,10 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.server.list.ListSession;
-import com.sapienter.jbilling.server.list.ListSessionHome;
+import com.sapienter.jbilling.server.list.ListSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.OptionDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Prepares the a bean to make available to the page the collection
@@ -92,13 +91,8 @@ public class GetOptionsTag extends TagSupport {
         String type = null;
 
 		try {
-            // get the the jndi factory
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ListSessionHome listHome =
-                    (ListSessionHome) EJBFactory.lookUpHome(
-                    ListSessionHome.class,
-                    ListSessionHome.JNDI_NAME);
-            ListSession remoteList = listHome.create();
+            ListSessionBean remoteList = (ListSessionBean) Context.getBean(
+                    Context.Name.LIST_SESSION);
   
             if (countries.booleanValue()) {
                 type = "countries";

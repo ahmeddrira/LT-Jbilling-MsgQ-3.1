@@ -18,6 +18,7 @@
     <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
     <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
     <bean id="customerSession" class="com.sapienter.jbilling.server.customer.CustomerSessionBean"/>
+    <bean id="listSession" class="com.sapienter.jbilling.server.list.ListSessionBean"/>
 
     <!-- Data Acess Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"

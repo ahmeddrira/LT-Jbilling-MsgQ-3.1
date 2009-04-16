@@ -35,16 +35,15 @@ import org.apache.struts.action.ActionErrors;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.list.ListDTO;
-import com.sapienter.jbilling.server.list.ListSession;
-import com.sapienter.jbilling.server.list.ListSessionHome;
+import com.sapienter.jbilling.server.list.ListSessionBean;
 import com.sapienter.jbilling.server.list.PagedListDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Prepares the result set so the InsertDataRowTag can then render
@@ -91,16 +90,10 @@ public class GenericListTag extends ListTagBase {
   
         // Now I'll call the session bean to get the CachedRowSet with
         // the results of the query
-        JNDILookup EJBFactory;
-        ListSessionHome listHome;
-        ListSession listSession;
+        ListSessionBean listSession;
         try {
-            EJBFactory= JNDILookup.getFactory(false);
-            listHome = (ListSessionHome) EJBFactory.lookUpHome(
-                ListSessionHome.class,
-                ListSessionHome.JNDI_NAME);
-
-            listSession = listHome.create();
+            listSession = (ListSessionBean) Context.getBean(
+                    Context.Name.LIST_SESSION);
         } catch (Exception e) {
             throw new JspException(e);
         }

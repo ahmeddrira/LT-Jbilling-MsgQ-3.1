@@ -42,8 +42,8 @@ import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
-import com.sapienter.jbilling.server.list.ListSession;
-import com.sapienter.jbilling.server.list.ListSessionHome;
+import com.sapienter.jbilling.server.list.ListSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -79,11 +79,8 @@ public class Trigger {
                 InvoiceSessionHome.class,
                 InvoiceSessionHome.JNDI_NAME);
             InvoiceSession remoteInvoice = invoiceHome.create();
-            ListSessionHome listHome =
-                (ListSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                ListSessionHome.class,
-                ListSessionHome.JNDI_NAME);
-            ListSession remoteList = listHome.create();
+            ListSessionBean remoteList = (ListSessionBean) Context.getBean(
+                    Context.Name.LIST_SESSION);
 			
             // determine the date for this run
 			Date today = Calendar.getInstance().getTime();

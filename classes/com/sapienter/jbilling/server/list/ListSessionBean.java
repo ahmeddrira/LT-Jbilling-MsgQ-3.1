@@ -26,8 +26,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
-
 import org.apache.log4j.Logger;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import sun.jdbc.rowset.CachedRowSet;
 
@@ -47,50 +50,24 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.GetSelectableOptions;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * 
  * Generic list provider.
  * 
  * @author emilc
- * @ejb:bean name="com/sapienter/jbilling/server/util/ListSession"
- *           display-name="The list session facade" type="Stateless"
- *           transaction-type="Container" view-type="remote"
- *           jndi-name="com/sapienter/jbilling/server/util/ListSession"
- * 
  **/
+@Transactional( propagation = Propagation.REQUIRED )
+public class ListSessionBean {
 
-public class ListSessionBean implements javax.ejb.SessionBean {
+    private static final Logger LOG = Logger.getLogger(ListSessionBean.class);
 
-    Logger log = null;
-
-    public void ejbActivate() {
-    }
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
-    public void ejbCreate() {
-    }
-
-    public void ejbPassivate() {
-        log.debug("getting passivated");
-    }
-
-    public void ejbRemove() {
-        log.debug("getting removed");
-    }
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public CachedRowSet getList(String type, Hashtable parameters)
             throws SessionInternalError {
 
         CachedRowSet retValue = null;
         try {
-            log.debug("List requested for type" + type + " param = "
+            LOG.debug("List requested for type" + type + " param = "
                     + parameters);
 
             if (type.equals(Constants.LIST_TYPE_CUSTOMER)) {
@@ -201,21 +178,18 @@ public class ListSessionBean implements javax.ejb.SessionBean {
                 Integer partnerId = (Integer) parameters.get("partnerId");
                 retValue = list.getPayoutList(partnerId);
             } else {
-                log.error("list type " + type + " is not supported");
+                LOG.error("list type " + type + " is not supported");
                 throw new Exception("list type " + type + " is not supported");
             }
 
         } catch (Exception e) {
-            log.error("Exception retreiving list " + type, e);
+            LOG.error("Exception retreiving list " + type, e);
             throw new SessionInternalError("Generic list");
         }
 
         return retValue;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public ListDTO getDtoList(String type, Hashtable parameters)
             throws SessionInternalError {
         ListDTO retValue;
@@ -232,7 +206,7 @@ public class ListSessionBean implements javax.ejb.SessionBean {
                         + " is not supported");
             }
         } catch (Exception e) {
-            log.error("Exception retreiving list " + type, e);
+            LOG.error("Exception retreiving list " + type, e);
             throw new SessionInternalError("Generic list");
         }
 
@@ -243,12 +217,10 @@ public class ListSessionBean implements javax.ejb.SessionBean {
      * This really doesn't belong to the list session bean, but it needs some
      * remote interface, so might as well put it here. All the real code it in
      * GetSelectableOptions.java
-     * 
-     * @ejb:interface-method view-type="remote"
      */
     public Collection getOptions(String type, Integer languageId,
             Integer entityId, Integer executorType) throws SessionInternalError {
-        log.debug("getting option " + type);
+        LOG.debug("getting option " + type);
         return GetSelectableOptions.getOptions(type, languageId, entityId,
                 executorType);
     }
@@ -258,22 +230,17 @@ public class ListSessionBean implements javax.ejb.SessionBean {
      * as an application wide object for reference
      * 
      * @return
-     * @ejb:interface-method view-type="remote"
      */
     public CurrencyDTO[] getCurrencySymbolsMap() throws SessionInternalError {
         try {
             CurrencyBL currency = new CurrencyBL();
             CurrencyDTO[] retValue = currency.getSymbols();
-            log.debug("symbols total = " + retValue.length + " content="
+            LOG.debug("symbols total = " + retValue.length + " content="
                     + retValue);
             return retValue;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }
-
-    public void setSessionContext(javax.ejb.SessionContext sessionContext) {
-        log = Logger.getLogger(ListSessionBean.class);
     }
 
     /*
@@ -282,9 +249,6 @@ public class ListSessionBean implements javax.ejb.SessionBean {
      * @author Emil
      */
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void updateStatistics() throws SessionInternalError {
         try {
             ListBL list = new ListBL();
@@ -294,9 +258,6 @@ public class ListSessionBean implements javax.ejb.SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public CachedRowSet getPage(Integer start, Integer end, Integer size,
             Integer listId, Integer entityId, Boolean direction,
             Integer fieldId, Hashtable parameters) throws SessionInternalError {
@@ -309,9 +270,6 @@ public class ListSessionBean implements javax.ejb.SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public CachedRowSet search(String start, String end, Integer fieldId,
             Integer listId, Integer entityId, Hashtable parameters)
             throws SessionInternalError {
@@ -324,9 +282,6 @@ public class ListSessionBean implements javax.ejb.SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public PagedListDTO getPagedListDTO(Integer listId, String legacyName,
             Integer entityId, Integer userId) throws SessionInternalError {
         if (listId == null && legacyName == null) {
@@ -363,7 +318,7 @@ public class ListSessionBean implements javax.ejb.SessionBean {
             ListFieldDTO[] arr = new ListFieldDTO[fields.size()];
             retValue.setFields((ListFieldDTO[]) orderedFields.toArray(arr));
             
-            log.debug("There are " + retValue.getFields().length
+            LOG.debug("There are " + retValue.getFields().length
                     + " searchable fields");
             // see if there's a count
             ListEntityBL eBl = new ListEntityBL();

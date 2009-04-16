@@ -29,11 +29,9 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.client.item.CurrencyArrayWrap;
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.list.ListSession;
-import com.sapienter.jbilling.server.list.ListSessionHome;
-
+import com.sapienter.jbilling.server.list.ListSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * 
@@ -60,13 +58,8 @@ public class TriggerHelperServlet extends HttpServlet {
         ServletContext context = config.getServletContext();
         LOG.debug("Loadding application currency symbols");
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);            
-            ListSessionHome listHome =
-                    (ListSessionHome) EJBFactory.lookUpHome(
-                    ListSessionHome.class,
-                    ListSessionHome.JNDI_NAME);
-
-            ListSession myRemoteSession = listHome.create();
+            ListSessionBean myRemoteSession = (ListSessionBean) Context.getBean(
+                    Context.Name.LIST_SESSION);
             context.setAttribute(Constants.APP_CURRENCY_SYMBOLS, 
                     new CurrencyArrayWrap(
                             myRemoteSession.getCurrencySymbolsMap()));

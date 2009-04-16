@@ -34,6 +34,7 @@ public class Context {
     public enum Name {
         ITEM_SESSION, 
         NOTIFICATION_SESSION,
+        CUSTOMER_SESSION,
         PROVISIONING,
         VELOCITY,
         DATA_SOURCE,
@@ -52,6 +53,7 @@ public class Context {
         // those that act as session facade, mostly for transaction demarcation
         springBeans.put(Name.ITEM_SESSION, "itemSession");
         springBeans.put(Name.NOTIFICATION_SESSION, "notificationSession");
+        springBeans.put(Name.CUSTOMER_SESSION, "customerSession");
 
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");

@@ -41,17 +41,17 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.CustomerSession;
-import com.sapienter.jbilling.interfaces.CustomerSessionHome;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * All the parameters of the list have to come from the request (hidden fields
@@ -310,11 +310,8 @@ public class GenericListAction extends Action {
                     // the user list adds two objects to the session, the
                     // contact dto and the user id selected, that's why it
                     // has specific code here
-                    CustomerSessionHome customerHome =
-                            (CustomerSessionHome) EJBFactory.lookUpHome(
-                            CustomerSessionHome.class,
-                            CustomerSessionHome.JNDI_NAME);
-                    CustomerSession remoteCustomer = customerHome.create();
+                    CustomerSessionBean remoteCustomer = (CustomerSessionBean) 
+                            Context.getBean(Context.Name.CUSTOMER_SESSION);
                     ContactDTO info = remoteCustomer.getPrimaryContactDTO(selectionId);
                     session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                     		info);

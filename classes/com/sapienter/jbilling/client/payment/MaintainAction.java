@@ -39,12 +39,11 @@ import org.apache.struts.action.ActionMessages;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CustomerSession;
-import com.sapienter.jbilling.interfaces.CustomerSessionHome;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
+import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -272,12 +271,9 @@ public class MaintainAction extends Action {
                     // now the user
                     session.setAttribute(Constants.SESSION_USER_ID, 
                             dto.getUserId());
-                    CustomerSessionHome userHome =
-                            (CustomerSessionHome) EJBFactory.lookUpHome(
-                            CustomerSessionHome.class,
-                            CustomerSessionHome.JNDI_NAME);
     
-                    CustomerSession userSession = userHome.create();
+                    CustomerSessionBean userSession = (CustomerSessionBean) 
+                            Context.getBean(Context.Name.CUSTOMER_SESSION);
                     session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                             userSession.getPrimaryContactDTO(dto.getUserId()));
                 

@@ -20,46 +20,21 @@
 
 package com.sapienter.jbilling.server.customer;
 
-import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import org.apache.log4j.Logger;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 
-/**
- * @ejb:bean name="CustomerSession"
- *           display-name="The customer session facade"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="remote"
- *           jndi-name="com/sapienter/jbilling/server/item/CustomerSession"
- * 
- */
-public class CustomerSessionBean implements SessionBean {
-    // -------------------------------------------------------------------------
-    // Static
-    // -------------------------------------------------------------------------
-    static Logger log = null;
-    /**
-    *
-    * @ejb:create-method view-type="remote"
-    */
-    public void ejbCreate() throws CreateException {
-        log = Logger.getLogger(CustomerSessionBean.class);
+@Transactional( propagation = Propagation.REQUIRED )
+public class CustomerSessionBean {
 
-    }
+    private static final Logger LOG = Logger.getLogger(
+            CustomerSessionBean.class);
 
-
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
 	public ContactDTOEx getPrimaryContactDTO(Integer userId)
 			throws SessionInternalError {
 	    try {
@@ -67,39 +42,8 @@ public class CustomerSessionBean implements SessionBean {
             bl.set(userId);
 	    	return bl.getDTO();
 	    } catch (Exception e) {
-            log.error("Exception retreiving the customer contact", e);
+            LOG.error("Exception retreiving the customer contact", e);
             throw new SessionInternalError("Customer primary contact");
 	    }
 	}
-	
-	// EJB Callbacks
-
-    /** 
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-     */
-    public void setSessionContext(SessionContext arg0)
-        throws EJBException, RemoteException {
-        log = Logger.getLogger(CustomerSessionBean.class);
-
-    }
-
 }

@@ -52,13 +52,13 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormHelper;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.CustomerSession;
-import com.sapienter.jbilling.interfaces.CustomerSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
+import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -185,7 +185,6 @@ public class ReviewOrderAction extends Action {
             } else if (action.equals("read")) {
                 // get the order information from the server and make it
                 // available to in the session
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
                 Integer orderId = (request.getParameter("id") == null) 
                         ? (Integer) session.getAttribute(
                             Constants.SESSION_LIST_ID_SELECTED)
@@ -209,12 +208,8 @@ public class ReviewOrderAction extends Action {
                 // the user has to be also in the session
                 session.setAttribute(Constants.SESSION_USER_ID, 
                         orderDto.getUser().getUserId());
-                CustomerSessionHome userHome =
-                        (CustomerSessionHome) EJBFactory.lookUpHome(
-                        CustomerSessionHome.class,
-                        CustomerSessionHome.JNDI_NAME);
-    
-                CustomerSession userSession = userHome.create();
+                CustomerSessionBean userSession = (CustomerSessionBean) 
+                        Context.getBean(Context.Name.CUSTOMER_SESSION);
                 // this is needed for the customer display
                 session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                         userSession.getPrimaryContactDTO(orderDto.getUser().getUserId()));

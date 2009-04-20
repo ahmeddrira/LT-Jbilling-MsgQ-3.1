@@ -40,9 +40,8 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.list.ListSessionBean;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -64,11 +63,8 @@ public class Trigger {
 			    BillingProcessSessionHome.class,
 			    BillingProcessSessionHome.JNDI_NAME);
 			remoteBillingProcess = billingProcessHome.create();
-            UserSessionHome userHome =
-                (UserSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                UserSessionHome.class,
-                UserSessionHome.JNDI_NAME);
-            UserSession remoteUser = userHome.create();
+            IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             OrderSessionHome orderHome =
                 (OrderSessionHome) JNDILookup.getFactory(true).lookUpHome(
                 OrderSessionHome.class,

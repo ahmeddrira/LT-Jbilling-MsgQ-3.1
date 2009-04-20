@@ -362,7 +362,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
     public MessageDTO getForgetPasswordEmailMessage(Integer entityId,
             Integer userId, Integer languageId) throws SessionInternalError,
-            NotificationNotFoundException, NamingException {
+            NotificationNotFoundException {
         MessageDTO message = initializeMessage(entityId, userId);
 
         message.setTypeId(MessageDTO.TYPE_FORGETPASSWORD_EMAIL);

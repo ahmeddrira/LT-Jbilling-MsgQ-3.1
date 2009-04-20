@@ -44,13 +44,12 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -134,13 +133,8 @@ public class NewEntityAction extends Action {
             user.setCustomer(cust);
             
             try {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);            
-                UserSessionHome UserHome =
-                        (UserSessionHome) EJBFactory.lookUpHome(
-                        UserSessionHome.class,
-                        UserSessionHome.JNDI_NAME);
-
-                UserSession userSession = UserHome.create();
+                IUserSessionBean userSession = (IUserSessionBean) 
+                        Context.getBean(Context.Name.USER_SESSION);
                 log.debug("Using language " + 
                         session.getAttribute("signup_language"));
                 

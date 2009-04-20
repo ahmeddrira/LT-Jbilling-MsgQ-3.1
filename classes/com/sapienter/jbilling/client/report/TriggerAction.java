@@ -44,12 +44,12 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.ReportSession;
 import com.sapienter.jbilling.interfaces.ReportSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * This action is used to run a report with a series of parameters directly from
@@ -143,13 +143,8 @@ public class TriggerAction extends Action {
             // contact type
             if(compare.equals(ReportDTOEx.REPORT_USERS)) {
                 try {
-                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                    UserSessionHome userHome =
-                           (UserSessionHome) EJBFactory.lookUpHome(
-                            UserSessionHome.class,
-                            UserSessionHome.JNDI_NAME);
-
-                    UserSession remoteSession = userHome.create();
+                    IUserSessionBean remoteSession = (IUserSessionBean) 
+                            Context.getBean(Context.Name.USER_SESSION);
                     report.addDynamicParameter(remoteSession.
                             getEntityPrimaryContactType(Integer.valueOf(entityId)).
                                 toString());

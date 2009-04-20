@@ -43,10 +43,9 @@ import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.util.RequestUtils;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -67,12 +66,8 @@ public class NotesEditAction extends Action {
 	        		Constants.SESSION_CUSTOMER_DTO);
     		
     		if (action.equals("edit")) {
-	            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-	            UserSessionHome userHome =
-	                    (UserSessionHome) EJBFactory.lookUpHome(
-	                    UserSessionHome.class,
-	                    UserSessionHome.JNDI_NAME);
-	            UserSession userSession = userHome.create();
+	            IUserSessionBean userSession = (IUserSessionBean) 
+                        Context.getBean(Context.Name.USER_SESSION);
 	            DynaActionForm myForm = (DynaActionForm) form;
 	            
 	            String notes = (String) myForm.get("notes");

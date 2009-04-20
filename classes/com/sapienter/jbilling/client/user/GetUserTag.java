@@ -35,10 +35,9 @@ import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Prepares the a bean to make available to the page the collection
@@ -62,12 +61,8 @@ public class GetUserTag extends TagSupport {
 
 		try {
             // get the order session bean
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome orderHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-            UserSession remoteUser = orderHome.create();
+            IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             // make the call
             UserDTOEx dto  = remoteUser.getUserDTOEx(userId);
     

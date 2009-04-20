@@ -22,7 +22,6 @@ package com.sapienter.jbilling.client.util;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.ejb.FinderException;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -44,11 +43,10 @@ import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
 import org.apache.struts.validator.Resources;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * This action is a helper class that replaces GenericMaintainAction.
@@ -368,18 +366,12 @@ public abstract class CrudAction extends Action {
         else return new Double(fl);
     }
 
-	protected final UserDTOEx getUser(Integer userId) throws FinderException {    
+	protected final UserDTOEx getUser(Integer userId) {    
 		UserDTOEx retValue = null;
 		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(//
-					UserSessionHome.class,
-					UserSessionHome.JNDI_NAME);
-			UserSession userSession = userHome.create();
+			IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
 			retValue = userSession.getUserDTOEx(userId);
-		} catch (FinderException e) {
-			//XXX: [MG] why?
-			throw new FinderException();
 		} catch (Exception e) {
 			throw new SessionInternalError(e);
 		}

@@ -105,8 +105,7 @@ public class DTOFactory {
 	}
 
 	public static UserDTOEx getUserDTOEx(Integer userId)
-			throws CreateException, NamingException, FinderException,
-			SessionInternalError {
+			throws CreateException, NamingException, SessionInternalError {
 
 		LOG.debug("getting the user " + userId);
 
@@ -115,7 +114,7 @@ public class DTOFactory {
 	}
 
 	public static UserDTOEx getUserDTOEx(UserDTO user) throws NamingException,
-			FinderException, SessionInternalError {
+			SessionInternalError {
 		UserDTOEx dto = new UserDTOEx(user);
 
 		// get the status

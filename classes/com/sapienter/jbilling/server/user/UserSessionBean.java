@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.user;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,14 +31,13 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -61,7 +59,6 @@ import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -69,22 +66,15 @@ import org.springframework.dao.EmptyResultDataAccessException;
  * to the server is made through calls to the methods of this class. This 
  * class uses helper classes (Business Logic -> BL) for the real logic.
  *
+ * Had to implement IUserSessionBean to stop Spring related 
+ * ClassCastExceptions when getting the bean. 
+ *
  * @author emilc
- * @ejb:bean name="com/sapienter/jbilling/server/user/UserSession"
- *           display-name="The user session facade"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/user/UserSession"
- * 
- * @ejb.transaction type="Required"
- * 
  */
-
-public class UserSessionBean implements SessionBean, PartnerSQL {
+@Transactional( propagation = Propagation.REQUIRED )
+public class UserSessionBean implements IUserSessionBean, PartnerSQL {
 
     private static final Logger LOG = Logger.getLogger(UserSessionBean.class);
-    private SessionContext context = null;
     
 
     // -------------------------------------------------------------------------
@@ -92,7 +82,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     // -------------------------------------------------------------------------  
 
     /**
-    * @ejb:interface-method view-type="remote"
     * @return the populated userDTO if ok, or null if fails.
     * @param clientUser The userDTO with the username and password to authenticate
     */
@@ -135,8 +124,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * the GUI needs
      * @param userId
      * @return
-     * 
-     * @ejb:interface-method view-type="remote"
      */
     public UserDTOEx getGUIDTO(String username, Integer entityId) {
         UserDTOEx retValue;
@@ -153,7 +140,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     }
 
     /**
-     * @ejb:interface-method view-type="remote"
      * @return the new user id if everthing ok, or null if the username is already 
      * taken, any other problems go as an exception
      */
@@ -189,9 +175,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */    
     public Integer createEntity(ContactDTO contact, UserDTOEx user, 
             Integer pack, Boolean config, String language,
             ContactDTO paymentContact)
@@ -231,13 +214,12 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             
             return entityId;
         } catch (Exception e) {
-            context.setRollbackOnly();
+            // context.setRollbackOnly(); // (old EJB rollback method)
+            // ^-- just throwing a runtime exception should be OK for spring?
             throw new SessionInternalError(e);
         }
     }
-    /**
-     * @ejb:interface-method view-type="remote"
-     */    
+  
     public UserDTO getUserDTO(String userName, Integer entityId) 
             throws SessionInternalError {
         UserDTO dto = null;
@@ -251,9 +233,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         return dto;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */    
     public String getCustomerNotes(Integer userId)
     		throws SessionInternalError {
     	try {
@@ -264,9 +243,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */    
     public Locale getLocale(Integer userId)
             throws SessionInternalError {
         try {
@@ -276,10 +252,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             throw new SessionInternalError(e);
         }
     }
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */    
+   
     public void setCustomerNotes(Integer userId, String notes)
     		throws SessionInternalError {
     	try {
@@ -290,10 +263,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void delete(Integer executorId, Integer userId) 
             throws SessionInternalError {
         if (userId == null) {
@@ -307,9 +276,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void delete(String userName, Integer entityId) 
             throws SessionInternalError {
         if (userName == null) {
@@ -327,7 +293,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * @param userId The user that is doing this change, it could be
      * the same user or someone else in behalf.
-     * @ejb:interface-method view-type="remote"
      */
     public void update(Integer executorId, UserDTOEx dto) 
             throws SessionInternalError {
@@ -339,9 +304,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void updatePartner(Integer executorId, Partner dto) 
             throws SessionInternalError {
         try {
@@ -352,9 +314,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void updatePartnerRanges(Integer executorId, Integer partnerId, 
             PartnerRange[] ranges) 
             throws SessionInternalError {
@@ -366,10 +325,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public ContactDTOEx getPrimaryContactDTO(Integer userId)
             throws SessionInternalError {
         try {
@@ -382,9 +337,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
     
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public void setPrimaryContact(ContactDTOEx dto, Integer userId)
             throws SessionInternalError {
         try {
@@ -396,11 +348,8 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }                    
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
      public ContactDTOEx getContactDTO(Integer userId, Integer contactTypeId)
-             throws SessionInternalError, FinderException {
+             throws SessionInternalError {
         ContactBL bl = new ContactBL();
         bl.set(userId, contactTypeId);
         if (bl.getEntity() != null) {
@@ -410,9 +359,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
      }
  
-     /**
-      * @ejb:interface-method view-type="remote"
-      */
       public ContactDTOEx getVoidContactDTO(Integer entityId)
               throws SessionInternalError {
          try {
@@ -423,9 +369,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
          } 
       }
 
-     /**
-      * @ejb:interface-method view-type="remote"
-      */
      public void setContact(ContactDTOEx dto, Integer userId, Integer 
              contactTypeId)
              throws SessionInternalError {
@@ -438,9 +381,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }                    
 
-     /**
-      * @ejb:interface-method view-type="remote"
-      */
      public boolean addContact(ContactDTOEx dto, String username,
              Integer entityId)
              throws SessionInternalError {
@@ -454,19 +394,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }                    
 
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public UserDTOEx getUserDTOEx(Integer userId) 
-            throws SessionInternalError, FinderException {
+            throws SessionInternalError {
         UserDTOEx dto = null;
         
         try {
             dto = DTOFactory.getUserDTOEx(userId);
             dto.touch();
-        } catch (FinderException e) {
-            throw new FinderException();
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -474,11 +408,8 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         return dto;
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Boolean isParentCustomer(Integer userId) 
-            throws SessionInternalError, FinderException {
+            throws SessionInternalError {
         try {
             UserBL user = new UserBL(userId);
             Integer isParent = user.getEntity().getCustomer().getIsParent();
@@ -492,10 +423,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public UserDTOEx getUserDTOEx(String userName, Integer entityId) 
             throws SessionInternalError{
         UserDTOEx dto = null;
@@ -512,18 +439,11 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         return dto;
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public CurrencyDTO getCurrency(Integer userId) 
             throws SessionInternalError{
         return new UserDAS().find(userId).getCurrency();
     }
 
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Integer createCreditCard(Integer userId,
             CreditCardDTO dto) throws SessionInternalError {
         try {
@@ -552,7 +472,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * Since now we are only supporting one cc per user, this will
      * just get the first cc and update it (it could have deleted 
      * all of them and create one, but it was too crapy).
-     * @ejb:interface-method view-type="remote"
      */
     public void updateCreditCard(Integer executorId, Integer userId,
             CreditCardDTO dto) throws SessionInternalError {
@@ -565,9 +484,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void updateCreditCard(String username, Integer entityId,
             CreditCardDTO dto) throws SessionInternalError {
         try {
@@ -607,9 +523,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 
     }   
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void setAuthPaymentType(Integer userId, Integer newMethod, 
     		Boolean use) 
     		throws SessionInternalError {
@@ -636,9 +549,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     	}
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Integer getAuthPaymentType(Integer userId)
     		throws SessionInternalError {
     	try {
@@ -657,9 +567,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     	}
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void updateACH(Integer userId, Integer executorId, AchDTO ach)
 			throws SessionInternalError {
 		try {
@@ -670,9 +577,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 		}
 	}
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public AchDTO getACH(Integer userId)
 			throws SessionInternalError {
 		try {
@@ -689,9 +593,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
 		}
 	}
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void removeACH(Integer userId, Integer executorId)
 			throws SessionInternalError {
 		try {
@@ -709,7 +610,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * Since now we are only supporting one cc per user, this will
      * just get the first cc .
-     * @ejb:interface-method view-type="remote"
      */
     public CreditCardDTO getCreditCard(Integer userId) 
             throws SessionInternalError {
@@ -733,7 +633,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     
     /**
      * @return The path or url of the css to use for the given entity
-     * @ejb.interface-method view-type="remote"
      */
     public String getEntityPreference(Integer entityId, Integer preferenceId) 
             throws SessionInternalError {
@@ -769,7 +668,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * @param entityId
      * @return
      * @throws SessionInternalError
-     * @ejb.interface-method view-type="remote"
      */
     public ContactDTOEx getEntityContact(Integer entityId) 
             throws SessionInternalError {
@@ -788,7 +686,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * @param entityId
      * @return
      * @throws SessionInternalError
-     * @ejb.interface-method view-type="remote"
      */
     public Integer getEntityPrimaryContactType(Integer entityId) 
             throws SessionInternalError {
@@ -810,8 +707,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * the hashtable
      * @return
      * The paramteres in "id - value" pairs. The value is of type String
-     * 
-     * @ejb.interface-method view-type="remote"
      */    
     public HashMap getEntityParameters(Integer entityId, Integer[] ids) 
             throws SessionInternalError {
@@ -839,8 +734,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * @param entityId
      * @param params
      * @throws SessionInternalError
-     * 
-     * @ejb.interface-method view-type="remote"
      */
     public void setEntityParameters(Integer entityId, HashMap params) 
             throws SessionInternalError {
@@ -872,9 +765,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /** 
-    * @ejb.interface-method view-type="remote"
-    */
     public void updatePreference(Integer userId, Integer typeId, Integer intValue,
             String strValue, Float floatValue) 
         throws SessionInternalError {
@@ -894,8 +784,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * @param entityId
      * @param params
      * @throws SessionInternalError
-     * 
-     * @ejb.interface-method view-type="remote"
      */
     public void setEntityParameter(Integer entityId, Integer preferenceId,
             String paramStr, Integer paramInt, Float paramFloat) 
@@ -914,7 +802,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     /**
      * Marks as deleted all the credit cards associated with this user
      * and removes the relationship
-     * @ejb:interface-method view-type="remote"
      */
     public void deleteCreditCard(Integer executorId, Integer userId) 
             throws SessionInternalError {
@@ -932,10 +819,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void setUserStatus(Integer executorId, Integer userId, 
             Integer statusId) 
             throws SessionInternalError {
@@ -948,11 +831,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }   
     
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public String getWelcomeMessage(Integer entityId, Integer languageId, 
             Integer statusId) 
             throws SessionInternalError {
@@ -961,15 +839,13 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
             AgeingBL age = new AgeingBL();
             LOG.debug("Getting welcome message for " + entityId +
                     " language " + languageId + " status " + statusId);
-            try {
-                retValue = age.getWelcome(entityId, languageId, statusId);
-                //log.debug("welcome = " + retValue);
-            } catch (FinderException e1) {
+            retValue = age.getWelcome(entityId, languageId, statusId);
+            //log.debug("welcome = " + retValue);
+            if (retValue == null) {
                 LOG.warn("No message found. Looking for active status");
-                try {
-                    retValue = age.getWelcome(entityId, languageId, 
-                            UserDTOEx.STATUS_ACTIVE);
-                } catch (FinderException e2) {
+                retValue = age.getWelcome(entityId, languageId, 
+                        UserDTOEx.STATUS_ACTIVE);
+                if (retValue == null) {
                     LOG.warn("Using welcome default");
                     retValue = "Welcome!";
                 }
@@ -980,16 +856,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         
         return retValue;
     }   
-    
-    /**
-    * Create the Session Bean
-    *
-    * @throws CreateException 
-    *
-    * @ejb:create-method view-type="remote"
-    */
-    public void ejbCreate() throws CreateException {
-    }
 
     /**
     * Describes the instance and its content for debugging purpose
@@ -1005,7 +871,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
      * partners with a next_payout_date <= today and calls the mthods to
      * process the payout
      * @param today
-     * @ejb:interface-method view-type="remote"
      */
     public void processPayouts(Date today) 
             throws SessionInternalError {
@@ -1027,10 +892,7 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     }
 
-    /**
-     * 
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void processPayout(Integer partnerId) 
             throws SessionInternalError {
         try {
@@ -1042,9 +904,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public PartnerPayout calculatePayout(Integer partnerId, Date start, 
             Date end, Integer currencyId) 
             throws SessionInternalError {
@@ -1061,11 +920,8 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Partner getPartnerDTO(Integer partnerId) 
-            throws SessionInternalError, FinderException {
+            throws SessionInternalError {
         try {
             PartnerBL partnerBL = new PartnerBL(partnerId);
             Partner retValue = partnerBL.getDTO();
@@ -1076,9 +932,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public PartnerPayout getPartnerLastPayoutDTO(Integer partnerId) 
             throws SessionInternalError {
         try {
@@ -1089,9 +942,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public PartnerPayout getPartnerPayoutDTO(Integer payoutId) 
             throws SessionInternalError {
         try {
@@ -1103,9 +953,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Date[] getPartnerPayoutDates(Integer partnerId) 
             throws SessionInternalError {
         try {
@@ -1116,9 +963,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void notifyCreditCardExpiration(Date today) 
             throws SessionInternalError {
         try {
@@ -1133,9 +977,6 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
         }
     } 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void setUserBlacklisted(Integer executorId, Integer userId, 
             Boolean isBlacklisted) throws SessionInternalError {
         try {
@@ -1147,55 +988,21 @@ public class UserSessionBean implements SessionBean, PartnerSQL {
     }
 
     /**
-     * @throws FinderException throws when no user with the specified username
-     * @throws NamingException 
      * @throws NumberFormatException 
-     * @throws CreateException 
      * @throws NotificationNotFoundException 
      * @throws SessionInternalError 
-     * @ejb:interface-method view-type="remote"
      */
-    public void sendLostPassword(String entityId, String username) throws NumberFormatException, NamingException,  SessionInternalError, NotificationNotFoundException, CreateException, FinderException {
+    public void sendLostPassword(String entityId, String username) 
+            throws NumberFormatException, SessionInternalError, 
+            NotificationNotFoundException {
     	UserBL user = new UserBL(username, Integer.valueOf(entityId));
 
 		user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField());	
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
    public boolean isPasswordExpired(Integer userId) {
         UserBL user;
         user = new UserBL(userId);
         return user.isPasswordExpired();
     }
-
-
-    // -------------------------------------------------------------------------
-    // Framework Callbacks
-    // -------------------------------------------------------------------------  
-
-    public void setSessionContext(SessionContext aContext)
-            throws EJBException {
-        context = aContext;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
 }

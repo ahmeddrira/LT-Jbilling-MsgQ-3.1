@@ -48,10 +48,7 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.JBCrypto;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -83,7 +80,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.UserSessionBean;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -406,7 +403,8 @@ public class WebServicesSessionBean implements SessionBean {
 
             // and the credit card
             if (user.getCreditCard() != null) {
-                UserSessionBean sess = new UserSessionBean();
+                IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                        Context.Name.USER_SESSION);
                 sess.updateCreditCard(executorId, user.getUserId(),
                         new CreditCardDTO(user.getCreditCard()));
             }
@@ -717,13 +715,8 @@ public class WebServicesSessionBean implements SessionBean {
             user.setPassword(password);
 
             // do the authentication
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome UserHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-
-            UserSession myRemoteSession = UserHome.create();
+            IUserSessionBean myRemoteSession = (IUserSessionBean) 
+                    Context.getBean(Context.Name.USER_SESSION);
             retValue = myRemoteSession.authenticate(user);
             if (retValue.equals(Constants.AUTH_OK)) {
                 // see if the password is not expired
@@ -799,7 +792,8 @@ public class WebServicesSessionBean implements SessionBean {
             UserBL bl = new UserBL();
             bl.setRoot(context.getCallerPrincipal().getName());
             Integer executorId = bl.getEntity().getUserId();
-            UserSessionBean sess = new UserSessionBean();
+            IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             CreditCardDTO cc = creditCard != null ? new CreditCardDTO(creditCard) : null;
 
             sess.updateCreditCard(executorId, userId, cc);

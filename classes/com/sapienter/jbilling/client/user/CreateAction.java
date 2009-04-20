@@ -22,7 +22,6 @@ package com.sapienter.jbilling.client.user;
 
 import java.io.IOException;
 
-import javax.ejb.FinderException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,16 +39,15 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.action.DynaActionForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
@@ -86,13 +84,8 @@ public class CreateAction extends Action {
         } else {
          
             try {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                UserSessionHome userHome =
-                        (UserSessionHome) EJBFactory.lookUpHome(
-                        UserSessionHome.class,
-                        UserSessionHome.JNDI_NAME);
-        
-                UserSession myRemoteSession = userHome.create();
+                IUserSessionBean myRemoteSession = (IUserSessionBean) 
+                        Context.getBean(Context.Name.USER_SESSION);
                 
                 // create the dto from the dynamic form
                 Integer typeId = (Integer) userForm.get("type");
@@ -172,27 +165,21 @@ public class CreateAction extends Action {
                     
                     // verify that the parent is valid
                     if (customerDto.getParent() != null) {
-                        try {
-                            UserDTOEx parent = myRemoteSession.getUserDTOEx(
-                                    customerDto.getParent().getId());
-                            if (!parent.getEntityId().equals(entityId) ||
-                                    parent.getDeleted() == 1) {
-                                errors.add(ActionErrors.GLOBAL_ERROR,
-                                        new ActionError(
-                                            "user.create.error.noParent"));                               
-                            } else {
-                                if (parent.getCustomer() == null ||
-                                        parent.getCustomer().getIsParent() == null ||
-                                        parent.getCustomer().getIsParent().intValue() == 0) {
-                                    errors.add(ActionErrors.GLOBAL_ERROR,
-                                            new ActionError(
-                                                "user.create.error.badParent"));        
-                                }
-                            }
-                        } catch (FinderException e) {
+                        UserDTOEx parent = myRemoteSession.getUserDTOEx(
+                                customerDto.getParent().getId());
+                        if (parent == null || !parent.getEntityId().equals(entityId) ||
+                                parent.getDeleted() == 1) {
                             errors.add(ActionErrors.GLOBAL_ERROR,
                                     new ActionError(
-                                        "user.create.error.noParent"));
+                                    "user.create.error.noParent"));
+                        } else {
+                            if (parent.getCustomer() == null ||
+                                    parent.getCustomer().getIsParent() == null ||
+                                    parent.getCustomer().getIsParent().intValue() == 0) {
+                                errors.add(ActionErrors.GLOBAL_ERROR,
+                                        new ActionError(
+                                        "user.create.error.badParent"));
+                            }
                         }
                     }
                     

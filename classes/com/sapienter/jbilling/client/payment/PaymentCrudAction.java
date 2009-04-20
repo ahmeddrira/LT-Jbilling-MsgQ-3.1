@@ -24,8 +24,6 @@ import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import javax.ejb.FinderException;
-
 import org.apache.commons.validator.Arg;
 import org.apache.commons.validator.Field;
 import org.apache.commons.validator.ValidatorAction;
@@ -396,11 +394,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         Integer currencyId = (Integer) myForm.get(FIELD_CURRENCY);
         dto.setCurrency( currencyId != null ? new CurrencyDTO((Integer) myForm.get(FIELD_CURRENCY)) : null);
         if (dto.getCurrency() == null) {
-            try {
-                dto.setCurrency(getUser(dto.getUserId()).getCurrency());
-            } catch (FinderException e) {
-                throw new SessionInternalError(e);
-            }
+            dto.setCurrency(getUser(dto.getUserId()).getCurrency());
         }
         
         if (errors.isEmpty()) {
@@ -486,11 +480,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	}
 	
 	private UserDTOEx getSessionUser() {
-		try {
-		    return getUser((Integer) session.getAttribute(Constants.SESSION_USER_ID));
-		} catch (FinderException e) {
-		    throw new SessionInternalError(e); 
-		}
+        return getUser((Integer) session.getAttribute(Constants.SESSION_USER_ID));
 	}
 	
 	private String maskCreditCard(String ccNumber) {

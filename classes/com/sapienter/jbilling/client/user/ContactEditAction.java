@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import javax.ejb.FinderException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,10 +43,9 @@ import org.apache.struts.util.RequestUtils;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ContactEditAction extends Action {
 
@@ -78,13 +76,8 @@ public class ContactEditAction extends Action {
         LOG.debug("In contact edit action = " + action);
 
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-        
-            UserSession myRemoteSession = userHome.create();
+            IUserSessionBean myRemoteSession = (IUserSessionBean) 
+                    Context.getBean(Context.Name.USER_SESSION);
             
             contactForm = (DynaValidatorForm) form;
         
@@ -104,15 +97,8 @@ public class ContactEditAction extends Action {
             } else if (request.getParameter("reload") != null) {
                 Integer type = (Integer) contactForm.get("type");
                 ContactDTOEx dbContact;
-                try {
-                    dbContact = myRemoteSession.getContactDTO(
-                            userId, type);
-                } catch (FinderException e) {
-                    // it is a new one
-                    Integer entityId = (Integer) session.getAttribute(
-                            Constants.SESSION_ENTITY_ID_KEY);
-                    dbContact = myRemoteSession.getVoidContactDTO(entityId);
-                }
+                dbContact = myRemoteSession.getContactDTO(
+                        userId, type);
                 fillForm(dbContact, request, mapping, moduleConfig);
                 session.setAttribute("contact", contactForm);
             } else { // send the information to the server for update

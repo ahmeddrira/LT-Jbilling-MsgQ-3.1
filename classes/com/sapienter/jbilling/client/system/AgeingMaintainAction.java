@@ -44,10 +44,10 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.process.AgeingDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class AgeingMaintainAction extends Action {
 
@@ -65,13 +65,10 @@ public class AgeingMaintainAction extends Action {
                     (BillingProcessSessionHome) EJBFactory.lookUpHome(
                     BillingProcessSessionHome.class,
                     BillingProcessSessionHome.JNDI_NAME);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
         
             BillingProcessSession processSession = processHome.create();
-            UserSession userSession = userHome.create();
+            IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             
             String action = request.getParameter("action");
             HttpSession session = request.getSession(false);
@@ -88,7 +85,7 @@ public class AgeingMaintainAction extends Action {
                 Integer[] preferenceIds = new Integer[2];
                 preferenceIds[0] = Constants.PREFERENCE_GRACE_PERIOD;
                 preferenceIds[1] = Constants.PREFERENCE_URL_CALLBACK;
-                HashMap result = ((UserSession) userSession).
+                HashMap result = ((IUserSessionBean) userSession).
                         getEntityParameters(entityId, preferenceIds);
             
                 String gracePeriod = (String) result.get(

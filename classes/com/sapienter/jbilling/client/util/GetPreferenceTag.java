@@ -34,9 +34,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Finds a preference. If no beanName is specified, the value of the
@@ -80,13 +79,8 @@ public class GetPreferenceTag extends TagSupport {
         if (result == null) {
             
             try {
-                // get the the jndi factory
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                UserSessionHome userHome =
-                        (UserSessionHome) EJBFactory.lookUpHome(
-                        UserSessionHome.class,
-                        UserSessionHome.JNDI_NAME);
-                UserSession remoteUser = userHome.create();
+                IUserSessionBean remoteUser = (IUserSessionBean) 
+                        Context.getBean(Context.Name.USER_SESSION);
                 result = remoteUser.getEntityPreference(entityId, preferenceId);
                 
                 // update the cache is applicable

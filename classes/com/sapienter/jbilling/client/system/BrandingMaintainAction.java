@@ -20,16 +20,14 @@
 
 package com.sapienter.jbilling.client.system;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudAction;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class BrandingMaintainAction extends CrudAction {
 	private static final String FORM_BRANDING = "branding";
@@ -38,15 +36,13 @@ public class BrandingMaintainAction extends CrudAction {
 	private static final String MESSAGE_SUCCESS = "system.branding.updated";
 	private static final String FORWARD_SUCCESS = "branding_edit";
 
-	private final UserSession myUserSession;
+	private final IUserSessionBean myUserSession;
 
 	public BrandingMaintainAction() {
 		setFormName(FORM_BRANDING);
 		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-					UserSessionHome.class, UserSessionHome.JNDI_NAME);
-			myUserSession = userHome.create();
+			myUserSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
 		} catch (Exception e) {
 			throw new SessionInternalError(
 					"Initializing branding CRUD action: " + e.getMessage());
@@ -62,12 +58,8 @@ public class BrandingMaintainAction extends CrudAction {
 		};
 		// get'em
 		Map<?, ?> result;
-		try {
-			result = myUserSession.getEntityParameters(entityId, preferenceIds);
-		} catch (RemoteException e) {
-			throw new SessionInternalError("Setup branding error:"
-					+ e.getMessage());
-		}
+
+        result = myUserSession.getEntityParameters(entityId, preferenceIds);
 
 		myForm.set(FIELD_CSS, stringNotNull(result
 				.get(Constants.PREFERENCE_CSS_LOCATION)));
@@ -105,12 +97,7 @@ public class BrandingMaintainAction extends CrudAction {
 		HashMap<Integer, String> map = new HashMap<Integer, String>();
 		map.put(Constants.PREFERENCE_CSS_LOCATION, cssAndLogo.getCss());
 		map.put(Constants.PREFERENCE_LOGO_LOCATION, cssAndLogo.getLogo());
-		try {
-			myUserSession.setEntityParameters(entityId, map);
-		} catch (RemoteException e) {
-			throw new SessionInternalError("Branding update failed: "
-					+ e.getMessage());
-		}
+        myUserSession.setEntityParameters(entityId, map);
 		setForward(FORWARD_SUCCESS);
 		return MESSAGE_SUCCESS;
 	}

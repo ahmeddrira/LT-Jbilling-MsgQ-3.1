@@ -128,8 +128,7 @@ public class ContactBL {
     }
     
     
-    public ContactDTOEx getVoidDTO(Integer myEntityId) 
-            throws NamingException, FinderException {
+    public ContactDTOEx getVoidDTO(Integer myEntityId) {
         entityId = myEntityId;
         ContactDTOEx retValue = new ContactDTOEx();
         retValue.setFieldsTable(initializeFields());
@@ -204,11 +203,8 @@ public class ContactBL {
      * Create a Hashtable with the key beign the field type for the
      * entity
      * @return
-     * @throws NamingException
-     * @throws FinderException
      */
-    private Hashtable<String, ContactFieldDTO> initializeFields() 
-            throws NamingException, FinderException {
+    private Hashtable<String, ContactFieldDTO> initializeFields() {
         // now go over the entity specific fields
         Hashtable<String, ContactFieldDTO> fields = new Hashtable<String, ContactFieldDTO>();
         EntityBL entity = new EntityBL(entityId);

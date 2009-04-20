@@ -36,6 +36,7 @@ public class Context {
         NOTIFICATION_SESSION,
         CUSTOMER_SESSION,
         LIST_SESSION,
+        USER_SESSION,
         PROVISIONING,
         VELOCITY,
         DATA_SOURCE,
@@ -56,6 +57,7 @@ public class Context {
         springBeans.put(Name.NOTIFICATION_SESSION, "notificationSession");
         springBeans.put(Name.CUSTOMER_SESSION, "customerSession");
         springBeans.put(Name.LIST_SESSION, "listSession");
+        springBeans.put(Name.USER_SESSION, "userSession");
 
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");

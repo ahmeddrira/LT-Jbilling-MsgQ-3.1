@@ -37,10 +37,9 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ChangePasswordAction extends Action {
     private static Logger LOG = Logger.getLogger(ChangePasswordAction.class);
@@ -71,18 +70,12 @@ public class ChangePasswordAction extends Action {
         }
 
 
-        JNDILookup EJBFactory = null;
-        UserSession myRemoteSession = null;
+        IUserSessionBean myRemoteSession = null;
         UserDTOEx user = null;
 
         try {
-            EJBFactory = JNDILookup.getFactory(false);            
-            UserSessionHome UserHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-
-            myRemoteSession = UserHome.create();
+            myRemoteSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
         } catch (Exception e) {
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));

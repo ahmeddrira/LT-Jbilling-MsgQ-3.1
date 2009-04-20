@@ -34,11 +34,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.Context;
 
 public class PartnerMaintainAction extends Action {
 
@@ -50,13 +49,8 @@ public class PartnerMaintainAction extends Action {
         
         
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-        
-            UserSession userSession = userHome.create();
+            IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             HttpSession session = request.getSession(false);
             if (request.getParameter("action").equals("view")) {
                 

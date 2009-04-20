@@ -39,11 +39,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 
@@ -122,16 +121,10 @@ public final class UserLoginAction extends Action {
 
         // now do the call to the business object
         // get the value from a Session EJB 
-        JNDILookup EJBFactory = null;
-        UserSession myRemoteSession = null;
+        IUserSessionBean myRemoteSession = null;
         try {
-            EJBFactory = JNDILookup.getFactory(false);            
-            UserSessionHome UserHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-
-            myRemoteSession = UserHome.create();
+            myRemoteSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             Integer result = myRemoteSession.authenticate(user);
             if (result.equals(Constants.AUTH_WRONG_CREDENTIALS)) {
                 errors.add(

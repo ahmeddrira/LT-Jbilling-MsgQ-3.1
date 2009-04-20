@@ -397,13 +397,12 @@ public class UserBL extends ResultList
       * @param entityId
       * @param userId
       * @param languageId
-      * @throws NamingException
       * @throws SessionInternalError
-      * @throws FinderException
       * @throws NotificationNotFoundException when no message row or message row is not activated for the specified entity
-      * @throws CreateException
       */
-     public void sendLostPassword(Integer entityId, Integer userId, Integer languageId) throws NamingException, SessionInternalError, FinderException, NotificationNotFoundException, CreateException {
+     public void sendLostPassword(Integer entityId, Integer userId, 
+             Integer languageId) throws SessionInternalError, 
+             NotificationNotFoundException {
     	 NotificationBL notif = new NotificationBL();
     	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
          NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(

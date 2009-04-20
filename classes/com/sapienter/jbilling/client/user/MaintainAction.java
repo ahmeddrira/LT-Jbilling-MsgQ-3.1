@@ -22,7 +22,6 @@ package com.sapienter.jbilling.client.user;
 
 import java.io.IOException;
 
-import javax.ejb.FinderException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,15 +42,15 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
@@ -84,13 +83,8 @@ public class MaintainAction extends Action {
                 Constants.SESSION_USER_DTO);
 
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-        
-            UserSession userSession = userHome.create();
+            IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
         
             if (action.equals("setup")) {
                 String id = request.getParameter("id");
@@ -116,6 +110,7 @@ public class MaintainAction extends Action {
                         userSession.getPrimaryContactDTO(userId));
 
                 // add the last invoice dto 
+                JNDILookup EJBFactory = JNDILookup.getFactory(false);
                 InvoiceSessionHome invoiceHome =
                         (InvoiceSessionHome) EJBFactory.lookUpHome(
                         InvoiceSessionHome.class,
@@ -208,9 +203,8 @@ public class MaintainAction extends Action {
                 String partnerId = (String) userForm.get("partnerId");
                 // validate the partnerId if present
                 if (errors.isEmpty() && partnerId != null && partnerId.length() > 0) {
-                    try {
-                        userSession.getPartnerDTO(Integer.valueOf(partnerId));
-                    } catch (FinderException e) {
+                    if (userSession.getPartnerDTO(Integer.valueOf(partnerId)) ==
+                            null) {
                         errors.add(ActionErrors.GLOBAL_ERROR,
                                 new ActionError("user.create.error.badPartner"));
                     }

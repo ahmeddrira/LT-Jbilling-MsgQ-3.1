@@ -33,12 +33,11 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -56,17 +55,13 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
 	private static final String FORWARD_EDIT = "ranges_edit";
 	private static final String FORWARD_PARTNER = "ranges_partner";
 	
-	private UserSession myUserSession;
+	private IUserSessionBean myUserSession;
 	
 	public PartnerRangesMaintainAction(){
 		super(FORM, "ranges");
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-            myUserSession = userHome.create();
+            myUserSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
         } catch (Exception e) {
 			throw new SessionInternalError(
 					"Initializing order CRUD action: " + e.getMessage());

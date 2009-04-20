@@ -29,10 +29,9 @@ import java.util.HashMap;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class NumberingAction extends UpdateOnlyCrudActionBase<NumberingActionContext> {
     private static final String FORM_NUMBERING = "invoiceNumbering";
@@ -43,18 +42,13 @@ public class NumberingAction extends UpdateOnlyCrudActionBase<NumberingActionCon
     
     private static final String MESSAGE_SUCCESSFULLY_UPDATED = "invoice.numbering.updated";
     
-    private final UserSession myUserSession;
+    private final IUserSessionBean myUserSession;
     
     public NumberingAction(){
         super(FORM_NUMBERING, "invoice numbering", FORWARD_EDIT);
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-        
-            myUserSession = userHome.create();
+            myUserSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError(
                     "Initializing invoice numbering "

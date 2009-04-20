@@ -23,8 +23,6 @@ package com.sapienter.jbilling.client.user;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
-import javax.ejb.FinderException;
-
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
@@ -32,11 +30,12 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.client.util.PreferencesMap;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PartnerCrudAction extends CrudActionBase<Partner> {
@@ -61,9 +60,9 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
 	private static final String MESSAGE_CREATED = "partner.created";
 	private static final String MESSAGE_UPDATED = "partner.updated";
 	
-	private final UserSession myUserSession;
+	private final IUserSessionBean myUserSession;
 	
-	public PartnerCrudAction(UserSession userSession){
+	public PartnerCrudAction(IUserSessionBean userSession) {
 		super(FORM, "partner");
 		myUserSession = userSession;
 	}
@@ -83,12 +82,8 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
         LOG.debug("Partner created = " + newUserID);
         session.setAttribute(Constants.SESSION_USER_ID, newUserID);
         
-        try {
-            session.setAttribute(Constants.SESSION_PARTNER_DTO, 
-                    myUserSession.getUserDTOEx(newUserID).getPartner());
-        } catch (FinderException e) {
-            throw new SessionInternalError(e);
-        }
+        session.setAttribute(Constants.SESSION_PARTNER_DTO, 
+                myUserSession.getUserDTOEx(newUserID).getPartner());
         return (request.getParameter("ranges") == null) ?
         		new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATED) :
         		new ForwardAndMessage(FORWARD_RANGES, MESSAGE_CREATED);
@@ -124,22 +119,21 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
         dto.setAutomaticProcess(valueOfCheckBox(FIELD_PROCESS));
         dto.setOneTime(valueOfCheckBox(FIELD_ONE_TIME));
 
-        try {
-            Integer clerkId = Integer.valueOf((String) myForm.get(FIELD_CLERK));
-            UserDTOEx clerk = getUser(clerkId);
-            if (!entityId.equals(clerk.getEntityId()) || 
-                    clerk.getDeleted() == 1 ||
-                    clerk.getMainRoleId().intValue() > 
-                        Constants.TYPE_CLERK.intValue()) {
-            	
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("partner.error.clerkinvalid"));
-            } else {
-                dto.setRelatedClerkUserId(clerkId);
-            }
-        } catch (FinderException e) {
+        Integer clerkId = Integer.valueOf((String) myForm.get(FIELD_CLERK));
+        UserDTOEx clerk = getUser(clerkId);
+        if (clerk == null) {
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("partner.error.clerknotfound"));
+        }
+        if (!entityId.equals(clerk.getEntityId()) || 
+                clerk.getDeleted() == 1 ||
+                clerk.getMainRoleId().intValue() > 
+                Constants.TYPE_CLERK.intValue()) {
+            	
+            errors.add(ActionErrors.GLOBAL_ERROR,
+                    new ActionError("partner.error.clerkinvalid"));
+        } else {
+            dto.setRelatedClerkUserId(clerkId);
         }
         return dto;
 	}
@@ -167,11 +161,7 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
         
         Partner partner;
         if (partnerId != null) {
-            try {
-                partner = myUserSession.getPartnerDTO(partnerId);
-            } catch (FinderException e) {
-                throw new SessionInternalError(e);
-            }
+            partner = myUserSession.getPartnerDTO(partnerId);
             result = new ForwardAndMessage(FORWARD_EDIT);
         } else {
             partner = createPartnerFromDefaults();

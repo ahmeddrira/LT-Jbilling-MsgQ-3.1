@@ -25,14 +25,11 @@
  */
 package com.sapienter.jbilling.server.user;
 
-import java.rmi.RemoteException;
 import java.security.Principal;
 import java.security.acl.Group;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -48,10 +45,8 @@ import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;
 import org.jboss.security.auth.spi.AbstractServerLoginModule;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -193,26 +188,15 @@ public class BettyLoginModule extends AbstractServerLoginModule {
             UserDTOEx user;
             try {
                 // Validate the password supplied by the subclass
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                UserSessionHome userHome =
-                        (UserSessionHome) EJBFactory.lookUpHome(
-                        UserSessionHome.class,
-                        UserSessionHome.JNDI_NAME);
-
-                UserSession myRemoteSession = userHome.create();
+                IUserSessionBean myRemoteSession = (IUserSessionBean) 
+                        Context.getBean(Context.Name.USER_SESSION);
                 user = myRemoteSession.getUserDTOEx(username, entityID);
                 
             } /*catch (FinderException e) {
                 throw new FailedLoginException("Invalid username/companyID");        
-            } */catch (NamingException e) {
+            } */catch (SessionInternalError e) {
                 throw new FailedLoginException("Internal error");
-            } catch (RemoteException e) {
-                throw new FailedLoginException("Internal error");
-            } catch (SessionInternalError e) {
-                throw new FailedLoginException("Internal error");
-            } catch (CreateException  e) {
-                throw new FailedLoginException("Internal error");
-            }            
+            }
             
             if (password == null || !user.getPassword().equals(
                     password) || user.getDeleted() == 1) {

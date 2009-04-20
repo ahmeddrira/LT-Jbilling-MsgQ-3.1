@@ -61,8 +61,6 @@ import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -70,7 +68,9 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -219,7 +219,7 @@ public class GatewayBL {
 
     private JNDILookup EJBFactory = null;
 
-    private UserSession userSession = null;
+    private IUserSessionBean userSession = null;
 
     private Logger log = null;
 
@@ -294,11 +294,8 @@ public class GatewayBL {
 
         init("/WEB-INF", "validator-beans.xml");
         try {
-            EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class, UserSessionHome.JNDI_NAME);
-
-            userSession = userHome.create();
+            userSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
         } catch (Exception e) {
             code = RES_CODE_ERROR;
             subCode = RES_SUB_CODE_ERR_INTERNAL;

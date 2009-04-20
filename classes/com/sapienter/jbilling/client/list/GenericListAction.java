@@ -45,11 +45,10 @@ import com.sapienter.jbilling.interfaces.InvoiceSession;
 import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -137,12 +136,8 @@ public class GenericListAction extends Action {
                     }
                     
                     if (errors.isEmpty()) {
-                        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                        UserSessionHome customerHome =
-                            (UserSessionHome) EJBFactory.lookUpHome(
-                            UserSessionHome.class,
-                            UserSessionHome.JNDI_NAME);
-                        UserSession remoteUser = customerHome.create();
+                        IUserSessionBean remoteUser = (IUserSessionBean) 
+                                Context.getBean(Context.Name.USER_SESSION);
                         
                         remoteUser.updatePreference((Integer)session.getAttribute(
                                 Constants.SESSION_LOGGED_USER_ID), 

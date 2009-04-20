@@ -21,7 +21,6 @@ package com.sapienter.jbilling.client.util;
 
 import java.io.IOException;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -30,10 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
-
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Simple server meant to be called by a monitoring service.
@@ -60,20 +57,12 @@ public class ServerUpCheckServlet extends HttpServlet {
         try {
             ServletOutputStream output = response.getOutputStream();
 
-            JNDILookup EJBFactory = null;
-            UserSession myRemoteSession = null;
+            IUserSessionBean myRemoteSession = null;
             try {
-                EJBFactory = JNDILookup.getFactory(false);            
-                UserSessionHome UserHome =
-                        (UserSessionHome) EJBFactory.lookUpHome(
-                        UserSessionHome.class,
-                        UserSessionHome.JNDI_NAME);
-
-                myRemoteSession = UserHome.create();
+                myRemoteSession = (IUserSessionBean) Context.getBean(
+                        Context.Name.USER_SESSION);
                 myRemoteSession.getEntityPrimaryContactType(1);
                 output.print("PASSED");
-            } catch (NamingException e) {
-                output.print("ERROR: JNDI problem." + e.getMessage());
             } catch (Throwable e) {
                 LOG.error("Error in server up check: " + e);
                 output.print("ERROR: Exception." + e.getMessage());

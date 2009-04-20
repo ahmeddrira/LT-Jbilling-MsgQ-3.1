@@ -33,11 +33,9 @@ import org.apache.struts.action.ActionErrors;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class NoUserInfoInPasswordValidator {
     
@@ -128,11 +126,8 @@ public class NoUserInfoInPasswordValidator {
 						bean, field.getProperty());
 
 			if (!GenericValidator.isBlankOrNull(value)) {
-				JNDILookup EJBFactory = JNDILookup.getFactory(false);
-				UserSessionHome userHome = (UserSessionHome)EJBFactory.lookUpHome(
-						UserSessionHome.class,
-						UserSessionHome.JNDI_NAME);
-				UserSession user = userHome.create();
+				IUserSessionBean user = (IUserSessionBean) Context.getBean(
+                        Context.Name.USER_SESSION);
 				ContactDTOEx dto = user.getPrimaryContactDTO(
 						(Integer)request.getSession().getAttribute(Constants.SESSION_USER_ID));
 				if (dto != null) {

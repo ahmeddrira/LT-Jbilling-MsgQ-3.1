@@ -45,13 +45,12 @@ import org.apache.struts.validator.DynaValidatorForm;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -66,12 +65,8 @@ public class PayoutAction extends Action {
         String forward = "error";
         ActionErrors errors = new ActionErrors();
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-            UserSession userSession = userHome.create();
+            IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             String action = request.getParameter("action");
             HttpSession session = request.getSession(false);
             Partner partner = (Partner) session.getAttribute(

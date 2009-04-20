@@ -22,22 +22,18 @@ package com.sapienter.jbilling.client.util;
 
 import java.rmi.RemoteException;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public abstract class PreferencesCrudActionBase<DTO> extends UpdateOnlyCrudActionBase<DTO> {
-	private final UserSession myUserSession;
+	private final IUserSessionBean myUserSession;
 	
 	public PreferencesCrudActionBase(String formName, String logFriendlyActionType, String forwardEdit) {
 		super(formName, logFriendlyActionType, forwardEdit);
 		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-					UserSessionHome.class, UserSessionHome.JNDI_NAME);
-
-			myUserSession = userHome.create();
+			myUserSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
 		} catch (Exception e) {
 			throw new SessionInternalError(
 					"Initializing " + logFriendlyActionType + " CRUD action: "
@@ -45,7 +41,7 @@ public abstract class PreferencesCrudActionBase<DTO> extends UpdateOnlyCrudActio
 		}
 	}
 
-	protected final UserSession getUserSession(){
+	protected final IUserSessionBean getUserSession(){
 		return myUserSession;
 	}
 	

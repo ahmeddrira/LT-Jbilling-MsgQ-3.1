@@ -22,7 +22,6 @@ package com.sapienter.jbilling.client.user;
 
 import java.io.IOException;
 
-import javax.ejb.FinderException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +36,9 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ForgetPasswordAction extends Action {
 	// Actionmethod for processing "forget password" operation
@@ -60,19 +58,10 @@ public class ForgetPasswordAction extends Action {
         
         // now do the call to the business object
         // get the value from a Session EJB 
-        JNDILookup EJBFactory = null;
         try {
-            EJBFactory = JNDILookup.getFactory(false);            
-            UserSessionHome UserHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-
-            UserSession myRemoteSession = UserHome.create();
+            IUserSessionBean myRemoteSession = (IUserSessionBean) 
+                    Context.getBean(Context.Name.USER_SESSION);
             myRemoteSession.sendLostPassword(entityId, username);
-        } catch (FinderException e) {
-        	errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
-                    "forgetPassword.errors.nosuchuser"));
     	} catch( NotificationNotFoundException e) {
     		errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
                     "forgetPassword.errors.notificationnotactivated"));

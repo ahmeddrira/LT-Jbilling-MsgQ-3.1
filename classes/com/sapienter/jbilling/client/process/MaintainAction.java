@@ -42,12 +42,12 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends Action {
 
@@ -154,12 +154,8 @@ public class MaintainAction extends Action {
                 
                 if (invoice != null) {
                     // get the user in the session
-                    UserSessionHome userHome =
-                            (UserSessionHome) EJBFactory.lookUpHome(
-                            UserSessionHome.class,
-                            UserSessionHome.JNDI_NAME);
-        
-                    UserSession myRemoteSession = userHome.create();
+                    IUserSessionBean myRemoteSession = (IUserSessionBean) 
+                            Context.getBean(Context.Name.USER_SESSION);
                     session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                             myRemoteSession.getPrimaryContactDTO(
                                 invoice.getUserId()));

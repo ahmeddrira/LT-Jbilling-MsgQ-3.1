@@ -36,11 +36,11 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 
 public class OrderCrudAction extends CrudActionBase<OrderDTO> {
@@ -187,13 +187,10 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
 
             // entities with pro-rating do not do the fraction of a period
             // validation
-            JNDILookup EJBFactory = null;
-            UserSession userSession;
+            IUserSessionBean userSession;
             try {
-                EJBFactory = JNDILookup.getFactory(false);
-                UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-                        UserSessionHome.class, UserSessionHome.JNDI_NAME);
-                userSession = userHome.create();
+                userSession = (IUserSessionBean) Context.getBean(
+                        Context.Name.USER_SESSION);
             } catch (Exception e1) {
                 addError("all.internal");
                 LOG.error("Getting pro-rating preference", e1);
@@ -209,9 +206,11 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
                             com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE)) {
                 // the whole period has to be a multiple of the period unit
                 // This is true, until there is support for prorating.
+                JNDILookup EJBFactory = null;
                 OrderSessionHome orderHome;
                 OrderPeriodDTO myPeriod;
                 try {
+                    EJBFactory = JNDILookup.getFactory(false);
                     orderHome = (OrderSessionHome) EJBFactory.lookUpHome(OrderSessionHome.class,
                             OrderSessionHome.JNDI_NAME);
 

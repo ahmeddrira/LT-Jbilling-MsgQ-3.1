@@ -43,13 +43,13 @@ import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.mediation.MediationSession;
 import com.sapienter.jbilling.server.mediation.MediationSessionHome;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends Action {
     
@@ -125,12 +125,8 @@ public class MaintainAction extends Action {
                 // show the children, or not and just go to the order edit
                 Integer userId = (Integer) session.getAttribute(
                         Constants.SESSION_USER_ID);
-                UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-            
-                UserSession remoteUser = userHome.create();
+                IUserSessionBean remoteUser = (IUserSessionBean) 
+                        Context.getBean(Context.Name.USER_SESSION);
                 if (remoteUser.isParentCustomer(userId).booleanValue()) {
                     return mapping.findForward("sub_accounts");
                 } else {
@@ -149,12 +145,8 @@ public class MaintainAction extends Action {
             summary = (OrderDTO) session.getAttribute(
                     Constants.SESSION_ORDER_SUMMARY);   
                         
-            UserSessionHome userHome =
-                    (UserSessionHome) EJBFactory.lookUpHome(
-                    UserSessionHome.class,
-                    UserSessionHome.JNDI_NAME);
-
-            UserSession remoteUser = userHome.create();
+            IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
             
             UserDTO user = new UserDTO();
             user.setId((Integer) session.getAttribute( //TODO this is known to have thrown a Null pointer exception

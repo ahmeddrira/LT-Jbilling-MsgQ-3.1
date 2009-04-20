@@ -43,9 +43,9 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserSQL;
+import com.sapienter.jbilling.server.util.Context;
 
 public class RepeatedPasswordValidator {
 
@@ -158,11 +158,8 @@ public class RepeatedPasswordValidator {
 		Integer userId = (Integer)request.getSession().getAttribute(Constants.SESSION_USER_ID);
 		Integer userRole = null;
 		try {
-			JNDILookup jndi = JNDILookup.getFactory();
-			UserSessionHome userHome = (UserSessionHome)jndi.lookUpHome(
-					UserSessionHome.class,
-					UserSessionHome.JNDI_NAME);
-			UserSession user = userHome.create();
+            IUserSessionBean user = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
 			userRole = user.getUserDTOEx(userId).getMainRoleId();
 		} catch (Exception e) {
 			result = false;

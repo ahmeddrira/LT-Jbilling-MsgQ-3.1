@@ -37,8 +37,6 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
@@ -46,6 +44,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -128,11 +127,8 @@ public class UploadData {
 			// get the remote interfaces
             JNDILookup EJBFactory = JNDILookup.getFactory(true);
 
-            UserSessionHome userHome =
-                (UserSessionHome) EJBFactory.lookUpHome(
-                UserSessionHome.class,
-                UserSessionHome.JNDI_NAME);
-            UserSession remoteSession = userHome.create();
+            IUserSessionBean remoteSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
 
             OrderSessionHome orderHome = null;
             if (processOrders.booleanValue()) {

@@ -27,8 +27,8 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Common base class for CreditCard / ACH maintinence action processors. The
@@ -49,7 +49,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 	private final String myNumberField;
 	private final String myForwardEdit;
 
-	private final UserSession myUserSession;
+	private final IUserSessionBean myUserSession;
 	private final PaymentSession myPaymentSession;
 
 	public AbstractPaymentMethodMaintainAction(String formName,
@@ -60,14 +60,13 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 
 		try {
 			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			UserSessionHome userHome = (UserSessionHome) EJBFactory.lookUpHome(
-					UserSessionHome.class, UserSessionHome.JNDI_NAME);
 
 			PaymentSessionHome paymentHome = (PaymentSessionHome) EJBFactory
 					.lookUpHome(PaymentSessionHome.class,
 							PaymentSessionHome.JNDI_NAME);
 
-			myUserSession = userHome.create();
+			myUserSession = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
 			myPaymentSession = paymentHome.create();
 
 		} catch (Exception e) {
@@ -118,7 +117,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 		// single payment method per customer, no lists
 	}
 
-	protected UserSession getUserSession() {
+	protected IUserSessionBean getUserSession() {
 		return myUserSession;
 	}
 

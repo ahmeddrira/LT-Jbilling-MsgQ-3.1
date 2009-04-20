@@ -17,8 +17,6 @@ package com.sapienter.jbilling.client.item;
 
 import java.rmi.RemoteException;
 
-import javax.ejb.FinderException;
-
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -119,12 +117,7 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTO> {
             // user-item combination.
             // I need the currency of the user, because the price will
             // be defaulted to this item's price
-            UserDTOEx user;
-            try {
-                user = getUser(userId);
-            } catch (FinderException e) {
-                throw new SessionInternalError(e);
-            }
+            UserDTOEx user = getUser(userId);
             itemDto = myItemSession.get(selectedId, languageId, null, user.getCurrencyId(), entityId);
             // We then use this item's current price
             myForm.set(FIELD_PRICE, float2string(itemDto.getPrice()));

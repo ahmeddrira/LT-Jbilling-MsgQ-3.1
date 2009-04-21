@@ -65,6 +65,7 @@ public class BasicEmailNotificationTask extends PluggableTask
     public static final String PARAMETER_BCCTO = "bcc_to";
     public static final String PARAMETER_HTML = "html";
     public static final String PARAMETER_TLS = "tls";
+    public static final String PARAMETER_SSL_AUTH = "ssl_auth";
 
     private static final Logger LOG = Logger.getLogger(BasicEmailNotificationTask.class);
 
@@ -77,6 +78,7 @@ public class BasicEmailNotificationTask extends PluggableTask
     private String replyTo;
     private boolean doHTML;
     private boolean tls;
+    private boolean sslAuth;
     
     private void init() {
                 // set some parameters
@@ -107,6 +109,8 @@ public class BasicEmailNotificationTask extends PluggableTask
         doHTML = Boolean.valueOf((String) parameters.get(PARAMETER_HTML));
 
         tls = Boolean.valueOf((String) parameters.get(PARAMETER_TLS));
+
+        sslAuth = Boolean.valueOf((String) parameters.get(PARAMETER_SSL_AUTH));
     }
 
     public void deliver(UserDTO user, MessageDTO message)
@@ -139,6 +143,13 @@ public class BasicEmailNotificationTask extends PluggableTask
         }
         if (tls) {
             sender.getJavaMailProperties().setProperty("mail.smtp.starttls.enable", "true");
+        }
+        if (sslAuth) {
+            // required for SMTP servers that use SSL authentication, 
+            // e.g., Gmail's SMTP servers
+            sender.getJavaMailProperties().setProperty(
+                    "mail.smtp.socketFactory.class", 
+                    "javax.net.ssl.SSLSocketFactory");
         }
 
         MimeMessage mimeMsg = sender.createMimeMessage();

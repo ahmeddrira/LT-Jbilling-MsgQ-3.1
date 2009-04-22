@@ -41,11 +41,10 @@ import org.apache.struts.validator.DynaValidatorForm;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.mediation.MediationSession;
 import com.sapienter.jbilling.server.mediation.MediationSessionHome;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -68,12 +67,8 @@ public class MaintainAction extends Action {
             EJBFactory = JNDILookup.getFactory(false);
             
             if (request.getParameter("action").equals("view")) {
-                OrderSessionHome orderHome =
-                        (OrderSessionHome) EJBFactory.lookUpHome(
-                        OrderSessionHome.class,
-                        OrderSessionHome.JNDI_NAME);
-                
-                OrderSession remoteOrder = orderHome.create();
+                OrderSessionBean remoteOrder = (OrderSessionBean) 
+                        Context.getBean(Context.Name.ORDER_SESSION);
                 Integer orderId = (request.getParameter("id") == null) 
                         ? (Integer) session.getAttribute(
                             Constants.SESSION_LIST_ID_SELECTED)
@@ -93,12 +88,8 @@ public class MaintainAction extends Action {
             } else if (request.getParameter("action").equals("status")) {
                 String statusStr = request.getParameter("statusId");
                 if (statusStr != null) {
-                    OrderSessionHome orderHome =
-                            (OrderSessionHome) EJBFactory.lookUpHome(
-                            OrderSessionHome.class,
-                            OrderSessionHome.JNDI_NAME);
-                    
-                    OrderSession remoteOrder = orderHome.create();
+                    OrderSessionBean remoteOrder = (OrderSessionBean) 
+                            Context.getBean(Context.Name.ORDER_SESSION);
                     Integer orderId = ((OrderDTO) session.getAttribute(
                             Constants.SESSION_ORDER_DTO)).getId();
                     Integer userId = (Integer) session.getAttribute(
@@ -172,17 +163,11 @@ public class MaintainAction extends Action {
      * Forwards onto the order edit screen.
      */
     private ActionForward newOrderEdit(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) 
-            throws NamingException, CreateException, RemoteException {
+            HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
 
-        OrderSessionHome orderHome =
-        (OrderSessionHome) EJBFactory.lookUpHome(
-        OrderSessionHome.class,
-        OrderSessionHome.JNDI_NAME);
-
-        OrderSession remoteOrder = orderHome.create();
+        OrderSessionBean remoteOrder = (OrderSessionBean) Context.getBean(
+                Context.Name.ORDER_SESSION);
 
         Integer userId = (Integer) session.getAttribute(
                 Constants.SESSION_USER_ID);

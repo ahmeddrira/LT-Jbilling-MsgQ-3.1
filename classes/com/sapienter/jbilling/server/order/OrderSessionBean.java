@@ -24,13 +24,10 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Date;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
@@ -45,32 +42,13 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
  * bean that provides services not directly linked to a particular operation
  *
  * @author emilc
- * @ejb:bean name="OrderSession"
- *           display-name="A stateless bean for orders"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/order/OrderSession"
- * 
- * 
  **/
-public class OrderSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class OrderSessionBean {
     
     private static final Logger LOG = Logger.getLogger(OrderSessionBean.class);
-    //private SessionContext context = null;
 
-    /**
-    * Create the Session Bean
-    * @throws CreateException
-    * @ejb:create-method view-type="remote"
-    */
-    public void ejbCreate() throws CreateException {
-    }
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void reviewNotifications(Date today) 
     		throws SessionInternalError {
     	
@@ -81,9 +59,7 @@ public class OrderSessionBean implements SessionBean {
     		throw new SessionInternalError(e);
     	}
     }
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
+
     public OrderDTO getOrder(Integer orderId) throws SessionInternalError {
         try {
         	OrderDAS das = new OrderDAS();
@@ -95,9 +71,6 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public OrderDTO getOrderEx(Integer orderId, Integer languageId) 
             throws SessionInternalError {
         try {
@@ -113,9 +86,6 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public OrderDTO setStatus(Integer orderId, Integer statusId, 
             Integer executorId, Integer languageId) 
             throws SessionInternalError {
@@ -135,7 +105,6 @@ public class OrderSessionBean implements SessionBean {
      * This is a version used by the http api, should be
      * the same as the web service but without the 
      * security check
-     * @ejb:interface-method view-type="remote"
     public Integer create(OrderWS order, Integer entityId,
             String rootUser, boolean process) 
             throws SessionInternalError {
@@ -167,9 +136,6 @@ public class OrderSessionBean implements SessionBean {
      */
 
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void delete(Integer id, Integer executorId) 
             throws SessionInternalError {
         try {
@@ -182,9 +148,6 @@ public class OrderSessionBean implements SessionBean {
 
     }
  
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public OrderPeriodDTO[] getPeriods(Integer entityId, Integer languageId) 
             throws SessionInternalError {
         try {
@@ -196,9 +159,6 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public OrderPeriodDTO getPeriod(Integer languageId, Integer id) 
             throws SessionInternalError {
         try {
@@ -213,18 +173,12 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void setPeriods(Integer languageId, OrderPeriodDTO[] periods)
             throws SessionInternalError {
         OrderBL bl = new OrderBL();
         bl.updatePeriods(languageId, periods);
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public void addPeriod(Integer entityId, Integer languageId) 
             throws SessionInternalError {
         try {
@@ -236,9 +190,6 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Boolean deletePeriod(Integer periodId) 
             throws SessionInternalError {
         try {
@@ -250,9 +201,6 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public OrderDTO getMainOrder(Integer userId)
             throws SessionInternalError {
         try {
@@ -268,9 +216,6 @@ public class OrderSessionBean implements SessionBean {
         }
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public OrderDTO addItem(Integer itemID, Double quantity, OrderDTO order, 
             Integer languageId, Integer userId, Integer entityId) 
             throws SessionInternalError, ItemDecimalsException {
@@ -283,9 +228,6 @@ public class OrderSessionBean implements SessionBean {
         return order;
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public OrderDTO addItem(Integer itemID, Integer quantity, OrderDTO order,
              Integer languageId, Integer userId, Integer entityId) 
              throws SessionInternalError, ItemDecimalsException {
@@ -294,11 +236,8 @@ public class OrderSessionBean implements SessionBean {
                 entityId);
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId) 
-            throws NamingException, ItemDecimalsException {
+            throws ItemDecimalsException {
         
         OrderBL bl = new OrderBL();
         bl.set(modifiedOrder);
@@ -306,9 +245,6 @@ public class OrderSessionBean implements SessionBean {
         return bl.getDTO();
     }
 
-    /**
-    * @ejb:interface-method view-type="remote"
-    */
     public Integer createUpdate(Integer entityId, Integer executorId, 
             OrderDTO order, Integer languageId) throws SessionInternalError {
         Integer retValue = null;
@@ -327,37 +263,6 @@ public class OrderSessionBean implements SessionBean {
         return retValue;
     }
 
-    // EJB Callbacks -------------------------------------------------
-
-    /**
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    /**
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /**
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    /**
-     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-     */
-    public void setSessionContext(SessionContext aContext)
-            throws EJBException {
-        //context = aContext;
-    }
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
      public Long getCountWithDecimals(Integer itemId) 
              throws SessionInternalError {
          try {

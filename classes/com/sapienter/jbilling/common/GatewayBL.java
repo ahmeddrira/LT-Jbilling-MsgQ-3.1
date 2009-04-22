@@ -57,12 +57,11 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
@@ -367,10 +366,8 @@ public class GatewayBL {
 
     private void orderRequest(String action) throws NamingException, RemoteException,
             SessionInternalError, CreateException, ValidatorException {
-        OrderSessionHome orderHome = (OrderSessionHome) EJBFactory.lookUpHome(
-                OrderSessionHome.class, OrderSessionHome.JNDI_NAME);
-
-        OrderSession orderSession = orderHome.create();
+        OrderSessionBean orderSession = (OrderSessionBean) Context.getBean(
+                Context.Name.ORDER_SESSION);
 
         if (action.equals("create")) {
             OrderWS order = new OrderWS();

@@ -33,13 +33,11 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -124,19 +122,9 @@ public class UploadData {
     
 			// open the file
 			BufferedReader file = new BufferedReader(new FileReader(fileName));
-			// get the remote interfaces
-            JNDILookup EJBFactory = JNDILookup.getFactory(true);
 
             IUserSessionBean remoteSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-
-            OrderSessionHome orderHome = null;
-            if (processOrders.booleanValue()) {
-                orderHome = 
-                        (OrderSessionHome) EJBFactory.lookUpHome(
-                        OrderSessionHome.class,
-                        OrderSessionHome.JNDI_NAME);
-            }
 
 			String header = file.readLine();
 			String columns[] = header.split("\t");
@@ -394,7 +382,8 @@ public class UploadData {
                     }
 		            // this makes it prepaid (2 is pospaid)
 		            //summary.setBillingTypeId(new Integer(1));
-                    OrderSession remoteOrder = orderHome.create(); 
+                    OrderSessionBean remoteOrder = (OrderSessionBean) 
+                            Context.getBean(Context.Name.ORDER_SESSION);
 		            // add the item (quantity = 1)
 		            Integer itemId = Integer.valueOf((String) prop.getProperty(
         					"item_id"));

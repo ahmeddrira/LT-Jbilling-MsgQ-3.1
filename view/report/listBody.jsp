@@ -48,7 +48,7 @@
 				</c:otherwise>
 			</c:choose>
 			<td>
-				<bean:message name="report" property="titlekey"/>
+				<bean:message name="report" property="titleKey"/>
 			</td>
 			<td>
 				<html:link page="/report/form.jsp" paramId="report_id" 

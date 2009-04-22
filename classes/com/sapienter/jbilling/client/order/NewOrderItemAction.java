@@ -41,13 +41,12 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -91,12 +90,8 @@ public class NewOrderItemAction extends Action {
         
         // if not create new one
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            OrderSessionHome orderHome =
-                    (OrderSessionHome) EJBFactory.lookUpHome(
-                    OrderSessionHome.class,
-                    OrderSessionHome.JNDI_NAME);
-            OrderSession remoteOrder = orderHome.create();
+            OrderSessionBean remoteOrder = (OrderSessionBean) Context.getBean(
+                    Context.Name.ORDER_SESSION);
 
             summary = (OrderDTO) session.getAttribute(
                     Constants.SESSION_ORDER_SUMMARY);   

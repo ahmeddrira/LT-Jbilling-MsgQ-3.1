@@ -31,11 +31,9 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
@@ -206,15 +204,10 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
                             com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE)) {
                 // the whole period has to be a multiple of the period unit
                 // This is true, until there is support for prorating.
-                JNDILookup EJBFactory = null;
-                OrderSessionHome orderHome;
                 OrderPeriodDTO myPeriod;
                 try {
-                    EJBFactory = JNDILookup.getFactory(false);
-                    orderHome = (OrderSessionHome) EJBFactory.lookUpHome(OrderSessionHome.class,
-                            OrderSessionHome.JNDI_NAME);
-
-                    OrderSession orderSession = orderHome.create();
+                    OrderSessionBean orderSession = (OrderSessionBean) 
+                            Context.getBean(Context.Name.ORDER_SESSION);
                     myPeriod = orderSession.getPeriod(languageId, summary.getPeriodId());
                 } catch (Exception e) {
                     throw new SessionInternalError("Validating date periods",

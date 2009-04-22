@@ -26,12 +26,9 @@
 package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,12 +47,10 @@ import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormHelper;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -82,16 +77,10 @@ public class ReviewOrderAction extends Action {
         String action = request.getParameter("action");
         log.debug("Review. action = " + action);
 
-        OrderSession remoteOrder = null;
+        OrderSessionBean remoteOrder = null;
         if (!action.equals("read")) {
-            try {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                OrderSessionHome orderHome =
-                        (OrderSessionHome) EJBFactory.lookUpHome(
-                        OrderSessionHome.class,
-                        OrderSessionHome.JNDI_NAME);
-                remoteOrder = orderHome.create();
-            } catch (Exception e) {}
+            remoteOrder = (OrderSessionBean) Context.getBean(
+                    Context.Name.ORDER_SESSION);
         }
 
         try {
@@ -249,17 +238,9 @@ public class ReviewOrderAction extends Action {
     }
     
     private OrderDTO putOrderInSession(Integer orderId,
-            HttpServletRequest request) 
-            throws SessionInternalError, NamingException, RemoteException,
-                CreateException {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        
-        OrderSessionHome orderHome =
-                (OrderSessionHome) EJBFactory.lookUpHome(
-                OrderSessionHome.class,
-                OrderSessionHome.JNDI_NAME);
-                
-        OrderSession order = orderHome.create();
+            HttpServletRequest request) throws SessionInternalError {
+        OrderSessionBean order = (OrderSessionBean) Context.getBean(
+                Context.Name.ORDER_SESSION);
 
         OrderDTO orderDto = order.getOrderEx(orderId,
                 (Integer) session.getAttribute(

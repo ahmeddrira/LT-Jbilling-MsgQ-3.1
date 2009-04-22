@@ -46,10 +46,9 @@ import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.StaleObjectStateException;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
+import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -71,15 +70,12 @@ public class OrderPeriodAction extends Action {
 		DynaValidatorForm myForm;
 		try {
 			String ret = "view";
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
 			ActionMessages messages = new ActionMessages();
 			ActionErrors errors = new ActionErrors();
 
 			String action = request.getParameter("action");
-			OrderSessionHome orderHome = (OrderSessionHome) EJBFactory
-					.lookUpHome(OrderSessionHome.class,
-							OrderSessionHome.JNDI_NAME);
-			OrderSession orderSession = orderHome.create();
+			OrderSessionBean orderSession = (OrderSessionBean) Context.getBean(
+                    Context.Name.ORDER_SESSION);
 
 			if (action.equals("setup")) {
 				OrderPeriodDTO[] periods = orderSession.getPeriods(entityId,

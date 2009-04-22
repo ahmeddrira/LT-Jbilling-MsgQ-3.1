@@ -39,9 +39,7 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -110,13 +108,8 @@ public class MaintainAction extends Action {
                         userSession.getPrimaryContactDTO(userId));
 
                 // add the last invoice dto 
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                InvoiceSessionHome invoiceHome =
-                        (InvoiceSessionHome) EJBFactory.lookUpHome(
-                        InvoiceSessionHome.class,
-                        InvoiceSessionHome.JNDI_NAME);
-        
-                InvoiceSession invoiceSession = invoiceHome.create();
+                InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+                        Context.getBean(Context.Name.INVOICE_SESSION);
                 if (userDto.getLastInvoiceId() != null) {
                     log.debug("adding the latest inovoice: " + 
                             userDto.getLastInvoiceId());

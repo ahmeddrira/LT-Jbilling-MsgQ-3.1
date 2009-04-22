@@ -695,7 +695,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
     public void processOverdue(Date today, Integer entityId)
-            throws SQLException, NamingException, PluggableTaskException {
+            throws SQLException, PluggableTaskException {
         LOG.debug("Processing overdue invoices for entity " + entityId);
 
         prepareStatement(InvoiceSQL.overdue);

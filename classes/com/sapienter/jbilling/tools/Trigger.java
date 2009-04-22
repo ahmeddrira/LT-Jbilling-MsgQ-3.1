@@ -36,10 +36,9 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.OrderSession;
 import com.sapienter.jbilling.interfaces.OrderSessionHome;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.list.ListSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
@@ -70,11 +69,8 @@ public class Trigger {
                 OrderSessionHome.class,
                 OrderSessionHome.JNDI_NAME);
             OrderSession remoteOrder = orderHome.create();
-            InvoiceSessionHome invoiceHome =
-                (InvoiceSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                InvoiceSessionHome.class,
-                InvoiceSessionHome.JNDI_NAME);
-            InvoiceSession remoteInvoice = invoiceHome.create();
+            InvoiceSessionBean remoteInvoice = (InvoiceSessionBean) 
+                    Context.getBean(Context.Name.INVOICE_SESSION);
             ListSessionBean remoteList = (ListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
 			

@@ -37,10 +37,9 @@ import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Calls the report session bean to get the specified report DTO
@@ -66,13 +65,8 @@ public class DownloadTag extends TagSupport {
         InvoiceDTO invoice = (InvoiceDTO) session.getAttribute(
                 Constants.SESSION_INVOICE_DTO);
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            InvoiceSessionHome invoiceHome =
-                    (InvoiceSessionHome) EJBFactory.lookUpHome(
-                    InvoiceSessionHome.class,
-                    InvoiceSessionHome.JNDI_NAME);
-        
-            InvoiceSession invoiceSession = invoiceHome.create();
+            InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+                    Context.getBean(Context.Name.INVOICE_SESSION);
 
             HttpServletResponse response = (HttpServletResponse) 
                     pageContext.getResponse();

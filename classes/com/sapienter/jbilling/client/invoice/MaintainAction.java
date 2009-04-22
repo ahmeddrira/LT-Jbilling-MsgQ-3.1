@@ -36,9 +36,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -56,14 +54,8 @@ public class MaintainAction extends Action {
         String forward = "invoice_view";
 
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-
-            InvoiceSessionHome invoiceHome =
-                (InvoiceSessionHome) EJBFactory.lookUpHome(
-                InvoiceSessionHome.class,
-                InvoiceSessionHome.JNDI_NAME);
-    
-            InvoiceSession invoiceSession = invoiceHome.create();
+            InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+                    Context.getBean(Context.Name.INVOICE_SESSION);
 
             // I could call the GenericMaintainAction here, but since
             // there's no create/edit/update with invoices, it'd make 

@@ -39,11 +39,10 @@ import org.apache.struts.action.ActionMessages;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -202,12 +201,8 @@ public class MaintainAction extends Action {
                         Constants.SESSION_USER_DTO);
                 Integer invoiceId = user.getLastInvoiceId();
                 if (invoiceId != null) {
-                    InvoiceSessionHome invoiceHome =
-                        (InvoiceSessionHome) EJBFactory.lookUpHome(
-                        InvoiceSessionHome.class,
-                        InvoiceSessionHome.JNDI_NAME);
-        
-                    InvoiceSession invoiceSession = invoiceHome.create();
+                    InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+                            Context.getBean(Context.Name.INVOICE_SESSION);
                     InvoiceDTO invoice = invoiceSession.getInvoice(
                             invoiceId);
                     if (invoice.getToProcess().intValue() == 1) {

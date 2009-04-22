@@ -46,9 +46,8 @@ import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Marius Munteanu
@@ -106,11 +105,8 @@ public final class DownloadAction extends Action {
             }
 
 			try {
-				JNDILookup EJBFactory = JNDILookup.getFactory(false);
-				InvoiceSessionHome invoiceHome = (InvoiceSessionHome) EJBFactory
-						.lookUpHome(InvoiceSessionHome.class,
-								InvoiceSessionHome.JNDI_NAME);
-				InvoiceSession invoiceSession = invoiceHome.create();
+				InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+                        Context.getBean(Context.Name.INVOICE_SESSION);
 				String filename = invoiceSession.generatePDFFile(map,
                         getServlet().getServletContext().getRealPath("/_FILE_NAME_"));
 

@@ -20,24 +20,18 @@
 
 package com.sapienter.jbilling.server.invoice;
 
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.InvoiceSessionLocal;
-import com.sapienter.jbilling.interfaces.InvoiceSessionLocalHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -52,7 +46,6 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.PreferenceBL;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -60,30 +53,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
  * bean that provides services not directly linked to a particular operation
  *
  * @author emilc
- * @ejb:bean name="InvoiceSession"
- *           display-name="A stateless bean for invoices"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/invoice/InvoiceSession"
- * 
  **/
-public class InvoiceSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class InvoiceSessionBean {
 
-    private Logger log = null;
-    private SessionContext context = null;
+    private static final Logger LOG = Logger.getLogger(
+            InvoiceSessionBean.class);
 
-    /**
-     * Create the Session Bean
-     * @throws CreateException
-     * @ejb:create-method view-type="remote"
-     */
-    public void ejbCreate() throws CreateException {
-    }
-
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public InvoiceDTO getInvoice(Integer invoiceId) throws SessionInternalError {
         InvoiceBL invoice = new InvoiceBL(invoiceId);
         InvoiceDTO dto =  invoice.getDTO();
@@ -91,10 +67,6 @@ public class InvoiceSessionBean implements SessionBean {
         return dto;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void create(Integer entityId, Integer userId,
             NewInvoiceDTO newInvoice)
             throws SessionInternalError {
@@ -113,9 +85,6 @@ public class InvoiceSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public String getFileName(Integer invoiceId) throws SessionInternalError {
         try {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
@@ -126,7 +95,7 @@ public class InvoiceSessionBean implements SessionBean {
             String ret = bundle.getString("invoice.file.name") + '-' +
                     invoice.getEntity().getPublicNumber().replaceAll(
                     "[\\\\~!@#\\$%\\^&\\*\\(\\)\\+`=\\]\\[';/\\.,<>\\?:\"{}\\|]", "_");
-            log.debug("name = " + ret);
+            LOG.debug("name = " + ret);
             return ret;
         } catch (Exception e) {
             throw new SessionInternalError(e);
@@ -138,8 +107,6 @@ public class InvoiceSessionBean implements SessionBean {
      * just a single invoice. If the next one fails, it's ok that the
      * previous ones got updated. In fact, they should, since the email
      * has been sent.
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public void sendReminders(Date today) throws SessionInternalError {
         try {
@@ -150,19 +117,8 @@ public class InvoiceSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void processOverdue(Date today) throws SessionInternalError {
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            InvoiceSessionLocalHome home =
-                    (InvoiceSessionLocalHome) EJBFactory.lookUpLocalHome(
-                    InvoiceSessionLocalHome.class,
-                    InvoiceSessionLocalHome.JNDI_NAME);
-            InvoiceSessionLocal invoiceSession = home.create();
-            
             // go over all the entities
             for (Iterator it = new CompanyDAS().findEntities().iterator();
                     it.hasNext();) {
@@ -175,7 +131,7 @@ public class InvoiceSessionBean implements SessionBean {
                 } catch (EmptyResultDataAccessException e) {
                 }
                 if (pref.getInt() == 1) {
-                    invoiceSession.processOverdue(today, entityId);
+                    processOverdue(today, entityId);
                 }
             }
         } catch (Exception e) {
@@ -185,19 +141,15 @@ public class InvoiceSessionBean implements SessionBean {
 
     /**
      * Again, this is only to allow the demarcation of a transaction.
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void processOverdue(Date today, Integer entityId)
-            throws NamingException, SessionInternalError, SQLException,
+            throws SessionInternalError, SQLException,
             PluggableTaskException {
         InvoiceBL invoice = new InvoiceBL();
         invoice.processOverdue(today, entityId);
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public InvoiceDTO getInvoiceEx(Integer invoiceId, Integer languageId)  {
         if (invoiceId == null) {
             return null;
@@ -213,9 +165,6 @@ public class InvoiceSessionBean implements SessionBean {
         return ret;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public byte[] getPDFInvoice(Integer invoiceId)
             throws SessionInternalError {
         try {
@@ -241,48 +190,15 @@ public class InvoiceSessionBean implements SessionBean {
         }
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void delete(Integer invoiceId, Integer executorId)
             throws SessionInternalError {
         InvoiceBL invoice = new InvoiceBL(invoiceId);
         invoice.delete(executorId);
     }
-    // EJB Callbacks -------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-     */
-    public void setSessionContext(SessionContext aContext)
-            throws EJBException, RemoteException {
-        log = Logger.getLogger(InvoiceSessionBean.class);
-        context = aContext;
-    }
 
     /**
      * The real path is known only to the web server
      * It should have the token _FILE_NAME_ to be replaced by the generated file
-     * @ejb:interface-method view-type="remote"
      */
     public String generatePDFFile(java.util.Map map, String realPath) throws SessionInternalError {
         Integer operationType = (Integer) map.get("operationType");

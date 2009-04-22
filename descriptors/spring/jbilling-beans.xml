@@ -20,6 +20,7 @@
     <bean id="customerSession" class="com.sapienter.jbilling.server.customer.CustomerSessionBean"/>
     <bean id="listSession" class="com.sapienter.jbilling.server.list.ListSessionBean"/>
     <bean id="userSession" class="com.sapienter.jbilling.server.user.UserSessionBean"/>
+    <bean id="invoiceSession" class="com.sapienter.jbilling.server.invoice.InvoiceSessionBean"/>
 
     <!-- Data Acess Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"

@@ -41,11 +41,10 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
 import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
@@ -340,11 +339,8 @@ public class GenericListAction extends Action {
                             selectionId);   
                 } else if (type.equals(Constants.LIST_TYPE_INVOICE) ||
                         type.equals(Constants.LIST_TYPE_INVOICE_ORDER)) {
-                    InvoiceSessionHome invoiceHome =
-                            (InvoiceSessionHome) EJBFactory.lookUpHome(
-                            InvoiceSessionHome.class,
-                            InvoiceSessionHome.JNDI_NAME);
-                    InvoiceSession remoteInvoice = invoiceHome.create();
+                    InvoiceSessionBean remoteInvoice = (InvoiceSessionBean) 
+                            Context.getBean(Context.Name.INVOICE_SESSION);
                     InvoiceDTO info = remoteInvoice.getInvoice(selectionId);
                     session.setAttribute(Constants.SESSION_INVOICE_DTO, info);
                 } else if (type.equals(Constants.LIST_TYPE_PAYMENT_USER)) {                    

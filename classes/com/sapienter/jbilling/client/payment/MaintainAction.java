@@ -37,15 +37,13 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -62,13 +60,8 @@ public class MaintainAction extends Action {
         String forward = null;
         ActionForward retValue = null;
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            PaymentSessionHome paymentHome =
-                    (PaymentSessionHome) EJBFactory.lookUpHome(
-                    PaymentSessionHome.class,
-                    PaymentSessionHome.JNDI_NAME);
-
-            PaymentSession myRemoteSession = paymentHome.create();
+            PaymentSessionBean myRemoteSession = (PaymentSessionBean) 
+                    Context.getBean(Context.Name.PAYMENT_SESSION);
             
             /*
              * Because of the review step, the payment has some actions that
@@ -243,7 +236,7 @@ public class MaintainAction extends Action {
                 }
                 Integer languageId = (Integer) session.getAttribute(
                         Constants.SESSION_LANGUAGE);
-                PaymentDTOEx dto = ((PaymentSession) myRemoteSession).getPayment(
+                PaymentDTOEx dto = myRemoteSession.getPayment(
                         paymentId, languageId);
                 log.debug("my dto is " + dto);
                 if (dto.getIsRefund() == 1) {
@@ -251,7 +244,7 @@ public class MaintainAction extends Action {
                             dto);
                     if (dto.getPayment() != null) {
                         session.setAttribute(Constants.SESSION_PAYMENT_DTO,
-                                ((PaymentSession) myRemoteSession).getPayment(
+                                myRemoteSession.getPayment(
                                     dto.getPayment().getId(), languageId));                            
                     } else {
                         session.removeAttribute(Constants.SESSION_PAYMENT_DTO);

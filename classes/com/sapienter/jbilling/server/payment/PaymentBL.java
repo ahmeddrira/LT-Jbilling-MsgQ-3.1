@@ -29,15 +29,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -79,7 +78,6 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class PaymentBL extends ResultList implements PaymentSQL {
 
-    private JNDILookup EJBFactory = null;
     private PaymentDAS paymentDas = null;
     private PaymentInfoChequeDAS chequeDas = null;
     private CreditCardDAS ccDas = null;
@@ -110,7 +108,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     private void init() {
         try {
             eLogger = EventLogger.getInstance();
-            EJBFactory = JNDILookup.getFactory(false);
             paymentDas = new PaymentDAS();
 
             chequeDas = new PaymentInfoChequeDAS();
@@ -221,11 +218,11 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      *            The DTO with all the information of the new payment record.
      */
     public void update(Integer executorId, PaymentDTOEx dto)
-            throws FinderException, NamingException, SessionInternalError {
+            throws SessionInternalError {
         // the payment should've been already set when constructing this
         // object
         if (payment == null) {
-            throw new FinderException("Payment to update not set");
+            throw new EmptyResultDataAccessException("Payment to update not set", 1);
         }
 
         // we better log this, so this change can be traced
@@ -347,8 +344,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                 payment.getPaymentMethod(), payment.getPaymentResult(), payment.getIsRefund(), payment.getIsPreauth(), payment.getCurrency(), payment.getBaseUser());
     }
 
-    public PaymentDTOEx getDTOEx(Integer language) throws FinderException,
-            NamingException {
+    public PaymentDTOEx getDTOEx(Integer language) {
         PaymentDTOEx dto = new PaymentDTOEx(getDTO());
         dto.setUserId(payment.getBaseUser().getUserId());
         // now add all the invoices that were paid by this payment
@@ -584,8 +580,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         return cachedResults;
     }
 
-    public boolean isMethodAccepted(Integer entityId, Integer paymentMethodId)
-            throws FinderException {
+    public boolean isMethodAccepted(Integer entityId, Integer paymentMethodId) {
 
         boolean retValue = false;
 
@@ -669,7 +664,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     public Integer[] getManyWS(Integer userId, Integer number,
-            Integer languageId) throws NamingException, FinderException {
+            Integer languageId) {
         List<Integer> result = new PaymentDAS().findIdsByUserLatestFirst(
                 userId, number);
         return result.toArray(new Integer[result.size()]);
@@ -710,7 +705,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             PaymentDTOEx dto = new PaymentDTOEx(getDTO());
 
             // not pretty, but the methods are there
-            PaymentSessionBean psb = new PaymentSessionBean();
+            PaymentSessionBean psb = (PaymentSessionBean) Context.getBean(
+                    Context.Name.PAYMENT_SESSION);
             // make the link between the payment and the invoice
             Float paidAmount = new Float(psb.applyPayment(dto, invoice, true));
             createMap(invoice, paidAmount);

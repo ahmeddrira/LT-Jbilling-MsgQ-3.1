@@ -39,13 +39,11 @@ import org.apache.struts.validator.DynaValidatorForm;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
@@ -295,7 +293,6 @@ public class GenericListAction extends Action {
                 retValue = (mapping.findForward(forwardFrom));
             
             } else {
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
                 Integer selectionId = Integer.valueOf(selectionStr);
                
                 if (type.equals(Constants.LIST_TYPE_CUSTOMER) ||
@@ -344,11 +341,8 @@ public class GenericListAction extends Action {
                     InvoiceDTO info = remoteInvoice.getInvoice(selectionId);
                     session.setAttribute(Constants.SESSION_INVOICE_DTO, info);
                 } else if (type.equals(Constants.LIST_TYPE_PAYMENT_USER)) {                    
-                    PaymentSessionHome paymentHome =
-                            (PaymentSessionHome) EJBFactory.lookUpHome(
-                            PaymentSessionHome.class,
-                            PaymentSessionHome.JNDI_NAME);
-                    PaymentSession remotePayment = paymentHome.create();
+                    PaymentSessionBean remotePayment = (PaymentSessionBean) 
+                            Context.getBean(Context.Name.PAYMENT_SESSION);
                     PaymentDTO info = remotePayment.getPayment(selectionId, 
                             (Integer) session.getAttribute(
                                 Constants.SESSION_LANGUAGE));

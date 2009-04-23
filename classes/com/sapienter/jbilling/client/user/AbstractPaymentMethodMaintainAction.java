@@ -20,13 +20,9 @@
 
 package com.sapienter.jbilling.client.user;
 
-import java.rmi.RemoteException;
-
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -50,7 +46,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 	private final String myForwardEdit;
 
 	private final IUserSessionBean myUserSession;
-	private final PaymentSession myPaymentSession;
+	private final PaymentSessionBean myPaymentSession;
 
 	public AbstractPaymentMethodMaintainAction(String formName,
 			String logFriendlyActionType, String numberField, String forwardEdit) {
@@ -59,15 +55,10 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 		myForwardEdit = forwardEdit;
 
 		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-
-			PaymentSessionHome paymentHome = (PaymentSessionHome) EJBFactory
-					.lookUpHome(PaymentSessionHome.class,
-							PaymentSessionHome.JNDI_NAME);
-
 			myUserSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-			myPaymentSession = paymentHome.create();
+			myPaymentSession = (PaymentSessionBean) Context.getBean(
+                    Context.Name.PAYMENT_SESSION);
 
 		} catch (Exception e) {
 			throw new SessionInternalError("Initializing "
@@ -107,7 +98,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 	}
 
 	@Override
-	protected ForwardAndMessage doCreate(DTO dto) throws RemoteException {
+	protected ForwardAndMessage doCreate(DTO dto) {
 		throw new UnsupportedOperationException(
 				"Can't create payment method. Create mode is not directly supported");
 	}
@@ -121,7 +112,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 		return myUserSession;
 	}
 
-	protected PaymentSession getPaymentSession() {
+	protected PaymentSessionBean getPaymentSession() {
 		return myPaymentSession;
 	}
 

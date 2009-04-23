@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.client.payment;
 
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -36,9 +35,9 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.PaymentSession;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
@@ -87,9 +86,9 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	private static final String MESSAGE_REVIEW = "payment.review";
 	private static final String MESSAGE_INVOICE_GENERATED = "process.invoiceGenerated";
 	
-	private final PaymentSession myPaymentSession;
+	private final PaymentSessionBean myPaymentSession;
 	
-	public PaymentCrudAction(PaymentSession paymentSession){
+	public PaymentCrudAction(PaymentSessionBean paymentSession){
 		super(FORM, "payment");
 		myPaymentSession = paymentSession;
 		LOG = Logger.getLogger(PaymentCrudAction.class);
@@ -105,7 +104,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doCreate(PaymentDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doCreate(PaymentDTOEx dto) {
         // this is not an update, it's the previous step of the review
         // payments have no updates (unmodifiable transactions).
         if (dto.getIsRefund() == 1) {
@@ -122,7 +121,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
+	protected ForwardAndMessage doSetup() {
         CreditCardDTO ccDto = null;
         AchDTO achDto = null;
         PaymentInfoChequeDTO chequeDto = null;
@@ -229,7 +228,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	}
 
 	@Override
-	protected PaymentDTOEx doEditFormToDTO() throws RemoteException {
+	protected PaymentDTOEx doEditFormToDTO() {
 		PaymentDTOEx dto = new PaymentDTOEx();
         // the id, only for payment edits
         dto.setId((Integer) myForm.get(FIELD_ID) == null ? 0 : (Integer) myForm.get(FIELD_ID));
@@ -417,7 +416,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(PaymentDTOEx dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(PaymentDTOEx dto) {
 		ForwardAndMessage result;
         if ("yes".equals(myForm.get("direct"))) {
         	result = new ForwardAndMessage(FORWARD_FROM_ORDER);
@@ -428,7 +427,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	}
 	
 	@Override
-	protected ForwardAndMessage doDelete() throws RemoteException {
+	protected ForwardAndMessage doDelete() {
         PaymentDTOEx paymentDto = (PaymentDTOEx) //
                 session.getAttribute(Constants.SESSION_PAYMENT_DTO);
         Integer id = paymentDto.getId();

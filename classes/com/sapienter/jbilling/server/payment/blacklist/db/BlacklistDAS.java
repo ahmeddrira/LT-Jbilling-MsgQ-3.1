@@ -171,7 +171,7 @@ public class BlacklistDAS extends AbstractDAS<BlacklistDTO> {
         */
 
         // should be faster than above, but hql doesn't do cascading deletes :(
-        String hql = "DELETE FROM CreditCard WHERE id IN (" +
+        String hql = "DELETE FROM CreditCardDTO WHERE id IN (" +
                 "SELECT creditCard.id FROM BlacklistDTO " + 
                 "WHERE company.id = :company AND source = :source)";
         Query query = getSession().createQuery(hql);

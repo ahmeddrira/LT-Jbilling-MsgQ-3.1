@@ -20,10 +20,6 @@
 
 package com.sapienter.jbilling.server.notification;
 
-
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -101,12 +97,6 @@ public class NotificationSessionBean {
                     new Integer(payment.getEntity().getPaymentResult().getId()).equals(
                             Constants.RESULT_OK));
             retValue = notify(user.getEntity(), message);
-        } catch (NamingException e) {
-            LOG.error("Exception sending email payment", e);
-            throw new SessionInternalError(e);
-        } catch (FinderException e) {
-            LOG.error("Exception sending email payment", e);
-            throw new SessionInternalError(e);
         } catch (NotificationNotFoundException e) {
             retValue = new Boolean(false);
         } 

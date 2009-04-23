@@ -1151,7 +1151,8 @@ public class WebServicesSessionBean implements SessionBean {
             //TODO Validate that the user ID of the payment is the same as the
             // owner of the invoice
             payment.setIsRefund(new Integer(0));
-            PaymentSessionBean session = new PaymentSessionBean();
+            PaymentSessionBean session = (PaymentSessionBean) Context.getBean(
+                    Context.Name.PAYMENT_SESSION);
             LOG.debug("Done");
             return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
         } catch (Exception e) {
@@ -1666,7 +1667,8 @@ public class WebServicesSessionBean implements SessionBean {
         }
 
         try {
-            PaymentSessionBean payment = new PaymentSessionBean();
+            PaymentSessionBean payment = (PaymentSessionBean) Context.getBean(
+                    Context.Name.PAYMENT_SESSION);
             PaymentDTOEx paymentDto = new PaymentDTOEx();
             paymentDto.setIsRefund(0);
             paymentDto.setAmount(invoice.getBalance());

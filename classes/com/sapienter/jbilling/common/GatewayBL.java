@@ -57,13 +57,12 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -78,6 +77,7 @@ import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil Moved to the common package bacause the web services can use the
@@ -467,10 +467,8 @@ public class GatewayBL {
 
     private void paymentRequest(String action) {
         try {
-            PaymentSessionHome paymentHome = (PaymentSessionHome) EJBFactory.lookUpHome(
-                    PaymentSessionHome.class, PaymentSessionHome.JNDI_NAME);
-
-            PaymentSession paymentSession = paymentHome.create();
+            PaymentSessionBean paymentSession = (PaymentSessionBean) 
+                    Context.getBean(Context.Name.PAYMENT_SESSION);
 
             /*
              * This is meant for online payments, at the time of signup of a

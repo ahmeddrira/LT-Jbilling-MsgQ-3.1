@@ -36,11 +36,8 @@ import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.PaymentSessionLocal;
-import com.sapienter.jbilling.interfaces.PaymentSessionLocalHome;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -55,6 +52,7 @@ import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
 import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask;
 import com.sapienter.jbilling.server.pluggableTask.OrderFilterTask;
@@ -77,15 +75,12 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
+import com.sapienter.jbilling.server.util.Context;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 public class BillingProcessBL extends ResultList
         implements ProcessSQL {
 
-    private JNDILookup EJBFactory = null;
     private BillingProcessDAS billingProcessDas = null;
     private BillingProcessDTO billingProcess = null;
     private ProcessRunDAS processRunHome = null;
@@ -113,12 +108,6 @@ public class BillingProcessBL extends ResultList
 
         // now create the run info row
         processRunHome = new ProcessRunDAS();
-        try {
-            EJBFactory = JNDILookup.getFactory(false);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
-
     }
 
     public BillingProcessDTO getEntity() {
@@ -168,10 +157,7 @@ public class BillingProcessBL extends ResultList
      * meant to be called outside the billing process.
      * @param orderId
      * @return
-     * @throws NamingException
-     * @throws FinderException
      * @throws PluggableTaskException
-     * @throws CreateException
      * @throws SessionInternalError
      */
     public InvoiceDTO generateInvoice(Integer orderId,
@@ -981,24 +967,18 @@ public class BillingProcessBL extends ResultList
      * @param processId
      * @param runId
      * @param newInvoice
-     * @throws NamingException
      * @throws SessionInternalError
      * @throws CreateException
-     * @throws FinderException
      */
     public void generatePayment(Integer processId, Integer runId,
             Integer invoiceId)
             throws SessionInternalError {
 
         try {
-            PaymentSessionLocalHome paymentHome =
-                    (PaymentSessionLocalHome) EJBFactory.lookUpLocalHome(
-                    PaymentSessionLocalHome.class,
-                    PaymentSessionLocalHome.JNDI_NAME);
-
             InvoiceBL invoiceBL = new InvoiceBL(invoiceId);
             InvoiceDTO newInvoice = invoiceBL.getEntity();
-            PaymentSessionLocal paymentSess = paymentHome.create();
+            PaymentSessionBean paymentSess = (PaymentSessionBean)
+                    Context.getBean(Context.Name.PAYMENT_SESSION);
             Integer result = paymentSess.generatePayment(newInvoice);
             Integer currencyId = newInvoice.getCurrency().getId();
             BillingProcessRunBL run = new BillingProcessRunBL();

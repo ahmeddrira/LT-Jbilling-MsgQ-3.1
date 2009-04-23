@@ -40,9 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * @author Emil
@@ -112,14 +111,8 @@ public class ExternalCallbackServlet extends HttpServlet {
                     LOG.debug("payment status is " + paymentStatus + " Rejecting");
                 } else { 
                     try {
-                    
-                        JNDILookup EJBFactory = JNDILookup.getFactory(false);            
-                        PaymentSessionHome paymentHome =
-                                (PaymentSessionHome) EJBFactory.lookUpHome(
-                                PaymentSessionHome.class,
-                                PaymentSessionHome.JNDI_NAME);
-        
-                        PaymentSession paymentSession = paymentHome.create();
+                        PaymentSessionBean paymentSession = (PaymentSessionBean) 
+                                Context.getBean(Context.Name.PAYMENT_SESSION);
                         Integer invoiceId = getInt(invoiceNumber);
                         Float amount = Float.valueOf(paymentAmount);
                         Integer userId = getInt(userIdStr);

@@ -45,10 +45,9 @@ import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.upload.FormFile;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
+import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Handles uploaded blacklist csv files to either add to or replace
@@ -96,13 +95,8 @@ public class BlacklistUploadAction extends Action {
 
                 // if there were no errors
                 if (errors.isEmpty()) {
-                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                    PaymentSessionHome paymentHome =
-                            (PaymentSessionHome) EJBFactory.lookUpHome(
-                            PaymentSessionHome.class,
-                            PaymentSessionHome.JNDI_NAME);
-        
-                    PaymentSession paymentSession = paymentHome.create();
+                    PaymentSessionBean paymentSession = (PaymentSessionBean)
+                            Context.getBean(Context.Name.PAYMENT_SESSION);
 
                     int number = paymentSession.processCsvBlacklist(
                             filePath, replace, entityId);

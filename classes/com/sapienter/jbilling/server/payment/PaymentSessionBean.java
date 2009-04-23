@@ -21,23 +21,17 @@
 package com.sapienter.jbilling.server.payment;
 
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -63,7 +57,6 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -71,32 +64,15 @@ import org.springframework.dao.EmptyResultDataAccessException;
  * bean that provides services not directly linked to a particular operation
  *
  * @author emilc
- * @ejb:bean name="PaymentSession"
- *           display-name="A stateless bean for payments"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/invoice/PaymentSession"
- * 
  */
-public class PaymentSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class PaymentSessionBean {
 
     private final Logger LOG = Logger.getLogger(PaymentSessionBean.class);
-    SessionContext ctx = null;
-
-    /**
-    * Create the Session Bean
-    * @throws CreateException
-    * @ejb:create-method view-type="both"
-    */
-    public void ejbCreate() throws CreateException {
-    }
 
    /**
     * This method goes over all the over due invoices for a given entity and
     * generates a payment record for each of them.
-    *  
-    * @ejb:interface-method view-type="local"
     */
     public void processPayments(Integer entityId) throws SessionInternalError {
         try {
@@ -119,8 +95,6 @@ public class PaymentSessionBean implements SessionBean {
     * to be created and processed real-time.
     * @return If the payment was not successful for any reason, null, 
     * otherwise the payment method used for the payment
-    * @ejb:interface-method view-type="local"
-    * @ejb.transaction type="Required"
     */
     public Integer generatePayment(InvoiceDTO invoice) 
             throws SessionInternalError {
@@ -191,7 +165,6 @@ public class PaymentSessionBean implements SessionBean {
      * 
      * @param integer
      * @throws SessionInternalError
-     * @ejb:interface-method view-type="remote"
      */
     public void deletePayment(Integer paymentId) throws SessionInternalError {
 
@@ -290,8 +263,6 @@ public class PaymentSessionBean implements SessionBean {
      * This is called from the client to process real-time a payment, usually
      * cc. 
      * 
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      * @param dto
      * @param invoiceId
      * @throws SessionInternalError
@@ -331,9 +302,6 @@ public class PaymentSessionBean implements SessionBean {
     /**
      * This is called from the client to apply an existing payment to 
      * an invoice. 
-     * 
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public void applyPayment(Integer paymentId, Integer invoiceId) {
         LOG.debug("Applying payment " + paymentId + " to invoice " 
@@ -470,9 +438,6 @@ public class PaymentSessionBean implements SessionBean {
      * apply payment  
      * Id does suport invoiceId = null because it is possible to get a payment
      * that is not paying a specific invoice, a deposit for prepaid models.
-     * 
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public Integer applyPayment(PaymentDTOEx payment, Integer invoiceId)  
             throws SessionInternalError {
@@ -522,9 +487,6 @@ public class PaymentSessionBean implements SessionBean {
         }
     }  
     
-    /** 
-    * @ejb:interface-method view-type="remote"
-    */
     public PaymentDTOEx getPayment(Integer id, Integer languageId) 
             throws SessionInternalError {
         try {
@@ -535,10 +497,6 @@ public class PaymentSessionBean implements SessionBean {
         }
     }
     
-
-    /** 
-    * @ejb:interface-method view-type="remote"
-    */
     public boolean isMethodAccepted(Integer entityId, 
             Integer paymentMethodId) 
             throws SessionInternalError {
@@ -556,10 +514,7 @@ public class PaymentSessionBean implements SessionBean {
         }
     } 
     
-    /** 
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public Integer processPayout(PaymentDTOEx payment, 
             Date start, Date end, Integer partnerId, Boolean process) 
             throws SessionInternalError {
@@ -572,10 +527,7 @@ public class PaymentSessionBean implements SessionBean {
         }
     }
 
-    /** 
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public Boolean processPaypalPayment(Integer invoiceId, String entityEmail,
             Float amount, String currency, Integer paramUserId, String userEmail) 
             throws SessionInternalError {
@@ -635,7 +587,6 @@ public class PaymentSessionBean implements SessionBean {
                     ret = true;
                     
                     // notify the customer that the payment was received
-                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
                     NotificationBL notif = new NotificationBL();
                     MessageDTO message = notif.getPaymentMessage(entityId, 
                             payment, true);
@@ -665,37 +616,27 @@ public class PaymentSessionBean implements SessionBean {
     /** 
      * Clients with the right priviliges can update payments with result
      * 'entered' that are not linked to an invoice
-     *  
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public void update(Integer executorId, PaymentDTOEx dto) 
-            throws SessionInternalError, FinderException {
+            throws SessionInternalError, EmptyResultDataAccessException {
         if (dto.getId() == 0) {
             throw new SessionInternalError("ID missing in payment to update");
         }
         
         LOG.debug("updateting payment " + dto.getId());
-        try {
-            PaymentBL bl = new PaymentBL(dto.getId());
-            if (new Integer(bl.getEntity().getPaymentResult().getId()).equals(Constants.RESULT_ENTERED)) {
+        PaymentBL bl = new PaymentBL(dto.getId());
+        if (new Integer(bl.getEntity().getPaymentResult().getId()).equals(Constants.RESULT_ENTERED)) {
                 
-            } else {
-                throw new SessionInternalError("Payment update only available" +
-                        " for entered payments");
-            }
-            
-            bl.update(executorId, dto);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
+        } else {
+            throw new SessionInternalError("Payment update only available" +
+                    " for entered payments");
         }
+            
+        bl.update(executorId, dto);
     }
     
     /** 
      * Removes a payment-invoice link
-     *  
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public void removeInvoiceLink(Integer mapId) {
         PaymentBL payment = new PaymentBL();
@@ -707,47 +648,10 @@ public class PaymentSessionBean implements SessionBean {
      * It will either add to or replace the existing uploaded 
      * blacklist for the given entity (company). Returns the number
      * of new blacklist entries created.
-     *
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public int processCsvBlacklist(String filePath, boolean replace, 
             Integer entityId) throws CsvProcessor.ParseException {
         CsvProcessor processor = new CsvProcessor();
-        try {
-            return processor.process(filePath, replace, entityId);
-        } catch (CsvProcessor.ParseException pe) {
-            ctx.setRollbackOnly();
-            throw pe;
-        }
+        return processor.process(filePath, replace, entityId);
     }
-
-    // EJB Callbacks -------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-     */
-    public void setSessionContext(SessionContext aContext)
-            throws EJBException, RemoteException {
-        ctx = aContext;
-    }
-
 }

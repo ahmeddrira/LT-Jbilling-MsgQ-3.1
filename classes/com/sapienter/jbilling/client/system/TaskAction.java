@@ -20,32 +20,26 @@
 
 package com.sapienter.jbilling.client.system;
 
-import java.rmi.RemoteException;
-
 import javax.persistence.OptimisticLockException;
 
 import com.sapienter.jbilling.client.util.CrudAction;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionHome;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 public class TaskAction extends CrudAction {
 
     //private static final Logger LOG = Logger.getLogger(TaskAction.class);
-    private PluggableTaskSession taskSession = null;
+    private PluggableTaskSessionBean taskSession = null;
     
     public TaskAction() {
         setFormName("task");
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            PluggableTaskSessionHome taskHome = (PluggableTaskSessionHome) EJBFactory.lookUpHome(
-                    PluggableTaskSessionHome.class,
-                    PluggableTaskSessionHome.JNDI_NAME);
-            taskSession = taskHome.create();
+            taskSession = (PluggableTaskSessionBean) Context.getBean(
+                    Context.Name.PLUGGABLE_TASK_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError("Initializing task action" + 
                     e.getMessage());
@@ -53,18 +47,13 @@ public class TaskAction extends CrudAction {
     }
     
     public void setup() {
-        try {
-            PluggableTaskDTO[] dtos = taskSession.getAllDTOs(entityId);
-            for (PluggableTaskDTO dto: dtos) {
-            	// make sure that each task has its own copy of a type
-            	// otherwise they share types and updating get messy
-            	dto.setType(new PluggableTaskTypeDTO(dto.getType()));
-            }
-            myForm.set("tasks", dtos);
-        } catch (RemoteException e) {
-            throw new SessionInternalError("setup task action", TaskAction.class, e);
+        PluggableTaskDTO[] dtos = taskSession.getAllDTOs(entityId);
+        for (PluggableTaskDTO dto: dtos) {
+            // make sure that each task has its own copy of a type
+            // otherwise they share types and updating get messy
+            dto.setType(new PluggableTaskTypeDTO(dto.getType()));
         }
-
+        myForm.set("tasks", dtos);
     }
 
     public Object editFormToDTO() {
@@ -115,32 +104,17 @@ public class TaskAction extends CrudAction {
             dto.setProcessingOrder(new Integer(1));
             dto.getType().setId(new Integer(1));
             // call the server tier to get it into the data base
-            try {
-                taskSession.create(executorId, dto);
-            } catch (RemoteException e) {
-                throw new SessionInternalError(action + " task action", 
-                        this.getClass(), e);
-            }
+            taskSession.create(executorId, dto);
         } else if (action.equals("addParameter")) {
             PluggableTaskParameterDTO dto = new PluggableTaskParameterDTO();
             dto.setStrValue("default");
             dto.setName("parameter_name");
             
-            try {
-                Integer id = Integer.valueOf(request.getParameter("id"));
-                taskSession.createParameter(executorId, id, dto);
-            } catch (RemoteException e) {
-                throw new SessionInternalError(action + " task action" + 
-                        e.getMessage());
-            }
+            Integer id = Integer.valueOf(request.getParameter("id"));
+            taskSession.createParameter(executorId, id, dto);
         } else if (action.equals("deleteParameter")) {
-            try {
-                Integer id = Integer.valueOf(request.getParameter("id"));
-                taskSession.deleteParameter(executorId, id);
-            } catch (RemoteException e) {
-                throw new SessionInternalError(action + " task action" + 
-                        e.getMessage());
-            }
+            Integer id = Integer.valueOf(request.getParameter("id"));
+            taskSession.deleteParameter(executorId, id);
         } else {
             return false;
         }

@@ -20,8 +20,6 @@
 
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -38,8 +36,7 @@ public class PluggableTaskBL<T> {
     private PluggableTaskParameterDAS dasParameter = null;
     private PluggableTaskDTO pluggableTask = null;
     
-    public PluggableTaskBL(Integer pluggableTaskId) 
-            throws FinderException {
+    public PluggableTaskBL(Integer pluggableTaskId) {
         init();
         set(pluggableTaskId);
     }
@@ -54,16 +51,15 @@ public class PluggableTaskBL<T> {
         dasParameter = new PluggableTaskParameterDAS();
     }
 
-    public void set(Integer id) throws FinderException {
+    public void set(Integer id) {
         pluggableTask = das.find(id);
     }
     
-    public void set(Integer entityId, Integer typeId) 
-            throws FinderException {
+    public void set(Integer entityId, Integer typeId) {
         pluggableTask = das.findByEntityType(entityId, typeId);
     }
 
-    public void set(PluggableTaskDTO task) throws FinderException {
+    public void set(PluggableTaskDTO task) {
         pluggableTask = task;
     }
 
@@ -124,8 +120,7 @@ public class PluggableTaskBL<T> {
     }
 
 
-    public void updateParameters(PluggableTaskDTO dto) 
-            throws FinderException {
+    public void updateParameters(PluggableTaskDTO dto) {
 
         // update the parameters from the dto
         for (PluggableTaskParameterDTO parameter: dto.getParameters()) {
@@ -133,8 +128,7 @@ public class PluggableTaskBL<T> {
         }
     }
     
-    private void updateParameter(PluggableTaskParameterDTO dto) 
-            throws FinderException {
+    private void updateParameter(PluggableTaskParameterDTO dto) {
         dto.expandValue();
         dasParameter.save(dto);
         // clear the rules cache (just in case this plug-in was ruled based)

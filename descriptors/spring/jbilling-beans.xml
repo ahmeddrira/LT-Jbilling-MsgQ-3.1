@@ -22,6 +22,7 @@
     <bean id="userSession" class="com.sapienter.jbilling.server.user.UserSessionBean"/>
     <bean id="invoiceSession" class="com.sapienter.jbilling.server.invoice.InvoiceSessionBean"/>
     <bean id="orderSession" class="com.sapienter.jbilling.server.order.OrderSessionBean"/>
+    <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean"/>
 
     <!-- Data Acess Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"

@@ -22,8 +22,6 @@ package com.sapienter.jbilling.server.payment.tasks;
 
 import java.util.Map;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -108,14 +106,9 @@ public abstract class AbstractPaymentRouterTask extends PluggableTask
 
     protected PaymentTask instantiateTask(Integer taskId)
    		    throws PluggableTaskException {
-        PluggableTaskBL<PaymentTask> taskLoader;
-        try {
-            taskLoader = new PluggableTaskBL<PaymentTask>(taskId);
-            return taskLoader.instantiateTask();
-        } catch (FinderException e) {
-            throw new PluggableTaskException("Task can not be found: id: "
-                    + taskId, e);
-        }
+        PluggableTaskBL<PaymentTask> taskLoader = 
+                new PluggableTaskBL<PaymentTask>(taskId);
+        return taskLoader.instantiateTask();
     }
 
     protected Integer intValueOf(Object object) {

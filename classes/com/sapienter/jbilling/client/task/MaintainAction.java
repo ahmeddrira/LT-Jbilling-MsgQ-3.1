@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.client.task;
 
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,12 +30,11 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSession;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionHome;
+import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends
 		UpdateOnlyCrudActionBase<PluggableTaskDTO> {
@@ -45,18 +43,15 @@ public class MaintainAction extends
 	private static final String MESSAGE_UPDATED = "task.parameter.update.done";
 	private static final String FORWARD_EDIT = "parameter_edit";
 	
-	private final PluggableTaskSession mySession;
+	private final PluggableTaskSessionBean mySession;
 
 	public MaintainAction() {
 		super(FORM_PARAMETER, "pluggable task parameters",
 				FORWARD_EDIT);
 
 		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			PluggableTaskSessionHome pluggableTaskHome = (PluggableTaskSessionHome) EJBFactory
-					.lookUpHome(PluggableTaskSessionHome.class,
-							PluggableTaskSessionHome.JNDI_NAME);
-			mySession = pluggableTaskHome.create();
+			mySession = (PluggableTaskSessionBean) Context.getBean(
+                    Context.Name.PLUGGABLE_TASK_SESSION);
 		} catch (Exception e) {
 			throw new SessionInternalError(
 					"Initializing pluggable task parameters CRUD action: " + e.getMessage());
@@ -65,7 +60,7 @@ public class MaintainAction extends
 	}
 
 	@Override
-	protected PluggableTaskDTO doEditFormToDTO() throws RemoteException {
+	protected PluggableTaskDTO doEditFormToDTO() {
 		PluggableTaskDTO result = (PluggableTaskDTO) session
 				.getAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO);
 		String values[] = (String[]) myForm.get("value");
@@ -86,13 +81,13 @@ public class MaintainAction extends
 	}
 	
 	@Override
-	protected ForwardAndMessage doUpdate(PluggableTaskDTO dto) throws RemoteException {
+	protected ForwardAndMessage doUpdate(PluggableTaskDTO dto) {
         mySession.updateParameters(executorId, dto);
         return getForwardEdit(MESSAGE_UPDATED);
 	}
 	
 	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
+	protected ForwardAndMessage doSetup() {
         Integer type = null;
         if (request.getParameter("type").equals("notification")) {
             type = PluggableTaskDTO.TYPE_EMAIL;

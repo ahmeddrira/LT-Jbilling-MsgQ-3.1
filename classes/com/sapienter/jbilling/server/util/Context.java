@@ -39,6 +39,7 @@ public class Context {
         USER_SESSION,
         INVOICE_SESSION,
         ORDER_SESSION,
+        PLUGGABLE_TASK_SESSION,
         PROVISIONING,
         VELOCITY,
         DATA_SOURCE,
@@ -62,6 +63,7 @@ public class Context {
         springBeans.put(Name.USER_SESSION, "userSession");
         springBeans.put(Name.INVOICE_SESSION, "invoiceSession");
         springBeans.put(Name.ORDER_SESSION, "orderSession");
+        springBeans.put(Name.PLUGGABLE_TASK_SESSION, "pluggableTaskSession");
 
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");

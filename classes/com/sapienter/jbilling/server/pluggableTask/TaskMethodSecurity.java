@@ -22,8 +22,6 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.lang.reflect.Method;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.PermissionConstants;
@@ -149,17 +147,12 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
      * @param taskId
      */
     private void validate(Integer userId, Integer taskId) {
-        try {
-            UserBL user = new UserBL(userId);
-            PluggableTaskBL task = new PluggableTaskBL(taskId);
-            if (user.getEntity().getEntity().getId() !=
-                    task.getDTO().getEntityId()) {
-                throw new SecurityException("Unauthorize access to user " + 
-                        userId);
-            }
-        } catch (FinderException e) {
-            throw new SecurityException("Row not present validating " + 
-                    e.getMessage());
+        UserBL user = new UserBL(userId);
+        PluggableTaskBL task = new PluggableTaskBL(taskId);
+        if (user.getEntity().getEntity().getId() !=
+                task.getDTO().getEntityId()) {
+            throw new SecurityException("Unauthorize access to user " + 
+                    userId);
         }
     }
     

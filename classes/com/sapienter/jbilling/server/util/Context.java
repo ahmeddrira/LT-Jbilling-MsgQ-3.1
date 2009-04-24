@@ -74,13 +74,13 @@ public class Context {
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");
         springBeans.put(Name.JBILLING_TABLE_DAS, "jbillingTableDAS");
+        springBeans.put(Name.PLUGGABLE_TASK_DAS, "pluggableTaskDAS");
         
         // other simple beans
         springBeans.put(Name.PROVISIONING, "provisioning");
         springBeans.put(Name.VELOCITY, "velocityEngine");
         springBeans.put(Name.DATA_SOURCE, "dataSource");
         springBeans.put(Name.HIBERNATE_TEMPLATE, "hibernateTemplate");
-        springBeans.put(Name.PLUGGABLE_TASK_DAS, "pluggableTaskDAS");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CAI, "cai");
     };

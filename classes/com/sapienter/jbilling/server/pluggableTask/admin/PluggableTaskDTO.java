@@ -50,7 +50,7 @@ import org.hibernate.annotations.FetchMode;
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="pluggable_task",
-        allocationSize = 100
+        allocationSize = 10
         )
 @Table(name = "pluggable_task")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

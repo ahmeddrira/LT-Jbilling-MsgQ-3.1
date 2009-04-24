@@ -524,7 +524,6 @@ public final class EntitySignup {
             { String.valueOf(newEntityId), "9", "1","1" }, // BasicEmailNotificationTask
             { String.valueOf(newEntityId), "10","1","1" }, // BasicPaymentInfoTask cc info fetcher
             { String.valueOf(newEntityId), "12","2","1" }, // Paper invoice (for download PDF).
-            { String.valueOf(newEntityId), "23","1","1" }, // Subscriber status manager
             { String.valueOf(newEntityId), "25","1","1" }, // Async payment processing (no parameters)
             { String.valueOf(newEntityId), "28","1","1" }, // BasicItemManager
             { String.valueOf(newEntityId), "33","1","1" }, // RulesMediationTask

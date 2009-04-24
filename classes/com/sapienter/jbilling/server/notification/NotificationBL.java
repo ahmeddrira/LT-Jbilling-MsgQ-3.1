@@ -322,7 +322,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                 InvoiceBL invoice = new InvoiceBL(invoiceId);
                 message.addParameter("invoice_number", invoice.getEntity()
                         .getPublicNumber().toString());
-                message.addParameter("invoice", invoice);
+                message.addParameter("invoice", invoice.getEntity());
             }
             message.addParameter("payment", dto);
         } catch (NamingException e) {

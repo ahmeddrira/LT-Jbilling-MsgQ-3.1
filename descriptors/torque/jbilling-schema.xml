@@ -1147,20 +1147,6 @@
             <reference foreign="id" local="item_id"/>
         </foreign-key>
     </table>
-    <table name="promotion_user_map">
-        <column name="user_id" type="INTEGER"/>
-        <column name="promotion_id" type="INTEGER"/>
-        <index name="promotion_user_map_i_2">
-            <index-column name="user_id"/>
-            <index-column name="promotion_id"/>
-        </index>
-        <foreign-key foreignTable="base_user">
-            <reference foreign="id" local="user_id"/>
-        </foreign-key>
-        <foreign-key foreignTable="promotion">
-            <reference foreign="id" local="promotion_id"/>
-        </foreign-key>
-    </table>
     <table name="purchase_order">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="user_id" type="INTEGER"/>

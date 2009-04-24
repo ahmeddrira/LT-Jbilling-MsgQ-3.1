@@ -41,55 +41,66 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 public class PluggableTaskTypeDTO extends AbstractDescription implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(PluggableTaskTypeDTO.class);
-    
+
     @Id
-    private int Id;
+    @Column(name = "id")
+    private Integer pk;
 
     @Column(name = "class_name")
     private String className;
 
-    @Column(name="min_parameters")
+    @Column(name = "min_parameters")
     private Integer minParameters;
 
     @ManyToOne
-    @JoinColumn(name="category_id")
+    @JoinColumn(name = "category_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     private PluggableTaskTypeCategoryDTO category;
-    
-    
+
     public PluggableTaskTypeDTO() {
-       // default
+        // default
     }
     // method useful to get a detached copy 
+
     public PluggableTaskTypeDTO(PluggableTaskTypeDTO otherDto) {
-    	Id = otherDto.getId();
-    	className = otherDto.getClassName();
-    	minParameters = otherDto.getMinParameters();
-    	category = otherDto.getCategory();
+        pk = otherDto.getId();
+        className = otherDto.getClassName();
+        minParameters = otherDto.getMinParameters();
+        category = otherDto.getCategory();
     }
 
     protected String getTable() {
         return Constants.TABLE_PLUGGABLE_TASK_TYPE;
     }
 
+    public int getId() {
+        return pk;
+    }
+
     public String getClassName() {
         return className;
     }
+
     public void setClassName(String className) {
         this.className = className;
     }
-    public int getId() {
-        return Id;
+
+    public Integer getPk() {
+        return pk;
     }
-    public void setId(Integer id) {
-        Id = id;
+
+    public void setPk(Integer id) {
+        pk = id;
     }
+
     public Integer getMinParameters() {
         return minParameters;
     }
+
     public void setMinParameters(Integer minParameters) {
         this.minParameters = minParameters;
     }
+
     public void setCategory(PluggableTaskTypeCategoryDTO category) {
         this.category = category;
     }
@@ -97,16 +108,15 @@ public class PluggableTaskTypeDTO extends AbstractDescription implements Seriali
     public PluggableTaskTypeCategoryDTO getCategory() {
         return category;
     }
-    
-    public String toString() {
-      StringBuffer str = new StringBuffer("{");
-      str.append("-" + this.getClass().getName() + "-");
-      str.append("id=" + getId() + " " + "className=" + getClassName() + " " + 
-              "minParameters=" + getMinParameters() + " " + "category=" + getCategory());
-      str.append('}');
 
-      return(str.toString());
+    public String toString() {
+        StringBuffer str = new StringBuffer("{");
+        str.append("-" + this.getClass().getName() + "-");
+        str.append("id=" + getId() + " " + "className=" + getClassName() + " " +
+                "minParameters=" + getMinParameters() + " " + "category=" + getCategory());
+        str.append('}');
+
+        return (str.toString());
 
     }
-
 }

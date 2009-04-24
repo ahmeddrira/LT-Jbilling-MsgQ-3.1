@@ -102,7 +102,7 @@ public class TaskAction extends CrudAction {
             PluggableTaskDTO dto = new PluggableTaskDTO();
             dto.setEntityId(entityId);
             dto.setProcessingOrder(new Integer(1));
-            dto.getType().setId(new Integer(1));
+            dto.getType().setPk(new Integer(1));
             // call the server tier to get it into the data base
             taskSession.create(executorId, dto);
         } else if (action.equals("addParameter")) {

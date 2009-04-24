@@ -32,10 +32,9 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.list.ListTagBase;
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ReportSession;
-import com.sapienter.jbilling.interfaces.ReportSessionHome;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
+import com.sapienter.jbilling.server.report.ReportSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Prepares the result set so the InsertDataRowTag can then render
@@ -72,13 +71,8 @@ public class ExecuteTag extends ListTagBase {
             if (queryResults == null) {
                 // Now I'll call the session bean to get the CachedRowSet with
                 // the results of the query
-                JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                ReportSessionHome reportHome =
-                       (ReportSessionHome) EJBFactory.lookUpHome(
-                        ReportSessionHome.class,
-                        ReportSessionHome.JNDI_NAME);
-    
-                ReportSession myRemoteSession = reportHome.create();
+                ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                        Context.getBean(Context.Name.REPORT_SESSION);
     
                 queryResults = myRemoteSession.execute(report);
                 

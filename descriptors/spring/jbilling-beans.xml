@@ -25,6 +25,7 @@
     <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean"/>
     <bean id="paymentSession" class="com.sapienter.jbilling.server.payment.PaymentSessionBean"/>
     <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
+    <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
 
     <!-- Data Acess Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"

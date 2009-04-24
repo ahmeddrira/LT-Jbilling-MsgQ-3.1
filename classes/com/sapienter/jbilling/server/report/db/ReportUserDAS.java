@@ -19,6 +19,7 @@
  */
 package com.sapienter.jbilling.server.report.db;
 
+import java.util.Date;
 import java.util.Collection;
 
 import org.hibernate.Criteria;
@@ -35,6 +36,7 @@ public class ReportUserDAS extends AbstractDAS<ReportUserDTO> {
         rudto.setBaseUser(new UserDAS().find(userId));
         rudto.setTitle(title);
         rudto.setReport(report);
+        rudto.setCreateDatetime(new Date());
 
         return save(rudto);
     }

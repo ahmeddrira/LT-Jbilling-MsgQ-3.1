@@ -35,9 +35,8 @@ import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.ReportSession;
-import com.sapienter.jbilling.interfaces.ReportSessionHome;
+import com.sapienter.jbilling.server.report.ReportSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Calls the report session bean to get the specified report DTO
@@ -61,13 +60,8 @@ public class DeleteTag extends TagSupport {
         log.debug("Deleting ..");
         
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ReportSessionHome reportHome =
-                    (ReportSessionHome) EJBFactory.lookUpHome(
-                    ReportSessionHome.class,
-                    ReportSessionHome.JNDI_NAME);
-
-            ReportSession myRemoteSession = reportHome.create();
+            ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                    Context.getBean(Context.Name.REPORT_SESSION);
             myRemoteSession.delete(reportId);
 
             // this will force a reload of the list, otherwise the new 

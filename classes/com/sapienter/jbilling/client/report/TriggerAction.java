@@ -40,12 +40,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.ReportSession;
-import com.sapienter.jbilling.interfaces.ReportSessionHome;
 import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
+import com.sapienter.jbilling.server.report.ReportSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -73,13 +71,8 @@ public class TriggerAction extends Action {
         try {
             // Now I'll call the session bean to get the CachedRowSet with
             // the results of the query
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ReportSessionHome reportHome =
-                   (ReportSessionHome) EJBFactory.lookUpHome(
-                    ReportSessionHome.class,
-                    ReportSessionHome.JNDI_NAME);
-
-            ReportSession remoteSession = reportHome.create();
+            ReportSessionBean remoteSession = (ReportSessionBean) 
+                    Context.getBean(Context.Name.REPORT_SESSION);
 
             String id = request.getParameter("id");
             String mode = request.getParameter("mode");

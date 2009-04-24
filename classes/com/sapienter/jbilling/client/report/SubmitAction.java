@@ -21,11 +21,8 @@
 package com.sapienter.jbilling.client.report;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,12 +40,11 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ReportSession;
-import com.sapienter.jbilling.interfaces.ReportSessionHome;
 import com.sapienter.jbilling.server.report.Field;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
+import com.sapienter.jbilling.server.report.ReportSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class SubmitAction extends Action {
 
@@ -160,13 +156,8 @@ public class SubmitAction extends Action {
                 session.setAttribute(Constants.SESSION_REPORT_TITLE, 
                         reportForm.getSaveName());
                 try {
-                    JNDILookup EJBFactory = JNDILookup.getFactory(false);
-                    ReportSessionHome reportHome =
-                            (ReportSessionHome) EJBFactory.lookUpHome(
-                            ReportSessionHome.class,
-                            ReportSessionHome.JNDI_NAME);
-
-                    ReportSession myRemoteSession = reportHome.create();
+                    ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                            Context.getBean(Context.Name.REPORT_SESSION);
                     myRemoteSession.save(report, (Integer) session.getAttribute(
                             Constants.SESSION_LOGGED_USER_ID), (String)
                             session.getAttribute(Constants.SESSION_REPORT_TITLE));
@@ -204,16 +195,9 @@ public class SubmitAction extends Action {
     }
     
     private Collection getListByType(Integer type) 
-            throws NamingException, CreateException, SessionInternalError,
-                RemoteException {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        ReportSessionHome reportHome =
-               (ReportSessionHome) EJBFactory.lookUpHome(
-                ReportSessionHome.class,
-                ReportSessionHome.JNDI_NAME);
-
-        ReportSession myRemoteSession = reportHome.create();
-
+            throws SessionInternalError {
+        ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                Context.getBean(Context.Name.REPORT_SESSION);
         return myRemoteSession.getListByType(type);
 
     }

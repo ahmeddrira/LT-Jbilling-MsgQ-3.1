@@ -21,11 +21,8 @@
 package com.sapienter.jbilling.client.report;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,10 +36,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.ReportSession;
-import com.sapienter.jbilling.interfaces.ReportSessionHome;
+import com.sapienter.jbilling.server.report.ReportSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ListAction extends Action {
 
@@ -77,16 +73,9 @@ public class ListAction extends Action {
     }
     
     private Collection getListByType(Integer type) 
-            throws NamingException, CreateException, SessionInternalError,
-                RemoteException {
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        ReportSessionHome reportHome =
-               (ReportSessionHome) EJBFactory.lookUpHome(
-                ReportSessionHome.class,
-                ReportSessionHome.JNDI_NAME);
-
-        ReportSession myRemoteSession = reportHome.create();
-
+            throws SessionInternalError {
+        ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                Context.getBean(Context.Name.REPORT_SESSION);
         return myRemoteSession.getListByType(type);
 
     }

@@ -372,6 +372,7 @@ public class ReportBL extends ResultList {
             fieldRow.setFunctionName(field.getFunctionName());
             fieldRow.setOperatorValue(field.getOperatorValue());
 
+            fieldRow.setReportUser(reportUser);
             reportUser.getFields().add(fieldRow);
         }
     }

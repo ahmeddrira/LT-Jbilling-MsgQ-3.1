@@ -35,10 +35,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.server.mediation.MediationSession;
-import com.sapienter.jbilling.server.mediation.MediationSessionHome;
+import com.sapienter.jbilling.server.mediation.MediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ProcessListAction extends Action {
     private static final Logger LOG = Logger.getLogger(ProcessListAction.class);
@@ -48,12 +47,8 @@ public class ProcessListAction extends Action {
             throws IOException, ServletException {
         
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            MediationSessionHome mediationHome =
-                    (MediationSessionHome) EJBFactory.lookUpHome(
-                    MediationSessionHome.class,
-                    MediationSessionHome.JNDI_NAME);
-            MediationSession mediationSession = mediationHome.create();
+            MediationSessionBean mediationSession = (MediationSessionBean)
+                    Context.getBean(Context.Name.MEDIATION_SESSION);
         
             HttpSession session = request.getSession(false);
             List <MediationProcess> list = mediationSession.getAll( (Integer)

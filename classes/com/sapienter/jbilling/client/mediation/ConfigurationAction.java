@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.client.mediation;
 
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,26 +30,22 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.CrudAction;
 import com.sapienter.jbilling.common.InvalidArgumentException;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.mediation.MediationSession;
-import com.sapienter.jbilling.server.mediation.MediationSessionHome;
+import com.sapienter.jbilling.server.mediation.MediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ConfigurationAction extends CrudAction {
 
     //private static final Logger LOG = Logger.getLogger(TaskAction.class);
-    private MediationSession configurationSession = null;
+    private MediationSessionBean configurationSession = null;
     
     public ConfigurationAction() {
         setFormName("configuration");
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            MediationSessionHome configurationHome = (MediationSessionHome) EJBFactory.lookUpHome(
-                    MediationSessionHome.class,
-                    MediationSessionHome.JNDI_NAME);
-            configurationSession = configurationHome.create();
+            configurationSession = (MediationSessionBean) Context.getBean(
+                    Context.Name.MEDIATION_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError("Initializing configuration action" + 
                     e.getMessage());
@@ -58,13 +53,8 @@ public class ConfigurationAction extends CrudAction {
     }
     
     public void setup() {
-        try {
-            List<MediationConfiguration> configs = configurationSession.getAllConfigurations(entityId);
-            myForm.set("configurations", configs);
-        } catch (RemoteException e) {
-            throw new SessionInternalError("setup configuration action", ConfigurationAction.class, e);
-        }
-
+        List<MediationConfiguration> configs = configurationSession.getAllConfigurations(entityId);
+        myForm.set("configurations", configs);
     }
 
     public Object editFormToDTO() {

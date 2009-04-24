@@ -47,8 +47,7 @@ import com.sapienter.jbilling.interfaces.BillingProcessSession;
 import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
 import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.list.ListSessionBean;
-import com.sapienter.jbilling.server.mediation.MediationSession;
-import com.sapienter.jbilling.server.mediation.MediationSessionHome;
+import com.sapienter.jbilling.server.mediation.MediationSessionBean;
 import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSession;
 import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionHome;
@@ -184,11 +183,8 @@ public class Trigger implements Job {
                     Context.getBean(Context.Name.INVOICE_SESSION);
             ListSessionBean remoteList = (ListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
-            MediationSessionHome mediationHome =
-                    (MediationSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                    MediationSessionHome.class,
-                    MediationSessionHome.JNDI_NAME);
-            MediationSession remoteMediation = mediationHome.create();
+            MediationSessionBean remoteMediation = (MediationSessionBean)
+                    Context.getBean(Context.Name.MEDIATION_SESSION);
             ProvisioningProcessSessionHome provisioningProcessHome=
             	(ProvisioningProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(
             			ProvisioningProcessSessionHome.class,

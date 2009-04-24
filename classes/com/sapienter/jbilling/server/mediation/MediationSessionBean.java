@@ -16,20 +16,16 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 package com.sapienter.jbilling.server.mediation;
 
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.naming.NamingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -62,35 +58,15 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 /**
  *
  * @author emilc
- * @ejb:bean name="MediationSession"
- *           display-name="A stateless bean for mediation"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/mediation/MediationSession"
- * 
- * 
  **/
-public class MediationSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class MediationSessionBean {
 
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
-    private static final EventLogger eLogger = EventLogger.getInstance();
-    private MediationSessionLocalHome myLocalHome = null;
-
-    /**
-     * @ejb:interface-method view-type="both"
-     * @ejb.transaction type="Required"
-     */
     public void trigger() {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         MediationProcessDAS processDAS = new MediationProcessDAS();
         Vector<String> errorMessages = new Vector<String>();
-        MediationSessionLocal local = null;
-        try {
-            local = myLocalHome.create();
-        } catch (CreateException e1) {
-            throw new SessionInternalError("Getting local view", MediationSessionBean.class, e1);
-        }
 
         LOG.debug("Running mediation trigger.");
 
@@ -125,7 +101,7 @@ public class MediationSessionBean implements SessionBean {
                         // there is going to be records processed from this configuration
                         // create a new process row. This happends in its own transactions
                         // so it needs to be brought to the persistant context here again
-                        MediationProcess process = local.createProcessRecord(cfg);
+                        MediationProcess process = createProcessRecord(cfg);
 
                         int lastPosition = 0;
                         Vector<Record> thisGroup = new Vector<Record>();
@@ -134,7 +110,7 @@ public class MediationSessionBean implements SessionBean {
                                 // end of this group
                                 // call the rules to get the records normalized
                                 // plus the user id, item id and quantity
-                                local.normalizeRecordGroup(processTask, executorId, process,
+                                normalizeRecordGroup(processTask, executorId, process,
                                         thisGroup, entityId, cfg);
                                 // start again
                                 thisGroup.clear();
@@ -146,7 +122,7 @@ public class MediationSessionBean implements SessionBean {
 
                         // send the last record/s as well
                         if (thisGroup.size() > 0) {
-                            local.normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
+                            normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
                         }
 
                         // save the information about this just ran mediation process in
@@ -175,9 +151,8 @@ public class MediationSessionBean implements SessionBean {
 
     /**
      * Needs to be in its own transaction, so it gets created right away
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public MediationProcess createProcessRecord(MediationConfiguration cfg) {
         MediationProcessDAS processDAS = new MediationProcessDAS();
         MediationProcess process = new MediationProcess();
@@ -188,10 +163,6 @@ public class MediationSessionBean implements SessionBean {
         return process;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public List<MediationProcess> getAll(Integer entityId) {
         MediationProcessDAS processDAS = new MediationProcessDAS();
         List<MediationProcess> result = processDAS.findAllByEntity(entityId);
@@ -200,10 +171,6 @@ public class MediationSessionBean implements SessionBean {
 
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public List<MediationConfiguration> getAllConfigurations(Integer entityId) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         List<MediationConfiguration> result = cfgDAS.findAllByEntity(entityId);
@@ -211,10 +178,6 @@ public class MediationSessionBean implements SessionBean {
         return result;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void createConfiguration(MediationConfiguration cfg) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
 
@@ -223,10 +186,6 @@ public class MediationSessionBean implements SessionBean {
 
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public List updateAllConfiguration(Integer executorId, List<MediationConfiguration> configurations)
             throws InvalidArgumentException {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
@@ -265,17 +224,14 @@ public class MediationSessionBean implements SessionBean {
 
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void delete(Integer executorId, Integer cfgId) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
 
         cfgDAS.delete(cfgDAS.find(cfgId));
-        eLogger.audit(executorId, Constants.TABLE_MEDIATION_CFG,
-                cfgId, EventLogger.MODULE_MEDIATION,
-                EventLogger.ROW_DELETED, null, null, null);
+        EventLogger.getInstance().audit(executorId, 
+                Constants.TABLE_MEDIATION_CFG, cfgId, 
+                EventLogger.MODULE_MEDIATION, EventLogger.ROW_DELETED, null, 
+                null, null);
     }
 
     public boolean isBeenProcessed(
@@ -294,21 +250,12 @@ public class MediationSessionBean implements SessionBean {
         return false;
     }
 
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void normalizeRecordGroup(IMediationProcess processTask, Integer executorId,
             MediationProcess process, Vector<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg)
-            throws TaskException, FinderException, NamingException {
+            throws TaskException {
         // validate that this group has not been already processed
-        MediationSessionLocal local = null;
-        try {
-            local = myLocalHome.create();
-        } catch (CreateException e1) {
-            throw new SessionInternalError("Getting local view", MediationSessionBean.class, e1);
-        }
         
         if (isBeenProcessed(process, thisGroup)) {
             return;
@@ -369,40 +316,11 @@ public class MediationSessionBean implements SessionBean {
         record.setFinished(Calendar.getInstance().getTime());
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId) {
         List<MediationRecordLineDTO> events = new MediationRecordLineDAS().getByOrder(orderId);
         for (MediationRecordLineDTO line: events) {
             line.toString(); //as a touch
         }
         return events;
-    }
-    
-    /*
-     * EJB 2.1 required methods ...
-     */
-
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    public void setSessionContext(SessionContext ctx) throws EJBException,
-            RemoteException {
-        // needed to make calls with new transactional boundries
-        myLocalHome = (MediationSessionLocalHome) ctx.getEJBLocalHome();
-    }
-
-    /**
-     * @ejb:create-method view-type="remote"
-     */
-    public void ejbCreate() throws CreateException {
     }
 }

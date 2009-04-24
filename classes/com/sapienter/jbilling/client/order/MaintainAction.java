@@ -21,11 +21,8 @@
 package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.List;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,9 +37,7 @@ import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormDateHelper;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.server.mediation.MediationSession;
-import com.sapienter.jbilling.server.mediation.MediationSessionHome;
+import com.sapienter.jbilling.server.mediation.MediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -52,8 +47,6 @@ import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends Action {
     
-    private JNDILookup EJBFactory = null;
-
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -64,8 +57,6 @@ public class MaintainAction extends Action {
         Integer languageId = (Integer) session.getAttribute(
                 Constants.SESSION_LANGUAGE);
         try {
-            EJBFactory = JNDILookup.getFactory(false);
-            
             if (request.getParameter("action").equals("view")) {
                 OrderSessionBean remoteOrder = (OrderSessionBean) 
                         Context.getBean(Context.Name.ORDER_SESSION);
@@ -183,14 +174,9 @@ public class MaintainAction extends Action {
         return mapping.findForward("order_edit");
     }
     
-    private List<MediationRecordLineDTO> getEvents(Integer orderId) 
-            throws NamingException, CreateException, RemoteException {
-        MediationSessionHome mediationHome =
-                (MediationSessionHome) EJBFactory.lookUpHome(
-                MediationSessionHome.class,
-                MediationSessionHome.JNDI_NAME);
-
-        MediationSession remoteMed = mediationHome.create();
+    private List<MediationRecordLineDTO> getEvents(Integer orderId) {
+        MediationSessionBean remoteMed = (MediationSessionBean) Context.getBean(
+                Context.Name.MEDIATION_SESSION);
         return remoteMed.getEventsForOrder(orderId);
     }
 }

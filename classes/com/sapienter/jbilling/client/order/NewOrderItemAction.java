@@ -43,7 +43,7 @@ import org.apache.struts.action.ActionMapping;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -90,7 +90,7 @@ public class NewOrderItemAction extends Action {
         
         // if not create new one
         try {
-            OrderSessionBean remoteOrder = (OrderSessionBean) Context.getBean(
+            IOrderSessionBean remoteOrder = (IOrderSessionBean) Context.getBean(
                     Context.Name.ORDER_SESSION);
 
             summary = (OrderDTO) session.getAttribute(

@@ -66,7 +66,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
  * @author emilc
  */
 @Transactional( propagation = Propagation.REQUIRED )
-public class PaymentSessionBean {
+public class PaymentSessionBean implements IPaymentSessionBean {
 
     private final Logger LOG = Logger.getLogger(PaymentSessionBean.class);
 

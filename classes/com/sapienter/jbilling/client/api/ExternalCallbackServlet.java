@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -111,8 +111,9 @@ public class ExternalCallbackServlet extends HttpServlet {
                     LOG.debug("payment status is " + paymentStatus + " Rejecting");
                 } else { 
                     try {
-                        PaymentSessionBean paymentSession = (PaymentSessionBean) 
-                                Context.getBean(Context.Name.PAYMENT_SESSION);
+                        IPaymentSessionBean paymentSession = 
+                                (IPaymentSessionBean) Context.getBean(
+                                Context.Name.PAYMENT_SESSION);
                         Integer invoiceId = getInt(invoiceNumber);
                         Float amount = Float.valueOf(paymentAmount);
                         Integer userId = getInt(userIdStr);

@@ -37,7 +37,7 @@ import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -65,7 +65,7 @@ public class DownloadTag extends TagSupport {
         InvoiceDTO invoice = (InvoiceDTO) session.getAttribute(
                 Constants.SESSION_INVOICE_DTO);
         try {
-            InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+            IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
                     Context.getBean(Context.Name.INVOICE_SESSION);
 
             HttpServletResponse response = (HttpServletResponse) 

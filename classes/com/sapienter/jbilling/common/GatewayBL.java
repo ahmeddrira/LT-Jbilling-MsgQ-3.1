@@ -27,7 +27,6 @@ package com.sapienter.jbilling.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,8 +37,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.validator.Field;
@@ -55,15 +52,14 @@ import org.apache.commons.validator.Var;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderLineWS;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.util.Context;
@@ -364,9 +360,9 @@ public class GatewayBL {
 
     }
 
-    private void orderRequest(String action) throws NamingException, RemoteException,
-            SessionInternalError, CreateException, ValidatorException {
-        OrderSessionBean orderSession = (OrderSessionBean) Context.getBean(
+    private void orderRequest(String action) throws SessionInternalError, 
+            ValidatorException {
+        IOrderSessionBean orderSession = (IOrderSessionBean) Context.getBean(
                 Context.Name.ORDER_SESSION);
 
         if (action.equals("create")) {
@@ -440,11 +436,9 @@ public class GatewayBL {
 
             // now see if an invoice has to be generated for the new order
             if (generateInvoice != null && generateInvoice.intValue() == 1) {
-                BillingProcessSessionHome processHome = (BillingProcessSessionHome) EJBFactory
-                        .lookUpHome(BillingProcessSessionHome.class,
-                                BillingProcessSessionHome.JNDI_NAME);
-
-                BillingProcessSession processSession = processHome.create();
+                IBillingProcessSessionBean processSession = 
+                        (IBillingProcessSessionBean) Context.getBean(
+                        Context.Name.BILLING_PROCESS_SESSION);
                 // default the language to english
                 InvoiceDTO invoice = processSession.generateInvoice(newOrderId, null,
                         new Integer(1));
@@ -467,7 +461,7 @@ public class GatewayBL {
 
     private void paymentRequest(String action) {
         try {
-            PaymentSessionBean paymentSession = (PaymentSessionBean) 
+            IPaymentSessionBean paymentSession = (IPaymentSessionBean) 
                     Context.getBean(Context.Name.PAYMENT_SESSION);
 
             /*
@@ -846,7 +840,7 @@ public class GatewayBL {
     }
 
     private boolean getUser(String username, Integer entityId, boolean isCreate)
-            throws SessionInternalError, RemoteException {
+            throws SessionInternalError {
         boolean retValue = true;
         // get the user id of this user
         userDto = userSession.getUserDTO(username, entityId);

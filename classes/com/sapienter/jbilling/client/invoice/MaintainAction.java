@@ -36,7 +36,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -54,7 +54,7 @@ public class MaintainAction extends Action {
         String forward = "invoice_view";
 
         try {
-            InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+            IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
                     Context.getBean(Context.Name.INVOICE_SESSION);
 
             // I could call the GenericMaintainAction here, but since

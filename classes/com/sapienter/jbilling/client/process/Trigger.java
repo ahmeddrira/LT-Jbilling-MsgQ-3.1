@@ -43,12 +43,11 @@ import org.quartz.SimpleTrigger;
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
-import com.sapienter.jbilling.server.list.ListSessionBean;
-import com.sapienter.jbilling.server.mediation.MediationSessionBean;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.list.IListSessionBean;
+import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSession;
 import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionHome;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
@@ -166,24 +165,21 @@ public class Trigger implements Job {
     }
 
     public void execute(JobExecutionContext ctx) throws JobExecutionException {
-        BillingProcessSession remoteBillingProcess = null;
+        IBillingProcessSessionBean remoteBillingProcess = null;
 
         try {
             // get a session for the remote interfaces
-            BillingProcessSessionHome billingProcessHome =
-                    (BillingProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                    BillingProcessSessionHome.class,
-                    BillingProcessSessionHome.JNDI_NAME);
-            remoteBillingProcess = billingProcessHome.create();
+            remoteBillingProcess = (IBillingProcessSessionBean) Context.getBean(
+                    Context.Name.BILLING_PROCESS_SESSION);
             IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-            OrderSessionBean remoteOrder = (OrderSessionBean) Context.getBean(
+            IOrderSessionBean remoteOrder = (IOrderSessionBean) Context.getBean(
                     Context.Name.ORDER_SESSION);
-            InvoiceSessionBean remoteInvoice = (InvoiceSessionBean) 
+            IInvoiceSessionBean remoteInvoice = (IInvoiceSessionBean) 
                     Context.getBean(Context.Name.INVOICE_SESSION);
-            ListSessionBean remoteList = (ListSessionBean) Context.getBean(
+            IListSessionBean remoteList = (IListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
-            MediationSessionBean remoteMediation = (MediationSessionBean)
+            IMediationSessionBean remoteMediation = (IMediationSessionBean)
                     Context.getBean(Context.Name.MEDIATION_SESSION);
             ProvisioningProcessSessionHome provisioningProcessHome=
             	(ProvisioningProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(

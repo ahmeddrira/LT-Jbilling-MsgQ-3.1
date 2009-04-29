@@ -41,10 +41,8 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
 import com.sapienter.jbilling.server.process.AgeingDTOEx;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
@@ -60,13 +58,9 @@ public class AgeingMaintainAction extends Action {
         ActionErrors errors = new ActionErrors();
         
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            BillingProcessSessionHome processHome =
-                    (BillingProcessSessionHome) EJBFactory.lookUpHome(
-                    BillingProcessSessionHome.class,
-                    BillingProcessSessionHome.JNDI_NAME);
-        
-            BillingProcessSession processSession = processHome.create();
+            IBillingProcessSessionBean processSession = 
+                    (IBillingProcessSessionBean) Context.getBean(
+                    Context.Name.BILLING_PROCESS_SESSION);
             IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
             

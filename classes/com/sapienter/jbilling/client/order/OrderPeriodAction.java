@@ -46,7 +46,7 @@ import org.apache.struts.validator.DynaValidatorForm;
 import org.hibernate.StaleObjectStateException;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -74,8 +74,8 @@ public class OrderPeriodAction extends Action {
 			ActionErrors errors = new ActionErrors();
 
 			String action = request.getParameter("action");
-			OrderSessionBean orderSession = (OrderSessionBean) Context.getBean(
-                    Context.Name.ORDER_SESSION);
+			IOrderSessionBean orderSession = (IOrderSessionBean) 
+                    Context.getBean(Context.Name.ORDER_SESSION);
 
 			if (action.equals("setup")) {
 				OrderPeriodDTO[] periods = orderSession.getPeriods(entityId,

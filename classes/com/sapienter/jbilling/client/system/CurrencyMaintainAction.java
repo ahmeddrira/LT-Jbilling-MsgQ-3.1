@@ -42,7 +42,7 @@ import org.apache.struts.action.ActionMessages;
 import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -60,7 +60,7 @@ public class CurrencyMaintainAction extends Action {
         ActionErrors errors = new ActionErrors();
         
         try {
-            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
+            IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
             
             String action = request.getParameter("action");
             HttpSession session = request.getSession(false);

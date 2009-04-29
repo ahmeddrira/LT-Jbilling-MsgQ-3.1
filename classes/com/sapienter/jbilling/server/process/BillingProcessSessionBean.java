@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.process;
 
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -29,20 +28,17 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
+import org.hibernate.ScrollableResults;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
 import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
@@ -72,32 +68,16 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
-import org.hibernate.ScrollableResults;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
  * This is the session facade for the all the billing process and its 
  * related services. 
- *
- * @ejb:bean name="BillingProcessSession"
- *           display-name="The billing process session facade"
- *           type="Stateless"
- *           transaction-type="Container"
- *           view-type="both"
- *           jndi-name="com/sapienter/jbilling/server/process/BillingProcessSession"
- * 
  */
-public class BillingProcessSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
     private static final Logger LOG = Logger.getLogger(BillingProcessSessionBean.class);
-    private SessionContext ctx = null;
-
-    /**
-    * @ejb:create-method view-type="remote"
-    */
-    public void ejbCreate() throws CreateException {
-    }
 
     /**
      * Gets the invoices for the specified process id. The returned collection
@@ -105,8 +85,6 @@ public class BillingProcessSessionBean implements SessionBean {
      * @param processId
      * @return A collection of InvoiceDTO objects
      * @throws SessionInternalError
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      */
     public Collection getGeneratedInvoices(Integer processId) {
         // find the billing_process home interface
@@ -123,7 +101,6 @@ public class BillingProcessSessionBean implements SessionBean {
     }
     
     /**
-     * @ejb:interface-method view-type="remote"
      * @param entityId
      * @param languageId
      * @return
@@ -141,13 +118,12 @@ public class BillingProcessSessionBean implements SessionBean {
     }
     
     /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="RequiresNew"
      * @param entityId
      * @param languageId
      * @param steps
      * @throws SessionInternalError
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void setAgeingSteps(Integer entityId, Integer languageId, 
             AgeingDTOEx[] steps) 
             throws SessionInternalError {
@@ -161,17 +137,10 @@ public class BillingProcessSessionBean implements SessionBean {
 
     public void generateReview(Integer entityId, Date billingDate,
             Integer periodType, Integer periodValue)
-            throws SessionInternalError, NamingException, CreateException {
+            throws SessionInternalError {
         LOG.debug("Generating review entity " + entityId);
-        // call using JNDI to use CMT
-        JNDILookup EJBFactory = JNDILookup.getFactory(false);
-        BillingProcessSessionLocalHome localHome = 
-            (BillingProcessSessionLocalHome) EJBFactory
-                .lookUpLocalHome(
-                   BillingProcessSessionLocalHome.class,
-                   BillingProcessSessionLocalHome.JNDI_NAME);
-        BillingProcessSessionLocal local = localHome.create();
-
+        IBillingProcessSessionBean local = (IBillingProcessSessionBean) 
+                Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         local.processEntity(entityId, billingDate, periodType, 
                 periodValue, true);
         // let know this entity that a new reivew is now pending approval
@@ -186,12 +155,11 @@ public class BillingProcessSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
      * Creates the billing process record. This has to be done in its own
      * transaction (thus, in its own method), so new invoices can link to
      * an existing process record in the db.
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public Integer createProcessRecord(Integer entityId, Date billingDate,
             Integer periodType, Integer periodValue, boolean isReview,
             Integer retries) 
@@ -221,10 +189,7 @@ public class BillingProcessSessionBean implements SessionBean {
         return bpBL.getEntity().getId();
     }
 
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public Integer createRetryRun(Integer processId) {
         BillingProcessBL process = new BillingProcessBL(processId);
         // create a new run record
@@ -234,10 +199,7 @@ public class BillingProcessSessionBean implements SessionBean {
         return runBL.getEntity().getId();
     }
     
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void processEntity(Integer entityId, Date billingDate,
             Integer periodType, Integer periodValue, boolean isReview)
             throws SessionInternalError {
@@ -250,13 +212,8 @@ public class BillingProcessSessionBean implements SessionBean {
         try {
             ConfigurationBL conf = new ConfigurationBL(entityId);
 
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            BillingProcessSessionLocalHome localHome = 
-                (BillingProcessSessionLocalHome) EJBFactory
-                    .lookUpLocalHome(
-                       BillingProcessSessionLocalHome.class,
-                       BillingProcessSessionLocalHome.JNDI_NAME);
-            BillingProcessSessionLocal local = localHome.create();
+            IBillingProcessSessionBean local = (IBillingProcessSessionBean)
+                    Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
             
             Integer billingProcessId = local.createProcessRecord(
                     entityId, billingDate, periodType, periodValue, isReview,
@@ -358,9 +315,8 @@ public class BillingProcessSessionBean implements SessionBean {
     /**
      * This method process a payment synchronously. It is a wrapper to the payment processing  
      * so it runs in its own transaction
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void processPayment(Integer processId, Integer runId, Integer invoiceId) {
         try {
             BillingProcessBL bl = new BillingProcessBL();
@@ -370,25 +326,19 @@ public class BillingProcessSessionBean implements SessionBean {
         }
     }
 
-        /**
+    /**
      * This method marks the end of payment processing. It is a wrapper
      * so it runs in its own transaction
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void endPayments(Integer runId) {
         BillingProcessRunBL run = new BillingProcessRunBL(runId);
         run.updatePaymentsFinished();
         
     }
 
-
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
-     */
-    public boolean verifyIsRetry(Integer processId, int retryDays, Date today) 
-            throws FinderException, NamingException {
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    public boolean verifyIsRetry(Integer processId, int retryDays, Date today) {
         GregorianCalendar cal = new GregorianCalendar();
         // find the last run date
         BillingProcessBL process = new BillingProcessBL(processId);
@@ -406,19 +356,13 @@ public class BillingProcessSessionBean implements SessionBean {
             return false;
         }
     }
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
-     */
+
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void doRetry(Integer processId, int retryDays, Date today) 
             throws SessionInternalError {
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            BillingProcessSessionLocalHome processHome =
-                (BillingProcessSessionLocalHome) EJBFactory.lookUpLocalHome(
-                BillingProcessSessionLocalHome.class,
-                BillingProcessSessionLocalHome.JNDI_NAME);
-            BillingProcessSessionLocal process = processHome.create();
+            IBillingProcessSessionBean process = (IBillingProcessSessionBean)
+                    Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 
             if (process.verifyIsRetry(processId, retryDays, today)) {
                 // it's time for a retry
@@ -462,10 +406,7 @@ public class BillingProcessSessionBean implements SessionBean {
         }
     }
     
-    /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="RequiresNew"
-     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void emailAndPayment(Integer entityId, Integer invoiceId,
             Integer processId, boolean processPayment) {
         try {
@@ -524,17 +465,16 @@ public class BillingProcessSessionBean implements SessionBean {
             }
         } catch (Exception e) {
             LOG.error("sending email and processing payment", e);
-            ctx.setRollbackOnly();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         } 
     }
         
 
     /**
-     * @ejb.transaction type="RequiresNew"
-     * @ejb:interface-method view-type="local" Process a user, generating the
-     *                       invoice/s,
+     * Process a user, generating the invoice/s,
      * @param userId
      */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
     public Integer[] processUser(Integer processId, Integer userId,
             boolean isReview, boolean onlyRecurring) {
         int invoiceGenerated = 0;
@@ -578,16 +518,13 @@ public class BillingProcessSessionBean implements SessionBean {
             LOG.error("Exception caught when processing the user " + 
                     userId, e);
             // rollback !
-            ctx.setRollbackOnly();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return null; // the user was not processed
         }
 
         return retValue;
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public BillingProcessDTOEx getDto(Integer processId, Integer languageId) {
         BillingProcessDTOEx retValue = null;
         
@@ -598,9 +535,6 @@ public class BillingProcessSessionBean implements SessionBean {
         return retValue;            
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public BillingProcessConfigurationDTO getConfigurationDto(Integer entityId) 
             throws SessionInternalError {
         BillingProcessConfigurationDTO retValue = null;
@@ -615,9 +549,6 @@ public class BillingProcessSessionBean implements SessionBean {
         return retValue;            
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Integer createUpdateConfiguration(Integer executorId,
             BillingProcessConfigurationDTO dto) 
             throws SessionInternalError {
@@ -634,9 +565,6 @@ public class BillingProcessSessionBean implements SessionBean {
         return retValue;            
     }
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public Integer getLast(Integer entityId) 
             throws SessionInternalError {
         int retValue;
@@ -651,9 +579,6 @@ public class BillingProcessSessionBean implements SessionBean {
         return retValue > 0 ? new Integer(retValue) : null;
     }  
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public BillingProcessDTOEx getReviewDto(Integer entityId, Integer languageId) {
         BillingProcessDTOEx dto = null;
         BillingProcessBL process = new BillingProcessBL();
@@ -663,9 +588,6 @@ public class BillingProcessSessionBean implements SessionBean {
         return dto;           
     }    
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     */
     public BillingProcessConfigurationDTO setReviewApproval(
             Integer executorId, Integer entityId, 
             Boolean flag) throws SessionInternalError {
@@ -679,27 +601,17 @@ public class BillingProcessSessionBean implements SessionBean {
         } 
     }  
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void trigger(Date pToday) 
             throws SessionInternalError {
         try {
         
             Date today = Util.truncateDate(pToday);
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
             EventLogger eLogger = EventLogger.getInstance();
             BillingProcessBL processBL = new BillingProcessBL();
             GregorianCalendar cal = new GregorianCalendar();  
-         
-            // call using JNDI to use CMT
-            BillingProcessSessionLocalHome localHome = 
-                (BillingProcessSessionLocalHome) EJBFactory
-                    .lookUpLocalHome(
-                       BillingProcessSessionLocalHome.class,
-                       BillingProcessSessionLocalHome.JNDI_NAME);
-            BillingProcessSessionLocal local = localHome.create();
+
+            IBillingProcessSessionBean local = (IBillingProcessSessionBean) 
+                    Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 
             // loop over all the entities
             EntityBL entityBL = new EntityBL();
@@ -814,15 +726,11 @@ public class BillingProcessSessionBean implements SessionBean {
                  */
                 if (config.getAutoPayment() == 1) {
                     // get the last process
-                    try {
-                        Integer[] processToRetry = processBL.getToRetry(entityId);
-                        for (int f = 0; f < processToRetry.length; f++) {
-                            local.doRetry(processToRetry[f], 
-                                    config.getDaysForRetry().intValue(), 
-                                    today);
-                        }
-                    } catch (FinderException e) {
-                        // it could be that an entity doesn't have any process yet
+                    Integer[] processToRetry = processBL.getToRetry(entityId);
+                    for (int f = 0; f < processToRetry.length; f++) {
+                        local.doRetry(processToRetry[f], 
+                                config.getDaysForRetry().intValue(), 
+                                today);
                     }
                 }
 
@@ -833,8 +741,6 @@ public class BillingProcessSessionBean implements SessionBean {
     } 
     
     /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
      * @return the id of the invoice generated
      */
     public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId,
@@ -853,10 +759,6 @@ public class BillingProcessSessionBean implements SessionBean {
         } 
     }
     
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void reviewUsersStatus(Date today) 
             throws SessionInternalError {
         try {
@@ -866,33 +768,4 @@ public class BillingProcessSessionBean implements SessionBean {
             throw new SessionInternalError(e);
         }
     }     
-      
-    // EJB Callbacks ---------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbActivate()
-     */
-    public void ejbActivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbPassivate()
-     */
-    public void ejbPassivate() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#ejbRemove()
-     */
-    public void ejbRemove() throws EJBException, RemoteException {
-    }
-
-    /* (non-Javadoc)
-     * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-     */
-    public void setSessionContext(SessionContext newCtx)
-        throws EJBException, RemoteException {
-        ctx = newCtx;
-    }
-
 }

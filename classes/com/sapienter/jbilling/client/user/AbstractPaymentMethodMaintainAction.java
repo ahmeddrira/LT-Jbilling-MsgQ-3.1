@@ -22,7 +22,7 @@ package com.sapienter.jbilling.client.user;
 
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -46,7 +46,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 	private final String myForwardEdit;
 
 	private final IUserSessionBean myUserSession;
-	private final PaymentSessionBean myPaymentSession;
+	private final IPaymentSessionBean myPaymentSession;
 
 	public AbstractPaymentMethodMaintainAction(String formName,
 			String logFriendlyActionType, String numberField, String forwardEdit) {
@@ -57,7 +57,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 		try {
 			myUserSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-			myPaymentSession = (PaymentSessionBean) Context.getBean(
+			myPaymentSession = (IPaymentSessionBean) Context.getBean(
                     Context.Name.PAYMENT_SESSION);
 
 		} catch (Exception e) {
@@ -112,7 +112,7 @@ public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
 		return myUserSession;
 	}
 
-	protected PaymentSessionBean getPaymentSession() {
+	protected IPaymentSessionBean getPaymentSession() {
 		return myPaymentSession;
 	}
 

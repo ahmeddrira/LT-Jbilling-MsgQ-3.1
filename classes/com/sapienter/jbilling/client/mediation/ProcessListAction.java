@@ -35,7 +35,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.mediation.MediationSessionBean;
+import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -47,7 +47,7 @@ public class ProcessListAction extends Action {
             throws IOException, ServletException {
         
         try {
-            MediationSessionBean mediationSession = (MediationSessionBean)
+            IMediationSessionBean mediationSession = (IMediationSessionBean)
                     Context.getBean(Context.Name.MEDIATION_SESSION);
         
             HttpSession session = request.getSession(false);

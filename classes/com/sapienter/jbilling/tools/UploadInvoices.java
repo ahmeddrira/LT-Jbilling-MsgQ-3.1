@@ -32,13 +32,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineTypeDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import java.math.BigDecimal;
@@ -75,8 +75,9 @@ public class UploadInvoices {
     
 			// open the file
 			BufferedReader file = new BufferedReader(new FileReader(fileName));
-            InvoiceSessionBean remoteSession = (InvoiceSessionBean) 
-                    Context.getBean(Context.Name.INVOICE_SESSION);
+            IInvoiceSessionBean remoteSession = (IInvoiceSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.INVOICE_REMOTE_SESSION);
 
 			String header = file.readLine();
 			String columns[] = header.split("\t");

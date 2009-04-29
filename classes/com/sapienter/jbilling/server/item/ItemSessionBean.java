@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @Transactional( propagation = Propagation.REQUIRED )
-public class ItemSessionBean {
+public class ItemSessionBean implements IItemSessionBean {
 
     //private static final Logger LOG = Logger.getLogger(ItemSessionBean.class);
 

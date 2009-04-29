@@ -50,7 +50,7 @@ import com.sapienter.jbilling.client.util.FormHelper;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -77,9 +77,9 @@ public class ReviewOrderAction extends Action {
         String action = request.getParameter("action");
         log.debug("Review. action = " + action);
 
-        OrderSessionBean remoteOrder = null;
+        IOrderSessionBean remoteOrder = null;
         if (!action.equals("read")) {
-            remoteOrder = (OrderSessionBean) Context.getBean(
+            remoteOrder = (IOrderSessionBean) Context.getBean(
                     Context.Name.ORDER_SESSION);
         }
 
@@ -239,7 +239,7 @@ public class ReviewOrderAction extends Action {
     
     private OrderDTO putOrderInSession(Integer orderId,
             HttpServletRequest request) throws SessionInternalError {
-        OrderSessionBean order = (OrderSessionBean) Context.getBean(
+        IOrderSessionBean order = (IOrderSessionBean) Context.getBean(
                 Context.Name.ORDER_SESSION);
 
         OrderDTO orderDto = order.getOrderEx(orderId,

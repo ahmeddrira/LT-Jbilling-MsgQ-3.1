@@ -24,23 +24,17 @@
  */
 package com.sapienter.jbilling.tools;
 
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
-
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
-import com.sapienter.jbilling.server.list.ListSessionBean;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.list.IListSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
-import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.RemoteContext;
 
 /**
  * @author Emil
@@ -51,24 +45,26 @@ public class Trigger {
     
     
 	public static void main(String[] args) {
-		BillingProcessSession remoteBillingProcess = null;
+		IBillingProcessSessionBean remoteBillingProcess = null;
 		
 		
         try {
         	// get a session for the remote interfaces
-			BillingProcessSessionHome billingProcessHome =
-			    (BillingProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(
-			    BillingProcessSessionHome.class,
-			    BillingProcessSessionHome.JNDI_NAME);
-			remoteBillingProcess = billingProcessHome.create();
-            IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
-                    Context.Name.USER_SESSION);
-            OrderSessionBean remoteOrder = (OrderSessionBean) Context.getBean(
-                    Context.Name.ORDER_SESSION);
-            InvoiceSessionBean remoteInvoice = (InvoiceSessionBean) 
-                    Context.getBean(Context.Name.INVOICE_SESSION);
-            ListSessionBean remoteList = (ListSessionBean) Context.getBean(
-                    Context.Name.LIST_SESSION);
+			remoteBillingProcess = (IBillingProcessSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.BILLING_PROCESS_REMOTE_SESSION);
+            IUserSessionBean remoteUser = (IUserSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.USER_REMOTE_SESSION);
+            IOrderSessionBean remoteOrder = (IOrderSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.ORDER_REMOTE_SESSION);
+            IInvoiceSessionBean remoteInvoice = (IInvoiceSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.INVOICE_REMOTE_SESSION);
+            IListSessionBean remoteList = (IListSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.LIST_REMOTE_SESSION);
 			
             // determine the date for this run
 			Date today = Calendar.getInstance().getTime();
@@ -155,15 +151,6 @@ public class Trigger {
             }
 
 		} catch (ClassCastException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CreateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SessionInternalError e) {

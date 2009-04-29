@@ -33,7 +33,7 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
@@ -206,7 +206,7 @@ public class OrderCrudAction extends CrudActionBase<OrderDTO> {
                 // This is true, until there is support for prorating.
                 OrderPeriodDTO myPeriod;
                 try {
-                    OrderSessionBean orderSession = (OrderSessionBean) 
+                    IOrderSessionBean orderSession = (IOrderSessionBean) 
                             Context.getBean(Context.Name.ORDER_SESSION);
                     myPeriod = orderSession.getPeriod(languageId, summary.getPeriodId());
                 } catch (Exception e) {

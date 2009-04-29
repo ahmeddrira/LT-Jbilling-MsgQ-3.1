@@ -31,7 +31,7 @@ import org.apache.struts.action.ActionErrors;
 import com.sapienter.jbilling.client.util.CrudAction;
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.mediation.MediationSessionBean;
+import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -39,12 +39,12 @@ import com.sapienter.jbilling.server.util.Context;
 public class ConfigurationAction extends CrudAction {
 
     //private static final Logger LOG = Logger.getLogger(TaskAction.class);
-    private MediationSessionBean configurationSession = null;
+    private IMediationSessionBean configurationSession = null;
     
     public ConfigurationAction() {
         setFormName("configuration");
         try {
-            configurationSession = (MediationSessionBean) Context.getBean(
+            configurationSession = (IMediationSessionBean) Context.getBean(
                     Context.Name.MEDIATION_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError("Initializing configuration action" + 

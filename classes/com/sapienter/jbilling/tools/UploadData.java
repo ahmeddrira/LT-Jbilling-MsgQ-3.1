@@ -34,22 +34,22 @@ import java.util.Properties;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
-import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.RemoteContext;
 
 
 /**
@@ -123,8 +123,9 @@ public class UploadData {
 			// open the file
 			BufferedReader file = new BufferedReader(new FileReader(fileName));
 
-            IUserSessionBean remoteSession = (IUserSessionBean) Context.getBean(
-                    Context.Name.USER_SESSION);
+            IUserSessionBean remoteSession = (IUserSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.USER_REMOTE_SESSION);
 
 			String header = file.readLine();
 			String columns[] = header.split("\t");
@@ -382,8 +383,9 @@ public class UploadData {
                     }
 		            // this makes it prepaid (2 is pospaid)
 		            //summary.setBillingTypeId(new Integer(1));
-                    OrderSessionBean remoteOrder = (OrderSessionBean) 
-                            Context.getBean(Context.Name.ORDER_SESSION);
+                    IOrderSessionBean remoteOrder = (IOrderSessionBean) 
+                            RemoteContext.getBean(
+                            RemoteContext.Name.ORDER_REMOTE_SESSION);
 		            // add the item (quantity = 1)
 		            Integer itemId = Integer.valueOf((String) prop.getProperty(
         					"item_id"));
@@ -428,7 +430,9 @@ public class UploadData {
             System.out.println("Now loading types " + fileName);
             file = new BufferedReader(new FileReader(fileName));
             // get the remote interfaces
-            ItemSessionBean itemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
+            IItemSessionBean itemSession = (IItemSessionBean) 
+                    RemoteContext.getBean(
+                    RemoteContext.Name.ITEM_REMOTE_SESSION);
             
             header = file.readLine();
             // the types file has only one field with the description

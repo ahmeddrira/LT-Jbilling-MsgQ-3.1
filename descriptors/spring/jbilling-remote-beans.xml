@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Configuration for remote access of session beans. 
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
+
+    <bean id="itemRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/ItemSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.item.IItemSessionBean"/>
+    </bean>
+    <bean id="listRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/ListSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.list.IListSessionBean"/>
+    </bean>
+    <bean id="userRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/UserSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.user.IUserSessionBean"/>
+    </bean>
+    <bean id="invoiceRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/InvoiceSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.invoice.IInvoiceSessionBean"/>
+    </bean>
+    <bean id="orderRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/OrderSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.order.IOrderSessionBean"/>
+    </bean>
+    <bean id="paymentRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/PaymentSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.payment.IPaymentSessionBean"/>
+    </bean>
+    <bean id="billingProcessRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/BillingProcessSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.process.IBillingProcessSessionBean"/>
+    </bean>
+    <bean id="mediationRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/MediationSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.mediation.IMediationSessionBean"/>
+    </bean>
+</beans>

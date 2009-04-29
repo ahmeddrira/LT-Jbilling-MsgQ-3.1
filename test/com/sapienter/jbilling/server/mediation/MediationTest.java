@@ -1,3 +1,23 @@
+/*
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2008 Enterprise jBilling Software Ltd. and Emiliano Conde
+
+    This file is part of jbilling.
+
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.sapienter.jbilling.server.mediation;
 
 import java.util.Date;
@@ -6,29 +26,25 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
 public class MediationTest extends TestCase {
 
-    private MediationSession remoteMediation = null;
+    private IMediationSessionBean remoteMediation = null;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        MediationSessionHome mediationHome =
-                (MediationSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                MediationSessionHome.class,
-                MediationSessionHome.JNDI_NAME);
-        remoteMediation = mediationHome.create();
-
+        remoteMediation = (IMediationSessionBean) RemoteContext.getBean(
+                RemoteContext.Name.MEDIATION_REMOTE_SESSION);
     }
 
     public void testTrigger() {

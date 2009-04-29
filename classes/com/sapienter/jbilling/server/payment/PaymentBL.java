@@ -705,7 +705,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             PaymentDTOEx dto = new PaymentDTOEx(getDTO());
 
             // not pretty, but the methods are there
-            PaymentSessionBean psb = (PaymentSessionBean) Context.getBean(
+            IPaymentSessionBean psb = (IPaymentSessionBean) Context.getBean(
                     Context.Name.PAYMENT_SESSION);
             // make the link between the payment and the invoice
             Float paidAmount = new Float(psb.applyPayment(dto, invoice, true));

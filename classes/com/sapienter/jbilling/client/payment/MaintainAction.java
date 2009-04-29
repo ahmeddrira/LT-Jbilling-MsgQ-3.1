@@ -39,11 +39,11 @@ import org.apache.struts.action.ActionMessages;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -60,7 +60,7 @@ public class MaintainAction extends Action {
         String forward = null;
         ActionForward retValue = null;
         try {
-            PaymentSessionBean myRemoteSession = (PaymentSessionBean) 
+            IPaymentSessionBean myRemoteSession = (IPaymentSessionBean) 
                     Context.getBean(Context.Name.PAYMENT_SESSION);
             
             /*
@@ -194,7 +194,7 @@ public class MaintainAction extends Action {
                         Constants.SESSION_USER_DTO);
                 Integer invoiceId = user.getLastInvoiceId();
                 if (invoiceId != null) {
-                    InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+                    IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
                             Context.getBean(Context.Name.INVOICE_SESSION);
                     InvoiceDTO invoice = invoiceSession.getInvoice(
                             invoiceId);

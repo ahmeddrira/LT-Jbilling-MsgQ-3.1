@@ -36,8 +36,8 @@ import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
@@ -86,9 +86,9 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
 	private static final String MESSAGE_REVIEW = "payment.review";
 	private static final String MESSAGE_INVOICE_GENERATED = "process.invoiceGenerated";
 	
-	private final PaymentSessionBean myPaymentSession;
+	private final IPaymentSessionBean myPaymentSession;
 	
-	public PaymentCrudAction(PaymentSessionBean paymentSession){
+	public PaymentCrudAction(IPaymentSessionBean paymentSession){
 		super(FORM, "payment");
 		myPaymentSession = paymentSession;
 		LOG = Logger.getLogger(PaymentCrudAction.class);

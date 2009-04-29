@@ -45,6 +45,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 
 /**
@@ -55,7 +56,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
  * @author emilc
  **/
 @Transactional( propagation = Propagation.REQUIRED )
-public class InvoiceSessionBean {
+public class InvoiceSessionBean implements IInvoiceSessionBean {
 
     private static final Logger LOG = Logger.getLogger(
             InvoiceSessionBean.class);
@@ -119,6 +120,9 @@ public class InvoiceSessionBean {
 
     public void processOverdue(Date today) throws SessionInternalError {
         try {
+            IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
+                    Context.getBean(Context.Name.INVOICE_SESSION);
+
             // go over all the entities
             for (Iterator it = new CompanyDAS().findEntities().iterator();
                     it.hasNext();) {
@@ -131,7 +135,7 @@ public class InvoiceSessionBean {
                 } catch (EmptyResultDataAccessException e) {
                 }
                 if (pref.getInt() == 1) {
-                    processOverdue(today, entityId);
+                    invoiceSession.processOverdue(today, entityId);
                 }
             }
         } catch (Exception e) {

@@ -20,19 +20,16 @@
 
 package com.sapienter.jbilling.client.process;
 
-import java.rmi.RemoteException;
-
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Context;
 
 public class ConfigurationMaintainAction extends
 		UpdateOnlyCrudActionBase<BillingProcessConfigurationDTO> {
@@ -59,18 +56,13 @@ public class ConfigurationMaintainAction extends
 
 	private static final String MESSAGE_UPDATE_SUCCESS = "process.configuration.updated";
 
-	private final BillingProcessSession myBillingSession;
+	private final IBillingProcessSessionBean myBillingSession;
 
 	public ConfigurationMaintainAction() {
 		super(FORM_CONFIGURATION, "billing process configuration", FORWARD_EDIT);
 		try {
-			JNDILookup EJBFactory = JNDILookup.getFactory(false);
-			BillingProcessSessionHome processHome = (BillingProcessSessionHome) EJBFactory
-					.lookUpHome(BillingProcessSessionHome.class,
-							BillingProcessSessionHome.JNDI_NAME);
-
-			myBillingSession = processHome.create();
-
+			myBillingSession = (IBillingProcessSessionBean) Context.getBean(
+                    Context.Name.BILLING_PROCESS_SESSION);
 		} catch (Exception e) {
 			throw new SessionInternalError(
 					"Initializing billing process configuration"
@@ -80,8 +72,7 @@ public class ConfigurationMaintainAction extends
 	}
 
 	@Override
-	protected BillingProcessConfigurationDTO doEditFormToDTO()
-			throws RemoteException {
+	protected BillingProcessConfigurationDTO doEditFormToDTO() {
 		BillingProcessConfigurationDTO dto = new BillingProcessConfigurationDTO();
 		//we need to find the entity by id(entityId)
 		dto.setEntity(new CompanyDTO(entityId));
@@ -115,14 +106,13 @@ public class ConfigurationMaintainAction extends
 	}
 
 	@Override
-	protected ForwardAndMessage doUpdate(BillingProcessConfigurationDTO dto)
-			throws RemoteException {
+	protected ForwardAndMessage doUpdate(BillingProcessConfigurationDTO dto) {
 		myBillingSession.createUpdateConfiguration(executorId, dto);
 		return new ForwardAndMessage(FORWARD_EDIT, MESSAGE_UPDATE_SUCCESS);
 	}
 
 	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
+	protected ForwardAndMessage doSetup() {
 		BillingProcessConfigurationDTO dto;
 		dto = myBillingSession.getConfigurationDto(entityId);
 

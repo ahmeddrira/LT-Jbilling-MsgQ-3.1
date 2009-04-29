@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.order;
 
-import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Date;
 
@@ -44,7 +43,7 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
  * @author emilc
  **/
 @Transactional( propagation = Propagation.REQUIRED )
-public class OrderSessionBean {
+public class OrderSessionBean implements IOrderSessionBean {
     
     private static final Logger LOG = Logger.getLogger(OrderSessionBean.class);
 

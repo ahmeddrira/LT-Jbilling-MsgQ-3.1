@@ -32,7 +32,7 @@ import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -56,11 +56,11 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
     private static final String FORWARD_DELETED = "item_deleted";
     private static final String MESSAGE_CREATED_OK = "item.create.done";
     private static final String MESSAGE_UPDATED_OK = "item.update.done";
-    private final ItemSessionBean myItemSession;
+    private final IItemSessionBean myItemSession;
 
     public MaintainAction() {
         super(FORM, "item");
-        myItemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
+        myItemSession = (IItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
     }
 
     @Override

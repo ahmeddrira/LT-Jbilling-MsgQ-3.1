@@ -45,7 +45,7 @@ import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.upload.FormFile;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -95,7 +95,7 @@ public class BlacklistUploadAction extends Action {
 
                 // if there were no errors
                 if (errors.isEmpty()) {
-                    PaymentSessionBean paymentSession = (PaymentSessionBean)
+                    IPaymentSessionBean paymentSession = (IPaymentSessionBean)
                             Context.getBean(Context.Name.PAYMENT_SESSION);
 
                     int number = paymentSession.processCsvBlacklist(

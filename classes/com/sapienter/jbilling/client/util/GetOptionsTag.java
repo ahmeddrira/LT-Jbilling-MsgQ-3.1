@@ -30,7 +30,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.list.ListSessionBean;
+import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.OptionDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -91,7 +91,7 @@ public class GetOptionsTag extends TagSupport {
         String type = null;
 
 		try {
-            ListSessionBean remoteList = (ListSessionBean) Context.getBean(
+            IListSessionBean remoteList = (IListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
   
             if (countries.booleanValue()) {

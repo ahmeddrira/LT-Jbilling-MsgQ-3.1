@@ -26,18 +26,12 @@ import java.util.GregorianCalendar;
 
 import junit.framework.TestCase;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
-import com.sapienter.jbilling.interfaces.InvoiceSession;
-import com.sapienter.jbilling.interfaces.InvoiceSessionHome;
-import com.sapienter.jbilling.interfaces.OrderSession;
-import com.sapienter.jbilling.interfaces.OrderSessionHome;
-import com.sapienter.jbilling.interfaces.PaymentSession;
-import com.sapienter.jbilling.interfaces.PaymentSessionHome;
-import com.sapienter.jbilling.interfaces.UserSession;
-import com.sapienter.jbilling.interfaces.UserSessionHome;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -46,6 +40,7 @@ import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.RemoteContext;
 
 /**
  * Points to testOrders:
@@ -64,11 +59,11 @@ import com.sapienter.jbilling.server.util.Constants;
  */
 public class BillingProcessTest extends TestCase {
 
-    OrderSession remoteOrder = null;
-    InvoiceSession remoteInvoice = null;
-    BillingProcessSession remoteBillingProcess = null;
-    UserSession remoteUser = null;
-    PaymentSession remotePayment = null;
+    IOrderSessionBean remoteOrder = null;
+    IInvoiceSessionBean remoteInvoice = null;
+    IBillingProcessSessionBean remoteBillingProcess = null;
+    IUserSessionBean remoteUser = null;
+    IPaymentSessionBean remotePayment = null;
     GregorianCalendar cal;
     Date processDate = null;
     final Integer entityId = new Integer(1);
@@ -85,33 +80,21 @@ public class BillingProcessTest extends TestCase {
     
     protected void setUp() throws Exception {
         // once it run well ;) let's get the order interface
-        OrderSessionHome orderHome =
-            (OrderSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                OrderSessionHome.class,
-                OrderSessionHome.JNDI_NAME);
-        remoteOrder = orderHome.create();
+        remoteOrder = (IOrderSessionBean) RemoteContext.getBean(
+                RemoteContext.Name.ORDER_REMOTE_SESSION);
             
-        InvoiceSessionHome invoiceHome =
-            (InvoiceSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                InvoiceSessionHome.class,
-                InvoiceSessionHome.JNDI_NAME);
-        remoteInvoice = invoiceHome.create();
+        remoteInvoice = (IInvoiceSessionBean) RemoteContext.getBean(
+                RemoteContext.Name.INVOICE_REMOTE_SESSION);
 
-        BillingProcessSessionHome billingProcessHome =
-                (BillingProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(
-                BillingProcessSessionHome.class,
-                BillingProcessSessionHome.JNDI_NAME);
-        remoteBillingProcess = billingProcessHome.create();
+        remoteBillingProcess = (IBillingProcessSessionBean) 
+                RemoteContext.getBean(
+                RemoteContext.Name.BILLING_PROCESS_REMOTE_SESSION);
 
-        UserSessionHome userHome = (UserSessionHome) JNDILookup.getFactory(
-                true).lookUpHome(UserSessionHome.class, 
-                    UserSessionHome.JNDI_NAME);
-        remoteUser = userHome.create();
+        remoteUser = (IUserSessionBean) RemoteContext.getBean(
+                RemoteContext.Name.USER_REMOTE_SESSION);;
 
-        PaymentSessionHome paymentHome = (PaymentSessionHome) JNDILookup.getFactory(
-                true).lookUpHome(PaymentSessionHome.class, 
-                    PaymentSessionHome.JNDI_NAME);
-        remotePayment= paymentHome.create();
+        remotePayment= (IPaymentSessionBean) RemoteContext.getBean(
+                RemoteContext.Name.PAYMENT_REMOTE_SESSION);
 
         languageId = new Integer(1);
         cal = new GregorianCalendar();

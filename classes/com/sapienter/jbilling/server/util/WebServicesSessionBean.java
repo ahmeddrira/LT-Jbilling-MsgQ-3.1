@@ -53,9 +53,9 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -64,10 +64,10 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -882,7 +882,8 @@ public class WebServicesSessionBean implements SessionBean {
             ItemBL itemBL = new ItemBL();
             ItemDTO dto = itemBL.getDTO(item);
 
-            ItemSessionBean itemSession = new ItemSessionBean();
+            IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
+                    Context.Name.ITEM_SESSION);
             itemSession.update(executorId, dto, languageId);
             LOG.debug("Done updateItem ");
         } catch (SessionInternalError e) {
@@ -910,7 +911,8 @@ public class WebServicesSessionBean implements SessionBean {
             throws SessionInternalError, PluggableTaskException, TaskException {
         for (OrderLineWS line : order.getOrderLines()) {
             // get the related item
-            ItemSessionBean itemSession = new ItemSessionBean();
+            IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
+                    Context.Name.ITEM_SESSION);
 
             ItemDTO item = itemSession.get(line.getItemId(),
                     languageId, order.getUserId(), order.getCurrencyId(),
@@ -1151,7 +1153,7 @@ public class WebServicesSessionBean implements SessionBean {
             //TODO Validate that the user ID of the payment is the same as the
             // owner of the invoice
             payment.setIsRefund(new Integer(0));
-            PaymentSessionBean session = (PaymentSessionBean) Context.getBean(
+            IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(
                     Context.Name.PAYMENT_SESSION);
             LOG.debug("Done");
             return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
@@ -1667,7 +1669,7 @@ public class WebServicesSessionBean implements SessionBean {
         }
 
         try {
-            PaymentSessionBean payment = (PaymentSessionBean) Context.getBean(
+            IPaymentSessionBean payment = (IPaymentSessionBean) Context.getBean(
                     Context.Name.PAYMENT_SESSION);
             PaymentDTOEx paymentDto = new PaymentDTOEx();
             paymentDto.setIsRefund(0);

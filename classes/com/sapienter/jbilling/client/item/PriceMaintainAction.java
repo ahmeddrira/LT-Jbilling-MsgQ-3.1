@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -30,7 +30,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTO> {
 
-    private final ItemSessionBean myItemSession;
+    private final IItemSessionBean myItemSession;
     private static final String FORM_PRICE = "price";
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_CURRENCY_ID = "currencyId";
@@ -45,7 +45,7 @@ public class PriceMaintainAction extends CrudActionBase<ItemUserPriceDTO> {
 
     public PriceMaintainAction() {
         super(FORM_PRICE, "item price");
-        myItemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
+        myItemSession = (IItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
     }
 
     @Override

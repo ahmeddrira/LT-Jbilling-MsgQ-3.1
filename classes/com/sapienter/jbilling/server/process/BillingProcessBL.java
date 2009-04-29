@@ -51,8 +51,8 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentBL;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask;
 import com.sapienter.jbilling.server.pluggableTask.OrderFilterTask;
@@ -977,7 +977,7 @@ public class BillingProcessBL extends ResultList
         try {
             InvoiceBL invoiceBL = new InvoiceBL(invoiceId);
             InvoiceDTO newInvoice = invoiceBL.getEntity();
-            PaymentSessionBean paymentSess = (PaymentSessionBean)
+            IPaymentSessionBean paymentSess = (IPaymentSessionBean)
                     Context.getBean(Context.Name.PAYMENT_SESSION);
             Integer result = paymentSess.generatePayment(newInvoice);
             Integer currencyId = newInvoice.getCurrency().getId();

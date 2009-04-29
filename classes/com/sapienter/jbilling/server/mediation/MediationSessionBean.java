@@ -60,13 +60,15 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
  * @author emilc
  **/
 @Transactional( propagation = Propagation.REQUIRED )
-public class MediationSessionBean {
+public class MediationSessionBean implements IMediationSessionBean {
 
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
     public void trigger() {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         MediationProcessDAS processDAS = new MediationProcessDAS();
         Vector<String> errorMessages = new Vector<String>();
+        IMediationSessionBean local = (IMediationSessionBean) Context.getBean(
+                Context.Name.MEDIATION_SESSION);
 
         LOG.debug("Running mediation trigger.");
 
@@ -101,7 +103,7 @@ public class MediationSessionBean {
                         // there is going to be records processed from this configuration
                         // create a new process row. This happends in its own transactions
                         // so it needs to be brought to the persistant context here again
-                        MediationProcess process = createProcessRecord(cfg);
+                        MediationProcess process = local.createProcessRecord(cfg);
 
                         int lastPosition = 0;
                         Vector<Record> thisGroup = new Vector<Record>();
@@ -110,7 +112,7 @@ public class MediationSessionBean {
                                 // end of this group
                                 // call the rules to get the records normalized
                                 // plus the user id, item id and quantity
-                                normalizeRecordGroup(processTask, executorId, process,
+                                local.normalizeRecordGroup(processTask, executorId, process,
                                         thisGroup, entityId, cfg);
                                 // start again
                                 thisGroup.clear();
@@ -122,7 +124,7 @@ public class MediationSessionBean {
 
                         // send the last record/s as well
                         if (thisGroup.size() > 0) {
-                            normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
+                            local.normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
                         }
 
                         // save the information about this just ran mediation process in

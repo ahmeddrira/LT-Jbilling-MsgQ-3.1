@@ -41,9 +41,9 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.payment.PaymentSessionBean;
+import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
@@ -336,12 +336,12 @@ public class GenericListAction extends Action {
                             selectionId);   
                 } else if (type.equals(Constants.LIST_TYPE_INVOICE) ||
                         type.equals(Constants.LIST_TYPE_INVOICE_ORDER)) {
-                    InvoiceSessionBean remoteInvoice = (InvoiceSessionBean) 
+                    IInvoiceSessionBean remoteInvoice = (IInvoiceSessionBean) 
                             Context.getBean(Context.Name.INVOICE_SESSION);
                     InvoiceDTO info = remoteInvoice.getInvoice(selectionId);
                     session.setAttribute(Constants.SESSION_INVOICE_DTO, info);
                 } else if (type.equals(Constants.LIST_TYPE_PAYMENT_USER)) {                    
-                    PaymentSessionBean remotePayment = (PaymentSessionBean) 
+                    IPaymentSessionBean remotePayment = (IPaymentSessionBean) 
                             Context.getBean(Context.Name.PAYMENT_SESSION);
                     PaymentDTO info = remotePayment.getPayment(selectionId, 
                             (Integer) session.getAttribute(

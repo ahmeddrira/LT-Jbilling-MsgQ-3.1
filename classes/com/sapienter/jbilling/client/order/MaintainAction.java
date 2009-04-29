@@ -37,9 +37,9 @@ import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormDateHelper;
-import com.sapienter.jbilling.server.mediation.MediationSessionBean;
+import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.order.OrderSessionBean;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
@@ -58,7 +58,7 @@ public class MaintainAction extends Action {
                 Constants.SESSION_LANGUAGE);
         try {
             if (request.getParameter("action").equals("view")) {
-                OrderSessionBean remoteOrder = (OrderSessionBean) 
+                IOrderSessionBean remoteOrder = (IOrderSessionBean) 
                         Context.getBean(Context.Name.ORDER_SESSION);
                 Integer orderId = (request.getParameter("id") == null) 
                         ? (Integer) session.getAttribute(
@@ -79,7 +79,7 @@ public class MaintainAction extends Action {
             } else if (request.getParameter("action").equals("status")) {
                 String statusStr = request.getParameter("statusId");
                 if (statusStr != null) {
-                    OrderSessionBean remoteOrder = (OrderSessionBean) 
+                    IOrderSessionBean remoteOrder = (IOrderSessionBean) 
                             Context.getBean(Context.Name.ORDER_SESSION);
                     Integer orderId = ((OrderDTO) session.getAttribute(
                             Constants.SESSION_ORDER_DTO)).getId();
@@ -157,7 +157,7 @@ public class MaintainAction extends Action {
             HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
 
-        OrderSessionBean remoteOrder = (OrderSessionBean) Context.getBean(
+        IOrderSessionBean remoteOrder = (IOrderSessionBean) Context.getBean(
                 Context.Name.ORDER_SESSION);
 
         Integer userId = (Integer) session.getAttribute(
@@ -175,8 +175,8 @@ public class MaintainAction extends Action {
     }
     
     private List<MediationRecordLineDTO> getEvents(Integer orderId) {
-        MediationSessionBean remoteMed = (MediationSessionBean) Context.getBean(
-                Context.Name.MEDIATION_SESSION);
+        IMediationSessionBean remoteMed = (IMediationSessionBean)
+                Context.getBean(Context.Name.MEDIATION_SESSION);
         return remoteMed.getEventsForOrder(orderId);
     }
 }

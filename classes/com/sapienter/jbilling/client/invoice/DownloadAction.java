@@ -46,7 +46,7 @@ import org.apache.struts.validator.DynaValidatorForm;
 
 import com.sapienter.jbilling.client.util.FormDateHelper;
 import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -105,7 +105,7 @@ public final class DownloadAction extends Action {
             }
 
 			try {
-				InvoiceSessionBean invoiceSession = (InvoiceSessionBean) 
+				IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
                         Context.getBean(Context.Name.INVOICE_SESSION);
 				String filename = invoiceSession.generatePDFFile(map,
                         getServlet().getServletContext().getRealPath("/_FILE_NAME_"));

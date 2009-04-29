@@ -58,7 +58,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
  * @author emilc
  **/
 @Transactional( propagation = Propagation.REQUIRED )
-public class ListSessionBean {
+public class ListSessionBean implements IListSessionBean {
 
     private static final Logger LOG = Logger.getLogger(ListSessionBean.class);
 

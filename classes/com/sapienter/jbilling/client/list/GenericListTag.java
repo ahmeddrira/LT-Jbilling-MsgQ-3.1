@@ -36,8 +36,8 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.list.ListDTO;
-import com.sapienter.jbilling.server.list.ListSessionBean;
 import com.sapienter.jbilling.server.list.PagedListDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
@@ -90,9 +90,9 @@ public class GenericListTag extends ListTagBase {
   
         // Now I'll call the session bean to get the CachedRowSet with
         // the results of the query
-        ListSessionBean listSession;
+        IListSessionBean listSession;
         try {
-            listSession = (ListSessionBean) Context.getBean(
+            listSession = (IListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
         } catch (Exception e) {
             throw new JspException(e);

@@ -29,9 +29,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionLocal;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionLocalHome;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /*
  * This message bean is not configured using xdoclet.
@@ -61,12 +60,8 @@ public class ProcessPaymentMDB implements MessageDrivenBean, MessageListener {
             MapMessage myMessage = (MapMessage) message;
             
             // use a session bean to make sure the processing is done in one transaction
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            BillingProcessSessionLocalHome processHome =
-                (BillingProcessSessionLocalHome) EJBFactory.lookUpLocalHome(
-                BillingProcessSessionLocalHome.class,
-                BillingProcessSessionLocalHome.JNDI_NAME);
-            BillingProcessSessionLocal process = processHome.create();
+            IBillingProcessSessionBean process = (IBillingProcessSessionBean) 
+                    Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 
             String type = message.getStringProperty("type"); 
             if (type.equals("payment")) {

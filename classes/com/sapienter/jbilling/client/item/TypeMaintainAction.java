@@ -19,7 +19,7 @@ import java.rmi.RemoteException;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.server.item.ItemSessionBean;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -35,11 +35,11 @@ public class TypeMaintainAction extends CrudActionBase<ItemTypeDTO> {
     private static final String FORWARD_LIST = "type_list";
     private static final String FORWARD_EDIT = "type_edit";
     private static final String FORWARD_DELETED = "type_deleted";
-    private final ItemSessionBean myItemSession;
+    private final IItemSessionBean myItemSession;
 
     public TypeMaintainAction() {
         super(FORM_ITEM_TYPE, "item type");
-        myItemSession = (ItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
+        myItemSession = (IItemSessionBean) Context.getBean(Context.Name.ITEM_SESSION);
     }
 
     @Override

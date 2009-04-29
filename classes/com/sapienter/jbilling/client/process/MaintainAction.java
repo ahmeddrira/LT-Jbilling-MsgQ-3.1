@@ -38,13 +38,11 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.interfaces.BillingProcessSession;
-import com.sapienter.jbilling.interfaces.BillingProcessSessionHome;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
@@ -60,13 +58,9 @@ public class MaintainAction extends Action {
         String forward = "error";
         ActionMessages messages = new ActionMessages();
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            BillingProcessSessionHome processHome =
-                    (BillingProcessSessionHome) EJBFactory.lookUpHome(
-                    BillingProcessSessionHome.class,
-                    BillingProcessSessionHome.JNDI_NAME);
-        
-            BillingProcessSession processSession = processHome.create();
+            IBillingProcessSessionBean processSession = 
+                    (IBillingProcessSessionBean) Context.getBean(
+                    Context.Name.BILLING_PROCESS_SESSION);
             
             String action = request.getParameter("action");
             Integer entityId = (Integer) session.

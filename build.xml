@@ -66,6 +66,10 @@
         </fileset>
         <pathelement location="${jboss.server.dir}/lib/postgresql-8.2-507.jdbc4.jar"/>
     </path>
+
+    <path id="spring.classpath">
+        <pathelement location="${source.spring.descriptor.dir}"/>
+    </path>
     
     
     <!-- Run this target when installing a fresh jboss.
@@ -511,6 +515,7 @@ xmlvalidation="true">
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
             
             <classpath refid="run.classpath"/>
+            <classpath refid="spring.classpath"/>
             <formatter type="brief" usefile="false"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest"/>
         </junit>
@@ -541,6 +546,7 @@ xmlvalidation="true">
         <junit printsummary="off"
         haltonfailure="true">
             <classpath refid="run.classpath"/>
+            <classpath refid="spring.classpath"/>
             <formatter type="brief" usefile="false"/>
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest"/>
         </junit>

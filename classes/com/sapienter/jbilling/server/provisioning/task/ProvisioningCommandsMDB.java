@@ -31,11 +31,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSession;
-import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionHome;
-
-
+import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
+import com.sapienter.jbilling.server.util.Context;
 
 /*
 * This message bean is not configured using xdoclet.
@@ -82,11 +79,9 @@ public class ProvisioningCommandsMDB implements MessageDrivenBean, MessageListen
 
             LOG.debug("Message property result value : " + result);
 
-            ProvisioningProcessSessionHome provisioningHome = (ProvisioningProcessSessionHome) JNDILookup.getFactory(
-                                                                  true).lookUpHome(
-                                                                  ProvisioningProcessSessionHome.class,
-                                                                  ProvisioningProcessSessionHome.JNDI_NAME);
-            ProvisioningProcessSession remoteProvisioning = provisioningHome.create();
+            IProvisioningProcessSessionBean remoteProvisioning = 
+                    (IProvisioningProcessSessionBean) Context.getBean(
+                    Context.Name.PROVISIONING_PROCESS_SESSION);
 
             remoteProvisioning.updateProvisioningStatus(in_order_id, in_order_line_id, result);
         } catch (Exception e) {

@@ -42,4 +42,8 @@
         <property name="serviceUrl" value="rmi://localhost:1199/MediationSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.mediation.IMediationSessionBean"/>
     </bean>
+    <bean id="provisioningProcessRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/ProvisioningProcessSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean"/>
+    </bean>
 </beans>

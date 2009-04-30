@@ -28,8 +28,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Receives messages from the provisioning commands rules task. Calls
@@ -49,13 +49,9 @@ public class ExternalProvisioningMDB implements MessageDrivenBean,
 
             // use a session bean to make sure the processing is done in 
             // a transaction
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ProvisioningProcessSessionLocalHome provisioningHome = 
-                    (ProvisioningProcessSessionLocalHome) EJBFactory.lookUpLocalHome(
-                    ProvisioningProcessSessionLocalHome.class,
-                    ProvisioningProcessSessionLocalHome.JNDI_NAME);
-            ProvisioningProcessSessionLocal provisioning = 
-                    provisioningHome.create();
+            IProvisioningProcessSessionBean provisioning = 
+                    (IProvisioningProcessSessionBean) Context.getBean(
+                    Context.Name.PROVISIONING_PROCESS_SESSION);
 
             provisioning.externalProvisioning(message);
         } catch (Exception e) {

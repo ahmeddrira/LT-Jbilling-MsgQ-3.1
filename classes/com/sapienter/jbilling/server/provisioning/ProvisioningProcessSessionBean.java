@@ -20,15 +20,12 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
-import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 import javax.jms.Message;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -44,28 +41,12 @@ import com.sapienter.jbilling.server.util.Constants;
  * 
  *         This is the session facade for the provisioning process and its
  *         related services.
- * 
- * @ejb:bean name="ProvisioningProcessSession"
- *           display-name="The provisioning process session facade"
- *           type="Stateless" transaction-type="Container" view-type="both"
- *           jndi-name=
- *           "com/sapienter/jbilling/server/provisioning/ProvisioningProcessSession"
- * 
  */
-public class ProvisioningProcessSessionBean implements SessionBean {
+@Transactional( propagation = Propagation.REQUIRED )
+public class ProvisioningProcessSessionBean 
+        implements IProvisioningProcessSessionBean {
 	private static final Logger LOG = Logger.getLogger(ProvisioningProcessSessionBean.class);
-	SessionContext ctx = null;
 
-	/**
-	 * @ejb:create-method view-type="remote"
-	 */
-	public void ejbCreate() throws CreateException {
-	}
-
-	/**
-	 * @ejb:interface-method view-type="remote"
-	 * @ejb.transaction type="Required"
-	 */
 	public void trigger() throws SessionInternalError {
 		LOG.debug("calling ProvisioningProcessSessionBean trigger() method");
 
@@ -79,11 +60,6 @@ public class ProvisioningProcessSessionBean implements SessionBean {
 		}
 	}
 
-	/**
-	 * 
-	 * @ejb:interface-method view-type="remote"
-	 * @ejb.transaction type="Required"
-	 */
 	public void updateProvisioningStatus(Integer in_order_id,
 			Integer in_order_line_id, String result) {
 		OrderDAS orderDb = new OrderDAS();
@@ -126,10 +102,6 @@ public class ProvisioningProcessSessionBean implements SessionBean {
 		}
 	}
 
-    /**
-     * @ejb:interface-method view-type="remote"
-     * @ejb.transaction type="Required"
-     */
     public void updateProvisioningStatus(Integer orderLineId, 
             Integer provisioningStatus) {
         OrderLineDTO orderLine = new OrderLineDAS().find(orderLineId);
@@ -138,56 +110,10 @@ public class ProvisioningProcessSessionBean implements SessionBean {
     }
 
     /**
-     * @ejb:interface-method view-type="local"
-     * @ejb.transaction type="Required"
      * Runs the external provisioning code in a transation.
      */
 	public void externalProvisioning(Message message) {
         ExternalProvisioning provisioning = new ExternalProvisioning();
         provisioning.onMessage(message);
     }
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.ejb.SessionBean#ejbActivate()
-	 */
-	@Override
-	public void ejbActivate() throws EJBException, RemoteException {
-
-		// TODO Auto-generated method stub
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.ejb.SessionBean#ejbPassivate()
-	 */
-	@Override
-	public void ejbPassivate() throws EJBException, RemoteException {
-
-		// TODO Auto-generated method stub
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.ejb.SessionBean#ejbRemove()
-	 */
-	@Override
-	public void ejbRemove() throws EJBException, RemoteException {
-
-		// TODO Auto-generated method stub
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.ejb.SessionBean#setSessionContext(javax.ejb.SessionContext)
-	 */
-	@Override
-	public void setSessionContext(SessionContext newCtx) throws EJBException,
-			RemoteException {
-		ctx = newCtx;
-	}
 }

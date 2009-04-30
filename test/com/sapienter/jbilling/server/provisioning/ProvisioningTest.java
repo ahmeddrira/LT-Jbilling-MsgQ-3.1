@@ -20,17 +20,16 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import junit.framework.TestCase;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
@@ -42,7 +41,7 @@ public class ProvisioningTest extends TestCase {
         1, 2, 3, 24, 240, 14
     };
     private static Integer[]           provisioningStatus = new Integer[6];
-    private ProvisioningProcessSession remoteProvisioning = null;
+    private IProvisioningProcessSessionBean remoteProvisioning = null;
     JbillingAPI                        api;
 
     /**
@@ -54,12 +53,9 @@ public class ProvisioningTest extends TestCase {
         super.setUp();
         api = JbillingAPIFactory.getAPI();
 
-        ProvisioningProcessSessionHome provisioningHome = 
-                (ProvisioningProcessSessionHome) JNDILookup.getFactory(true)
-                .lookUpHome(ProvisioningProcessSessionHome.class,
-                ProvisioningProcessSessionHome.JNDI_NAME);
-
-        remoteProvisioning = provisioningHome.create();
+        remoteProvisioning = (IProvisioningProcessSessionBean) 
+                RemoteContext.getBean(
+                RemoteContext.Name.PROVISIONING_PROCESS_REMOTE_SESSION);
     }
 
     private void pause(long t) {
@@ -141,9 +137,6 @@ public class ProvisioningTest extends TestCase {
         } catch (SessionInternalError e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
         }
     }
 
@@ -219,9 +212,6 @@ public class ProvisioningTest extends TestCase {
         } catch (SessionInternalError e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
         }
     }
 
@@ -295,9 +285,6 @@ public class ProvisioningTest extends TestCase {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
         } catch (SessionInternalError e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
-        } catch (RemoteException e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
         }

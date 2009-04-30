@@ -533,6 +533,7 @@ xmlvalidation="true">
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
             <classpath refid="run.classpath"/>
+            <classpath refid="spring.classpath"/>
             <formatter type="brief" usefile="false"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest"/>
         </junit>

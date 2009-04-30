@@ -44,6 +44,7 @@ public class Context {
         MEDIATION_SESSION,
         REPORT_SESSION,
         BILLING_PROCESS_SESSION,
+        PROVISIONING_PROCESS_SESSION,
         PROVISIONING,
         VELOCITY,
         DATA_SOURCE,
@@ -72,6 +73,8 @@ public class Context {
         springBeans.put(Name.MEDIATION_SESSION, "mediationSession");
         springBeans.put(Name.REPORT_SESSION, "reportSession");
         springBeans.put(Name.BILLING_PROCESS_SESSION, "billingProcessSession");
+        springBeans.put(Name.PROVISIONING_PROCESS_SESSION, 
+                "provisioningProcessSession");
 
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");

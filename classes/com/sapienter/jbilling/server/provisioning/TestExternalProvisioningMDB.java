@@ -29,8 +29,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 
 /**
  * Tests responses from the external provisioning module. Receives 
@@ -228,12 +228,9 @@ public class TestExternalProvisioningMDB implements MessageDrivenBean, MessageLi
     private void updateProvisioningStatus(int orderLineId, 
             int provisioningStatusId) {
         try {
-            JNDILookup EJBFactory = JNDILookup.getFactory(false);
-            ProvisioningProcessSessionHome provisioningHome = 
-                (ProvisioningProcessSessionHome) EJBFactory.lookUpHome(
-                    ProvisioningProcessSessionHome.class,
-                    ProvisioningProcessSessionHome.JNDI_NAME);
-            ProvisioningProcessSession provisioning = provisioningHome.create();
+            IProvisioningProcessSessionBean provisioning = 
+                    (IProvisioningProcessSessionBean) Context.getBean(
+                    Context.Name.PROVISIONING_PROCESS_SESSION);
 
             provisioning.updateProvisioningStatus(orderLineId, 
                     provisioningStatusId);

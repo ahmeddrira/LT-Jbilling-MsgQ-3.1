@@ -27,6 +27,7 @@
     <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
     <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
     <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
+    <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
 
     <!-- Remote Session beans -->
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
@@ -75,6 +76,12 @@
       <property name="service" ref="billingProcessSession"/>
       <property name="serviceName" value="BillingProcessSession"/>
       <property name="serviceInterface" value="com.sapienter.jbilling.server.process.IBillingProcessSessionBean"/>
+      <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+      <property name="service" ref="provisioningProcessSession"/>
+      <property name="serviceName" value="ProvisioningProcessSession"/>
+      <property name="serviceInterface" value="com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean"/>
       <property name="registryPort" value="1199"/>
     </bean>
 

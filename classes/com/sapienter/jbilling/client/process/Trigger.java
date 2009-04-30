@@ -20,15 +20,11 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.sapienter.jbilling.client.process;
 
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 import org.quartz.Job;
@@ -40,7 +36,6 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
@@ -48,8 +43,7 @@ import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
-import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSession;
-import com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionHome;
+import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -181,11 +175,9 @@ public class Trigger implements Job {
                     Context.Name.LIST_SESSION);
             IMediationSessionBean remoteMediation = (IMediationSessionBean)
                     Context.getBean(Context.Name.MEDIATION_SESSION);
-            ProvisioningProcessSessionHome provisioningProcessHome=
-            	(ProvisioningProcessSessionHome) JNDILookup.getFactory(true).lookUpHome(
-            			ProvisioningProcessSessionHome.class,
-            			ProvisioningProcessSessionHome.JNDI_NAME);
-            ProvisioningProcessSession remoteProvisioningProcess=provisioningProcessHome.create();
+            IProvisioningProcessSessionBean remoteProvisioningProcess = 
+                    (IProvisioningProcessSessionBean) Context.getBean(
+                    Context.Name.PROVISIONING_PROCESS_SESSION);
             
             // determine the date for this run
             Date today = Calendar.getInstance().getTime();
@@ -278,12 +270,6 @@ public class Trigger implements Job {
                 }
             }
 
-        } catch (RemoteException e) {
-            LOG.debug(e);
-        } catch (NamingException e) {
-            LOG.debug(e);
-        } catch (CreateException e) {
-            LOG.debug(e);
         } catch (SessionInternalError e) {
             LOG.debug(e);
         }

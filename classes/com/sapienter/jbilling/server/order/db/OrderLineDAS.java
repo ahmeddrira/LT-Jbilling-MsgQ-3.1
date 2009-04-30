@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.order.db;
 import org.hibernate.Query;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import java.util.List;
 
 public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
     public Long findLinesWithDecimals(Integer itemId) {
@@ -36,6 +37,21 @@ public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
         query.setParameter("item", itemId);
 
         return (Long) query.uniqueResult();
+    }
+
+    public List<OrderLineDTO> findByUserItem(Integer userId, Integer itemId) {
+        final String hql =
+            "select ol" +
+            "  from OrderLineDTO ol " +
+            " where ol.deleted = 0 " +
+            "   and ol.item.id = :item " +
+            "   and ol.purchaseOrder.baseUserByUserId.id = :user";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("item", itemId);
+        query.setParameter("user", userId);
+
+        return query.list();
     }
 
 }

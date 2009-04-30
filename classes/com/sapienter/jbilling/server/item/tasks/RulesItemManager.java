@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -40,6 +41,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import java.util.List;
 
 public class RulesItemManager extends BasicItemManager {
 
@@ -257,6 +259,16 @@ public class RulesItemManager extends BasicItemManager {
             newLine.setPurchaseOrder(newOrder);
             
             return new OrderDAS().save(newOrder);
+        }
+
+        public void removeOrder(Integer itemId) {
+            List<OrderLineDTO> list = new OrderLineDAS().findByUserItem(
+                    order.getBaseUserByUserId().getId(), itemId);
+
+            for (OrderLineDTO line : list) {
+                LOG.debug("Deleting order " + line.getPurchaseOrder().getId());
+                new OrderDAS().delete(line.getPurchaseOrder());
+            }
         }
 
         public Integer getCurrencyId() {

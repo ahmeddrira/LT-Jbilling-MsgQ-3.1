@@ -267,7 +267,9 @@ public class RulesItemManager extends BasicItemManager {
 
             for (OrderLineDTO line : list) {
                 LOG.debug("Deleting order " + line.getPurchaseOrder().getId());
-                new OrderDAS().delete(line.getPurchaseOrder());
+
+                // who is the executor? we'll use the owner.. she is cancelling
+                new OrderBL(line.getPurchaseOrder()).delete(order.getBaseUserByUserId().getId());
             }
         }
 

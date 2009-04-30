@@ -28,10 +28,14 @@ package com.sapienter.jbilling.server.util;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
@@ -58,6 +62,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
     private Class local = null;
     private Class remote = null;
     private static final Logger LOG = Logger.getLogger(WSMethodSecurityProxy.class);
+    private TransactionTemplate transactionTemplate = null;
     
     private void addMethod(String name, Class params[]) throws InstantiationException {
         try {
@@ -74,6 +79,10 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
     public void init(Class beanHome, Class beanRemote,
             Class beanLocalHome, Class beanLocal, Object securityMgr)
             throws InstantiationException {
+
+       transactionTemplate = new TransactionTemplate(
+               (PlatformTransactionManager) Context.getBean(
+               Context.Name.TRANSACTION_MANAGER));
 
        local = beanLocal;
        remote = beanRemote;
@@ -229,12 +238,21 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
 
     }
     
-    public void invoke(Method m, Object[] args, Object bean)
+    public void invoke(final Method m, final Object[] args, final Object bean)
             throws SecurityException {
         LOG.info("invoke, m=" + m.getName());
         if (!isMethodPresent(m)) {
             return;
         }
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                invokeInTransaction(m, args, bean);
+            }
+        });
+    }
+
+    public void invokeInTransaction(Method m, Object[] args, Object bean) 
+            throws SecurityException {
         try {
             if(m.getName().equals("getInvoiceWS") || m.getName().equals("payInvoice") || 
                     m.getName().equals("deleteInvoice") ) {

@@ -212,7 +212,7 @@ public class UserBL extends ResultList
     }
     
     private void updateRoles(Set<RoleDTO> theseRoles, Integer main) 
-            throws NamingException, SessionInternalError {    
+            throws SessionInternalError {    
 
         if (theseRoles == null || theseRoles.isEmpty()) {
             if (main != null) {
@@ -246,8 +246,8 @@ public class UserBL extends ResultList
         }
     }
     
-    public Integer create(UserDTOEx dto) throws CreateException,
-            NamingException, SessionInternalError, RemoveException {
+    public Integer create(UserDTOEx dto) throws NamingException, 
+            SessionInternalError {
         
         Integer newId;
         LOG.debug("Creating user " + dto);
@@ -320,7 +320,7 @@ public class UserBL extends ResultList
     private Integer create(Integer entityId, String userName, String password,
             Integer languageId, Vector<Integer> roles, Integer currencyId, 
 			Integer statusId, Integer subscriberStatusId) 
-           throws CreateException, NamingException, SessionInternalError {
+           throws SessionInternalError {
         // Default the language and currency to that one of the entity         
         if (languageId == null) {
             EntityBL entity = new EntityBL(entityId);

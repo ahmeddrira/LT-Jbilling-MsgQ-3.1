@@ -5,7 +5,7 @@ package com.sapienter.jbilling.server.entity;
 
 /**
  * Value object for InvoiceLineEntity.
- *
+ * @jboss-net.xml-schema urn="sapienter:InvoiceLineDTO"
  */
 public class InvoiceLineDTO
    extends java.lang.Object

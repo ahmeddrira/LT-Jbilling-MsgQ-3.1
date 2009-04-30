@@ -28,6 +28,7 @@
     <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
     <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
     <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
+    <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean" scope="prototype"/>
 
     <!-- Remote Session beans -->
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">

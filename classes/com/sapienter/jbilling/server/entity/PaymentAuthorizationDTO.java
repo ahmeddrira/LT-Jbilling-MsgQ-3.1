@@ -5,7 +5,7 @@ package com.sapienter.jbilling.server.entity;
 
 /**
  * Value object for PaymentAuthorizationEntity.
- *
+ * @jboss-net.xml-schema urn="sapienter:PaymentAuthorizationDTO"
  */
 public class PaymentAuthorizationDTO
    extends java.lang.Object

@@ -119,8 +119,7 @@ public class PartnerBL extends ResultList
         return partner;
     }
     
-    public Integer create(Partner dto) 
-            throws CreateException, SessionInternalError {
+    public Integer create(Partner dto) throws SessionInternalError {
         LOG.debug("creating partner");
         
         dto.setTotalPayments(0);

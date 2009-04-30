@@ -5,7 +5,7 @@ package com.sapienter.jbilling.server.entity;
 
 /**
  * Value object for AchEntity.
- *
+ * @jboss-net.xml-schema urn="sapienter:AchDTO"
  */
 public class AchDTO
    extends java.lang.Object

@@ -45,9 +45,11 @@ public class Context {
         REPORT_SESSION,
         BILLING_PROCESS_SESSION,
         PROVISIONING_PROCESS_SESSION,
+        WEB_SERVICES_SESSION,
         PROVISIONING,
         VELOCITY,
         DATA_SOURCE,
+        TRANSACTION_MANAGER,
         HIBERNATE_TEMPLATE,
         DESCRIPTION_DAS,
         JBILLING_TABLE_DAS,
@@ -75,6 +77,7 @@ public class Context {
         springBeans.put(Name.BILLING_PROCESS_SESSION, "billingProcessSession");
         springBeans.put(Name.PROVISIONING_PROCESS_SESSION, 
                 "provisioningProcessSession");
+        springBeans.put(Name.WEB_SERVICES_SESSION, "webServicesSession");
 
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");
@@ -85,6 +88,7 @@ public class Context {
         springBeans.put(Name.PROVISIONING, "provisioning");
         springBeans.put(Name.VELOCITY, "velocityEngine");
         springBeans.put(Name.DATA_SOURCE, "dataSource");
+        springBeans.put(Name.TRANSACTION_MANAGER, "transactionManager");
         springBeans.put(Name.HIBERNATE_TEMPLATE, "hibernateTemplate");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CAI, "cai");

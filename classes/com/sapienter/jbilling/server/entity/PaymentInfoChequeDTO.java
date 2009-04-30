@@ -5,7 +5,7 @@ package com.sapienter.jbilling.server.entity;
 
 /**
  * Value object for PaymentInfoChequeEntity.
- *
+ * @jboss-net.xml-schema urn="sapienter:PaymentInfoChequeDTO"
  */
 public class PaymentInfoChequeDTO
    extends java.lang.Object

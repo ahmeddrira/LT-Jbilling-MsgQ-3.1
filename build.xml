@@ -190,6 +190,7 @@
                 <include name="**/*WS.java"/>
                 <include name="**/*DTOEx.java"/>
                 <include name="**/PricingField.java"/>
+                <include name="**/entity/*DTO.java"/>
             </fileset>
             
             <packageSubstitution packages="server.entity,server.user,server.item,server.order,server.util,server.customer,server.process,server.payment,server.notification,server.report,server.invoice"

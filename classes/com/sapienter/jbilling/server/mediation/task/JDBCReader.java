@@ -237,7 +237,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
             query += " " + whereAppend + " ";
         }
 
-        query += "ORDER BY ";
+        query += " ORDER BY ";
         String orderBy = (String) parameters.get(PARAM_ORDER_BY);
         if (orderBy != null) {
             query += orderBy;

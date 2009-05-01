@@ -24,57 +24,31 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
-import org.hibernate.ejb.HibernateEntityManager;
-import org.hibernate.ejb.HibernateEntityManagerFactory;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.util.Context;
 import org.hibernate.LockMode;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 
-// TODO: extend HibernateDaoSupport and get the sessionFactory from the spring context
-// (no need for a template)
-public abstract class AbstractDAS<T> {
+public abstract class AbstractDAS<T> extends HibernateDaoSupport {
 
     private static final Logger LOG = Logger.getLogger(AbstractDAS.class);
-    private static SessionFactory sessionFactory;
-    private EntityManager em = null;
     private Class<T> persistentClass;
-    //  use "jbilling-jta" for JTA or "jbilling-jdbc" for jdbc
-    private static final EntityManagerFactory emf =
-        Persistence.createEntityManagerFactory("jbilling-jta"); 
     // if querys will be run cached or not
     private boolean queriesCached = false;
 
     
-    // Create the initial SessionFactory from the default configuration files
-    static {
-        try {
-            LOG.debug("Initializing Hibernate");
-
-            sessionFactory = ((HibernateEntityManagerFactory) emf).getSessionFactory();
-
-            LOG.debug("Hibernate initialized");
-        } catch (Throwable ex) {
-            // We have to catch Throwable, otherwise we will miss
-            // NoClassDefFoundError and other subclasses of Error
-            LOG.error("Building SessionFactory failed.", ex);
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
-    
     public AbstractDAS() {
         this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
                                 .getGenericSuperclass()).getActualTypeArguments()[0];
+        setSessionFactory((SessionFactory) Context.getBean(Context.Name.HIBERNATE_SESSION));
     }
 
     
@@ -91,20 +65,11 @@ public abstract class AbstractDAS<T> {
     
     public void delete(T entity) {
         //em.remove(entity);
-        getSession().delete(entity);
+        getHibernateTemplate().delete(entity);
     }
 
     public void refresh(T entity) {
-    	getSession().refresh(entity);
-    }
-    protected Session getSession() {
-        Session mySession = null;
-        if (em != null) {
-            mySession = ((HibernateEntityManager) em).getSession();
-        } else {
-            mySession = sessionFactory.getCurrentSession();
-        }
-        return mySession;
+    	getHibernateTemplate().refresh(entity);
     }
     
     public Class<T> getPersistentClass() {
@@ -122,7 +87,7 @@ public abstract class AbstractDAS<T> {
     @SuppressWarnings("unchecked")
     public T find(Serializable id) {
     	if (id == null) return null;
-        T entity = (T) getSession().load(getPersistentClass(), id);
+        T entity = (T) getHibernateTemplate().load(getPersistentClass(), id);
 
         return entity;
     }
@@ -136,7 +101,7 @@ public abstract class AbstractDAS<T> {
     @SuppressWarnings("unchecked")
     public T findNow(Serializable id) {
     	if (id == null) return null;
-        T entity = (T) getSession().get(getPersistentClass(), id);
+        T entity = (T) getHibernateTemplate().get(getPersistentClass(), id);
 
         return entity;
     }
@@ -152,7 +117,7 @@ public abstract class AbstractDAS<T> {
         if (id == null) {
             return null;
         }
-        T entity = (T) getSession().get(getPersistentClass(), id, LockMode.UPGRADE);
+        T entity = (T) getHibernateTemplate().get(getPersistentClass(), id, LockMode.UPGRADE);
 
         return entity;
     }
@@ -188,20 +153,20 @@ public abstract class AbstractDAS<T> {
     
     @SuppressWarnings("unchecked")
     public T makePersistent(T entity) {
-        getSession().saveOrUpdate(entity);
+        getHibernateTemplate().saveOrUpdate(entity);
         return entity;
     }
 
     public void makeTransient(T entity) {
-        getSession().delete(entity);
+        getHibernateTemplate().delete(entity);
     }
 
     public void flush() {
-        getSession().flush();
+        getHibernateTemplate().flush();
     }
 
     public void clear() {
-        getSession().clear();
+        getHibernateTemplate().clear();
     }
 
     /**

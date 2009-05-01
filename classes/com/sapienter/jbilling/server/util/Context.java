@@ -50,7 +50,7 @@ public class Context {
         VELOCITY,
         DATA_SOURCE,
         TRANSACTION_MANAGER,
-        HIBERNATE_TEMPLATE,
+        HIBERNATE_SESSION,
         DESCRIPTION_DAS,
         JBILLING_TABLE_DAS,
         PLUGGABLE_TASK_DAS,
@@ -90,7 +90,7 @@ public class Context {
         springBeans.put(Name.VELOCITY, "velocityEngine");
         springBeans.put(Name.DATA_SOURCE, "dataSource");
         springBeans.put(Name.TRANSACTION_MANAGER, "transactionManager");
-        springBeans.put(Name.HIBERNATE_TEMPLATE, "hibernateTemplate");
+        springBeans.put(Name.HIBERNATE_SESSION, "sessionFactory");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CAI, "cai");
         springBeans.put(Name.MMSC, "mmsc");

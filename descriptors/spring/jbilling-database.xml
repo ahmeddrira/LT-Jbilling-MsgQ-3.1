@@ -17,18 +17,32 @@
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
        http://www.springframework.org/schema/tx 
        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
-    
+
+    <!--
     <tx:jta-transaction-manager />
-    
     <jee:jndi-lookup id="dataSource" jndi-name="java:/ApplicationDS"/>
+    -->
+ 
     
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+			<property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://localhost:5433/jbilling_test" />
+        <property name="username" value="jbilling" />
+        <property name="password" value="jbilling" />
+        <property name="initialSize" value="5"/>
+        <property name="maxWait" value="-1" />
+    </bean>
+       
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <bean id="sessionFactory"
-        class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" lazy-init="true">
+        class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <!-- Scan for annotated classes -->
-        <property name="packagesToScan" value="com.sapienter.jbilling.server"/>
+        <property name="packagesToScan" value="com.sapienter.jbilling.server.**.*"/>
         <property name="hibernateProperties">
             <props>
                 <!--
@@ -43,6 +57,11 @@
                 <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
                 <prop key="SecondLevelCacheEnabled">true</prop>
                 <prop key="hibernate.cache.use_query_cache">true</prop>
+
+                <!-- Data source and transaction settings (JTA only)
+                <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</prop>
+                <prop key="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</prop>
+                -->
 
                  <!-- This should be equal to Constants.HIBERNATE_BATCH_SIZE -->
                 <prop key="hibernate.jdbc.batch_size">100</prop>

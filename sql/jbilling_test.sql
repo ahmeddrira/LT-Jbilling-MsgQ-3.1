@@ -11096,14 +11096,14 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 86	mediation_record_line	1
 87	generic_status	26
 88	order_line_provisioning_status	1
-25	pluggable_task	53
 10	base_user	1074
 12	customer	1063
 29	contact_map	7905
 27	contact	1126
-26	pluggable_task_parameter	76
 76	contact_field	2022
 44	credit_card	1014
+25	pluggable_task	54
+26	pluggable_task_parameter	81
 \.
 
 
@@ -14296,6 +14296,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 500	1	47	1	1
 510	1	48	2	1
 520	1	49	3	1
+530	1	50	6	1
 20	1	21	4	1
 22	1	21	5	1
 \.
@@ -14357,6 +14358,11 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 730	520	USD	\N	20	\N	1
 740	520	AUD	\N	22	\N	1
 750	21	CURRENCY_ROUTER	\N	520	\N	1
+760	530	loginUser	\N	test-username	\N	1
+770	530	loginPassword	\N	test-password	\N	1
+780	530	portalId	\N	test-portalId	\N	1
+790	530	applicationId	\N	test-applicationId	\N	1
+800	530	bnet	\N	test-bnet	\N	1
 \.
 
 
@@ -14412,6 +14418,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 22	6	com.sapienter.jbilling.server.payment.tasks.PaymentRouterCCFTask	2
 48	18	com.sapienter.jbilling.server.provisioning.task.CAIProvisioningTask	2
 49	6	com.sapienter.jbilling.server.payment.tasks.PaymentRouterCurrencyTask	2
+50	18	com.sapienter.jbilling.server.provisioning.task.MMSCProvisioningTask	5
 \.
 
 

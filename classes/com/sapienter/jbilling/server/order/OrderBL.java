@@ -1399,7 +1399,7 @@ public class OrderBL extends ResultList
     }
     
     public void setProvisioningStatus(Integer orderLineId,Integer provisioningStatus){
-    	OrderLineDTO line = getOrderLine(orderLineId);
+    	OrderLineDTO line = orderLineDAS.findForUpdate(orderLineId);
     	Integer oldStatus=line.getProvisioningStatusId();
     	line.setProvisioningStatus(provisioningStatusDas.find(provisioningStatus));
     	LOG.debug("order line "+orderLineId+": updated provisioning status :"+line.getProvisioningStatusId());

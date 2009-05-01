@@ -57,3 +57,14 @@ then
     // should be removed from command
     command.addParameter("imsi", "VOID");
 end
+
+rule 'mmsc_test'
+when
+    $orderLine : OrderLineDTO(itemId == 251, quantity == 3, 
+        provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
+    CommandManager(eventType == "activated")
+then
+    command.addCommand("mmsc_test", $orderLine.getId());
+    command.addParameter("msisdn", "99777");    
+    command.addParameter("subscriptionType", "HK");
+end

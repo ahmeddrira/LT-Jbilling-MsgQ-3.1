@@ -59,6 +59,10 @@ public class TestExternalProvisioningMDB implements MessageDrivenBean, MessageLi
             } else if (myMessage.getStringProperty("in_command")
                     .equals("cai_test")) {
                 testCAIProvisioningTask(myMessage);
+            }else if (myMessage.getStringProperty("in_command")
+                    .equals("mmsc_test")) {
+                testMMSCProvisioningTask(myMessage);
+            	
             }
         } catch (Exception e) {
             LOG.error("Error processing message", e);
@@ -67,8 +71,8 @@ public class TestExternalProvisioningMDB implements MessageDrivenBean, MessageLi
 
     public void testExternalProvisioningTask(MapMessage message) {
         try {
-            // pause while ProvisioningCommandsMDB is updating the order line
-            pause(3000);
+            // let ProvisioningCommandsMDB update order line first
+            pause(500);
 
             // only sucessful after receiving the last expected message 
             // sucessfully (and no other tests failed). 
@@ -152,8 +156,8 @@ public class TestExternalProvisioningMDB implements MessageDrivenBean, MessageLi
 
     private void testCAIProvisioningTask(MapMessage message) {
         try {
-            // pause while ProvisioningCommandsMDB is updating the order line
-            pause(3000);
+            // let ProvisioningCommandsMDB update order line first
+            pause(500);
 
             boolean success = true;
 
@@ -224,7 +228,70 @@ public class TestExternalProvisioningMDB implements MessageDrivenBean, MessageLi
             LOG.error("processing cai provisioning command", e);
         }
     }
+    
+    private void testMMSCProvisioningTask(MapMessage message) {
+		try {
+            // let ProvisioningCommandsMDB update order line first
+			pause(500);
+			
+			boolean success = true;
 
+			String value = message.getStringProperty("out_result");
+			if (!value.equals("success")) {
+				success = false;
+				LOG.error("Expected a result of 'success', but got '" + value
+						+ "'");
+			} else {
+				LOG.debug("Got 'success' result");
+			}
+
+			value = message.getStringProperty("out_statusCode");
+			if (!value.equals("0")) {
+				success = false;
+				LOG.error("Expected a statusCode of '0', but got '" + value + "'");
+			} else {
+				LOG.debug("Got '0' statusCode");
+			}
+
+			value = message.getStringProperty("out_transactionId");
+			if (value.length() != 36) {
+				success = false;
+				LOG.error("Expected a transactionId length of 36. Got: '" + value
+						+ "'");
+			} else {
+				LOG.debug("Got transactionId with a length of 36");
+			}
+			
+			value = message.getStringProperty("out_statusMessage");
+			
+			if (!value.equals("Customer Added Successfully")) {
+				success = false;
+				LOG.error("Expected a statusMessage of 'Customer Added Successfully'. But Got: '" + value
+						+ "'");
+			} else {
+				LOG.debug("Got statusMessage of 'Customer Added Successfully' ");
+			}
+
+			Integer orderLineId = message.getIntProperty("in_order_line_id");
+
+			// Set the order line's provisioning status to 'ACTIVE' if
+			// test is successful, others to 'FAILED' (overrides
+			// ProvisioningCommandsMDB).
+			if (success) {
+				LOG.debug("Provisioning status of order line id " + orderLineId
+						+ " updated to ACTIVE");
+				updateProvisioningStatus(orderLineId,
+						Constants.PROVISIONING_STATUS_ACTIVE);
+			} else {
+				LOG.debug("Provisioning status of order line id " + orderLineId
+						+ " updated to FAILED");
+				updateProvisioningStatus(orderLineId,
+						Constants.PROVISIONING_STATUS_FAILED);
+			}
+		} catch (Exception e) {
+			LOG.error("processing mmsc provisioning command", e);
+		}
+	}
     private void updateProvisioningStatus(int orderLineId, 
             int provisioningStatusId) {
         try {

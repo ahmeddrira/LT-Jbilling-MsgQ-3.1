@@ -20,8 +20,10 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import junit.framework.TestCase;
 
@@ -88,9 +90,9 @@ public class ProvisioningTest extends TestCase {
             System.out.println("Created order." + ret);
             assertNotNull("The order was not created", ret);
             System.out.println("running provisioning batch process..");
-            pause(4000);
+            //pause(2000);
             remoteProvisioning.trigger();
-            pause(4000);
+            pause(2000);
             System.out.println("Getting back order " + ret);
 
             OrderWS retOrder = api.getOrder(ret);
@@ -164,9 +166,9 @@ public class ProvisioningTest extends TestCase {
             System.out.println("Created order." + ret);
             assertNotNull("The order was not created", ret);
             System.out.println("running provisioning batch process..");
-            pause(4000);
+            //pause(2000);
             remoteProvisioning.trigger();
-            pause(4000);
+            pause(2000);
             System.out.println("Getting back order " + ret);
 
             OrderWS retOrder = api.getOrder(ret);
@@ -239,9 +241,9 @@ public class ProvisioningTest extends TestCase {
             System.out.println("Created order." + ret);
             assertNotNull("The order was not created", ret);
             System.out.println("running provisioning batch process..");
-            pause(4000);
+            //pause(2000);
             remoteProvisioning.trigger();
-            pause(4000);
+            pause(2000);
             System.out.println("Getting back order " + ret);
 
             OrderWS retOrder = api.getOrder(ret);
@@ -349,7 +351,7 @@ public class ProvisioningTest extends TestCase {
             Integer ret = api.createOrder(order);
             assertNotNull("The order was not created", ret);
 
-            pause(12000); // wait for MDBs to complete
+            pause(4000); // wait for MDBs to complete
             System.out.println("Getting back order " + ret);
 
             // check TestExternalProvisioningMDB was successful
@@ -389,7 +391,46 @@ public class ProvisioningTest extends TestCase {
             Integer ret = api.createOrder(order);
             assertNotNull("The order was not created", ret);
 
-            pause(6000); // wait for MDBs to complete
+            pause(2000); // wait for MDBs to complete
+            System.out.println("Getting back order " + ret);
+
+            // check TestExternalProvisioningMDB was successful
+            OrderWS retOrder = api.getOrder(ret); 
+            OrderLineWS orderLine = retOrder.getOrderLines()[0];
+            assertEquals("Order status should be active. Check log output " +
+                    "from TestExternalProvisioningMDB in jbilling.log for " + 
+                    "exact error.", Constants.PROVISIONING_STATUS_ACTIVE,
+                    orderLine.getProvisioningStatusId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+    
+    public void testMMSCProvisioning() {
+        try {
+            // create the order
+            OrderWS order = new OrderWS();
+            order.setUserId(USER_ID);
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(1);
+            order.setCurrencyId(1);
+
+            OrderLineWS line = new OrderLineWS();
+            line.setItemId(251);
+            line.setQuantity(3); // trigger 'mmsc_test' rule
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setUseItem(true);
+            line.setProvisioningStatusId(Constants.PROVISIONING_STATUS_INACTIVE);
+
+            order.setOrderLines(new OrderLineWS[] { line });
+
+            System.out.println("Creating order ...");
+            Integer ret = api.createOrder(order);
+            assertNotNull("The order was not created", ret);
+
+            pause(2000); // wait for MDBs to complete
             System.out.println("Getting back order " + ret);
 
             // check TestExternalProvisioningMDB was successful

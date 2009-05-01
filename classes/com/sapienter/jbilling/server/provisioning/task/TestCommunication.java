@@ -45,7 +45,7 @@ public class TestCommunication implements IExternalCommunication {
         }
 
         // wait for command rules task transaction to complete
-        pause(2000);
+        //pause(2000);
 
         int transidIndexStart = command.indexOf(':', command.indexOf(':') + 1) 
                 + 9;

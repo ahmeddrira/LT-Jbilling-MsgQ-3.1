@@ -31,6 +31,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -83,9 +85,37 @@ public class ProvisioningCommandsMDB implements MessageDrivenBean, MessageListen
                     (IProvisioningProcessSessionBean) Context.getBean(
                     Context.Name.PROVISIONING_PROCESS_SESSION);
 
-            remoteProvisioning.updateProvisioningStatus(in_order_id, in_order_line_id, result);
+            // try updating the order line's provisioning status
+            boolean keepTrying = true;
+            for (int tries = 1; keepTrying; tries++) {
+                try {
+                    remoteProvisioning.updateProvisioningStatus(in_order_id, 
+                            in_order_line_id, result);
+                    keepTrying = false;
+                } catch (EmptyResultDataAccessException erdae) {
+                    // order line not there yet
+                    LOG.debug("Didn't find order line: " + in_order_line_id);
+                    if (tries == 1) {
+                        pause(100);
+                    } else if (tries == 2) {
+                        pause(1000);
+                    } else if (tries == 3) {
+                        pause(10000);
+                    } else {
+                        throw erdae;
+                    }
+                }
+            }
         } catch (Exception e) {
             LOG.error("processing provisioning command", e);
+        }
+    }
+
+    private void pause(long t) {
+        LOG.debug("pausing for " + t + " ms...");
+        try {
+            Thread.sleep(t);
+        } catch (InterruptedException e) {
         }
     }
 }

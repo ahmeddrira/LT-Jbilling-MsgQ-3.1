@@ -110,6 +110,35 @@
             </list>
           </property>
         </bean>
+         <bean class="com.sapienter.jbilling.server.provisioning.config.Command">
+          <property name="id" value="mmsc_test" />
+          <property name="fields">
+            <list>
+              <bean class="com.sapienter.jbilling.server.provisioning.config.Field">
+                <property name="name" value="msisdn" />
+              </bean>
+              <bean class="com.sapienter.jbilling.server.provisioning.config.Field">
+                <property name="name" value="subscriptionType" />
+              </bean>
+            </list>
+          </property>
+          <property name="processors">
+            <list>
+              <bean class="com.sapienter.jbilling.server.provisioning.config.Processor">
+                <property name="id" value="mmsc" />
+                <property name="requests">
+                  <list>
+                    <bean class="com.sapienter.jbilling.server.provisioning.config.Request">
+                      <property name="order" value="1" />
+                      <property name="submit" value="addCustomer:msisdn,|msisdn|:subscriptionType,|subscriptionType|;" />
+                      <property name="postResult" value="true" />
+                    </bean>
+                  </list>
+                </property>
+              </bean>
+            </list>
+          </property>
+        </bean>
       </list>
     </property>
   </bean>
@@ -118,5 +147,7 @@
   </bean>
 -->
   <bean id="cai" class="com.sapienter.jbilling.server.provisioning.task.TestCommunication">
+  </bean>
+  <bean id="mmsc" class="com.sapienter.jbilling.server.provisioning.task.TestMMSCCommunication">
   </bean>
 </beans>

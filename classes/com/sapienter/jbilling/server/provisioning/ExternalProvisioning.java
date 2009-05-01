@@ -122,7 +122,8 @@ public class ExternalProvisioning {
             }
             fields.put(field.getName(), value);
         }
-
+        LOG.debug("Externalprovisioning.ProcessCommand()-> List of Command Fields:");
+        LOG.debug(fields);
         // call each configured processor
         for (Processor processor : config.getProcessors()) {
             PluggableTaskManager<IExternalProvisioning> taskManager = new

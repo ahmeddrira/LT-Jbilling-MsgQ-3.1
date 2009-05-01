@@ -55,7 +55,8 @@ public class Context {
         JBILLING_TABLE_DAS,
         PLUGGABLE_TASK_DAS,
         CACHE,
-        CAI
+        CAI,
+        MMSC
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -92,6 +93,7 @@ public class Context {
         springBeans.put(Name.HIBERNATE_TEMPLATE, "hibernateTemplate");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CAI, "cai");
+        springBeans.put(Name.MMSC, "mmsc");
     };
     
     // should not be instantiated

@@ -24,6 +24,7 @@ import javax.jms.Message;
 
 import org.apache.log4j.Logger;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,12 +62,19 @@ public class ProvisioningProcessSessionBean
 	}
 
 	public void updateProvisioningStatus(Integer in_order_id,
-			Integer in_order_line_id, String result) {
+			Integer in_order_line_id, String result) 
+            throws EmptyResultDataAccessException {
 		OrderDAS orderDb = new OrderDAS();
 		OrderDTO order = orderDb.find(in_order_id);
 		OrderBL order_bl = new OrderBL(order);
-		OrderLineDAS lineDb = new OrderLineDAS();
-		OrderLineDTO order_line = lineDb.findNow(in_order_line_id);
+		OrderLineDAS lineDAS = new OrderLineDAS();
+		OrderLineDTO order_line =  lineDAS.findForUpdate(in_order_line_id);//lineDb.findNow(in_order_line_id);
+
+        if (order_line == null) {
+            throw new EmptyResultDataAccessException("Didn't find order line: "
+                    + in_order_line_id, 1);
+        }
+		LOG.debug("update order line : " + order_line.getId());
 
 		if (result.equals("fail")) {
 			order_bl.setProvisioningStatus(in_order_line_id,
@@ -79,6 +87,8 @@ public class ProvisioningProcessSessionBean
 			LOG.debug("Provisioning status set to 'UNAVAILABLE' for order line : "
 					+ order_line.getId());
 		} else if (result.equals("success")) {
+			LOG.debug("order line Status before : "
+					+ order_line.getProvisioningStatusId());
 			if (order_line.getProvisioningStatusId().equals(
 					Constants.PROVISIONING_STATUS_PENDING_ACTIVE)) {
 				order_bl.setProvisioningStatus(in_order_line_id,

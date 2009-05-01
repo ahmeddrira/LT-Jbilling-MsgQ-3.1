@@ -22,9 +22,7 @@ package com.sapienter.jbilling.server.provisioning.task;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
-
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
@@ -46,7 +44,7 @@ public class TestExternalProvisioningTask extends PluggableTask
             throws TaskException {
 
         // wait for command rules task transaction to complete
-        pause(1000);
+        //pause(1000);
 
         LOG.debug("id: " + id);
         LOG.debug("command: " + command);

@@ -23,10 +23,13 @@ package com.sapienter.jbilling.server.util.db;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -34,6 +37,14 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import com.sapienter.jbilling.server.util.db.JbillingTable;
 
 @Entity
+@TableGenerator(
+        name="preference_GEN",
+        table="jbilling_table",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue="preference",
+        allocationSize = 10
+        )
 @Table(name="preference")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PreferenceDTO  implements java.io.Serializable {
@@ -66,8 +77,8 @@ public class PreferenceDTO  implements java.io.Serializable {
        this.floatValue = floatValue;
     }
    
-     @Id 
-    
+    @Id 
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="preference_GEN")
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;

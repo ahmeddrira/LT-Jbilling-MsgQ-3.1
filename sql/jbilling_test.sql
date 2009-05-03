@@ -11059,7 +11059,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 48	event_log	459
 49	order_process	85
 50	preference_type	36
-51	preference	45
 52	notification_message_type	21
 53	notification_message	27
 54	notification_message_section	43
@@ -11104,6 +11103,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 44	credit_card	1014
 25	pluggable_task	54
 26	pluggable_task_parameter	81
+51	preference	49
 \.
 
 
@@ -14296,9 +14296,9 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 500	1	47	1	1
 510	1	48	2	1
 520	1	49	3	1
-530	1	50	6	1
 20	1	21	4	1
 22	1	21	5	1
+530	1	50	3	1
 \.
 
 
@@ -14492,7 +14492,6 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 46	44	5	1	1	\N	\N
 47	45	5	1	1	\N	\N
 48	46	5	1	1	\N	\N
-49	47	5	1	0	\N	\N
 \.
 
 

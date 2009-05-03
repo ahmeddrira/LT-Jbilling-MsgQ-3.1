@@ -303,7 +303,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
         String timestampColumnName = (String) parameters.get(
                 PARAM_TIMESTAMP_COLUMN_NAME);
         if (timestampColumnName != null) {
-            // get the tables from metadata
+            // get the columns from metadata
             ResultSet columns = connection.getMetaData().getColumns(null, null, 
                     tableName, null);
             while (columns.next()) {
@@ -317,7 +317,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
         }
 
         // see if default column name is there
-        // get the tables from metadata
+        // get the columns from metadata
         ResultSet columns = connection.getMetaData().getColumns(null, null, 
                 tableName, null);
         while (columns.next()) {
@@ -410,14 +410,6 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
 
             // set the maximum id last processed
             PreferenceBL preferenceBL = new PreferenceBL();
-            try {
-                preferenceBL.set(getEntityId(), 
-                        Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID);
-            } catch (EmptyResultDataAccessException fe) { 
-                throw new SessionInternalError("MEDIATION_JDBC_READER_LAST_ID "
-                        + "preference not set. Last processed id: " + maxId);
-            }
-
             LOG.debug("Updating last id preference: " + maxId);
             preferenceBL.createUpdateForEntity(getEntityId(),
                     Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID, maxId,

@@ -19,14 +19,19 @@
        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
     <!--
-    <tx:jta-transaction-manager />
+      To use JTA transactions and a data source from an application server:
+        - replace the local data source (comment) with the jndi data source (uncomment)
+        - Add the two lines for JTA transactions in the hibernate properties
+    -->
+    <!-- Datasource from an Application Server (JTA only)
     <jee:jndi-lookup id="dataSource" jndi-name="java:/ApplicationDS"/>
     -->
  
-    
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 			<property name="sessionFactory" ref="sessionFactory" />
     </bean>
+
+    <!-- Datasource from a local resource -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="url" value="jdbc:postgresql://localhost:5433/jbilling_test" />

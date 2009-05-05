@@ -881,8 +881,6 @@ public class UserBL extends ResultList
     	} while (cachedResults.next());
     	
     	// The list is now ready. Convert into an array and return.
-    	conn.close();
-    	
     	result = new UserTransitionResponseWS[tempList.size()];
     	int count = 0;
     	for (Iterator i = tempList.iterator(); i.hasNext(); ) {
@@ -935,8 +933,6 @@ public class UserBL extends ResultList
     	} while (cachedResults.next());
     	
     	// The list is now ready. Convert into an array and return.
-    	conn.close();
-    	
     	result = new UserTransitionResponseWS[tempList.size()];
     	int count = 0;
     	for (Iterator i = tempList.iterator(); i.hasNext(); ) {

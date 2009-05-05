@@ -34,8 +34,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.PostUpdate;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
@@ -156,8 +154,6 @@ public class PluggableTaskParameterDTO implements Serializable {
       return(str.toString());
      }
     
-    @PostLoad
-    @PostUpdate
     public void populateValue() {
         if (getIntValue() != null) {
             type = new Integer(INT);

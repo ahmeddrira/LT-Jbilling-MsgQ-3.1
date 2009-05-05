@@ -518,8 +518,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
             ids.toArray(retValue);
         }
 
-        cachedResults.close();
-        conn.close();
         return retValue;
     }
 
@@ -576,7 +574,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                 retValue = new Integer(value);
             }
         }
-        cachedResults.close();
         conn.close();
         return retValue;
     }
@@ -602,7 +599,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         } else {
             retValue = new Boolean(false);
         }
-        cachedResults.close();
         conn.close();
         LOG.debug("user with overdue: " + retValue);
         return retValue;
@@ -684,7 +680,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                         LOG.warn("There are invoice to send reminders, but " + "the notification message is missing for " + "entity " + entityId);
                     }
                 }
-                cachedResults.close();
             }
         }
 
@@ -718,7 +713,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
             }
         }
 
-        cachedResults.close();
         conn.close();
 
     }
@@ -934,7 +928,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                 found = true;
             }
         }
-        cachedResults.close();
         conn.close();
 
         if (!found) {

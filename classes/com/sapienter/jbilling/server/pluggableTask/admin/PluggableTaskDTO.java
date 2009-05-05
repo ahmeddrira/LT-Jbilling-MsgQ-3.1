@@ -152,4 +152,11 @@ public class PluggableTaskDTO implements java.io.Serializable {
 
     protected int getVersionNum() { return versionNum; }
 
+    public void populateParamValues() {
+        if (parameters != null) {
+            for (PluggableTaskParameterDTO parameter : parameters) {
+                parameter.populateValue();
+            }
+        }
+    }
 }

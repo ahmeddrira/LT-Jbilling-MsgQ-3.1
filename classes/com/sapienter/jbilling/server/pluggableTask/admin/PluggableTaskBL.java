@@ -97,6 +97,8 @@ public class PluggableTaskBL<T> {
         // clear the rules cache (just in case this plug-in was ruled based)
         PluggableTask.invalidateRuleCache(dto.getId());
         das.invalidateCache(); // 3rd level cache
+
+        pluggableTask.populateParamValues();
     }
     
     public void delete(Integer executor) {

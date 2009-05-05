@@ -39,7 +39,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
@@ -724,12 +723,19 @@ public class OrderDTO  implements java.io.Serializable {
 	}
 	
     // default values
-    @PrePersist
-    private void setDefaults() {
-    	setDeleted(0);
-    	setCreateDate(Calendar.getInstance().getTime());
-    	OrderStatusDAS das = new OrderStatusDAS();
-    	setOrderStatus(das.find(Constants.ORDER_STATUS_ACTIVE));
+    @Transient
+    public void setDefaults() {
+        if (getCreateDate() == null) {
+            setCreateDate(Calendar.getInstance().getTime());
+            setDeleted(0);
+        }
+        if (getOrderStatus() == null) {
+            setOrderStatus(new OrderStatusDAS().find(
+                    Constants.ORDER_STATUS_ACTIVE));
+        }
+        for (OrderLineDTO line : lines) {
+            line.setDefaults();
+        }
     }
     
     @Transient

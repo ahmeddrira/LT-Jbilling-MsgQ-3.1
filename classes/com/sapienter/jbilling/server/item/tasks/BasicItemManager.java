@@ -75,6 +75,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         myLine.setItem(item);
         myLine.setQuantity(quantity);
         populateOrderLine(language, userId, entityId, currencyId, myLine, records);
+        myLine.setDefaults();
         if (line == null) { // not yet there
             newOrder.getLines().add(myLine);
             latestLine = myLine;

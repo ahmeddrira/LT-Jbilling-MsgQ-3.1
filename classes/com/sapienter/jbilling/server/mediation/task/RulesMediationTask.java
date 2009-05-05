@@ -131,6 +131,7 @@ public class RulesMediationTask extends PluggableTask implements
             OrderLineDTO line =  new OrderLineDTO();
             line.setItemId(itemId);
             line.setQuantity(quantity);
+            line.setDefaults();
             lines.add(line);
         }
         

@@ -36,7 +36,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
@@ -385,9 +384,11 @@ public class OrderLineDTO implements Serializable, Comparable {
 		getEditable();
 	}
 	
-    @PrePersist
-    private void setDefaults() {
-    	setCreateDatetime(Calendar.getInstance().getTime());
+    @Transient
+    public void setDefaults() {
+        if (getCreateDatetime() == null) {
+            setCreateDatetime(Calendar.getInstance().getTime());
+        }
     }
     
     // this helps to add lines to the treeSet

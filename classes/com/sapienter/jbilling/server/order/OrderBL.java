@@ -267,6 +267,9 @@ public class OrderBL extends ResultList
         // make sure the user is there
         UserDAS user = new UserDAS();
         order.setBaseUserByUserId(user.find(order.getBaseUserByUserId().getId()));
+        // some things can't be null, otherwise hibernate complains
+        order.setDefaults();
+
         try {
             PluggableTaskManager taskManager = new PluggableTaskManager(
                     entityId, Constants.PLUGGABLE_TASK_PROCESSING_ORDERS);
@@ -319,6 +322,7 @@ public class OrderBL extends ResultList
                             line.getProvisioningStatus().getId()));
                 }
             }
+            orderDto.setDefaults();
             order = orderDas.save(orderDto);
             // link the lines to the new order
             for (OrderLineDTO line: order.getLines()) {
@@ -542,11 +546,13 @@ public class OrderBL extends ResultList
         // now update this order's lines
         order.getLines().clear();
         order.getLines().addAll(dto.getLines());
-        order = orderDas.save(order);
         for (OrderLineDTO line : order.getLines()) {
             // link them all, just in case there's a new one
         	line.setPurchaseOrder(order);
+            // new lines need createDatetime set
+            line.setDefaults();
         }
+        order = orderDas.save(order);
  
         if (oldLine != null && nonDeletedLines == 1) {
     		OrderLineDTO newLine = null;

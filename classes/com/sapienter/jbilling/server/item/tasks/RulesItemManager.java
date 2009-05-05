@@ -257,6 +257,7 @@ public class RulesItemManager extends BasicItemManager {
             OrderManager helper = new OrderManager(newOrder, language, userId, entityId, currencyId);
             OrderLineDTO newLine = helper.addItem(itemId, quantity);
             newLine.setPurchaseOrder(newOrder);
+            newLine.setDefaults();
             
             return new OrderDAS().save(newOrder);
         }

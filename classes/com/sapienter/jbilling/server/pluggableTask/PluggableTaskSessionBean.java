@@ -62,7 +62,12 @@ public class PluggableTaskSessionBean {
             throws SessionInternalError {
             
         PluggableTaskDAS das = (PluggableTaskDAS) Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
-        Collection tasks = das.findAllByEntity(entityId);
+        Collection<PluggableTaskDTO> tasks = das.findAllByEntity(entityId);
+
+        for (PluggableTaskDTO task : tasks) {
+            task.populateParamValues();
+        }
+
         PluggableTaskDTO[] retValue = 
             new PluggableTaskDTO[tasks.size()];
         retValue = (PluggableTaskDTO[]) tasks.toArray(retValue);

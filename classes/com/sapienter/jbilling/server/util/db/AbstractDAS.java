@@ -205,6 +205,14 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     public void reattach(T dto) {
     	getSession().update(dto);
     }
+
+    /**
+     * Detaches the DTO from the session. Updates to the object will
+     * no longer make it to the database.
+     */
+    public void detach(T dto) {
+        getSession().evict(dto);
+    }
     
     protected void touch(List<T> list, String methodName) {
     	

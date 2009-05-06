@@ -77,6 +77,7 @@ public class OrderSessionBean implements IOrderSessionBean {
         	OrderDTO order = das.find(orderId);
         	order.addExtraFields(languageId);
         	order.touch();
+        	das.detach(order);
         	Collections.sort(order.getLines(), new OrderLineComparator());
         	//LOG.debug("returning order " + order);
         	return order;

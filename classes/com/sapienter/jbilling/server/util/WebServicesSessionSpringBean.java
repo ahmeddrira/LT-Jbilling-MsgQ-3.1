@@ -1686,4 +1686,104 @@ public class WebServicesSessionSpringBean {
     public void setCallerName(String callerName) {
         this.callerName = callerName;
     }
+
+    // TODO: This method is not secured or in a jUnit test
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
+            throws SessionInternalError {
+        LOG.debug("Call to getLatestInvoiceByItemType " + userId + " " + itemTypeId);
+        InvoiceWS retValue = null;
+        try {
+            if (userId == null) {
+                return null;
+            }
+            InvoiceBL bl = new InvoiceBL();
+            Integer invoiceId = bl.getLastByUserAndItemType(userId, itemTypeId);
+            if (invoiceId != null) {
+                retValue = bl.getWS(new InvoiceDAS().find(invoiceId));
+            }
+            LOG.debug("Done");
+            return retValue;
+        } catch (Exception e) {
+            LOG.error("Exception in web service: getting latest invoice" +
+                    " for user " + userId, e);
+            throw new SessionInternalError("Error getting latest invoice");
+        }
+    }
+
+    /**
+     * Return 'number' most recent invoices that contain a line item with an
+     * item of the given item type.
+     */
+    // TODO: This method is not secured or in a jUnit test
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws SessionInternalError {
+        LOG.debug("Call to getLastInvoicesByItemType " + userId + " " + itemTypeId + " " + number);
+        try {
+            if (userId == null || itemTypeId == null || number == null) {
+                return null;
+            }
+
+            InvoiceBL bl = new InvoiceBL();
+            LOG.debug("Done");
+            return bl.getManyByItemTypeWS(userId, itemTypeId, number);
+        } catch (Exception e) {
+            LOG.error("Exception in web service: getting last invoices by item type" +
+                    " for user " + userId, e);
+            throw new SessionInternalError("Error getting last invoices by item type");
+        }
+    }
+
+    // TODO: This method is not secured or in a jUnit test
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId)
+            throws SessionInternalError {
+        LOG.debug("Call to getLatestOrderByItemType " + userId + " " + itemTypeId);
+        if (userId == null) {
+            throw new SessionInternalError("User id can not be null");
+        }
+        if (itemTypeId == null) {
+            throw new SessionInternalError("itemTypeId can not be null");
+        }
+        try {
+            OrderWS retValue = null;
+            // get the info from the caller
+            UserBL userbl = new UserBL();
+            userbl.setRoot(callerName);
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+
+            // now get the order
+            OrderBL bl = new OrderBL();
+            Integer orderId = bl.getLatestByItemType(userId, itemTypeId);
+            if (orderId != null) {
+                bl.set(orderId);
+                retValue = bl.getWS(languageId);
+            }
+            LOG.debug("Done");
+            return retValue;
+        } catch (Exception e) {
+            LOG.error("WS - getLatestOrder", e);
+            throw new SessionInternalError("Error getting latest order");
+        }
+    }
+
+    // TODO: This method is not secured or in a jUnit test
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws SessionInternalError {
+        LOG.debug("Call to getLastOrdersByItemType " + userId + " " + itemTypeId + " " + number);
+        if (userId == null || number == null) {
+            return null;
+        }
+        try {
+            UserBL userbl = new UserBL();
+            userbl.setRoot(callerName);
+
+            OrderBL order = new OrderBL();
+            return order.getListIdsByItemType(userId, itemTypeId, number);
+        } catch (Exception e) {
+            LOG.error("WS - getLastOrdersByItemType", e);
+            throw new SessionInternalError("Error getting last orders by item type");
+        } finally {
+            LOG.debug("Done");
+        }
+    }
+
 }

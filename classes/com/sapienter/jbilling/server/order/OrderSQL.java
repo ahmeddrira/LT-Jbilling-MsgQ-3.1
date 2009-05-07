@@ -84,6 +84,16 @@ public interface OrderSQL {
         " where user_id = ?" +
         "   and deleted = 0";
     
+    static final String getLatestByItemType =
+        "select max(purchase_order.id) " +
+        "  from purchase_order "+
+        "  inner join order_line on order_line.order_id = purchase_order.id " +
+        "  inner join item on item.id = order_line.item_id " +
+        "  inner join item_type_map on item_type_map.item_id = item.id " +
+        " where purchase_order.user_id = ?" +
+        "   and item_type_map.type_id = ? " +
+        "   and purchase_order.deleted = 0";
+    
     static final String getByUserAndPeriod =
         "select id " +
         "  from purchase_order " +

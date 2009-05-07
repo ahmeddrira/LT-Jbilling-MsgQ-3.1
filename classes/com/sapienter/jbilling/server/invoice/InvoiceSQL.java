@@ -144,6 +144,17 @@ public interface InvoiceSQL {
     " where i.user_id = ? " +
     "   and i.deleted = 0 " +
     "   and i.is_review = 0";
+
+    // Last invoice id for a user that contains a line item w/ particular type id
+    static final String lastIdbyUserAndItemType =
+    "select max(i.id) " +
+    "  from invoice i " +
+    " inner join invoice_line on invoice_line.invoice_id = i.id" +
+    " inner join item_type_map on item_type_map.item_id = invoice_line.item_id " +
+    " where i.user_id = ? " +
+    "   and item_type_map.type_id = ? " +
+    "   and i.deleted = 0 " +
+    "   and i.is_review = 0";
     
     static final String previous = 
     "select max(i.id) " +

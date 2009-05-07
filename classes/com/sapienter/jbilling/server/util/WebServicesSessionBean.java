@@ -405,7 +405,6 @@ public class WebServicesSessionBean implements SessionBean {
 
     /**
      * @ejb:interface-method view-type="both"
-     * @ejb.transaction type="Required"
      */
     public void updateOrderLine(OrderLineWS line)
             throws SessionInternalError {
@@ -579,4 +578,42 @@ public class WebServicesSessionBean implements SessionBean {
     private void setCallerName() {
         session.setCallerName(context.getCallerPrincipal().getName());
     }
+
+    /**
+     * @ejb:interface-method view-type="both"
+     */
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
+            throws SessionInternalError {
+        return session.getLatestInvoiceByItemType(userId, itemTypeId);
+    }
+
+    /**
+     * Return 'number' most recent invoices that contain a line item with an
+     * item of the given item type.
+     * 
+     * @ejb:interface-method view-type="both"
+     */
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws SessionInternalError {
+        return session.getLastInvoicesByItemType(userId, itemTypeId, number);
+    }
+
+    /**
+     * @ejb:interface-method view-type="both"
+     */
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId)
+            throws SessionInternalError {
+        setCallerName();
+        return session.getLatestOrderByItemType(userId, itemTypeId);
+    }
+ 
+    /**
+     * @ejb:interface-method view-type="both"
+     */
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws SessionInternalError {
+        setCallerName();
+        return session.getLastOrdersByItemType(userId, itemTypeId, number);
+    }
+
 }

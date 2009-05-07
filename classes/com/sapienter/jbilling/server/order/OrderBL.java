@@ -721,6 +721,29 @@ public class OrderBL extends ResultList
         
         return retValue;
     }
+    
+    public Integer getLatestByItemType(Integer userId, Integer itemTypeId) 
+            throws SessionInternalError {
+        Integer retValue = null;
+        try {
+            prepareStatement(OrderSQL.getLatestByItemType);
+            cachedResults.setInt(1, userId.intValue());
+            cachedResults.setInt(2, itemTypeId.intValue());
+            execute();
+            if (cachedResults.next()) {
+                int value = cachedResults.getInt(1);
+                if (!cachedResults.wasNull()) {
+                    retValue = new Integer(value);
+                }
+            } 
+            cachedResults.close();
+            conn.close();
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        } 
+        
+        return retValue;
+    }
 
 
     public CachedRowSet getOrdersByProcessId(Integer processId)
@@ -1047,6 +1070,13 @@ public class OrderBL extends ResultList
             throws Exception {
         
         List<Integer> result = orderDas.findIdsByUserLatestFirst(userId, number);
+        return result.toArray(new Integer[result.size()]);
+    }
+    
+    public Integer[] getListIdsByItemType(Integer userId, Integer itemTypeId, Integer number) 
+            throws Exception {
+        
+        List<Integer> result = orderDas.findIdsByUserAndItemTypeLatestFirst(userId, itemTypeId, number);
         return result.toArray(new Integer[result.size()]);
     }
     

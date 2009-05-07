@@ -204,6 +204,15 @@ public class EJBAPI implements JbillingAPI {
         }
     }
 
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws JbillingAPIException {
+        try {
+            return session.getLastInvoicesByItemType(userId, itemTypeId, number);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public Integer[] getLastOrders(Integer userId, Integer number)
             throws JbillingAPIException {
         try {
@@ -213,6 +222,15 @@ public class EJBAPI implements JbillingAPI {
         }
     }
 
+
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws JbillingAPIException {
+        try {
+            return session.getLastOrdersByItemType(userId, itemTypeId, number);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
     public Integer[] getLastPayments(Integer userId, Integer number)
             throws JbillingAPIException {
         try {
@@ -231,9 +249,26 @@ public class EJBAPI implements JbillingAPI {
         }
     }
 
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
+            throws JbillingAPIException {
+        try {
+            return session.getLatestInvoiceByItemType(userId, itemTypeId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public OrderWS getLatestOrder(Integer userId) throws JbillingAPIException {
         try {
             return session.getLatestOrder(userId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException {
+        try {
+            return session.getLatestOrderByItemType(userId, itemTypeId);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

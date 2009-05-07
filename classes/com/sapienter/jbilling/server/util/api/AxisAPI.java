@@ -311,21 +311,37 @@ public class AxisAPI implements JbillingAPI {
 		return invoiceIds;
 	}
 
-	public Integer[] getLastInvoices(Integer userId, Integer number)
-			throws JbillingAPIException {
-		int[] ret = (int[])invokeAxisCall(WebServicesConstants.GET_LAST_INVOICES,
-			new Object[]{userId,number});
-		Integer[] invoiceIds = convertToIntegerArray(ret);
-		return invoiceIds;
-	}
+    public Integer[] getLastInvoices(Integer userId, Integer number)
+            throws JbillingAPIException {
+        int[] ret = (int[])invokeAxisCall(WebServicesConstants.GET_LAST_INVOICES,
+            new Object[]{userId,number});
+        Integer[] invoiceIds = convertToIntegerArray(ret);
+        return invoiceIds;
+    }
 
-	public Integer[] getLastOrders(Integer userId, Integer number)
-			throws JbillingAPIException {
-		int[] ret = (int[])invokeAxisCall(WebServicesConstants.GET_LAST_ORDERS,
-			new Object[]{userId,number});
-		Integer[] orderIds = convertToIntegerArray(ret);
-		return orderIds;
-	}
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws JbillingAPIException {
+        int[] ret = (int[])invokeAxisCall(WebServicesConstants.GET_LAST_INVOICES_BY_ITEM_TYPE,
+            new Object[]{userId,itemTypeId,number});
+        Integer[] invoiceIds = convertToIntegerArray(ret);
+        return invoiceIds;
+    }
+
+    public Integer[] getLastOrders(Integer userId, Integer number)
+            throws JbillingAPIException {
+        int[] ret = (int[])invokeAxisCall(WebServicesConstants.GET_LAST_ORDERS,
+            new Object[]{userId,number});
+        Integer[] orderIds = convertToIntegerArray(ret);
+        return orderIds;
+    }
+
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
+            throws JbillingAPIException {
+        int[] ret = (int[])invokeAxisCall(WebServicesConstants.GET_LAST_ORDERS_BY_ITEM_TYPE,
+            new Object[]{userId,itemTypeId,number});
+        Integer[] orderIds = convertToIntegerArray(ret);
+        return orderIds;
+    }
 
 	public Integer[] getLastPayments(Integer userId, Integer number)
 			throws JbillingAPIException {
@@ -335,18 +351,31 @@ public class AxisAPI implements JbillingAPI {
 		return payments;
 }
 
-	public InvoiceWS getLatestInvoice(Integer userId)
-			throws JbillingAPIException {
-		InvoiceWS invoice = (InvoiceWS) invokeAxisCall(WebServicesConstants.GET_LATEST_INVOICE,
-			new Object[]{userId});
-		return invoice;
-	}
+    public InvoiceWS getLatestInvoice(Integer userId)
+            throws JbillingAPIException {
+        InvoiceWS invoice = (InvoiceWS) invokeAxisCall(WebServicesConstants.GET_LATEST_INVOICE,
+            new Object[]{userId});
+        return invoice;
+    }
 
-	public OrderWS getLatestOrder(Integer userId) throws JbillingAPIException {
-		OrderWS order = (OrderWS) invokeAxisCall(WebServicesConstants.GET_LATEST_ORDER,
-			new Object[]{userId});
-		return order;
-	}
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
+            throws JbillingAPIException {
+        InvoiceWS invoice = (InvoiceWS) invokeAxisCall(WebServicesConstants.GET_LATEST_INVOICE_BY_ITEM_TYPE,
+            new Object[]{userId, itemTypeId});
+        return invoice;
+    }
+
+    public OrderWS getLatestOrder(Integer userId) throws JbillingAPIException {
+        OrderWS order = (OrderWS) invokeAxisCall(WebServicesConstants.GET_LATEST_ORDER,
+            new Object[]{userId});
+        return order;
+    }
+
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException {
+        OrderWS order = (OrderWS) invokeAxisCall(WebServicesConstants.GET_LATEST_ORDER_BY_ITEM_TYPE,
+            new Object[]{userId, itemTypeId});
+        return order;
+    }
 
 	public PaymentWS getLatestPayment(Integer userId)
 			throws JbillingAPIException {

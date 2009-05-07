@@ -83,6 +83,28 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         return criteria.list();
     }
 
+    // used for the web services call to get the latest X orders that contain an item of a type id
+    @SuppressWarnings("unchecked")
+    public List<Integer> findIdsByUserAndItemTypeLatestFirst(Integer userId, Integer itemTypeId, int maxResults) {
+        // I'm a HQL guy, not Criteria
+        String hql = 
+            "select distinct(orderObj.id)" +
+            " from OrderDTO orderObj" +
+            " inner join orderObj.lines line" +
+            " inner join line.item.itemTypes itemType" +
+            " where itemType.id = :typeId" +
+            "   and orderObj.baseUserByUserId.id = :userId" +
+            "   and orderObj.deleted = 0" +
+            " order by orderObj.id desc";
+        List<Integer> data = getSession()
+                                .createQuery(hql)
+                                .setParameter("userId", userId)
+                                .setParameter("typeId", itemTypeId)
+                                .setMaxResults(maxResults)
+                                .list();
+        return data;
+    }
+
 	/**
 	 * @author othman
 	 * @return list of active orders

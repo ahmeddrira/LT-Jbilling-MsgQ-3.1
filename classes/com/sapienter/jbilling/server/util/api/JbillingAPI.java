@@ -143,4 +143,16 @@ public interface JbillingAPI {
     public OrderWS rateOrder(OrderWS order) throws JbillingAPIException;
     
     public void updateItem(ItemDTOEx item) throws JbillingAPIException;
+    
+    // "byItemType" routines:
+    
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException;
+    
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException;
+
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) throws JbillingAPIException;
+
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) throws JbillingAPIException;
+
+
 }

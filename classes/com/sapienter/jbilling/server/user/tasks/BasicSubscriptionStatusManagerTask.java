@@ -24,11 +24,14 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         ISubscriptionStatusManager {
@@ -122,18 +125,59 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
     }
     
     private boolean isPaymentApplicable(boolean failed) {
-        if (payment != null && payment.getIsRefund() == 0) {
-            if (failed) {
-                if (payment.getAttempt() != null) {
-                     return true;
-                } else {
-                    return false;
+
+        // no payment? then it's not applicable
+        if( payment == null )
+            return false;
+        
+        // If a payment is a refund, then it's not applicable
+        if( payment.getIsRefund() != 0 )
+            return false;
+        
+        // failed payments that don't have an "attempt" set (is this some kind of counter?)
+        // don't apply
+        if( failed && payment.getAttempt() == null )
+            return false;
+  
+        String typeStr = (String) parameters.get(PARAMETER_ITEM_TYPE_ID);
+        
+        if (typeStr == null || typeStr.length() == 0) {
+            throw new SessionInternalError("parameter " + PARAMETER_ITEM_TYPE_ID + 
+                    " is required");
+        }
+
+        boolean retValue = false;
+        
+        if (payment.getInvoiceIds() == null || payment.getInvoiceIds().size() == 0) {
+            // If you don't have an invoice, it doesn't change subscription status,
+            // unless it's a preauthorization.
+            // We're assuming that ALL preauthorizations without invoices are being
+            // used to start a subscription.
+            
+            boolean isPreAuth = (payment.getIsPreauth() != null) && (payment.getIsPreauth() != 0);
+            return isPreAuth; // don't bother looking for the item category (you can't get to it anyway, this is a "naked" pre-auth payment).
+        }
+        else 
+        {
+            // validate that this payment is for a subscription item
+            for(Integer invoiceId : payment.getInvoiceIds()) {
+                if (new InvoiceDAS().isReleatedToItemType(invoiceId, Integer.valueOf(typeStr))) {
+                    retValue = true;
                 }
             }
-            return true;
         }
         
-        return false;
+        if (retValue == false) {
+            new EventLogger().auditBySystem(entityId, 
+                Constants.TABLE_BASE_USER, payment.getUserId(), 
+                EventLogger.MODULE_USER_MAINTENANCE,
+                EventLogger.SUBSCRIPTION_STATUS_NO_CHANGE,
+                payment.getId(), typeStr, null);
+            LOG.debug("Payment did not change subscription status to active." +
+                    "Invoice with item category " + typeStr + " not found");
+        }
+        
+        return retValue;
     }
     
     private boolean isLastRetry() {

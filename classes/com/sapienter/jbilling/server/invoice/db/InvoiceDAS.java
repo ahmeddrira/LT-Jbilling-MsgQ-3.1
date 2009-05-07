@@ -50,6 +50,26 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 		return criteria.list();
 	}
 
+    // used for the web services call to get the latest X that contain a particular item type
+    public List<Integer> findIdsByUserAndItemTypeLatestFirst(Integer userId, Integer itemTypeId, int maxResults) {
+        
+        String hql = "select distinct(invoice.id)" +
+                     "  from Invoice invoice" +
+                     "  inner join invoice.invoiceLines line" +
+                     "  inner join line.item.itemTypes itemType" +
+                     "  where invoice.baseUser.id = :userId" +
+                     "    and invoice.deleted = 0" +
+                     "    and itemType.id = :typeId" +
+                     "  order by invoice.id desc";
+        List<Integer> data = getSession()
+                        .createQuery(hql)
+                        .setParameter("userId", userId)
+                        .setParameter("typeId", itemTypeId)
+                        .setMaxResults(maxResults)
+                        .list();
+        return data;
+    }
+
 	public Double findTotalForPeriod(Integer userId, Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);

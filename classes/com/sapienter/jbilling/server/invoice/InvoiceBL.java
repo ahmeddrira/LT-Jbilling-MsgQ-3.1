@@ -578,6 +578,29 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         return retValue;
     }
 
+    public Integer getLastByUserAndItemType(Integer userId, Integer itemTypeId) 
+            throws SQLException, NamingException {
+
+        Integer retValue = null;
+        if (userId == null) {
+            return null;
+        }            
+        prepareStatement(InvoiceSQL.lastIdbyUserAndItemType);
+        cachedResults.setInt(1, userId.intValue());
+        cachedResults.setInt(2, itemTypeId.intValue());
+        
+        execute();
+        if (cachedResults.next()) {
+            int value = cachedResults.getInt(1);
+            if (!cachedResults.wasNull()) {
+                retValue = new Integer(value);
+            }
+        } 
+        cachedResults.close();
+        conn.close();
+        return retValue;
+    }
+
     public Boolean isUserWithOverdueInvoices(Integer userId, Date today,
             Integer excludeInvoiceId) throws SQLException {
 
@@ -615,6 +638,13 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                 userId, number);
         return result.toArray(new Integer[result.size()]);
     }
+
+    public Integer[] getManyByItemTypeWS(Integer userId, Integer itemTypeId, Integer number)
+            throws NamingException, FinderException, SessionInternalError {
+        List<Integer> result = new InvoiceDAS().findIdsByUserAndItemTypeLatestFirst(userId, itemTypeId, number);
+        return result.toArray(new Integer[result.size()]);
+    }
+
 
     public InvoiceWS[] DTOtoWS(Vector dtos) {
         InvoiceWS retValue[] = new InvoiceWS[dtos.size()];

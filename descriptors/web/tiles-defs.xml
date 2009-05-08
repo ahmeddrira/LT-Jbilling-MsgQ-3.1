@@ -380,4 +380,10 @@
         <put name="body" value="/mediation/configurationEdit.jsp" />
     </definition>
     
+    <definition name="user.confirm.delete" extends="main">
+        <put name="body" value="/user/confirmDeleteBody.jsp" />
+        <put name="featureTitle" value="bar.user.confirm.delete" />
+        <put name="leftMenuBar" value="/other/blank.jsp" />
+    </definition>
+    
 </tiles-definitions>

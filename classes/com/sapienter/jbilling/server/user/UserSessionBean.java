@@ -34,7 +34,6 @@ import java.util.Set;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +47,7 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
@@ -423,6 +423,25 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
         }
     }
 
+	// Check if there is any Active Children under this client
+    public Boolean hasSubAccounts(Integer userId) 
+            throws SessionInternalError {
+        try {
+            boolean hasSubAccounts = false;
+            UserBL user = new UserBL(userId);
+            Iterator childs = user.getEntity().getCustomer().getChildren().iterator();
+            while( !hasSubAccounts && childs.hasNext() ){
+                CustomerDTO child = (CustomerDTO)childs.next();
+                if( child.getBaseUser().getDeleted() == 0 ){
+                    hasSubAccounts = true;
+                }
+            }
+            return hasSubAccounts;
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+    
     public UserDTOEx getUserDTOEx(String userName, Integer entityId) 
             throws SessionInternalError{
         UserDTOEx dto = null;

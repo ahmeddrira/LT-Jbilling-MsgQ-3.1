@@ -135,7 +135,18 @@ public class MaintainAction extends Action {
                 throw new ServletException("userId is required in the session");
             }
             
-            if (action.equals("delete")) {
+            
+            // Validate and Confirm deletion
+            if (action.equals("confirmDelete")){
+                if( userSession.isParentCustomer(userId) && userSession.hasSubAccounts( userId)  ){
+                    errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("user.delete.hasChild"));
+                    forward = "edit";
+                } else {
+                    userDto = userSession.getUserDTOEx(userId);
+                    session.setAttribute("deleteUserName", userDto.getUserName());
+                    forward = "confirmDelete";
+                }
+            } else if (action.equals("delete")) {
                 userSession.delete(executorId, userId);
                 // after deleting, it goes to the maintain page, showing the
                 // list of users

@@ -486,6 +486,8 @@
         <action path="/userMaintain" type="com.sapienter.jbilling.client.user.MaintainAction" name="userEdit" scope="session" validate="false" input="/user/edit.jsp">
             <forward name="view" path="/user/view.jsp" redirect="false" />
             <forward name="order" path="/order/edit.jsp" redirect="false" />
+            <forward name="edit" path="/user/edit.jsp" redirect="false" />
+            <forward name="confirmDelete" path="/user/confirmDelete.jsp" redirect="false"></forward>
         </action>
         <action path="/userAccount" type="com.sapienter.jbilling.client.user.AccountAction">
             <forward name="passwordChange" path="/user/edit.jsp" redirect="false" />

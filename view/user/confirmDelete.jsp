@@ -24,20 +24,6 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 
-<table>
-    <tr>
-        <td class="leftMenuOption">
-            <html:link styleClass="leftMenu" page="/item/userPriceCreate.jsp?create=yes">
-                <bean:message key="item.user.price.create"/>
-            </html:link>
-        </td>
-    </tr>
-    <tr>
-        <td class="leftMenuOption">
-            <html:link styleClass="leftMenu" page="/item/userPriceList.jsp">
-                <bean:message key="item.user.price.maintain"/>
-            </html:link>
-        </td>
-    </tr>
-</table>
+<tiles:insert definition="user.confirm.delete" flush="true" />

@@ -126,8 +126,11 @@ public interface IUserSessionBean {
     
     public Boolean isParentCustomer(Integer userId) 
             throws SessionInternalError;
-
+    
     public UserDTOEx getUserDTOEx(String userName, Integer entityId) 
+            throws SessionInternalError;
+    
+    public Boolean hasSubAccounts(Integer userId)
             throws SessionInternalError;
     
     public CurrencyDTO getCurrency(Integer userId) throws SessionInternalError;

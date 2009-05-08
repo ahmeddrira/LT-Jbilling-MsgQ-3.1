@@ -18,26 +18,30 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
-<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants"%>
+<%@ page language="java" import="com.sapienter.jbilling.client.util.Constants, com.sapienter.jbilling.server.user.UserDTOEx"%>
 
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
+<%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
 
-<table>
-    <tr>
-        <td class="leftMenuOption">
-            <html:link styleClass="leftMenu" page="/item/userPriceCreate.jsp?create=yes">
-                <bean:message key="item.user.price.create"/>
-            </html:link>
-        </td>
-    </tr>
-    <tr>
-        <td class="leftMenuOption">
-            <html:link styleClass="leftMenu" page="/item/userPriceList.jsp">
-                <bean:message key="item.user.price.maintain"/>
-            </html:link>
-        </td>
-    </tr>
-</table>
+<p class="title">
+<bean:message key="user.confirm.delete.title"/>
+</p>
+
+<p class="instr">
+<bean:message key="user.confirm.delete.instr"/> 
+<bean:write name='<%=Constants.SESSION_CUSTOMER_CONTACT_DTO%>' property="organizationName" /> 
+(<bean:write name="deleteUserName" />)
+</p>
+
+<p>
+   <html:link page="/userMaintain.do?action=delete">
+      <bean:message key="all.prompt.yes"/>
+   </html:link><br/>
+   <html:link page="/user/edit.jsp">
+      <bean:message key="all.prompt.no"/>
+   </html:link><br/>
+</p>

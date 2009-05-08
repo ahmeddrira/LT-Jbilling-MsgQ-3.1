@@ -37,7 +37,7 @@
 <table>
 	<tr>
 		<td class="leftMenuOption">
-		<html:link styleClass="leftMenu" page="/userMaintain.do?action=delete">
+		<html:link styleClass="leftMenu" page="/userMaintain.do?action=confirmDelete">
 		   <bean:message key="user.edit.delete"/>
 		</html:link>
 		</td>

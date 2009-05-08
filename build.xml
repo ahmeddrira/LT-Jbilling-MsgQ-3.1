@@ -257,8 +257,6 @@
     <!-- =================================================================== -->
  
     <target name="jar" depends="compile, findRevision">
-        <copy file="${source.resources.descriptor.dir}/persistence.xml" 
-              todir="${build.dir}/META-INF"/>
         <copy file="${source.resources.descriptor.dir}/ehcache.xml" 
               todir="${jboss.conf.dir}"/>
         <jar jarfile="${build.deploy.dir}/jbilling.jar">

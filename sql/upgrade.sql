@@ -121,11 +121,15 @@ SET class_name = 'com.sapienter.jbilling.server.payment.tasks.PaymentRouterCCFTa
 WHERE class_name = 'com.sapienter.jbilling.server.pluggableTask.PaymentRouterTask';
 
 -- New generic status tables
-DROP TABLE order_status CASCADE;
+alter table purchase_order drop constraint purchase_or....;
+DROP TABLE order_status;
 
-DROP TABLE user_status CASCADE;
+alter table base_user drop constraint base_user_...;
+alter table ageing_entity_step drop constraint ageing_entity_step_...;
+DROP TABLE user_status;
 
-DROP TABLE subscriber_status CASCADE;
+alter table base_user drop constraint base_user_...;
+DROP TABLE subscriber_status;
 
 CREATE TABLE generic_status_type
 (
@@ -136,7 +140,7 @@ CREATE TABLE generic_status_type
 CREATE TABLE generic_status
 (
     id INTEGER NOT NULL,
-    dtype VARCHAR(20) NOT NULL,
+    dtype VARCHAR(40) NOT NULL,
     status_value INTEGER NOT NULL,
     can_login INT2,
     PRIMARY KEY (id)
@@ -186,27 +190,24 @@ INSERT INTO generic_status VALUES(24,'order_line_provisioning_status',5,NULL);
 INSERT INTO generic_status VALUES(25,'order_line_provisioning_status',6,NULL);
 
 ALTER TABLE ageing_entity_step
-    ADD CONSTRAINT ageing_entity_step_FK_1 FOREIGN KEY (status_id)
+    ADD CONSTRAINT ageing_entity_step_FK_gs FOREIGN KEY (status_id)
     REFERENCES generic_status (id);
 
 ALTER TABLE base_user
-    ADD CONSTRAINT base_user_FK_1 FOREIGN KEY (status_id)
+    ADD CONSTRAINT base_user_FK_gs FOREIGN KEY (status_id)
     REFERENCES generic_status (id);
 
 ALTER TABLE base_user
-    ADD CONSTRAINT base_user_FK_2 FOREIGN KEY (subscriber_status)
+    ADD CONSTRAINT base_user_FK_gs2 FOREIGN KEY (subscriber_status)
     REFERENCES generic_status (id);
 
 ALTER TABLE purchase_order
-    ADD CONSTRAINT purchase_order_FK_6 FOREIGN KEY (status_id)
+    ADD CONSTRAINT purchase_order_FK_gs FOREIGN KEY (status_id)
     REFERENCES generic_status (id);
 
 ALTER TABLE generic_status
     ADD CONSTRAINT generic_status_FK_1 FOREIGN KEY (dtype)
     REFERENCES generic_status_type (id);
-
-INSERT INTO jbilling_table (id,name,next_id)
-    VALUES (86,'mediation_record_line',1);
 
 INSERT INTO jbilling_table (id,name,next_id)
     VALUES (87,'generic_status',26);
@@ -233,3 +234,10 @@ INSERT INTO international_description (table_id,foreign_id,psudo_column,language
     VALUES (88,6,'description',1,'Unavailable');
 
 INSERT INTO PREFERENCE_TYPE VALUES(48,1,NULL,NULL);
+
+update notification_message_line set content = replace(content,'|','$');
+update notification_message_line set content = replace(content,'$ ',' ');
+update notification_message_line set content = replace(content,'$,',',');
+update notification_message_line set content = replace(content,'$.','.');
+update notification_message_line set content = replace(content,'$\r','\r');
+

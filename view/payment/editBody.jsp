@@ -247,7 +247,7 @@
 	   <input type="hidden" name="no_shipping" value="1"/>
 	   
 	   <bean:define id="index" name='<%=Constants.SESSION_INVOICE_DTO%>' 
-	   		property="currencyId"/>
+	   		property="currency.id"/>
 	   <input type="hidden" name="currency_code" value="<bean:write name='<%= Constants.APP_CURRENCY_SYMBOLS %>'
 	   		property='<%= "symbols[" + index + "].code" %>'
 	   		scope="application"/>"/>

@@ -24,6 +24,7 @@ package com.sapienter.jbilling.server.process;
 
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
@@ -34,7 +35,7 @@ public class ConfigurationBL {
 
 	public ConfigurationBL(Integer entityId)  {
 		init();
-		set(entityId);
+        configuration = configurationDas.findByEntity(new CompanyDAS().find(entityId));
 	}
 
 	public ConfigurationBL() {

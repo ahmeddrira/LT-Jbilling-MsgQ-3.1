@@ -47,7 +47,7 @@
     </path>
     
     <path id="run.classpath">
-    <path refid="compile.classpath"/>
+        <path refid="compile.classpath"/>
         <pathelement location="${build.deploy.dir}/jbilling.jar"/>
         <pathelement location="${junit.dir}/junit.jar"/>
         <pathelement location="${build.test.dir}"/>
@@ -415,15 +415,19 @@
         </taskdef>
         
         <jrc destdir="${build.designs.dir}"
-tempdir="${basedir}/tmp"
-keepjava="true"
-xmlvalidation="true">
+            tempdir="${basedir}/tmp"
+            keepjava="true"
+            xmlvalidation="true">
             <src>
                 <fileset dir="${source.descriptor.dir}/designs">
                     <include name="**/*.jrxml"/>
                 </fileset>
             </src>
-            <classpath refid="compile.classpath"/>
+
+            <classpath>
+                <path refid="compile.classpath"/>
+                <pathelement location="${build.deploy.dir}/jbilling.jar"/>
+            </classpath>
             <!--
 			<classpath>
 				<pathelement location="${jasper.home.dir}/classes"/>

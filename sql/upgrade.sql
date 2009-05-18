@@ -56,6 +56,9 @@ INSERT INTO pluggable_task_type (id,category_id,class_name,min_parameters)
 INSERT INTO pluggable_task_type (id,category_id,class_name,min_parameters)
     VALUES (46,17,'com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask',0);
 
+INSERT INTO preference_type (id,int_def_value) VALUES (44,0);
+INSERT INTO preference_type (id,int_def_value) VALUES (45,0);
+INSERT INTO preference_type (id,int_def_value) VALUES (46,0);
 INSERT INTO preference_type (id,int_def_value) VALUES (47,0);
 
 alter table notification_message add optlock integer;

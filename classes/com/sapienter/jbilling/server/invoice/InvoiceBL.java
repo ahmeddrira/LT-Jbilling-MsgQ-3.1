@@ -557,8 +557,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         }
     }
 
-    public Integer getLastByUser(Integer userId) throws SQLException,
-            NamingException {
+    public Integer getLastByUser(Integer userId) throws SQLException {
 
         Integer retValue = null;
         if (userId == null) {
@@ -579,7 +578,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
     public Integer getLastByUserAndItemType(Integer userId, Integer itemTypeId) 
-            throws SQLException, NamingException {
+            throws SQLException {
 
         Integer retValue = null;
         if (userId == null) {

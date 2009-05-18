@@ -90,7 +90,7 @@ public final class EventManager {
 
         Class processors[] = (Class[]) subscriptions.get(event.getClass());
         if (processors == null) {
-            LOG.warn("No processors for class " + event.getClass());
+            LOG.info("No processors for class " + event.getClass());
             return;
         }
         for (int f = 0; f < processors.length; f++) {

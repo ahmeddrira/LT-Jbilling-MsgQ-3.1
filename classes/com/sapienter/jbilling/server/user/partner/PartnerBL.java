@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.CommonConstants;
-import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -70,6 +69,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import javax.sql.DataSource;
 
 /**
  * @author Emil
@@ -82,19 +82,18 @@ public class PartnerBL extends ResultList
     private PartnerPayout payout = null;
     private static final Logger LOG = Logger.getLogger(PartnerBL.class);
     private EventLogger eLogger = null;
-    private JNDILookup EJBFactory = null;
 
-    public PartnerBL(Integer partnerId) throws NamingException  {
+    public PartnerBL(Integer partnerId) {
         init();
 
         set(partnerId);
     }
     
-    public PartnerBL() throws NamingException  {
+    public PartnerBL() {
         init();
     }
     
-    public PartnerBL(Partner entity) throws NamingException  {
+    public PartnerBL(Partner entity) {
         partner = entity;
         init();
     }
@@ -107,12 +106,11 @@ public class PartnerBL extends ResultList
         payout = new PartnerPayoutDAS().find(payoutId);
     }
 
-    private void init() throws NamingException {
+    private void init() {
         eLogger = EventLogger.getInstance();        
         payout = null;
         partnerRange = null;
         partnerDAS = new PartnerDAS();
-        EJBFactory = JNDILookup.getFactory(false); 
     }
 
     public Partner getEntity() {
@@ -356,7 +354,7 @@ public class PartnerBL extends ResultList
         
         LOG.debug("Calculating payout partner " + partner.getId() + " from " + 
                 start + " to " + end);
-        Connection conn = EJBFactory.lookUpDataSource().getConnection();
+        Connection conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
         PreparedStatement stmt = conn.prepareStatement(paymentsInPayout);
         stmt.setInt(1, partner.getId());
         stmt.setDate(2, new java.sql.Date(start.getTime()));
@@ -424,7 +422,7 @@ public class PartnerBL extends ResultList
     private Integer getLastPayout(Integer partnerId) 
             throws NamingException, SQLException {
         Integer retValue = null;
-        Connection conn = EJBFactory.lookUpDataSource().getConnection();
+        Connection conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
         PreparedStatement stmt = conn.prepareStatement(lastPayout);
         stmt.setInt(1, partnerId.intValue());
         ResultSet result = stmt.executeQuery();
@@ -575,7 +573,7 @@ public class PartnerBL extends ResultList
     private int getCustomersCount() 
             throws SQLException, NamingException {
         int retValue = 0;
-        Connection conn = EJBFactory.lookUpDataSource().getConnection();
+        Connection conn = ((DataSource) Context.getBean(Context.Name.DATA_SOURCE)).getConnection();
         PreparedStatement stmt = conn.prepareStatement(countCustomers);
         stmt.setInt(1, partner.getId());
         ResultSet result = stmt.executeQuery();

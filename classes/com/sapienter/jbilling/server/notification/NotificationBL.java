@@ -52,8 +52,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -148,7 +146,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         
     }
 
-    public MessageDTO getDTO() throws SessionInternalError, NamingException {
+    public MessageDTO getDTO() throws SessionInternalError {
         MessageDTO retValue = new MessageDTO();
 
         retValue.setLanguageId(messageRow.getLanguage().getId());
@@ -219,8 +217,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
     public MessageDTO[] getInvoiceMessages(Integer entityId, Integer processId,
             Integer languageId, InvoiceDTO invoice)
-            throws SessionInternalError, NamingException,
-            NotificationNotFoundException {
+            throws SessionInternalError, NotificationNotFoundException {
         MessageDTO retValue[] = null;
         Integer deliveryMethod;
         // now see what kind of invoice this customers wants
@@ -262,7 +259,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
     public MessageDTO getInvoicePaperMessage(Integer entityId,
             Integer processId, Integer languageId, InvoiceDTO invoice)
-            throws SessionInternalError, NamingException {
+            throws SessionInternalError {
         MessageDTO retValue = new MessageDTO();
 
         retValue.setTypeId(MessageDTO.TYPE_INVOICE_PAPER);
@@ -280,8 +277,6 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         try {
             setContent(retValue, MessageDTO.TYPE_INVOICE_PAPER, entityId,
                     languageId);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
         } catch (NotificationNotFoundException e1) {
             // put blanks
             MessageSection sectionContent = new MessageSection(new Integer(1),
@@ -303,31 +298,27 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         message.setTypeId(result ? MessageDTO.TYPE_PAYMENT : new Integer(
                 MessageDTO.TYPE_PAYMENT.intValue() + 1));
 
-        try {
-            user = new UserBL(dto.getUserId());
-            languageId = user.getEntity().getLanguageIdField();
-            setContent(message, message.getTypeId(), entityId, languageId);
+        user = new UserBL(dto.getUserId());
+        languageId = user.getEntity().getLanguageIdField();
+        setContent(message, message.getTypeId(), entityId, languageId);
 
-            // find the description for the payment method
-            PaymentBL payment = new PaymentBL();
-            message.addParameter("method", payment.getMethodDescription(dto
-                    .getPaymentMethod(), languageId));
-            message.addParameter("total", Util.formatMoney(dto.getAmount(), dto
-                    .getUserId(), dto.getCurrency().getId(), true));
-            
-            message.addParameter("payment", payment.getEntity());
-            // find an invoice in the list of invoices id
-            if (dto.getInvoiceIds() != null && dto.getInvoiceIds().size() > 0) {
-                Integer invoiceId = (Integer) dto.getInvoiceIds().get(0);
-                InvoiceBL invoice = new InvoiceBL(invoiceId);
-                message.addParameter("invoice_number", invoice.getEntity()
-                        .getPublicNumber().toString());
-                message.addParameter("invoice", invoice.getEntity());
-            }
-            message.addParameter("payment", dto);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        } 
+        // find the description for the payment method
+        PaymentBL payment = new PaymentBL();
+        message.addParameter("method", payment.getMethodDescription(dto
+                .getPaymentMethod(), languageId));
+        message.addParameter("total", Util.formatMoney(dto.getAmount(), dto
+                .getUserId(), dto.getCurrency().getId(), true));
+
+        message.addParameter("payment", payment.getEntity());
+        // find an invoice in the list of invoices id
+        if (dto.getInvoiceIds() != null && dto.getInvoiceIds().size() > 0) {
+            Integer invoiceId = (Integer) dto.getInvoiceIds().get(0);
+            InvoiceBL invoice = new InvoiceBL(invoiceId);
+            message.addParameter("invoice_number", invoice.getEntity()
+                    .getPublicNumber().toString());
+            message.addParameter("invoice", invoice.getEntity());
+        }
+        message.addParameter("payment", dto);
 
         return message;
     }
@@ -341,21 +332,17 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         MessageDTO message = initializeMessage(entityId, userId);
         message.setTypeId(MessageDTO.TYPE_INVOICE_REMINDER);
 
-        try {
-            user = new UserBL(userId);
-            languageId = user.getEntity().getLanguageIdField();
-            setContent(message, message.getTypeId(), entityId, languageId);
+        user = new UserBL(userId);
+        languageId = user.getEntity().getLanguageIdField();
+        setContent(message, message.getTypeId(), entityId, languageId);
 
-            message.addParameter("days", days.toString());
-            message.addParameter("dueDate", Util.formatDate(dueDate, userId));
-            message.addParameter("number", number);
-            message.addParameter("total", Util.formatMoney(total.floatValue(), userId,
-                    currencyId, true));
-            message.addParameter("date", Util.formatDate(date, userId));
+        message.addParameter("days", days.toString());
+        message.addParameter("dueDate", Util.formatDate(dueDate, userId));
+        message.addParameter("number", number);
+        message.addParameter("total", Util.formatMoney(total.floatValue(), userId,
+                currencyId, true));
+        message.addParameter("date", Util.formatDate(date, userId));
 
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        } 
 
         return message;
     }
@@ -367,12 +354,8 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
         message.setTypeId(MessageDTO.TYPE_FORGETPASSWORD_EMAIL);
 
-        try {
-            setContent(message, MessageDTO.TYPE_FORGETPASSWORD_EMAIL, entityId,
-                    languageId);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
+        setContent(message, MessageDTO.TYPE_FORGETPASSWORD_EMAIL, entityId,
+                languageId);
 
         return message;
     }
@@ -385,12 +368,8 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
         message.setTypeId(MessageDTO.TYPE_INVOICE_EMAIL);
 
-        try {
-            setContent(message, MessageDTO.TYPE_INVOICE_EMAIL, entityId,
-                    languageId);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
+        setContent(message, MessageDTO.TYPE_INVOICE_EMAIL, entityId,
+                languageId);
 
         message.addParameter("total", Util.formatMoney(invoice.getTotal().floatValue(),
                 invoice.getBaseUser().getUserId(), invoice.getCurrency().getId(), true));
@@ -398,7 +377,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         message.addParameter("number", invoice.getPublicNumber());
         // format the date depending of the customers locale
 
-        message.addParameter("due date", Util.formatDate(invoice.getDueDate(),
+        message.addParameter("due_date", Util.formatDate(invoice.getDueDate(),
                 invoice.getBaseUser().getUserId()));
         String notes = invoice.getCustomerNotes();
         
@@ -447,8 +426,6 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                 LOG.warn("user " + userId + " has no invoice but an ageing "
                         + "message is being sent");
             }
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
         } catch (SQLException e1) {
             throw new SessionInternalError(e1);
         }
@@ -485,9 +462,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     currencyId, true));
         } catch (ClassCastException e) {
             throw new SessionInternalError(e);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
+        } 
 
         return retValue;
     }
@@ -525,10 +500,8 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             message.addParameter("partner_id", partnerId.toString());
         } catch (ClassCastException e) {
             throw new SessionInternalError(e);
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
         }
-
+        
         return message;
     }
 
@@ -539,21 +512,16 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         MessageDTO message = initializeMessage(entityId, userId);
         message.setTypeId(MessageDTO.TYPE_CREDIT_CARD);
 
-        try {
-            setContent(message, message.getTypeId(), entityId, languageId);
-            SimpleDateFormat format = new SimpleDateFormat("MM/yy");
-            message.addParameter("expiry_date", format.format(creditCard
-                    .getCcExpiry()));
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
+        setContent(message, message.getTypeId(), entityId, languageId);
+        SimpleDateFormat format = new SimpleDateFormat("MM/yy");
+        message.addParameter("expiry_date", format.format(creditCard
+                .getCcExpiry()));
 
         return message;
     }
 
     private void setContent(MessageDTO newMessage, Integer type,
-            Integer entity, Integer language) throws NamingException,
-            SessionInternalError,
+            Integer entity, Integer language) throws SessionInternalError,
             NotificationNotFoundException {
         set(type, language, entity);
         if (messageRow != null) {
@@ -848,7 +816,8 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // I need a copy, so to not affect the real invoice
             Vector<InvoiceLineDTO> lines = new Vector<InvoiceLineDTO>(invoice.getInvoiceLines());
            // Collections.copy(lines, invoice.getInvoiceLines());
-            
+
+            Vector<InvoiceLineDTO> linesRemoved = new Vector<InvoiceLineDTO>();
             for (InvoiceLineDTO line: lines) {
                 // log.debug("Processing line " + line);
                 // process the tax, if this line is one
@@ -863,12 +832,13 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                             .float2string(line.getPrice(), locale));
                     taxItemIndex++;
                     // taxes are not displayed as invoice lines
-                    lines.remove(line);
+                    linesRemoved.add(line); // can't do lines.remove(): ConcurrentModificationException
                 } else if (line.getIsPercentage().intValue() == 1) {
                     // if the line is a percentage, remove the price
                     line.setPrice(null);
                 }
             }
+            lines.removeAll(linesRemoved); // removed them once out of the loop. Otherwise it will throw
             // remove the last line, that is the total footer
             lines.remove(lines.size() - 1);
             // now add the tax

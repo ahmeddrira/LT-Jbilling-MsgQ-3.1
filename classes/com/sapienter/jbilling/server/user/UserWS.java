@@ -33,7 +33,6 @@ import com.sapienter.jbilling.server.user.db.CustomerDTO;
 
 /**
  * @author Emil
- * @jboss-net.xml-schema urn="sapienter:UserWS"
  */
 public class UserWS implements Serializable {
     private int id;

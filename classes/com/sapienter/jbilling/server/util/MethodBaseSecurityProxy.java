@@ -27,10 +27,9 @@ package com.sapienter.jbilling.server.util;
 
 import java.lang.reflect.Method;
 
-import javax.ejb.EJBContext;
-
 import org.apache.log4j.Logger;
-import org.jboss.security.SecurityProxy;
+
+import org.springframework.aop.MethodBeforeAdvice;
 
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -38,35 +37,10 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 /**
  * @author Emil
  */
-public abstract class MethodBaseSecurityProxy implements SecurityProxy {
+public abstract class MethodBaseSecurityProxy implements MethodBeforeAdvice {
 
     protected Logger log = null; 
     private Method methods[] = null;
-    protected EJBContext context = null;
-
-    public void init(Class beanHome, Class beanRemote,
-            Object securityMgr)
-            throws InstantiationException {
-       init(beanHome, beanRemote, null, null, securityMgr);
-    }
-    
-    public abstract void init(Class beanHome, Class beanRemote,
-            Class beanLocalHome, Class beanLocal, Object securityMgr)
-            throws InstantiationException;
-
-    public abstract void invoke(Method m, Object[] args, Object bean)
-            throws SecurityException;
-                
-    
-    public void setEJBContext(EJBContext ctx) {
-       //log.debug("setEJBContext, ctx="+ctx);
-       context = ctx;
-    }
-    
-    public void invokeHome(Method m, Object[] args)
-        throws SecurityException {
-       // We don't validate access to home methods
-    }
     
     protected boolean isMethodPresent(Method m) {
         boolean retValue = false;

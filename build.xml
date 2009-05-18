@@ -20,15 +20,15 @@
         <pathelement location="${junit.dir}/junit.jar"/>
         <pathelement location="${build.deploy.dir}/jbilling_api.jar"/>
         <pathelement location="${build.test.dir}"/>
-        
-        <!-- this is necessary to find the jndi.properties -->
-        <fileset dir="${jboss.client.dir}">
-            <include name="*.jar"/>
-        </fileset>
+        <pathelement location="${jboss.server.dir}/lib/commons-logging.jar"/>
         <!-- classes for webservices -->
-        <fileset dir="${axis.dir}">
-            <include name="*.jar"/>
-        </fileset>
+        <pathelement location="${jboss.server.dir}/lib/spring.jar"/>
+        <pathelement location="${jboss.server.dir}/lib/cxf.jar"/>
+        <pathelement location="${jboss.server.dir}/lib/XmlSchema.jar"/>
+        <pathelement location="${jboss.server.dir}/lib/wsdl4j.jar"/>
+        <pathelement location="${jboss.server.dir}/lib/FastInfoset.jar"/>
+        <pathelement location="${jboss.server.dir}/lib/neethi.jar"/>
+        <pathelement location="${jboss.server.dir}/lib/hessian.jar"/>
     </path>
     
     <path id="drools.classpath">
@@ -138,10 +138,6 @@
               todir="${jboss.web.dir}"/>
         <copy file="${source.jboss.descriptor.dir}/jboss-web.xml"
               todir="${build.dir}/WEB-INF"/>
-        <copy file="${source.descriptor.dir}/jboss-net/jboss-web.xml"
-              todir="${deploy.local.dir}/jboss-net.sar/jboss-net.war/WEB-INF"/>
-        <copy file="${source.descriptor.dir}/jboss-net/web.xml"
-              todir="${deploy.local.dir}/jboss-net.sar/jboss-net.war/WEB-INF"/>
         
         <!-- Copy the messages file -->
         <copy todir="${deploy.resources.dir}">
@@ -210,10 +206,6 @@
                    destdir="${build.dir}/META-INF"
                    validateXml="false"
             />
-            <jbossnet webDeploymentName="${ws.name}"    
-        prefix="${ws.prefix}"    
-        destdir="${build.ws.dir}/META-INF"    
-        targetNameSpace="${ws.targetNameSpace}" />         
         </ejbdoclet>
     </target>
     
@@ -356,35 +348,13 @@
             </classes>
         </war>
     </target>
-    
-    <!-- =================================================================== -->
-    <!-- Creates the Web Service Archive (WSR) file                          -->
-    <!-- =================================================================== -->
-    <target name="wsr" depends="xdoclet-ejbgenerate">
-        <!-- xdoclet is not merging the customer type definitions
-   	       so we'll do it manually  -->
-        <replace file="${build.ws.dir}/META-INF/web-service.xml"
-             token="&lt;/deployment&gt;"/>
         
-        <concat destfile="${build.ws.dir}/META-INF/web-service.xml"
-            append="yes">
-            <fileset file="${source.descriptor.dir}/jboss/web-service.xml"/>
-            <footer><![CDATA[</deployment>]]></footer>
-        </concat>
-        
-        <jar jarfile="${build.deploy.dir}/betty.wsr">
-            <fileset
-                dir="${build.ws.dir}"
-                includes="META-INF/**" />
-        </jar>
-    </target>
-    
     
     <!-- =================================================================== -->
     <!-- Deploys localy, in the self contained environment                -->
     <!-- =================================================================== -->
    
-    <target name="deploy-local" depends="jar,war,wsr,designs">
+    <target name="deploy-local" depends="jar,war,designs">
         <copy todir="${deploy.local.dir}">
             <fileset dir="${build.deploy.dir}" excludes="jbilling_api.jar"/>
         </copy>
@@ -472,7 +442,7 @@
                includes="**/WSTest*.java">
             <classpath refid="test.classpath"/>
         </javac>
-        <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
        todir="${build.test.dir}"/>
         <junit printsummary="off"
                haltonfailure="true"
@@ -495,7 +465,7 @@
     </target>
     
     <target name="test-mediation">
-        <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
        todir="${build.test.dir}"/>
         <mkdir dir="${base_dir}/mediation"/>
         <copy file="${source.mediation.descriptor.dir}/asterisk.xml" 
@@ -518,14 +488,13 @@
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
             
             <classpath refid="run.classpath"/>
-            <classpath refid="spring.classpath"/>
             <formatter type="brief" usefile="false"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest"/>
         </junit>
     </target>
 
     <target name="test-provisioning">
-        <copy file="${source.resources.descriptor.dir}/jbilling_api.properties" 
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
               todir="${build.test.dir}"/>			  
         <javac debug="on" destdir="${build.test.dir}"
               srcdir="${source.test.dir}/com/sapienter/jbilling/server/provisioning">
@@ -536,7 +505,6 @@
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
             <classpath refid="run.classpath"/>
-            <classpath refid="spring.classpath"/>
             <formatter type="brief" usefile="false"/>
             <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest"/>
         </junit>

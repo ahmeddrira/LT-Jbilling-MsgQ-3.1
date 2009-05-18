@@ -20,9 +20,6 @@
 
 package com.sapienter.jbilling.server.item;
 
-/**
- * @jboss-net.xml-schema urn="sapienter:ItemPriceDTOEx"
- */
 public class ItemPriceDTOEx
    extends java.lang.Object
    implements java.io.Serializable 

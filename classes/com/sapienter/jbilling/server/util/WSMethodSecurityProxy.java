@@ -57,35 +57,12 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
  * @author Emil
  */
 public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
-    
-    private ArrayList<Method> methods = new ArrayList<Method>();
-    private Class local = null;
-    private Class remote = null;
-    private static final Logger LOG = Logger.getLogger(WSMethodSecurityProxy.class);
-    private TransactionTemplate transactionTemplate = null;
-    
-    private void addMethod(String name, Class params[]) throws InstantiationException {
-        try {
-            methods.add(local.getDeclaredMethod(name, params));
-            methods.add(remote.getDeclaredMethod(name, params));
-        } catch(NoSuchMethodException e) {
-            String msg = "Failed to find method " + name;
-            LOG.error(msg, e);
-            throw new InstantiationException(msg);
-         }
-    }
 
+    private static final Logger LOG = Logger.getLogger(WSMethodSecurityProxy.class);    
+    private static final ArrayList<Method> methods = new ArrayList<Method>();
+    private static final Class target = IWebServicesSessionBean.class;
 
-    public void init(Class beanHome, Class beanRemote,
-            Class beanLocalHome, Class beanLocal, Object securityMgr)
-            throws InstantiationException {
-
-       transactionTemplate = new TransactionTemplate(
-               (PlatformTransactionManager) Context.getBean(
-               Context.Name.TRANSACTION_MANAGER));
-
-       local = beanLocal;
-       remote = beanRemote;
+    static {
        // getInvoiceWS
        Class params[] = new Class[1];
        params[0] = Integer.class;
@@ -232,18 +209,33 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        params = new Class[1];
        params[0] = ItemDTOEx.class;
        addMethod("updateItem", params);
+    }
 
+    private static void addMethod(String name, Class params[]) {
+        try {
+            methods.add(target.getDeclaredMethod(name, params));
+        } catch(NoSuchMethodException e) {
+            String msg = "Failed to find method " + name;
+            LOG.error(msg, e);
+            throw new RuntimeException(msg);
+         }
+    }
+
+    public WSMethodSecurityProxy() {
        // set the parent methods
        setMethods(methods.toArray(new Method[methods.size()]));          
-
     }
     
-    public void invoke(final Method m, final Object[] args, final Object bean)
+    public void before(final Method m, final Object[] args, final Object bean)
             throws SecurityException {
         LOG.info("invoke, m=" + m.getName());
         if (!isMethodPresent(m)) {
             return;
         }
+
+        TransactionTemplate transactionTemplate = new TransactionTemplate(
+               (PlatformTransactionManager) Context.getBean(
+               Context.Name.TRANSACTION_MANAGER));
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             public void doInTransactionWithoutResult(TransactionStatus status) {
                 invokeInTransaction(m, args, bean);
@@ -281,9 +273,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                 try {
                     Integer entityId = new ContactTypeDAS().find(
                             contactTypeId).getEntity().getId();
-                    UserBL user = new UserBL();
-                    user.setRoot(context.getCallerPrincipal().getName());
-                    if (!entityId.equals(user.getEntity().getEntity().getId())) {
+                    if (!entityId.equals(WebServicesCaller.getCompanyId())) {
                         throw new SecurityException("Contact type belongs to entity " + entityId);
                     }
                 } catch (Exception e) {
@@ -371,9 +361,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             	Integer userId = (Integer) args[1];
             	
             	Integer itemEntityId = new ItemDAS().find(itemId).getEntity().getId();
-        		UserBL user = new UserBL();
-        		user.setRoot(context.getCallerPrincipal().getName());
-        		if (!itemEntityId.equals(user.getEntity().getEntity().getId())) {
+        		if (!itemEntityId.equals(WebServicesCaller.getCompanyId())) {
                     throw new SecurityException("Item belongs to entity " + itemEntityId);
                 }
             	if (userId != null) {
@@ -382,19 +370,14 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             } else if (m.getName().equals("updateItem")) {
             	ItemDTOEx item = (ItemDTOEx) args[0];
             	Integer itemEntityId = new ItemDAS().find(item.getId()).getEntity().getId();
-            	UserBL user = new UserBL();
-            	user.setRoot(context.getCallerPrincipal().getName());
-            	if (!itemEntityId.equals(user.getEntity().getEntity().getId())) {
+            	if (!itemEntityId.equals(WebServicesCaller.getCompanyId())) {
             		throw new SecurityException("Item belongs to entity " + itemEntityId);
             	}
-            	validate(user.getEntity().getId());
+            	validate(WebServicesCaller.getUserId());
             }
 
-        } catch (SessionInternalError e) {
-            log.error("Exception ", e);
-            throw new SecurityException(e.getMessage());
-        } catch (NamingException e) {
-            log.error("Exception ", e);
+        } catch (Exception e) {
+            LOG.error("Exception ", e);
             throw new SecurityException(e.getMessage());
         } 
         LOG.debug("Done");

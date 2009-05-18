@@ -44,11 +44,10 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
-
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
@@ -424,7 +423,8 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                         processId, invoice.getEntity().getBaseUser()
                                 .getLanguageIdField(), invoice.getEntity());
 
-                NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                INotificationSessionBean notificationSess = 
+                        (INotificationSessionBean) Context.getBean(
                         Context.Name.NOTIFICATION_SESSION);
 
                 for (int msg = 0; msg < invoiceMessage.length; msg++) {

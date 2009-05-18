@@ -35,7 +35,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.DynaActionForm;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public class EmailsAction extends Action {
@@ -46,7 +46,8 @@ public class EmailsAction extends Action {
         
         Logger log = Logger.getLogger(MaintainAction.class);
         try {
-            NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
+            INotificationSessionBean notificationSession = 
+                    (INotificationSessionBean) Context.getBean(
                     Context.Name.NOTIFICATION_SESSION);
         
             DynaActionForm myForm = (DynaActionForm) form;

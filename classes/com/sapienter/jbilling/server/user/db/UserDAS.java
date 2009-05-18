@@ -85,6 +85,25 @@ public class UserDAS extends AbstractDAS<UserDTO> {
 		return (UserDTO) criteria.uniqueResult();
 	}
 
+    public UserDTO findWebServicesRoot(String username) {
+        if (username == null || username.length() == 0) {
+            LOG.error("can not find an empty root: " + username);
+            return null;
+        }
+        // I need to access an association, so I can't use the parent helper class
+        Criteria criteria = getSession().createCriteria(UserDTO.class)
+            .add(Restrictions.eq("userName", username))
+            .add(Restrictions.eq("deleted", 0))
+            .createAlias("roles", "r")
+		   	    .add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT))
+            .createAlias("permissions", "p")
+                .add(Restrictions.eq("p.permission.id", 120));
+		
+        criteria.setCacheable(true); // it will be called over an over again
+		
+        return (UserDTO) criteria.uniqueResult();
+    }
+
 	public UserDTO findByUserName(String username, Integer entityId) {
 		// I need to access an association, so I can't use the parent helper class
 		Criteria criteria = getSession().createCriteria(UserDTO.class)

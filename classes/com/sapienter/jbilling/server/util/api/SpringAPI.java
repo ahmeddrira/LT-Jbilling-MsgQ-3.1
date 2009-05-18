@@ -23,16 +23,9 @@ package com.sapienter.jbilling.server.util.api;
 import java.util.Date;
 import java.util.Hashtable;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.rmi.PortableRemoteObject;
-import javax.security.auth.login.LoginContext;
-
 import org.apache.log4j.Logger;
-import org.jboss.security.auth.callback.UsernamePasswordHandler;
 
-import com.sapienter.jbilling.interfaces.WebServicesSession;
-import com.sapienter.jbilling.interfaces.WebServicesSessionHome;
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -44,37 +37,16 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
+import com.sapienter.jbilling.server.util.RemoteContext;
 
-public class EJBAPI implements JbillingAPI {
+public class SpringAPI implements JbillingAPI {
 
-    private WebServicesSessionHome home = null;
+    private IWebServicesSessionBean session = null;
 
-    private WebServicesSession session = null;
-
-    protected EJBAPI(String providerUrl, String username, String password) throws JbillingAPIException {
-        Hashtable<String, String> env = new Hashtable<String, String>();
-        
-        try {
-            UsernamePasswordHandler handler = new UsernamePasswordHandler(
-                    username, password.toCharArray());
-            LoginContext lc = new LoginContext("jbilling API", handler);
-            lc.login();
-    
-            env.put(Context.URL_PKG_PREFIXES,
-                            "org.jboss.naming:org.jnp.interfaces");
-            env.put(Context.PROVIDER_URL, providerUrl);
-            env.put(Context.INITIAL_CONTEXT_FACTORY,
-                    "org.jnp.interfaces.NamingContextFactory");
-            InitialContext ctx = new InitialContext(env);
-            home = (WebServicesSessionHome) PortableRemoteObject
-                    .narrow(ctx.lookup("com/sapienter/jbilling/server/util/WebServicesSession"),
-                            WebServicesSessionHome.class);
-            session = home.create();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-
+    public SpringAPI() throws JbillingAPIException {
+        session = (IWebServicesSessionBean) RemoteContext.getBean(
+                RemoteContext.Name.API_CLIENT);
     }
 
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
@@ -387,8 +359,6 @@ public class EJBAPI implements JbillingAPI {
         }
     }
     
-    private static final Logger LOG = Logger.getLogger(EJBAPI.class);
-
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
             throws JbillingAPIException {
         try {

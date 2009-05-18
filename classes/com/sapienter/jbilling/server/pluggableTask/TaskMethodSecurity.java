@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+/*
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.lang.reflect.Method;
@@ -139,13 +139,14 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
             validateParameter(userId, parameterId);
         }
      }
-
+*/
     
     /**
      * Validates that the given user can modify the task
      * @param userId
      * @param taskId
      */
+/*
     private void validate(Integer userId, Integer taskId) {
         UserBL user = new UserBL(userId);
         PluggableTaskBL task = new PluggableTaskBL(taskId);
@@ -161,3 +162,4 @@ public class TaskMethodSecurity extends MethodBaseSecurityProxy {
         validate(userId, das.find(parameterId).getTask().getId());
     }
 }
+*/

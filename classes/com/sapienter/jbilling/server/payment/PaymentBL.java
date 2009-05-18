@@ -41,10 +41,10 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
@@ -732,7 +732,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             MessageDTO message = notif.getPaymentMessage(entityId, info,
                     new Integer(info.getPaymentResult().getId()).equals(Constants.RESULT_OK));
 
-            NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+            INotificationSessionBean notificationSess = 
+                    (INotificationSessionBean) Context.getBean(
                     Context.Name.NOTIFICATION_SESSION);
             notificationSess.notify(info.getUserId(), message);
         } catch (NotificationNotFoundException e1) {

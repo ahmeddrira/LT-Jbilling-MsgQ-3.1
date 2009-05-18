@@ -36,9 +36,9 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
@@ -590,8 +590,9 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     NotificationBL notif = new NotificationBL();
                     MessageDTO message = notif.getPaymentMessage(entityId, 
                             payment, true);
-                    NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.Name.NOTIFICATION_SESSION);
+                    INotificationSessionBean notificationSess = 
+                            (INotificationSessionBean) Context.getBean(
+                            Context.Name.NOTIFICATION_SESSION);
                     notificationSess.notify(payment.getUserId(), message);
                     
                     // link to unpaid invoices

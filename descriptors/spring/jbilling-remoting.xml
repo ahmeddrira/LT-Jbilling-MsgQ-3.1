@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Configuration for export of jBilling remote services on server. 
+    Comment out or uncomment the services that are to be 
+    disabled/enabled.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+    <!-- SOAP Web Service -->
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+    <jaxws:endpoint id="soapService" implementor="#webServicesSession" 
+            implementorClass="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean" 
+            address="/soap.service"/>
+
+    <!-- Hessian Web Service -->
+    <bean name="hessianService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="webServicesSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
+    </bean>
+
+    <!-- Burlap Web Service -->
+    <bean name="burlapService" class="org.springframework.remoting.caucho.BurlapServiceExporter">
+        <property name="service" ref="webServicesSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
+    </bean>
+
+    <!-- RMI Service -->
+    <!-- Note: calls are unauthenticated and require a default 
+         username/password for use, configured by next bean below. -->
+    <!--
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="webServicesSession"/>
+        <property name="serviceName" value="RmiService"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    -->
+
+    <!-- Username and password for unsecured API calls like RMI above.
+         Uncomment if unauthenticated calls are used. -->
+    <!--
+    <bean id="webServicesCallerDefaults" class="com.sapienter.jbilling.server.util.WebServicesCaller$Defaults">
+         <property name="username" value="admin"/>
+         <property name="password" value="123qwe"/>
+    </bean>
+    -->
+
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <!-- Security Advice for WebServicesSessionBean -->
+    <!-- Comment out if this jBilling installation is only used by one company. -->
+    <bean id="webServicesSecurityAdvice" class="com.sapienter.jbilling.server.util.WSMethodSecurityProxy"/>
+    <bean id="webServicesSecurityAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice" ref="webServicesSecurityAdvice"/>
+        <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
+    </bean>
+
+    <!-- Exception Advice for WebServicesSessionBean -->
+    <!-- Re-throws all exceptions as SessionInternalErrors. -->
+    <bean id="webServicesExceptionAdvice" class="com.sapienter.jbilling.server.util.WSExceptionAdvice"/>
+    <bean id="webServicesExceptionAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice" ref="webServicesExceptionAdvice"/>
+        <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
+    </bean>
+
+
+    <!-- RMI Session Bean Services (Note: used by jBilling tests and are unsecured) -->
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="itemSession"/>
+        <property name="serviceName" value="ItemSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.item.IItemSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="listSession"/>
+        <property name="serviceName" value="ListSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.list.IListSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="userSession"/>
+        <property name="serviceName" value="UserSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.user.IUserSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="invoiceSession"/>
+        <property name="serviceName" value="InvoiceSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.invoice.IInvoiceSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="orderSession"/>
+        <property name="serviceName" value="OrderSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.order.IOrderSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="paymentSession"/>
+        <property name="serviceName" value="PaymentSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.payment.IPaymentSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="mediationSession"/>
+        <property name="serviceName" value="MediationSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.mediation.IMediationSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="billingProcessSession"/>
+        <property name="serviceName" value="BillingProcessSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.process.IBillingProcessSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="service" ref="provisioningProcessSession"/>
+        <property name="serviceName" value="ProvisioningProcessSession"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+
+</beans>

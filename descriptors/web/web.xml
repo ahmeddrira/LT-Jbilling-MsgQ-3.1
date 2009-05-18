@@ -43,6 +43,10 @@
   		<filter-name>Menu Selection</filter-name>
   		<filter-class>com.sapienter.jbilling.client.user.MenuSelectionFilter</filter-class>
   </filter>
+  <filter>
+        <filter-name>Web Services Authentication Filter</filter-name>
+        <filter-class>com.sapienter.jbilling.client.util.WebServicesAuthenticationFilter</filter-class>
+  </filter>
   
   <filter-mapping>
   		<filter-name>Authentication Filter</filter-name>
@@ -59,6 +63,14 @@
   <filter-mapping>
   		<filter-name>Menu Selection</filter-name>
 		<url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+  		<filter-name>Web Services Authentication Filter</filter-name>
+		<url-pattern>/services/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+  		<filter-name>Web Services Authentication Filter</filter-name>
+		<url-pattern>/cxf/*</url-pattern>
   </filter-mapping>
   
   <!-- Action Servlet Configuration -->
@@ -112,6 +124,21 @@
   	<load-on-startup>10</load-on-startup>
   </servlet>
 
+  <!-- Spring MVC DispatcherServlet -->
+  <servlet>
+    <servlet-name>jbilling</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- CXF Web Services Servlet -->
+  <servlet>
+	<servlet-name>CXFServlet</servlet-name>
+	<display-name>CXF Servlet</display-name>
+	<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
+  </servlet>
+
   <!-- Action Servlet Mapping -->
   <servlet-mapping>
     <servlet-name>action</servlet-name>
@@ -135,6 +162,37 @@
   	<servlet-name>serverUpCheck</servlet-name>
   	<url-pattern>/serverUpCheck</url-pattern>
   </servlet-mapping>  
+
+  <!-- Spring MVC DispatcherServlet Mapping -->
+  <servlet-mapping>
+    <servlet-name>jbilling</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- CXF Web Services Servlet Mapping -->
+  <servlet-mapping>
+	<servlet-name>CXFServlet</servlet-name>
+	<url-pattern>/cxf/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Spring MVC ContextLoaderListener configuration -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <!-- No configuration files at this time -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value></param-value>
+  </context-param>
+  <!-- Configuration of parent ApplicationContext -->
+  <context-param>
+    <param-name>locatorFactorySelector</param-name>
+    <param-value>jbilling-beansRefFactory.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>com.sapienter.jbilling</param-value>
+  </context-param>
 
   <session-config>
   	<session-timeout>20</session-timeout>

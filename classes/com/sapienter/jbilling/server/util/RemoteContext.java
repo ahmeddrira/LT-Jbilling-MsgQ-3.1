@@ -41,7 +41,8 @@ public class RemoteContext {
         PAYMENT_REMOTE_SESSION,
         MEDIATION_REMOTE_SESSION,
         BILLING_PROCESS_REMOTE_SESSION,
-        PROVISIONING_PROCESS_REMOTE_SESSION
+        PROVISIONING_PROCESS_REMOTE_SESSION,
+        API_CLIENT
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -61,6 +62,7 @@ public class RemoteContext {
                 "billingProcessRemoteSession");
         springBeans.put(Name.PROVISIONING_PROCESS_REMOTE_SESSION,
                 "provisioningProcessRemoteSession");
+        springBeans.put(Name.API_CLIENT, "apiClient");
     };
     
     // should not be instantiated

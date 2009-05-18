@@ -118,6 +118,19 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
         LOG.debug("result is " + result);
         return result;
     }
+
+    /**
+     * Returns UserDTO if authentication successful, otherwise null.
+     */
+    public UserDTO webServicesAuthenticate(String username, String password)
+            throws SessionInternalError{
+        try {
+            UserBL user = new UserBL();
+            return user.webServicesAuthenticate(username, password);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
     
     /**
      * This returns more than a DTOEx, it includes the permissions and menu that
@@ -214,8 +227,6 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
             
             return entityId;
         } catch (Exception e) {
-            // context.setRollbackOnly(); // (old EJB rollback method)
-            // ^-- just throwing a runtime exception should be OK for spring?
             throw new SessionInternalError(e);
         }
     }

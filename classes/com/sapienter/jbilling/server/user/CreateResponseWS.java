@@ -30,7 +30,6 @@ import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 
 /**
  * @author Emil
- * @jboss-net.xml-schema urn="sapienter:CreateResponseWS"
  */
 public class CreateResponseWS implements Serializable {
     private Integer userId = null;

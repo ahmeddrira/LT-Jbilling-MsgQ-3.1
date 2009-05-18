@@ -308,8 +308,11 @@ public class WSTest extends TestCase {
 
             // check that a user isn't blacklisted
             UserWS user = api.getUserWS(USER_ID);
+            // CXF returns null
+            if (user.getBlacklistMatches() != null) {
             assertTrue("User shouldn't be blacklisted yet", 
                     user.getBlacklistMatches().length == 0);
+            }
 
             // change their status to suspended
             user.setStatusId(UserDTOEx.STATUS_SUSPENDED);

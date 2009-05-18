@@ -30,7 +30,6 @@ import java.util.Date;
 
 /**
  * @author Emil
- * @jboss-net.xml-schema urn="sapienter:OrderWS"
  */
 public class OrderWS implements Serializable {
 

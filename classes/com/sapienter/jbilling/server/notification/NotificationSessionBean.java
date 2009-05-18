@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional( propagation = Propagation.REQUIRED )
-public class NotificationSessionBean {
+public class NotificationSessionBean implements INotificationSessionBean {
 
     private static final Logger LOG = Logger.getLogger(NotificationSessionBean.class);
 

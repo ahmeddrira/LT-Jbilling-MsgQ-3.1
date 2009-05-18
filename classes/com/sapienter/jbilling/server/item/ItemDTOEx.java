@@ -23,9 +23,6 @@ package com.sapienter.jbilling.server.item;
 import java.util.Collection;
 import java.util.Vector;
 
-/**
- * @jboss-net.xml-schema urn="sapienter:ItemDTOEx"
- */
 public class ItemDTOEx
    extends java.lang.Object
    implements java.io.Serializable 
@@ -47,7 +44,7 @@ public class ItemDTOEx
     private Float price = null;
     private Integer orderLineTypeId = null;
     // all the prices.ItemPriceDTOEx  
-    private Vector prices = null;
+    private Vector<ItemPriceDTOEx> prices = null;
     
     public ItemDTOEx(Integer id,String number, Integer entity, 
             String description,
@@ -380,14 +377,14 @@ public class ItemDTOEx
     /**
      * @return
      */
-    public Vector getPrices() {
+    public Vector<ItemPriceDTOEx> getPrices() {
         return prices;
     }
 
     /**
      * @param prices
      */
-    public void setPrices(Vector prices) {
+    public void setPrices(Vector<ItemPriceDTOEx> prices) {
         this.prices = prices;
     }
 }

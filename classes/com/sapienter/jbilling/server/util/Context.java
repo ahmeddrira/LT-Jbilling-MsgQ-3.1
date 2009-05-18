@@ -21,15 +21,17 @@ package com.sapienter.jbilling.server.util;
 
 import java.util.EnumMap;
 import java.util.Map;
-import org.springframework.context.ApplicationContext;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
+import org.springframework.context.ApplicationContext;
 
 public class Context {
 
-    private static final ApplicationContext spring = 
-            new ClassPathXmlApplicationContext( new String[] {"/jbilling-beans.xml", 
-            "/jbilling-database.xml", "/jbilling-provisioning.xml"});
+    // get ApplicationContext configured by jbilling-beansRefFactory.xml
+    private static final ApplicationContext spring = (ApplicationContext)
+            ContextSingletonBeanFactoryLocator.getInstance(
+            "jbilling-beansRefFactory.xml").useBeanFactory(
+            "com.sapienter.jbilling").getFactory();
     
     public enum Name {
         ITEM_SESSION, 
@@ -56,7 +58,8 @@ public class Context {
         PLUGGABLE_TASK_DAS,
         CACHE,
         CAI,
-        MMSC
+        MMSC,
+        WEB_SERVICES_CALLER_DEFAULTS
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -94,6 +97,8 @@ public class Context {
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CAI, "cai");
         springBeans.put(Name.MMSC, "mmsc");
+        springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 
+                "webServicesCallerDefaults");
     };
     
     // should not be instantiated

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.naming.NamingException;
+import javax.jws.WebService;
 
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
@@ -90,14 +91,11 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 @Transactional( propagation = Propagation.REQUIRED )
-public class WebServicesSessionSpringBean {
+@WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
+public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     private static final Logger LOG = Logger.getLogger(
             WebServicesSessionSpringBean.class);
-    // used only to know if an invoice was created in the mega call
-    private Integer invoiceId = null;
-    // the user making the calls
-    private String callerName = null;
 
     /*
      * INVOICES
@@ -173,9 +171,7 @@ public class WebServicesSessionSpringBean {
                 return null;
             }
 
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
 
             InvoiceBL invoiceBl = new InvoiceBL();
             LOG.debug("Done");
@@ -195,9 +191,7 @@ public class WebServicesSessionSpringBean {
     public void deleteInvoice(Integer invoiceId) {
         LOG.debug("Call to deleteInvoice " + invoiceId);
         try {
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
-            Integer executorId = bl.getEntity().getUserId();
+            Integer executorId = getCallerId();
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             invoice.delete(executorId);
             LOG.debug("Done");
@@ -229,9 +223,8 @@ public class WebServicesSessionSpringBean {
         newUser.setUserId(0);
 
         try {
+            Integer entityId = getCallerCompanyId();
             UserBL bl = new UserBL();
-            bl.setRoot(callerName);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             LOG.info("WS - Creating user " + newUser);
 
             if (!bl.exists(newUser.getUserName(), entityId)) {
@@ -272,8 +265,7 @@ public class WebServicesSessionSpringBean {
         LOG.debug("Call to deleteUser " + userId);
         try {
             UserBL bl = new UserBL();
-            bl.setRoot(callerName);
-            Integer executorId = bl.getEntity().getUserId();
+            Integer executorId = getCallerId();
             bl.set(userId);
             bl.delete(executorId);
             LOG.debug("Done");
@@ -289,10 +281,6 @@ public class WebServicesSessionSpringBean {
 
         LOG.debug("Call to updateUserContact " + userId + " " + typeId);
         try {
-            UserBL bl = new UserBL();
-
-            // get the entity
-            bl.setRoot(callerName);
             LOG.info("WS - Updating contact for user " + userId);
 
             // update the contact
@@ -316,12 +304,11 @@ public class WebServicesSessionSpringBean {
         validateUser(user);
 
         try {
-            UserBL bl = new UserBL();
+            UserBL bl = new UserBL(user.getUserId());
 
             // get the entity
-            bl.setRoot(callerName);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-            Integer executorId = bl.getEntity().getUserId();
+            Integer entityId = getCallerCompanyId();
+            Integer executorId = getCallerId();
             LOG.info("WS - Updating user " + user);
 
             // Check whether the password changes or not.
@@ -341,7 +328,6 @@ public class WebServicesSessionSpringBean {
             UserDTOEx dto = new UserDTOEx(user, entityId);
 
             // update the user info
-            bl.set(user.getUserId());
             bl.update(executorId, dto);
 
             // now update the contact info
@@ -422,19 +408,17 @@ public class WebServicesSessionSpringBean {
     public Integer getUserId(String username)
             throws SessionInternalError {
         LOG.debug("Call to getUserId " + username);
-        // find which entity are we talking here
-        String root = callerName;
         try {
             UserDAS das = new UserDAS();
-            UserDTO rootUser = das.findRoot(root);
-            Integer retValue = das.findByUserName(username, rootUser.getCompany().getId()).getId();
+            Integer retValue = das.findByUserName(username, 
+                    getCallerCompanyId()).getId();
             LOG.debug("Done " + retValue);
             return retValue;
 
         } catch (Exception e) {
             LOG.error("WS - getUserId", e);
             throw new SessionInternalError("Error getting user id username = " + username +
-                    " root " + root);
+                    " root " + WebServicesCaller.getUserName());
         }
 
     }
@@ -445,12 +429,8 @@ public class WebServicesSessionSpringBean {
     public Integer[] getUsersInStatus(Integer statusId)
             throws SessionInternalError {
         LOG.debug("Call to getUsersInStatus " + statusId);
-        // find which entity are we talking here
-        String root = callerName;
         try {
-            UserBL bl = new UserBL();
-            bl.setRoot(root);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
             return getUsersByStatus(statusId, entityId, true);
         } catch (Exception e) {
             LOG.error("WS - getUsersInStatus", e);
@@ -464,12 +444,8 @@ public class WebServicesSessionSpringBean {
     public Integer[] getUsersNotInStatus(Integer statusId)
             throws SessionInternalError {
         LOG.debug("Call to getUsersNotInStatus " + statusId);
-        // find which entity are we talking here
-        String root = callerName;
         try {
-            UserBL bl = new UserBL();
-            bl.setRoot(root);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
             return getUsersByStatus(statusId, entityId, false);
         } catch (Exception e) {
             LOG.error("WS - getUsersNotInStatus", e);
@@ -483,12 +459,9 @@ public class WebServicesSessionSpringBean {
     public Integer[] getUsersByCustomField(Integer typeId, String value)
             throws SessionInternalError {
         LOG.debug("Call to getUsersByCustomField " + typeId + " " + value);
-        // find which entity are we talking here
-        String root = callerName;
         try {
             UserBL bl = new UserBL();
-            bl.setRoot(root);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
 
             CachedRowSet users = bl.getByCustomField(entityId, typeId, value);
             LOG.debug("got collection. Now converting");
@@ -521,12 +494,8 @@ public class WebServicesSessionSpringBean {
     public Integer[] getUsersByCreditCard(String number)
             throws SessionInternalError {
         LOG.debug("Call to getUsersByCreditCard " + number);
-        // find which entity are we talking here
-        String root = callerName;
         try {
-            UserBL bl = new UserBL();
-            bl.setRoot(root);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
 
 //            CachedRowSet users = bl.getByCCNumber(entityId, number);
 //            LOG.debug("getUsersByCreditCard - got collection. Now converting");
@@ -597,20 +566,17 @@ public class WebServicesSessionSpringBean {
 
         // the order and (if needed) invoice
         order.setUserId(userId);
-        final int orderId = createOrderAndInvoice(order);
-        retValue.setOrderId(orderId);
-        if (invoiceId != null) {
-            //we assume that createOrder have actually created an invoice
-            //it would be better to access it directly from createOrder() 
-            //but we don't want to change API for now
-            //so we will get it indirectly, as the latest invoice
 
-            Integer lastInvoiceId = invoiceId;
-            retValue.setInvoiceId(lastInvoiceId);
+        Integer orderId = doCreateOrder(order, true).getId();
+        InvoiceDTO invoice = doCreateInvoice(orderId);
+
+        retValue.setOrderId(orderId);
+
+        if (invoice != null) {
+            retValue.setInvoiceId(invoice.getId());
 
             //the payment, if we have a credit card
             if (user.getCreditCard() != null) {
-                InvoiceDTO invoice = findInvoice(lastInvoiceId);
                 PaymentDTOEx payment = doPayInvoice(invoice, new CreditCardDTO(user.getCreditCard()));
                 PaymentAuthorizationDTOEx result = null;
                 if (payment != null) {
@@ -645,8 +611,7 @@ public class WebServicesSessionSpringBean {
         try {
             // the caller will tell us what entity is this
             UserBL bl = new UserBL();
-            bl.setRoot(callerName);
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
 
             // prepare the DTO for the authentication call
             UserDTOEx user = new UserDTOEx();
@@ -726,9 +691,7 @@ public class WebServicesSessionSpringBean {
                 throw new SessionInternalError("Missing cc data.");
             }
 
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
-            Integer executorId = bl.getEntity().getUserId();
+            Integer executorId = getCallerId();
             IUserSessionBean sess = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
             CreditCardDTO cc = creditCard != null ? new CreditCardDTO(creditCard) : null;
@@ -800,8 +763,7 @@ public class WebServicesSessionSpringBean {
 
         try {
             LOG.debug("Call to updateItem ");
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
+            UserBL bl = new UserBL(getCallerId());
             Integer executorId = bl.getEntity().getUserId();
             Integer languageId = bl.getEntity().getLanguageIdField();
 
@@ -864,8 +826,7 @@ public class WebServicesSessionSpringBean {
         validateOrder(order);
         try {
             // get the info from the caller
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
+            UserBL bl = new UserBL(getCallerId());
             Integer executorId = bl.getEntity().getUserId();
             Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             Integer languageId = bl.getEntity().getLanguageIdField();
@@ -895,8 +856,7 @@ public class WebServicesSessionSpringBean {
         try {
             LOG.debug("order requested " + orderId);
             // get the info from the caller
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
+            UserBL userbl = new UserBL(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             // now get the order. Avoid the proxy since this is for the client
@@ -925,10 +885,6 @@ public class WebServicesSessionSpringBean {
             return null;
         }
         try {
-            // get the info from the caller
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
-
             // now get the order
             OrderBL bl = new OrderBL();
             LOG.debug("Done");
@@ -982,8 +938,7 @@ public class WebServicesSessionSpringBean {
         try {
             OrderWS retValue = null;
             // get the info from the caller
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
+            UserBL userbl = new UserBL(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             // now get the order
@@ -1009,7 +964,6 @@ public class WebServicesSessionSpringBean {
         }
         try {
             UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
 
             OrderBL order = new OrderBL();
             LOG.debug("Done");
@@ -1024,11 +978,9 @@ public class WebServicesSessionSpringBean {
             throws SessionInternalError {
         LOG.debug("Call to deleteOrder " + id);
         try {
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
             // now get the order
             OrderBL bl = new OrderBL(id);
-            bl.delete(userbl.getEntity().getUserId());
+            bl.delete(getCallerId());
         } catch (Exception e) {
             LOG.error("WS - deleteOrder", e);
             throw new SessionInternalError("Error deleting order");
@@ -1062,8 +1014,7 @@ public class WebServicesSessionSpringBean {
         LOG.debug("Call to getPayment " + paymentId);
         try {
             // get the info from the caller
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
+            UserBL userbl = new UserBL(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             PaymentBL bl = new PaymentBL(paymentId);
@@ -1081,8 +1032,7 @@ public class WebServicesSessionSpringBean {
         try {
             PaymentWS retValue = null;
             // get the info from the caller
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
+            UserBL userbl = new UserBL(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             PaymentBL bl = new PaymentBL();
@@ -1107,8 +1057,7 @@ public class WebServicesSessionSpringBean {
         }
         LOG.debug("WS - getLastPayments " + userId + " " + number);
         try {
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
+            UserBL userbl = new UserBL(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             PaymentBL payment = new PaymentBL();
@@ -1133,8 +1082,7 @@ public class WebServicesSessionSpringBean {
         }
         try {
             // get the info from the caller
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
+            UserBL bl = new UserBL(getCallerId());
             Integer languageId = bl.getEntity().getLanguageIdField();
             Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             dto.setEntity(new CompanyDTO(entityId));
@@ -1157,9 +1105,7 @@ public class WebServicesSessionSpringBean {
     public ItemDTOEx[] getAllItems() throws SessionInternalError {
         LOG.debug("Call to getAllItems ");
         try {
-            UserBL userBL = new UserBL();
-            userBL.setRoot(callerName);
-            Integer entityId = userBL.getEntityId(userBL.getEntity().getUserId());
+            Integer entityId = getCallerCompanyId();
             ItemBL itemBL = new ItemBL();
             LOG.debug("Done");
             return itemBL.getAllItems(entityId);
@@ -1195,9 +1141,8 @@ public class WebServicesSessionSpringBean {
 
         try {
             UserBL user = new UserBL();
-            user.setRoot(callerName);
-            Integer callerId = user.getEntity().getUserId();
-            Integer entityId = user.getEntityId(callerId);
+            Integer callerId = getCallerId();
+            Integer entityId = getCallerCompanyId();
             EventLogger evLog = EventLogger.getInstance();
 
             if (from == null) {
@@ -1245,9 +1190,8 @@ public class WebServicesSessionSpringBean {
 
         try {
             UserBL user = new UserBL();
-            user.setRoot(callerName);
-            Integer callerId = user.getEntity().getUserId();
-            Integer entityId = user.getEntityId(callerId);
+            Integer callerId = getCallerId();
+            Integer entityId = getCallerCompanyId();
             EventLogger evLog = EventLogger.getInstance();
 
             result = user.getUserTransitionsById(entityId, id, null);
@@ -1283,8 +1227,7 @@ public class WebServicesSessionSpringBean {
             Vector<PricingField> f = new Vector<PricingField>();
             f.addAll(Arrays.asList(fields));
             helper.setPricingFields(f);
-            UserBL user = new UserBL();
-            user.setRoot(callerName);
+            UserBL user = new UserBL(getCallerId());
             Integer callerId = user.getEntity().getUserId();
             Integer entityId = user.getEntityId(callerId);
             Integer languageId = user.getEntity().getLanguageIdField();
@@ -1394,6 +1337,11 @@ public class WebServicesSessionSpringBean {
         order.setActiveUntil(zero2null(order.getActiveUntil()));
         order.setNextBillableDay(zero2null(order.getNextBillableDay()));
         order.setLastNotified(null);
+        // CXF seems to pass empty array as null
+        if (order.getOrderLines() == null) {
+            order.setOrderLines(new OrderLineWS[0]);
+        }
+
         try {
             GatewayBL valid = new GatewayBL();
             // the order
@@ -1486,7 +1434,6 @@ public class WebServicesSessionSpringBean {
         try {
             BillingProcessBL process = new BillingProcessBL();
             InvoiceDTO invoice = process.generateInvoice(orderId, null);
-            invoiceId = invoice == null ? null : invoice.getId();
             return invoice;
         } catch (Exception e) {
             LOG.error("WS - create invoice:", e);
@@ -1495,7 +1442,7 @@ public class WebServicesSessionSpringBean {
     }
 
     private void validateCaller() {
-        String root = callerName;
+        String root = WebServicesCaller.getUserName();
         try {
             UserBL bl = new UserBL();
             bl.setRoot(root);
@@ -1573,8 +1520,7 @@ public class WebServicesSessionSpringBean {
         validateOrder(order);
         try {
             // get the info from the caller
-            UserBL bl = new UserBL();
-            bl.setRoot(callerName);
+            UserBL bl = new UserBL(getCallerId());
             Integer executorId = bl.getEntity().getUserId();
             Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
             Integer languageId = bl.getEntity().getLanguageIdField();
@@ -1682,11 +1628,6 @@ public class WebServicesSessionSpringBean {
         return invoice;
     }
 
-    @Transactional( propagation = Propagation.SUPPORTS )
-    public void setCallerName(String callerName) {
-        this.callerName = callerName;
-    }
-
     // TODO: This method is not secured or in a jUnit test
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
             throws SessionInternalError {
@@ -1746,8 +1687,7 @@ public class WebServicesSessionSpringBean {
         try {
             OrderWS retValue = null;
             // get the info from the caller
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
+            UserBL userbl = new UserBL(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             // now get the order
@@ -1773,9 +1713,6 @@ public class WebServicesSessionSpringBean {
             return null;
         }
         try {
-            UserBL userbl = new UserBL();
-            userbl.setRoot(callerName);
-
             OrderBL order = new OrderBL();
             return order.getListIdsByItemType(userId, itemTypeId, number);
         } catch (Exception e) {
@@ -1786,4 +1723,11 @@ public class WebServicesSessionSpringBean {
         }
     }
 
+    private Integer getCallerId() {
+        return WebServicesCaller.getUserId();
+    }
+
+    private Integer getCallerCompanyId() {
+        return WebServicesCaller.getCompanyId();
+    }
 }

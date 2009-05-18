@@ -46,10 +46,10 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -141,8 +141,9 @@ public class AgeingBL {
                     user.getEntity().getEntity().getId(), 
                     user.getEntity().getLanguageIdField(), statusId, userId);
      
-            NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.Name.NOTIFICATION_SESSION);
+            INotificationSessionBean notificationSess = 
+                    (INotificationSessionBean) Context.getBean(
+                    Context.Name.NOTIFICATION_SESSION);
             notificationSess.notify(user.getEntity(), message);
         } catch (NotificationNotFoundException e) {
             LOG.warn("Changeing the satus of a user. An ageing notification " +

@@ -32,10 +32,10 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
@@ -192,7 +192,8 @@ public class CreditCardBL extends ResultList
                         getEntity().getId(), user.getEntity().getLanguageIdField(),
                         userId, getDTO());
 
-                NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
+                INotificationSessionBean notificationSess = 
+                        (INotificationSessionBean) Context.getBean(
                         Context.Name.NOTIFICATION_SESSION);
                 notificationSess.notify(userId, message);
             } catch (NotificationNotFoundException e) {

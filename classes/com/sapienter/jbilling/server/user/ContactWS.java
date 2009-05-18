@@ -34,8 +34,6 @@ import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 
 /**
  * @author Emil
- *
- * @jboss-net.xml-schema urn="sapienter:ContactWS"
  */
 public class ContactWS implements Serializable {
 

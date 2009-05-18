@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.entity;
 /**
  * Only used for web services backward compatibility. 
  * Do not use!
- * @jboss-net.xml-schema urn="sapienter:CreditCardDTO"
  */
 public class CreditCardDTO
    extends java.lang.Object

@@ -1,15 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Configuration for remote access of session beans. 
+    Configuration for accessing remote beans from a client. 
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
+    <!-- Web Service Client Bean -->
+    <!-- Uncomment one of the remoting protocols for the client API to use. -->
+
+    <!-- SOAP Web Service -->
+    <!--
+    <jaxws:client id="apiClient" 
+            serviceClass="com.sapienter.jbilling.server.util.IWebServicesSessionBean" 
+            address="http://localhost/billing/cxf/soap.service"
+            username="admin" password="123qwe"/>
+    -->
+
+    <!-- Hessian Web Service -->
+    <bean id="apiClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" lazy-init="true">
+        <property name="serviceUrl" value="http://localhost/billing/services/hessian.service"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
+        <property name="hessian2" value="true"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="123qwe"/>
+    </bean>
+
+    <!-- Burlap Web Service -->
+    <!--
+    <bean id="apiClient" class="org.springframework.remoting.caucho.BurlapProxyFactoryBean" lazy-init="true">
+        <property name="serviceUrl" value="http://localhost/billing/services/burlap.service"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="123qwe"/>
+    </bean>
+    -->
+
+    <!-- RMI Service -->
+    <!--
+    <bean id="apiClient" class="org.springframework.remoting.rmi.RmiProxyFactoryBean" lazy-init="true">
+        <property name="serviceUrl" value="rmi://localhost:1199/RmiService"/>
+        <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
+    </bean>
+    -->
+
+
+    <!-- Remote RMI Session Beans -->
     <bean id="itemRemoteSession" class="org.springframework.remoting.rmi.RmiProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="rmi://localhost:1199/ItemSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.item.IItemSessionBean"/>

@@ -18,33 +18,22 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.server.payment;
+package com.sapienter.jbilling.server.util;
 
-import java.io.Serializable;
+import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import org.springframework.aop.ThrowsAdvice;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 
 /**
- * @author Emil
+ * Re-throws any exceptions from the API as SessionInternalErrors to
+ * prevent server exception classes being required on the client. 
+ * Useful for remoting protocols such as Hessian which propagate the 
+ * exception stack trace from the server to the client. 
  */
-public class PaymentAuthorizationDTOEx extends PaymentAuthorizationDTO implements Serializable {
-    private Boolean result;
-    
-    public PaymentAuthorizationDTOEx() {
-        super();
+public class WSExceptionAdvice implements ThrowsAdvice {
+    public void afterThrowing(Exception throwable) {
+        throw new SessionInternalError(throwable.getMessage());
     }
-    
-    public PaymentAuthorizationDTOEx(PaymentAuthorizationDTO dto) {
-        super(dto);
-    }
-
-    public Boolean getResult() {
-        return result;
-    }
-
-    public void setResult(Boolean result) {
-        this.result = result;
-    }
-    
 }

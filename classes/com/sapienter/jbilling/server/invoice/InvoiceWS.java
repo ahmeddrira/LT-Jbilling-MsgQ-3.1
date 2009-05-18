@@ -26,7 +26,6 @@ import java.io.Serializable;
 
 /**
  * @author Emil
- * @jboss-net.xml-schema urn="sapienter:InvoiceWS"
  */
 public class InvoiceWS implements Serializable {
 
@@ -222,8 +221,10 @@ public class InvoiceWS implements Serializable {
 
         str.append("delegated invoice = [" + delegatedInvoiceId + "]");
         str.append(" payments = ");
-        for (int f = 0; f < payments.length; f++) {
-            str.append(payments[f].toString());
+        if (payments != null) {
+            for (int f = 0; f < payments.length; f++) {
+                str.append(payments[f].toString());
+            }
         }
         str.append(" userId = [" + userId);
         str.append(" invoiceLines = ");

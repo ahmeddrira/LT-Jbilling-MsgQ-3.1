@@ -324,6 +324,7 @@ public class WSTest  extends TestCase {
             assertEquals("Result is ok", new Boolean(true), auth.getResult());
             System.out.println("Order pre-authorized. Approval code = " + auth.getApprovalCode());
             // check the last one is a new one
+            pause(2000); // pause while provisioning status is being updated
             System.out.println("Getting latest");
             retOrder = api.getLatestOrder(new Integer(2));
             System.out.println("Order created with ID = " + retOrder.getId());
@@ -525,8 +526,11 @@ public class WSTest  extends TestCase {
 	}
 	
 	private void assertEmptyArray(Object[] array){
-		assertNotNull(array);
-		assertEquals("Empty array expected: " + Arrays.toString(array), 0, array.length);
+        // CXF returns null for empty array
+		//assertNotNull(array);
+        if (array != null) {
+            assertEquals("Empty array expected: " + Arrays.toString(array), 0, array.length);
+        }
 	}
 	
     public void testUpdateLines() {

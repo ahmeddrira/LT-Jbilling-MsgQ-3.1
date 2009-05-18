@@ -41,7 +41,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.customer.CustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
@@ -272,7 +272,8 @@ public class MaintainAction extends Action {
 
                 forward = "payment_view";
             } else if (action.equals("notify")) {
-                NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
+                INotificationSessionBean notificationSession = 
+                        (INotificationSessionBean) Context.getBean(
                         Context.Name.NOTIFICATION_SESSION);
                 Integer paymentId = Integer.valueOf(
                         request.getParameter("id"));

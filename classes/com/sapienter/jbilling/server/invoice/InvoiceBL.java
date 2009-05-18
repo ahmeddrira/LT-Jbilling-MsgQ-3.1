@@ -49,10 +49,10 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
@@ -700,7 +700,9 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                                 invoice.getPublicNumber(), invoice.getTotal(),
                                 invoice.getCreateDatetime(), invoice.getCurrency().getId());
 
-                        NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(Context.Name.NOTIFICATION_SESSION);
+                        INotificationSessionBean notificationSess = 
+                                (INotificationSessionBean) Context.getBean(
+                                Context.Name.NOTIFICATION_SESSION);
 
                         notificationSess.notify(invoice.getBaseUser(), message);
 

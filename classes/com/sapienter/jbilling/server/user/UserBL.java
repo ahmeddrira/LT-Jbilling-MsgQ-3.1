@@ -52,10 +52,10 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
@@ -386,6 +386,36 @@ public class UserBL extends ResultList
         
         return false;
     }
+
+    /**
+     * Tries to authenticate username/password for web services call.
+     * The user must be an administrator and have permission 120 set.
+     * Returns the user's UserDTO if successful, otherwise null.
+     */
+    public UserDTO webServicesAuthenticate(String username, String password) {
+        // try to get root user for this username that has web 
+        // services permission
+        user = das.findWebServicesRoot(username);
+        if (user == null) {
+            LOG.warn("Web services authentication: Username \"" + username + 
+                    "\" is either invalid, isn't an administrator or doesn't " +
+                    "have web services permission granted (120).");
+            return null;
+        }
+
+        // check password
+        JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(
+                Constants.TYPE_ROOT);
+        String encryptedPassword = passwordCryptoService.encrypt(
+                password);
+
+        if (encryptedPassword.equals(user.getPassword())) {
+            return user;
+        }
+        LOG.warn("Web services authentication: Invlid password \"" + password +
+                "\" for username \"" + username + "\"");
+        return null;
+    }
     
     public static UserDTO getUserEntity(Integer userId) {
         return new UserDAS().find(userId);
@@ -405,8 +435,9 @@ public class UserBL extends ResultList
              NotificationNotFoundException {
     	 NotificationBL notif = new NotificationBL();
     	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
-         NotificationSessionBean notificationSess = (NotificationSessionBean) Context.getBean(
-                        Context.Name.NOTIFICATION_SESSION);    	
+         INotificationSessionBean notificationSess = 
+                 (INotificationSessionBean) Context.getBean(
+                 Context.Name.NOTIFICATION_SESSION);    	
          notificationSess.notify(userId, message);
      }
      

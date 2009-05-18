@@ -44,10 +44,10 @@ import com.sapienter.jbilling.common.CommonConstants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
@@ -472,8 +472,9 @@ public class PartnerBL extends ResultList
 	        MessageDTO message = notification.getPayoutMessage(entityId, 
 	                languageId, total, start, end, clerk, partner.getId());
 	 
-	        NotificationSessionBean notificationSess = 
-                        (NotificationSessionBean) Context.getBean(Context.Name.NOTIFICATION_SESSION);
+	        INotificationSessionBean notificationSess = 
+                    (INotificationSessionBean) Context.getBean(
+                    Context.Name.NOTIFICATION_SESSION);
 	        if (!clerk) {
 	            notificationSess.notify(partner.getUser(), message);
 	        } else {

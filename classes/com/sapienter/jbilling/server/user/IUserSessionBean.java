@@ -55,12 +55,17 @@ public interface IUserSessionBean {
             throws SessionInternalError;
 
     /**
+     * Returns UserDTO if authentication successful, otherwise null.
+     */
+    public UserDTO webServicesAuthenticate(String username, String password)
+            throws SessionInternalError;
+
+    /**
      * This returns more than a DTOEx, it includes the permissions and menu that
      * the GUI needs
      * @param userId
      * @return
      */
-
     public UserDTOEx getGUIDTO(String username, Integer entityId);
 
     /**

@@ -29,9 +29,9 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends CrudActionBase<MessageDTO> {
@@ -46,13 +46,13 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
 	private static final String FORWARD_EDIT = "notification_edit";
 	private static final String MESSAGE_UPDATE_OK = "notification.message.update.done";
 
-	private final NotificationSessionBean myNotificationSession;
+	private final INotificationSessionBean myNotificationSession;
 
     public MaintainAction() {
         super(FORM, "notification");
         LOG = Logger.getLogger(MaintainAction.class);
         try {
-            myNotificationSession = (NotificationSessionBean) Context.getBean(
+            myNotificationSession = (INotificationSessionBean) Context.getBean(
                     Context.Name.NOTIFICATION_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError(

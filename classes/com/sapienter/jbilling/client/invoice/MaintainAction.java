@@ -38,7 +38,7 @@ import org.apache.struts.action.ActionMessages;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.notification.NotificationSessionBean;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -85,8 +85,9 @@ public class MaintainAction extends Action {
             
             if (action != null && action.equals("notify")) {
         
-                NotificationSessionBean notificationSession = (NotificationSessionBean) Context.getBean(
-                    Context.Name.NOTIFICATION_SESSION);
+                INotificationSessionBean notificationSession = 
+                        (INotificationSessionBean) Context.getBean(
+                        Context.Name.NOTIFICATION_SESSION);
                 Boolean result = notificationSession.emailInvoice(invoiceId);
                 String field;
                 if (result.booleanValue()) {

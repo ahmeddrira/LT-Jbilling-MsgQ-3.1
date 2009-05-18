@@ -32,7 +32,6 @@ import com.sapienter.jbilling.server.item.ItemDTOEx;
 
 /**
  * @author Emil
- * @jboss-net.xml-schema urn="sapienter:OrderLineWS"
  */
 public class OrderLineWS implements Serializable {
 

@@ -24,22 +24,22 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.jms.Message;
+import javax.jms.Session;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 /**
@@ -50,41 +50,20 @@ public class CommandsQueueSender {
 	private static final Logger LOG = Logger
 			.getLogger(CommandsQueueSender.class);
 	private EventLogger eLogger = null;
-	private String queueName = "provisioning_commands_queue";
-	private QueueConnection conn;
 	private Integer entityId;
-	private MapMessage message;
-	private Queue myQueue;
 	private OrderDTO order;
-	private QueueSession session;
 
-	public CommandsQueueSender(OrderDTO order) throws JMSException,
-			NamingException {
+	public CommandsQueueSender(OrderDTO order) {
 		this.order = order;
 		this.setEntityId(order.getUser().getCompany().getId());
-		setupPTP();
-		message = session.createMapMessage();
 		eLogger = EventLogger.getInstance();
-	}
-
-	private void setupPTP() throws JMSException, NamingException {
-		InitialContext iniCtx = new InitialContext();
-		Object tmp = iniCtx.lookup("java:/ConnectionFactory");
-		QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
-
-		conn = qcf.createQueueConnection();
-		myQueue = (Queue) iniCtx.lookup("queue/" + queueName);
-		session = conn.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
-		conn.start();
 	}
 
 	/**
 	 * @param commandQueue
-	 * @throws JMSException
-	 * @throws NamingException
 	 */
 	private void postCommand(LinkedList<StringPair> commandQueue,
-			String eventType) throws JMSException, NamingException {
+            String eventType, MapMessage message) throws JMSException {
 		String command = null;
 
 		// sets command id
@@ -145,13 +124,6 @@ public class CommandsQueueSender {
 					+ param.getValue() + ")");
 		}
 
-		QueueSender sender = session.createSender(myQueue);
-
-		sender.send(message);
-		LOG.debug("Message for command '" + command + "'"
-				+ " sent successfully");
-		sender.close();
-
 		LOG.debug("adding event log messages");
 
 		// add a log for message id
@@ -161,15 +133,14 @@ public class CommandsQueueSender {
 		eLogger.auditBySystem(entityId, Constants.TABLE_ORDER_LINE, order_line_id, EventLogger.MODULE_PROVISIONING,
 				EventLogger.PROVISIONING_COMMAND, null, command, null);
 
+		LOG.debug("Sending message for command '" + command + "'");
 	}
 
 	/**
 	 * @param commands
-	 * @throws JMSException
-	 * @throws NamingException
 	 */
 	public void postCommandsQueue(LinkedList<LinkedList<StringPair>> commands,
-			String eventType) throws JMSException, NamingException {
+			final String eventType) throws JMSException {
 		LOG.debug("calling postCommandsQueue()");
 
 		if (commands == null) {
@@ -184,12 +155,25 @@ public class CommandsQueueSender {
 			return;
 		}
 
+        JmsTemplate jmsTemplate = (JmsTemplate) Context.getBean(
+                Context.Name.JMS_TEMPLATE);
+
 		for (Iterator<LinkedList<StringPair>> it = commands.iterator(); it
 				.hasNext();) {
-			LinkedList<StringPair> commandQueue = (LinkedList<StringPair>) it
-					.next();
+			final LinkedList<StringPair> commandQueue = (LinkedList<StringPair>)
+                    it.next();
 
-			postCommand(commandQueue, eventType);
+            Destination destination = (Destination) Context.getBean(
+                    Context.Name.PROVISIONING_COMMANDS_DESTINATION);
+
+            jmsTemplate.send(destination, new MessageCreator() {
+                public Message createMessage(Session session) 
+                        throws JMSException {
+                    MapMessage message = session.createMapMessage();
+                    postCommand(commandQueue, eventType, message);
+                    return message;
+                }
+            });
 		}
 	}
 
@@ -201,25 +185,10 @@ public class CommandsQueueSender {
 	}
 
 	/**
-	 * @return the queueName
-	 */
-	public String getQueueName() {
-		return queueName;
-	}
-
-	/**
 	 * @param entityId
 	 *            the entityId to set
 	 */
 	public void setEntityId(Integer entityId) {
 		this.entityId = entityId;
-	}
-
-	/**
-	 * @param queueName
-	 *            the queueName to set
-	 */
-	public void setQueueName(String queueName) {
-		this.queueName = queueName;
 	}
 }

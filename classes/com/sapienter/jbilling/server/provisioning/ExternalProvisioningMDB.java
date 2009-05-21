@@ -20,9 +20,6 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
-import javax.ejb.EJBException;
-import javax.ejb.MessageDrivenBean;
-import javax.ejb.MessageDrivenContext;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
@@ -34,11 +31,9 @@ import com.sapienter.jbilling.server.util.Context;
 /**
  * Receives messages from the provisioning commands rules task. Calls
  * the external provisioning logic through the provisioning session 
- * bean so it runs in a transaction. Configured in jboss-beans.xml
- * and message-driven-beans.xml.
+ * bean so it runs in a transaction. Configured in jbilling-jms.xml.
  */
-public class ExternalProvisioningMDB implements MessageDrivenBean, 
-        MessageListener {
+public class ExternalProvisioningMDB implements MessageListener {
 
     private static final Logger LOG = Logger.getLogger(
             ExternalProvisioningMDB.class);
@@ -57,17 +52,5 @@ public class ExternalProvisioningMDB implements MessageDrivenBean,
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }
-
-    public void ejbRemove() throws EJBException {
-        LOG.debug("Removing MDB " + this.hashCode());
-    }
-
-    public void ejbCreate() {
-        LOG.debug("Creating MDB " + this.hashCode());
-    }
-
-    public void setMessageDrivenContext(MessageDrivenContext context)
-            throws EJBException {
     }
 }

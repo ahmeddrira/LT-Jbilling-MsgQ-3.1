@@ -20,30 +20,11 @@
 
 package com.sapienter.jbilling.server.customer;
 
-import org.apache.log4j.Logger;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 
-@Transactional( propagation = Propagation.REQUIRED )
-public class CustomerSessionBean implements ICustomerSessionBean {
-
-    private static final Logger LOG = Logger.getLogger(
-            CustomerSessionBean.class);
+public interface ICustomerSessionBean {
 
 	public ContactDTOEx getPrimaryContactDTO(Integer userId)
-			throws SessionInternalError {
-	    try {
-            ContactBL bl = new ContactBL();
-            bl.set(userId);
-	    	return bl.getDTO();
-	    } catch (Exception e) {
-            LOG.error("Exception retreiving the customer contact", e);
-            throw new SessionInternalError("Customer primary contact");
-	    }
-	}
+            throws SessionInternalError;
 }

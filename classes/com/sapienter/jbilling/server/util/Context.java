@@ -59,7 +59,11 @@ public class Context {
         CACHE,
         CAI,
         MMSC,
-        WEB_SERVICES_CALLER_DEFAULTS
+        WEB_SERVICES_CALLER_DEFAULTS,
+        JMS_TEMPLATE,
+        PROCESSORS_DESTINATION,
+        PROVISIONING_COMMANDS_DESTINATION,
+        PROVISIONING_COMMANDS_REPLY_DESTINATION
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -99,6 +103,14 @@ public class Context {
         springBeans.put(Name.MMSC, "mmsc");
         springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 
                 "webServicesCallerDefaults");
+
+        // JMS related beans
+        springBeans.put(Name.JMS_TEMPLATE, "jmsTemplate");
+        springBeans.put(Name.PROCESSORS_DESTINATION, "processorsDestination");
+        springBeans.put(Name.PROVISIONING_COMMANDS_DESTINATION, 
+                "provisioningCommandsDestination");
+        springBeans.put(Name.PROVISIONING_COMMANDS_REPLY_DESTINATION,
+                "provisioningCommandsReplyDestination");
     };
     
     // should not be instantiated

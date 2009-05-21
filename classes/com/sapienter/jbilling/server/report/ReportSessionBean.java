@@ -37,7 +37,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
  * @author emilc
  **/
 @Transactional( propagation = Propagation.REQUIRED )
-public class ReportSessionBean {
+public class ReportSessionBean implements IReportSessionBean {
 
     //private static final Logger log = Logger.getLogger(ReportSessionBean.class);
 

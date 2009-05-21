@@ -249,11 +249,6 @@ ALTER TABLE ONLY public.list_field DROP CONSTRAINT list_field_pkey;
 ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_pkey;
 ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_pkey;
 ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
-ALTER TABLE ONLY public.jms_users DROP CONSTRAINT jms_users_pkey;
-ALTER TABLE ONLY public.jms_subscriptions DROP CONSTRAINT jms_subscriptions_pkey;
-ALTER TABLE ONLY public.jms_roles DROP CONSTRAINT jms_roles_pkey;
-ALTER TABLE ONLY public.jms_reference_log DROP CONSTRAINT jms_reference_log_pkey;
-ALTER TABLE ONLY public.jms_message_log DROP CONSTRAINT jms_message_log_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
 ALTER TABLE ONLY public.item_user_price DROP CONSTRAINT item_user_price_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
@@ -344,12 +339,6 @@ DROP TABLE public.list_field;
 DROP TABLE public.list_entity;
 DROP TABLE public.list;
 DROP TABLE public.language;
-DROP TABLE public.jms_users;
-DROP TABLE public.jms_transaction_log;
-DROP TABLE public.jms_subscriptions;
-DROP TABLE public.jms_roles;
-DROP TABLE public.jms_reference_log;
-DROP TABLE public.jms_message_log;
 DROP TABLE public.jbilling_table;
 DROP TABLE public.item_user_price;
 DROP TABLE public.item_type_map;
@@ -1018,88 +1007,6 @@ CREATE TABLE jbilling_table (
 
 
 ALTER TABLE public.jbilling_table OWNER TO jbilling;
-
---
--- Name: jms_message_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE jms_message_log (
-    messageid integer NOT NULL,
-    destination character varying(255) NOT NULL,
-    txid integer,
-    txop character(1),
-    lateclone character(1),
-    messageblob bytea
-);
-
-
-ALTER TABLE public.jms_message_log OWNER TO jbilling;
-
---
--- Name: jms_reference_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE jms_reference_log (
-    messageid integer NOT NULL,
-    destination character varying(256) NOT NULL,
-    txid integer,
-    txop character(1),
-    redelivered character(1),
-    redelivers integer
-);
-
-
-ALTER TABLE public.jms_reference_log OWNER TO jbilling;
-
---
--- Name: jms_roles; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE jms_roles (
-    roleid character varying(32) NOT NULL,
-    userid character varying(32) NOT NULL
-);
-
-
-ALTER TABLE public.jms_roles OWNER TO jbilling;
-
---
--- Name: jms_subscriptions; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE jms_subscriptions (
-    clientid character varying(128) NOT NULL,
-    subname character varying(128) NOT NULL,
-    topic character varying(255) NOT NULL,
-    selector character varying(255)
-);
-
-
-ALTER TABLE public.jms_subscriptions OWNER TO jbilling;
-
---
--- Name: jms_transaction_log; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE jms_transaction_log (
-    txid integer
-);
-
-
-ALTER TABLE public.jms_transaction_log OWNER TO jbilling;
-
---
--- Name: jms_users; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE jms_users (
-    userid character varying(32) NOT NULL,
-    passwd character varying(32) NOT NULL,
-    clientid character varying(128)
-);
-
-
-ALTER TABLE public.jms_users OWNER TO jbilling;
 
 --
 -- Name: language; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -11108,56 +11015,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 
 
 --
--- Data for Name: jms_message_log; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY jms_message_log (messageid, destination, txid, txop, lateclone, messageblob) FROM stdin;
-\.
-
-
---
--- Data for Name: jms_reference_log; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY jms_reference_log (messageid, destination, txid, txop, redelivered, redelivers) FROM stdin;
-\.
-
-
---
--- Data for Name: jms_roles; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY jms_roles (roleid, userid) FROM stdin;
-guest	guest
-\.
-
-
---
--- Data for Name: jms_subscriptions; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY jms_subscriptions (clientid, subname, topic, selector) FROM stdin;
-\.
-
-
---
--- Data for Name: jms_transaction_log; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY jms_transaction_log (txid) FROM stdin;
-\.
-
-
---
--- Data for Name: jms_users; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY jms_users (userid, passwd, clientid) FROM stdin;
-guest	guest	\N
-\.
-
-
---
 -- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -19212,46 +19069,6 @@ ALTER TABLE ONLY item_user_price
 
 ALTER TABLE ONLY jbilling_table
     ADD CONSTRAINT jbilling_table_pkey PRIMARY KEY (id);
-
-
---
--- Name: jms_message_log_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY jms_message_log
-    ADD CONSTRAINT jms_message_log_pkey PRIMARY KEY (messageid, destination);
-
-
---
--- Name: jms_reference_log_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY jms_reference_log
-    ADD CONSTRAINT jms_reference_log_pkey PRIMARY KEY (messageid, destination);
-
-
---
--- Name: jms_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY jms_roles
-    ADD CONSTRAINT jms_roles_pkey PRIMARY KEY (userid, roleid);
-
-
---
--- Name: jms_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY jms_subscriptions
-    ADD CONSTRAINT jms_subscriptions_pkey PRIMARY KEY (clientid, subname);
-
-
---
--- Name: jms_users_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY jms_users
-    ADD CONSTRAINT jms_users_pkey PRIMARY KEY (userid);
 
 
 --

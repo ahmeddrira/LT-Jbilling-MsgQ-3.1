@@ -221,8 +221,6 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 			cmdSender.postCommandsQueue(c.getCommands(), eventType);
 		} catch (JMSException e) {
 			throw new TaskException(e);
-		} catch (NamingException e) {
-			throw new TaskException(e);
 		}
 	}
 

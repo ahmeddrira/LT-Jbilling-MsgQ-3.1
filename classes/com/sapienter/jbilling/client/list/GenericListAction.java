@@ -40,7 +40,7 @@ import org.apache.struts.validator.Resources;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.customer.CustomerSessionBean;
+import com.sapienter.jbilling.server.customer.ICustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
@@ -301,7 +301,7 @@ public class GenericListAction extends Action {
                     // the user list adds two objects to the session, the
                     // contact dto and the user id selected, that's why it
                     // has specific code here
-                    CustomerSessionBean remoteCustomer = (CustomerSessionBean) 
+                    ICustomerSessionBean remoteCustomer = (ICustomerSessionBean)
                             Context.getBean(Context.Name.CUSTOMER_SESSION);
                     ContactDTO info = remoteCustomer.getPrimaryContactDTO(selectionId);
                     session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,

@@ -42,8 +42,8 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.report.Field;
+import com.sapienter.jbilling.server.report.IReportSessionBean;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
-import com.sapienter.jbilling.server.report.ReportSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public class SubmitAction extends Action {
@@ -156,7 +156,7 @@ public class SubmitAction extends Action {
                 session.setAttribute(Constants.SESSION_REPORT_TITLE, 
                         reportForm.getSaveName());
                 try {
-                    ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                    IReportSessionBean myRemoteSession = (IReportSessionBean) 
                             Context.getBean(Context.Name.REPORT_SESSION);
                     myRemoteSession.save(report, (Integer) session.getAttribute(
                             Constants.SESSION_LOGGED_USER_ID), (String)
@@ -196,7 +196,7 @@ public class SubmitAction extends Action {
     
     private Collection getListByType(Integer type) 
             throws SessionInternalError {
-        ReportSessionBean myRemoteSession = (ReportSessionBean) 
+        IReportSessionBean myRemoteSession = (IReportSessionBean) 
                 Context.getBean(Context.Name.REPORT_SESSION);
         return myRemoteSession.getListByType(type);
 

@@ -29,18 +29,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.jms.Session;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -65,13 +63,6 @@ public class ExternalProvisioning {
     private static final Logger LOG = Logger.getLogger(
             ExternalProvisioning.class);
 
-    private static final String TOPIC_NAME = 
-            "provisioning_commands_reply_topic";
-
-    private TopicConnection conn = null;
-    private TopicPublisher topic = null;
-    private TopicSession session = null;
-
     private MapMessage message;
 
     /**
@@ -82,7 +73,6 @@ public class ExternalProvisioning {
      */
     public void onMessage(Message myMessage) {
         try {
-            setupTopic();
             message = (MapMessage) myMessage;
 
             Provisioning config = (Provisioning) Context.getBean(
@@ -101,8 +91,6 @@ public class ExternalProvisioning {
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
-        } finally {
-            closeTopic();
         }
     }
 
@@ -219,65 +207,43 @@ public class ExternalProvisioning {
     /**
      * Posts results of external provisioning processing tasks.
      */
-    private void postResults(Map<String, Object> results, String error) 
-            throws JMSException {
-        MapMessage replyMessage = session.createMapMessage();
+    private void postResults(final Map<String, Object> results, 
+            final String error) throws JMSException {
+        JmsTemplate jmsTemplate = (JmsTemplate) Context.getBean(
+                Context.Name.JMS_TEMPLATE);
 
-        // add the original properties (names prefixed with 'in_')
-        Enumeration originalPropNames = message.getPropertyNames();
-        while (originalPropNames.hasMoreElements()) {
-            String propName = (String) originalPropNames.nextElement();
-            Object propValue = message.getObjectProperty(propName);
-            replyMessage.setObjectProperty("in_" + propName, propValue);
-        }
+        Destination destination = (Destination) Context.getBean(
+                Context.Name.PROVISIONING_COMMANDS_REPLY_DESTINATION);
 
-        if (error == null) {
-            // add the properties returned by the processor
-            Set<Map.Entry<String, Object>> entrySet = results.entrySet();
-            for (Map.Entry<String, Object> entry : entrySet) {
-                replyMessage.setObjectProperty("out_" + entry.getKey(), 
-                        entry.getValue());
+        jmsTemplate.send(destination, new MessageCreator() {
+            public Message createMessage(Session session) 
+                    throws JMSException {
+                MapMessage replyMessage = session.createMapMessage();
+
+                // add the original properties (names prefixed with 'in_')
+                Enumeration originalPropNames = message.getPropertyNames();
+                while (originalPropNames.hasMoreElements()) {
+                    String propName = (String) originalPropNames.nextElement();
+                    Object propValue = message.getObjectProperty(propName);
+                    replyMessage.setObjectProperty("in_" + propName, propValue);
+                }
+
+                if (error == null) {
+                    // add the properties returned by the processor
+                    Set<Map.Entry<String, Object>> entrySet = 
+                            results.entrySet();
+                    for (Map.Entry<String, Object> entry : entrySet) {
+                        replyMessage.setObjectProperty("out_" + entry.getKey(), 
+                                entry.getValue());
+                    }
+                } else {
+                    // there was an error
+                    replyMessage.setStringProperty("out_result", "unavailable");
+                    replyMessage.setStringProperty("exception", error);
+                }
+
+                return replyMessage;
             }
-        } else {
-            // there was an error
-            replyMessage.setStringProperty("out_result", "unavailable");
-            replyMessage.setStringProperty("exception", error);
-        }
-
-        // send the message
-        topic.publish(replyMessage);        
-    }
-
-    /**
-     * Sets up the JMS topic.
-     */
-    public void setupTopic() throws JMSException, NamingException {
-        InitialContext iniCtx = new InitialContext();
-        TopicConnectionFactory tcf = (TopicConnectionFactory) 
-                iniCtx.lookup("ConnectionFactory");
-
-        conn = tcf.createTopicConnection();
-        session = conn.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
-        conn.start();
-        topic = session.createPublisher((Topic) iniCtx.lookup("topic/" + 
-                TOPIC_NAME));
-    }
-
-    /**
-     * Closes the JMS topic.
-     */
-    public void closeTopic() {
-        try {
-            if (topic != null) {
-                topic.close();
-            }
-            if (session != null) {
-                session.close();
-            }
-            if (conn != null) {
-                conn.close();
-            }
-        } catch(JMSException jmse) { 
-        }
+        });
     }
 }

@@ -48,7 +48,7 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.FormHelper;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.customer.CustomerSessionBean;
+import com.sapienter.jbilling.server.customer.ICustomerSessionBean;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -197,7 +197,7 @@ public class ReviewOrderAction extends Action {
                 // the user has to be also in the session
                 session.setAttribute(Constants.SESSION_USER_ID, 
                         orderDto.getUser().getUserId());
-                CustomerSessionBean userSession = (CustomerSessionBean) 
+                ICustomerSessionBean userSession = (ICustomerSessionBean) 
                         Context.getBean(Context.Name.CUSTOMER_SESSION);
                 // this is needed for the customer display
                 session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,

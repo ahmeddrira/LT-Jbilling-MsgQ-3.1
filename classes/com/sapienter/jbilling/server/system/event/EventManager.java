@@ -100,12 +100,6 @@ public final class EventManager {
                 processor = (EventProcessor) processors[f].newInstance();
                 LOG.debug("Now processing with " + processor);
                 processor.process(event);
-                
-                if (processor instanceof AsynchronousEventProcessor) {
-                    AsynchronousEventProcessor async = (AsynchronousEventProcessor) processor;
-                    
-                    async.doPost();
-                }
             } catch (Exception e) {
                 throw new SessionInternalError("Error processing an event " + event, 
                         EventManager.class, e);

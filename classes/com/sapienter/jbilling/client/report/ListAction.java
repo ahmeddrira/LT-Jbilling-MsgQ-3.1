@@ -37,7 +37,7 @@ import org.apache.struts.action.ActionMapping;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.report.ReportSessionBean;
+import com.sapienter.jbilling.server.report.IReportSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public class ListAction extends Action {
@@ -74,7 +74,7 @@ public class ListAction extends Action {
     
     private Collection getListByType(Integer type) 
             throws SessionInternalError {
-        ReportSessionBean myRemoteSession = (ReportSessionBean) 
+        IReportSessionBean myRemoteSession = (IReportSessionBean) 
                 Context.getBean(Context.Name.REPORT_SESSION);
         return myRemoteSession.getListByType(type);
 

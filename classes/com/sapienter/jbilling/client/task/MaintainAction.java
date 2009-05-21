@@ -31,7 +31,7 @@ import org.apache.struts.action.ActionErrors;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.UpdateOnlyCrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean;
+import com.sapienter.jbilling.server.pluggableTask.IPluggableTaskSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 import com.sapienter.jbilling.server.util.Context;
@@ -43,14 +43,14 @@ public class MaintainAction extends
 	private static final String MESSAGE_UPDATED = "task.parameter.update.done";
 	private static final String FORWARD_EDIT = "parameter_edit";
 	
-	private final PluggableTaskSessionBean mySession;
+	private final IPluggableTaskSessionBean mySession;
 
 	public MaintainAction() {
 		super(FORM_PARAMETER, "pluggable task parameters",
 				FORWARD_EDIT);
 
 		try {
-			mySession = (PluggableTaskSessionBean) Context.getBean(
+			mySession = (IPluggableTaskSessionBean) Context.getBean(
                     Context.Name.PLUGGABLE_TASK_SESSION);
 		} catch (Exception e) {
 			throw new SessionInternalError(

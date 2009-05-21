@@ -35,7 +35,7 @@ import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.report.ReportSessionBean;
+import com.sapienter.jbilling.server.report.IReportSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -60,7 +60,7 @@ public class DeleteTag extends TagSupport {
         log.debug("Deleting ..");
         
         try {
-            ReportSessionBean myRemoteSession = (ReportSessionBean) 
+            IReportSessionBean myRemoteSession = (IReportSessionBean) 
                     Context.getBean(Context.Name.REPORT_SESSION);
             myRemoteSession.delete(reportId);
 

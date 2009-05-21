@@ -189,18 +189,7 @@
                 <include name="**/entity/*DTO.java"/>
             </fileset>
             
-            <packageSubstitution packages="server.entity,server.user,server.item,server.order,server.util,server.customer,server.process,server.payment,server.notification,server.report,server.invoice"
-                                 substituteWith="interfaces"/>
-            <entitypk/>
-            <remoteinterface/>
-            <homeinterface/>
-            <localinterface/>
-            <localhomeinterface/>
             <deploymentdescriptor destdir="${build.dir}/META-INF" />
-            <valueobject pattern="{0}DTO">
-                <packageSubstitution packages="entity"
-                                     substituteWith="entity"/>
-            </valueobject>
             <jboss version="${jboss.version}"
                    xmlencoding="UTF-8"
                    destdir="${build.dir}/META-INF"

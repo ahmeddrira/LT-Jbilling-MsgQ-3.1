@@ -34,8 +34,8 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.report.IReportSessionBean;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
-import com.sapienter.jbilling.server.report.ReportSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -82,7 +82,7 @@ public class ListTag extends TagSupport {
 
                 // Now I'll call the session bean to get the CachedRowSet with
                 // the results of the query
-                ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                IReportSessionBean myRemoteSession = (IReportSessionBean) 
                         Context.getBean(Context.Name.REPORT_SESSION);
 
                 if (mode.equals("entity")) {

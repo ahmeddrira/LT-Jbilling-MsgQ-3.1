@@ -19,54 +19,42 @@
 */
 package com.sapienter.jbilling.server.system.event;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.jms.Message;
+import javax.jms.Session;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+
+import com.sapienter.jbilling.server.util.Context;
 
 public abstract class AsynchronousEventProcessor<TType> extends EventProcessor<TType> {
     private static final Logger LOG = Logger.getLogger(AsynchronousEventProcessor.class); 
 
-    private QueueConnection conn;
-    private QueueSession session;
-    private Queue myQueue;
     protected MapMessage message;
     
-    protected AsynchronousEventProcessor() 
-            throws JMSException, NamingException {
-        setupPTP();
-        message = session.createMapMessage();
+    protected AsynchronousEventProcessor() {
     }
     
-    private void setupPTP()
-            throws JMSException, NamingException {
-        InitialContext iniCtx = new InitialContext();
-        Object tmp = iniCtx.lookup("java:/ConnectionFactory");
-        QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
-        conn = qcf.createQueueConnection();
-        myQueue = (Queue) iniCtx.lookup("queue/" + getQueueName());
-        session = conn.createQueueSession(false,
-           QueueSession.AUTO_ACKNOWLEDGE);
-        conn.start();
+    public void process(final Event event) {
+        JmsTemplate jmsTemplate = (JmsTemplate) Context.getBean(
+                Context.Name.JMS_TEMPLATE);
+
+        jmsTemplate.send(getDestination(), new MessageCreator() {
+            public Message createMessage(Session session) throws JMSException {
+                message = session.createMapMessage();
+                doProcess(event);
+                message.setIntProperty("entityId", getEntityId());
+                return message;
+            }
+        });
     }
-    
-    protected void doPost() 
-            throws JMSException, NamingException {
-        message.setIntProperty("entityId", getEntityId());
-        // the extending processor is free of adding additional properties
-        // such as the processor name for payment processing
-        QueueSender sender = session.createSender(myQueue); 
-        sender.send(message);
-        sender.close();
-    }
-    
-    protected abstract String getQueueName();
+
+    protected abstract void doProcess(Event event);
+    protected abstract Destination getDestination();
     protected abstract int getEntityId();
 }

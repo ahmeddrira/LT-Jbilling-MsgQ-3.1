@@ -38,7 +38,7 @@ import org.apache.struts.action.ActionMessages;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.customer.CustomerSessionBean;
+import com.sapienter.jbilling.server.customer.ICustomerSessionBean;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
@@ -260,7 +260,7 @@ public class MaintainAction extends Action {
                     session.setAttribute(Constants.SESSION_USER_ID, 
                             dto.getUserId());
     
-                    CustomerSessionBean userSession = (CustomerSessionBean) 
+                    ICustomerSessionBean userSession = (ICustomerSessionBean) 
                             Context.getBean(Context.Name.CUSTOMER_SESSION);
                     session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
                             userSession.getPrimaryContactDTO(dto.getUserId()));

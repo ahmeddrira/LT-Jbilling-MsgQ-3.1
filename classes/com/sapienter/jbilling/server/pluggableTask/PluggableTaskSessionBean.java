@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.util.Context;
  * transactional demarcation is taked from the application server.
  **/
 @Transactional( propagation = Propagation.REQUIRED )
-public class PluggableTaskSessionBean {
+public class PluggableTaskSessionBean implements IPluggableTaskSessionBean {
 
     //private static final Logger LOG = Logger.getLogger(PluggableTaskSessionBean.class);
 

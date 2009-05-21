@@ -16,15 +16,10 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
+*/
 
 package com.sapienter.jbilling.server.provisioning.task;
 
-import javax.ejb.EJBException;
-import javax.ejb.MessageDrivenBean;
-import javax.ejb.MessageDrivenContext;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -37,22 +32,11 @@ import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBea
 import com.sapienter.jbilling.server.util.Context;
 
 /*
-* This message bean is not configured using xdoclet.
-* The configuration needs to be done specifically for each installation/scenario
-* using the files jboss-beans.xml and message-driven-beans.xml
+ * The configuration needs to be done specifically for each installation/scenario
+ * using the file jbilling-jms.xml
  */
-public class ProvisioningCommandsMDB implements MessageDrivenBean, MessageListener {
+public class ProvisioningCommandsMDB implements MessageListener {
     private final Logger LOG = Logger.getLogger(ProvisioningCommandsMDB.class);
-
-    public void ejbRemove() throws EJBException {
-        LOG.debug("Removing MDB " + this.hashCode());
-    }
-
-    public void ejbCreate() {
-        LOG.debug("Creating MDB " + this.hashCode());
-    }
-
-    public void setMessageDrivenContext(MessageDrivenContext context) throws EJBException {}
 
     public void onMessage(Message message) {
         try {

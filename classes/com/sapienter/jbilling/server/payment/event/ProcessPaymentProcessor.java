@@ -19,14 +19,14 @@
 */
 package com.sapienter.jbilling.server.payment.event;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
+import javax.jms.Destination;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.payment.tasks.IAsyncPaymentParameters;
 import com.sapienter.jbilling.server.system.event.AsynchronousEventProcessor;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 
 /*
  * All this class has to do is to populate the 'message' field.
@@ -35,15 +35,13 @@ import com.sapienter.jbilling.server.util.Constants;
 public class ProcessPaymentProcessor extends AsynchronousEventProcessor<IAsyncPaymentParameters> {
 
     private Integer entityId;
-    private final String queueName = "processors";
     
-    public ProcessPaymentProcessor() 
-            throws JMSException, NamingException {
+    public ProcessPaymentProcessor() {
         super();
     }
-    
+
     @Override
-    public void process(Event event) {
+    public void doProcess(Event event) {
         entityId = event.getEntityId();
         if (event instanceof ProcessPaymentEvent) {
             ProcessPaymentEvent pEvent;
@@ -91,8 +89,9 @@ public class ProcessPaymentProcessor extends AsynchronousEventProcessor<IAsyncPa
     }
     
     @Override
-    protected String getQueueName() {
-        return queueName;
+    protected Destination getDestination() {
+        return (Destination) Context.getBean(
+                Context.Name.PROCESSORS_DESTINATION);
     }
     
 }

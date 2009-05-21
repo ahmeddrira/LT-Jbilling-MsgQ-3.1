@@ -24,7 +24,7 @@ import javax.persistence.OptimisticLockException;
 
 import com.sapienter.jbilling.client.util.CrudAction;
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean;
+import com.sapienter.jbilling.server.pluggableTask.IPluggableTaskSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskTypeDTO;
@@ -33,12 +33,12 @@ import com.sapienter.jbilling.server.util.Context;
 public class TaskAction extends CrudAction {
 
     //private static final Logger LOG = Logger.getLogger(TaskAction.class);
-    private PluggableTaskSessionBean taskSession = null;
+    private IPluggableTaskSessionBean taskSession = null;
     
     public TaskAction() {
         setFormName("task");
         try {
-            taskSession = (PluggableTaskSessionBean) Context.getBean(
+            taskSession = (IPluggableTaskSessionBean) Context.getBean(
                     Context.Name.PLUGGABLE_TASK_SESSION);
         } catch (Exception e) {
             throw new SessionInternalError("Initializing task action" + 

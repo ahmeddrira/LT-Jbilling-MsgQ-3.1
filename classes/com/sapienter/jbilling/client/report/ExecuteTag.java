@@ -32,8 +32,8 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.client.list.ListTagBase;
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.server.report.IReportSessionBean;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
-import com.sapienter.jbilling.server.report.ReportSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -71,7 +71,7 @@ public class ExecuteTag extends ListTagBase {
             if (queryResults == null) {
                 // Now I'll call the session bean to get the CachedRowSet with
                 // the results of the query
-                ReportSessionBean myRemoteSession = (ReportSessionBean) 
+                IReportSessionBean myRemoteSession = (IReportSessionBean) 
                         Context.getBean(Context.Name.REPORT_SESSION);
     
                 queryResults = myRemoteSession.execute(report);

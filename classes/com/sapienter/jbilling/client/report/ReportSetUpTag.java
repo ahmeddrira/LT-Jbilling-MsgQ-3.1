@@ -39,8 +39,8 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.report.Field;
+import com.sapienter.jbilling.server.report.IReportSessionBean;
 import com.sapienter.jbilling.server.report.ReportDTOEx;
-import com.sapienter.jbilling.server.report.ReportSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -103,7 +103,7 @@ public class ReportSetUpTag extends TagSupport {
         
         try {
             // get a report remote session
-            ReportSessionBean myRemoteSession = (ReportSessionBean) 
+            IReportSessionBean myRemoteSession = (IReportSessionBean) 
                     Context.getBean(Context.Name.REPORT_SESSION);
             // get the object
             if (reportId != null) {

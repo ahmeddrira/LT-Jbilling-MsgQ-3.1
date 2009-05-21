@@ -18,6 +18,7 @@
          <value>/jbilling-database.xml</value>
          <value>/jbilling-remoting.xml</value>
          <value>/jbilling-provisioning.xml</value>
+         <value>/jbilling-jms.xml</value>
        </list>
      </constructor-arg>
    </bean>

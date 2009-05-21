@@ -57,8 +57,8 @@ public class ConfigurationBL {
 		return configuration;
 	}
 
-	public void set(Integer id) {
-		configuration = configurationDas.find(id);
+	public void set(Integer entityId) {
+		configuration = configurationDas.findByEntity(new CompanyDAS().find(entityId));
 	}
 
 	public Integer createUpdate(Integer executorId,

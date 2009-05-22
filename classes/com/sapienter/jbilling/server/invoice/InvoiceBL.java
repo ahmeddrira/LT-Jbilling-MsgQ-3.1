@@ -64,8 +64,8 @@ import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
-import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -292,6 +292,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
             invoiceLines.add(newLine);
         }
         getHome().save(invoice);
+        EventManager.process(new NewInvoiceEvent(invoice));
     }
 
     /**

@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import javax.mail.Message;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -161,6 +162,7 @@ public class BasicEmailNotificationTask extends PluggableTask
             msg = new MimeMessageHelper(mimeMsg, doHTML || message.getAttachmentFile() != null);
             ContactBL contact = new ContactBL();
             Vector contacts = contact.getAll(user.getUserId());
+            Vector addresses = new Vector<InternetAddress>();
             boolean atLeastOne = false;
             for (int f = 0; f < contacts.size(); f++) {
                 ContactDTOEx record = (ContactDTOEx) contacts.get(f);
@@ -168,7 +170,7 @@ public class BasicEmailNotificationTask extends PluggableTask
                 if (record.getInclude() != null &&
                         record.getInclude().intValue() == 1 &&
                         address != null && address.trim().length() > 0) {
-                    msg.setTo(new InternetAddress(address, false));
+                    addresses.add(new InternetAddress(address, false));
                     atLeastOne = true;
                 }
             }
@@ -177,6 +179,8 @@ public class BasicEmailNotificationTask extends PluggableTask
                 LOG.info("User without email address " +
                         user.getUserId());
                 return;
+            } else {
+                msg.setTo((InternetAddress[])addresses.toArray(new InternetAddress[addresses.size()]));
             }
         } catch (Exception e) {
             LOG.debug("Exception setting addresses ", e);
@@ -254,7 +258,7 @@ public class BasicEmailNotificationTask extends PluggableTask
         // send the message
         try {
             String allEmails = "";
-            for (Address address : msg.getMimeMessage().getAllRecipients()) {
+            for (Address address : msg.getMimeMessage().getRecipients(Message.RecipientType.TO)) {
                 allEmails = allEmails + " " + address.toString();
             }
             LOG.debug(

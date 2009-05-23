@@ -90,6 +90,7 @@ public class PaperInvoiceNotificationTask
             // link the batch to this invoice
             InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
             record.getInvoices().add(invoiceBL.getEntity());
+            invoiceBL.getEntity().setPaperInvoiceBatch(record);
         } catch (Exception e) {
             throw new TaskException(e);
         }

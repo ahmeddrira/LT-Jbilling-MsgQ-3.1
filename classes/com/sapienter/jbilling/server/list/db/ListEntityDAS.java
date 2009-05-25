@@ -26,6 +26,7 @@ import org.hibernate.criterion.Restrictions;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import java.util.Date;
 
 public class ListEntityDAS extends AbstractDAS<ListEntityDTO> {
 
@@ -37,6 +38,7 @@ public class ListEntityDAS extends AbstractDAS<ListEntityDTO> {
         entity.setEntity(company);
         entity.setList(list);
         entity.setTotalRecords(count);
+        entity.setLastUpdate(new Date());
 
         return save(entity);
     }
@@ -44,10 +46,10 @@ public class ListEntityDAS extends AbstractDAS<ListEntityDTO> {
     public ListEntityDTO findByEntity(Integer listId, Integer entityId) {
 
         Criteria criteria = getSession().createCriteria(ListEntityDTO.class);
-        criteria.createAlias("list", "list").add(
-                Restrictions.eq("list.id", listId.intValue()));
+        criteria.add(Restrictions.eq("id", listId.intValue()));
         criteria.createAlias("entity", "entity").add(
-                Restrictions.eq("entity.id", entityId.intValue()));
+                Restrictions.eq("entity.id", entityId.intValue()))
+        .setComment("ListEtntityDAS.findByEntity");
 
         return (ListEntityDTO) criteria.uniqueResult();
     }

@@ -137,7 +137,7 @@ public class ListBL {
                     ListEntityBL listEntityBl = new ListEntityBL();
                     listEntityBl.set(list.getId(), anEntity.getId());
                     
-                    if (getEntity() == null) {
+                    if (listEntityBl.getEntity() == null) {
                         // this entity has no records for this list
                         // create one
                         listEntityBl.create(list, anEntity.getId(), count);

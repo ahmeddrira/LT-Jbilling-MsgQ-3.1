@@ -97,7 +97,7 @@ public class RefreshBettyTable {
             Statement exe = conn.createStatement();
             while (res.next()) {
                 String table = res.getString(1);
-                if (!table.endsWith("_map")) {
+                if (!table.endsWith("_map") && !table.endsWith("_status")) {
                     PreparedStatement stmt2 = conn.prepareStatement(
                             "select max(id) from " + table);
                     ResultSet res2 = stmt2.executeQuery();

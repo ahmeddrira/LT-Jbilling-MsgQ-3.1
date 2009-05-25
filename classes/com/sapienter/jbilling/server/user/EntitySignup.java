@@ -367,7 +367,7 @@ public final class EntitySignup {
         String userData[][] = { 
             { String.valueOf(newEntityId), user.getUserName(), 
                 getDBPassword(user), "0", "1", "1", now, null, 
-                languageId.toString(), "1", "1" },  //1
+                languageId.toString(), "9", "1" },  //1
         };
         table = addTable(Constants.TABLE_BASE_USER, userColumns, userData, false);
         processTable(table);
@@ -665,9 +665,9 @@ public final class EntitySignup {
         
         //AGEING_ENTITY_STEP
         String ageingEntityStepColumns[] =
-                {"i_id", "i_entity_id", "i_status_id", "i_days"};
+                {"i_id", "i_entity_id", "i_status_id", "i_days", "i_optlock"};
         String ageingEntityStepMessageData[][] = {
-            {String.valueOf(newEntityId), "1", "0"}, // active (for the welcome message) 
+            {String.valueOf(newEntityId), "1", "0", "0"}, // active (for the welcome message)
         };
         String ageingEntityStepIntColumns[][][] =
         { 
@@ -700,11 +700,12 @@ public final class EntitySignup {
             "i_due_date_value",
             "i_only_recurring",
             "i_invoice_date_process",
-            "i_auto_payment"
+            "i_auto_payment",
+            "i_optlock"
         };
         String billingProcessConfigurationData[][] = {
             { String.valueOf(newEntityId), inAMonth, 
-                "1", "0", "1", "3", "1", "2", "1", "1", "1", "1", "0", "0" },
+                "1", "0", "1", "3", "1", "2", "1", "1", "1", "1", "0", "0", "0" },
         };
         
         table = addTable(Constants.TABLE_BILLING_PROCESS_CONFIGURATION, 

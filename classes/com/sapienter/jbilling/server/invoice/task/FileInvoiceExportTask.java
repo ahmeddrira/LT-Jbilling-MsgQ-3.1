@@ -49,6 +49,10 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
 
     public void process(Event event) throws PluggableTaskException {
         NewInvoiceEvent myEvent = (NewInvoiceEvent) event;
+        if (myEvent.getInvoice().getIsReview() != null && myEvent.getInvoice().getIsReview() == 1) {
+            return;
+        }
+
         LOG.debug("Exporting invoice " + myEvent.getInvoice().getId());
 
         try {
@@ -75,52 +79,52 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
         contact.set(userId);
 
         // cono															
-        line.append(emptyIfNull(contact.getEntity().getPostalCode()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getPostalCode()) + "\"");
         line.append(",");
         // custno
-        line.append(userId);
+        line.append("\"" + userId + "\"");
         line.append(",");
         // naddrcode
-        line.append("000");
+        line.append("\"" + "000" + "\"");
         line.append(",");
         // lookupnm
-        line.append(emptyIfNull(contact.getEntity().getOrganizationName()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getOrganizationName()) + "\"");
         line.append(",");
         // totallineamt
-        line.append(invoiceLine.getAmount());
+        line.append("\"" + invoiceLine.getAmount() + "\"");
         line.append(",");
         // period
-        line.append(new SimpleDateFormat("yyyyMM").format(invoice.getCreateDatetime()));
+        line.append("\"" + new SimpleDateFormat("yyyyMM").format(invoice.getCreateDatetime()) + "\"");
         line.append(",");
         // name
-        line.append(emptyIfNull(contact.getEntity().getOrganizationName()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getOrganizationName()) + "\"");
         line.append(",");
         // deliveryaddr
-        line.append(emptyIfNull(contact.getEntity().getAddress1()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getAddress1()) + "\"");
         line.append(",");
         // city
-        line.append(emptyIfNull(contact.getEntity().getCity()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getCity()) + "\"");
         line.append(",");
         // state
-        line.append(emptyIfNull(contact.getEntity().getStateProvince()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getStateProvince()) + "\"");
         line.append(",");
         // zip5
-        line.append(emptyIfNull(contact.getEntity().getPostalCode()));
+        line.append("\"" + emptyIfNull(contact.getEntity().getPostalCode()) + "\"");
         line.append(",");
         // totdue
-        line.append(invoice.getTotal());
+        line.append("\"" + invoice.getTotal() + "\"");
         line.append(",");
         // qty
-        line.append(invoiceLine.getQuantity());
+        line.append("\"" + invoiceLine.getQuantity() + "\"");
         line.append(",");
         // description
-        line.append(invoiceLine.getDescription());
+        line.append("\"" + invoiceLine.getDescription() + "\"");
         line.append(",");
         // invoiceno
-        line.append(invoice.getNumber());
+        line.append("\"" + invoice.getNumber() + "\"");
         line.append(",");
         // custstatus
-        line.append("TRUE");
+        line.append("\"" + "TRUE" + "\"");
 
         LOG.debug("Line to export:" + line);
         return line.toString();

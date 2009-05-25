@@ -35,9 +35,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -199,7 +196,7 @@ public class CurrencyBL {
     
     public CurrencyDTO[] getCurrencies(Integer languageId, 
             Integer entityId) 
-            throws NamingException, SQLException, FinderException {
+            throws NamingException, SQLException {
         Vector result = new Vector();
         
         CurrencyDTO[] all = getSymbols();
@@ -233,8 +230,7 @@ public class CurrencyBL {
     }
     
     public void setCurrencies(Integer entityId, CurrencyDTO[] currencies) 
-            throws NamingException, FinderException, RemoveException,
-                    CreateException, ParseException {
+            throws NamingException, ParseException {
         EntityBL entity = new EntityBL(entityId);
 
         // start by wiping out the existing data for this entity
@@ -265,14 +261,12 @@ public class CurrencyBL {
         }
     }
     
-    public Integer getEntityCurrency(Integer entityId)
-             throws FinderException {
+    public Integer getEntityCurrency(Integer entityId) {
         CompanyDTO entity = new CompanyDAS().find(entityId);
         return entity.getCurrencyId();
     }
     
-    public void setEntityCurrency(Integer entityId, Integer currencyId) 
-            throws FinderException {
+    public void setEntityCurrency(Integer entityId, Integer currencyId) {
         CompanyDTO entity = new CompanyDAS().find(entityId);
         entity.setCurrency(new CurrencyDAS().find(currencyId));
     }

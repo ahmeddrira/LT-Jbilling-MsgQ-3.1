@@ -26,7 +26,6 @@ package com.sapienter.jbilling.server.list;
 
 import java.util.Date;
 
-import javax.ejb.CreateException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -86,7 +85,7 @@ public class ListFieldEntityBL {
 
 	public void createUpdate(ListFieldDTO field, ListEntityDTO entity,
 			Integer min, Integer max, String minStr, String maxStr,
-			Date minDate, Date maxDate) throws CreateException {
+			Date minDate, Date maxDate) {
 		fieldEntity = fieldEntityDas.findByFieldEntity(field.getId(), entity
 				.getId());
 		if (fieldEntity == null) {

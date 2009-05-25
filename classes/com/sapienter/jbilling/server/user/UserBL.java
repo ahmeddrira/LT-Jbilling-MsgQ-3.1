@@ -34,9 +34,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -145,8 +142,7 @@ public class UserBL extends ResultList
      * @param dto This is the user that will be updated 
      */
     public void update(Integer executorId, UserDTOEx dto) 
-            throws NamingException, FinderException, SessionInternalError,
-              CreateException, RemoveException {
+            throws NamingException, SessionInternalError {
         // password is the only one that might've not been set
     	String changedPassword = dto.getPassword();
     	if (changedPassword != null){
@@ -481,7 +477,7 @@ public class UserBL extends ResultList
      }
      
     public Menu getMenu(Vector<PermissionDTO> permissions) 
-            throws NamingException, FinderException, SessionInternalError {
+            throws NamingException, SessionInternalError {
 
         Menu menu = new Menu();
         // this should be doable in EJB/QL !! :( :(
@@ -602,7 +598,7 @@ public class UserBL extends ResultList
     }
 
     public UserWS getUserWS() 
-            throws NamingException, FinderException, SessionInternalError {
+            throws NamingException, SessionInternalError {
         UserDTOEx dto = DTOFactory.getUserDTOEx(user);
         UserWS retValue = new UserWS(dto);
         // the contact is not included in the Ex
@@ -771,7 +767,7 @@ public class UserBL extends ResultList
     }
     
     public void updateAch(AchDTO ach, Integer executorId)
-    		throws NamingException, CreateException, SessionInternalError {
+    		throws NamingException, SessionInternalError {
     	AchBL bl = new AchBL();
     	// let's see if this guy already has an ach record
     	Set<AchDTO> rows = user.getAchs();

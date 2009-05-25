@@ -31,9 +31,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -268,13 +265,10 @@ public class AgeingBL {
      * in active status, it always moves it to the first ageing step).
      * @param userId
      * @throws NamingException
-     * @throws FinderException
      * @throws SessionInternalError
-     * @throws CreateException
      */
     public void age(UserDTO user, Date today) 
-            throws NamingException, FinderException, SessionInternalError,
-                CreateException, RemoveException {
+            throws NamingException, SessionInternalError {
         LOG.debug("Ageing user:" + user.getUserId());
         Integer status = user.getStatus().getId();
         Integer nextStatus = null;
@@ -358,8 +352,7 @@ public class AgeingBL {
      * This doesn't discriminate over entities.
      */
     public void reviewAll(Date today) 
-            throws NamingException, CreateException, FinderException,
-                SessionInternalError, RemoveException, SQLException {
+            throws NamingException, SessionInternalError, SQLException {
         // go over all the users already in the ageing system
         for (UserDTO userRow : new UserDAS().findAgeing()) {
             age(userRow, today);
@@ -414,8 +407,7 @@ public class AgeingBL {
     }
     
     public String getWelcome(Integer entityId, Integer languageId, 
-            Integer statusId) 
-            throws NamingException, FinderException {
+            Integer statusId) throws NamingException {
         AgeingEntityStepDTO step = new AgeingEntityStepDAS().findStep(
             entityId, statusId);
         ageing = ageingDas.find(step.getId());
@@ -424,7 +416,7 @@ public class AgeingBL {
     
     public AgeingDTOEx[] getSteps(Integer entityId, 
             Integer executorLanguageId, Integer languageId) 
-            throws NamingException, FinderException {
+            throws NamingException {
         AgeingDTOEx[] result  = new AgeingDTOEx[
                 UserDTOEx.STATUS_DELETED.intValue()];
         
@@ -458,8 +450,7 @@ public class AgeingBL {
     }
     
     public void setSteps(Integer entityId, Integer languageId, 
-            AgeingDTOEx[] steps) 
-            throws RemoveException, CreateException, NamingException, FinderException {
+            AgeingDTOEx[] steps) throws NamingException {
         LOG.debug("Setting a total of " + steps.length + " steps");
         for (int f = 0; f < steps.length; f++) {
             // get the existing data for this step

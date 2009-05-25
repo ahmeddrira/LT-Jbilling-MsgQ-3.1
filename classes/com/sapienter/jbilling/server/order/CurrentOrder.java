@@ -24,8 +24,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.ResourceBundle;
 
-import javax.ejb.FinderException;
-
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -48,7 +46,7 @@ public class CurrentOrder {
     private final EventLogger eLogger = EventLogger.getInstance();
 
     
-    protected CurrentOrder(Integer userId, Date eventDate) throws FinderException{
+    protected CurrentOrder(Integer userId, Date eventDate) {
         LOG.debug("Current order constructed with user " + userId + " event date " +
                 eventDate);
         if (userId == null || eventDate == null) {

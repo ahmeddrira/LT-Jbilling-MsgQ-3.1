@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -304,13 +303,13 @@ public class ReportBL extends ResultList {
     }
 
     public ReportDTOEx getReport(Integer reportId, Integer entityId)
-            throws NamingException, FinderException, SessionInternalError {
+            throws NamingException, SessionInternalError {
         log.debug("Getting report " + reportId + " for entity " + entityId);
         return DTOFactory.getReportDTOEx(reportId, entityId);
     }
 
     public ReportDTOEx getReport(Integer userReportId) throws NamingException,
-            FinderException, SessionInternalError {
+            SessionInternalError {
         log.debug("Getting user report " + userReportId);
         ReportDTOEx reportDto = null;
 
@@ -384,8 +383,7 @@ public class ReportBL extends ResultList {
         }
     }
 
-    public Collection getUserList(Integer report, Integer userId)
-            throws FinderException {
+    public Collection getUserList(Integer report, Integer userId) {
         Collection reports = reportUserDas.findByTypeUser(report, userId);
         return DTOFactory.reportUserEJB2DTO(reports);
     }

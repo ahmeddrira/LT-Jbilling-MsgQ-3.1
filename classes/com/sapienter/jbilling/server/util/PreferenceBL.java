@@ -24,6 +24,8 @@ import java.util.Locale;
 
 import org.apache.log4j.Logger;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
@@ -31,8 +33,6 @@ import com.sapienter.jbilling.server.util.db.PreferenceDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDAS;
 import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
-import javax.ejb.FinderException;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 public class PreferenceBL {
     
@@ -62,15 +62,16 @@ public class PreferenceBL {
     }
     
     /**
-     * If the entity does not have explicitly set the property
-     * it will throw a FinderException, but will still find the
-     * defaut.
-     * So you need to catch the finder and then use the default
+     * If the entity does not have the property explicitly set,
+     * it will throw an EmptyResultDataAccessException, but will 
+     * still find the default.
+     * So you need to catch the exception and then use the default.
      * @param entityId
      * @param typeId
-     * @throws FinderException
+     * @throws EmptyResultDataAccessException
      */
-    public void set(Integer entityId, Integer typeId)  {
+    public void set(Integer entityId, Integer typeId) 
+            throws EmptyResultDataAccessException {
         LOG.debug("Now looking for preference " + typeId + " ent " +
                 entityId + " table " + Constants.TABLE_ENTITY);
         if (entityId != null) {

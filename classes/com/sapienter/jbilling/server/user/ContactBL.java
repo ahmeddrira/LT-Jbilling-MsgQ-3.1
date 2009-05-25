@@ -25,7 +25,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -61,7 +60,7 @@ public class ContactBL {
     private JbillingTableDAS jbDAS = null;
     
     public ContactBL(Integer contactId) 
-            throws NamingException, FinderException {
+            throws NamingException {
         init();
         contact = contactDas.find(contactId);
     }
@@ -98,7 +97,7 @@ public class ContactBL {
     	contact = contactDas.findEntityContact(entityId);
     }
 
-    public boolean setInvoice(Integer invoiceId) throws FinderException {
+    public boolean setInvoice(Integer invoiceId) {
         boolean retValue = false;
         contact = contactDas.findInvoiceContact(invoiceId);
         InvoiceBL invoice = new InvoiceBL(invoiceId);
@@ -113,8 +112,7 @@ public class ContactBL {
         return retValue;
     }
 
-    public Integer getPrimaryType(Integer entityId) 
-            throws FinderException {
+    public Integer getPrimaryType(Integer entityId) {
         return new ContactTypeDAS().findPrimary(entityId).getId();
     }
     
@@ -184,7 +182,7 @@ public class ContactBL {
     }
     
     public Vector<ContactDTOEx> getAll(Integer userId) 
-            throws NamingException, FinderException {
+            throws NamingException {
         Vector<ContactDTOEx> retValue = new Vector<ContactDTOEx>();
         UserBL user = new UserBL(userId);
         entityId = user.getEntityId(userId);
@@ -286,8 +284,6 @@ public class ContactBL {
      * @param typeId Use 1 if it is not for a user (like and entity or invoice)
      * @return
      * @throws NamingException
-     * @throws FinderException
-     * @throws CreateException
      */
     public Integer create(ContactDTOEx dto, String table,  
             Integer foreignId, Integer typeId) {

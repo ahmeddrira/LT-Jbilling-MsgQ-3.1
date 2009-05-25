@@ -22,8 +22,6 @@ package com.sapienter.jbilling.server.process.task;
 
 import java.util.Date;
 
-import javax.ejb.FinderException;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.order.db.OrderDTO;

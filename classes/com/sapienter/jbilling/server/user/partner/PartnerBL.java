@@ -31,9 +31,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -153,9 +150,8 @@ public class PartnerBL extends ResultList
      * @param payoutDto
      */
     public void processPayout(Integer partnerId) 
-            throws CreateException, SQLException, 
-                SessionInternalError, PluggableTaskException,
-                TaskException, NamingException, FinderException {
+            throws SQLException, SessionInternalError, PluggableTaskException,
+            TaskException, NamingException {
         boolean notPaid;
         partner = partnerDAS.find(partnerId);
         // find out the date ranges for this payout
@@ -236,8 +232,7 @@ public class PartnerBL extends ResultList
      */
     public Integer processPayout(Integer partnerId, Date start, Date end,
             PaymentDTOEx payment, Boolean process) 
-            throws FinderException, CreateException, SessionInternalError,
-                SQLException, NamingException {
+            throws SessionInternalError, SQLException, NamingException {
         
         partner = partnerDAS.find(partnerId);
         payout = new PartnerPayout();
@@ -289,8 +284,7 @@ public class PartnerBL extends ResultList
     
     private boolean processPayment(PaymentDTOEx payment, Integer entityId,
             PartnerPayout dto, boolean process) 
-            throws NamingException, CreateException, FinderException, 
-                    SessionInternalError {
+            throws NamingException, SessionInternalError {
         PaymentBL paymentBL = new PaymentBL();
         boolean retValue;
         // isRefund is not null, so having to decide it is better to use refund.
@@ -346,8 +340,7 @@ public class PartnerBL extends ResultList
      * @return
      */
     public PartnerPayout calculatePayout(Date start, Date end, Integer currencyId) 
-            throws NamingException, SQLException, FinderException,
-                SessionInternalError {
+            throws NamingException, SQLException, SessionInternalError {
     	BigDecimal total = new BigDecimal("0");
         BigDecimal paymentTotal = new BigDecimal("0");
         BigDecimal refundTotal = new BigDecimal("0");
@@ -464,8 +457,7 @@ public class PartnerBL extends ResultList
     
     public void notifyPayout(Integer entityId, Integer languageId,
             double total, Date start, Date end, boolean clerk) 
-            throws NamingException, SessionInternalError, CreateException,
-				FinderException {
+            throws NamingException, SessionInternalError {
         // make the notification
         NotificationBL notification = new NotificationBL();
         try {
@@ -491,8 +483,7 @@ public class PartnerBL extends ResultList
     
     public float calculateCommission(float amount, Integer currencyId, 
             UserDTO user, boolean update) 
-            throws SessionInternalError, NamingException, FinderException,
-                SQLException {
+            throws SessionInternalError, NamingException, SQLException {
         LOG.debug("Calculating commision on " + amount); 
         float result;
         BigDecimal decAmount = new BigDecimal(amount);
@@ -595,7 +586,7 @@ public class PartnerBL extends ResultList
     }
     
     public PartnerPayout getLastPayoutDTO(Integer partnerId) 
-            throws SQLException, NamingException, FinderException {
+            throws SQLException, NamingException {
         PartnerPayout retValue = null;
         
         Integer payoutId = getLastPayout(partnerId);
@@ -637,8 +628,7 @@ public class PartnerBL extends ResultList
      * the values of the parameter
      * @param ranges
      */
-    public void setRanges(Integer executorId, PartnerRange[] ranges) 
-            throws CreateException, RemoveException {
+    public void setRanges(Integer executorId, PartnerRange[] ranges) {
         eLogger.audit(executorId, Constants.TABLE_PARTNER_RANGE, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, null);

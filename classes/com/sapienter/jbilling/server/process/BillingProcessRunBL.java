@@ -41,7 +41,6 @@ import com.sapienter.jbilling.server.process.db.ProcessRunTotalDAS;
 import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
 import com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDAS;
 import com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDTO;
-import javax.ejb.CreateException;
 
 public class BillingProcessRunBL {
     private ProcessRunDAS processRunDas = null;
@@ -131,7 +130,6 @@ public class BillingProcessRunBL {
      * @param methodId
      * @param total
      * @param ok
-     * @throws CreateException
      */
     public void updateNewPayment(Integer currencyId, Integer methodId,
             BigDecimal total, boolean ok) {

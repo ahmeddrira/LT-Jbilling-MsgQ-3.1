@@ -134,9 +134,6 @@ public class AgeingEntityStepDTO extends AbstractDescription implements Serializ
         return getDescription(languageId, "failed_login_message");
     }
 
-    /**
-     * @ejb:interface-method view-type="local"
-     */
     public void setFailedLoginMessage(Integer languageId, String message) {
         if (message == null) {
             message = "";

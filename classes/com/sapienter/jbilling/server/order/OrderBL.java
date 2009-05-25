@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -133,8 +130,7 @@ public class OrderBL extends ResultList
         return order;
     }
     
-    public OrderPeriodDTO getPeriod(Integer language, Integer id) 
-            throws FinderException {
+    public OrderPeriodDTO getPeriod(Integer language, Integer id) {
         return(orderPeriodDAS.find(id));
     }
 
@@ -160,8 +156,7 @@ public class OrderBL extends ResultList
         }
     }
 
-    public OrderWS getWS(Integer languageId) 
-            throws FinderException, NamingException {
+    public OrderWS getWS(Integer languageId) throws NamingException {
         OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(), 
         		order.getNotify(), order.getActiveSince(), order.getActiveUntil(), 
         		order.getCreateDate(), order.getNextBillableDay(), 
@@ -466,8 +461,7 @@ public class OrderBL extends ResultList
         }
     }
 
-    public void update(Integer executorId, OrderDTO dto) 
-            throws FinderException, CreateException {
+    public void update(Integer executorId, OrderDTO dto) {
         // update first the order own fields
         if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
             updateActiveUntil(executorId, dto.getActiveUntil(), dto);
@@ -789,7 +783,7 @@ public class OrderBL extends ResultList
      * @param dto
      */
     public void fillInLines(OrderDTO dto, Integer entityId) 
-            throws NamingException, FinderException, SessionInternalError {
+            throws NamingException, SessionInternalError {
         /*
          * now go over the order lines
          */
@@ -857,7 +851,7 @@ public class OrderBL extends ResultList
     }
     
     public void reviewNotifications(Date today) 
-    		throws NamingException, FinderException, SQLException, Exception  {
+    		throws NamingException, SQLException, Exception  {
         INotificationSessionBean notificationSess = (INotificationSessionBean) 
                 Context.getBean(Context.Name.NOTIFICATION_SESSION);
 
@@ -1104,8 +1098,7 @@ public class OrderBL extends ResultList
         } 
     }
     
-    public Collection<OrderDTO> getActiveRecurringByUser(Integer userId) 
-            throws FinderException {
+    public Collection<OrderDTO> getActiveRecurringByUser(Integer userId) {
         return orderDas.findByUserSubscriptions(userId);
     }
 
@@ -1136,8 +1129,7 @@ public class OrderBL extends ResultList
         }
     }
     
-    public void addPeriod(Integer entityId, Integer languageId) 
-            throws CreateException {
+    public void addPeriod(Integer entityId, Integer languageId) {
     	OrderPeriodDTO newPeriod = new OrderPeriodDTO();
     	CompanyDAS companyDas = new CompanyDAS();
     	newPeriod.setCompany(companyDas.find(entityId));
@@ -1148,8 +1140,7 @@ public class OrderBL extends ResultList
     	newPeriod.setDescription(" ", languageId);
     }
     
-    public boolean deletePeriod(Integer periodId) 
-            throws FinderException, RemoveException{
+    public boolean deletePeriod(Integer periodId) {
         OrderPeriodDTO period = orderPeriodDAS.find(
                 periodId);
         if (period.getPurchaseOrders().size() > 0) {
@@ -1160,8 +1151,7 @@ public class OrderBL extends ResultList
         }
     }
     
-    public OrderLineWS getOrderLineWS(Integer id) 
-            throws FinderException {
+    public OrderLineWS getOrderLineWS(Integer id) {
         OrderLineDTO line = orderLineDAS.findNow(id);
         if (line == null) {
         	LOG.warn("Order line " + id + " not found");
@@ -1208,8 +1198,7 @@ public class OrderBL extends ResultList
     	return dto;
     }
     
-    public void updateOrderLine(OrderLineWS dto) 
-            throws FinderException, RemoveException {
+    public void updateOrderLine(OrderLineWS dto) {
         OrderLineDTO line = getOrderLine(dto.getId());
         if (dto.getQuantity() != null && dto.getQuantity().intValue() == 0) {
             // deletes the order line if the quantity is 0

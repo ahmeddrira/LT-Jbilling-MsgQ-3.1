@@ -20,11 +20,6 @@
 
 package com.sapienter.jbilling.server.item;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -63,8 +58,7 @@ public class ItemTypeBL {
         itemType = itemTypeDas.find(id);
     }
     
-    public void create(ItemTypeDTO dto) 
-            throws CreateException {
+    public void create(ItemTypeDTO dto) {
         itemType = new ItemTypeDTO();
         itemType.setEntity(dto.getEntity());
         itemType.setOrderLineTypeId(dto.getOrderLineTypeId());
@@ -83,8 +77,7 @@ public class ItemTypeBL {
         itemType.setOrderLineTypeId(dto.getOrderLineTypeId());
     }
     
-    public void delete(Integer executorId) 
-            throws RemoveException, NamingException, FinderException {
+    public void delete(Integer executorId) {
         Integer itemTypeId = itemType.getId();
         itemTypeDas.delete(itemType);
         // now remove all the descriptions 

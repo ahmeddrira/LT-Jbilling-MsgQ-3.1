@@ -33,8 +33,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -126,7 +124,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
      * @param newInvoice
      * @param process
      *            It can be null.
-     * @throws CreateException
      */
     public void create(Integer userId, NewInvoiceDTO newInvoice,
             BillingProcessDTO process) {
@@ -633,14 +630,14 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
    
     public Integer[] getManyWS(Integer userId, Integer number)
-            throws NamingException, FinderException, SessionInternalError {
+            throws NamingException, SessionInternalError {
         List<Integer> result = new InvoiceDAS().findIdsByUserLatestFirst(
                 userId, number);
         return result.toArray(new Integer[result.size()]);
     }
 
     public Integer[] getManyByItemTypeWS(Integer userId, Integer itemTypeId, Integer number)
-            throws NamingException, FinderException, SessionInternalError {
+            throws NamingException, SessionInternalError {
         List<Integer> result = new InvoiceDAS().findIdsByUserAndItemTypeLatestFirst(userId, itemTypeId, number);
         return result.toArray(new Integer[result.size()]);
     }
@@ -659,7 +656,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     
 
     public void sendReminders(Date today) throws SQLException, NamingException,
-            FinderException, SessionInternalError, CreateException {
+            SessionInternalError {
         GregorianCalendar cal = new GregorianCalendar();
 
         for (Iterator it = new CompanyDAS().findEntities().iterator(); it.hasNext();) {
@@ -945,7 +942,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
     // given the current invoice, it will 'rewind' to the previous one
     public void setPrevious() throws SQLException, NamingException,
-            FinderException {
+            EmptyResultDataAccessException {
 
         prepareStatement(InvoiceSQL.previous);
         cachedResults.setInt(1, invoice.getBaseUser().getUserId().intValue());
@@ -963,7 +960,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         conn.close();
 
         if (!found) {
-            throw new FinderException("No previous invoice found");
+            throw new EmptyResultDataAccessException("No previous invoice found", 1);
         }
     }
 

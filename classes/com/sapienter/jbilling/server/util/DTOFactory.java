@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -88,13 +86,10 @@ public class DTOFactory {
 	 * @param username
 	 * @return UserDTO
 	 * @throws HomeFactoryException
-	 * @throws CreateException
 	 * @throws NamingException
-	 * @throws FinderException
 	 */
 	public static UserDTOEx getUserDTO(String username, Integer entityId)
-			throws CreateException, NamingException, FinderException,
-			SessionInternalError {
+			throws NamingException, SessionInternalError {
 
 		LOG.debug("getting the user " + username);
 
@@ -105,7 +100,7 @@ public class DTOFactory {
 	}
 
 	public static UserDTOEx getUserDTOEx(Integer userId)
-			throws CreateException, NamingException, SessionInternalError {
+			throws NamingException, SessionInternalError {
 
 		LOG.debug("getting the user " + userId);
 
@@ -313,7 +308,7 @@ public class DTOFactory {
 	}
 
 	public static MenuOption getMenuOption(Integer id, Integer languageId)
-			throws NamingException, FinderException {
+			throws NamingException {
 		JNDILookup EJBFactory = JNDILookup.getFactory(false);
 		MenuOptionDAS menuDas = new MenuOptionDAS();
 

@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.ejb.EJBHome;
-import javax.ejb.EJBLocalHome;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -43,7 +41,6 @@ import org.apache.log4j.Logger;
  */
 public class JNDILookup {
 
-    private Map ejbHomes;
     private static final String DATABASE_JNDI = "java:/ApplicationDS";
     // this is then custom treated for serialization
     private static Logger log = null;
@@ -71,7 +68,6 @@ public class JNDILookup {
             ctx = new InitialContext();
             log.info("Default Context set");
         }
-        this.ejbHomes = Collections.synchronizedMap(new HashMap());
     }
     
     public static JNDILookup getFactory(boolean test)
@@ -97,52 +93,7 @@ public class JNDILookup {
     public static JNDILookup getFactory() throws NamingException {
         return getFactory(false);
     }
-    
-   /**
-     * Lookup and cache an EJBHome object.
-     * This 'alternate' implementation delegates JNDI name knowledge
-     * to the client. It is included here for example only.
-     */
-    public EJBHome lookUpHome(Class homeClass, String jndiName)
-        throws ClassCastException, NamingException {
 
-        EJBHome anEJBHome;
-
-        anEJBHome = (EJBHome) this.ejbHomes.get(jndiName);
-
-        if (anEJBHome == null) {
-            //log.info("finding Home " + jndiName + " for first time");
-            anEJBHome =
-                (EJBHome) PortableRemoteObject.narrow(
-                    ctx.lookup(jndiName),
-                    homeClass);
-            this.ejbHomes.put(jndiName, anEJBHome);
-        }
-
-        return anEJBHome;
-
-    }
-
-    public EJBLocalHome lookUpLocalHome(Class homeClass, String jndiName)
-        throws ClassCastException, NamingException {
-
-        EJBLocalHome anEJBLocalHome;
-
-        anEJBLocalHome = (EJBLocalHome) this.ejbHomes.get(jndiName);
-
-        if (anEJBLocalHome == null) {
-            //log.info("finding Local Home " + jndiName + " for first time");
-            anEJBLocalHome =
-                (EJBLocalHome) PortableRemoteObject.narrow(
-                    ctx.lookup(jndiName),
-                    homeClass);
-            this.ejbHomes.put(jndiName, anEJBLocalHome);
-        }
-
-        return anEJBLocalHome;
-
-    }
-    
     public DataSource lookUpDataSource() {
         return (DataSource) com.sapienter.jbilling.server.util.Context.getBean(
                 com.sapienter.jbilling.server.util.Context.Name.DATA_SOURCE);

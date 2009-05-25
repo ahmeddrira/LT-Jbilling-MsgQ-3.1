@@ -26,7 +26,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -60,8 +59,7 @@ public class Menu implements Serializable {
         return lmOptions;
     }
     
-    protected void addOption(MenuOption option) 
-            throws NamingException, FinderException{
+    protected void addOption(MenuOption option) throws NamingException {
         options.put(option.getId(), option);
     }
     

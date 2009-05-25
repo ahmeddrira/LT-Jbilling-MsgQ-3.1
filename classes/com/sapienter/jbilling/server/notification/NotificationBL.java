@@ -42,7 +42,6 @@ import java.util.Vector;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.ejb.FinderException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
@@ -774,7 +773,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                             new Float(invoiceBL.getTotalPaid()), invoice
                                     .getUserId(), invoice.getCurrency().getId(),
                             false));
-                } catch (FinderException e1) {
+                } catch (EmptyResultDataAccessException e1) {
                     parameters.put("prevInvoiceTotal", "0");
                     parameters.put("prevInvoicePaid", "0");
                 }

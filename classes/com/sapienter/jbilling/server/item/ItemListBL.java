@@ -26,7 +26,6 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.Comparator;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -98,7 +97,7 @@ public final class ItemListBL extends ResultList
      */
     public ListDTO getOrderList(Integer entityID, Integer languageId, 
             Integer userId) 
-            throws FinderException, NamingException, SessionInternalError {
+            throws NamingException, SessionInternalError {
         ListDTO result = new ListDTO();
 
         LOG.debug("Runing item list for a new order");

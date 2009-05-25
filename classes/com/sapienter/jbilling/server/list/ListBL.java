@@ -33,8 +33,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
@@ -181,8 +179,6 @@ public class ListBL {
 
             conn.close();
         } catch (NamingException e2) {
-            throw new SessionInternalError(e2);
-        } catch (CreateException e2) {
             throw new SessionInternalError(e2);
         } catch (SQLException e3) {
             throw new SessionInternalError(e3);
@@ -520,7 +516,7 @@ public class ListBL {
 
     public CachedRowSet search(String start, String end, Integer fieldId,
             Integer listId, Integer entityId, Hashtable parameters)
-            throws FinderException, SQLException, NamingException {
+            throws SQLException, NamingException {
         this.parameters = parameters;
         StringBuffer sql = new StringBuffer();
         set(listId);

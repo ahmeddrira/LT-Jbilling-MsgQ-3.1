@@ -26,6 +26,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -90,7 +91,9 @@ public class PaperInvoiceNotificationTask
             // link the batch to this invoice
             InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
             record.getInvoices().add(invoiceBL.getEntity());
-            invoiceBL.getEntity().setPaperInvoiceBatch(record);
+            // lock the row
+            InvoiceDTO myInvoice = new InvoiceDAS().findForUpdate(invoice.getId());
+            myInvoice.setPaperInvoiceBatch(record);
         } catch (Exception e) {
             throw new TaskException(e);
         }

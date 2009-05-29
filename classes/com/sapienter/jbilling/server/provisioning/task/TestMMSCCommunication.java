@@ -22,56 +22,61 @@ package com.sapienter.jbilling.server.provisioning.task;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
+
+import com.sapienter.jbilling.server.provisioning.task.mmsc.AddCustomerRequest;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.DeleteCustomerRequest;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.GetCustomerRequest;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.GetCustomerResponse;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.IMMSCHandlerFacade;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.MMSCException_Exception;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.MmscFacadeHandlerResponse;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.ModifyCustomerRequest;
+
 
 /**
  * Dummy MMSC communication class for testing MMSCProvisioningTask.
  */
-public class TestMMSCCommunication implements IMMSCCommunication {
+public class TestMMSCCommunication implements IMMSCHandlerFacade {
 	private static final Logger LOG = Logger
 			.getLogger(TestMMSCCommunication.class);
 
-	public Map<String, String> addCustomer(String loginUser,
-			String loginPassword, String portalId, String applicationId,
-			String transactionId, String channeld, String referenceId,
-			String tag, String userId, String msisdn, String subscriptionType,
-			String bnet) throws TaskException {
+
+    public MmscFacadeHandlerResponse addCustomer(AddCustomerRequest request)
+            throws MMSCException_Exception {
 		LOG.debug("Calling Dummy method addCustomer");
-		Map<String, String> response = new HashMap<String, String>();
+        return getResponse(request.getTransactionId());
+    }
+
+    public MmscFacadeHandlerResponse modifyCustomer(
+            ModifyCustomerRequest request) throws MMSCException_Exception {
+		LOG.debug("Calling Dummy method modifyCustomer");
+        return getResponse(request.getTransactionId());
+    }
+
+    public MmscFacadeHandlerResponse deleteCustomer(
+            DeleteCustomerRequest request) throws MMSCException_Exception {
+		LOG.debug("Calling Dummy method deleteCustomer");
+        return getResponse(request.getTransactionId());
+    }
+
+    public GetCustomerResponse getCustomerInfo(GetCustomerRequest request)
+            throws MMSCException_Exception {
+        return null; // not implemented
+    }
+
+    private MmscFacadeHandlerResponse getResponse(String transactionId) {
+        MmscFacadeHandlerResponse response = new MmscFacadeHandlerResponse();
 		// wait for command rules task transaction to complete
 		//pause(2000);
 
-		response.put(MMSCProvisioningTask.TRANSACTION_ID, transactionId);
-		response.put(MMSCProvisioningTask.STATUS_CODE,
-				MMSCProvisioningTask.STATUS_CODE_OK);
-		response.put(MMSCProvisioningTask.STATUS_MESSAGE,
-				"Customer Added Successfully");
+		response.setTransactionId(transactionId);
+		response.setStatusCode(MMSCProvisioningTask.STATUS_CODE_OK);
+		response.setStatusMessage("Operation Performed Successfully");
 
 		return response;
-	}
-
-	public Map<String, String> deleteCustomer(String loginUser,
-			String loginPassword, String portalId, String applicationId,
-			String transactionId, String channeld, String referenceId,
-			String tag, String userId, String msisdn, String bnet)
-			throws TaskException {
-		LOG.debug("Calling Dummy method deleteCustomer");
-		return addCustomer(loginUser, loginPassword, portalId, applicationId,
-				transactionId, channeld, referenceId, tag, userId, msisdn,
-				null, bnet);
-	}
-
-	public Map<String, String> modifyCustomer(String loginUser,
-			String loginPassword, String portalId, String applicationId,
-			String transactionId, String channeld, String referenceId,
-			String tag, String userId, String msisdn, String bnet)
-			throws TaskException {
-		LOG.debug("Calling Dummy method modifyCustomer");
-		return addCustomer(loginUser, loginPassword, portalId, applicationId,
-				transactionId, channeld, referenceId, tag, userId, msisdn,
-				null, bnet);
-	}
+    }
 
 	private void pause(long t) {
 		LOG.debug("TestMMSCCommunication: pausing for " + t + " ms...");

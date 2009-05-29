@@ -24,9 +24,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.AddCustomerRequest;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.DeleteCustomerRequest;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.EfsBaseMSISDNRequest;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.IMMSCHandlerFacade;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.MMSCException_Exception;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.MmscFacadeHandlerResponse;
+import com.sapienter.jbilling.server.provisioning.task.mmsc.ModifyCustomerRequest;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
@@ -43,7 +52,7 @@ public class MMSCProvisioningTask extends PluggableTask implements
 	public static final String PARAM_ID = "id";
 	public static final String PARAM_ID_DEFAULT = "mmsc";
 	// MMSCProvisioningTask plugin parameters
-		public static final String PARAM_LOGIN_USER = "loginUser";
+	public static final String PARAM_LOGIN_USER = "loginUser";
 	public static final String PARAM_LOGIN_PASSWORD = "loginPassword";
 	public static final String PARAM_PORTAL_ID = "portalId";
 	public static final String PARAM_APPLICATION_ID = "applicationId";
@@ -56,6 +65,7 @@ public class MMSCProvisioningTask extends PluggableTask implements
 	public static final String USER_ID = "userId";
 	public static final String MSISDN = "msisdn";
 	public static final String SUBSCRIPTION_TYPE = "subscriptionType";
+    public static final String MMS_CAPABILITY = "mmsCapability";
 	
 	public static final String METHOD_NAME = "methodName";
 	// MMSC service methods names. These names should match the methods names in
@@ -66,11 +76,11 @@ public class MMSCProvisioningTask extends PluggableTask implements
 	// MMSC Service-level error codes
 	public static final String STATUS_CODE = "statusCode";
 	public static final String STATUS_MESSAGE = "statusMessage";
-	public static final String STATUS_CODE_OK = "0";
-	public static final String STATUS_CODE_SERVICE_ERROR = "-1";
-	public static final String STATUS_CODE_MSISDN_ERROR = "1";
-	public static final String STATUS_CODE_SUBSCRIPTION_ERROR = "2";
-	public static final String STATUS_CODE_BNET_ERROR = "3";
+	public static final int STATUS_CODE_OK = 0;
+	public static final int STATUS_CODE_SERVICE_ERROR = -1;
+	public static final int STATUS_CODE_MSISDN_ERROR = 1;
+	public static final int STATUS_CODE_SUBSCRIPTION_ERROR = 2;
+	public static final int STATUS_CODE_BNET_ERROR = 3;
 
 	private static final Logger LOG = Logger.getLogger(MMSCProvisioningTask.class);
 
@@ -80,8 +90,6 @@ public class MMSCProvisioningTask extends PluggableTask implements
 	
 	public Map<String, Object> sendRequest(String id, String command)
 			throws TaskException {
-		
-		
 		
 		// send command and return results
 		return parseResponse(sendCommand(command, id));
@@ -96,63 +104,78 @@ public class MMSCProvisioningTask extends PluggableTask implements
 	 * @return
 	 * @throws TaskException
 	 */
-	private Map<String, String> sendCommand(String command, String id)
+	private MmscFacadeHandlerResponse sendCommand(String command, String id)
 			throws TaskException {
-		IMMSCCommunication mmsc = (IMMSCCommunication) Context
+		IMMSCHandlerFacade mmsc = (IMMSCHandlerFacade) Context
 				.getBean(Context.Name.MMSC);
-		Map<String, String> response = null;
+		MmscFacadeHandlerResponse response = null;
+
 		Map<String, String> params = getParameters(command, id);
 		if (params == null || params.isEmpty())
 			throw new TaskException("NULL or Empty Parameters List!");
+
 		String methodName = params.get(METHOD_NAME);
 		if (methodName == null)
 			throw new TaskException("Expected Method Name!");
 
-		String loginUser = (String) params.get(PARAM_LOGIN_USER);
-
-		String loginPassword = (String) params.get(PARAM_LOGIN_PASSWORD);
-
-		String portalId = (String) params.get(PARAM_PORTAL_ID);
-
-		String applicationId = (String) params.get(PARAM_APPLICATION_ID);
-		String transactionId = (String) params.get(TRANSACTION_ID);
-		String channeld = (String) params.get(CHANNEL_ID);
-		String referenceId = (String) params.get(REFERENCE_ID);
-		String tag = (String) params.get(TAG);
-		String userId = (String) params.get(USER_ID);
-
-		String msisdn = (String) params.get(MSISDN);
-		if (msisdn == null) {
-			throw new TaskException("parameter '" + MSISDN + "' is Mandatory ");
-		}
-		String subscriptionType = (String) params.get(SUBSCRIPTION_TYPE);
-		String bnet = (String) params.get(PARAM_BNET);
-
-		if (methodName.equals(ADD_CUSTOMER)) {
-			if (subscriptionType == null) {
-				throw new TaskException("parameter '" + SUBSCRIPTION_TYPE
-						+ "' is Mandatory ");
-			}
-			response = mmsc.addCustomer(loginUser, loginPassword, portalId,
-					applicationId, transactionId, channeld, referenceId, tag,
-					userId, msisdn, subscriptionType, bnet);
-		} else if (methodName.equals(MODIFY_CUSTOMER)) {
-
-			response = mmsc.modifyCustomer(loginUser, loginPassword, portalId,
-					applicationId, transactionId, channeld, referenceId, tag,
-					userId, msisdn, bnet);
-		} else if (methodName.equals(DELETE_CUSTOMER)) {
-
-			response = mmsc.deleteCustomer(loginUser, loginPassword, portalId,
-					applicationId, transactionId, channeld, referenceId, tag,
-					userId, msisdn, bnet);
-		} else {
-			throw new TaskException("webservice method '" + methodName
-					+ "' is Not Found! ");
-		}
+        try {
+            if (methodName.equals(ADD_CUSTOMER)) {
+                String subscriptionType = (String) params.get(
+                        SUBSCRIPTION_TYPE);
+                if (subscriptionType == null) {
+                    throw new TaskException("parameter '" + SUBSCRIPTION_TYPE
+                            + "' is Mandatory ");
+                }
+                AddCustomerRequest request = new AddCustomerRequest();
+                populateRequest(request, params);
+                request.setSubscriptionType(subscriptionType);
+                response = mmsc.addCustomer(request);
+            } else if (methodName.equals(MODIFY_CUSTOMER)) {
+                String mmsCapability = (String) params.get(MMS_CAPABILITY);
+                if (mmsCapability == null) {
+                    throw new TaskException("parameter '" + MMS_CAPABILITY
+                            + "' is Mandatory ");
+                }
+                ModifyCustomerRequest request = new ModifyCustomerRequest();
+                populateRequest(request, params);
+                request.setMmsCapability(mmsCapability);
+                response = mmsc.modifyCustomer(request);
+            } else if (methodName.equals(DELETE_CUSTOMER)) {
+                DeleteCustomerRequest request = new DeleteCustomerRequest();
+                populateRequest(request, params);
+                response = mmsc.deleteCustomer(request);
+            } else {
+                throw new TaskException("webservice method '" + methodName
+                        + "' is Not Found! ");
+            }
+        } catch (MMSCException_Exception mmsce) {
+            throw new TaskException(mmsce);
+        }
 
 		return response;
 	}
+
+    /**
+     * Adds common parameters to request.
+     */
+    private void populateRequest(EfsBaseMSISDNRequest request, 
+            Map<String, String> params) throws TaskException {
+        request.setLoginUser((String) params.get(PARAM_LOGIN_USER));
+        request.setLoginPassword((String) params.get(PARAM_LOGIN_PASSWORD));
+        request.setPortalId((String) params.get(PARAM_PORTAL_ID));
+        request.setApplicationId((String) params.get(PARAM_APPLICATION_ID));
+        request.setTransactionId((String) params.get(TRANSACTION_ID));
+        request.setChannelId((String) params.get(CHANNEL_ID));
+        request.setReferenceId((String) params.get(REFERENCE_ID));
+        request.setTag((String) params.get(TAG));
+        request.setUserId((String) params.get(USER_ID));
+
+        String msisdn = (String) params.get(MSISDN);
+        if (msisdn == null) {
+            throw new TaskException("parameter '" + MSISDN + "' is Mandatory ");
+        }
+        request.setMSISDN(msisdn);
+    }
 
 	/**
 	 * method to parse MMSC command
@@ -230,45 +253,24 @@ public class MMSCProvisioningTask extends PluggableTask implements
 		}
 		params.put(PARAM_APPLICATION_ID, applicationId);
 
+        /*
 		String bnet = (String) parameters.get(PARAM_BNET);
 		if (bnet == null) {
 			throw new TaskException("No '" + PARAM_BNET + "' plug-in "
 					+ "parameter found.");
 		}
+		params.put(PARAM_BNET, bnet);
+        */
 
 		params.put(TRANSACTION_ID, id);
 
 		Map<String, String> parsedCommand = parseCommand(command);
 
-		adjustParameter(params, parsedCommand, CHANNEL_ID);
-		adjustParameter(params, parsedCommand, REFERENCE_ID);
-		adjustParameter(params, parsedCommand, TAG);
-		adjustParameter(params, parsedCommand, USER_ID);
 		// append parsed command key/value pairs
 		params.putAll(parsedCommand);
-		// last add bnet parameter
-		params.put(PARAM_BNET, bnet);
 
 		return params;
 
-	}
-
-	/**
-	 * adds key to Map if not exists.then removes key from parsed command Map.
-	 * 
-	 * @param params
-	 * @param parsedCommand
-	 * @param key
-	 */
-	private void adjustParameter(Map<String, String> params,
-			Map<String, String> parsedCommand, String key) {
-		if (!parsedCommand.containsKey(key))
-			params.put(key, null);
-		else {
-			String val = parsedCommand.get(key);
-			params.put(key, val);
-			parsedCommand.remove(key);
-		}
 	}
 
 	
@@ -281,12 +283,12 @@ public class MMSCProvisioningTask extends PluggableTask implements
 	 * @return
 	 * @throws TaskException
 	 */
-	private Map<String, Object> parseResponse(Map<String, String> response)
-			throws TaskException {
+	private Map<String, Object> parseResponse(
+            MmscFacadeHandlerResponse response) throws TaskException {
 
 		Map<String, Object> results = new HashMap<String, Object>();
 
-		String value = response.get(TRANSACTION_ID);
+		String value = response.getTransactionId();
 		if (value == null) {
 			throw new TaskException("Expected '" + TRANSACTION_ID
 					+ "' in response");
@@ -294,22 +296,18 @@ public class MMSCProvisioningTask extends PluggableTask implements
 		// set TRANSACTION_ID value
 		results.put(TRANSACTION_ID, value);
 
-		value = response.get(STATUS_CODE);
-		if (value == null) {
-			throw new TaskException("Expected '" + STATUS_CODE
-					+ "' in response");
-		}
+		int statusCode = response.getStatusCode();
 		// set STATUS_CODE value
-		results.put(STATUS_CODE, value);
+		results.put(STATUS_CODE, "" + statusCode);
 
 		// set result value
-		if (value.equals(STATUS_CODE_OK)) {
+		if (statusCode == STATUS_CODE_OK) {
 			results.put("result", "success");
 		} else {
 			results.put("result", "fail");
 		}
 
-		value = response.get(STATUS_MESSAGE);
+		value = response.getStatusMessage();
 		if (value == null) {
 			throw new TaskException("Expected '" + STATUS_MESSAGE
 					+ "' in response");

@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
+import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
@@ -128,6 +129,14 @@ public class PaymentCaledonTask extends PaymentTaskWithTimeout implements
 		} else {
 			paymentInfo.setResultId(Constants.RESULT_FAIL);
 		}
+		
+		PaymentAuthorizationDTO auth1 = new PaymentAuthorizationDTO();
+		
+		auth1.setTransactionId("CFR" + paymentInfo.getId());
+		auth1.setProcessor(PROCESSOR);
+		auth1.setCode1(resp.getAuth());
+		auth1.setResponseMessage(resp.getText());
+		storeProcessedAuthorization(paymentInfo, auth1);
 		return false;
 	}
 
@@ -180,10 +189,12 @@ public class PaymentCaledonTask extends PaymentTaskWithTimeout implements
 			paymentInfo.setResultId(Constants.RESULT_FAIL);
 		}
 		paymentInfo.setResultStr(resp.getText());
+		
 		PaymentAuthorizationDTO auth = new PaymentAuthorizationDTO();
+		
 		auth.setTransactionId(txId);
 		auth.setProcessor(PROCESSOR);
-		auth.setApprovalCode(resp.getAuth());
+		auth.setCode1(resp.getAuth());
 		auth.setResponseMessage(resp.getText());
 		storeProcessedAuthorization(paymentInfo, auth);
 		
@@ -200,24 +211,43 @@ public class PaymentCaledonTask extends PaymentTaskWithTimeout implements
 		
 		if (paymentInfo.getCreditCard() == null) {
 			throw new PluggableTaskException("Credit card must " +
-					"exist in order to pre-authorize a payment");
+					"exist in order to perform payment or refund");
 		}
 		// Instantiate the service
 		CaledonProcessor service = new CaledonProcessor(url);
 		
 		// Populate service request data
 		CaledonRequestDTO req = new CaledonRequestDTO();
-		req.setType(CaledonRequestType.PREAUTH);
+		
 		req.setTermid(termid);
 		if (password != null) {
 			req.setPass(password);
 		}
 		String txId = "PAY" + paymentInfo.getId();
-		req.setAmount(paymentInfo.getAmount());
-		req.setCard(paymentInfo.getCreditCard().getNumber());
-		req.setExp(new SimpleDateFormat("MMyy").format(paymentInfo.getCreditCard().getExpiry()));
-		req.setRef(txId);
 		
+		boolean isRefund = (paymentInfo.getIsRefund() == null || paymentInfo.getIsRefund() == 0);
+		
+		if (!isRefund) {
+			
+			// Process requested is a normal payment.
+			req.setType(CaledonRequestType.PREAUTH);
+			req.setAmount(paymentInfo.getAmount());
+			req.setCard(paymentInfo.getCreditCard().getNumber());
+			req.setExp(new SimpleDateFormat("MMyy").format(paymentInfo.getCreditCard().getExpiry()));
+			req.setRef(txId);
+		
+		} else {
+			
+			// Process requested is a refund.
+			if (paymentInfo.getPayment() == null) {
+				log.error("Refund should refer to a previous payment.");
+			}
+			req.setType(CaledonRequestType.VOID);
+			req.setAmount(paymentInfo.getAmount());
+			req.setCard(paymentInfo.getCreditCard().getNumber());
+			req.setExp(new SimpleDateFormat("MMyy").format(paymentInfo.getCreditCard().getExpiry()));
+			req.setRef(paymentInfo.getPayment().getAuthorization().getTransactionId());
+		}
 		// Execute the request
 		CaledonResponseDTO resp;
 		try {
@@ -228,12 +258,23 @@ public class PaymentCaledonTask extends PaymentTaskWithTimeout implements
 		}
 		
 		// Determine result and update payment information
+		PaymentAuthorizationDTOEx auth = new PaymentAuthorizationDTOEx();
+		
 		if (resp.getCode().equals("0000")) {
 			paymentInfo.setResultId(Constants.RESULT_OK);
+			auth.setResult(Boolean.TRUE);
 		} else {
 			paymentInfo.setResultId(Constants.RESULT_FAIL);
+			auth.setResult(Boolean.FALSE);
 		}
-		return false;
+		
+		auth.setProcessor(PROCESSOR);
+		auth.setCode1(resp.getAuth());
+		auth.setTransactionId(txId);
+	    auth.setResponseMessage(resp.getText());
+	    storeProcessedAuthorization(paymentInfo, auth);
+		
+	    return true;
 	}
 
 }

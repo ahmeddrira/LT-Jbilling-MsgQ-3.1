@@ -26,7 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.jboss.security.Base64Utils;
+import org.apache.commons.codec.binary.Base64;
 
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.server.util.Util;
@@ -99,7 +99,7 @@ public class ConvertToBinHexa {
                 String oldPassword = rows.getString(2);
 
                 try {
-                    String newPassword = Util.binaryToString(Base64Utils.fromb64(oldPassword));
+                    String newPassword = Util.binaryToString(Base64.decodeBase64(oldPassword.getBytes()));
                     System.out.println("new " + newPassword + " old " + oldPassword);
                     updateUserRow(rowId, newPassword);
                     count++;

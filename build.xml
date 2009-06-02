@@ -1,17 +1,14 @@
 <project name="bop" default="deploy-local" basedir=".">
     
     <property file="build.properties"/>
-    <property file="${jboss.conf.dir}/jbilling.properties"/>
+    <property file="${jbilling.conf.dir}/jbilling.properties"/>
     
     <path id="compile.classpath">
-        <fileset dir="${jboss.client.dir}">
+        <fileset dir="${source.lib.dir}">
             <include name="*.jar"/>
         </fileset>
         <fileset dir="${libs.client.dir}">
             <include name="**/*.jar"/>
-        </fileset>
-        <fileset dir="${jboss.server.dir}/lib">
-            <include name="*.jar"/>
         </fileset>
         <pathelement location="${hibernate.tools.jar}"/>
     </path>
@@ -20,15 +17,16 @@
         <pathelement location="${junit.dir}/junit.jar"/>
         <pathelement location="${build.deploy.dir}/jbilling_api.jar"/>
         <pathelement location="${build.test.dir}"/>
-        <pathelement location="${jboss.server.dir}/lib/commons-logging.jar"/>
+        <pathelement location="${source.lib.dir}/commons-logging.jar"/>
+        <pathelement location="${source.lib.dir}/log4j.jar"/>
         <!-- classes for webservices -->
-        <pathelement location="${jboss.server.dir}/lib/spring.jar"/>
-        <pathelement location="${jboss.server.dir}/lib/cxf.jar"/>
-        <pathelement location="${jboss.server.dir}/lib/XmlSchema.jar"/>
-        <pathelement location="${jboss.server.dir}/lib/wsdl4j.jar"/>
-        <pathelement location="${jboss.server.dir}/lib/FastInfoset.jar"/>
-        <pathelement location="${jboss.server.dir}/lib/neethi.jar"/>
-        <pathelement location="${jboss.server.dir}/lib/hessian.jar"/>
+        <pathelement location="${source.lib.dir}/spring.jar"/>
+        <pathelement location="${source.lib.dir}/cxf.jar"/>
+        <pathelement location="${source.lib.dir}/XmlSchema.jar"/>
+        <pathelement location="${source.lib.dir}/wsdl4j.jar"/>
+        <pathelement location="${source.lib.dir}/FastInfoset.jar"/>
+        <pathelement location="${source.lib.dir}/neethi.jar"/>
+        <pathelement location="${source.lib.dir}/hessian.jar"/>
     </path>
     
     <path id="drools.classpath">
@@ -41,7 +39,7 @@
         <fileset dir="${build.deploy.dir}">
             <include name="*.jar" />
         </fileset>
-        <fileset dir="${jboss.server.dir}/lib">
+        <fileset dir="${source.lib.dir}">
             <include name="log4j*.jar"/>
         </fileset>
     </path>
@@ -64,43 +62,20 @@
         <fileset dir="${hibernate.tools.dir}">
             <include name="**/*.jar"/>
         </fileset>
-        <pathelement location="${jboss.server.dir}/lib/postgresql-8.2-507.jdbc4.jar"/>
+        <pathelement location="${source.lib.dir}/postgresql*.jar"/>
     </path>
 
     <path id="spring.classpath">
         <pathelement location="${source.spring.descriptor.dir}"/>
     </path>
     
-    
-    <!-- Run this target when installing a fresh jboss.
-	     It will copy all the additional (no jboss) jars -->
-    <target name="prepare-jboss">
-        <!-- Make the JDBC drivers available to JBoss  -->
-        <copy todir="${jboss.server.dir}/lib">
-            <fileset dir="${jdbc.home.dir}">
-                <include name="*jar"/>
-            </fileset>
-        </copy>
-        <!-- Make the some apis are available to JBoss  -->
-        <copy todir="${jboss.server.dir}/lib">
-            <fileset dir="${rowset.home.dir}">
-                <include name="rowset.jar"/>
-            </fileset>
-        </copy>
-        <copy todir="${jboss.server.dir}/lib" file="${http_client.jar}"/>
-        <copy todir="${jboss.server.dir}/lib" file="${logging.jar}"/>
-        <copy todir="${jboss.server.dir}/lib" file="${jasper.home.dir}/dist/jasperreports-0.5.3.jar"/>  
-        <copy todir="${jboss.server.dir}/lib" file="${jasper.home.dir}/lib/itext-1.01.jar"/>
-        <copy todir="${jboss.server.dir}/lib" file="${pjx.home.dir}/pjx.jar"/>
-    </target>
-    
+        
     <!-- Get client libraries from the binary distribution -->
     <target name="get-client-files" unless="client.libs.present">
         <mkdir dir="${libs.client.dir}"/>
         <unwar src="${deploy.local.dir}/billing.war"
  dest="${libs.client.dir}">
             <patternset>
-                <include name="WEB-INF/lib/*.jar"/>
                 <include name="**/*.tld"/>
             </patternset>
         </unwar>
@@ -113,32 +88,17 @@
         <mkdir dir="${source.view.dir}"/>
         <mkdir dir="${source.descriptor.dir}"/>
         <mkdir dir="${source.web.descriptor.dir}"/>
-        <mkdir dir="${source.jboss.descriptor.dir}"/>
         <mkdir dir="${source.torque.descriptor.dir}"/>
         <mkdir dir="${basedir}/build"/>
         <mkdir dir="${basedir}/tmp"/>
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.api.dir}"/>
         <mkdir dir="${build.test.dir}"/>
-        <mkdir dir="${build.generate.dir}"/>
         <mkdir dir="${build.designs.dir}"/>
         <mkdir dir="${build.deploy.dir}"/>
-        <mkdir dir="${build.ws.dir}/META-INF"/>
-        <mkdir dir="${build.ws.cs.dir}"/>
-        <mkdir dir="${deploy.local.dir}/resources"/>
         <mkdir dir="${deploy.resources.dir}/designs"/>
         <mkdir dir="${deploy.resources.dir}/invoices"/>
-        
-        <!-- Make sure JBOSS has all the configuration files  -->
-        <copy file="${source.jboss.descriptor.dir}/log4j.xml"
-              todir="${jboss.server.dir}/conf"/>
-        <copy file="${source.jboss.descriptor.dir}/login-config.xml"
-              todir="${jboss.server.dir}/conf"/>
-        <copy file="${source.jboss.descriptor.dir}/server.xml"
-              todir="${jboss.web.dir}"/>
-        <copy file="${source.jboss.descriptor.dir}/jboss-web.xml"
-              todir="${build.dir}/WEB-INF"/>
-        
+                
         <!-- Copy the messages file -->
         <copy todir="${deploy.resources.dir}">
             <fileset dir="${source.resources.descriptor.dir}">
@@ -158,48 +118,13 @@
         <!-- Check that one client library is available. If not, get
 		     all the client files required for a build from the 
 			 binary application -->
-        <available file="${libs.client.lib.dir}/struts.jar" 
+        <available file="${libs.client.dir}/WEB-INF/struts-bean.tld" 
                    property="client.libs.present"/>
     </target>
     
-    <!-- =================================================================== -->
-    <!-- Generates the EJB interfaces classes and deployment descriptors     -->
-    <!-- =================================================================== -->
-   
-    <target name="xdoclet-ejbgenerate" depends="init">
-        <taskdef
-            name="ejbdoclet"
-            classname="xdoclet.modules.ejb.EjbDocletTask"
-        >
-            <classpath refid="xdoclet.classpath"/>
-        </taskdef>
-        
-        <ejbdoclet
-            destdir="${build.generate.dir}"
-            excludedtags="@version,@author"
-            ejbspec="2.0"
-            force="false"
-            verbose="true"
-            mergeDir="${source.jboss.descriptor.dir}">
-            <fileset dir="${source.classes.dir}">
-                <include name="**/*Bean.java"/>
-                <include name="**/*WS.java"/>
-                <include name="**/*DTOEx.java"/>
-                <include name="**/PricingField.java"/>
-                <include name="**/entity/*DTO.java"/>
-            </fileset>
-            
-            <deploymentdescriptor destdir="${build.dir}/META-INF" />
-            <jboss version="${jboss.version}"
-                   xmlencoding="UTF-8"
-                   destdir="${build.dir}/META-INF"
-                   validateXml="false"
-            />
-        </ejbdoclet>
-    </target>
     
     <!-- =================================================================== -->
-    <!-- Generates the tld descriptors for the custom tags                                                              -->
+    <!-- Generates the tld descriptors for the custom tags                   -->
     <!-- =================================================================== -->
    
     <target name="xdoclet-webgenerate" depends="init">
@@ -223,35 +148,33 @@
     <!-- Complies the source code                                            -->
     <!-- =================================================================== -->
    
-    <target name="compile" depends="init,xdoclet-ejbgenerate,get-client-files">
+    <target name="compile" depends="init, get-client-files">
         <javac
             debug="on"
             destdir="${build.classes.dir}">
             <classpath refid="compile.classpath"/>
-            <src path="${build.generate.dir}"/>
             <src path="${source.classes.dir}"/>
         </javac>
     </target>
     
     <!-- =================================================================== -->
-    <!-- Create the JAR file with all the servers side classes (EJBs) -->
+    <!-- Create the JAR file with all the servers side classes               -->
     <!-- =================================================================== -->
  
     <target name="jar" depends="compile, findRevision">
         <copy file="${source.resources.descriptor.dir}/ehcache.xml" 
-              todir="${jboss.conf.dir}"/>
+              todir="${jbilling.conf.dir}"/>
         <jar jarfile="${build.deploy.dir}/jbilling.jar">
             <fileset dir="${build.classes.dir}">
                 <include name="${source.server.package.dir}/**"/>
                 <include name="${source.common.package.dir}/**"/>
-                <include name="${source.interfaces.package.dir}/**"/>
             </fileset>
             <fileset dir="${build.dir}" includes="META-INF/**">
             </fileset>
             <fileset dir="${source.resources.descriptor.dir}" 
                      includes="entityNotifications*.properties"/>
             <manifest>
-                <attribute name="Company" value="Sapienter Billing Software Corp."/>
+                <attribute name="Company" value="Enterprise jBilling Software Ltd."/>
                 <attribute name="Version" value="${version}"/>
                 <attribute name="Date" value="${DSTAMP} ${TSTAMP}"/>
                 <attribute name="Revision" value="${revisionNumber}"/>
@@ -268,10 +191,9 @@
     </target>
     
     
-    <target name="compile_api" depends="init, xdoclet-ejbgenerate">
+    <target name="compile_api" depends="init">
         <javac debug="on" destdir="${build.api.dir}" target="1.5" source="1.5">
             <classpath refid="compile.classpath"/>
-            <src path="${build.generate.dir}"/>
             <src path="${source.classes.dir}"/>
             <include name="com/sapienter/jbilling/server/util/api/*.java"/>
         </javac>
@@ -281,7 +203,7 @@
         <jar jarfile="${build.deploy.dir}/jbilling_api.jar">
             <fileset dir="${build.api.dir}"/>
             <manifest>
-                <attribute name="Company" value="Sapienter Billing Software Corp."/>
+                <attribute name="Company" value="Enterprise jBilling Software Ltd."/>
                 <attribute name="Version" value="${version}"/>
                 <attribute name="Date" value="${DSTAMP} ${TSTAMP}"/>
                 <attribute name="Revision" value="${revisionNumber}"/>
@@ -293,11 +215,10 @@
     <!-- Create the WAR file for the web-client, to be run by tomcat -->
     <!-- =================================================================== -->
  
-    <target name="war" depends="compile, xdoclet-webgenerate">
+    <target name="war" depends="compile, jar, xdoclet-webgenerate">
         <copy todir="${build.dir}/WEB-INF">
             <fileset dir="${source.web.descriptor.dir}">
                 <include name="*.xml"/>
-                <exclude name="log4j.xml"/>
             </fileset>
             <fileset dir="${taglib.home.dir}">
                 <include name="*.tld"/>
@@ -321,18 +242,15 @@
             <webinf dir="${build.dir}/WEB-INF">
                 <exclude name="web.xml"/>
             </webinf>
-            <lib dir="${libs.client.lib.dir}">
+            <lib dir="${source.lib.dir}">
                 <include name="*.jar"/>
             </lib>
+            <lib dir="${build.deploy.dir}">
+                <include name="jbilling.jar"/>
+            </lib>
             <classes dir="${build.classes.dir}" >
-                <include name="${source.interfaces.package.dir}/**"/>
-                <include name="${source.common.package.dir}/**"/>
                 <include name="${source.client.package.dir}/**"/>
-                <include name="${source.server.package.dir}/**"/>
                 <include name="org/apache.jsp/**"/>
-                <exclude name="${source.server.package.dir}/**/*BL.class"/> 
-                <exclude name="${source.server.package.dir}/**/*Bean.class"/> 
-                <exclude name="${source.server.package.dir}/**/*SQL.class"/> 
                 <include name="*.properties"/>
             </classes>
         </war>
@@ -344,19 +262,20 @@
     <!-- =================================================================== -->
    
     <target name="deploy-local" depends="jar,war,designs">
-        <copy todir="${deploy.local.dir}">
-            <fileset dir="${build.deploy.dir}" excludes="jbilling_api.jar"/>
-        </copy>
+        <copy file="${build.deploy.dir}/billing.war" 
+              todir="${deploy.local.dir}"/>
         <copy todir="${deploy.resources.dir}/designs">
             <fileset dir="${build.designs.dir}">
                 <include name="*.jasper"/>
             </fileset>
         </copy>
-        <copy todir="${jboss.conf.dir}" overwrite="yes">
+        <copy todir="${jbilling.conf.dir}" overwrite="yes">
             <fileset dir="${source.spring.descriptor.dir}">
                 <include name="*.xml"/>
             </fileset>
         </copy>
+        <copy file="${source.resources.descriptor.dir}/log4j.xml" 
+              todir="${jbilling.conf.dir}"/>
     </target>
     
     <!-- compile the Jasper design reports -->
@@ -422,7 +341,7 @@
         <exec executable="psql" failonerror="true">
             <arg line=" -U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test"/>
         </exec>
-        <echo>Ready. Start-up JBoss and run 'ant test'</echo>
+        <echo>Ready. Start-up Tomcat and run 'ant test'</echo>
     </target>
     
     <target name="test-ws" depends="jar_api">

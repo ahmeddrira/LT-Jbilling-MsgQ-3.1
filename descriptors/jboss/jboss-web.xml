@@ -1,6 +1,0 @@
-<!-- This was an attempt (with high hopes) to make tomcat to use jboss login-config.xml
-	 for the authentication. It didn't work-->
-	 
-<jboss-web>
-	<security-domain>java:/jaas/betty</security-domain>
-</jboss-web>

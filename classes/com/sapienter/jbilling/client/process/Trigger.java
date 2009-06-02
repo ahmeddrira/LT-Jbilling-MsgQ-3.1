@@ -54,6 +54,7 @@ import com.sapienter.jbilling.server.util.Context;
 public class Trigger implements Job {
 
     private static final Logger LOG = Logger.getLogger(Trigger.class);
+    private static Scheduler sched = null;
 
     /**
      * Initialize tool Trigger. Load properties from jbilling.properties and set up Quartz job/trigger
@@ -134,7 +135,7 @@ public class Trigger implements Job {
         // startup trigger
         try {
             SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
-            Scheduler sched = schedFact.getScheduler();
+            sched = schedFact.getScheduler();
             JobDetail jbillingJob = new JobDetail("jbilling", Scheduler.DEFAULT_GROUP, Trigger.class);
 
             SimpleTrigger trigger = new SimpleTrigger("jbillingTrigger",
@@ -149,6 +150,15 @@ public class Trigger implements Job {
             sched.scheduleJob(jbillingJob, trigger);
 
             sched.start();
+        } catch (SchedulerException e) {
+            LOG.debug(e);
+        }
+    }
+
+    // called at shutdown
+    public static void shutdown() {
+        try {
+            sched.shutdown();
         } catch (SchedulerException e) {
             LOG.debug(e);
         }

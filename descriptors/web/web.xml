@@ -117,13 +117,6 @@
   </servlet>
 
 
-  <!-- Trigger startup Servlet -->
-  <servlet>
-  	<servlet-name>trigger</servlet-name>
-  	<servlet-class>com.sapienter.jbilling.client.process.TriggerHelperServlet</servlet-class>
-  	<load-on-startup>10</load-on-startup>
-  </servlet>
-
   <!-- Spring MVC DispatcherServlet -->
   <servlet>
     <servlet-name>jbilling</servlet-name>
@@ -174,6 +167,11 @@
 	<servlet-name>CXFServlet</servlet-name>
 	<url-pattern>/cxf/*</url-pattern>
   </servlet-mapping>
+
+  <!-- jBilling Servlet Context Listener -->
+  <listener>
+  	<listener-class>com.sapienter.jbilling.client.util.JBillingListener</listener-class>
+  </listener>
 
   <!-- Spring MVC ContextLoaderListener configuration -->
   <listener>

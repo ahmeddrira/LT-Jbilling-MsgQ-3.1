@@ -22,16 +22,19 @@ package com.sapienter.jbilling.server.util;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
 import org.springframework.context.ApplicationContext;
 
 public class Context {
 
     // get ApplicationContext configured by jbilling-beansRefFactory.xml
-    private static final ApplicationContext spring = (ApplicationContext)
+    private static final BeanFactoryReference factoryRef = 
             ContextSingletonBeanFactoryLocator.getInstance(
             "jbilling-beansRefFactory.xml").useBeanFactory(
-            "com.sapienter.jbilling").getFactory();
+            "com.sapienter.jbilling");
+    private static final ApplicationContext spring = (ApplicationContext)
+            factoryRef.getFactory();
     
     public enum Name {
         ITEM_SESSION, 
@@ -119,5 +122,10 @@ public class Context {
     
     public static Object getBean(Name bean) {
         return spring.getBean(springBeans.get(bean));
+    }
+
+    // called at shutdown
+    public static void shutdown() {
+        factoryRef.release();
     }
 }

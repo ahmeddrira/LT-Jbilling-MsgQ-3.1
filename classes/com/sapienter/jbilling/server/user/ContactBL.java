@@ -44,7 +44,6 @@ import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
-import javax.ejb.CreateException;
 
 public class ContactBL {
     private static final Logger LOG = Logger.getLogger(ContactBL.class);             

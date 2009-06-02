@@ -25,8 +25,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.jboss.security.Base64Utils;
 
 public abstract class JBCrypto {
 
@@ -70,7 +70,8 @@ public abstract class JBCrypto {
         }
 
         byte[] hash = md5.digest(input.getBytes(UTF8));
-        return useHexForBinary ? com.sapienter.jbilling.server.util.Util.binaryToString(hash) : Base64Utils.tob64(hash);
+        return useHexForBinary ? com.sapienter.jbilling.server.util.Util.binaryToString(hash) : 
+                new String(Base64.encodeBase64(hash));
     }
 
     private static JBCrypto loadCreditCardCrypto() {

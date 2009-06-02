@@ -18,35 +18,32 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.client.process;
+package com.sapienter.jbilling.client.util;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.client.item.CurrencyArrayWrap;
-import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.process.Trigger;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.list.IListSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 /**
- * 
- * @author Justin
- *
+ * Listens for servlet context initialization and destruction. Used to
+ * start/stop jBilling services when the servlet container 
+ * starts/stops.
  */
-public class TriggerHelperServlet extends HttpServlet {
+public class JBillingListener implements ServletContextListener {
 
-    private static final Logger LOG = Logger.getLogger(TriggerHelperServlet.class);
+    private static final Logger LOG = Logger.getLogger(JBillingListener.class);
 
-	public void init(ServletConfig config) throws ServletException {
+	public void contextInitialized(ServletContextEvent event) {
 		
-		super.init(config);
-        
-        
         // validate that the java version is correct
         validateJava();
 		
@@ -55,7 +52,7 @@ public class TriggerHelperServlet extends HttpServlet {
 		Trigger.Initialize();
         
         // initialize the currencies, which are in application scope
-        ServletContext context = config.getServletContext();
+        ServletContext context = event.getServletContext();
         LOG.debug("Loadding application currency symbols");
         try {
             IListSessionBean myRemoteSession = (IListSessionBean) 
@@ -64,7 +61,7 @@ public class TriggerHelperServlet extends HttpServlet {
                     new CurrencyArrayWrap(
                             myRemoteSession.getCurrencySymbolsMap()));
         } catch (Exception e) {
-            throw new ServletException(e);
+            throw new SessionInternalError(e);
         }
         
     }
@@ -83,5 +80,10 @@ public class TriggerHelperServlet extends HttpServlet {
         if (!System.getProperty("java.vendor").matches(".*Sun.*")) {
             LOG.warn("Your java vendor is not Sun. Results are unpredicatble");
         }
+    }
+
+    public void contextDestroyed(ServletContextEvent event) {
+        Context.shutdown(); // shutdown Spring container
+        Trigger.shutdown(); // shutdown Quartz scheduler
     }
 }

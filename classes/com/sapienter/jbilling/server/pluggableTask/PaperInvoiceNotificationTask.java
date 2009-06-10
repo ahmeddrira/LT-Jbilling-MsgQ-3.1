@@ -91,9 +91,10 @@ public class PaperInvoiceNotificationTask
             // link the batch to this invoice
             InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
             record.getInvoices().add(invoiceBL.getEntity());
+            invoice.setPaperInvoiceBatch(record);
             // lock the row
-            InvoiceDTO myInvoice = new InvoiceDAS().findForUpdate(invoice.getId());
-            myInvoice.setPaperInvoiceBatch(record);
+            //InvoiceDTO myInvoice = new InvoiceDAS().findForUpdate(invoice.getId());
+            //myInvoice.setPaperInvoiceBatch(record);
         } catch (Exception e) {
             throw new TaskException(e);
         }

@@ -38,8 +38,10 @@ public class NotificationMessageArchDAS extends
             MessageSection[] sections) {
 
         NotificationMessageArchLineDAS lineHome = new NotificationMessageArchLineDAS();
+        NotificationMessageArchDTO nma = new NotificationMessageArchDTO();
+        nma.setTypeId(id);
+        nma.setCreateDatetime(new Date());
 
-        HashSet<NotificationMessageArchLineDTO> newLines = new HashSet<NotificationMessageArchLineDTO>();
         for (int f = 0; f < sections.length; f++) {
 
             String content = sections[f].getContent();
@@ -48,14 +50,11 @@ public class NotificationMessageArchDAS extends
                         .length() : index + LINE_LENGTH;
                 NotificationMessageArchLineDTO line = lineHome.create(content
                         .substring(index, end), sections[f].getSection());
-                newLines.add(line);
+                line.setNotificationMessageArch(nma);
+                nma.getNotificationMessageArchLines().add(line);
             }
         }
 
-        NotificationMessageArchDTO nma = new NotificationMessageArchDTO();
-        nma.setTypeId(id);
-        nma.setCreateDatetime(new Date());
-        nma.setNotificationMessageArchLines(newLines);
         return save(nma);
     }
 

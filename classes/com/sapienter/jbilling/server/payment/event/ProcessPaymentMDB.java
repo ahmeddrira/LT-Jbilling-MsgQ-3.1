@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.payment.event;
 
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -52,10 +53,15 @@ public class ProcessPaymentMDB implements MessageListener {
             			" processId: " + myMessage.getInt("processId") +
             			" runId:" + myMessage.getInt("runId") +
             			" invoiceId:" + myMessage.getInt("invoiceId"));
+                Integer invoiceId = (myMessage.getInt("invoiceId") == -1) ? null : myMessage.getInt("invoiceId");
+                if (invoiceId != null) {
+                    // lock it
+                    new InvoiceDAS().findForUpdate(invoiceId);
+                }
                 process.processPayment(
                         (myMessage.getInt("processId") == -1) ? null : myMessage.getInt("processId"),
                         (myMessage.getInt("runId") == -1) ? null : myMessage.getInt("runId"),
-                        (myMessage.getInt("invoiceId") == -1) ? null : myMessage.getInt("invoiceId"));
+                        invoiceId);
                 LOG.debug("Done");
             } else if (type.equals("ender")) {
                 process.endPayments(myMessage.getInt("runId"));

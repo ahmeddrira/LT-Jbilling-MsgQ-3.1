@@ -56,8 +56,8 @@ public class NotificationMessageArchDTO implements Serializable {
     private Integer typeId;
     private Date createDatetime;
     private String resultMessage;
-    private Set<NotificationMessageArchLineDTO> notificationMessageArchLines = new HashSet<NotificationMessageArchLineDTO>(
-            0);
+    private Set<NotificationMessageArchLineDTO> notificationMessageArchLines =
+            new HashSet<NotificationMessageArchLineDTO>(0);
     private int versionNum;
 
     public NotificationMessageArchDTO() {

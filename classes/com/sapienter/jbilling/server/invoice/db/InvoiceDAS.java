@@ -70,6 +70,27 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         return data;
     }
 
+    // used for checking if a user was subscribed to something at a given date
+    public List<Integer> findIdsByUserAndPeriodDate(Integer userId, Date date) {
+
+        String hql = "select pr.invoice.id" +
+                     "  from OrderProcessDTO pr " +
+                     "  where pr.invoice.baseUser.id = :userId" +
+                     "    and pr.invoice.deleted = 0" +
+                     "    and pr.periodStart <= :date" +
+                     "    and pr.periodEnd > :date" + // the period end is not included
+                     "    and pr.isReview = 0";
+
+        List<Integer> data = getSession()
+                        .createQuery(hql)
+                        .setParameter("userId", userId)
+                        .setParameter("date", date)
+                        .setComment("InvoiceDAS.findIdsByUserAndPeriodDate " + userId + " - " + date)
+                        .list();
+        return data;
+    }
+
+
 	public Double findTotalForPeriod(Integer userId, Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);

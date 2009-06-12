@@ -46,6 +46,7 @@ import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
 import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
@@ -1146,34 +1147,13 @@ public class UserBL extends ResultList
     
     /**
      * Checks if the user has been invoiced for anything at the time given
-     * as a parameter. Only the latest invoice is considered, so this only
-     * works if the system carries over invoices with balance.
-     * To make this work in more cases, the invoice/s that apply to the 
-     * give date should be considered
+     * as a parameter. 
      * @return
      */
     public boolean isCurrentlySubscribed(Date forDate) {
-        boolean retValue = false;
-        try {
-            InvoiceBL invoice = new InvoiceBL();
-            Integer id = invoice.getLastByUser(user.getUserId());
-            if (id != null) {
-                invoice = new InvoiceBL(id);
-                for(OrderProcessDTO period: 
-                    (Collection<OrderProcessDTO>)invoice.getEntity().getOrderProcesses()) {
-                    
-                    LOG.debug("testing from " + period.getPeriodStart() +
-                            " tp " + period.getPeriodEnd() + " for " + forDate);
-                    if (period.getPeriodStart() != null && period.getPeriodStart().compareTo(forDate) <= 0 &&
-                            period.getPeriodEnd() != null && period.getPeriodEnd().after(forDate)) {
-                        retValue = true;
-                        break;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        } 
+
+        List<Integer> results = new InvoiceDAS().findIdsByUserAndPeriodDate(user.getUserId(), forDate);
+        boolean retValue = !results.isEmpty();
         
         LOG.debug(" user " + user.getUserId() + " is subscribed result " + retValue);
         

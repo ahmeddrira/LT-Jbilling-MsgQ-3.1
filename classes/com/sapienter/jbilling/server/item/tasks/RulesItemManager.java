@@ -34,6 +34,7 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
@@ -250,7 +251,9 @@ public class RulesItemManager extends BasicItemManager {
             newOrder.setId(0);
             newOrder.setVersionNum(null);
             // the period needs to be in the session
-            newOrder.setOrderPeriod(order.getOrderPeriod());
+            newOrder.setOrderPeriodId(order.getOrderPeriod().getId());
+            // the status should be active
+            newOrder.setOrderStatus(new OrderStatusDAS().find(Constants.ORDER_STATUS_ACTIVE));
             // but without the lines
             newOrder.getLines().clear();
             // but do get the new line in

@@ -55,6 +55,7 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
 import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.system.event.EventManager;
@@ -383,9 +384,11 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                     EventManager.process(event);
                 }
 
+                // lock the run record to avoid contention with the MDB
+                ProcessRunDTO myRun = new ProcessRunDAS().findForUpdate(runId);
                 // update the run record with the results of the run
-                runBL.getEntity().setFinished(Calendar.getInstance().getTime());
-                runBL.getEntity().setInvoicesGenerated(new Integer(0));
+                myRun.setFinished(Calendar.getInstance().getTime());
+                myRun.setInvoicesGenerated(new Integer(0));
                 // the payment processing is happening in parallel
                 // this event marks the end of it
                 EndProcessPaymentEvent event = new EndProcessPaymentEvent(

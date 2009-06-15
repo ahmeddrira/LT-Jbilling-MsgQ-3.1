@@ -203,7 +203,7 @@ public class BillingProcessRunBL {
         // get the very latest version
         billingProcessRun = processRunDas.findForUpdate(billingProcessRun.getId());
         billingProcessRun.setFinished(Calendar.getInstance().getTime());
-        LOG.debug("updating run version " + billingProcessRun.getVersionNum());
+        LOG.debug("updating run " + billingProcessRun.getId() +" version " + billingProcessRun.getVersionNum());
         billingProcessRun = processRunDas.save(billingProcessRun);
     }
     
@@ -211,7 +211,7 @@ public class BillingProcessRunBL {
         // get the very latest version
         billingProcessRun = processRunDas.findForUpdate(billingProcessRun.getId());
         billingProcessRun.setPaymentFinished(Calendar.getInstance().getTime());
-        LOG.debug("updating payments run version " + billingProcessRun.getVersionNum());
+        LOG.debug("updating payments run " + billingProcessRun.getId() +" version " + billingProcessRun.getVersionNum());
         billingProcessRun = processRunDas.save(billingProcessRun);
     }
     

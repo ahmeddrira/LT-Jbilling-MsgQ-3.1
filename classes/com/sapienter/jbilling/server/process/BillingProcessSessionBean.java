@@ -195,6 +195,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         // create a new run record
         BillingProcessRunBL runBL = new BillingProcessRunBL();
         runBL.create(process.getEntity(), process.getEntity().getBillingDate());
+        LOG.debug("created process run " + runBL.getEntity().getId());
 
         return runBL.getEntity().getId();
     }
@@ -368,8 +369,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 // it's time for a retry
                 LOG.debug("Retring process " + processId);
                 Integer runId = process.createRetryRun(processId); 
-                BillingProcessRunBL runBL = new BillingProcessRunBL(runId);
-                Integer entityId = runBL.getEntity().getBillingProcess().getEntity().getId();
+                Integer entityId = new BillingProcessDAS().find(processId).getEntity().getId();
 
                 // get the invoices yet to be paid from this process
                 InvoiceBL invoiceBL = new InvoiceBL();
@@ -378,21 +378,19 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                     InvoiceDTO invoice = (InvoiceDTO) it.next();
                     LOG.debug("Retrying invoice " + invoice.getId());
 
-                    // post the need a a payment process, it'll be done asynchronusly
+                    // post the need of a payment process, it'll be done asynchronusly
                     ProcessPaymentEvent event = new ProcessPaymentEvent(invoice.getId(), 
                             null, runId, entityId);
                     EventManager.process(event);
                 }
 
-                // lock the run record to avoid contention with the MDB
-                ProcessRunDTO myRun = new ProcessRunDAS().findForUpdate(runId);
-                // update the run record with the results of the run
-                myRun.setFinished(Calendar.getInstance().getTime());
-                myRun.setInvoicesGenerated(new Integer(0));
+                // update the end date of this run
+                BillingProcessRunBL runBl = new BillingProcessRunBL(runId);
+                runBl.updateFinished();
+
                 // the payment processing is happening in parallel
                 // this event marks the end of it
-                EndProcessPaymentEvent event = new EndProcessPaymentEvent(
-                        runBL.getEntity().getId(), entityId);
+                EndProcessPaymentEvent event = new EndProcessPaymentEvent(runId, entityId);
                 EventManager.process(event);
 
                 

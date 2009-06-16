@@ -43,14 +43,17 @@ public class ListEntityDAS extends AbstractDAS<ListEntityDTO> {
         return save(entity);
     }
 
+
     public ListEntityDTO findByEntity(Integer listId, Integer entityId) {
 
         Criteria criteria = getSession().createCriteria(ListEntityDTO.class);
-        criteria.add(Restrictions.eq("id", listId.intValue()));
-        criteria.createAlias("entity", "entity").add(
+        criteria.createAlias("list", "list").add(
+                Restrictions.eq("list.id", listId.intValue()))
+        .createAlias("entity", "entity").add(
                 Restrictions.eq("entity.id", entityId.intValue()))
         .setComment("ListEtntityDAS.findByEntity");
 
         return (ListEntityDTO) criteria.uniqueResult();
     }
+
 }

@@ -14276,6 +14276,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 48	18	com.sapienter.jbilling.server.provisioning.task.CAIProvisioningTask	2
 49	6	com.sapienter.jbilling.server.payment.tasks.PaymentRouterCurrencyTask	2
 50	18	com.sapienter.jbilling.server.provisioning.task.MMSCProvisioningTask	5
+51	3	com.sapienter.jbilling.server.invoice.task.NegativeBalanceInvoiceFilterTask	0
 \.
 
 

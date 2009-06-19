@@ -298,6 +298,15 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
 	}
 
+    public Float findTotalBalanceByUser(Integer userId) {
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        addUserCriteria(criteria, userId);
+        criteria.add(Restrictions.gt("balance", new Float(0)));
+        criteria.add(Restrictions.eq("isReview", 0));
+        criteria.setProjection(Projections.sum("balance"));
+        return (Float) criteria.uniqueResult();
+    }
+
 	/*
 	 * signature="Collection findProccesableByUser(java.lang.Integer userId)"
  *             query="SELECT OBJECT(a) 

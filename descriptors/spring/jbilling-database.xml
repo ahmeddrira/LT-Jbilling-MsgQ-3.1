@@ -38,7 +38,10 @@
         <property name="username" value="jbilling" />
         <property name="password" value="jbilling" />
         <property name="initialSize" value="5"/>
-        <property name="maxWait" value="-1" />
+        <property name="maxWait" value="10000" />
+        <property name="maxActive" value="20" />
+        <property name="maxIdle" value="5" />
+        <property name="minIdle" value="2" />
     </bean>
        
     <tx:annotation-driven transaction-manager="transactionManager"/>

@@ -112,7 +112,7 @@ public class PluggableTaskTypeDTO extends AbstractDescription implements Seriali
     public String toString() {
         StringBuffer str = new StringBuffer("{");
         str.append("-" + this.getClass().getName() + "-");
-        str.append("id=" + getId() + " " + "className=" + getClassName() + " " +
+        str.append("id=" + getPk() + " " + "className=" + getClassName() + " " +
                 "minParameters=" + getMinParameters() + " " + "category=" + getCategory());
         str.append('}');
 

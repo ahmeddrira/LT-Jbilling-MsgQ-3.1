@@ -245,8 +245,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     
                     UserDTO userD = new UserDAS().find(userId);
                     userD.getCreditCards().add(ccBL.getEntity());
-                    ccBL.getEntity().getBaseUsers().add(userD);
-                    
                 }
                 LOG.debug("Done");
                 return userId;

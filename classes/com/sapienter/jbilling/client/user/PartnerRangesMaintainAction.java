@@ -26,6 +26,7 @@ package com.sapienter.jbilling.client.user;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts.action.ActionError;
@@ -35,6 +36,7 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
+import com.sapienter.jbilling.server.user.PartnerRangeComparator;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 import com.sapienter.jbilling.server.util.Context;
@@ -53,8 +55,8 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
 	private static final String FIELD_RANGE_FROM = "range_from";
 
 	private static final String FORWARD_EDIT = "ranges_edit";
-	private static final String FORWARD_PARTNER = "ranges_partner";
-	
+	private static final String FORWARD_PARTNER = "partner_list";
+
 	private IUserSessionBean myUserSession;
 	
 	public PartnerRangesMaintainAction(){
@@ -112,19 +114,34 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
         
         if (errors.isEmpty()) {
             Partner p = new Partner();
-            
-            p.getRanges().addAll(Arrays.asList(data));
-            int ret = p.validateRanges();
-            if (ret == 2) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("partner.ranges.error.consec"));
-            } else if (ret == 3) {
-                errors.add(ActionErrors.GLOBAL_ERROR,
-                        new ActionError("partner.ranges.error.gap"));
-            }
+            p.getRanges().addAll(ranges);
+            validateRanges(ranges);
         }
         return new PartnerRangedMaintainActionContext(data);
 	}
+
+    /**
+     * validate that the ranges start from 1, have no superpositions and
+     * no gaps
+     */
+    private void validateRanges(List<PartnerRange> partnerRanges) {
+        int retValue = 0;
+        int last = 0;
+        
+        for (PartnerRange range: partnerRanges) {
+            if (range.getRangeTo() <= range.getRangeFrom()) {
+                errors.add(ActionErrors.GLOBAL_ERROR,
+                        new ActionError("partner.ranges.error.consec"));
+                break;
+            } else if (range.getRangeFrom() != last + 1) {
+                errors.add(ActionErrors.GLOBAL_ERROR,
+                        new ActionError("partner.ranges.error.gap"));
+                break;
+            } else {
+                last = range.getRangeTo();
+            }
+        }
+    }
 	
 	@Override
 	protected ForwardAndMessage doSetup() throws RemoteException {
@@ -136,8 +153,12 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
 		String[] allPercentages = new String[MAX_RANGES];
 		String[] allReferralFees = new String[MAX_RANGES];
 
-		for (int f = 0; f < Math.min(MAX_RANGES, partner.getRanges().size()); f++) {
-			PartnerRange next = (PartnerRange) partner.getRanges().toArray()[f];
+        ArrayList<PartnerRange> ranges = new ArrayList(partner.getRanges());
+        Collections.sort(ranges, new PartnerRangeComparator());
+        int numOfRanges = Math.min(MAX_RANGES, partner.getRanges().size());
+
+		for (int f = 0; f < numOfRanges; f++) {
+			PartnerRange next = ranges.get(f);
 			allFrom[f] = String.valueOf(next.getRangeFrom());
 			allTo[f] = String.valueOf(next.getRangeTo());
 			allPercentages[f] = float2string(next.getPercentageRate());

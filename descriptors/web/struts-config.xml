@@ -597,6 +597,7 @@
         <action path="/partnerRangesMaintain" type="com.sapienter.jbilling.client.user.PartnerRangesMaintainAction" name="partnerRanges" validate="false" scope="session">
             <forward name="ranges_edit" path="/user/partnerRangesEdit.jsp" redirect="false" />
             <forward name="ranges_partner" path="/user/partnerEdit.jsp" redirect="false" />
+            <forward name="partner_list" path="/user/listPartner.jsp" redirect="false" />
         </action>
         <action path="/signupEntity" type="com.sapienter.jbilling.client.signup.NewEntityAction" name="newEntity" scope="session" input="/signup/newEntity.jsp" validate="false">
             <forward name="edit" path="/signup/newEntity.jsp" redirect="false" />

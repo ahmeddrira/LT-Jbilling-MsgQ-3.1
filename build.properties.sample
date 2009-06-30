@@ -32,6 +32,7 @@ struts.home.tag.dir=${libs.client.dir}/WEB-INF
 #the next directory is needed to run xdoclet
 xdoclet.home.dir=${libs.dir}/xdoclet
 hibernate.tools.dir=U:/bop/tools/hibernate/tools
+junit.dir=${basedir}/libs/junit
 
 #
 # Deployment related properties

@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -170,14 +171,15 @@ public class PartnerBL extends ResultList
         
         if (doProcess) {
             // now creating the row
-            PartnerPayout payout = new PartnerPayout();
+            payout = new PartnerPayout();
             payout.setStartingDate(startDate);
             payout.setEndingDate(endDate);
             payout.setBalanceLeft(0);
             payout.setPaymentsAmount(0);
             payout.setRefundsAmount(0);
             payout.setPartner(partner);
-            partner.getPartnerPayouts().add(new PartnerPayoutDAS().save(payout));
+            payout = new PartnerPayoutDAS().save(payout);
+            partner.getPartnerPayouts().add(payout);
         } else {
             payout = null; // to avoid confustion
         }
@@ -287,6 +289,7 @@ public class PartnerBL extends ResultList
             throws NamingException, SessionInternalError {
         PaymentBL paymentBL = new PaymentBL();
         boolean retValue;
+        PaymentDTO createdPayment = null;
         // isRefund is not null, so having to decide it is better to use refund.
         payment.setPayoutId(payout.getId());
         payment.setIsRefund(new Integer(1));
@@ -297,12 +300,14 @@ public class PartnerBL extends ResultList
         Integer result = Constants.RESULT_OK;
         if (process) {
             result = paymentBL.processPayment(entityId, payment);
+            createdPayment = paymentBL.getEntity();
             if (result == null) { // means no pluggable task config.
                 result = Constants.RESULT_UNAVAILABLE;
             }
         } else {
             // create the payment row
             paymentBL.create(payment);
+            createdPayment = paymentBL.getEntity();
         }
         // and link it to this payout row
         payout.setPayment(new PaymentDAS().find(paymentBL.getEntity().getId()));
@@ -325,7 +330,7 @@ public class PartnerBL extends ResultList
         } else {
             retValue = false;
         }
-        payment.setPaymentResult(new PaymentResultDAS().find(result));
+        createdPayment.setPaymentResult(new PaymentResultDAS().find(result));
 
         return retValue;
     }
@@ -394,9 +399,11 @@ public class PartnerBL extends ResultList
         
         LOG.debug("total " + total + " currency = " + currencyId);
         PartnerPayout retValue = new PartnerPayout();
-        retValue.getPayment().setAmount(total.floatValue());
-        retValue.getPayment().setCurrency(new CurrencyDAS().find(currencyId));
-        retValue.getPayment().setBaseUser(partner.getBaseUser());
+        PaymentDTO payment = new PaymentDTO();
+        payment.setAmount(total.floatValue());
+        payment.setCurrency(new CurrencyDAS().find(currencyId));
+        payment.setBaseUser(partner.getBaseUser());
+        retValue.setPayment(payment);
         retValue.setRefundsAmount(new Float(refundTotal.floatValue()));
         retValue.setPaymentsAmount(new Float(paymentTotal.floatValue()));
         retValue.setStartingDate(start);
@@ -506,8 +513,10 @@ public class PartnerBL extends ResultList
         BigDecimal fee = null;
         if (partner.getRanges().size() > 0) {
             getRangedCommission();
-            rate = new BigDecimal(partnerRange.getPercentageRate().toString());
-            fee = new BigDecimal(partnerRange.getReferralFee().toString());
+            rate = partnerRange.getPercentageRate() == null ? null : 
+                    new BigDecimal(partnerRange.getPercentageRate().toString());
+            fee = partnerRange.getReferralFee() == null ? null : 
+                    new BigDecimal(partnerRange.getReferralFee().toString());
         } else {
             rate = new BigDecimal(partner.getPercentageRate().toString());
             fee = new BigDecimal(partner.getReferralFee().toString());
@@ -515,11 +524,11 @@ public class PartnerBL extends ResultList
 
         LOG.debug("using rate " + rate + " fee " + fee);
         // apply the rate to get the commission value
-        if (rate != null) {
+        if (rate != null && rate.floatValue() != 0.0F) {
             result = decAmount.divide(new BigDecimal("100"), 
             		CommonConstants.BIGDECIMAL_SCALE, 
             		CommonConstants.BIGDECIMAL_ROUND).multiply(rate).floatValue();
-        } else if (fee != null) {
+        } else if (fee != null && fee.floatValue() != 0.0F) {
             CurrencyBL currency = new CurrencyBL();
             Integer partnerCurrencyId = partner.getFeeCurrency().getId();
             if (partnerCurrencyId == null) {
@@ -635,8 +644,8 @@ public class PartnerBL extends ResultList
         // remove existing ranges (a clear will only set the partner_id = null)
         for (Iterator it = partner.getRanges().iterator(); it.hasNext();) {
             partnerRange = (PartnerRange) it.next();
+            it.remove();
             new PartnerRangeDAS().delete(partnerRange);
-            it = partner.getRanges().iterator();
         }
         
         // may be this is a delete

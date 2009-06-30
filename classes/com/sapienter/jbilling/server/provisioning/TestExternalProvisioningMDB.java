@@ -261,12 +261,12 @@ public class TestExternalProvisioningMDB implements MessageListener {
 			
 			value = message.getStringProperty("out_statusMessage");
 			
-			if (!value.equals("Customer Added Successfully")) {
+			if (!value.equals("Operation Performed Successfully")) {
 				success = false;
-				LOG.error("Expected a statusMessage of 'Customer Added Successfully'. But Got: '" + value
+				LOG.error("Expected a statusMessage of 'Operation Performed Successfully'. But Got: '" + value
 						+ "'");
 			} else {
-				LOG.debug("Got statusMessage of 'Customer Added Successfully' ");
+				LOG.debug("Got statusMessage of 'Operation Performed Successfully' ");
 			}
 
 			Integer orderLineId = message.getIntProperty("in_order_line_id");

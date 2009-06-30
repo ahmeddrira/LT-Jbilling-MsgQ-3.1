@@ -271,9 +271,9 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(1009,users.length);
+            assertEquals(1015,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 10741, users[1008].intValue());
+            assertEquals("Last returned user ", 10751, users[1014].intValue());
 
             /*
              * Get list of not active customers
@@ -477,9 +477,10 @@ public class WSTest extends TestCase {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer[] ids = api.getUsersByCreditCard("1152");
-            assertNotNull("One customer with CC", ids);
-            assertEquals("One customer with CC",3, ids.length);
-            //assertEquals("Created user with CC", 10731, ids[0].intValue());
+            assertNotNull("Four customers with CC", ids);
+            assertEquals("Four customers with CC", 4, ids.length);
+            assertEquals("Created user with CC", 10751, 
+                    ids[ids.length - 1].intValue());
                     
             // get the user
             assertNotNull("Getting found user",api.getUserWS(ids[0]));

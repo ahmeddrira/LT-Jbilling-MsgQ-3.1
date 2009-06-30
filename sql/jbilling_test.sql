@@ -1966,7 +1966,6 @@ COPY ageing_entity_step (id, entity_id, status_id, days, optlock) FROM stdin;
 --
 
 COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscriber_status, currency_id, create_datetime, last_status_change, last_login, user_name, failed_attempts, optlock) FROM stdin;
-1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2007-12-28 14:40:46.604	admin	0	1
 2	1	6a204bd89f3c8348afd5c77c717a097a	0	1	1	9	1	2006-07-26 09:29:19.596	\N	\N	gandalf	0	1
 12	2	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2006-12-07 00:00:00	\N	2007-08-16 14:56:18.752	mordor	0	1
 13	2	9369e99369e9	0	1	1	9	1	2006-12-07 14:56:32.79	\N	\N	orc1	0	1
@@ -2977,6 +2976,13 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 1072	1	eee0f3c319c7bdaf6311559eec5058e1	0	1	1	14	1	2007-09-12 12:15:04.533	\N	\N	testUserName-1189624504355	0	1
 10730	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-04-08 22:00:53.823	\N	\N	payment-router-currency-1	0	2
 10731	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	11	2009-04-08 22:01:32.259	\N	\N	payment-router-currency-2	0	2
+1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2007-12-28 14:40:46.604	admin	0	4
+10746	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-06-23 20:33:44.57	\N	\N	partner-customer1	0	1
+10748	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-06-23 20:34:20.537	\N	\N	partner-customer3	0	2
+10747	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-06-23 20:34:03.466	\N	\N	partner-customer2	0	2
+10740	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner1	0	2
+10741	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner2	0	1
+10742	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-05 00:00:00	\N	\N	partner3	0	2
 \.
 
 
@@ -4043,6 +4049,12 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 1128	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	2008-09-26 00:00:00	0	1	\N	1
 112500	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-1@test.com	2009-04-08 22:00:53.927	0	1	10730	4
 112501	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	payment-router-currency-2@test.com	2009-04-08 22:01:32.286	0	1	10731	4
+112601	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner2@partners.com	2009-06-23 16:30:54.845	0	1	10741	1
+112607	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer1@partners.com	2009-06-23 20:33:44.596	0	1	10746	1
+112608	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer2@partners.com	2009-06-23 20:34:03.47	0	1	10747	1
+112609	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer3@partners.com	2009-06-23 20:34:20.542	0	1	10748	1
+112600	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner1@partners.com	2009-06-23 16:25:44.594	0	1	10740	4
+112602	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner3@partners.com	2009-06-23 16:37:05.548	0	1	10742	4
 \.
 
 
@@ -6064,6 +6076,12 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202103	3	112501		0
 202104	2	112501	CURRENCY_ROUTER	0
 202105	1	112501		0
+202200	3	112600		0
+202201	2	112600	FAKE_2	0
+202202	1	112600		0
+202300	3	112602		0
+202301	2	112602	FAKE_2	0
+202302	1	112602		0
 \.
 
 
@@ -7103,6 +7121,12 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 7903	1124	2	10	1072	1
 790400	112500	2	10	10730	1
 790401	112501	2	10	10731	1
+790500	112600	2	10	10740	1
+790501	112601	2	10	10741	1
+790502	112602	2	10	10742	1
+790507	112607	2	10	10746	1
+790508	112608	2	10	10747	1
+790509	112609	2	10	10748	1
 \.
 
 
@@ -8373,6 +8397,8 @@ COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, dele
 1013	1411cc96f356985d8d08b6b6a0e64c3b898f4d626891ac18	\N	2100-09-12	\N	2	0	\N	1
 101300	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cfdb7296a638472486	2	0	\N	0
 101301	9cda913406c15ad25dc3601f8e1baf66	2222	2100-12-01	5064e904bdf462834a9a6ae961d7f8cf6dfff96e1e08386c	2	0	\N	0
+101400	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-01	09a86cc260cf65aa620eebea721886a0	2	0	\N	0
+101401	a14159733ae22ce59f51625df2bd1c0649788742506e5046	1152	2100-09-01	e8b96c5abe318acf5c4e84e2b8452c25	2	0	\N	0
 \.
 
 
@@ -9437,8 +9463,11 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1059	1070	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1
 1060	1071	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1
 1061	1072	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1
-106200	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2
-106201	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2
+1062	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2
+1063	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2
+1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1
+1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2
+1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2
 \.
 
 
@@ -10932,7 +10961,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 7	invoice_delivery_method	4
 8	entity_delivery_method_map	4
 9	user_status	9
-11	partner	1
 13	item_type	22
 14	item	26
 15	item_price	16
@@ -10958,8 +10986,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 39	invoice	85
 40	invoice_line	86
 41	payment_result	5
-42	payment	16
-43	payment_info_cheque	14
 45	user_credit_card_map	5
 46	event_log_module	11
 47	event_log_message	17
@@ -10992,7 +11018,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 75	ach	1
 77	list_entity	15
 78	list_field_entity	15
-79	partner_range	1
 80	payment_invoice	11
 81	subscriber_status	7
 82	mediation_cfg	3
@@ -11002,15 +11027,19 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 86	mediation_record_line	1
 87	generic_status	26
 88	order_line_provisioning_status	1
-10	base_user	1074
-12	customer	1063
-29	contact_map	7905
-27	contact	1126
-76	contact_field	2022
-44	credit_card	1014
 25	pluggable_task	54
 26	pluggable_task_parameter	81
 51	preference	49
+10	base_user	1075
+11	partner	2
+29	contact_map	7906
+27	contact	1127
+12	customer	1067
+44	credit_card	1015
+42	payment	19
+43	payment_info_cheque	17
+76	contact_field	2024
+79	partner_range	2
 \.
 
 
@@ -13484,6 +13513,9 @@ COPY paper_invoice_batch (id, total_invoices, delivery_date, is_self_managed, op
 --
 
 COPY partner (id, user_id, balance, total_payments, total_refunds, total_payouts, percentage_rate, referral_fee, fee_currency_id, one_time, period_unit_id, period_value, next_payout_date, due_payout, automatic_process, related_clerk, optlock) FROM stdin;
+10	10740	0	0	0	0	10	0	1	0	1	1	2009-04-01	0	1	1	1
+12	10742	0	0	0	0	10	0	1	0	3	10	2009-03-15	0	1	1	1
+11	10741	0	0	0	0	0	1	1	1	1	1	2009-03-01	0	0	1	2
 \.
 
 
@@ -13500,6 +13532,8 @@ COPY partner_payout (id, starting_date, ending_date, payments_amount, refunds_am
 --
 
 COPY partner_range (id, partner_id, percentage_rate, referral_fee, range_from, range_to, optlock) FROM stdin;
+10	11	\N	2.2999999523162842	1	10	0
+11	11	\N	4.6999998092651367	11	20	0
 \.
 
 
@@ -13514,6 +13548,10 @@ COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_d
 4	2	1	4	20	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0	1
 5	2	1	4	10	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0	1
 6	2	1	4	83	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0	1
+1600	10746	1	4	100	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100	1
+1601	10746	1	4	50	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0	1
+1700	10747	1	4	50	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50	1
+1800	10748	1	4	25	2009-03-13 00:00:00	\N	2009-03-13	1	\N	0	0	0	\N	1	\N	\N	25	1
 \.
 
 
@@ -13534,6 +13572,10 @@ COPY payment_info_cheque (id, payment_id, bank, cheque_number, cheque_date, optl
 2	2	Gold Miners Ltd.	123-123-123	2005-10-10	1
 3	3	Gold Miners Ltd.	123-123-145	2006-12-12	1
 4	6	Bree First Bank	123-21312-A	2006-10-10	1
+1400	1600	ABC Bank	213987213987	2009-03-18	0
+1401	1601	ABC Bank	497834095830	2009-03-25	0
+1500	1700	ABC Bank	485740398420	2009-03-06	0
+1600	1800	ABC Bank	875939859305	2009-03-07	0
 \.
 
 
@@ -17791,9 +17833,9 @@ COPY user_credit_card_map (user_id, credit_card_id) FROM stdin;
 868	808
 1006	946
 10730	101300
-10730	101300
 10731	101301
-10731	101301
+10740	101400
+10742	101401
 \.
 
 
@@ -18813,6 +18855,12 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 1072	5
 10730	5
 10731	5
+10740	4
+10741	4
+10742	4
+10746	5
+10747	5
+10748	5
 \.
 
 

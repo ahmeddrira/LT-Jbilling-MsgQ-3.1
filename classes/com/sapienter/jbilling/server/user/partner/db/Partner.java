@@ -355,36 +355,11 @@ public class Partner implements java.io.Serializable {
         this.relatedClerkUserId = relatedClerckUserId;
     }
 
-
-    
-    /**
-     * validate that the ranges start from 1, have no superpositions and
-     * no gaps
-     * @return
-     *  0 = ok
-     *  2 = range end <= range start
-     *  3 = gap
-     */
-    public int validateRanges() {
-        int retValue = 0;
-        int last = 0;
-        
-        for (PartnerRange range: getRanges()) {
-            if (range.getRangeTo() <= range.getRangeFrom()) {
-                retValue = 2;
-            } else if (range.getRangeFrom() != last + 1) {
-                    retValue = 3;
-            } else {
-            }
-            if (retValue != 0)
-                break;
-        }
-        return retValue;
-    }
-
     public void touch() {
         getBalance();
         getRanges().size();
-        getPartnerPayouts().size();
+        for (PartnerPayout payout : getPartnerPayouts()) {
+            payout.touch();
+        }
     }
 }

@@ -62,10 +62,8 @@ public class PartnerPayout  implements java.io.Serializable {
 
      private Integer paymentId = null;
      private Integer partnerId = null;
-     private PaymentDTO paymentDTO = null;
 
     public PartnerPayout() {
-        payment = new PaymentDTO();
     }
 
 	

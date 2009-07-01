@@ -308,7 +308,7 @@
 		<td class="infoprompt"><bean:message key="invoice.included.prompt"/></td>
 		<td></td>
 	</tr>
-	<logic:present name='<%=Constants.SESSION_INVOICE_DTO%>' property="invoicesIncluded">
+	<logic:present name='<%=Constants.SESSION_INVOICE_DTO%>' property="invoices">
 	<tr class="infoA">
 		<td class="infoprompt"></td>
 		<td>
@@ -316,12 +316,13 @@
 		<logic:iterate name='<%=Constants.SESSION_INVOICE_DTO%>' 
 						   scope="session"
 						   id="incInvoice"
-						   property="invoicesIncluded">
+						   property="invoices">
+          <bean:define id="incInvoiceId" name="incInvoice" property="id"/>
 		  <tr class="infoA">
 			<td class="infodata">
 				<html:link page="/invoiceMaintain.do?action=view" paramId="id" 
-						   paramName="incInvoice">
-					<bean:write name="incInvoice"/>
+						   paramName="incInvoiceId">
+					<bean:write name="incInvoiceId"/>
 				</html:link>
 			</td>
 		  </tr>	

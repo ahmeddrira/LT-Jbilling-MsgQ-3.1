@@ -150,9 +150,12 @@ public class PartnerTest extends TestCase {
             payouts = partner.getPartnerPayouts();
             assertEquals("3: two payout", 2, payouts.size());
             payoutsIter = payouts.iterator();
-            payoutsIter.next();
             payout = payoutsIter.next();
-            assertNotNull("Payout", payout);
+            // make sure we have the lastest payout
+            PartnerPayout payout2 = payoutsIter.next();
+            if (payout2.getId() > payout.getId()) {
+                payout = payout2;
+            }
             payment = payout.getPayment();
             assertNotNull("Payout payment", payment);
             assertEquals("3: payout total", 0F, 

@@ -236,7 +236,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 	}
 
 	public InvoiceDTO create(Integer userId, NewInvoiceDTO invoice,
-			Vector invoiceEntities, BillingProcessDTO process) {
+			BillingProcessDTO process) {
 
 		InvoiceDTO entity = new InvoiceDTO();
 

@@ -127,13 +127,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
      */
     public void create(Integer userId, NewInvoiceDTO newInvoice,
             BillingProcessDTO process) {
-        Vector invoiceEntities = new Vector();
-        for (Iterator it = newInvoice.getInvoices().iterator(); it.hasNext();) {
-            InvoiceDTO dto = (InvoiceDTO) it.next();
-            set(dto.getId());
-            invoiceEntities.add(invoice);
-        }
-
         // find out the entity id
         PreferenceBL pref = new PreferenceBL();
         UserBL user = null;
@@ -179,8 +172,12 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         }
 
         // create the invoice row
-        invoice = invoiceDas.create(userId, newInvoice, invoiceEntities,
-                process);
+        invoice = invoiceDas.create(userId, newInvoice, process);
+
+        // add delegated/included invoice links
+        for (InvoiceDTO dto : newInvoice.getInvoices()) {
+            dto.setInvoice(invoice);
+        }
 
         // add the customer notes if it applies
         try {

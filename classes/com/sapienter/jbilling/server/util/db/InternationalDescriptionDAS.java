@@ -23,7 +23,6 @@ import java.util.Collection;
 
 import org.hibernate.Query;
 
-import com.sapienter.jbilling.server.util.Util;
 
 /**
  * 
@@ -38,12 +37,6 @@ public class InternationalDescriptionDAS extends AbstractDAS<InternationalDescri
     protected InternationalDescriptionDAS() {
         super();
     }
-
-    private final String QUERY = "SELECT a " +
-            "FROM description a, jbilling_table b " +
-            "WHERE a.tableId = b.id " +
-            "AND b.name = :table " +
-            "AND a.foreignId = :foreing ";
 
     public void setJbDAS(JbillingTableDAS util) {
         this.jtDAS = util;
@@ -78,6 +71,12 @@ public class InternationalDescriptionDAS extends AbstractDAS<InternationalDescri
     }
 
     public Collection<InternationalDescriptionDTO> findByTable_Row(String table, Integer foreignId) {
+        final String QUERY = "SELECT a " +
+            "FROM InternationalDescriptionDTO a, JbillingTable b " +
+            "WHERE a.id.tableId = b.id " +
+            "AND b.name = :table " +
+            "AND a.id.foreignId = :foreing ";
+
         Query query = getSession().createQuery(QUERY);
         query.setParameter("table", table);
         query.setParameter("foreing", foreignId);

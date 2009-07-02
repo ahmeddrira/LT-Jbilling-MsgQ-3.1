@@ -37,7 +37,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 
 @Entity
 @Table(name="jbilling_table"

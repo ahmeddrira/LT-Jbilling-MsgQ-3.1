@@ -31,8 +31,9 @@ taglib.home.dir=${libs.client.dir}/WEB-INF
 struts.home.tag.dir=${libs.client.dir}/WEB-INF
 #the next directory is needed to run xdoclet
 xdoclet.home.dir=${libs.dir}/xdoclet
-hibernate.tools.dir=U:/bop/tools/hibernate/tools
-junit.dir=${basedir}/libs/junit
+#digester is needed for the compilation of designs
+digester.jar=${libs.dir}/client/commons-digester-1.8.jar
+junit.dir=${libs.dir}/junit
 
 #
 # Deployment related properties
@@ -42,6 +43,13 @@ deploy.resources.dir=${basedir}/../resources
 image.source.dir=c:/bop/image/source
 image.target.dir=c:/bop/image/target
 version=1_1_3
+#Configure the context path for this application -->
+path=billing
+#Configure properties to access Tomcat's Manager application -->
+url=http://localhost:8888/manager"/>
+username=admin
+password=admin
+
 #<!-- Build temporary directories -->
 build.dir=${basedir}/build
 build.designs.dir=${build.dir}/designs

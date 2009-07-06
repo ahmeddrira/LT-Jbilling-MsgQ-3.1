@@ -7,10 +7,10 @@
         <fileset dir="${source.lib.dir}">
             <include name="*.jar"/>
         </fileset>
-        <fileset dir="${libs.client.dir}">
+        <fileset dir="${basedir}/../lib">
             <include name="**/*.jar"/>
         </fileset>
-        <pathelement location="${hibernate.tools.jar}"/>
+        <pathelement location="${digester.jar}"/>
     </path>
     
     <path id="test.classpath">
@@ -68,18 +68,33 @@
     <path id="spring.classpath">
         <pathelement location="${source.spring.descriptor.dir}"/>
     </path>
-    
-        
-    <!-- Get client libraries from the binary distribution -->
-    <target name="get-client-files" unless="client.libs.present">
-        <mkdir dir="${libs.client.dir}"/>
-        <unwar src="${deploy.local.dir}/billing.war"
- dest="${libs.client.dir}">
-            <patternset>
-                <include name="**/*.tld"/>
-            </patternset>
-        </unwar>
-    </target>
+
+
+  <!-- Configure the Tomcat tasks for the Manager application -->
+  <taskdef name="tc-deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+  <taskdef name="tc-list"      classname="org.apache.catalina.ant.ListTask"/>
+  <taskdef name="tc-reload"    classname="org.apache.catalina.ant.ReloadTask"/>
+  <taskdef name="tc-resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+  <taskdef name="tc-roles"     classname="org.apache.catalina.ant.RolesTask"/>
+  <taskdef name="tc-start"     classname="org.apache.catalina.ant.StartTask"/>
+  <taskdef name="tc-stop"      classname="org.apache.catalina.ant.StopTask"/>
+  <taskdef name="tc-undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+
+  <target name="tc-deploy" description="Install web application"
+          depends="compile">
+    <deploy url="${url}" username="${username}" password="${password}"
+            path="${path}" war="file:${build}${path}.war"/>
+  </target>
+
+  <target name="tc-reload" description="Reload web application">
+    <tc-reload  url="${url}" username="${username}" password="${password}"
+            path="${path}"/>
+  </target>
+
+  <target name="tc-undeploy" description="Remove web application">
+    <undeploy url="${url}" username="${username}" password="${password}"
+            path="${path}"/>
+  </target>
     
     <target name="init">
         <mkdir dir="${source.dir}"/>
@@ -148,7 +163,7 @@
     <!-- Complies the source code                                            -->
     <!-- =================================================================== -->
    
-    <target name="compile" depends="init, get-client-files">
+    <target name="compile" depends="init">
         <javac
             debug="on"
             destdir="${build.classes.dir}">

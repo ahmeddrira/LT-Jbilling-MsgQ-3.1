@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.math.BigDecimal;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 	// used for the web services call to get the latest X
@@ -86,6 +87,22 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
 		return criteria.list();
 	}
+
+    public BigDecimal findTotalBalanceByUser(Integer userId) {
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("deleted", 0))
+				.createAlias("baseUser", "u").add(
+						Restrictions.eq("u.id", userId));
+        criteria.add(Restrictions.ne("balance", new Float(0)));
+        criteria.setProjection(Projections.sum("balance"));
+        criteria.setComment("PaymentDAS.findTotalBalanceByUser");
+        Float result = (Float) criteria.uniqueResult();
+        if (result == null) {
+            return new BigDecimal(0);
+        } else {
+            return new BigDecimal(result);
+        }
+    }
 
 	/**
 	 * 

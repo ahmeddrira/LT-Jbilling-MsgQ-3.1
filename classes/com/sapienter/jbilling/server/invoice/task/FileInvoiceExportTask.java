@@ -22,7 +22,6 @@
 package com.sapienter.jbilling.server.invoice.task;
 
 import com.sapienter.jbilling.server.invoice.NewInvoiceEvent;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
@@ -30,6 +29,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.ContactBL;
+import com.sapienter.jbilling.server.user.UserBL;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,8 +47,6 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
 
     // Required parameters
 	private static final String FILE = "file";
-
-    private InvoiceDAS invoiceDAS = new InvoiceDAS();
 
     public void process(Event event) throws PluggableTaskException {
         NewInvoiceEvent myEvent = (NewInvoiceEvent) event;
@@ -115,7 +113,7 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
         line.append("\"" + emptyIfNull(contact.getEntity().getPostalCode()) + "\"");
         line.append(",");
         // totdue
-        line.append("\"" + invoiceDAS.findTotalBalanceByUser(userId) + "\"");
+        line.append("\"" + new UserBL().getBalance(userId) + "\"");
         line.append(",");
         // qty
         line.append("\"" + invoiceLine.getQuantity() + "\"");

@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -298,12 +297,14 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
 	}
 
-    public Float findTotalBalanceByUser(Integer userId) {
+    public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
         addUserCriteria(criteria, userId);
+        criteria.add(Restrictions.ne("balance", new Float(0)));
         criteria.add(Restrictions.eq("isReview", 0));
         criteria.setProjection(Projections.sum("balance"));
-        return (Float) criteria.uniqueResult();
+        criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
+        return new BigDecimal(((Float) criteria.uniqueResult()));
     }
 
 	/*

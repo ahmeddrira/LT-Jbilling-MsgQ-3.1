@@ -209,6 +209,12 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        params = new Class[1];
        params[0] = ItemDTOEx.class;
        addMethod("updateItem", params);
+
+       // createInvoice
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = Boolean.TYPE;
+       addMethod("createInvoice", params);
     }
 
     private static void addMethod(String name, Class params[]) {
@@ -255,7 +261,8 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                     validate(bl.getEntity().getBaseUser().getUserId());
                 }
             } else if (m.getName().equals("getLatestInvoice") || 
-                    m.getName().equals("getLastInvoices")) {
+                    m.getName().equals("getLastInvoices") ||
+                    m.getName().equals("createInvoice")) {
                 Integer userId = (Integer) args[0];
                 
                 if (userId != null) {

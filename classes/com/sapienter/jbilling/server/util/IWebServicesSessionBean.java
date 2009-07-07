@@ -65,6 +65,15 @@ public interface IWebServicesSessionBean {
      */
     public void deleteInvoice(Integer invoiceId);
 
+    /**
+     * Generates invoices for orders not yet invoiced for this user.
+     * Optionally only allow recurring orders to generate invoices. 
+     * Returns the ids of the invoices generated. 
+     */
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
+            throws SessionInternalError;
+
+
     /*
      * USERS
      */

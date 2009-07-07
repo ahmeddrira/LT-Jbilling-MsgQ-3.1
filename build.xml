@@ -69,16 +69,37 @@
         <pathelement location="${source.spring.descriptor.dir}"/>
     </path>
 
+    <path id="tomcat.classpath">
+        <fileset dir="${server.dir}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
 
   <!-- Configure the Tomcat tasks for the Manager application -->
-  <taskdef name="tc-deploy"    classname="org.apache.catalina.ant.DeployTask"/>
-  <taskdef name="tc-list"      classname="org.apache.catalina.ant.ListTask"/>
-  <taskdef name="tc-reload"    classname="org.apache.catalina.ant.ReloadTask"/>
-  <taskdef name="tc-resources" classname="org.apache.catalina.ant.ResourcesTask"/>
-  <taskdef name="tc-roles"     classname="org.apache.catalina.ant.RolesTask"/>
-  <taskdef name="tc-start"     classname="org.apache.catalina.ant.StartTask"/>
-  <taskdef name="tc-stop"      classname="org.apache.catalina.ant.StopTask"/>
-  <taskdef name="tc-undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+  <taskdef name="tc-deploy"    classname="org.apache.catalina.ant.DeployTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-list"      classname="org.apache.catalina.ant.ListTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-reload"    classname="org.apache.catalina.ant.ReloadTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-resources" classname="org.apache.catalina.ant.ResourcesTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-roles"     classname="org.apache.catalina.ant.RolesTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-start"     classname="org.apache.catalina.ant.StartTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-stop"      classname="org.apache.catalina.ant.StopTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
+  <taskdef name="tc-undeploy"  classname="org.apache.catalina.ant.UndeployTask">
+    <classpath refid="tomcat.classpath"/>
+  </taskdef>
 
   <target name="tc-deploy" description="Install web application"
           depends="compile">

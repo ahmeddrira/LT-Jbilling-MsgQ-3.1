@@ -71,6 +71,9 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -198,6 +201,53 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } catch (Exception e) {
             LOG.error("WS - deleteUser", e);
             throw new SessionInternalError("Error deleting user");
+        }
+    }
+
+    /**
+     * Generates invoices for orders not yet invoiced for this user.
+     * Optionally only processes recurring orders. Returns the ids of 
+     * the invoices generated. 
+     */
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
+            throws SessionInternalError {
+        LOG.debug("Call to createInvoice - userId: " + userId + 
+                " onlyRecurring: " + onlyRecurring);
+        try {
+            UserDTO user = new UserDAS().find(userId);
+            BillingProcessBL processBL = new BillingProcessBL();
+
+            BillingProcessConfigurationDTO config = 
+                    new BillingProcessConfigurationDAS().findByEntity(
+                    user.getCompany());
+
+            // Create a mock billing process object, because the method 
+            // we are calling was meant to be called by the billing process. 
+            BillingProcessDTO billingProcess = new BillingProcessDTO();
+            billingProcess.setId(0);
+            billingProcess.setEntity(user.getCompany());
+            billingProcess.setBillingDate(new Date());
+            billingProcess.setPeriodUnit(config.getPeriodUnit());
+            billingProcess.setPeriodValue(config.getPeriodValue());
+            billingProcess.setIsReview(0);
+            billingProcess.setRetriesToDo(0);
+
+            InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
+                    user, false, onlyRecurring);
+
+            if (newInvoices != null) {
+                Integer[] invoiceIds = new Integer[newInvoices.length];
+                for (int i = 0; i < newInvoices.length; i++) {
+                    invoiceIds[i] = newInvoices[i].getId();
+                }
+                return invoiceIds;
+            } else {
+                return new Integer[] { };
+            }
+
+        } catch (Exception e) {
+            LOG.error("WS - createInvoice", e);
+            throw new SessionInternalError("Error generating invoices.");
         }
     }
 

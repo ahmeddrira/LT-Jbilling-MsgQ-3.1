@@ -444,4 +444,13 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
+        throws JbillingAPIException {
+    	try {
+    		return session.createInvoice(userId, onlyRecurring);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
+
 }

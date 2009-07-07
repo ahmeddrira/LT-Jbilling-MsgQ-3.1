@@ -25,8 +25,13 @@
  */
 package com.sapienter.jbilling.server.invoice;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 
@@ -154,4 +159,116 @@ public class WSTest extends TestCase {
         
     }
 
+    public void testCreateInvoice() {
+        try {
+            final Integer USER_ID = 10730; // user has no orders
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // setup order
+            OrderWS order = new OrderWS();
+            order.setUserId(USER_ID); 
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(1); // once
+            order.setCurrencyId(1);
+
+            OrderLineWS line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setDescription("Order line");
+            line.setItemId(1);
+            line.setQuantity(1);
+            line.setPrice(10.0f);
+            line.setAmount(10.0f);
+
+            order.setOrderLines(new OrderLineWS[] { line });
+
+            /*
+             * Test invoicing of one-time and recurring orders
+             */
+
+            // create 1st order
+            Integer orderId1 = api.createOrder(order);
+
+            // create 2nd order
+            line.setPrice(20.0f);
+            line.setAmount(20.0f);
+            Integer orderId2 = api.createOrder(order);
+
+            // create invoice
+            Integer[] invoices = api.createInvoice(USER_ID, false);
+
+            assertEquals("Number of invoices returned", 1, invoices.length);
+            InvoiceWS invoice = api.getInvoiceWS(invoices[0]);
+            Integer[] invoicedOrderIds = invoice.getOrders();
+            assertEquals("Number of orders invoiced", 2, 
+                    invoicedOrderIds.length);
+            Arrays.sort(invoicedOrderIds);
+            assertEquals("Order 1 invoiced", orderId1, invoicedOrderIds[0]);
+            assertEquals("Order 2 invoiced", orderId2, invoicedOrderIds[1]);
+            assertEquals("Total is 30.0", 30.0f, invoice.getTotal());
+
+            // clean up
+            api.deleteInvoice(invoices[0]);
+            api.deleteOrder(orderId1);
+            api.deleteOrder(orderId2);
+
+            /*
+             * Test only recurring order can generate invoice.
+             */
+
+            // one-time order
+            line.setPrice(2.0f);
+            line.setAmount(2.0f);
+            orderId1 = api.createOrder(order);
+
+            // try to create invoice, but none should be returned
+            invoices = api.createInvoice(USER_ID, true);
+
+            // Note: CXF returns null for empty array
+            if (invoices != null) {
+                assertEquals("Number of invoices returned", 0, invoices.length);
+            }
+
+            // recurring order
+            order.setPeriod(2); // monthly
+            line.setPrice(3.0f);
+            line.setAmount(3.0f);
+            orderId2 = api.createOrder(order);
+
+            // create invoice
+            invoices = api.createInvoice(USER_ID, true);
+
+            assertEquals("Number of invoices returned", 1, invoices.length);
+            invoice = api.getInvoiceWS(invoices[0]);
+            invoicedOrderIds = invoice.getOrders();
+            assertEquals("Number of orders invoiced", 2, 
+                    invoicedOrderIds.length);
+            Arrays.sort(invoicedOrderIds);
+            assertEquals("Order 1 invoiced", orderId1, invoicedOrderIds[0]);
+            assertEquals("Order 2 invoiced", orderId2, invoicedOrderIds[1]);
+            assertEquals("Total is 5.0", 5.0f, invoice.getTotal());
+
+            // clean up
+            api.deleteInvoice(invoices[0]);
+            api.deleteOrder(orderId1);
+            api.deleteOrder(orderId2);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    public void testCreateInvoiceSecurity() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            try {
+                api.createInvoice(13, false);
+                fail("User 13 belongs to entity 2");
+            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

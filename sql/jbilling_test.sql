@@ -14390,8 +14390,6 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 44	26	10	1	200	\N	\N
 45	43	5	1	460	\N	\N
 46	44	5	1	1	\N	\N
-47	45	5	1	1	\N	\N
-48	46	5	1	1	\N	\N
 \.
 
 

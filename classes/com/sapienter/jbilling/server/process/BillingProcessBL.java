@@ -585,8 +585,14 @@ public class BillingProcessBL extends ResultList
                     continue;
                 }
 
-                retValue[index] = generateDBInvoice(user.getUserId(), invoice, process,
-                        Constants.ORDER_PROCESS_ORIGIN_PROCESS);
+                // If this is a web services API call, the billing 
+                // process id is 0. Don't link to the billing process 
+                // object for API calls.
+                BillingProcessDTO billingProcess = 
+                        process.getId() != 0 ? process : null;
+
+                retValue[index] = generateDBInvoice(user.getUserId(), invoice, 
+                        billingProcess, Constants.ORDER_PROCESS_ORIGIN_PROCESS);
                 // try to get this new invioce paid by previously unlinked 
                 // payments
                 if (paymentApplication && !isReview) {

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.order.event;
 
 import java.util.Date;
 
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.system.event.Event;
 
 /**
@@ -35,13 +36,15 @@ public class OrderToInvoiceEvent implements Event {
     private Integer entityId;
     private Integer userId;
     private Integer orderId;
+    private OrderDTO order;
     private Date start;
     private Date end;
 
-    public OrderToInvoiceEvent(Integer entityId, Integer userId, Integer orderId) {
+    public OrderToInvoiceEvent(Integer entityId, Integer userId, OrderDTO order) {
         this.entityId = entityId;
         this.userId = userId;
-        this.orderId = orderId;
+        this.orderId = order.getId();
+        this.order = order;
     }
 
     public Integer getEntityId() {
@@ -58,6 +61,14 @@ public class OrderToInvoiceEvent implements Event {
 
     public Integer getOrderId() {
         return orderId;
+    }
+
+    /**
+     * Warning, the order returned is in the hibernate session.
+     * Any changes will be reflected in the database.
+     */
+    public OrderDTO getOrder() {
+        return order;
     }
 
     public Date getStart() {

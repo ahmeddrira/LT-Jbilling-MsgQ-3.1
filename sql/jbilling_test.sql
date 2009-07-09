@@ -11027,8 +11027,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 86	mediation_record_line	1
 87	generic_status	26
 88	order_line_provisioning_status	1
-25	pluggable_task	54
-26	pluggable_task_parameter	81
 51	preference	49
 10	base_user	1075
 11	partner	2
@@ -11040,6 +11038,8 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 43	payment_info_cheque	17
 76	contact_field	2024
 79	partner_range	2
+25	pluggable_task	55
+26	pluggable_task_parameter	82
 \.
 
 
@@ -14198,6 +14198,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 20	1	21	4	1
 22	1	21	5	1
 530	1	50	3	1
+540	1	53	1	2
 \.
 
 
@@ -14262,6 +14263,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 780	530	portalId	\N	test-portalId	\N	1
 790	530	applicationId	\N	test-applicationId	\N	1
 800	530	bnet	\N	test-bnet	\N	1
+8100	540	file	\N	InternalEventsRulesTask520.pkg	\N	1
 \.
 
 
@@ -14319,6 +14321,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 49	6	com.sapienter.jbilling.server.payment.tasks.PaymentRouterCurrencyTask	2
 50	18	com.sapienter.jbilling.server.provisioning.task.MMSCProvisioningTask	5
 51	3	com.sapienter.jbilling.server.invoice.task.NegativeBalanceInvoiceFilterTask	0
+52	17	com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask	1
+53	17	com.sapienter.jbilling.server.system.event.task.InternalEventsRulesTask	0
 \.
 
 

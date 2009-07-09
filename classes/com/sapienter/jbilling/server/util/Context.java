@@ -66,7 +66,8 @@ public class Context {
         JMS_TEMPLATE,
         PROCESSORS_DESTINATION,
         PROVISIONING_COMMANDS_DESTINATION,
-        PROVISIONING_COMMANDS_REPLY_DESTINATION
+        PROVISIONING_COMMANDS_REPLY_DESTINATION,
+        INTERNAL_EVENTS_RULES_TASK_CONFIG
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -106,6 +107,8 @@ public class Context {
         springBeans.put(Name.MMSC, "mmsc");
         springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 
                 "webServicesCallerDefaults");
+        springBeans.put(Name.INTERNAL_EVENTS_RULES_TASK_CONFIG, 
+                "internalEventsRulesTaskConfig");
 
         // JMS related beans
         springBeans.put(Name.JMS_TEMPLATE, "jmsTemplate");

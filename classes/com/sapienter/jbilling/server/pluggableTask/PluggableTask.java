@@ -56,6 +56,10 @@ public abstract class PluggableTask {
     protected Integer getEntityId() {
         return entityId;
     }
+
+    protected Integer getTaskId() {
+        return task.getId();
+    }
     
     public void initializeParamters(PluggableTaskDTO task) 
             throws PluggableTaskException {

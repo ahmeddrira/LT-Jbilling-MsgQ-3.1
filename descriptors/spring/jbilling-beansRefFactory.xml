@@ -19,6 +19,7 @@
          <value>/jbilling-remoting.xml</value>
          <value>/jbilling-provisioning.xml</value>
          <value>/jbilling-jms.xml</value>
+         <value>/jbilling-internal-events-rules-tasks.xml</value>
        </list>
      </constructor-arg>
    </bean>

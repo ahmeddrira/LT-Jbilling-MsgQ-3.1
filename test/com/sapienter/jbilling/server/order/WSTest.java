@@ -34,6 +34,7 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
@@ -848,6 +849,48 @@ public class WSTest  extends TestCase {
             // clean up
             api.deleteOrder(orders[0]);
             api.deleteOrder(orders[1]);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    // Tests InternalEventsRulesTask plug-in.
+    // See also InternalEventsRulesTask520.drl.
+    public void testInternalEventsRulesTask() {
+        try {
+            final Integer USER_ID = 1010;
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create order with 2 lines (item ids 1 & 2) and invoice
+            OrderWS order = createMockOrder(USER_ID, 2, 5);
+            order.setNotes("Change me.");
+            Integer invoiceId = api.createOrderAndInvoice(order);
+
+            // get back created order
+            InvoiceWS invoice = api.getInvoiceWS(invoiceId);
+            Integer orderId = invoice.getOrders()[0];
+            order = api.getOrder(orderId);
+
+            // check order was modified
+            assertEquals("Order was changed by rules", "Modified by rules.", 
+                    order.getNotes());
+            OrderLineWS[] orderLines = order.getOrderLines();
+            assertEquals("Only 1 order line", 1, orderLines.length);
+            assertEquals("Item id 1 was removed", new Integer(2), 
+                    orderLines[0].getItemId());
+
+            // double check the invoice lines
+            InvoiceLineDTO[] invoiceLines = invoice.getInvoiceLines();
+            assertEquals("Only 1 invoice line", 1, invoiceLines.length);
+            assertEquals("Item id 1 was removed", new Integer(2), 
+                    invoiceLines[0].getItemId());
+
+            // clean up
+            api.deleteInvoice(invoiceId);
+            api.deleteOrder(orderId);
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

@@ -795,6 +795,13 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="provisioning_commands.drl" />
         </rulebase>
+        <rulebase 
+        	srcdir="${source.rules.dir}" 		
+        	tofile="${base_dir}/rules/InternalEventsRulesTask520.pkg"
+        	classpathref="drools.run.classpath"
+        	binformat="package">
+        	<include name="InternalEventsRulesTask520.drl" />
+        </rulebase>
     </target>
     
 </project>

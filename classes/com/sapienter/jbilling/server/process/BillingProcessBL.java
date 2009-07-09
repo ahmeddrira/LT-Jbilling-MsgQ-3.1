@@ -1084,11 +1084,10 @@ public class BillingProcessBL extends ResultList
         Vector<Vector<PeriodOfTime>> periods = newInvoice.getPeriods();
         for (int i = 0; i < orders.size(); i++) {
             OrderDTO order = orders.get(i);
-            Integer orderId = order.getId();
             Integer userId = findUserId(order);
             for (PeriodOfTime period : periods.get(i)) {
                 OrderToInvoiceEvent newEvent =
-                        new OrderToInvoiceEvent(entityId, userId, orderId);
+                        new OrderToInvoiceEvent(entityId, userId, order);
                 newEvent.setStart(period.getStart());
                 newEvent.setEnd(period.getEnd());
                 EventManager.process(newEvent);

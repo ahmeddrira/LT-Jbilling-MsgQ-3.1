@@ -26,14 +26,16 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import org.springmodules.cache.provider.CacheProviderFacade;
+import org.springmodules.cache.CachingModel;
+import org.springmodules.cache.FlushingModel;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemPriceDAS;
 import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
@@ -43,6 +45,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
@@ -54,7 +57,12 @@ public class ItemBL {
     private EventLogger eLogger = null;
     private String priceCurrencySymbol = null;
     private Vector<PricingField> pricingFields = null;
-    
+
+    // item price cache for getPrice()
+    private CacheProviderFacade cache;
+    private CachingModel cacheModel;
+    private FlushingModel flushModel;
+
     public ItemBL(Integer itemId) 
             throws SessionInternalError {
         try {
@@ -81,6 +89,11 @@ public class ItemBL {
     private void init() {
         eLogger = EventLogger.getInstance();        
         itemDas = new ItemDAS();
+        cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
+        cacheModel = (CachingModel) Context.getBean(
+                Context.Name.CACHE_MODEL_ITEM_PRICE);
+        flushModel = (FlushingModel) Context.getBean(
+                Context.Name.CACHE_FLUSH_MODEL_ITEM_PRICE);
     }
     
     public ItemDTO getEntity() {
@@ -124,6 +137,9 @@ public class ItemBL {
         
         updateTypes(dto);
         updateCurrencies(dto);
+
+        // invalidate item/price cache
+        invalidateCache();
     }
     
     private void updateTypes(ItemDTO dto) 
@@ -193,6 +209,8 @@ public class ItemBL {
                 }
             }
         }    
+        // invalidate item/price cache
+        invalidateCache();
     }
     
     public void delete(Integer executorId) {
@@ -270,37 +288,6 @@ public class ItemBL {
     }
     
     /**
-     * Tries to find a price for this user for the given currency.
-     * If there are some prices, but not for this currency, it will
-     * return it (with preferece to the pivot)
-     * @param userId
-     * @param currencyId
-     * @return
-     */
-    private ItemPriceDTO getPriceByUser(Integer userId, Integer currencyId) {
-        ItemPriceDTO retValue = null;
-        
-        Collection prices = new ItemUserPriceDAS().findByUserItem(userId, 
-                item.getId());
-        for (Iterator it = prices.iterator(); it.hasNext(); ) {
-            ItemUserPriceDTO price = (ItemUserPriceDTO) it.next();
-            if (price.getCurrencyId().equals(currencyId)) {
-                // got it
-                return new ItemPriceDTO(price.getId(), null, price.getPrice(),
-                        price.getCurrency());
-            } else {
-                if (retValue == null || 
-                        retValue.getCurrencyId().intValue() != 1) {
-                    retValue = new ItemPriceDTO(price.getId(), null, 
-                            price.getPrice(), price.getCurrency());
-                }
-            }
-        }
-        
-        return retValue;
-    }
-
-    /**
      * It will call the main getPrice, with the currency of the userId passed
      * @param userId
      * @param entityId
@@ -338,60 +325,16 @@ public class ItemBL {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
- 
-        // let's see first if this user has its own pricing
-        ItemPriceDTO userPrice = null;
-        if (userId != null) {
-            /*
-             * This is the order followed. Whatever is found FIRST is returned
-             * - User own price
-             * - Parent own price
-             * - Partner own price
-             * - Item default price
-             */
-            // check for own price
-            userPrice = getPriceByUser(userId, currencyId);
 
-            if (userPrice == null) {
-                try {
-                    UserBL userBL = new UserBL(userId);
-                    UserDTO user = userBL.getEntity();
-                    if (user.getCustomer() != null
-                            && user.getCustomer().getParent() != null) {
-                        // this is a child account, see if the parent has a
-                        // price
-                        userPrice = getPriceByUser(user.getCustomer()
-                                .getParent().getBaseUser().getUserId(), currencyId);
-                    }
-                    // if the user is a customer belonging to a partner, then
-                    // that partner might have special prices
-                    if (userPrice == null && user.getCustomer() != null
-                            && user.getCustomer().getPartner() != null) {
-                        userPrice = getPriceByUser(user.getCustomer()
-                                .getPartner().getUser().getUserId(),
-                                currencyId);
-                    }
-                } catch (Exception e) {
-                    throw new SessionInternalError(e);
-                }
-            }
-        }
+        // try to get cached item price for this currency
+        retValue = (Float) cache.getFromCache(item.getId() + 
+                currencyId.toString(), cacheModel);
 
-        // if the user has its own price, it has priority over anything else
-        if (userPrice != null) {
-            // verify that it is in the right currency
-            if (!userPrice.getCurrencyId().equals(currencyId)) {
-                // need to convert
-               retValue = currencyBL.convert(userPrice.getCurrencyId(), 
-                        currencyId, userPrice.getPrice(), entityId);
-            } else {
-                retValue = userPrice.getPrice();
-            }
-        }
-        
-        // still not found, go get the item's defualt price
         if (retValue == null) {
+            // get the item's defualt price
             retValue = getPriceByCurrency(currencyId, entityId);
+            cache.putInCache(item.getId() + currencyId.toString(), cacheModel,
+                    retValue);
         }
         
         // run a plug-in with external logic (rules), if available
@@ -597,5 +540,9 @@ public class ItemBL {
 
     public void setPricingFields(Vector<PricingField> fields) {
         pricingFields = fields;
+    }
+
+    public void invalidateCache() {
+        cache.flushCache(flushModel);
     }
 }

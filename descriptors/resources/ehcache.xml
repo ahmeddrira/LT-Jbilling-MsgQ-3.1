@@ -441,4 +441,13 @@
             overflowToDisk="false"
      />
 
+     <!-- Item price cache -->
+     <cache name="itemPriceCache"
+            maxElementsInMemory="500"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="3600"
+            overflowToDisk="false"
+     />
+
 </ehcache>

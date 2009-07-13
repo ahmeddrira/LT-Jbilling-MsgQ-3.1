@@ -77,4 +77,14 @@
         <property name="flushBeforeMethodExecution" value="true"/>
     </bean>
 
+    <!-- Item Price cache configuration. -->
+    <bean id="cacheModelItemPrice" class="org.springmodules.cache.provider.ehcache.EhCacheCachingModel">
+        <property name="cacheName" value="itemPriceCache"/>
+    </bean>
+
+    <bean id="flushModelItemPrice" class="org.springmodules.cache.provider.ehcache.EhCacheFlushingModel">
+        <property name="cacheNames" value="itemPriceCache"/>
+        <property name="flushBeforeMethodExecution" value="true"/>
+    </bean>
+
 </beans>

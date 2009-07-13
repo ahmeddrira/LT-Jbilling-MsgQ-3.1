@@ -65,20 +65,6 @@
 	</tr>
 	<tr>
 		<td class="leftMenuOption">
-		<html:link styleClass="leftMenu" page="/item/userPriceCreate.jsp?create=yes">
-		   <bean:message key="user.edit.price"/>
-		</html:link>
-		</td>
-	</tr>
-	<tr>
-		<td class="leftMenuOption">
-		<html:link styleClass="leftMenu" page="/item/userPriceList.jsp">
-		   <bean:message key="user.edit.listPrice"/>
-		</html:link>
-		</td>
-	</tr>
-	<tr>
-		<td class="leftMenuOption">
 		<html:link styleClass="leftMenu" page="/userMaintain.do?action=order">
 		   <bean:message key="user.edit.order"/>
 		</html:link>

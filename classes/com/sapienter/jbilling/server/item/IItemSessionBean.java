@@ -23,7 +23,6 @@ package com.sapienter.jbilling.server.item;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /*
@@ -49,6 +48,7 @@ public interface IItemSessionBean {
     public ItemDTO get(Integer id, Integer languageId, Integer userId,
             Integer currencyId, Integer entityId) throws SessionInternalError;
 
+
     public void delete(Integer executorId, Integer id) 
             throws SessionInternalError;
 
@@ -64,28 +64,6 @@ public interface IItemSessionBean {
      *
      */
      public void deleteType(Integer executorId, Integer itemTypeId) 
-             throws SessionInternalError;
-
-    /**
-    * @return the id if all good, null if the user/item combination already
-    * exists.
-    */
-    public Integer createPrice(Integer executorId, ItemUserPriceDTO dto) 
-            throws SessionInternalError;
-    
-    public ItemUserPriceDTO getPrice(Integer userId, Integer itemId)
-            throws SessionInternalError;
-
-    public ItemUserPriceDTO getPrice(Integer priceId)
-            throws SessionInternalError;
-    
-    public void updatePrice(Integer executorId, ItemUserPriceDTO dto) 
-            throws SessionInternalError;
-
-    /**
-     * For now, this will delete permanently
-     */
-     public void deletePrice(Integer executorId, Integer itemPriceId) 
              throws SessionInternalError;
 
     public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) 

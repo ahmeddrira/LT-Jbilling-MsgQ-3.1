@@ -26,7 +26,6 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
@@ -155,80 +154,6 @@ public class ItemSessionBean implements IItemSessionBean {
              throw new SessionInternalError(e);
          }
      }
-
-
-    /**
-    * @return the id if all good, null if the user/item combination already
-    * exists.
-    */
-    public Integer createPrice(Integer executorId, ItemUserPriceDTO dto) 
-            throws SessionInternalError {
-        Integer retValue = null;
-        ItemUserPriceBL bl;
-        try {
-            bl = new ItemUserPriceBL(dto.getUserId(),
-                    dto.getItemId(), dto.getCurrencyId());
-            boolean exists = bl.update(executorId, dto);
-            if(!exists) { 
-                bl = new ItemUserPriceBL();
-                retValue = bl.create(dto.getUserId(), dto.getItemId(), 
-                        dto.getCurrencyId(), dto.getPrice());
-            } 
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-        
-        return retValue;
-    }
-    
-    public ItemUserPriceDTO getPrice(Integer userId, Integer itemId)
-            throws SessionInternalError {
-        try {
-            UserBL userBL = new UserBL(userId);
-            ItemUserPriceBL bl = new ItemUserPriceBL(userId, itemId, 
-                    userBL.getCurrencyId());
-            return bl.getDTO();
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-    }
-
-    public ItemUserPriceDTO getPrice(Integer priceId)
-            throws SessionInternalError {
-        try {
-            ItemUserPriceBL bl = new ItemUserPriceBL(priceId);
-            return bl.getDTO();
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-    }
-    
-    public void updatePrice(Integer executorId, ItemUserPriceDTO dto) 
-            throws SessionInternalError {
-        try {
-            ItemUserPriceBL bl = new ItemUserPriceBL(dto.getId());
-            bl.update(executorId, dto);
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-
-    }
-
-    /**
-     * For now, this will delete permanently
-     */
-     public void deletePrice(Integer executorId, Integer itemPriceId) 
-             throws SessionInternalError {
-         try {
-             
-             ItemUserPriceBL bl = new ItemUserPriceBL(itemPriceId);
-             bl.delete(executorId);
-
-         } catch (Exception e) {
-             throw new SessionInternalError(e);
-         }
-     }
-
 
     public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) 
             throws SessionInternalError {

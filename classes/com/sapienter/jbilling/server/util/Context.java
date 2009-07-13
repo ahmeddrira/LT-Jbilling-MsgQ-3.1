@@ -60,6 +60,8 @@ public class Context {
         JBILLING_TABLE_DAS,
         PLUGGABLE_TASK_DAS,
         CACHE,
+        CACHE_MODEL_ITEM_PRICE,
+        CACHE_FLUSH_MODEL_ITEM_PRICE,
         CAI,
         MMSC,
         WEB_SERVICES_CALLER_DEFAULTS,
@@ -103,6 +105,9 @@ public class Context {
         springBeans.put(Name.TRANSACTION_MANAGER, "transactionManager");
         springBeans.put(Name.HIBERNATE_SESSION, "sessionFactory");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
+        springBeans.put(Name.CACHE_MODEL_ITEM_PRICE, "cacheModelItemPrice");
+        springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE, 
+                "flushModelItemPrice");
         springBeans.put(Name.CAI, "cai");
         springBeans.put(Name.MMSC, "mmsc");
         springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 

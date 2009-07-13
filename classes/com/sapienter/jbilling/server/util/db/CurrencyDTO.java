@@ -40,7 +40,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
@@ -69,7 +68,6 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
      private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
      private Set<ItemPriceDTO> itemPrices = new HashSet<ItemPriceDTO>(0);
      private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
-     private Set<ItemUserPriceDTO> itemUserPrices = new HashSet<ItemUserPriceDTO>(0);
 
      // from EX
      private String name = null;
@@ -92,7 +90,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.code = code;
         this.countryCode = countryCode;
     }
-    public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<CompanyDTO> entities, Set<UserDTO> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<PaymentDTO> payments, Set<CurrencyExchangeDTO> currencyExchanges, Set<CompanyDTO> entities_1, Set<InvoiceDTO> invoices, Set<ItemPriceDTO> itemPrices, Set<ProcessRunTotalDTO> processRunTotals, Set<ItemUserPriceDTO> itemUserPrices) {
+    public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<CompanyDTO> entities, Set<UserDTO> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<PaymentDTO> payments, Set<CurrencyExchangeDTO> currencyExchanges, Set<CompanyDTO> entities_1, Set<InvoiceDTO> invoices, Set<ItemPriceDTO> itemPrices, Set<ProcessRunTotalDTO> processRunTotals) {
        this.id = id;
        this.symbol = symbol;
        this.code = code;
@@ -107,7 +105,6 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
        this.invoices = invoices;
        this.itemPrices = itemPrices;
        this.processRunTotals = processRunTotals;
-       this.itemUserPrices = itemUserPrices;
     }
  
     @Transient
@@ -234,14 +231,6 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
     
     public void setProcessRunTotals(Set<ProcessRunTotalDTO> processRunTotals) {
         this.processRunTotals = processRunTotals;
-    }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
-    public Set<ItemUserPriceDTO> getItemUserPrices() {
-        return this.itemUserPrices;
-    }
-    
-    public void setItemUserPrices(Set<ItemUserPriceDTO> itemUserPrices) {
-        this.itemUserPrices = itemUserPrices;
     }
 
     @Transient

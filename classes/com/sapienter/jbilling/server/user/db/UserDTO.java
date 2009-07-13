@@ -43,7 +43,6 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
@@ -97,7 +96,6 @@ public class UserDTO implements java.io.Serializable {
     private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
-    private Set<ItemUserPriceDTO> itemUserPrices = new HashSet<ItemUserPriceDTO>(0);
 
     public UserDTO() {
     }
@@ -130,7 +128,6 @@ public class UserDTO implements java.io.Serializable {
         setRoles(another.getRoles());
         setEventLogs(another.getEventLogs());
         setInvoices(another.getInvoices());
-        setItemUserPrices(another.getItemUserPrices());
     }
 
     public UserDTO(int id) {
@@ -151,8 +148,7 @@ public class UserDTO implements java.io.Serializable {
             Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
             Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId,
             Set<CreditCardDTO> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles,
-            Set<EventLogDTO> eventLogs, Set<InvoiceDTO> invoices,
-            Set<ItemUserPriceDTO> itemUserPrices) {
+            Set<EventLogDTO> eventLogs, Set<InvoiceDTO> invoices) {
         this.id = id;
         this.currencyDTO = currencyDTO;
         this.company = entity;
@@ -180,7 +176,6 @@ public class UserDTO implements java.io.Serializable {
         this.roles = roles;
         this.eventLogs = eventLogs;
         this.invoices = invoices;
-        this.itemUserPrices = itemUserPrices;
     }
 
     @Id
@@ -437,15 +432,6 @@ public class UserDTO implements java.io.Serializable {
 
     public void setInvoices(Set<InvoiceDTO> invoices) {
         this.invoices = invoices;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
-    public Set<ItemUserPriceDTO> getItemUserPrices() {
-        return this.itemUserPrices;
-    }
-
-    public void setItemUserPrices(Set<ItemUserPriceDTO> itemUserPrices) {
-        this.itemUserPrices = itemUserPrices;
     }
 
     @Version

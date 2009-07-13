@@ -236,12 +236,6 @@
             <form-property name="create" type="java.lang.String" />
             <form-property name="order_line_type" type="java.lang.Integer" />
         </form-bean>
-        <form-bean name="userPrice" type="org.apache.struts.validator.DynaValidatorForm">
-            <form-property name="price" type="java.lang.String" />
-            <form-property name="create" type="java.lang.String" />
-            <form-property name="currencyId" type="java.lang.Integer" />
-            <form-property name="id" type="java.lang.Integer" />
-        </form-bean>
         <form-bean name="branding" type="org.apache.struts.validator.DynaValidatorForm">
             <form-property name="css" type="java.lang.String" />
             <form-property name="logo" type="java.lang.String" />
@@ -401,9 +395,6 @@
         <forward name="itemTypeEdit" path="/itemTypeMaintain.do?action=setup&amp;mode=type" redirect="false" />
         <forward name="itemList" path="/item/list.jsp" redirect="false" />
         <forward name="itemEdit" path="/itemMaintain.do?action=setup&amp;mode=item" redirect="false" />
-        <forward name="itemPriceList" path="/item/userPriceList.jsp" redirect="false" />
-        <forward name="itemPriceEdit" redirect="false" path="/itemPriceMaintain.do?action=setup&amp;mode=price" />
-        <forward name="itemPriceCreate" path="/itemPriceMaintain.do?action=setup&amp;mode=price&amp;create=yes" redirect="false" />
         <forward name="error" path="/other/error.jsp" redirect="false" />
         <forward name="invoiceView" path="/invoiceMaintain.do?action=setup&amp;mode=invoice" redirect="false" />
         <forward name="processView" path="/processMaintain.do?action=view" redirect="false" />
@@ -511,12 +502,6 @@
             <forward name="type_create" path="/item/createType.jsp?create=yes" redirect="false" />
             <forward name="type_deleted" redirect="false" path="/item/listType.jsp" />
             <forward name="type_list" redirect="false" path="/item/listType.jsp" />
-        </action>
-        <action path="/itemPriceMaintain" type="com.sapienter.jbilling.client.item.PriceMaintainAction" name="userPrice" validate="false" scope="session">
-            <forward name="price_edit" path="/item/userPriceMaintain.jsp" redirect="false" />
-            <forward name="price_create" redirect="false" path="/item/userPriceCreate2.jsp?create=yes" />
-            <forward name="price_deleted" redirect="false" path="/item/userPriceList.jsp" />
-            <forward name="price_list" redirect="false" path="/item/userPriceList.jsp" />
         </action>
         <action path="/genericListSelect" type="com.sapienter.jbilling.client.list.GenericListAction" name="list" scope="session" validate="false" input="/other/list.jsp" />
         <action path="/creditCardMaintain" type="com.sapienter.jbilling.client.user.CreditCardMaintainAction" name="creditCard" validate="false" scope="session">

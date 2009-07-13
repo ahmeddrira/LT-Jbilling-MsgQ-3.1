@@ -335,24 +335,6 @@ public class WSTest  extends TestCase {
     	}
     }
 
-    public void testSpecialPrice() {
-    	try {
-    		JbillingAPI api = JbillingAPIFactory.getAPI();
-
-            ItemDTOEx normalPriceItem = api.getItem(new Integer(1), 
-                    new Integer(2), new PricingField[] {} );
-            ItemDTOEx specialPriceItem = api.getItem(new Integer(1), 
-                    new Integer(1010), new PricingField[] {} );
-
-            assertEquals("Normal price", 10.0F, normalPriceItem.getPrice());
-            assertEquals("Special price", 5.0F, specialPriceItem.getPrice());
-
-        } catch (Exception e) {
-    		e.printStackTrace();
-    		fail("Exception caught:" + e);
-    	}
-    }
-
     private ItemPriceDTOEx getCurrencyPrice(Vector prices, int currencyId) {
         Iterator iter = prices.iterator();
         while (iter.hasNext()) {

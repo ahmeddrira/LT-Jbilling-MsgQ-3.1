@@ -82,9 +82,6 @@ ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_fk_2
 ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_fk_1;
 ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_2;
 ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_1;
-ALTER TABLE ONLY public.item_user_price DROP CONSTRAINT item_user_price_fk_3;
-ALTER TABLE ONLY public.item_user_price DROP CONSTRAINT item_user_price_fk_2;
-ALTER TABLE ONLY public.item_user_price DROP CONSTRAINT item_user_price_fk_1;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_2;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
@@ -185,7 +182,6 @@ DROP INDEX public.ix_cc_number;
 DROP INDEX public.ix_blacklist_user_type;
 DROP INDEX public.ix_blacklist_entity_type;
 DROP INDEX public.ix_base_user_un;
-DROP INDEX public.item_user_price_i_2;
 DROP INDEX public.international_description_i_2;
 DROP INDEX public.int_description_i_lan;
 DROP INDEX public.customer_i_2;
@@ -250,7 +246,6 @@ ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_pkey
 ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_pkey;
 ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
-ALTER TABLE ONLY public.item_user_price DROP CONSTRAINT item_user_price_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
 ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_pkey;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_pkey;
@@ -340,7 +335,6 @@ DROP TABLE public.list_entity;
 DROP TABLE public.list;
 DROP TABLE public.language;
 DROP TABLE public.jbilling_table;
-DROP TABLE public.item_user_price;
 DROP TABLE public.item_type_map;
 DROP TABLE public.item_type;
 DROP TABLE public.item_price;
@@ -978,22 +972,6 @@ CREATE TABLE item_type_map (
 
 
 ALTER TABLE public.item_type_map OWNER TO jbilling;
-
---
--- Name: item_user_price; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE item_user_price (
-    id integer NOT NULL,
-    item_id integer,
-    user_id integer,
-    price double precision NOT NULL,
-    currency_id integer NOT NULL,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.item_user_price OWNER TO jbilling;
 
 --
 -- Name: jbilling_table; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -10939,15 +10917,6 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 
 
 --
--- Data for Name: item_user_price; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY item_user_price (id, item_id, user_id, price, currency_id, optlock) FROM stdin;
-20	1	1010	5	1	0
-\.
-
-
---
 -- Data for Name: jbilling_table; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -19107,14 +19076,6 @@ ALTER TABLE ONLY item_type
 
 
 --
--- Name: item_user_price_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY item_user_price
-    ADD CONSTRAINT item_user_price_pkey PRIMARY KEY (id);
-
-
---
 -- Name: jbilling_table_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -19612,13 +19573,6 @@ CREATE INDEX int_description_i_lan ON international_description USING btree (lan
 --
 
 CREATE INDEX international_description_i_2 ON international_description USING btree (table_id, foreign_id, language_id);
-
-
---
--- Name: item_user_price_i_2; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE INDEX item_user_price_i_2 ON item_user_price USING btree (user_id, item_id);
 
 
 --
@@ -20371,30 +20325,6 @@ ALTER TABLE ONLY item_type_map
 
 ALTER TABLE ONLY item_type_map
     ADD CONSTRAINT item_type_map_fk_2 FOREIGN KEY (type_id) REFERENCES item_type(id);
-
-
---
--- Name: item_user_price_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_user_price
-    ADD CONSTRAINT item_user_price_fk_1 FOREIGN KEY (currency_id) REFERENCES currency(id);
-
-
---
--- Name: item_user_price_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_user_price
-    ADD CONSTRAINT item_user_price_fk_2 FOREIGN KEY (user_id) REFERENCES base_user(id);
-
-
---
--- Name: item_user_price_fk_3; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_user_price
-    ADD CONSTRAINT item_user_price_fk_3 FOREIGN KEY (item_id) REFERENCES item(id);
 
 
 --

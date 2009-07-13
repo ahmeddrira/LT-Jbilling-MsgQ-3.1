@@ -46,8 +46,6 @@ import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDAS;
-import com.sapienter.jbilling.server.item.db.ItemUserPriceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -702,11 +700,6 @@ public class UserBL extends ResultList
         for (CreditCardDTO cc: user.getCreditCards()) {
             cc.setDeleted(1);
         }
-        // item prices
-        for (ItemUserPriceDTO itemPrice: user.getItemUserPrices()) {
-            new ItemUserPriceDAS().delete(itemPrice);
-        }
-        user.getItemUserPrices().clear();
         // orders
         for (OrderDTO order: user.getOrders()) {
             order.setDeleted(1);

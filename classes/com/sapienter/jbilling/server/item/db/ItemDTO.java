@@ -74,7 +74,6 @@ public class ItemDTO extends AbstractDescription {
     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
     private Set<InvoiceLineDTO> invoiceLines = new HashSet<InvoiceLineDTO>(0);
-    private Set<ItemUserPriceDTO> itemUserPrices = new HashSet<ItemUserPriceDTO>(0);
     private Set<ItemPriceDTO> itemPrices = new HashSet<ItemPriceDTO>(0);
     private int versionNum;
 
@@ -113,7 +112,7 @@ public class ItemDTO extends AbstractDescription {
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(int id, CompanyDTO entity, String internalNumber, Float percentage, Integer priceManual, Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes, Set<InvoiceLineDTO> invoiceLines, Set<ItemUserPriceDTO> itemUserPrices, Set<ItemPriceDTO> itemPrices) {
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, Float percentage, Integer priceManual, Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes, Set<InvoiceLineDTO> invoiceLines, Set<ItemPriceDTO> itemPrices) {
        this.id = id;
        this.entity = entity;
        this.internalNumber = internalNumber;
@@ -124,7 +123,6 @@ public class ItemDTO extends AbstractDescription {
        this.orderLineDTOs = orderLineDTOs;
        this.itemTypes = itemTypes;
        this.invoiceLines = invoiceLines;
-       this.itemUserPrices = itemUserPrices;
        this.itemPrices = itemPrices;
     }
 
@@ -242,15 +240,6 @@ public class ItemDTO extends AbstractDescription {
     
     public void setInvoiceLines(Set<InvoiceLineDTO> invoiceLines) {
         this.invoiceLines = invoiceLines;
-    }
-
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")
-    public Set<ItemUserPriceDTO> getItemUserPrices() {
-        return this.itemUserPrices;
-    }
-    
-    public void setItemUserPrices(Set<ItemUserPriceDTO> itemUserPrices) {
-        this.itemUserPrices = itemUserPrices;
     }
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="item")

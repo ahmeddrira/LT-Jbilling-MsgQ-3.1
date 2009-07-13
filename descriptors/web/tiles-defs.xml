@@ -198,24 +198,6 @@
     </definition>
     <definition name="item.list.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/item/listTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />
     </definition>
-    <definition name="item.user.price.create" extends="main"><put name="featureTitle" value="bar.item.price.create" /><put name="body" value="item.user.price.create.body" /><put name="leftMenuBar" value="/item/userPriceLeft.jsp" />
-    </definition>
-    <definition name="item.user.price.create.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="item.user.price.create.body.top" /><put name="bottom" value="/other/genericList.jsp" />
-    </definition>
-    <definition name="item.user.price.create.body.top" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/item/userPriceCreateTop.jsp" /><put name="bottom" value="/user/displaySelected.jsp" />
-    </definition>
-    <definition name="item.user.price.create2" extends="main"><put name="featureTitle" value="bar.item.price.create2" /><put name="body" value="item.user.price.create2.body" /><put name="leftMenuBar" value="/item/userPriceLeft.jsp" />
-    </definition>
-    <definition name="item.user.price.create2.body" path="/layouts/bodySplitThree.jsp"><put name="one" value="/item/userPriceEditHeader.jsp" /><put name="two" value="/user/displaySelected.jsp" /><put name="three" value="/item/userPriceEditBody.jsp" />
-    </definition>
-    <definition name="item.user.price.maintain" extends="main"><put name="featureTitle" value="bar.item.price.maintain" /><put name="body" value="item.user.price.maintain.body" /><put name="leftMenuBar" value="/item/userPriceLeft.jsp" />
-    </definition>
-    <definition name="item.user.price.maintain.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/item/userPriceMaintainTop.jsp" /><put name="bottom" value="/item/userPriceEditBody.jsp" />
-    </definition>
-    <definition name="item.user.price.list" extends="main"><put name="featureTitle" value="bar.item.price.list" /><put name="body" value="item.user.price.list.body" /><put name="leftMenuBar" value="/item/userPriceLeft.jsp" />
-    </definition>
-    <definition name="item.user.price.list.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/item/userPriceListTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />
-    </definition>
     <definition name="promotion.create" extends="main"><put name="featureTitle" value="bar.promotion.create" /><put name="body" value="promotion.create.body" />
     </definition>
     <definition name="promotion.create.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/item/promotionCreateTop.jsp" /><put name="bottom" value="/item/editBody.jsp?create=yes&amp;promotion=yes" />

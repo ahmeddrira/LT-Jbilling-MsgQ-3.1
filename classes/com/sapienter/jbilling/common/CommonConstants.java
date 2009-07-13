@@ -178,4 +178,9 @@ public interface CommonConstants {
     public final static Integer PROVISIONING_STATUS_PENDING_INACTIVE=new Integer(4);
     public final static Integer PROVISIONING_STATUS_FAILED=new Integer(5);
     public final static Integer PROVISIONING_STATUS_UNAVAILABLE = new Integer(6);
+
+    // types of balances
+    public final static int BALANCE_NO_DYNAMIC = 1; // the default
+    public final static int BALANCE_PRE_PAID = 2;
+    public final static int BALANCE_CREDIT_LIMIT = 3;
 }

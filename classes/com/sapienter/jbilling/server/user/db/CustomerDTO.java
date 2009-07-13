@@ -46,6 +46,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
+import java.math.BigDecimal;
 
 @Entity
 @TableGenerator(
@@ -78,6 +79,9 @@ public class CustomerDTO  implements java.io.Serializable {
      private int excludeAging;
      private Integer invoiceChild;
      private Integer currentOrderId;
+     private int balanceType = Constants.BALANCE_NO_DYNAMIC;
+     private BigDecimal dynamicBalance;
+     private BigDecimal creditLimit;
      private int versionNum;
 
     public CustomerDTO() {
@@ -275,6 +279,33 @@ public class CustomerDTO  implements java.io.Serializable {
     
     public void setCurrentOrderId(Integer currentOrderId) {
         this.currentOrderId = currentOrderId;
+    }
+
+    @Column(name="balance_type")
+    public int getBalanceType() {
+        return balanceType;
+    }
+
+    public void setBalanceType(int balanceType) {
+        this.balanceType = balanceType;
+    }
+
+    @Column(name="credit_limit")
+    public BigDecimal getCreditLimit() {
+        return creditLimit;
+    }
+
+    public void setCreditLimit(BigDecimal creditLimit) {
+        this.creditLimit = creditLimit;
+    }
+
+    @Column(name="dynamic_balance")
+    public BigDecimal getDynamicBalance() {
+        return dynamicBalance;
+    }
+
+    public void setDynamicBalance(BigDecimal dynamicBalance) {
+        this.dynamicBalance = dynamicBalance;
     }
 
     @Version

@@ -350,9 +350,12 @@
         <column name="df_fm" type="SMALLINT"/>
         <column name="parent_id" type="INTEGER"/>
         <column name="is_parent" type="SMALLINT"/>
-        <column default="0" name="exclude_aging" required="true" type="SMALLINT"/>
+        <column name="exclude_aging" default="0" required="true" type="SMALLINT"/>
         <column name="invoice_child" type="SMALLINT"/>
         <column name="current_order_id" type="INTEGER"/>
+        <column name="balance_type" type="INTEGER" default="1" required="true"/>
+        <column name="dynamic_balance" type="DOUBLE"/>
+        <column name="credit_limit" type="DOUBLE"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="customer_i_2">
             <index-column name="user_id"/>

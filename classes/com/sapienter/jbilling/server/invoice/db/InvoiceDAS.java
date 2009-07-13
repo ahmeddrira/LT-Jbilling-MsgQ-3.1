@@ -304,7 +304,12 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         criteria.add(Restrictions.eq("isReview", 0));
         criteria.setProjection(Projections.sum("balance"));
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
-        return new BigDecimal(((Float) criteria.uniqueResult()));
+        Float result = (Float) criteria.uniqueResult();
+        if (result == null) {
+            return new BigDecimal(0);
+        } else {
+            return new BigDecimal(result);
+        }
     }
 
 	/*

@@ -73,6 +73,12 @@
 		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
 			property="subscriptionStatusStr" scope="session"/></td>
 	</tr>
+    <tr class="infoA">
+		<td class="infoprompt"><bean:message key="user.prompt.balance"/></td>
+		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+			property="balance" scope="session" formatKey="format.money"/></td>
+	</tr>
+
 	
 	<logic:notEqual name='<%=Constants.SESSION_USER_DTO%>'
 					 property="mainRoleId"

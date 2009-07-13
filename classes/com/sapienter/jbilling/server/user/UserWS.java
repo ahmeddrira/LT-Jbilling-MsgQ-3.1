@@ -62,6 +62,7 @@ public class UserWS implements Serializable {
     private String[] blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
     private Integer[] childIds = null;
+    private Double owingBalance = null;
 
     public Integer getPartnerId() {
         return partnerId;
@@ -110,6 +111,7 @@ public class UserWS implements Serializable {
         blacklistMatches = dto.getBlacklistMatches() != null ? 
                 dto.getBlacklistMatches().toArray(new String[0]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();
+        owingBalance = dto.getBalance().doubleValue();
     }
     
     public String toString() {
@@ -331,5 +333,9 @@ public class UserWS implements Serializable {
 
     public void setChildIds(Integer[] childIds) {
         this.childIds = childIds;
+    }
+
+    public Double getOwingBalance() {
+        return owingBalance;
     }
 }

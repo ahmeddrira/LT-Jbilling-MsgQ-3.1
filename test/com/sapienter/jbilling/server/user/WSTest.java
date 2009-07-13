@@ -67,6 +67,20 @@ public class WSTest extends TestCase {
         }
     }
 
+    public void testOwningBalance() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            System.out.println("Getting balance of user 2");
+            UserWS ret = api.getUserWS(new Integer(2));
+            assertEquals("Balance of Gandlaf starts at 1376690.0", 1376690.0, ret.getOwingBalance());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
 
     public void testCreateUpdateDeleteUser() {
         try {

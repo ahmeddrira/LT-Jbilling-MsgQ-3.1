@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.user.permisson.db.PermissionTypeDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import java.math.BigDecimal;
 
 /**
  * @author emilc
@@ -79,6 +80,7 @@ public final class UserDTOEx extends UserDTO {
     private Locale locale = null;
     private Vector<String> blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
+    private BigDecimal balance = null; // calculated in real-time. Not a DB field
 
 
     /**
@@ -431,5 +433,12 @@ public final class UserDTOEx extends UserDTO {
 
     public void setUserIdBlacklisted(Boolean userIdBlacklisted) {
         this.userIdBlacklisted = userIdBlacklisted;
+    }
+
+    public BigDecimal getBalance() {
+        if (balance == null) {
+            balance = new UserBL().getBalance(getId());
+        }
+        return balance;
     }
 }

@@ -51,20 +51,23 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import java.math.BigDecimal;
 
 public class MaintainAction extends Action {
+
+    private static Logger LOG = Logger.getLogger(MaintainAction.class);
 
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         ActionErrors errors = new ActionErrors();
         ActionMessages messages = new ActionMessages();
-        Logger log = Logger.getLogger(MaintainAction.class);
+        
         HttpSession session = request.getSession(false);
 
         String action = request.getParameter("action");
         if (action == null) {
-            log.error("action is required in maintain action");
+            LOG.error("action is required in maintain action");
             throw new ServletException("action is required");
         }
         
@@ -111,7 +114,7 @@ public class MaintainAction extends Action {
                 IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
                         Context.getBean(Context.Name.INVOICE_SESSION);
                 if (userDto.getLastInvoiceId() != null) {
-                    log.debug("adding the latest inovoice: " + 
+                    LOG.debug("adding the latest inovoice: " +
                             userDto.getLastInvoiceId());
                     Integer languageId = (Integer) session.getAttribute(
                             Constants.SESSION_LANGUAGE);
@@ -119,7 +122,7 @@ public class MaintainAction extends Action {
                             invoiceSession.getInvoiceEx(userDto.getLastInvoiceId(),
                                 languageId));
                 } else {
-                    log.debug("there is no invoices.");
+                    LOG.debug("there is no invoices.");
                     session.removeAttribute(Constants.SESSION_INVOICE_DTO);
                 }
 
@@ -127,11 +130,11 @@ public class MaintainAction extends Action {
             } 
 
             if (forward == null) {
-                log.error("forward is required in the session");
+                LOG.error("forward is required in the session");
                 throw new ServletException("forward is required in the session");
             }
             if (userId == null) {
-                log.error("userId is required in the session");
+                LOG.error("userId is required in the session");
                 throw new ServletException("userId is required in the session");
             }
             
@@ -164,7 +167,7 @@ public class MaintainAction extends Action {
 				// get the info in its current status
                 UserDTOEx orgUser = (UserDTOEx) session.getAttribute(
                         Constants.SESSION_CUSTOMER_DTO);
-				log.debug("Updating user: ");
+				LOG.debug("Updating user: ");
                 // general validation first
                 errors = userForm.validate(mapping, request);
                 // verify that the password and the verification password 
@@ -214,7 +217,7 @@ public class MaintainAction extends Action {
                     }
                 }
 
-		// the login name has to be unique across entities
+                // the login name has to be unique across entities
                 // test only if it has changed
                 if (orgUser != null && !orgUser.getUserName().equals((String) 
                         userForm.get("username"))) {
@@ -228,8 +231,21 @@ public class MaintainAction extends Action {
                                     (String) userForm.get("username")));
                     }
                 }
-				
-                
+
+                LOG.debug("balance type is " + userForm.get("balance_type") +
+                        " credit limit is " + userForm.get("credit_limit"));
+                if (((Integer) userForm.get("balance_type")).equals(Constants.BALANCE_CREDIT_LIMIT) &&
+                        ((String) userForm.get("credit_limit")).trim().length() == 0) {
+                    errors.add(ActionErrors.GLOBAL_ERROR,
+                            new ActionError("user.edit.error.invalidCreditLimit"));
+                }
+
+                if (!((Integer) userForm.get("balance_type")).equals(Constants.BALANCE_CREDIT_LIMIT) &&
+                        ((String) userForm.get("credit_limit")).trim().length() != 0) {
+                    errors.add(ActionErrors.GLOBAL_ERROR,
+                            new ActionError("user.edit.error.invalidNonCreditLimit"));
+                }
+
                 if (errors.isEmpty()) {              
                     // create a dto with the info from the form
                     UserDTOEx dto = new UserDTOEx();
@@ -269,7 +285,12 @@ public class MaintainAction extends Action {
                         dto.getCustomer().setExcludeAging(new Integer(((Boolean)
                                     userForm.get("chbx_excludeAging")).booleanValue() 
                                         ? 1 : 0));
-                        
+
+                        dto.getCustomer().setBalanceType((Integer) userForm.get("balance_type"));
+                        String cl = (String) userForm.get("credit_limit");
+                        dto.getCustomer().setCreditLimit(cl.trim().length() == 0 ? null :
+                                new BigDecimal(cl));
+
                         if (partnerId != null && partnerId.length() > 0) {
                             dto.getCustomer().setPartner(new Partner(Integer.valueOf(
                                 partnerId)));
@@ -308,14 +329,14 @@ public class MaintainAction extends Action {
                 forward="userView";
 
             } else {
-                log.error("action not supported" + action);
+                LOG.error("action not supported" + action);
                 throw new ServletException("action is not supported :" + action);
             }
             saveMessages(request, messages);
         } catch (Exception e) {
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));
-            log.debug("Exception:", e);
+            LOG.debug("Exception:", e);
         }
         
         if (!errors.isEmpty()) {

@@ -122,6 +122,9 @@ public class GetUserTag extends TagSupport {
                         form.set("partnerId", null);
                     }
                     form.set("subscriberStatus", dto.getSubscriptionStatusId());
+                    form.set("balance_type", dto.getCustomer().getBalanceType());
+                    form.set("credit_limit", dto.getCustomer().getCreditLimit() == null ?
+                        null : dto.getCustomer().getCreditLimit().toString());
                 }
                 
                 // make it available to the jsp

@@ -201,6 +201,8 @@ public class UserBL extends ResultList
             }
             
             user.getCustomer().setExcludeAging(dto.getCustomer().getExcludeAging());
+            user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
+            user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
         }
         
         updateRoles(dto.getRoles(), dto.getMainRoleId());

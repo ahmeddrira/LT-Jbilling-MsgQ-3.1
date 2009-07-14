@@ -62,6 +62,7 @@ public class GetOptionsTag extends TagSupport {
     private Boolean taskClasses = new Boolean(false);
     private Boolean subscriberStatus = new Boolean(false);
     private Boolean provisioningStatus = new Boolean(false);
+    private Boolean balanceType = new Boolean(false);
 
     // these are flag to indicate some particluar behavior
     private Boolean inSession = new Boolean(false);
@@ -139,6 +140,9 @@ public class GetOptionsTag extends TagSupport {
             } else if (provisioningStatus.booleanValue()) {
                 type = "provisioningStatus";
                 attributeKey = Constants.PAGE_PROVISIONING_STATUS;                
+            } else if (balanceType.booleanValue()) {
+                type = "balanceType";
+                attributeKey = Constants.PAGE_BALANCE_TYPE;
             } else {
                 log.error("At least one flag has to be present");
                 throw new Exception("at least one attribute required");
@@ -428,4 +432,19 @@ public class GetOptionsTag extends TagSupport {
     public void setProvisioningStatus(Boolean provisioningStatus) {
         this.provisioningStatus = provisioningStatus;
     }
+
+    /**
+     * @jsp:attribute required="false"
+     *                rtexprvalue="true"
+     *                type="java.lang.Boolean"
+     */
+    public Boolean getBalanceType() {
+        return balanceType;
+    }
+
+    public void setBalanceType(Boolean balanceType) {
+        this.balanceType = balanceType;
+    }
+
+
 }

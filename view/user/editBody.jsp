@@ -343,6 +343,27 @@
 				</td>
 			</tr>
 			</logic:equal>
+
+            <jbilling:getOptions balanceType="true"/>
+            <tr class="form">
+				<td></td>
+		    	<td class="form_prompt"><bean:message key="user.prompt.balanceType"/></td>
+		    	<td>
+                    <html:select property="balance_type">
+						 	<html:options collection='<%=Constants.PAGE_BALANCE_TYPE%>'
+				                    property="code"
+				                    labelProperty="description"/>
+					</html:select>
+ 	        	</td>
+	        </tr>
+            <tr class="form">
+				<td></td>
+		    	<td class="form_prompt"><bean:message key="user.prompt.creditLimit"/></td>
+		    	<td>
+		        	<html:text property="credit_limit" size="10" />
+ 	        	</td>
+	        </tr>
+
 		</logic:equal>
 			<tr class="form">
   			 	<td></td>

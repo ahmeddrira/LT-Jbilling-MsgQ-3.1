@@ -21,7 +21,6 @@
 /*
  * Created on Dec 18, 2003
  *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.user;
 
@@ -63,6 +62,9 @@ public class UserWS implements Serializable {
     private Boolean userIdBlacklisted = null;
     private Integer[] childIds = null;
     private Double owingBalance = null;
+    private Integer balanceType = null;
+    private Double dynamicBalance = null;
+    private Double creditLimit = null;
 
     public Integer getPartnerId() {
         return partnerId;
@@ -107,6 +109,11 @@ public class UserWS implements Serializable {
                 childIds[index] = customer.getBaseUser().getId();
                 index++;
             }
+            balanceType = dto.getCustomer().getBalanceType();
+            dynamicBalance = dto.getCustomer().getDynamicBalance() == null ? null :
+                dto.getCustomer().getDynamicBalance().doubleValue();
+            creditLimit = dto.getCustomer().getCreditLimit() == null ? null :
+                dto.getCustomer().getCreditLimit().doubleValue();
         }
         blacklistMatches = dto.getBlacklistMatches() != null ? 
                 dto.getBlacklistMatches().toArray(new String[0]) : null;
@@ -338,4 +345,29 @@ public class UserWS implements Serializable {
     public Double getOwingBalance() {
         return owingBalance;
     }
+
+    public Integer getBalanceType() {
+        return balanceType;
+    }
+
+    public void setBalanceType(Integer balanceType) {
+        this.balanceType = balanceType;
+    }
+
+    public Double getCreditLimit() {
+        return creditLimit;
+    }
+
+    public void setCreditLimit(Double creditLimit) {
+        this.creditLimit = creditLimit;
+    }
+
+    public Double getDynamicBalance() {
+        return dynamicBalance;
+    }
+
+    public void setDynamicBalance(Double dynamicBalance) {
+        this.dynamicBalance = dynamicBalance;
+    }
+
 }

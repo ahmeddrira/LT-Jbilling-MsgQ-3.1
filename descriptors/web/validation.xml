@@ -1094,6 +1094,13 @@
                 <arg0 key="prompt.password" />
                 <arg1 name="minlength" key="${var:minlength}" resource="false" />
             </field>
+            <field property="credit_limit" depends="mask">
+                <arg0 key="user.prompt.creditLimit" />
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9\.\,\-]*$</var-value>
+                </var>
+            </field>
         </form>
         <form name="signup">
             <field property="address1" depends="required">

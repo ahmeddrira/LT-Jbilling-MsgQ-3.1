@@ -1789,6 +1789,9 @@
     <InternationalDescription TableId="63" ForeignId="93" PsudoColumn="display" LanguageId="2" Content="Plug-ins"/>
     <InternationalDescription TableId="63" ForeignId="95" PsudoColumn="display" LanguageId="1" Content="Mediation"/>
     <InternationalDescription TableId="63" ForeignId="96" PsudoColumn="display" LanguageId="1" Content="Mediation"/>
+    <InternationalDescription TableId="89" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="None"/>
+    <InternationalDescription TableId="89" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Pre-paid balance"/>
+    <InternationalDescription TableId="89" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Credit limit"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>
@@ -1883,6 +1886,7 @@
     <JbillingTable Id="86" Name="mediation_record_line" NextId="1"/>
     <JbillingTable Id="87" Name="generic_status" NextId="26"/>
     <JbillingTable Id="88" Name="order_line_provisioning_status" NextId="1"/>
+    <JbillingTable Id="89" Name="balance_type" NextId="0"/>
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
     <List Id="1" LegacyName="customerSimple" TitleKey="list.customers.title" Optlock="1"/>

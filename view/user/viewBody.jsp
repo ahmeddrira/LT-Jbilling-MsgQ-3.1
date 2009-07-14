@@ -78,6 +78,49 @@
 		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'
 			property="balance" scope="session" formatKey="format.money"/></td>
 	</tr>
+    
+    <!-- Display the dynamic balance, depending on the balance type of the customer -->
+    <logic:present name='<%=Constants.SESSION_CUSTOMER_DTO%>'  
+			property="customer" scope="session">
+
+    <logic:notEqual name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+					 property="customer.balanceType"
+					 scope="session"
+					 value='<%=Constants.BALANCE_NO_DYNAMIC.toString()%>'>
+    <tr class="infoB">
+        <logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+					 property="customer.balanceType"
+					 scope="session"
+					 value='<%=Constants.BALANCE_PRE_PAID.toString()%>'>
+            <td class="infoprompt"><bean:message key="user.prompt.prepaidBalance"/></td>
+        </logic:equal>
+        <logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+					 property="customer.balanceType"
+					 scope="session"
+					 value='<%=Constants.BALANCE_CREDIT_LIMIT.toString()%>'>
+            <td class="infoprompt"><bean:message key="user.prompt.creditBalance"/></td>
+        </logic:equal>
+		<td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+			property="customer.dynamicBalance" scope="session"/>
+        </td>
+	</tr>
+    
+    <logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+					 property="customer.balanceType"
+					 scope="session"
+					 value='<%=Constants.BALANCE_CREDIT_LIMIT.toString()%>'>
+        <tr class="infoA">
+            <td class="infoprompt"><bean:message key="user.prompt.creditLimit"/></td>
+        
+		    <td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+			    property="customer.creditLimit" scope="session"/>
+            </td>
+        </tr>
+    </logic:equal>
+
+    </logic:notEqual>
+    </logic:present>
+
 
 	
 	<logic:notEqual name='<%=Constants.SESSION_USER_DTO%>'

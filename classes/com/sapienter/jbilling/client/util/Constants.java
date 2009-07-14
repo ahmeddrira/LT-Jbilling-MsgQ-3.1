@@ -196,6 +196,7 @@ public final class Constants implements PermissionConstants, CommonConstants {
     public static final String PAGE_TASK_CLASSES = "task_classes";
     public static final String PAGE_SUBSCRIBER_STATUS = "subscriberStatus";
     public static final String PAGE_PROVISIONING_STATUS = "provisioningStatus";
+    public static final String PAGE_BALANCE_TYPE = "balanceType";
 
     /*
      * Forwards as parameters

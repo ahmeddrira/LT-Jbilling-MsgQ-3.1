@@ -106,6 +106,8 @@ public class WSTest extends TestCase {
             assertEquals("created user first name", retUser.getContact().getFirstName(),
                     newUser.getContact().getFirstName());     
             assertEquals("create user parent id", new Integer(43), retUser.getParentId());
+            assertEquals("created user with no dynamic balance type", Constants.BALANCE_NO_DYNAMIC,
+                    retUser.getBalanceType());
             System.out.println("My user: " + retUser);
             assertEquals("created credit card name", "Frodo Baggins", retUser.getCreditCard().getName());
             
@@ -151,6 +153,8 @@ public class WSTest extends TestCase {
             System.out.println("Updating user - Pass 1 - Should succeed");
             retUser.setPassword("newPassword1");
             retUser.getCreditCard().setNumber("4111111111111152");
+            retUser.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            retUser.setCreditLimit(112233.0);
             System.out.println("Updating user...");
             api.updateUser(retUser);
             
@@ -165,6 +169,10 @@ public class WSTest extends TestCase {
                     newUser.getContact().getFirstName());
             assertEquals("Credit card updated", "4111111111111152",
                     retUser.getCreditCard().getNumber());
+            assertEquals("Balance type updated", Constants.BALANCE_CREDIT_LIMIT,
+                    retUser.getBalanceType());
+            assertEquals("credit limit updated", 112233.0,
+                    retUser.getCreditLimit());
 
             System.out.println("Updating user - Pass 2 - Should fail due to invalid password");
             retUser.setPassword("newPassword");
@@ -518,6 +526,7 @@ public class WSTest extends TestCase {
             newUser.setParentId(parentId); // this parent exists
             newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
             newUser.setCurrencyId(currencyId);
+            newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
             
             // add a contact
             ContactWS contact = new ContactWS();

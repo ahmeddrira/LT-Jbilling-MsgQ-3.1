@@ -10788,6 +10788,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 88	4	description	1	Pending Inactive
 88	5	description	1	Failed
 88	6	description	1	Unavailable
+89	1	description	1	None
+89	2	description	1	Pre-paid balance
+89	3	description	1	Credit limit
 \.
 
 
@@ -11011,6 +11014,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 79	partner_range	2
 25	pluggable_task	55
 26	pluggable_task_parameter	82
+89	balance_type	0
 \.
 
 

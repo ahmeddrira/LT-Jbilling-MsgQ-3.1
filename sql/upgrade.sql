@@ -9,6 +9,12 @@ alter table customer alter column balance_type set not null;
 alter table customer add dynamic_balance DOUBLE PRECISION ;
 alter table customer add credit_limit DOUBLE PRECISION ;
 
+-- for the GUI to support balance type
+insert into jbilling_table values (89, 'balance_type', 0);
+insert into international_description values (89, 1, 'description', 1, 'None');
+insert into international_description values (89, 2, 'description', 1, 'Pre-paid balance');
+insert into international_description values (89, 3, 'description', 1, 'Credit limit');
+
 -- obsolete item user pricing
 drop table item_user_price;
 delete from jbilling_table where name = 'item_user_price';

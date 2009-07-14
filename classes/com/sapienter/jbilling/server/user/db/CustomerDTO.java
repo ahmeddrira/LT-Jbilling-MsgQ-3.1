@@ -134,6 +134,11 @@ public class CustomerDTO  implements java.io.Serializable {
         if (user.getCreditCard() != null) {
             setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC);
         }
+
+        setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC :
+            user.getBalanceType());
+        setCreditLimit(user.getCreditLimit() == null ? null : new BigDecimal(user.getCreditLimit()));
+        setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));
     }
    
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="customer_GEN")

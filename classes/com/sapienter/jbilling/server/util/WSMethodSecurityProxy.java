@@ -27,6 +27,7 @@ package com.sapienter.jbilling.server.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.naming.NamingException;
 
@@ -215,6 +216,20 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        params[0] = Integer.class;
        params[1] = Boolean.TYPE;
        addMethod("createInvoice", params);
+
+       // getCurrentOrder
+       params = new Class[2];
+       params[0] = Integer.class;
+       params[1] = Date.class;
+       addMethod("getCurrentOrder", params);
+
+       // updateCurrentOrder
+       params = new Class[4];
+       params[0] = Integer.class;
+       params[1] = OrderLineWS[].class;
+       params[2] = String.class;
+       params[3] = Date.class;
+       addMethod("updateCurrentOrder", params);
     }
 
     private static void addMethod(String name, Class params[]) {
@@ -313,7 +328,9 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                     }
                 }
             } else if(m.getName().equals("getOrder") || 
-                    m.getName().equals("deleteOrder")) {
+                    m.getName().equals("deleteOrder") ||
+                    m.getName().equals("getCurrentOrder") ||
+                    m.getName().equals("updateCurrentOrder")) {
                 Integer arg = (Integer) args[0];
                 
                 if (arg != null) {

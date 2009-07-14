@@ -231,6 +231,12 @@ public interface IWebServicesSessionBean {
 
     public void deleteOrder(Integer id) throws SessionInternalError;
 
+    public OrderWS getCurrentOrder(Integer userId, Date date) 
+            throws SessionInternalError;
+
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
+            String pricing, Date date) throws SessionInternalError;
+
     /*
      * PAYMENT
      */

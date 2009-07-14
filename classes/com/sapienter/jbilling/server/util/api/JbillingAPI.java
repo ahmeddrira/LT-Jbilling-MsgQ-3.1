@@ -116,6 +116,12 @@ public interface JbillingAPI {
 
     public void deleteOrder(Integer id) throws JbillingAPIException;
 
+    public OrderWS getCurrentOrder(Integer userId, Date date) 
+            throws JbillingAPIException;
+
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
+            PricingField[] fields, Date date) throws JbillingAPIException;
+
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws JbillingAPIException;
 

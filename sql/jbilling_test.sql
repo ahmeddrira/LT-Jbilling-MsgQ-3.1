@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -10936,7 +10936,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 13	item_type	22
 14	item	26
 15	item_price	16
-16	item_user_price	3
 17	order_period	4
 18	order_line_type	4
 19	order_billing_type	3

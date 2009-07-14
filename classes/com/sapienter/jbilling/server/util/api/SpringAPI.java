@@ -203,6 +203,26 @@ public class SpringAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+
+    public OrderWS getCurrentOrder(Integer userId, Date date) 
+            throws JbillingAPIException {
+        try {
+            return session.getCurrentOrder(userId, date);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
+            PricingField[] fields, Date date) throws JbillingAPIException {
+        try {
+            return session.updateCurrentOrder(userId, lines, 
+                    PricingField.setPricingFieldsValue(fields), date);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public Integer[] getLastPayments(Integer userId, Integer number)
             throws JbillingAPIException {
         try {

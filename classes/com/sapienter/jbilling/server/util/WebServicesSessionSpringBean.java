@@ -56,6 +56,7 @@ import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -840,16 +841,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return invoice == null ? null : invoice.getId();
     }
 
-    private void processItemLine(OrderWS order, Integer languageId,
-            Integer entityId)
+    private void processItemLine(OrderLineWS[] lines, Integer languageId,
+            Integer entityId, Integer userId, Integer currencyId)
             throws SessionInternalError, PluggableTaskException, TaskException {
-        for (OrderLineWS line : order.getOrderLines()) {
+        for (OrderLineWS line : lines) {
             // get the related item
             IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
                     Context.Name.ITEM_SESSION);
 
             ItemDTO item = itemSession.get(line.getItemId(),
-                    languageId, order.getUserId(), order.getCurrencyId(),
+                    languageId, userId, currencyId,
                     entityId);
 
             //ItemDAS itemDas = new ItemDAS();
@@ -880,7 +881,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             Integer languageId = bl.getEntity().getLanguageIdField();
 
             // see if the related items should provide info
-            processItemLine(order, languageId, entityId);
+            processItemLine(order.getOrderLines(), languageId, entityId, 
+                    order.getUserId(), order.getCurrencyId());
 
             // do some transformation from WS to DTO :(
             OrderBL orderBL = new OrderBL();
@@ -1034,6 +1036,93 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Error deleting order");
         }
         LOG.debug("Done");
+    }
+
+    /**
+     * Returns the current one-time order for this user for the given 
+     * date. Returns null for users with no main subscription order.
+     */
+    public OrderWS getCurrentOrder(Integer userId, Date date) {
+        LOG.debug("Call to getCurrentOrder " + userId);
+        try {
+            OrderWS retValue = null;
+            // get the info from the caller
+            UserBL userbl = new UserBL(getCallerId());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+
+            // now get the current order
+            OrderBL bl = new OrderBL();
+            if (bl.getCurrentOrder(userId, date) != null) {
+                retValue = bl.getWS(languageId);
+            }
+
+            LOG.debug("Done");
+            return retValue;
+
+        } catch (Exception e) {
+            LOG.error("WS - getCurrentOrder", e);
+            throw new SessionInternalError("Error getting current order");
+        }
+    }
+
+    /**
+     * Updates the uesr's current one-time order for the given date.
+     * Returns the updated current order. Throws an exception for 
+     * users with no main subscription order.
+     */
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
+            String pricing, Date date) {
+        LOG.debug("Call to updateCurrentOrder - userId: " + userId + 
+            " lines: " + Arrays.toString(lines) + " date: " + date);
+        try {
+            UserBL userbl = new UserBL(userId);
+            // check user has a main subscription order
+            if (userbl.getEntity().getCustomer().getCurrentOrderId() == null) {
+                throw new SessionInternalError("No main subscription order " +
+                        "for userId: " + userId);
+            }
+
+            // get currency from the user
+            Integer currencyId = userbl.getCurrencyId();
+
+            // get language from the caller
+            userbl.set(getCallerId());
+            Integer languageId = userbl.getEntity().getLanguageIdField();
+
+            // convert order lines from WS to DTO
+            OrderBL bl = new OrderBL();
+            processItemLine(lines, languageId, getCallerCompanyId(), userId, 
+                    currencyId);
+            Vector<OrderLineDTO> orderLines = new Vector<OrderLineDTO>(
+                    lines.length);
+            for (OrderLineWS line : lines) {
+                orderLines.add(bl.getOrderLine(line));
+            }
+
+            // pricing fields
+            Vector<Record> records = null;
+            PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
+                    pricing);
+            if (fieldsArray != null) {
+                Record record = new Record();
+                for (PricingField field : fieldsArray) {
+                    record.addField(field, false); // don't care about isKey
+                }
+                records = new Vector<Record>(1);
+                records.add(record);
+            }
+
+            // do the update
+            bl.updateCurrent(getCallerCompanyId(), getCallerId(), userId, 
+                    currencyId, orderLines, records, date);
+
+            // return the updated order
+            return bl.getWS(languageId);
+
+        } catch (Exception e) {
+            LOG.error("WS - getCurrentOrder", e);
+            throw new SessionInternalError("Error getting current order");
+        }
     }
 
     /*
@@ -1576,7 +1665,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             // we'll need the langauge later
             bl.set(order.getUserId());
             // see if the related items should provide info
-            processItemLine(order, languageId, entityId);
+            processItemLine(order.getOrderLines(), languageId, entityId, 
+                    order.getUserId(), order.getCurrencyId());
             // call the creation
             OrderBL orderBL = new OrderBL();
             OrderDTO dto = orderBL.getDTO(order);

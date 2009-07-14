@@ -1840,7 +1840,6 @@
     <JbillingTable Id="11" Name="partner" NextId="1"/>
     <JbillingTable Id="5" Name="entity" NextId="1"/>
     <JbillingTable Id="28" Name="contact_type" NextId="2"/>
-    <JbillingTable Id="16" Name="item_user_price" NextId="1"/>
     <JbillingTable Id="65" Name="promotion" NextId="1"/>
     <JbillingTable Id="25" Name="pluggable_task" NextId="1"/>
     <JbillingTable Id="75" Name="ach" NextId="1"/>

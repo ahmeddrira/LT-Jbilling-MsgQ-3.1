@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
@@ -890,6 +891,120 @@ public class WSTest  extends TestCase {
             // clean up
             api.deleteInvoice(invoiceId);
             api.deleteOrder(orderId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    public void testCurrentOrder() {
+        try {
+            final Integer USER_ID = 2;
+            final Integer NO_MAIN_SUB_USER_ID = 1010;
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            /*
+             * Test update current order without pricing fields.
+             */
+
+            // current order before modification
+            OrderWS currentOrderBefore = api.getCurrentOrder(USER_ID, 
+                    new Date());
+            assertEquals("No order lines.", 0, 
+                    currentOrderBefore.getOrderLines().length);
+
+            // add a single line
+            OrderLineWS newLine = new OrderLineWS();
+            newLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            newLine.setItemId(new Integer(1));
+            newLine.setQuantity(new Double(22.0));
+            // take the price and description from the item
+            newLine.setUseItem(new Boolean(true));
+
+            // update the current order
+            OrderWS currentOrderAfter = api.updateCurrentOrder(USER_ID, 
+                    new OrderLineWS[] { newLine }, null, new Date());
+
+            // asserts
+            assertEquals("Order ids", currentOrderBefore.getId(),
+                    currentOrderAfter.getId());
+            assertEquals("1 new order line", 1,
+                    currentOrderAfter.getOrderLines().length);
+            OrderLineWS createdLine = currentOrderAfter.getOrderLines()[0];
+            assertEquals("Order line item ids", newLine.getItemId(), 
+                    createdLine.getItemId());
+            assertEquals("Order line quantities", newLine.getQuantity(),
+                    createdLine.getQuantity());
+            assertEquals("Order line price", 10.0f, createdLine.getPrice());
+            assertEquals("Order line total", 220.0f, createdLine.getAmount());
+
+
+            /*
+             * Test update current order with pricing fields.
+             */
+
+            // A pricing rule. See PricingRules.drl, rule 'PricingField test1'.
+            PricingField pf = new PricingField("newPrice", 5.0);
+            newLine.setQuantity(1);
+            currentOrderAfter = api.updateCurrentOrder(USER_ID, 
+                    new OrderLineWS[] { newLine }, new PricingField[] { pf }, 
+                    new Date());
+
+            // asserts
+            assertEquals("1 order line", 1,
+                    currentOrderAfter.getOrderLines().length);
+            createdLine = currentOrderAfter.getOrderLines()[0];
+            assertEquals("Order line ids", newLine.getItemId(), 
+                    createdLine.getItemId());
+            assertEquals("Order line quantities", 23.0, 
+                    createdLine.getQuantity());
+            assertEquals("Order line price", 10.0f, createdLine.getPrice());
+            // Note that because of the rule, the result should be 
+            // 225.0, not 230.0.
+            assertEquals("Order line total", 225.0f, createdLine.getAmount());
+
+
+            /*
+             * No main subscription order tests.
+             */
+
+            // User with no main subscription order should return
+            // null when trying to get a current order.
+            assertNull("User with no main subscription order should have " +
+                    "null current order", api.getCurrentOrder(
+                    NO_MAIN_SUB_USER_ID, new Date()));
+
+            // An exception should be thrown
+            try {
+                api.updateCurrentOrder(NO_MAIN_SUB_USER_ID, 
+                        new OrderLineWS[] { newLine }, null, new Date());
+                fail("User with no main subscription order should throw an " +
+                        "exception");
+            } catch(Exception e) {
+            }
+
+
+            /*
+             * Security tests
+             */
+            try {
+                api.getCurrentOrder(13, new Date());
+                fail("User 13 belongs to entity 2");
+            } catch (Exception e) {
+            }
+
+            try {
+                api.updateCurrentOrder(13, new OrderLineWS[] { newLine }, 
+                        new PricingField[] { pf }, new Date());
+                fail("User 13 belongs to entity 2");
+            } catch (Exception e) {
+            }                
+
+
+            // cleanup
+            api.deleteOrder(currentOrderAfter.getId());
 
         } catch (Exception e) {
             e.printStackTrace();

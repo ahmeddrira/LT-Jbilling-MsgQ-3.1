@@ -1303,6 +1303,15 @@ public class OrderBL extends ResultList
             throw new SessionInternalError("Updating current order", OrderBL.class, e);
         } 
     }
+
+    /**
+     * Returns the current one-time order for this user for the given date.
+     */
+    public OrderDTO getCurrentOrder(Integer userId, Date date) {
+        CurrentOrder co = new CurrentOrder(userId, date);
+        set(co.getCurrent());
+        return order;
+    }
     
     /**
      * The order has to be set and made persitent with an ID

@@ -8,3 +8,7 @@ update customer set balance_type = 1;
 alter table customer alter column balance_type set not null;
 alter table customer add dynamic_balance DOUBLE PRECISION ;
 alter table customer add credit_limit DOUBLE PRECISION ;
+
+-- obsolete item user pricing
+drop table item_user_price;
+delete from jbilling_table where name = 'item_user_price';

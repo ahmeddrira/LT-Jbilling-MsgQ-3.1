@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'SQL_ASCII';
+SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -9957,6 +9957,7 @@ COPY event_log_message (id) FROM stdin;
 30
 31
 32
+33
 \.
 
 
@@ -14174,6 +14175,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 22	1	21	5	1
 530	1	50	3	1
 540	1	53	1	2
+541	1	54	1	1
 \.
 
 
@@ -14298,6 +14300,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 51	3	com.sapienter.jbilling.server.invoice.task.NegativeBalanceInvoiceFilterTask	0
 52	17	com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask	1
 53	17	com.sapienter.jbilling.server.system.event.task.InternalEventsRulesTask	0
+54	17	com.sapienter.jbilling.server.user.balance.DynamicBalanceManagerTask	0
 \.
 
 

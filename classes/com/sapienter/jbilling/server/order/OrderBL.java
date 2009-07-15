@@ -64,8 +64,10 @@ import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.order.db.OrderStatusDAS;
 import com.sapienter.jbilling.server.order.event.NewActiveUntilEvent;
+import com.sapienter.jbilling.server.order.event.NewOrderEvent;
 import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
 import com.sapienter.jbilling.server.order.event.NewStatusEvent;
+import com.sapienter.jbilling.server.order.event.OrderDeletedEvent;
 import com.sapienter.jbilling.server.order.event.PeriodCancelledEvent;
 import com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -239,6 +241,10 @@ public class OrderBL extends ResultList
     }
     
     public void delete(Integer executorId) {
+        // the event is needed before the deletion
+        EventManager.process(new OrderDeletedEvent(
+                order.getBaseUserByUserId().getCompany().getId(), order));
+
         for (OrderLineDTO line: order.getLines()) {
             line.setDeleted(1);
         }
@@ -250,6 +256,7 @@ public class OrderBL extends ResultList
                 EventLogger.ROW_DELETED, null,  
                 null, null);
 
+       
     }
 
     /**
@@ -342,6 +349,7 @@ public class OrderBL extends ResultList
             		Constants.TABLE_PUCHASE_ORDER, order.getId(),
             		EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
 
+            EventManager.process(new NewOrderEvent(entityId, order));
         } catch (Exception e) {
             throw new SessionInternalError("Create exception creating order entity bean", OrderBL.class, e);
         } 

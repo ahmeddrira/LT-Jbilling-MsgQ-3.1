@@ -18,3 +18,9 @@ insert into international_description values (89, 3, 'description', 1, 'Credit l
 -- obsolete item user pricing
 drop table item_user_price;
 delete from jbilling_table where name = 'item_user_price';
+
+-- dynamic balance changes
+insert into event_log_message values (33);
+insert into pluggable_task_type values (54, 17, 'com.sapienter.jbilling.server.user.balance.DynamicBalanceManagerTask',0);
+-- check the correct id, ignore if this install does not care about pre-paid/credit limit balances.
+insert into pluggable_task values (541, 1, 54, 1, 1);

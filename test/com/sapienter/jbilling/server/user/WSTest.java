@@ -33,14 +33,17 @@ import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
+import java.math.BigDecimal;
 
 /**
  * @author Emil
@@ -547,7 +550,7 @@ public class WSTest extends TestCase {
             CreditCardDTO cc = new CreditCardDTO();
             cc.setName("Frodo Baggins");
             cc.setNumber(goodCC ? "4111111111111152" : "4111111111111111");
-            cc.setExpiry(Calendar.getInstance().getTime());
+            cc.setExpiry(new Date(new Date().getTime() + 1000000));
             newUser.setCreditCard(cc);
             
             System.out.println("Creating user ...");
@@ -627,7 +630,168 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
     	}
     }
-    
+
+    public void testPrePaidBalance() {
+        try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+            UserWS myUser = createUser(true, null, null);
+            Integer myId = myUser.getUserId();
+
+            // update to pre-paid
+            myUser.setBalanceType(Constants.BALANCE_PRE_PAID);
+            api.updateUser(myUser);
+
+            // get the current balance, it should be null or 0
+            System.out.println("Checking initial balance type and dynamic balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should be pre-paid", Constants.BALANCE_PRE_PAID,
+                    myUser.getBalanceType());
+            assertEquals("user should have 0 balance", BigDecimal.ZERO,
+                    myUser.getDynamicBalance() == null ? BigDecimal.ZERO :
+                        myUser.getDynamicBalance());
+
+            // add a payment
+            PaymentWS payment = new PaymentWS();
+            payment.setAmount(new Float(20));
+            payment.setIsRefund(new Integer(0));
+            payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
+            payment.setPaymentDate(Calendar.getInstance().getTime());
+            payment.setResultId(Constants.RESULT_ENTERED);
+            payment.setCurrencyId(new Integer(1));
+            payment.setUserId(myId);
+
+            PaymentInfoChequeDTO cheque = new PaymentInfoChequeDTO();
+            cheque.setBank("ws bank");
+            cheque.setDate(Calendar.getInstance().getTime());
+            cheque.setNumber("2232-2323-2323");
+            payment.setCheque(cheque);
+
+            System.out.println("Applying payment");
+            api.applyPayment(payment, null);
+            // check new balance is 20
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 20 balance", 20.0,
+                    myUser.getDynamicBalance());
+
+            // now create a one time order, the balance should decrease
+            OrderWS order = getOrder();
+            order.setUserId(myId);
+            System.out.println("creating one time order");
+            Integer orderId = api.createOrder(order);
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 0 balance", 0.0,
+                    myUser.getDynamicBalance());
+
+            // delete the order, the balance has to go back to 20
+            System.out.println("deleting one time order");
+            api.deleteOrder(orderId);
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 20 balance", 20.0,
+                    myUser.getDynamicBalance());
+
+            // now create a recurring order with invoice, the balance should decrease
+            order = getOrder();
+            order.setUserId(myId);
+            order.setPeriod(2);
+            System.out.println("creating recurring order and invoice");
+            api.createOrderAndInvoice(order);
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 0 balance", 0.0,
+                    myUser.getDynamicBalance());
+            
+            System.out.println("Removing");
+            api.deleteUser(myId);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
+
+     public void testCreditLimit() {
+        try {
+    		JbillingAPI api = JbillingAPIFactory.getAPI();
+            UserWS myUser = createUser(true, null, null);
+            Integer myId = myUser.getUserId();
+
+            // update to pre-paid
+            myUser.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            myUser.setCreditLimit(1000.0);
+            api.updateUser(myUser);
+
+            // get the current balance, it should be null or 0
+            System.out.println("Checking initial balance type and dynamic balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should be pre-paid", Constants.BALANCE_CREDIT_LIMIT,
+                    myUser.getBalanceType());
+            assertEquals("user should have 0 balance", BigDecimal.ZERO,
+                    myUser.getDynamicBalance() == null ? BigDecimal.ZERO :
+                        myUser.getDynamicBalance());
+
+            // now create a one time order, the balance should increase
+            OrderWS order = getOrder();
+            order.setUserId(myId);
+            System.out.println("creating one time order");
+            Integer orderId = api.createOrder(order);
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 20 balance", 20.0,
+                    myUser.getDynamicBalance());
+
+            // delete the order, the balance has to go back to 0
+            System.out.println("deleting one time order");
+            api.deleteOrder(orderId);
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 0 balance", 0.0,
+                    myUser.getDynamicBalance());
+
+            // now create a recurring order with invoice, the balance should increase
+            order = getOrder();
+            order.setUserId(myId);
+            order.setPeriod(2);
+            System.out.println("creating recurring order and invoice");
+            Integer invoiceId = api.createOrderAndInvoice(order);
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 20 balance", 20.0,
+                    myUser.getDynamicBalance());
+
+            // add a payment. I'd like to call payInvoice but it's not finding the CC
+            PaymentWS payment = new PaymentWS();
+            payment.setAmount(new Float(20));
+            payment.setIsRefund(new Integer(0));
+            payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
+            payment.setPaymentDate(Calendar.getInstance().getTime());
+            payment.setResultId(Constants.RESULT_ENTERED);
+            payment.setCurrencyId(new Integer(1));
+            payment.setUserId(myId);
+
+            PaymentInfoChequeDTO cheque = new PaymentInfoChequeDTO();
+            cheque.setBank("ws bank");
+            cheque.setDate(Calendar.getInstance().getTime());
+            cheque.setNumber("2232-2323-2323");
+            payment.setCheque(cheque);
+
+            System.out.println("Applying payment");
+            api.applyPayment(payment, invoiceId);
+            // check new balance is 20
+            System.out.println("Validating new balance");
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have 0 balance", 0.0,
+                    myUser.getDynamicBalance());
+
+            System.out.println("Removing");
+            api.deleteUser(myId);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
+
     // name changed so it is not called in normal test runs
     public void XXtestLoad() {
         try {

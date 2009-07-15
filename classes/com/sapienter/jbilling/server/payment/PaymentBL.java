@@ -57,6 +57,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
 import com.sapienter.jbilling.server.payment.event.AbstractPaymentEvent;
+import com.sapienter.jbilling.server.payment.event.PaymentDeletedEvent;
 import com.sapienter.jbilling.server.pluggableTask.PaymentInfoTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -551,10 +552,14 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
         try {
             LOG.debug("Deleting payment " + payment.getId());
+
+            Integer entityId = payment.getBaseUser().getEntity().getId();
+            EventManager.process(new PaymentDeletedEvent(entityId, payment));
+
             payment.setUpdateDatetime(Calendar.getInstance().getTime());
             payment.setDeleted(new Integer(1));
 
-            eLogger.auditBySystem(payment.getBaseUser().getEntity().getId(),
+            eLogger.auditBySystem(entityId,
                     Constants.TABLE_PAYMENT, payment.getId(),
                     EventLogger.MODULE_PAYMENT_MAINTENANCE,
                     EventLogger.ROW_DELETED, null, null, null);

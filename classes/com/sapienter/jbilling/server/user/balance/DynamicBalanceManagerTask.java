@@ -119,7 +119,8 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
     private void updateDynamicBalance(Integer entityId, Integer userId, BigDecimal amount) {
         UserDTO user = new UserDAS().find(userId);
 
-        if (user.getCustomer().getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
+        if (user.getCustomer() == null ||
+                user.getCustomer().getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
                 amount.equals(BigDecimal.ZERO)) {
             LOG.debug("Nothing to update");
             return;

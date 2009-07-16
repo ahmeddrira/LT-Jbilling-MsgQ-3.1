@@ -430,13 +430,13 @@ public class OrderBL extends ResultList
                 LOG.debug("Deleted order line. Order line Id: " + oldLineId);
                 EventManager.process(new NewQuantityEvent(entityId, 
                         currentOldLine.getQuantity(), new Double(0), orderId, 
-                        currentOldLine));
+                        currentOldLine, null));
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
             } else if (oldLineId > newLineId) {
                 // order line has been added
                 LOG.debug("Added order line. Order line Id: " + newLineId);
                 EventManager.process(new NewQuantityEvent(entityId, new Double(0), 
-                        currentNewLine.getQuantity(), orderId, currentNewLine));
+                        currentNewLine.getQuantity(), orderId, currentNewLine, null));
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
             } else {
                 // order line exists in both, so check quantity
@@ -446,7 +446,8 @@ public class OrderBL extends ResultList
                     LOG.debug("Order line quantity changed. Order line Id: " + 
                             oldLineId);
                     EventManager.process(new NewQuantityEvent(entityId, 
-                            oldLineQuantity, newLineQuantity, orderId, currentOldLine));
+                            oldLineQuantity, newLineQuantity, orderId, currentOldLine,
+                            currentNewLine));
                 }
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
@@ -457,14 +458,14 @@ public class OrderBL extends ResultList
             LOG.debug("Deleted order line. Order line id: " + currentOldLine.getId());
             EventManager.process(new NewQuantityEvent(entityId, 
                     currentOldLine.getQuantity(), new Double(0), orderId, 
-                    currentOldLine));
+                    currentOldLine, null));
             currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
         }
         while (currentNewLine != null) {
             LOG.debug("Added order line. Order line id: " + currentNewLine.getId());
             EventManager.process(new NewQuantityEvent(entityId, new Double(0), 
                     currentNewLine.getQuantity(), orderId, 
-                    currentNewLine));
+                    currentNewLine, null));
             currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
         }
     }
@@ -1294,9 +1295,15 @@ public class OrderBL extends ResultList
                     diffLine.setQuantity(line.getQuantity() - diffLine.getQuantity());
                     if (diffLine.getAmount() != 0 || diffLine.getQuantity() != 0) {
                         newLines.add(diffLine);
+                        EventManager.process(new NewQuantityEvent(entityId,
+                                oldLines.get(index).getQuantity(),
+                                line.getQuantity(), userId, oldLines.get(index),line));
+                        
                     }
                 } else {
-                    // new line, attached to session
+                    EventManager.process(new NewQuantityEvent(entityId,
+                                0.0, line.getQuantity(), userId,line, null));
+                    // new line, attach to session
                     newLines.add(line);
                 }
             }
@@ -1305,6 +1312,7 @@ public class OrderBL extends ResultList
             if (newLines.size() == 0) {
                 LOG.warn("No lines updated after update current");
             }
+
             return newLines;
             
         } catch (Exception e) {

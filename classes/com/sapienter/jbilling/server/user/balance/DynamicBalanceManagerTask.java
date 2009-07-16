@@ -21,7 +21,9 @@
 package com.sapienter.jbilling.server.user.balance;
 
 import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.event.NewOrderEvent;
+import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
 import com.sapienter.jbilling.server.order.event.OrderDeletedEvent;
 import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentDeletedEvent;
@@ -47,7 +49,8 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         OrderDeletedEvent.class,
         NewOrderEvent.class,
         PaymentDeletedEvent.class,
-        OrderToInvoiceEvent.class
+        OrderToInvoiceEvent.class,
+        NewQuantityEvent.class
     };
 
     private static final Logger LOG = Logger.getLogger(DynamicBalanceManagerTask.class);
@@ -88,7 +91,31 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
             } else {
                 return BigDecimal.ZERO;
             }
-        } else {
+        } else if (event instanceof NewQuantityEvent) {
+            NewQuantityEvent nq = (NewQuantityEvent) event;
+
+            if (new OrderDAS().find(nq.getOrderId()).getOrderPeriod().getId() ==
+                    com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
+                BigDecimal newTotal, oldTotal;
+                // new order line, or old one updated?
+                if (nq.getNewOrderLine() == null) {
+                    // new
+                    oldTotal = BigDecimal.ZERO;
+                    newTotal = new BigDecimal(nq.getOrderLine().getAmount());
+                    if (nq.getNewQuantity() == 0.0) {
+                        // it is a delete
+                        newTotal = newTotal.multiply(new BigDecimal(-1));
+                    }
+                } else {
+                    // old
+                    oldTotal = new BigDecimal(nq.getOrderLine().getAmount());
+                    newTotal = new BigDecimal(nq.getNewOrderLine().getAmount());
+                }
+                return newTotal.subtract(oldTotal).multiply(new BigDecimal(-1));
+            } else {
+                return BigDecimal.ZERO;
+            }
+        }  else {
             LOG.error("Can not determine amount for event " + event);
             return null;
         }
@@ -110,7 +137,10 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         } else if (event instanceof OrderToInvoiceEvent) {
             OrderToInvoiceEvent order = (OrderToInvoiceEvent) event;
             return order.getOrder().getBaseUserByUserId().getId();
-        } else {
+        } else if (event instanceof NewQuantityEvent) {
+            NewQuantityEvent nq = (NewQuantityEvent) event;
+            return new OrderDAS().find(nq.getOrderId()).getBaseUserByUserId().getId();
+        }  else {
             LOG.error("Can not determine user for event " + event);
             return 0;
         }

@@ -875,6 +875,44 @@ Ch2->P1
             assertEquals("user should have 0 balance", 0.0,
                     myUser.getDynamicBalance());
 
+            // for the following, use line 2 with item id 2. item id 1 has
+            // cancellation fees rules that affect the balance.
+            // increase the quantity of the one-time order
+            System.out.println("adding quantity to one time order");
+            order = api.getOrder(orderId);
+            OrderLineWS line = order.getOrderLines()[0].getItemId() == 2 ?
+                order.getOrderLines()[0] : order.getOrderLines()[1];
+            line.setQuantity(7);
+            line.setAmount(7 * line.getPrice());
+            Float delta = 6 * line.getPrice();
+            api.updateOrder(order);
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have new balance", 0.0 - delta,
+                    myUser.getDynamicBalance());
+
+            // decrease the quantity of the one-time order
+            System.out.println("remove quantity to one time order");
+            order = api.getOrder(orderId);
+            line = order.getOrderLines()[0].getItemId() == 2 ?
+                order.getOrderLines()[0] : order.getOrderLines()[1];
+            line.setQuantity(1);
+            line.setAmount(1 * order.getOrderLines()[1].getPrice());
+            api.updateOrder(order);
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have new balance", 0.0,
+                    myUser.getDynamicBalance());
+
+            // delete one line from the one time order
+            System.out.println("remove one line from one time order");
+            order = api.getOrder(orderId);
+            line = order.getOrderLines()[0].getItemId() == 1 ?
+                order.getOrderLines()[0] : order.getOrderLines()[1];
+            order.setOrderLines(new OrderLineWS[] { line });
+            api.updateOrder(order);
+            myUser = api.getUserWS(myId);
+            assertEquals("user should have new balance", 10.0,
+                    myUser.getDynamicBalance());
+
             // delete the order, the balance has to go back to 20
             System.out.println("deleting one time order");
             api.deleteOrder(orderId);

@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.system.event.Event;
 
 /**
  * This event is triggered when an order line's quantity is updated in an order.
+ * In most cases rhe event can be used as 'order line updated' event.
  * 
  * @author Lucas Pickstone
  * 
@@ -36,14 +37,19 @@ public class NewQuantityEvent implements Event {
     private final Integer orderId;
      // original (old) order line, unless line was newly added
     private final OrderLineDTO orderLine;
+    // the new line:
+    //    null if line deleted or added
+    private final OrderLineDTO newOrderLine;
     
     public NewQuantityEvent(Integer entityId, Double oldQuantity, 
-            Double newQuantity, Integer orderId, OrderLineDTO orderLine) {
+            Double newQuantity, Integer orderId, OrderLineDTO orderLine,
+            OrderLineDTO newOrderLine) {
         this.entityId = entityId;
         this.oldQuantity = oldQuantity;
         this.newQuantity = newQuantity;
         this.orderId = orderId;
         this.orderLine = orderLine;
+        this.newOrderLine = newOrderLine;
     }
 
     public Integer getEntityId() {
@@ -64,6 +70,10 @@ public class NewQuantityEvent implements Event {
 
     public OrderLineDTO getOrderLine() {
         return orderLine;
+    }
+
+    public OrderLineDTO getNewOrderLine() {
+        return newOrderLine;
     }
 
     public String getName() {

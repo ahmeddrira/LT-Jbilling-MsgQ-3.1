@@ -1011,6 +1011,52 @@ public class WSTest  extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+    
+    public void testIsUserSubscribedTo() throws Exception {
+    	JbillingAPI api = JbillingAPIFactory.getAPI();
+    	
+    	// Test a non-existing user first, result should be 0
+    	Double result = api.isUserSubscribedTo(Integer.valueOf(999), 
+    			Integer.valueOf(999));
+    	assertEquals(Double.valueOf(0), result);
+    	
+    	// Test the result given by a known existing user (
+    	// in PostgreSQL test db)
+    	result = api.isUserSubscribedTo(Integer.valueOf(2), 
+    			Integer.valueOf(2));
+    	assertEquals(Double.valueOf(1), result);
+    	
+    	// Test another user
+    	result = api.isUserSubscribedTo(Integer.valueOf(73), 
+    			Integer.valueOf(1));
+    	assertEquals(Double.valueOf(89), result);
+    }
+    
+    public void testGetUserItemsByCategory() throws Exception {
+    	JbillingAPI api = JbillingAPIFactory.getAPI();
+    	
+    	// Test a non-existing user first, result should be 0
+    	Integer[] result = api.getUserItemsByCategory(
+    			Integer.valueOf(999), 
+    			Integer.valueOf(999));
+    	assertNull(result);
+    	
+    	// Test the result given by a known existing user 
+    	// (it has items 2 and 3 on category 1
+    	// in PostgreSQL test db)
+    	result = api.getUserItemsByCategory(Integer.valueOf(2), 
+    			Integer.valueOf(1));
+    	assertEquals(2, result.length);
+    	assertEquals(Integer.valueOf(2), result[0]);
+    	assertEquals(Integer.valueOf(3), result[1]);
+    	
+    	// Test another user (has items 1 and 2 on cat. 1)
+    	result = api.getUserItemsByCategory(Integer.valueOf(73), 
+    			Integer.valueOf(1));
+    	assertEquals(2, result.length);
+    	assertEquals(Integer.valueOf(1), result[0]);
+    	assertEquals(Integer.valueOf(2), result[1]);
+    }
 
     private void pause(long t) {
         System.out.println("pausing for " + t + " ms...");

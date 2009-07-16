@@ -163,5 +163,7 @@ public interface JbillingAPI {
 
     public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) throws JbillingAPIException;
 
-
+    public Double isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
+    
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
 }

@@ -28,16 +28,14 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.naming.NamingException;
 import javax.jws.WebService;
+import javax.naming.NamingException;
 
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,9 +78,9 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
@@ -427,7 +425,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
-     * Retrieves aall the contacts of a user 
+     * Retrieves all the contacts of a user 
      * @param userId
      * The id of the user to be returned
      */
@@ -1867,5 +1865,39 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     private Integer getCallerCompanyId() {
         return WebServicesCaller.getCompanyId();
+    }
+    
+    @Override
+    public Double isUserSubscribedTo(Integer userId, Integer itemId) {
+	    LOG.debug("Call to isUserSubscribedTo with params: userId = "
+	    			+ userId + ", itemId = " + itemId);
+    	Double result = Double.valueOf(0);
+    	try {
+    		OrderDAS das = new OrderDAS();
+    		result = das.findIsUserSubscribedTo(userId, itemId);
+    		return result;
+    	} catch (Throwable e) {
+    		LOG.error("Error determining if user is subscribed to item", e);
+    		throw new SessionInternalError("Error determining if user is subscribed to item");
+    	} finally {
+  			LOG.debug("Done");
+    	}
+    }
+    
+    @Override
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
+    	LOG.debug("Call to getUserItemsByCategory with params: userId = "
+    			+ userId + ", categoryId = " + categoryId);
+    	Integer[] result = null;
+    	try {
+    		OrderDAS das = new OrderDAS();
+    		result = das.findUserItemsByCategory(userId, categoryId);
+    		return result;
+    	} catch (Throwable e) {
+    		LOG.error("Error retrieving user items by category", e);
+    		throw new SessionInternalError("Error retrieving user items by category");
+    	} finally {
+   			LOG.debug("Done");
+    	}
     }
 }

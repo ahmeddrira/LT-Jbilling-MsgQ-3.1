@@ -136,4 +136,57 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 
 		return criteria.list();
 	}
+	
+	public Double findIsUserSubscribedTo(Integer userId, Integer itemId) {
+		String hql = 
+				"select sum(l.quantity) " +
+				"from OrderDTO o " +
+				"inner join o.lines l " +
+				"where l.item.id = :itemId and " +
+				"o.baseUserByUserId.id = :userId and " +
+				"o.orderPeriod.id != :periodVal and " +
+				"o.orderStatus.id = :status and " +
+				"o.deleted = 0 and " +
+				"l.deleted = 0";
+
+        Double result = (Double) getSession()
+                .createQuery(hql)
+                .setInteger("userId", userId)
+                .setInteger("itemId", itemId)
+                .setInteger("periodVal", Constants.ORDER_PERIOD_ONCE)
+                .setInteger("status", Constants.ORDER_STATUS_ACTIVE)
+                .uniqueResult();
+        if (result == null) {
+            result = Double.valueOf(0);
+        }
+        return result;
+	}
+	
+	public Integer[] findUserItemsByCategory(Integer userId, 
+			Integer categoryId) {
+		
+		Integer[] result = null;
+		
+        String hql =
+                "select distinct(i.id) " +
+                "from OrderDTO o " +
+                "inner join o.lines l " +
+                "inner join l.item i " +
+                "inner join i.itemTypes t " +
+                "where t.id = :catId and " +
+                "o.baseUserByUserId.id = :userId and " +
+                "o.orderPeriod.id != :periodVal and " +
+                "o.deleted = 0 and " +
+                "l.deleted = 0";
+        List qRes = getSession()
+                .createQuery(hql)
+                .setInteger("userId", userId)
+                .setInteger("catId", categoryId)
+                .setInteger("periodVal", Constants.ORDER_PERIOD_ONCE)
+                .list();
+        if (qRes != null && qRes.size() > 0) {
+            result = (Integer[])qRes.toArray(new Integer[0]);
+        }
+        return result;
+	}
 }

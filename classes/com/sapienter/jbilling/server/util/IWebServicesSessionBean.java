@@ -306,4 +306,8 @@ public interface IWebServicesSessionBean {
 
     public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId,
             Integer number) throws SessionInternalError;
+
+	public Double isUserSubscribedTo(Integer userId, Integer itemId);
+
+	public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
 }

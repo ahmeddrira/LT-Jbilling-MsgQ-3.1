@@ -473,4 +473,23 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
+    @Override
+    public Double isUserSubscribedTo(Integer userId, Integer itemId)
+    		throws JbillingAPIException {
+    	try {
+    		return session.isUserSubscribedTo(userId, itemId);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
+    
+    @Override
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId)
+    		throws JbillingAPIException {
+    	try {
+    		return session.getUserItemsByCategory(userId, categoryId);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
 }

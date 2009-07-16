@@ -302,7 +302,11 @@ public class UserBL extends ResultList
             if (dto.getCustomer().getParent() != null) {
                 user.getCustomer().setParent(new UserDAS().find(dto.getCustomer().getParent().getId()).getCustomer());
                 user.getCustomer().setInvoiceChild(dto.getCustomer().getInvoiceChild());
-            } 
+            }
+            // set dynamic balance fields
+            user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
+            user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
+            user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
                     dto.getLanguageId(), roles, dto.getCurrencyId(),

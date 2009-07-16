@@ -155,14 +155,6 @@ public class CreateAction extends Action {
                             "chbx_is_parent")).booleanValue() 
                             ? new Integer(1) : new Integer(0));
                     
-                    if (customerDto.getIsParent().intValue() == 1 &&
-                            customerDto.getParent() != null) {
-                        // can't be parent and child at the same time
-                        errors.add(ActionErrors.GLOBAL_ERROR,
-                                new ActionError(
-                                    "user.create.error.parent"));
-                    }
-                    
                     // verify that the parent is valid
                     if (customerDto.getParent() != null) {
                         UserDTOEx parent = myRemoteSession.getUserDTOEx(

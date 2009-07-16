@@ -69,6 +69,7 @@ import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -282,148 +283,13 @@ public class BillingProcessBL extends ResultList
                 " process date:" + process.getBillingDate());
         /*
          * Go through the orders first
+         * This method will recursively call itself to find sub-accounts in any
+         * level
          */
+        boolean includedOrders = processOrdersForUser(user, entityId, process,
+                isReview, onlyRecurring, useProcessDateForInvoice,
+                maximumPeriods, newInvoices);
 
-        boolean includedOrders = false;
-
-        // initialize the subaccounts iterator if this user is a parent
-        Iterator subAccountsIt = null;
-        if (user.getCustomer().getIsParent() != null &&
-                user.getCustomer().getIsParent().intValue() == 1) {
-            try {
-                UserBL parent = new UserBL(userId);
-                subAccountsIt = parent.getEntity().getCustomer().getChildren().
-                        iterator();
-            } catch (Exception e) {
-                throw new SessionInternalError(e);
-            }
-        }
-
-        do {
-            // get the orders that might be processable for this user
-            OrderDAS orderDas = new OrderDAS();
-            Collection<OrderDTO> orders = orderDas.findByUser_Status(userId,
-                    Constants.ORDER_STATUS_ACTIVE);
-
-            // go through each of them, and update the DTO if it applies
-            for (OrderDTO order : orders) {
-                LOG.debug("Processing order :" + order.getId());
-                // apply any order processing filter pluggable task
-                try {
-                    PluggableTaskManager taskManager = new PluggableTaskManager(
-                            entityId,
-                            Constants.PLUGGABLE_TASK_ORDER_FILTER);
-                    OrderFilterTask task = (OrderFilterTask) taskManager.getNextClass();
-                    boolean isProcessable = true;
-                    while (task != null) {
-                        isProcessable = task.isApplicable(order, process);
-                        if (!isProcessable) {
-                            break; // no need to keep doing more tests
-                        }
-                        task = (OrderFilterTask) taskManager.getNextClass();
-                    }
-
-                    // include this order only if it complies with all the
-                    // rules
-                    if (isProcessable) {
-
-                        LOG.debug("Order processable");
-
-                        if (onlyRecurring) {
-                            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
-                                includedOrders = true;
-                                LOG.debug("It is not one-timer. " +
-                                        "Generating invoice");
-                            }
-                        } else {
-                            includedOrders = true;
-                        }
-                        /*
-                         * now find if there is already an invoice being
-                         * generated for the given due date period
-                         */
-                        // find the due date that applies to this order
-                        OrderBL orderBl = new OrderBL();
-                        orderBl.set(order);
-                        TimePeriod dueDatePeriod = orderBl.getDueDate();
-                        // look it up in the hashtable
-                        NewInvoiceDTO thisInvoice = (NewInvoiceDTO) newInvoices.get(dueDatePeriod);
-                        if (thisInvoice == null) {
-                            LOG.debug("Adding new invoice for period " + dueDatePeriod + " process date:" + process.getBillingDate());
-                            // we need a new one with this period
-                            // define the invoice date
-                            thisInvoice = new NewInvoiceDTO();
-                            if (useProcessDateForInvoice) {
-                                thisInvoice.setDate(process.getBillingDate());
-                            } else {
-                                thisInvoice.setDate(orderBl.getInvoicingDate(),
-                                        order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
-                            }
-                            thisInvoice.setIsReview(isReview ? new Integer(1) : new Integer(0));
-                            thisInvoice.setCarriedBalance(new Float(0));
-                            thisInvoice.setDueDatePeriod(dueDatePeriod);
-                        } else {
-                            LOG.debug("invoice found for period " + dueDatePeriod);
-                            if (!useProcessDateForInvoice) {
-                                thisInvoice.setDate(orderBl.getInvoicingDate(),
-                                        order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
-                            }
-                        }
-                        /*
-                         * The order periods plug-in might not add any period. This should not happen
-                         * but if it does, the invoice should not be included
-                         */
-                        if (addOrderToInvoice(entityId, order, thisInvoice,
-                                process.getBillingDate(), maximumPeriods)) {
-                            // add or replace
-                            newInvoices.put(dueDatePeriod, thisInvoice);
-                        }
-                        LOG.debug("After putting period there are " + newInvoices.size() + " periods.");
-
-                    // here it would be easy to update this order
-                    // to_process and
-                    // next_billable_time. I can't do that because these
-                    // fields
-                    // will be read by the following tasks, and they
-                    // will asume
-                    // they are not modified.
-                    }
-
-                } catch (PluggableTaskException e) {
-                    LOG.fatal("Problems handling order filter task.", e);
-                    throw new SessionInternalError(
-                            "Problems handling order filter task.");
-                } catch (TaskException e) {
-                    LOG.fatal("Problems excecuting order filter task.", e);
-                    throw new SessionInternalError(
-                            "Problems executing order filter task.");
-                }
-            } // for - all the orders for this user
-
-            // see if there is any subaccounts to include in this invoice
-            if (subAccountsIt != null) {
-                CustomerDTO customer = null;
-                while (subAccountsIt.hasNext()) {
-                    customer = (CustomerDTO) subAccountsIt.next();
-                    if (customer.getInvoiceChild() == null ||
-                            customer.getInvoiceChild().intValue() == 0) {
-                        break;
-                    } else {
-                        LOG.debug("Subaccount not included in parent's invoice " +
-                                customer.getId());
-                        customer = null;
-                    }
-                }
-                if (customer != null) {
-                    userId = customer.getBaseUser().getUserId();
-                    LOG.debug("Now processing subaccount " + userId);
-                } else {
-                    subAccountsIt = null;
-                    LOG.debug("No more subaccounts to process");
-                }
-            }
-
-        } while (subAccountsIt != null); // until there are no more subaccounts
 
         if (!includedOrders || newInvoices.size() == 0) {
             // check if invoices without orders are allowed
@@ -614,6 +480,155 @@ public class BillingProcessBL extends ResultList
         }
 
         return retValue;
+    }
+
+    private boolean processOrdersForUser(UserDTO user, Integer entityId,BillingProcessDTO process, 
+            boolean isReview, boolean onlyRecurring, boolean useProcessDateForInvoice,
+        int maximumPeriods, Hashtable<TimePeriod, NewInvoiceDTO> newInvoices) {
+        
+        boolean includedOrders = false;
+        Integer userId = user.getUserId();
+
+        LOG.debug("Processing orders for user " + userId);
+
+        // initialize the subaccounts iterator if this user is a parent
+        Iterator subAccountsIt = null;
+        if (user.getCustomer().getIsParent() != null &&
+                user.getCustomer().getIsParent().intValue() == 1) {
+            UserBL parent = new UserBL(userId);
+            subAccountsIt = parent.getEntity().getCustomer().getChildren().
+                    iterator();
+        }
+
+        // get the orders that might be processable for this user
+        OrderDAS orderDas = new OrderDAS();
+        Collection<OrderDTO> orders = orderDas.findByUser_Status(userId,
+                Constants.ORDER_STATUS_ACTIVE);
+
+        // go through each of them, and update the DTO if it applies
+        for (OrderDTO order : orders) {
+            LOG.debug("Processing order :" + order.getId());
+            // apply any order processing filter pluggable task
+            try {
+                PluggableTaskManager taskManager = new PluggableTaskManager(
+                        entityId,
+                        Constants.PLUGGABLE_TASK_ORDER_FILTER);
+                OrderFilterTask task = (OrderFilterTask) taskManager.getNextClass();
+                boolean isProcessable = true;
+                while (task != null) {
+                    isProcessable = task.isApplicable(order, process);
+                    if (!isProcessable) {
+                        break; // no need to keep doing more tests
+                    }
+                    task = (OrderFilterTask) taskManager.getNextClass();
+                }
+
+                // include this order only if it complies with all the
+                // rules
+                if (isProcessable) {
+
+                    LOG.debug("Order processable");
+
+                    if (onlyRecurring) {
+                        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                            includedOrders = true;
+                            LOG.debug("It is not one-timer. " +
+                                    "Generating invoice");
+                        }
+                    } else {
+                        includedOrders = true;
+                    }
+                    /*
+                     * now find if there is already an invoice being
+                     * generated for the given due date period
+                     */
+                    // find the due date that applies to this order
+                    OrderBL orderBl = new OrderBL();
+                    orderBl.set(order);
+                    TimePeriod dueDatePeriod = orderBl.getDueDate();
+                    // look it up in the hashtable
+                    NewInvoiceDTO thisInvoice = (NewInvoiceDTO) newInvoices.get(dueDatePeriod);
+                    if (thisInvoice == null) {
+                        LOG.debug("Adding new invoice for period " + dueDatePeriod + " process date:" + process.getBillingDate());
+                        // we need a new one with this period
+                        // define the invoice date
+                        thisInvoice = new NewInvoiceDTO();
+                        if (useProcessDateForInvoice) {
+                            thisInvoice.setDate(process.getBillingDate());
+                        } else {
+                            thisInvoice.setDate(orderBl.getInvoicingDate(),
+                                    order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
+                        }
+                        thisInvoice.setIsReview(isReview ? new Integer(1) : new Integer(0));
+                        thisInvoice.setCarriedBalance(new Float(0));
+                        thisInvoice.setDueDatePeriod(dueDatePeriod);
+                    } else {
+                        LOG.debug("invoice found for period " + dueDatePeriod);
+                        if (!useProcessDateForInvoice) {
+                            thisInvoice.setDate(orderBl.getInvoicingDate(),
+                                    order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
+                        }
+                    }
+                    /*
+                     * The order periods plug-in might not add any period. This should not happen
+                     * but if it does, the invoice should not be included
+                     */
+                    if (addOrderToInvoice(entityId, order, thisInvoice,
+                            process.getBillingDate(), maximumPeriods)) {
+                        // add or replace
+                        newInvoices.put(dueDatePeriod, thisInvoice);
+                    }
+                    LOG.debug("After putting period there are " + newInvoices.size() + " periods.");
+
+                // here it would be easy to update this order
+                // to_process and
+                // next_billable_time. I can't do that because these
+                // fields
+                // will be read by the following tasks, and they
+                // will asume
+                // they are not modified.
+                }
+
+            } catch (PluggableTaskException e) {
+                LOG.fatal("Problems handling order filter task.", e);
+                throw new SessionInternalError(
+                        "Problems handling order filter task.");
+            } catch (TaskException e) {
+                LOG.fatal("Problems excecuting order filter task.", e);
+                throw new SessionInternalError(
+                        "Problems executing order filter task.");
+            }
+        } // for - all the orders for this user
+
+        // see if there is any subaccounts to include in this invoice
+        while (subAccountsIt != null) {  // until there are no more subaccounts (subAccountsIt != null) {
+            CustomerDTO customer = null;
+            while (subAccountsIt.hasNext()) {
+                customer = (CustomerDTO) subAccountsIt.next();
+                if (customer.getInvoiceChild() == null ||
+                        customer.getInvoiceChild().intValue() == 0) {
+                    break;
+                } else {
+                    LOG.debug("Subaccount not included in parent's invoice " +
+                            customer.getId());
+                    customer = null;
+                }
+            }
+            if (customer != null) {
+                userId = customer.getBaseUser().getUserId();
+                includedOrders = processOrdersForUser(customer.getBaseUser(),
+                        entityId, process, isReview, onlyRecurring,
+                        useProcessDateForInvoice, maximumPeriods,
+                        newInvoices);
+                LOG.debug("Now processing subaccount " + userId);
+
+            } else {
+                subAccountsIt = null;
+                LOG.debug("No more subaccounts to process");
+            }
+        } 
+
+        return includedOrders;
     }
 
     private InvoiceDTO generateDBInvoice(Integer userId,
@@ -1096,18 +1111,17 @@ public class BillingProcessBL extends ResultList
     }
 
     private Integer findUserId(OrderDTO order) {
-        if (order.getUser().getCustomer().getParent() == null) {
-            return order.getUser().getUserId();
-        } else {
-            Integer flag = order.getUser().getCustomer().getInvoiceChild();
-            if (flag == null || flag == 0) {
-                // there is a parent, the invoice should go to her
-                return order.getUser().getCustomer().getParent().
-                        getBaseUser().getUserId(); // yes, I like CRM!
-            } else {
-                // the child gets its own invoices
-                return order.getUser().getUserId();
-            }
+        UserDTO user = order.getUser();
+
+        // while this user has a parent and the flag is off, keep looking
+        while(user.getCustomer().getParent() != null &&
+                (user.getCustomer().getInvoiceChild() == null ||
+                 user.getCustomer().getInvoiceChild() == 0)) {
+            // go up one level
+            LOG.debug("finding parent for invoicing. Now " + user.getUserId());
+            user = user.getCustomer().getParent().getBaseUser();
         }
+
+        return user.getUserId();
     }
 }

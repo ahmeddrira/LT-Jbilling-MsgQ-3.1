@@ -426,6 +426,22 @@ public class WSTest extends TestCase {
         
     }
 
+/*
+          Parent 1 10752
+           /\   |
+          /  \  +--------+
+ 10753 iCh1  Ch2 10754   |
+        /\    |         Ch6
+       /  \   |
+    Ch3 iCh4 Ch5
+  10755 10756 10757
+
+Ch3->Ch1
+Ch4->Ch4
+Ch1->Ch1
+Ch5->P1
+Ch2->P1
+     */
     public void testParentChild() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -433,7 +449,7 @@ public class WSTest extends TestCase {
              * Create - This passes the password validation routine.
              */
             UserWS newUser = new UserWS();
-            newUser.setUserName("ws-parent");
+            newUser.setUserName("parent1");
             newUser.setPassword("asdfasdf1");
             newUser.setLanguageId(new Integer(1));
             newUser.setMainRoleId(new Integer(5));
@@ -450,25 +466,24 @@ public class WSTest extends TestCase {
             Integer parentId = api.createUser(newUser);
             assertNotNull("The user was not created", parentId);
             
-            
-            //verify the created user       
+            // verify the created user
             System.out.println("Getting created user ");
             UserWS retUser = api.getUserWS(parentId);
             assertEquals("created username", retUser.getUserName(),
                     newUser.getUserName());
             assertEquals("create user is parent", new Boolean(true), retUser.getIsParent());
             
-            System.out.println("Creating child user ...");
+            System.out.println("Creating child1 user ...");
             // now create the child
-            newUser.setIsParent(new Boolean(false));
+            newUser.setIsParent(new Boolean(true));
             newUser.setParentId(parentId);
-            newUser.setUserName("childOfParent");
+            newUser.setUserName("child1");
             newUser.setPassword("asdfasdf1");
             newUser.setInvoiceChild(Boolean.TRUE);
-            Integer childId = api.createUser(newUser);
+            Integer child1Id = api.createUser(newUser);
             //test
             System.out.println("Getting created user ");
-            retUser = api.getUserWS(childId);
+            retUser = api.getUserWS(child1Id);
             assertEquals("created username", retUser.getUserName(),
                     newUser.getUserName());
             assertEquals("created user parent", parentId, retUser.getParentId());
@@ -478,19 +493,195 @@ public class WSTest extends TestCase {
             retUser = api.getUserWS(parentId);
             Integer[] childIds = retUser.getChildIds();
             assertEquals("1 child", 1, childIds.length);
-            assertEquals("created user child", childId, childIds[0]);
+            assertEquals("created user child", child1Id, childIds[0]);
             
-            // test authentication of both
+            System.out.println("Creating child2 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(true));
+            newUser.setParentId(parentId);
+            newUser.setUserName("child2");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.FALSE);
+            Integer child2Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child2Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", parentId, retUser.getParentId());
+            assertEquals("created do not invoice child", Boolean.FALSE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(parentId);
+            childIds = retUser.getChildIds();
+            assertEquals("2 child", 2, childIds.length);
+            assertEquals("created user child", child2Id, 
+                    childIds[0].equals(child2Id) ? childIds[0] : childIds[1]);
+
+            System.out.println("Creating child6 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(true));
+            newUser.setParentId(parentId);
+            newUser.setUserName("child6");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.FALSE);
+            Integer child6Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child6Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", parentId, retUser.getParentId());
+            assertEquals("created do not invoice child", Boolean.FALSE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(parentId);
+            childIds = retUser.getChildIds();
+            assertEquals("3 child", 3, childIds.length);
+            assertEquals("created user child", child6Id,
+                    childIds[0].equals(child6Id) ? childIds[0] : childIds[1]);
+
+            System.out.println("Creating child3 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(false));
+            newUser.setParentId(child1Id);
+            newUser.setUserName("child3");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.FALSE);
+            Integer child3Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child3Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", child1Id, retUser.getParentId());
+            assertEquals("created do not invoice child", Boolean.FALSE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(child1Id);
+            childIds = retUser.getChildIds();
+            assertEquals("1 child", 1, childIds.length);
+            assertEquals("created user child", child3Id, childIds[0]);
+
+            System.out.println("Creating child4 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(false));
+            newUser.setParentId(child1Id);
+            newUser.setUserName("child4");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.TRUE);
+            Integer child4Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child4Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", child1Id, retUser.getParentId());
+            assertEquals("created do not invoice child", Boolean.TRUE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(child1Id);
+            childIds = retUser.getChildIds();
+            assertEquals("2 child for child1", 2, childIds.length);
+            assertEquals("created user child", child4Id, childIds[0].equals(child4Id) ? childIds[0] : childIds[1]);
+
+            System.out.println("Creating child5 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(false));
+            newUser.setParentId(child2Id);
+            newUser.setUserName("child5");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.FALSE);
+            Integer child5Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child5Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", child2Id, retUser.getParentId());
+            assertEquals("created do not invoice child", Boolean.FALSE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(child2Id);
+            childIds = retUser.getChildIds();
+            assertEquals("1 child for child2", 1, childIds.length);
+            assertEquals("created user child", child5Id, childIds[0]);
+
+            // test authentication of two of them
             System.out.println("Authenticating new users ");
             assertEquals("auth of parent", new Integer(0), 
-                    api.authenticate("ws-parent", "asdfasdf1"));
+                    api.authenticate("parent1", "asdfasdf1"));
             assertEquals("auth of child", new Integer(0), 
-                    api.authenticate("childOfParent", "asdfasdf1"));
-            
+                    api.authenticate("child1", "asdfasdf1"));
+
+            // create an order for all these users
+            System.out.println("Creating orders for all users");
+            OrderWS order = getOrder();
+            order.setUserId(parentId);
+            api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child1Id);
+            api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child2Id);
+            api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child3Id);
+            api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child4Id);
+            api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child5Id);
+            api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child6Id);
+            api.createOrder(order);
+            // run the billing process for each user, validating the results
+            System.out.println("Invoicing and validating...");
+            // parent1
+            Integer[] invoices = api.createInvoice(parentId, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be one invoice", 1, invoices.length);
+            InvoiceWS invoice = api.getInvoiceWS(invoices[0]);
+            assertEquals("invoice should be 80$", 80F, invoice.getTotal());
+            // child1
+            invoices = api.createInvoice(child1Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be one invoice", 1, invoices.length);
+            invoice = api.getInvoiceWS(invoices[0]);
+            assertEquals("invoice should be 40$", 40F, invoice.getTotal());
+            // child2
+            invoices = api.createInvoice(child2Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be no invoice", 0, invoices.length);
+            // child3
+            invoices = api.createInvoice(child3Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be no invoice", 0, invoices.length);
+            // child4
+            invoices = api.createInvoice(child4Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be one invoice", 1, invoices.length);
+            invoice = api.getInvoiceWS(invoices[0]);
+            assertEquals("invoice should be 20$", 20F, invoice.getTotal());
+            // child5
+            invoices = api.createInvoice(child5Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be no invoice", 0, invoices.length);
+            // child6
+            invoices = api.createInvoice(child6Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be one invoice", 0, invoices.length);
      
             // clean up
             api.deleteUser(parentId);
-            api.deleteUser(childId);
+            api.deleteUser(child1Id);
+            api.deleteUser(child2Id);
+            api.deleteUser(child3Id);
+            api.deleteUser(child4Id);
+            api.deleteUser(child5Id);
+            api.deleteUser(child6Id);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

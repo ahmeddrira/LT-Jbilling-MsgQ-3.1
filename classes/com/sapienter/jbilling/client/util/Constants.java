@@ -205,6 +205,7 @@ public final class Constants implements PermissionConstants, CommonConstants {
     public static final String FORWARD_NEW_ORDER_ITEMS = "orderNewItems";
     public static final String FORWARD_ORDER_VIEW = "orderView";
     public static final String FORWARD_ORDER_EDIT = "orderEdit";
+    public static final String FORWARD_LIST_OR_ORDER_EDIT = "listOrOrderEdit";
     public static final String FORWARD_USER_MAINTAIN = "userMaintain";
     public static final String FORWARD_USER_EDIT = "userEdit";
     public static final String FORWARD_USER_VIEW = "userView";

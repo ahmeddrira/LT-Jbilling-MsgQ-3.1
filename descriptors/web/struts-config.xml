@@ -385,6 +385,7 @@
         <forward name="orderNewItems" redirect="false" path="/orderMaintain.do?action=isParent" />
         <forward name="orderView" redirect="false" path="/orderMaintain.do?action=view" />
         <forward name="orderEdit" path="/order/edit.jsp" redirect="false" />
+        <forward name="listOrOrderEdit" path="/listOrOrder.do" redirect="false" />
         <forward name="paymentList" path="/payment/list.jsp" redirect="false" />
         <forward name="paymentCreate" redirect="false" path="/paymentMaintain.do?action=setup&amp;mode=payment" />
         <forward name="paymentView" path="/paymentMaintain.do?action=view&amp;mode=payment" redirect="false" />
@@ -440,6 +441,11 @@
             <forward name="sub_accounts" path="/order/listSubAccounts.jsp" redirect="false" />
             <forward name="cdr_list" path="/order/listEvents.jsp" redirect="false" />
         </action>
+        <action path="/listOrOrder" type="com.sapienter.jbilling.client.order.ListOrEditAction" name="order" validate="false" scope="session">
+            <forward name="list" path="/order/listSubAccounts.jsp" redirect="false" />
+            <forward name="order_edit" path="/order/edit.jsp" redirect="false" />
+        </action>
+
         <action path="/paymentMaintain" type="com.sapienter.jbilling.client.payment.MaintainAction" name="payment" scope="session" input="/payment/enterInfoCheque.jsp" validate="false">
             <forward name="payment_review" path="/payment/review.jsp?review=yes" redirect="false" />
             <forward name="payment_view" path="/payment/view.jsp?view=yes" redirect="false" />

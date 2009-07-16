@@ -51,7 +51,7 @@
 	         toScope="session"/>
 
 <bean:define id="forward_to" 
-	         value='<%=Constants.FORWARD_ORDER_EDIT%>' 
+	         value='<%=Constants.FORWARD_LIST_OR_ORDER_EDIT%>'
              toScope="session"/>
 
 <jbilling:genericList setup="true" type='<%=Constants.LIST_TYPE_SUB_ACCOUNTS%>'/>

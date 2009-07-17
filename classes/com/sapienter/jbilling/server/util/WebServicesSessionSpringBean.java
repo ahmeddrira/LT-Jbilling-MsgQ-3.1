@@ -1915,7 +1915,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // find the price first
         ItemBL item = new ItemBL(itemId);
         item.setPricingFields(new Vector(Arrays.asList(fieldsArray)));
-        Float price = item.getPrice(userId, itemId);
+        Float price = item.getPrice(userId, getCallerCompanyId());
 
         Double ret = new UserBL(userId).validatePurchase(new BigDecimal(price));
         LOG.debug("Done");

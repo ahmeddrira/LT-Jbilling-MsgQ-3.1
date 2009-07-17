@@ -91,6 +91,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import java.math.BigDecimal;
 
 @Transactional( propagation = Propagation.REQUIRED )
 @WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
@@ -1900,4 +1901,26 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
    			LOG.debug("Done");
     	}
     }
+
+    public Double validatePurchase(Integer userId, Integer itemId,
+            String fields) {
+        LOG.debug("Call to validatePurchase " + userId + ' ' + itemId);
+
+        if (userId == null || itemId == null) {
+            return null;
+        }
+
+        PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
+                    fields);
+        // find the price first
+        ItemBL item = new ItemBL(itemId);
+        item.setPricingFields(new Vector(Arrays.asList(fieldsArray)));
+        Float price = item.getPrice(userId, itemId);
+
+        Double ret = new UserBL(userId).validatePurchase(new BigDecimal(price));
+        LOG.debug("Done");
+        return ret;
+    }
+
+
 }

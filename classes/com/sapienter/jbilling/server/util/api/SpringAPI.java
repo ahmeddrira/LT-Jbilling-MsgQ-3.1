@@ -21,9 +21,7 @@
 package com.sapienter.jbilling.server.util.api;
 
 import java.util.Date;
-import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -491,5 +489,15 @@ public class SpringAPI implements JbillingAPI {
     	} catch (Exception e) {
     		throw new JbillingAPIException(e);
     	}
+    }
+
+    public Double validatePurchase(Integer userId, Integer itemId,
+            PricingField[] fields) throws JbillingAPIException {
+        try {
+            return session.validatePurchase(userId, itemId, 
+                    PricingField.setPricingFieldsValue(fields));
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 }

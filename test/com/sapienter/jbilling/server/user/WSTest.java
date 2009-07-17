@@ -35,6 +35,7 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
@@ -539,7 +540,8 @@ Ch2->P1
             childIds = retUser.getChildIds();
             assertEquals("3 child", 3, childIds.length);
             assertEquals("created user child", child6Id,
-                    childIds[0].equals(child6Id) ? childIds[0] : childIds[1]);
+                    childIds[0].equals(child6Id) ? childIds[0] : 
+                        childIds[1].equals(child6Id) ? childIds[1] : childIds[2]);
 
             System.out.println("Creating child3 user ...");
             // now create the child
@@ -837,9 +839,15 @@ Ch2->P1
             myUser = api.getUserWS(myId);
             assertEquals("user should be pre-paid", Constants.BALANCE_PRE_PAID,
                     myUser.getBalanceType());
-            assertEquals("user should have 0 balance", BigDecimal.ZERO,
-                    myUser.getDynamicBalance() == null ? BigDecimal.ZERO :
+            assertEquals("user should have 0 balance", 0.0,
                         myUser.getDynamicBalance());
+
+            // validate. room = 0, price = 7
+            System.out.println("Validate with fields...");
+            PricingField pf[] =  { new PricingField("src", "604"),
+                new PricingField("dst", "512")};
+            assertEquals("validate purchase 1", 0.0, api.validatePurchase(myId, 1, pf));
+
 
             // add a payment
             PaymentWS payment = new PaymentWS();
@@ -864,6 +872,10 @@ Ch2->P1
             myUser = api.getUserWS(myId);
             assertEquals("user should have 20 balance", 20.0,
                     myUser.getDynamicBalance());
+
+            // validate. room = 20, price = 7
+            System.out.println("Validate with fields...");
+            assertEquals("validate purchase 2", 2.8571428571, api.validatePurchase(myId, 1, pf));
 
             // now create a one time order, the balance should decrease
             OrderWS order = getOrder();
@@ -913,6 +925,11 @@ Ch2->P1
             assertEquals("user should have new balance", 10.0,
                     myUser.getDynamicBalance());
 
+            // validate. room = 10, price = 10
+            System.out.println("Validate with fields...");
+            assertEquals("validate purchase 3", 1.0, api.validatePurchase(myId, 1, null));
+
+
             // delete the order, the balance has to go back to 20
             System.out.println("deleting one time order");
             api.deleteOrder(orderId);
@@ -951,13 +968,18 @@ Ch2->P1
             myUser.setCreditLimit(1000.0);
             api.updateUser(myUser);
 
+            // validate. room = 1000, price = 7
+            System.out.println("Validate with fields...");
+            PricingField pf[] =  { new PricingField("src", "604"),
+                new PricingField("dst", "512")};
+            assertEquals("validate purchase 1", 142.8571428571, api.validatePurchase(myId, 1, pf));
+
             // get the current balance, it should be null or 0
             System.out.println("Checking initial balance type and dynamic balance");
             myUser = api.getUserWS(myId);
             assertEquals("user should be pre-paid", Constants.BALANCE_CREDIT_LIMIT,
                     myUser.getBalanceType());
-            assertEquals("user should have 0 balance", BigDecimal.ZERO,
-                    myUser.getDynamicBalance() == null ? BigDecimal.ZERO :
+            assertEquals("user should have 0 balance", 0.0,
                         myUser.getDynamicBalance());
 
             // now create a one time order, the balance should increase
@@ -969,6 +991,10 @@ Ch2->P1
             myUser = api.getUserWS(myId);
             assertEquals("user should have 20 balance", 20.0,
                     myUser.getDynamicBalance());
+
+             // validate. room = 980, price = 10
+            System.out.println("Validate with fields...");
+            assertEquals("validate purchase 2", 98.0, api.validatePurchase(myId, 1, null));
 
             // delete the order, the balance has to go back to 0
             System.out.println("deleting one time order");
@@ -988,6 +1014,11 @@ Ch2->P1
             myUser = api.getUserWS(myId);
             assertEquals("user should have 20 balance", 20.0,
                     myUser.getDynamicBalance());
+
+             // validate. room = 980, price = 7
+            System.out.println("Validate with fields...");
+            assertEquals("validate purchase 3", 140.0, api.validatePurchase(myId, 1, pf));
+
 
             // add a payment. I'd like to call payInvoice but it's not finding the CC
             PaymentWS payment = new PaymentWS();

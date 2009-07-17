@@ -46,6 +46,7 @@ import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -59,6 +60,10 @@ import com.sapienter.jbilling.server.payment.db.PaymentDAS;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.report.db.ReportUserDAS;
 import com.sapienter.jbilling.server.report.db.ReportUserDTO;
+import com.sapienter.jbilling.server.user.balance.IUserBalanceValidation;
+import com.sapienter.jbilling.server.user.balance.ValidatorCreditLimit;
+import com.sapienter.jbilling.server.user.balance.ValidatorNone;
+import com.sapienter.jbilling.server.user.balance.ValidatorPrePaid;
 import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -1297,5 +1302,27 @@ public class UserBL extends ResultList
                 }
             }
         }
+    }
+
+    public Double validatePurchase(BigDecimal amount) {
+        if (user.getCustomer() == null) {
+            return null;
+        }
+        // TODO: find in the hierarchy tree the right user to use the
+        // dynamic balance... a child might look up to the parent for this
+        // (or not, if a flag is set).
+        
+        IUserBalanceValidation validator;
+        // simple factory ...
+        if (user.getCustomer().getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
+                amount.equals(BigDecimal.ZERO)) {
+            validator = new ValidatorNone();
+        } else if (user.getCustomer().getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
+            validator = new ValidatorCreditLimit();
+        } else {
+            validator = new ValidatorPrePaid();
+        }
+
+        return validator.validate(user.getCustomer(), amount);
     }
 }

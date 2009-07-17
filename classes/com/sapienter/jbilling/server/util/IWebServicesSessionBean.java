@@ -27,6 +27,7 @@ import javax.jws.WebService;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -35,7 +36,6 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 
 /**
  * Interface for WebServicesSessionBean
@@ -170,17 +170,6 @@ public interface IWebServicesSessionBean {
     public Integer authenticate(String username, String password)
             throws SessionInternalError;
 
-    /**
-     * Pays given invoice, using the first credit card available for invoice'd
-     * user.
-     * 
-     * @return <code>null</code> if invoice has not positive balance, or if
-     *         user does not have credit card
-     * @return resulting authorization record. The payment itself can be found by
-     * calling getLatestPayment
-     */
-    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) 
-            throws SessionInternalError;
 
     /**
      * Updates a user's credit card.
@@ -240,6 +229,18 @@ public interface IWebServicesSessionBean {
     /*
      * PAYMENT
      */
+    /**
+     * Pays given invoice, using the first credit card available for invoice'd
+     * user.
+     *
+     * @return <code>null</code> if invoice has not positive balance, or if
+     *         user does not have credit card
+     * @return resulting authorization record. The payment itself can be found by
+     * calling getLatestPayment
+     */
+    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
+            throws SessionInternalError;
+
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError;
 
@@ -250,6 +251,18 @@ public interface IWebServicesSessionBean {
 
     public Integer[] getLastPayments(Integer userId, Integer number)
             throws SessionInternalError;
+
+    /**
+     * Validate if the user can buy this. This depends on the balance type:
+     *   - none: can always buy
+     *   - pre paid: if there is enough dynamic balance
+     *   - credit limit: only if credit limie - dynamix balance is enough
+     * @param userId
+     * @param itemId
+     * @param fields
+     * @return 0, if she can not. >o the number of quantities that she can buy
+     */
+    Double validatePurchase(Integer userId, Integer itemId, String fields);
 
     /*
      * ITEM

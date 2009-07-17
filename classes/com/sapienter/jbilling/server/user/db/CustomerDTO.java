@@ -297,6 +297,9 @@ public class CustomerDTO  implements java.io.Serializable {
 
     @Column(name="credit_limit")
     public BigDecimal getCreditLimit() {
+        if (creditLimit == null) {
+            return BigDecimal.ZERO;
+        }
         return creditLimit;
     }
 
@@ -306,6 +309,9 @@ public class CustomerDTO  implements java.io.Serializable {
 
     @Column(name="dynamic_balance")
     public BigDecimal getDynamicBalance() {
+        if (dynamicBalance == null) {
+            return BigDecimal.ZERO;
+        }
         return dynamicBalance;
     }
 

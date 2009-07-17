@@ -166,4 +166,7 @@ public interface JbillingAPI {
     public Double isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
     
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
+
+    Double validatePurchase(Integer userId, Integer itemId, PricingField[] fields) throws JbillingAPIException;
+
 }

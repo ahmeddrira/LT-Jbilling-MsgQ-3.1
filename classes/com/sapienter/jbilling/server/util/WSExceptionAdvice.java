@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 import org.springframework.aop.ThrowsAdvice;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Re-throws any exceptions from the API as SessionInternalErrors to
@@ -34,6 +36,14 @@ import com.sapienter.jbilling.common.SessionInternalError;
  */
 public class WSExceptionAdvice implements ThrowsAdvice {
     public void afterThrowing(Exception throwable) {
+        Logger log = Logger.getLogger(WSExceptionAdvice.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        pw.close();
+
+        log.error(throwable.getMessage() + "\n" + sw.toString());
+
         throw new SessionInternalError(throwable.getMessage());
     }
 }

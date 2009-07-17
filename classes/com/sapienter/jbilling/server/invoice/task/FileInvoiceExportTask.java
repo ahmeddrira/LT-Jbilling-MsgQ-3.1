@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.MathContext;
 import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
 /**
@@ -112,8 +113,8 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
         // zip5
         line.append("\"" + emptyIfNull(contact.getEntity().getPostalCode()) + "\"");
         line.append(",");
-        // totdue
-        line.append("\"" + new UserBL().getBalance(userId) + "\"");
+        // totdue - round to two decimals
+        line.append("\"" + new UserBL().getBalance(userId).round(new MathContext(2)) + "\"");
         line.append(",");
         // qty
         line.append("\"" + invoiceLine.getQuantity() + "\"");

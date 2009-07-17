@@ -1297,12 +1297,12 @@ public class OrderBL extends ResultList
                         newLines.add(diffLine);
                         EventManager.process(new NewQuantityEvent(entityId,
                                 oldLines.get(index).getQuantity(),
-                                line.getQuantity(), userId, oldLines.get(index),line));
+                                line.getQuantity(), currentOrderId, oldLines.get(index),line));
                         
                     }
                 } else {
                     EventManager.process(new NewQuantityEvent(entityId,
-                                0.0, line.getQuantity(), userId,line, null));
+                                0.0, line.getQuantity(), currentOrderId, line, null));
                     // new line, attach to session
                     newLines.add(line);
                 }

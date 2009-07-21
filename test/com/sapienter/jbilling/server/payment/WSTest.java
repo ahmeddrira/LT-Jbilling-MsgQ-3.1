@@ -408,4 +408,28 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+
+    public void testPayInvoice() {
+        try {
+            final Integer USER = 1072;
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            System.out.println("Getting an invoice paid, and validating the payment.");
+            OrderWS order = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER, 3, 3.45F);
+            Integer invoiceId = api.createOrderAndInvoice(order);
+            PaymentAuthorizationDTOEx auth = api.payInvoice(invoiceId);
+            assertNotNull("auth can not be null", auth);
+            PaymentWS payment  = api.getLatestPayment(USER);
+            assertNotNull("payment can not be null", payment);
+            assertNotNull("auth in payment can not be null", payment.getAuthorizationId());
+
+            api.deleteInvoice(invoiceId);
+            api.deleteOrder(api.getLatestOrder(USER).getId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

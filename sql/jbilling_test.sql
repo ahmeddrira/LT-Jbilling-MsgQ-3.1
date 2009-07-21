@@ -2957,13 +2957,13 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 1072	1	eee0f3c319c7bdaf6311559eec5058e1	0	1	1	14	1	2007-09-12 12:15:04.533	\N	\N	testUserName-1189624504355	0	1
 10730	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-04-08 22:00:53.823	\N	\N	payment-router-currency-1	0	2
 10731	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	11	2009-04-08 22:01:32.259	\N	\N	payment-router-currency-2	0	2
-1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2007-12-28 14:40:46.604	admin	0	4
 10746	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-06-23 20:33:44.57	\N	\N	partner-customer1	0	1
 10748	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-06-23 20:34:20.537	\N	\N	partner-customer3	0	2
 10747	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-06-23 20:34:03.466	\N	\N	partner-customer2	0	2
 10740	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner1	0	2
 10741	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner2	0	1
 10742	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-05 00:00:00	\N	\N	partner3	0	2
+1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2007-12-28 14:40:46.604	admin	0	4
 \.
 
 
@@ -4036,6 +4036,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 112609	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer3@partners.com	2009-06-23 20:34:20.542	0	1	10748	1
 112600	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner1@partners.com	2009-06-23 16:25:44.594	0	1	10740	4
 112602	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner3@partners.com	2009-06-23 16:37:05.548	0	1	10742	4
+112700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2009-07-20 16:42:04.934	0	1	\N	1
 \.
 
 
@@ -6063,6 +6064,9 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202300	3	112602		0
 202301	2	112602	FAKE_2	0
 202302	1	112602		0
+202400	3	112700		0
+202401	2	112700	FAKE_2	0
+202402	1	112700	serial-from-ws	0
 \.
 
 
@@ -7108,6 +7112,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790507	112607	2	10	10746	1
 790508	112608	2	10	10747	1
 790509	112609	2	10	10748	1
+790600	112700	1	39	8500	1
 \.
 
 
@@ -8437,7 +8442,6 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 --
 
 COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit) FROM stdin;
-1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	1	1	\N	\N
 2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
 12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N
 22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
@@ -8492,12 +8496,10 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 107	118	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 108	119	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 109	120	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 111	122	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 112	123	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 113	124	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 114	125	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 116	127	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 117	128	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 118	129	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
@@ -8556,6 +8558,8 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 171	182	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 172	183	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 173	184	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
+115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
+110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
 174	185	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 175	186	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 176	187	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
@@ -9411,7 +9415,6 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1026	1037	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1027	1038	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1028	1039	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1030	1041	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1031	1042	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1032	1043	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
@@ -9426,7 +9429,6 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1041	1052	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1042	1053	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1043	1054	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	1	1	\N	\N
 1045	1056	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1046	1057	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1047	1058	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
@@ -9449,6 +9451,9 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
 1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N
 1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N
+1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0	0
+1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0
+1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
 \.
 
 
@@ -9917,6 +9922,22 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 4579	1	1	25	440	2008-06-26 11:47:27.466	2	11	9	\N	\N	\N	0
 1	1	1	\N	2	2006-12-31 23:59:59	3	2	20	2	1	\N	1
 2	1	1	\N	2	2007-01-02 23:59:59	3	2	20	2	1	\N	1
+459000	1	1	10	1	2009-07-20 16:28:40.856	2	2	8	\N	46f94c8de14fb36680850768ff1b7f2a	\N	0
+459001	1	\N	22	207600	2009-07-20 16:41:58.173	2	15	31	2	\N	\N	0
+459002	1	\N	22	207600	2009-07-20 16:41:58.179	2	15	29	\N	2676339f-3878-49dd-86ea-d0f144cf652f	\N	0
+459003	1	\N	22	207600	2009-07-20 16:41:58.18	2	15	30	\N	result_test	\N	0
+459004	1	\N	22	207600	2009-07-20 16:41:58.291	2	15	31	3	\N	\N	0
+459005	1	\N	22	207600	2009-07-20 16:41:58.292	2	15	29	\N	d85d1780-1594-4c25-8980-39ddaf2e15ce	\N	0
+459006	1	\N	22	207600	2009-07-20 16:41:58.293	2	15	30	\N	result_test	\N	0
+459007	1	\N	21	107500	2009-07-20 16:41:58.342	2	7	25	\N	\N	\N	0
+459008	1	\N	22	207600	2009-07-20 16:41:58.427	2	15	31	3	\N	\N	0
+459009	1	\N	22	207600	2009-07-20 16:41:58.456	2	15	31	1	\N	\N	0
+459010	1	\N	22	207600	2009-07-20 16:41:58.49	2	15	31	6	\N	\N	0
+459011	1	\N	22	207600	2009-07-20 16:41:58.92	2	15	31	5	\N	\N	0
+459012	1	\N	22	207600	2009-07-20 16:41:59.436	2	15	31	5	\N	\N	0
+459013	1	\N	22	207600	2009-07-20 16:41:59.952	2	15	31	5	\N	\N	0
+459014	1	\N	39	8500	2009-07-20 16:42:04.941	2	9	25	\N	\N	\N	0
+459015	1	\N	21	107500	2009-07-20 16:42:04.953	2	7	13	1	\N	\N	0
 \.
 
 
@@ -10811,6 +10832,7 @@ COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoic
 55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10	0	1	10	0	1	0	1	0	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
 65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15	0	1	15	0	1	0	1	0	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
 75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.989999771118164	0	1	12.989999771118164	0	1	0	1	0	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
+8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15	0	1	15	0	1	0	1	0	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
 \.
 
 
@@ -10845,6 +10867,7 @@ COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, it
 56	55	1	10	1	10	0	1	Lemonade - 1 per day monthly pass Period from 10/01/2006 to 10/31/2006	53	0	1
 66	65	1	15	1	15	0	3	Coffee - one per day - Monthly Period from 09/26/2006 to 10/25/2006	63	0	1
 76	75	1	12.989999771118164	1	12.989999771118164	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
+8600	8500	4	15	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
 \.
 
 
@@ -10944,8 +10967,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 18	order_line_type	4
 19	order_billing_type	3
 20	order_status	5
-21	purchase_order	1075
-22	order_line	2076
 23	pluggable_task_type_category	10
 24	pluggable_task_type	20
 28	contact_type	4
@@ -10958,14 +10979,10 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 36	entity_payment_method_map	26
 37	process_run_total	31
 38	process_run_total_pm	1
-39	invoice	85
-40	invoice_line	86
 41	payment_result	5
 45	user_credit_card_map	5
 46	event_log_module	11
 47	event_log_message	17
-48	event_log	459
-49	order_process	85
 50	preference_type	36
 52	notification_message_type	21
 53	notification_message	27
@@ -11005,17 +11022,23 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 51	preference	49
 10	base_user	1075
 11	partner	2
-29	contact_map	7906
-27	contact	1127
 12	customer	1067
 44	credit_card	1015
 42	payment	19
 43	payment_info_cheque	17
-76	contact_field	2024
 79	partner_range	2
 25	pluggable_task	55
 26	pluggable_task_parameter	82
 89	balance_type	0
+48	event_log	460
+21	purchase_order	1076
+22	order_line	2077
+39	invoice	86
+29	contact_map	7907
+27	contact	1128
+76	contact_field	2025
+40	invoice_line	87
+49	order_process	86
 \.
 
 
@@ -13431,6 +13454,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 2055	1054	2	1	1540	77	20	\N	2007-09-12 12:15:04.804	0	Second line	\N	\N	1
 2056	1055	3	1	15	1	15	0	2007-12-28 14:47:08.524	0	Coffee - one per day - Monthly	\N	\N	1
 2066	1065	3	1	15	1	15	0	2008-03-06 09:19:01.556	0	Coffee - one per day - Monthly	\N	\N	1
+207600	107500	251	3	15	1	15	0	2009-07-20 16:41:52.245	0	Lemonade plan - Setup Fee	20	d85d1780-1594-4c25-8980-39ddaf2e15ce	5
 \.
 
 
@@ -13473,6 +13497,7 @@ COPY order_process (id, order_id, invoice_id, billing_process_id, periods_includ
 55	35	55	\N	1	2006-10-01	2006-11-01	0	2	1
 65	45	65	\N	1	2006-09-26	2006-10-26	0	2	1
 75	5	75	\N	1	2006-12-07	2007-01-07	0	2	1
+8500	107500	8500	\N	1	\N	\N	0	2	0
 \.
 
 
@@ -14349,7 +14374,6 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 12	12	5	1	1	\N	\N
 13	13	5	1	1	\N	\N
 14	14	5	1	0	\N	\N
-15	19	5	1	1022	\N	\N
 25	1	5	2	0	\N	\N
 26	2	5	2	\N	/billing/css/jbilling.css	\N
 27	3	5	2	\N	/billing/graphics/jbilling.jpg	\N
@@ -14372,6 +14396,7 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 44	26	10	1	200	\N	\N
 45	43	5	1	460	\N	\N
 46	44	5	1	1	\N	\N
+15	19	5	1	1023	\N	\N
 \.
 
 
@@ -15491,6 +15516,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 1054	1072	2	1	\N	\N	\N	2006-11-01 00:00:00	\N	1	16	1	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	1
 1055	2	2	1	2007-09-15	\N	\N	2007-12-28 14:47:08.494	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
 1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
+107500	121	1	1	\N	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	0	1
 \.
 
 

@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
@@ -47,6 +48,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import java.util.Set;
 
 /**
  *
@@ -62,9 +64,8 @@ public class InvoiceSessionBean implements IInvoiceSessionBean {
             InvoiceSessionBean.class);
 
     public InvoiceDTO getInvoice(Integer invoiceId) throws SessionInternalError {
-        InvoiceBL invoice = new InvoiceBL(invoiceId);
-        InvoiceDTO dto =  invoice.getDTO();
-        dto.getBalance(); // touch
+        InvoiceDTO dto =  new InvoiceDAS().findNow(invoiceId);
+        if (dto != null) dto.getBalance(); // touch
         return dto;
     }
 
@@ -264,5 +265,11 @@ public class InvoiceSessionBean implements IInvoiceSessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
+    }
+
+    public Set<InvoiceDTO> getAllInvoices(Integer userId) {
+        Set<InvoiceDTO>  ret = new UserBL(userId).getEntity().getInvoices();
+        ret.iterator().next().getDueDate(); // touch
+        return ret;
     }
 }    

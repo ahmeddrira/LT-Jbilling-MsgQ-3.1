@@ -175,8 +175,10 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         invoice = invoiceDas.create(userId, newInvoice, process);
 
         // add delegated/included invoice links
-        for (InvoiceDTO dto : newInvoice.getInvoices()) {
-            dto.setInvoice(invoice);
+        if (newInvoice.getIsReview() == 0) {
+            for (InvoiceDTO dto : newInvoice.getInvoices()) {
+                dto.setInvoice(invoice);
+            }
         }
 
         // add the customer notes if it applies

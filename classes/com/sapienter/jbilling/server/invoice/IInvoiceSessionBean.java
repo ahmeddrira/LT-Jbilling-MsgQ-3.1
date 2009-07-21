@@ -26,6 +26,7 @@ import java.util.Date;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import java.util.Set;
 
 /**
  *
@@ -73,4 +74,7 @@ public interface IInvoiceSessionBean {
      */
     public String generatePDFFile(java.util.Map map, String realPath) 
             throws SessionInternalError;
+
+    // only for unit tests
+    public Set<InvoiceDTO> getAllInvoices(Integer userId);
 }    

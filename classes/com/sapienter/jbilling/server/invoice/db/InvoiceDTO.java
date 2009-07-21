@@ -360,7 +360,7 @@ public class InvoiceDTO implements Serializable {
         this.invoiceLines = invoiceLines;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "invoice")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice")
     public Set<InvoiceDTO> getInvoices() {
         return this.invoices;
     }

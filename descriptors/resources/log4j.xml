@@ -102,6 +102,9 @@
       <appender-ref ref="jbillingAppender"/>
   </category>
 -->
+  <category name="com.mchange">
+      <appender-ref ref="FILE"/>
+  </category>
   
 
   <!-- ======================= -->

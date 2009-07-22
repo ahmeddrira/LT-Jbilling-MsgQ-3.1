@@ -30,8 +30,8 @@ import java.math.BigDecimal;
  */
 public class ValidatorPrePaid implements  IUserBalanceValidation {
 
-    public Double validate(CustomerDTO customer, BigDecimal amount) {
+    public BigDecimal validate(CustomerDTO customer, BigDecimal amount) {
         return customer.getDynamicBalance().divide(amount,
-                Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).doubleValue();
+                Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
     }
 }

@@ -875,7 +875,7 @@ Ch2->P1
 
             // validate. room = 20, price = 7
             System.out.println("Validate with fields...");
-            assertEquals("validate purchase 2", 2.8571428571, api.validatePurchase(myId, 1, pf));
+            assertEquals("validate purchase 2", 2.8571, api.validatePurchase(myId, 1, pf));
 
             // now create a one time order, the balance should decrease
             OrderWS order = getOrder();
@@ -972,7 +972,7 @@ Ch2->P1
             System.out.println("Validate with fields...");
             PricingField pf[] =  { new PricingField("src", "604"),
                 new PricingField("dst", "512")};
-            assertEquals("validate purchase 1", 142.8571428571, api.validatePurchase(myId, 1, pf));
+            assertEquals("validate purchase 1", 142.8571, api.validatePurchase(myId, 1, pf));
 
             // get the current balance, it should be null or 0
             System.out.println("Checking initial balance type and dynamic balance");

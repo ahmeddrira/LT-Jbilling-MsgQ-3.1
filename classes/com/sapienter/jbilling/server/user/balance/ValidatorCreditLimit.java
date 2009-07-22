@@ -29,10 +29,10 @@ import java.math.BigDecimal;
  */
 public class ValidatorCreditLimit implements IUserBalanceValidation {
 
-    public Double validate(CustomerDTO customer, BigDecimal amount) {
+    public BigDecimal validate(CustomerDTO customer, BigDecimal amount) {
         return customer.getCreditLimit().subtract(
                 customer.getDynamicBalance()).divide(amount,
-                Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).doubleValue();
+                Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
 
     }
 }

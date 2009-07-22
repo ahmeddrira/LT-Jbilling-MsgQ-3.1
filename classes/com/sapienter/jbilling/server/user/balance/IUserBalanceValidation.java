@@ -28,5 +28,5 @@ import java.math.BigDecimal;
  * @author emilc
  */
 public interface IUserBalanceValidation {
-    Double validate(CustomerDTO customer, BigDecimal amount);
+    BigDecimal validate(CustomerDTO customer, BigDecimal amount);
 }

@@ -1304,7 +1304,7 @@ public class UserBL extends ResultList
         }
     }
 
-    public Double validatePurchase(BigDecimal amount) {
+    public BigDecimal validatePurchase(BigDecimal amount) {
         if (user.getCustomer() == null) {
             return null;
         }

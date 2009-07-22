@@ -29,7 +29,7 @@ import java.math.BigDecimal;
  */
 public class ValidatorNone implements  IUserBalanceValidation {
 
-    public Double validate(CustomerDTO customer, BigDecimal amount) {
-        return 1000.0; // always ok
+    public BigDecimal validate(CustomerDTO customer, BigDecimal amount) {
+        return new BigDecimal("1000.0"); // always ok
     }
 }

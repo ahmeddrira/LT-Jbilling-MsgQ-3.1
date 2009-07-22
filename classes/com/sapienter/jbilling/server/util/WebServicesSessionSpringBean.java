@@ -92,6 +92,7 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 @Transactional( propagation = Propagation.REQUIRED )
 @WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
@@ -1917,9 +1918,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         item.setPricingFields(new Vector(Arrays.asList(fieldsArray)));
         Float price = item.getPrice(userId, getCallerCompanyId());
 
-        Double ret = new UserBL(userId).validatePurchase(new BigDecimal(price));
+        BigDecimal ret = new UserBL(userId).validatePurchase(new BigDecimal(price.toString()));
         LOG.debug("Done");
-        return ret;
+        return ret.setScale(4, Constants.BIGDECIMAL_ROUND).doubleValue();
     }
 
 

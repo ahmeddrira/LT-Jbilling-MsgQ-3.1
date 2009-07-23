@@ -1330,7 +1330,7 @@
         <column name="id_key" primaryKey="true" type="VARCHAR" size="100" required="true"/>
         <column name="start_datetime" required="true" type="TIMESTAMP"/>
         <column name="end_datetime" required="false" type="TIMESTAMP"/>
-        <column name="mediation_process_id" type="INTEGER" required="true"/>
+        <column name="mediation_process_id" type="INTEGER" required="false"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="mediation_process">
             <reference foreign="id" local="mediation_process_id"/>

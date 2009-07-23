@@ -224,11 +224,12 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
        addMethod("getCurrentOrder", params);
 
        // updateCurrentOrder
-       params = new Class[4];
+       params = new Class[5];
        params[0] = Integer.class;
        params[1] = OrderLineWS[].class;
        params[2] = String.class;
        params[3] = Date.class;
+       params[4] = String.class;
        addMethod("updateCurrentOrder", params);
     }
 

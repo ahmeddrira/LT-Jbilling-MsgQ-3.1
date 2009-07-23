@@ -24,3 +24,6 @@ insert into event_log_message values (33);
 insert into pluggable_task_type values (54, 17, 'com.sapienter.jbilling.server.user.balance.DynamicBalanceManagerTask',0);
 -- check the correct id, ignore if this install does not care about pre-paid/credit limit balances.
 insert into pluggable_task values (541, 1, 54, 1, 1);
+
+-- updateCurrentOrder event saving
+alter table mediation_record alter column mediation_process_id drop not null;

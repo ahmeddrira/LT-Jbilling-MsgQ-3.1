@@ -55,6 +55,9 @@ import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -1071,7 +1074,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * users with no main subscription order.
      */
     public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
-            String pricing, Date date) {
+            String pricing, Date date, String eventDescription) {
         LOG.debug("Call to updateCurrentOrder - userId: " + userId + 
             " lines: " + Arrays.toString(lines) + " date: " + date);
         try {
@@ -1113,8 +1116,21 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             }
 
             // do the update
-            bl.updateCurrent(getCallerCompanyId(), getCallerId(), userId, 
-                    currencyId, orderLines, records, date);
+            Vector<OrderLineDTO> newLines = bl.updateCurrent(
+                    getCallerCompanyId(), getCallerId(), userId, currencyId, 
+                    orderLines, records, date);
+
+            // save the event
+            MediationRecordDTO record = new MediationRecordDTO("" + 
+                    date.getTime(), new Date(), null);
+            record = new MediationRecordDAS().save(record);
+
+            IMediationSessionBean mediation = (IMediationSessionBean) 
+                    Context.getBean(Context.Name.MEDIATION_SESSION);
+            mediation.saveEventRecordLines(newLines, record, date, 
+                    eventDescription);
+
+            record.setFinished(new Date());
 
             // return the updated order
             return bl.getWS(languageId);

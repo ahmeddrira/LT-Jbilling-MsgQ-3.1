@@ -925,7 +925,8 @@ public class WSTest  extends TestCase {
 
             // update the current order
             OrderWS currentOrderAfter = api.updateCurrentOrder(USER_ID, 
-                    new OrderLineWS[] { newLine }, null, new Date());
+                    new OrderLineWS[] { newLine }, null, new Date(), 
+                    "Event from WS");
 
             // asserts
             assertEquals("Order ids", currentOrderBefore.getId(),
@@ -950,7 +951,7 @@ public class WSTest  extends TestCase {
             newLine.setQuantity(1);
             currentOrderAfter = api.updateCurrentOrder(USER_ID, 
                     new OrderLineWS[] { newLine }, new PricingField[] { pf }, 
-                    new Date());
+                    new Date(), "Event from WS");
 
             // asserts
             assertEquals("1 order line", 1,
@@ -979,7 +980,8 @@ public class WSTest  extends TestCase {
             // An exception should be thrown
             try {
                 api.updateCurrentOrder(NO_MAIN_SUB_USER_ID, 
-                        new OrderLineWS[] { newLine }, null, new Date());
+                        new OrderLineWS[] { newLine }, null, new Date(),
+                        "Event from WS");
                 fail("User with no main subscription order should throw an " +
                         "exception");
             } catch(Exception e) {
@@ -997,7 +999,7 @@ public class WSTest  extends TestCase {
 
             try {
                 api.updateCurrentOrder(13, new OrderLineWS[] { newLine }, 
-                        new PricingField[] { pf }, new Date());
+                        new PricingField[] { pf }, new Date(), "Event from WS");
                 fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }                

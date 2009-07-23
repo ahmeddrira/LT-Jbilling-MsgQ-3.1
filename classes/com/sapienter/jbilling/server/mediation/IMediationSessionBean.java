@@ -20,14 +20,17 @@
 
 package com.sapienter.jbilling.server.mediation;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
 /**
@@ -62,6 +65,9 @@ public interface IMediationSessionBean {
             Integer executorId, MediationProcess process, 
             Vector<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg) throws TaskException;
-    
+
+    public void saveEventRecordLines(Vector<OrderLineDTO> newLines, 
+            MediationRecordDTO record, Date eventDate, String description);
+
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId);
 }

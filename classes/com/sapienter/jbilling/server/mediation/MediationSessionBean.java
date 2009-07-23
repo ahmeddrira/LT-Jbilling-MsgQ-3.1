@@ -17,6 +17,7 @@ package com.sapienter.jbilling.server.mediation;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -297,27 +298,36 @@ public class MediationSessionBean implements IMediationSessionBean {
             mapDas.save(map);
 
             // add the record lines
-            for (OrderLineDTO line : newLines) {
-                MediationRecordLineDTO recordLine = new MediationRecordLineDTO();
-
-                recordLine.setEventDate(processTask.getEventDate());
-                OrderLineDTO dbLine = new OrderLineDAS().find(line.getId());
-                recordLine.setOrderLine(dbLine);
-                recordLine.setAmount(new BigDecimal(line.getAmount().doubleValue()));
-                recordLine.setQuantity(new BigDecimal(line.getQuantity()));
-                recordLine.setRecord(record);
-                recordLine.setDescription(processTask.getDescription());
-
-                recordLine = new MediationRecordLineDAS().save(recordLine);
-                // no need to link to the parent record. The association is completed already
-                // record.getLines().add(recordLine);
-            }
+            saveEventRecordLines(newLines, record, processTask.getEventDate(), 
+                    processTask.getDescription());
         }
 
         // mark the record as done
         record.setFinished(Calendar.getInstance().getTime());
     }
-    
+
+    public void saveEventRecordLines(Vector<OrderLineDTO> newLines, 
+            MediationRecordDTO record, Date eventDate, String description) {
+        MediationRecordLineDAS mediationRecordLineDas = 
+            new MediationRecordLineDAS();
+
+        for (OrderLineDTO line : newLines) {
+            MediationRecordLineDTO recordLine = new MediationRecordLineDTO();
+
+            recordLine.setEventDate(eventDate);
+            OrderLineDTO dbLine = new OrderLineDAS().find(line.getId());
+            recordLine.setOrderLine(dbLine);
+            recordLine.setAmount(new BigDecimal(line.getAmount().doubleValue()));
+            recordLine.setQuantity(new BigDecimal(line.getQuantity()));
+            recordLine.setRecord(record);
+            recordLine.setDescription(description);
+
+            recordLine = mediationRecordLineDas.save(recordLine);
+            // no need to link to the parent record. The association is completed already
+            // record.getLines().add(recordLine);
+        }
+    }
+
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId) {
         List<MediationRecordLineDTO> events = new MediationRecordLineDAS().getByOrder(orderId);
         for (MediationRecordLineDTO line: events) {

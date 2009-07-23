@@ -224,7 +224,8 @@ public interface IWebServicesSessionBean {
             throws SessionInternalError;
 
     public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
-            String pricing, Date date) throws SessionInternalError;
+            String pricing, Date date, String eventDescription) 
+            throws SessionInternalError;
 
     /*
      * PAYMENT

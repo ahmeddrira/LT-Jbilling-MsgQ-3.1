@@ -212,10 +212,12 @@ public class SpringAPI implements JbillingAPI {
     }
 
     public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
-            PricingField[] fields, Date date) throws JbillingAPIException {
+            PricingField[] fields, Date date, String eventDescription) 
+            throws JbillingAPIException {
         try {
             return session.updateCurrentOrder(userId, lines, 
-                    PricingField.setPricingFieldsValue(fields), date);
+                    PricingField.setPricingFieldsValue(fields), date, 
+                    eventDescription);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

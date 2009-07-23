@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -1124,7 +1124,7 @@ CREATE TABLE mediation_record (
     id_key character varying(100) NOT NULL,
     start_datetime timestamp without time zone NOT NULL,
     end_datetime timestamp without time zone,
-    mediation_process_id integer NOT NULL,
+    mediation_process_id integer,
     optlock integer NOT NULL
 );
 

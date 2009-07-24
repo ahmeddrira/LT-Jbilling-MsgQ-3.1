@@ -53,6 +53,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -859,6 +860,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
             JRBeanCollectionDataSource data = new JRBeanCollectionDataSource(
                     lines);
+
+            // set report locale
+            parameters.put(JRParameter.REPORT_LOCALE, locale);
 
             // at last, generate the report
             JasperPrint report = JasperFillManager.fillReport(stream,

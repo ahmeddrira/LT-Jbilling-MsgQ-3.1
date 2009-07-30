@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,6 +52,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -660,13 +662,13 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         return retValue.toString();
     }
 
-    public static byte[] generatePaperInvoiceAsStream(String design,
-            InvoiceDTO invoice, ContactDTOEx from, ContactDTOEx to,
-            String message1, String message2, Integer entityId,
+    public static byte[] generatePaperInvoiceAsStream(String design, 
+            boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from, 
+            ContactDTOEx to, String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
-        JasperPrint report = generatePaperInvoice(design, invoice, from, to,
-                message1, message2, entityId, username, password);
+        JasperPrint report = generatePaperInvoice(design, useSqlQuery, invoice,
+                from, to, message1, message2, entityId, username, password);
         try {
             return JasperExportManager.exportReportToPdf(report);
         } catch (JRException e) {
@@ -675,13 +677,13 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         }
     }
 
-    public static String generatePaperInvoiceAsFile(String design,
-            InvoiceDTO invoice, ContactDTOEx from, ContactDTOEx to,
-            String message1, String message2, Integer entityId,
+    public static String generatePaperInvoiceAsFile(String design, 
+            boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from, 
+            ContactDTOEx to, String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
-        JasperPrint report = generatePaperInvoice(design, invoice, from, to,
-                message1, message2, entityId, username, password);
+        JasperPrint report = generatePaperInvoice(design, useSqlQuery, invoice,
+                from, to, message1, message2, entityId, username, password);
         String fileName = null;
         try {
             fileName = com.sapienter.jbilling.common.Util
@@ -698,9 +700,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         return fileName;
     }
 
-    private static JasperPrint generatePaperInvoice(String design,
-            InvoiceDTO invoice, ContactDTOEx from, ContactDTOEx to,
-            String message1, String message2, Integer entityId,
+    private static JasperPrint generatePaperInvoice(String design, 
+            boolean useSqlQuery, InvoiceDTO invoice, ContactDTOEx from, 
+            ContactDTOEx to, String message1, String message2, Integer entityId,
             String username, String password) throws FileNotFoundException,
             SessionInternalError {
         try {
@@ -719,6 +721,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // add all the invoice data
             HashMap<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("invoiceNumber", invoice.getPublicNumber());
+            parameters.put("invoiceId", invoice.getId());
             parameters.put("entityName", printable(from.getOrganizationName()));
             parameters.put("entityAddress", printable(from.getAddress1()));
             parameters.put("entityPostalCode", printable(from.getPostalCode()));
@@ -858,16 +861,28 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     + " totalWithoutTax = " + parameters.get("totalWithoutTax")
                     + " balance = " + parameters.get("balance"));
 
-            JRBeanCollectionDataSource data = new JRBeanCollectionDataSource(
-                    lines);
-
             // set report locale
             parameters.put(JRParameter.REPORT_LOCALE, locale);
 
+            // set the subreport directory
+            String subreportDir = com.sapienter.jbilling.common.Util
+                .getSysProp("base_dir") + "designs/";
+            parameters.put("SUBREPORT_DIR", subreportDir);
+
             // at last, generate the report
-            JasperPrint report = JasperFillManager.fillReport(stream,
-                    parameters, data);
+            JasperPrint report = null;
+            if (useSqlQuery) {
+                Connection conn = ((DataSource) Context.getBean(
+                        Context.Name.DATA_SOURCE)).getConnection();
+                report = JasperFillManager.fillReport(stream, parameters, conn);
+            } else {
+                JRBeanCollectionDataSource data = 
+                        new JRBeanCollectionDataSource(lines);
+                report = JasperFillManager.fillReport(stream, parameters, data);
+            }
+
             stream.close();
+
             return report;
         } catch (Exception e) {
             LOG.error("Exception generating paper invoice", e);

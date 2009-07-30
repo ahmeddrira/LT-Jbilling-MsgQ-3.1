@@ -44,9 +44,11 @@ public class PaperInvoiceNotificationTask
     // pluggable task parameters names
     public static final String PARAMETER_DESIGN = "design";
     public static final String PARAMETER_LANGUAGE_OPTIONAL = "language";
+    public static final String PARAMETER_SQL_QUERY_OPTIONAL = "sql_query";
 
     private String design;
     private boolean language;
+    private boolean sqlQuery;
     private ContactBL contact;
     private ContactDTOEx to;
     private Integer entityId;
@@ -62,6 +64,9 @@ public class PaperInvoiceNotificationTask
 
         language = Boolean.parseBoolean((String) parameters.get(
                 PARAMETER_LANGUAGE_OPTIONAL));
+
+        sqlQuery = Boolean.parseBoolean((String) parameters.get(
+                PARAMETER_SQL_QUERY_OPTIONAL));
 
         invoice = (InvoiceDTO) message.getParameters().get(
                 "invoiceDto");
@@ -85,8 +90,8 @@ public class PaperInvoiceNotificationTask
         }
         try {
             init(user, message);
-            NotificationBL.generatePaperInvoiceAsFile(getDesign(user), invoice, 
-                    from, to, message.getContent()[0].getContent(),
+            NotificationBL.generatePaperInvoiceAsFile(getDesign(user), sqlQuery,
+                    invoice, from, to, message.getContent()[0].getContent(),
                     message.getContent()[1].getContent(), entityId,
                     user.getUserName(), user.getPassword());
             // update the batch record
@@ -110,8 +115,9 @@ public class PaperInvoiceNotificationTask
         try {
             init(user, message);
             LOG.debug("now message1 = " + message.getContent()[0].getContent());
-            return NotificationBL.generatePaperInvoiceAsStream(getDesign(user), 
-                    invoice, from, to, message.getContent()[0].getContent(),
+            return NotificationBL.generatePaperInvoiceAsStream(getDesign(user),
+                    sqlQuery, invoice, from, to, 
+                    message.getContent()[0].getContent(),
                     message.getContent()[1].getContent(), entityId,
                     user.getUserName(), user.getPassword());
         } catch (Exception e) {
@@ -123,8 +129,9 @@ public class PaperInvoiceNotificationTask
             throws SessionInternalError {
         try {
             init(user, message);
-            return NotificationBL.generatePaperInvoiceAsFile(getDesign(user), 
-                    invoice, from, to, message.getContent()[0].getContent(),
+            return NotificationBL.generatePaperInvoiceAsFile(getDesign(user),
+                    sqlQuery, invoice, from, to, 
+                    message.getContent()[0].getContent(),
                     message.getContent()[1].getContent(), entityId,
                     user.getUserName(), user.getPassword());
         } catch (Exception e) {

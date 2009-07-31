@@ -493,6 +493,19 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
+	/* 
+	 * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
+	 */
+	@Override
+	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment)
+			throws JbillingAPIException {
+		try {
+			return session.processPayment(payment);
+		} catch (Exception e) {
+			throw new JbillingAPIException(e);
+		}
+	}
+
     public Double validatePurchase(Integer userId, Integer itemId,
             PricingField[] fields) throws JbillingAPIException {
         try {

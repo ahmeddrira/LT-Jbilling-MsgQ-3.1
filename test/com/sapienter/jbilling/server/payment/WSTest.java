@@ -30,6 +30,7 @@ import java.util.Calendar;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -426,6 +427,53 @@ public class WSTest extends TestCase {
 
             api.deleteInvoice(invoiceId);
             api.deleteOrder(api.getLatestOrder(USER).getId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    public void testProcessPayment(){
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();		
+            final Integer USER_ID = new Integer(1072);
+			 
+            PaymentWS payment = new PaymentWS();
+            payment.setAmount(new Float(15));
+            payment.setIsRefund(new Integer(0));
+            payment.setMethodId(Constants.PAYMENT_METHOD_VISA);
+            payment.setPaymentDate(Calendar.getInstance().getTime());
+            payment.setCurrencyId(new Integer(1));
+            payment.setUserId(USER_ID);            
+
+            //UserWS user = api.getUserWS(USER_ID);         
+            //CreditCardDTO cc= user.getCreditCard();
+
+            CreditCardDTO cc = new CreditCardDTO();
+            cc.setName("Frodo Baggins");
+            cc.setNumber("4111111111111152");
+            cc.setType(Constants.PAYMENT_METHOD_VISA);
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.YEAR, 5);
+            cc.setExpiry(cal.getTime());
+            payment.setCreditCard(cc);                       
+
+            System.out.println("processing payment..");
+            PaymentAuthorizationDTOEx authInfo=api.processPayment(payment);
+
+            // check payment successful
+            assertNotNull("JbillingAPI.processPayment(payment) returned PaymentAuthorizationDTOEx : NULL !", 
+                    authInfo);
+            assertTrue("Payment Authorization result should be OK", 
+                    authInfo.getResult().booleanValue());
+
+            // check payment was made
+            payment = api.getLatestPayment(USER_ID);
+            assertNotNull("payment can not be null", payment);
+            assertNotNull("auth in payment can not be null", 
+                    payment.getAuthorizationId());
+            assertEquals("correct amount", new Float(15), payment.getAmount());
 
         } catch (Exception e) {
             e.printStackTrace();

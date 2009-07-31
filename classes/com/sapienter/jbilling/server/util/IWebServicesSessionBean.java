@@ -253,6 +253,8 @@ public interface IWebServicesSessionBean {
     public Integer[] getLastPayments(Integer userId, Integer number)
             throws SessionInternalError;
 
+	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
+
     /**
      * Validate if the user can buy this. This depends on the balance type:
      *   - none: can always buy

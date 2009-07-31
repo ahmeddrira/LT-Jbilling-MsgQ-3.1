@@ -1919,6 +1919,43 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     	}
     }
 
+	@Override
+	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
+		LOG.debug("Call to processPayment with params: payment Id = "
+				+ payment.getId());
+
+		validatePayment(payment);
+		try {
+
+			IPaymentSessionBean session = (IPaymentSessionBean) Context
+					.getBean(Context.Name.PAYMENT_SESSION);
+			PaymentDTOEx dto = new PaymentDTOEx(payment);
+			Integer entityId = getCallerCompanyId();
+			Integer result = session.processAndUpdateInvoice(dto, null,
+					entityId);
+			LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
+			PaymentAuthorizationDTOEx auth = null;
+			if (dto !=null && dto.getAuthorization() != null) {
+				LOG.debug("PaymentAuthorizationDTO Id ="
+						+ dto.getAuthorization().getId());
+				auth = new PaymentAuthorizationDTOEx(dto.getAuthorization()
+						.getOldDTO());
+				LOG.debug("PaymentAuthorizationDTOEx Id =" + auth.getId());
+				auth.setResult(result.equals(Constants.RESULT_OK));
+				
+			} else {
+				auth = new PaymentAuthorizationDTOEx();
+				auth.setResult(result.equals(Constants.RESULT_FAIL));				
+			}
+			return auth;
+		} catch (Throwable e) {
+			LOG.error("Error processing payment ", e);
+			throw new SessionInternalError("Error processing payment");
+		} finally {
+			LOG.debug("Done");
+		}
+	}
+
     public Double validatePurchase(Integer userId, Integer itemId,
             String fields) {
         LOG.debug("Call to validatePurchase " + userId + ' ' + itemId);

@@ -26,7 +26,7 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
 <%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="/WEB-INF/c-rt.tld" prefix="c" %>
 
 <%-- this menu is only dispalyed when a payment is present, and it is
      not the review screen --%>

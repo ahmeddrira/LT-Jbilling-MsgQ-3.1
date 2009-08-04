@@ -130,6 +130,7 @@
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.api.dir}"/>
         <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${build.view.dir}"/>
         <mkdir dir="${build.designs.dir}"/>
         <mkdir dir="${build.deploy.dir}"/>
         <mkdir dir="${deploy.resources.dir}/designs"/>
@@ -170,7 +171,7 @@
             classpathref="xdoclet.classpath"
         />
         
-        <webdoclet  destdir="${build.dir}/WEB-INF" verbose="true">
+        <webdoclet  destdir="${build.view.dir}/WEB-INF" verbose="true">
             <fileset dir="${source.classes.dir}">
                 <include name="**/*Tag.java"/>
             </fileset>
@@ -251,18 +252,7 @@
     <!-- Create the WAR file for the web-client, to be run by tomcat -->
     <!-- =================================================================== -->
  
-    <target name="war" depends="compile, jar, xdoclet-webgenerate">
-        <copy todir="${build.dir}/WEB-INF">
-            <fileset dir="${source.web.descriptor.dir}">
-                <include name="*.xml"/>
-            </fileset>
-            <fileset dir="${taglib.home.dir}">
-                <include name="*.tld"/>
-            </fileset>
-            <fileset dir="${struts.home.tag.dir}">
-                <include name="*.tld"/>
-            </fileset>
-        </copy>
+    <target name="war" depends="jspc, jar">
         <copy todir="${build.classes.dir}">
             <fileset dir="${source.web.descriptor.dir}">
                 <include name="*.properties"/>
@@ -271,11 +261,11 @@
         
         <war
             destfile="${build.deploy.dir}/billing.war"
-            webxml="${build.dir}/WEB-INF/web.xml"
+            webxml="${build.view.dir}/WEB-INF/web.xml"
             compress="false"
         >
             <fileset dir="${source.view.dir}"/>
-            <webinf dir="${build.dir}/WEB-INF">
+            <webinf dir="${build.view.dir}/WEB-INF">
                 <exclude name="web.xml"/>
             </webinf>
             <lib dir="${source.lib.dir}">
@@ -286,7 +276,7 @@
             </lib>
             <classes dir="${build.classes.dir}" >
                 <include name="${source.client.package.dir}/**"/>
-                <include name="org/apache.jsp/**"/>
+                <include name="com/sapienter/jbilling/client/jspc/**"/>
                 <include name="*.properties"/>
             </classes>
         </war>
@@ -647,59 +637,70 @@ server="upload.sourceforge.net" userid="anonymous">
     <!-- JSPC target to precompile JSP's 
 	     This is only used to generate the binary image for a release,
 	     to avoid having the Java SDK as a requirement. -->
-    <target name="jspc">  
+    <target name="jspc" depends="compile, xdoclet-webgenerate">
         
         <taskdef classname="org.apache.jasper.JspC" name="jasper2"> 
-            
             <classpath id="jspc.classpath">
                 <!-- Classpath for extra jars -->
-                <fileset dir="${jboss.web.dir}">
-                    <include name="jsp-api.jar" /> 
-                    <include name="commons-el.jar" /> 
-                    <include name="jasper-compiler.jar" /> 
-                    <include name="jasper-runtime.jar" /> 
-                    <include name="servlet-api.jar" />
-                    <include name="commons-logging.jar"/> 
+                <fileset dir="${tools.dir}/lib">
+                    <include name="*.jar" />
                 </fileset>
+                <fileset dir="${tools.dir}/bin">
+                    <include name="*.jar" />
+                </fileset>
+                <fileset dir="${libs.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+
+                <pathelement location="${source.lib.dir}/rowset.jar"/>
                 
                 <!-- Directory for taglibs -->
                 <dirset dir="${source.dir}\build\classes">
                 </dirset>
                 
-                <fileset dir="${libs.client.lib.dir}"> 
-                    <include name="struts.jar"/>
-                    <include name="taglibs-session.jar"/> 		
-                    <include name="standard.jar"/>
-                    <include name="jstl.jar"/>
-                </fileset>
-                
-                <fileset dir="${jboss.server.dir}/lib"> 
-                    <include name="rowset.jar"/> 
-                </fileset>
             </classpath>
-            
-        </taskdef> 
+        </taskdef>
         
         <!-- Copy the view to the build directory -->
-        <copy todir="${build.dir}\">
-            <fileset dir="${source.dir}\view">
+        <copy todir="${build.view.dir}">
+            <fileset dir="${source.dir}/view">
                 <include name="**/*.jsp"/>
             </fileset>
         </copy>
-        
+
+        <copy todir="${build.view.dir}/WEB-INF">
+            <fileset dir="${source.web.descriptor.dir}">
+                <include name="*.xml"/>
+            </fileset>
+            <fileset dir="${taglib.home.dir}">
+                <include name="*.tld"/>
+            </fileset>
+            <fileset dir="${struts.home.tag.dir}">
+                <include name="*.tld"/>
+            </fileset>
+        </copy>
+
         <!-- Create the directory to hold compiled jsp-->
-		
-        <mkdir dir="${source.dir}\build\jsp-classes"/> 
+        <mkdir dir="${source.dir}/build/jsp-classes"/>
         
         <!-- Compile the jsp to .java files -->
         <jasper2 
-            validateXml="false" 
-            uriroot = "${source.dir}/build"
-            outputDir = "${source.dir}/build/jsp-classes"/>
-        
+            package="com.sapienter.jbilling.client.jspc"
+            uriroot = "${build.view.dir}"
+            outputDir = "${source.dir}/build/jsp-classes"
+            webXmlFragment="${build.dir}/jspc-web.xml"/>
+
+        <loadfile property="jpc-code" srcfile="${build.dir}/jspc-web.xml" />
+        <replace file="${build.view.dir}/WEB-INF/web.xml"
+                 token="jspc-webxml"
+                 value="${jpc-code}" />
+
+        <!-- Create the directory to hold compiled jsp-->
+        <mkdir dir="${build.view.dir}/WEB-INF/classes"/>
         
         <!-- Compile the intermediate jsp's-->
-        <javac srcdir="${source.dir}/build/jsp-classes"  destdir="${source.dir}/build/jsp-classes" > 
+        <javac srcdir="${source.dir}/build/jsp-classes"
+              destdir="${build.classes.dir}" >
             <classpath refid="jspc.classpath" /> 
             <classpath refid="compile.classpath" />
         </javac> 

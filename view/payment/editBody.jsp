@@ -24,7 +24,7 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="jbilling" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="c" uri="/WEB-INF/c-rt.tld" %>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/session-1.0" prefix="sess" %>
 
 

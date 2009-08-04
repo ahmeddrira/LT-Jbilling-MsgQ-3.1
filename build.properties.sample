@@ -33,7 +33,9 @@ struts.home.tag.dir=${libs.client.dir}/WEB-INF
 xdoclet.home.dir=${libs.dir}/xdoclet
 #digester is needed for the compilation of designs
 digester.jar=${libs.dir}/client/commons-digester-1.8.jar
+drools-api.jar=${libs.dir}/drools/drools-api-5.0.1.jar
 junit.dir=${libs.dir}/junit
+spring.test.jar=${libs.dir}/spring/spring-test.jar
 
 #
 # Deployment related properties
@@ -44,9 +46,9 @@ image.source.dir=c:/bop/image/source
 image.target.dir=c:/bop/image/target
 version=1_1_3
 #Configure the context path for this application -->
-path=billing
+path=/billing
 #Configure properties to access Tomcat's Manager application -->
-url=http://localhost:8888/manager"/>
+url=http://localhost:8888/manager
 username=admin
 password=admin
 
@@ -57,3 +59,4 @@ build.deploy.dir=${build.dir}/deploy
 build.classes.dir=${build.dir}/classes
 build.api.dir=${build.dir}/api
 build.test.dir=${build.dir}/test
+build.view.dir=${build.dir}/view

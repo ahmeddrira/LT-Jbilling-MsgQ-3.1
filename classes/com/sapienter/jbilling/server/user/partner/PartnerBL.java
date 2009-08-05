@@ -331,6 +331,7 @@ public class PartnerBL extends ResultList
             retValue = false;
         }
         createdPayment.setPaymentResult(new PaymentResultDAS().find(result));
+        payment.setPaymentResult(createdPayment.getPaymentResult());
 
         return retValue;
     }

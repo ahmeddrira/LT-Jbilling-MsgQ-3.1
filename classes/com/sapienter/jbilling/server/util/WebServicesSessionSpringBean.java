@@ -1925,6 +1925,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 				+ payment.getId());
 
 		validatePayment(payment);
+
+        if (payment.getCreditCard() == null && payment.getAch() == null) {
+            throw new SessionInternalError("Credit card or ACH payments can " +
+                    "only be processed");
+        }
+
 		try {
 
 			IPaymentSessionBean session = (IPaymentSessionBean) Context

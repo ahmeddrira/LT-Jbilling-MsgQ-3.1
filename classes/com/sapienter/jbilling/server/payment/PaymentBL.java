@@ -39,6 +39,8 @@ import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.InvoiceIdComparator;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
@@ -706,26 +708,56 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             if (new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_FAIL) || new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_UNAVAILABLE)) {
                 continue;
             }
-            // this is not actually getting de Ex, so it is faster
-            PaymentDTOEx dto = new PaymentDTOEx(getDTO());
-
-            // not pretty, but the methods are there
-            IPaymentSessionBean psb = (IPaymentSessionBean) Context.getBean(
-                    Context.Name.PAYMENT_SESSION);
-            // make the link between the payment and the invoice
-            Float paidAmount = new Float(psb.applyPayment(dto, invoice, true));
-            createMap(invoice, paidAmount);
-
-            // notify the customer
-            dto.setUserId(invoice.getBaseUser().getUserId()); // needed for the
-            // notification
-            // the notification only understands ok or not, if the payment is
-            // entered
-            // it has to show as ok
-            dto.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
-            sendNotification(dto, payment.getBaseUser().getEntity().getId());
-
+            applyPaymentToInvoice(invoice);
         }
+    }
+
+    /**
+     * make sure to call this only with the configuration for automatic
+     * application of unused payments is set
+     */
+    public void automaticPaymentApplication() throws SQLException {
+        if (payment.getBalance() <= 0) {
+            return;
+        }
+
+        Collection<InvoiceDTO> invoiceCollection = new InvoiceDAS()
+                .findWithBalanceByUser(payment.getBaseUser());
+        // sort from oldest to newest
+        Vector<InvoiceDTO> invoices = new Vector<InvoiceDTO>(invoiceCollection);
+        Collections.sort(invoices, new InvoiceIdComparator());
+
+        for (InvoiceDTO invoice : invoices) {
+            // negative balances don't need paying
+            if (invoice.getBalance() < 0) {
+                continue;
+            }
+            applyPaymentToInvoice(invoice);
+            if (payment.getBalance() <= 0) {
+                break;
+            }
+        }
+    }
+
+    private void applyPaymentToInvoice(InvoiceDTO invoice) throws SQLException {
+        // this is not actually getting de Ex, so it is faster
+        PaymentDTOEx dto = new PaymentDTOEx(getDTO());
+
+        // not pretty, but the methods are there
+        IPaymentSessionBean psb = (IPaymentSessionBean) Context.getBean(
+            Context.Name.PAYMENT_SESSION);
+        // make the link between the payment and the invoice
+        Float paidAmount = new Float(psb.applyPayment(dto, invoice, true));
+        createMap(invoice, paidAmount);
+
+        // notify the customer
+        dto.setUserId(invoice.getBaseUser().getUserId()); // needed for the
+        // notification
+        // the notification only understands ok or not, if the payment is
+        // entered
+        // it has to show as ok
+        dto.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
+        sendNotification(dto, payment.getBaseUser().getEntity().getId());
     }
 
     /**

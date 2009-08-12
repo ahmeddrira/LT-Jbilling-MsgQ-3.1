@@ -437,10 +437,17 @@ public class WSTest extends TestCase {
     public void testProcessPayment(){
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();		
-            final Integer USER_ID = new Integer(1072);
-			 
+            final Integer USER_ID = new Integer(1071);
+
+            // first, create two unpaid invoices
+            OrderWS order = com.sapienter.jbilling.server.order.WSTest.
+                    createMockOrder(USER_ID, 1, 10.0F);
+            Integer invoiceId1 = api.createOrderAndInvoice(order);
+            Integer invoiceId2 = api.createOrderAndInvoice(order);
+
+            // create the payment
             PaymentWS payment = new PaymentWS();
-            payment.setAmount(new Float(15));
+            payment.setAmount(new Float(5));
             payment.setIsRefund(new Integer(0));
             payment.setMethodId(Constants.PAYMENT_METHOD_VISA);
             payment.setPaymentDate(Calendar.getInstance().getTime());
@@ -450,30 +457,151 @@ public class WSTest extends TestCase {
             //UserWS user = api.getUserWS(USER_ID);         
             //CreditCardDTO cc= user.getCreditCard();
 
+
+            /*
+             * try a credit card number that fails
+             */
             CreditCardDTO cc = new CreditCardDTO();
             cc.setName("Frodo Baggins");
-            cc.setNumber("4111111111111152");
+            cc.setNumber("4111111111111111");
             cc.setType(Constants.PAYMENT_METHOD_VISA);
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.YEAR, 5);
             cc.setExpiry(cal.getTime());
             payment.setCreditCard(cc);                       
 
-            System.out.println("processing payment..");
-            PaymentAuthorizationDTOEx authInfo=api.processPayment(payment);
+            System.out.println("processing payment.");
+            PaymentAuthorizationDTOEx authInfo = api.processPayment(payment);
+
+            // check payment failed
+            assertNotNull("Payment result not null", authInfo);
+            assertFalse("Payment Authorization result should be FAILED",
+                    authInfo.getResult().booleanValue());
+
+            // check payment has zero balance
+            PaymentWS lastPayment = api.getLatestPayment(USER_ID);
+            assertNotNull("payment can not be null", lastPayment);
+            assertNotNull("auth in payment can not be null", 
+                    lastPayment.getAuthorizationId());
+            assertEquals("correct payment amount", new Float(5), 
+                    lastPayment.getAmount());
+            assertEquals("correct payment balance", new Float(0), 
+                    lastPayment.getBalance());
+
+            // check invoices still have balance
+            InvoiceWS invoice1 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 10.0f,
+                    invoice1.getBalance());
+            InvoiceWS invoice2 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 10.0f,
+                    invoice2.getBalance());
+
+
+            /*
+             * do a successful payment of $5
+             */
+            cc.setNumber("4111111111111152");
+            System.out.println("processing payment.");
+            authInfo = api.processPayment(payment);
 
             // check payment successful
-            assertNotNull("JbillingAPI.processPayment(payment) returned PaymentAuthorizationDTOEx : NULL !", 
-                    authInfo);
+            assertNotNull("Payment result not null", authInfo);
             assertTrue("Payment Authorization result should be OK", 
                     authInfo.getResult().booleanValue());
 
             // check payment was made
-            payment = api.getLatestPayment(USER_ID);
-            assertNotNull("payment can not be null", payment);
+            lastPayment = api.getLatestPayment(USER_ID);
+            assertNotNull("payment can not be null", lastPayment);
             assertNotNull("auth in payment can not be null", 
-                    payment.getAuthorizationId());
-            assertEquals("correct amount", new Float(15), payment.getAmount());
+                    lastPayment.getAuthorizationId());
+            assertEquals("correct payment amount", new Float(5), 
+                    lastPayment.getAmount());
+            assertEquals("correct payment balance", new Float(0), 
+                    lastPayment.getBalance());
+
+            // check invoice 1 was partially paid (balance 5)
+            invoice1 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 5.0f, 
+                    invoice1.getBalance());
+
+            // check invoice 2 wan't paid at all
+            invoice2 = api.getInvoiceWS(invoiceId2);
+            assertEquals("correct invoice balance", 10.0f, 
+                    invoice2.getBalance());
+
+
+            /*
+             * another payment for $10
+             */
+            payment.setAmount(new Float(10));
+            System.out.println("processing payment.");
+            authInfo = api.processPayment(payment);
+
+            // check payment successful
+            assertNotNull("Payment result not null", authInfo);
+            assertTrue("Payment Authorization result should be OK", 
+                    authInfo.getResult().booleanValue());
+
+            // check payment was made
+            lastPayment = api.getLatestPayment(USER_ID);
+            assertNotNull("payment can not be null", lastPayment);
+            assertNotNull("auth in payment can not be null", 
+                    lastPayment.getAuthorizationId());
+            assertEquals("correct payment amount", new Float(10), 
+                    lastPayment.getAmount());
+            assertEquals("correct payment balance", new Float(0), 
+                    lastPayment.getBalance());
+
+            // check invoice 1 is fully paid (balance 0)
+            invoice1 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 0.0f, 
+                    invoice1.getBalance());
+
+            // check invoice 2 was partially paid (balance 5)
+            invoice2 = api.getInvoiceWS(invoiceId2);
+            assertEquals("correct invoice balance", 5.0f, 
+                    invoice2.getBalance());
+
+
+            /* 
+             *another payment for $10
+             */
+            payment.setAmount(new Float(10));
+            System.out.println("processing payment.");
+            authInfo = api.processPayment(payment);
+
+            // check payment successful
+            assertNotNull("Payment result not null", authInfo);
+            assertTrue("Payment Authorization result should be OK", 
+                    authInfo.getResult().booleanValue());
+
+            // check payment was made
+            lastPayment = api.getLatestPayment(USER_ID);
+            assertNotNull("payment can not be null", lastPayment);
+            assertNotNull("auth in payment can not be null", 
+                    lastPayment.getAuthorizationId());
+            assertEquals("correct  payment amount", new Float(10), 
+                    lastPayment.getAmount());
+            assertEquals("correct  payment balance", new Float(5), 
+                    lastPayment.getBalance());
+
+            // check invoice 1 balance is unchanged
+            invoice1 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 0.0f, 
+                    invoice1.getBalance());
+
+            // check invoice 2 is fully paid (balance 0)
+            invoice2 = api.getInvoiceWS(invoiceId2);
+            assertEquals("correct invoice balance", 0.0f, 
+                    invoice2.getBalance());
+
+
+            // clean up
+            System.out.println("Deleting invoices and orders.");
+            api.deleteInvoice(invoice1.getId());
+            api.deleteInvoice(invoice2.getId());
+            api.deleteOrder(invoice1.getOrders()[0]);
+            api.deleteOrder(invoice2.getOrders()[0]);
 
         } catch (Exception e) {
             e.printStackTrace();

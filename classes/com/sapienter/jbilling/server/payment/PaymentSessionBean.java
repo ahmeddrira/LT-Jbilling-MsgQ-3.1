@@ -46,6 +46,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.payment.event.PaymentFailedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.process.AgeingBL;
+import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
@@ -292,8 +293,16 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 if (result != null) {
                     bl.getEntity().setPaymentResult(new PaymentResultDAS().find(result));
                 }
-                return result;
 
+                if (result != null && result.equals(Constants.RESULT_OK)) {
+                    // if the configured, pay any unpaid invoices
+                    ConfigurationBL config = new ConfigurationBL(entityId);
+                    if (config.getEntity().getAutoPaymentApplication() == 1) {
+                        bl.automaticPaymentApplication();
+                    }
+                }
+
+                return result;
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);

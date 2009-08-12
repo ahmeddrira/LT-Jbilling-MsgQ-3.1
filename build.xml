@@ -651,6 +651,9 @@ server="upload.sourceforge.net" userid="anonymous">
                 <fileset dir="${libs.dir}">
                     <include name="**/*.jar" />
                 </fileset>
+                <fileset dir="${source.lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
 
                 <pathelement location="${source.lib.dir}/rowset.jar"/>
                 

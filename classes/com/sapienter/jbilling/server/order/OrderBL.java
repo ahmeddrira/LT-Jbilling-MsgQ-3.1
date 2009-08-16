@@ -36,6 +36,10 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.CommonConstants;
@@ -88,7 +92,6 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  * @author Emil
@@ -866,9 +869,11 @@ public class OrderBL extends ResultList
 
     	for (CompanyDTO ent: new CompanyDAS().findEntities()) {
     		// find the orders for this entity
-    	    prepareStatement(OrderSQL.getAboutToExpire);
-    	    
-    	    cachedResults.setDate(1, new java.sql.Date(today.getTime()));
+
+            // SQL args
+            Object[] sqlArgs = new Object[4];
+            sqlArgs[0] = new java.sql.Date(today.getTime());
+
     	    // calculate the until date
     	    
     	    // get the this entity preferences for each of the steps
@@ -906,19 +911,22 @@ public class OrderBL extends ResultList
     	    cal.clear();
     	    cal.setTime(today);
     	    cal.add(Calendar.DAY_OF_MONTH, stepDays[minStep]);
-    	    cachedResults.setDate(2, new java.sql.Date(
-    	    		cal.getTime().getTime()));
+    	    sqlArgs[1] =  new java.sql.Date(cal.getTime().getTime());
     	    
     	    // the entity
-    	    cachedResults.setInt(3, ent.getId());
+    	    sqlArgs[2] = ent.getId();
             // the total number of steps
-            cachedResults.setInt(4, totalSteps);
-    	            
-    	    execute();
-    	    while (cachedResults.next()) {
-		    	int orderId = cachedResults.getInt(1);
-                Date activeUntil = cachedResults.getDate(2);
-                int currentStep = cachedResults.getInt(3);
+            sqlArgs[3] = totalSteps;
+
+            JdbcTemplate jdbcTemplate = (JdbcTemplate) Context.getBean(
+                    Context.Name.JDBC_TEMPLATE);
+
+    	    SqlRowSet results = jdbcTemplate.queryForRowSet(
+                    OrderSQL.getAboutToExpire, sqlArgs);
+    	    while (results.next()) {
+		    	int orderId = results.getInt(1);
+                Date activeUntil = results.getDate(2);
+                int currentStep = results.getInt(3);
                 int days = -1;
 
                 // find out how many days apply for this order step
@@ -988,12 +996,7 @@ public class OrderBL extends ResultList
 		    	}
 		    	
 		    } 
-            cachedResults.close();
     	}
-        // The connection was found null when testing on Oracle
-        if (conn != null) {
-            conn.close();
-        }
     }
     
     public TimePeriod getDueDate() {

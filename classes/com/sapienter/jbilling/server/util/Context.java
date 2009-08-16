@@ -56,6 +56,7 @@ public class Context {
         DATA_SOURCE,
         TRANSACTION_MANAGER,
         HIBERNATE_SESSION,
+        JDBC_TEMPLATE,
         DESCRIPTION_DAS,
         JBILLING_TABLE_DAS,
         PLUGGABLE_TASK_DAS,
@@ -104,6 +105,7 @@ public class Context {
         springBeans.put(Name.DATA_SOURCE, "dataSource");
         springBeans.put(Name.TRANSACTION_MANAGER, "transactionManager");
         springBeans.put(Name.HIBERNATE_SESSION, "sessionFactory");
+        springBeans.put(Name.JDBC_TEMPLATE, "jdbcTemplate");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CACHE_MODEL_ITEM_PRICE, "cacheModelItemPrice");
         springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE, 

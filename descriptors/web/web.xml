@@ -244,34 +244,26 @@
   </taglib>
 
 
-
- <!-- Security stuff, now not implemented 
- 	This side had the last problem that wasn't solved. The idea is that through
- 	the transport-fuarantee, the container will make the kick http->https. That 
- 	was fine, but then I couldn't get rid of an error: 500 Anauthenticated principal.
+  <!-- Force SSL connections (HTTP -> HTTPS). Uncomment this section 
+       for web services or if force_https=true in jbilling.properties
+       isn't working properly, e.g., when using non-standard ports. -->
+  <!--
   <security-constraint>
-  	<web-resource-collection>
-      <web-resource-name>bettyPages</web-resource-name>
-      <description>All pages of the billing application</description>
-      <url-pattern>/order/*</url-pattern>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
+    <web-resource-collection>
+	  <web-resource-name>Secured</web-resource-name>
+	  <description>Authenticate every call</description>
+	  <url-pattern>/*</url-pattern>
+	  <http-method>HEAD</http-method>
+	  <http-method>GET</http-method>
+	  <http-method>POST</http-method>
+	  <http-method>PUT</http-method>
+	  <http-method>DELETE</http-method>
     </web-resource-collection>
-    <auth-constraint>
-      <role-name>*</role-name>
-    </auth-constraint>
-	<user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+
+    <user-data-constraint>
+	  <transport-guarantee>CONFIDENTIAL</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
-  
-  <login-config>
-    <auth-method>FORM</auth-method>
-    <realm-name>Default</realm-name>
-    <form-login-config>
-      <form-login-page>/user/login.jsp</form-login-page>
-      <form-error-page>/user/login.jsp</form-error-page>
-    </form-login-config>
-  </login-config>
-	-->
+  -->
+
 </web-app>

@@ -655,12 +655,15 @@ Ch2->P1
             assertEquals("invoice should be 40$", 40F, invoice.getTotal());
             // child2
             invoices = api.createInvoice(child2Id, false);
-            assertNotNull("invoices cant be null", invoices);
-            assertEquals("there should be no invoice", 0, invoices.length);
+            // CXF returns null for empty arrays
+            if (invoices != null) {
+                assertEquals("there should be no invoice", 0, invoices.length);
+            }
             // child3
             invoices = api.createInvoice(child3Id, false);
-            assertNotNull("invoices cant be null", invoices);
-            assertEquals("there should be no invoice", 0, invoices.length);
+            if (invoices != null) {
+                assertEquals("there should be no invoice", 0, invoices.length);
+            }
             // child4
             invoices = api.createInvoice(child4Id, false);
             assertNotNull("invoices cant be null", invoices);
@@ -669,12 +672,14 @@ Ch2->P1
             assertEquals("invoice should be 20$", 20F, invoice.getTotal());
             // child5
             invoices = api.createInvoice(child5Id, false);
-            assertNotNull("invoices cant be null", invoices);
-            assertEquals("there should be no invoice", 0, invoices.length);
+            if (invoices != null) {
+                assertEquals("there should be no invoice", 0, invoices.length);
+            }
             // child6
             invoices = api.createInvoice(child6Id, false);
-            assertNotNull("invoices cant be null", invoices);
-            assertEquals("there should be one invoice", 0, invoices.length);
+            if (invoices != null) {
+                assertEquals("there should be one invoice", 0, invoices.length);
+            }
      
             // clean up
             api.deleteUser(parentId);

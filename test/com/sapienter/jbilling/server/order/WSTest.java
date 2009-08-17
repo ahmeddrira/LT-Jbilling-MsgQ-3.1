@@ -912,8 +912,11 @@ public class WSTest  extends TestCase {
             // current order before modification
             OrderWS currentOrderBefore = api.getCurrentOrder(USER_ID, 
                     new Date());
-            assertEquals("No order lines.", 0, 
-                    currentOrderBefore.getOrderLines().length);
+            // CXF returns null for empty arrays
+            if (currentOrderBefore.getOrderLines() != null) {
+                assertEquals("No order lines.", 0, 
+                        currentOrderBefore.getOrderLines().length);
+            }
 
             // add a single line
             OrderLineWS newLine = new OrderLineWS();

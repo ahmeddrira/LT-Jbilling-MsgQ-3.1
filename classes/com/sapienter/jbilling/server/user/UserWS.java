@@ -346,6 +346,10 @@ public class UserWS implements Serializable {
         return owingBalance;
     }
 
+    public void setOwingBalance(Double owingBalance) {
+        this.owingBalance = owingBalance;
+    }
+
     public Integer getBalanceType() {
         return balanceType;
     }

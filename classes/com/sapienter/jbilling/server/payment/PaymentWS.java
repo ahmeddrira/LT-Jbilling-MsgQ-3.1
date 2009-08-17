@@ -137,6 +137,11 @@ public class PaymentWS implements Serializable {
         this.authorization = authorization;
     }
 
+    // required by CXF
+    public void setAuthorizationId(PaymentAuthorizationDTO authorization) {
+        this.authorization = authorization;
+    }
+
     public Float getAmount() {
         return amount;
     }

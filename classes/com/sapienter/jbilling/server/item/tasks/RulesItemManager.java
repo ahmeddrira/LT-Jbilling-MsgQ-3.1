@@ -28,6 +28,7 @@ import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.tasks.Subscription;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
@@ -291,43 +292,6 @@ public class RulesItemManager extends BasicItemManager {
 
         public Integer getUserId() {
             return userId;
-        }
-    }
-
-    public static class Subscription {
-
-        private final Integer itemId;
-        private final Integer periodId;
-        private final Date activeSince;
-        private final Date activeUntil;
-        private final Double quantity;
-
-        protected Subscription(OrderLineDTO line) {
-            periodId = line.getPurchaseOrder().getOrderPeriod().getId();
-            activeSince = line.getPurchaseOrder().getActiveSince();
-            activeUntil = line.getPurchaseOrder().getActiveUntil();
-            itemId = line.getItemId();
-            quantity = line.getQuantity();
-        }
-
-        public Date getActiveSince() {
-            return activeSince;
-        }
-
-        public Date getActiveUntil() {
-            return activeUntil;
-        }
-
-        public Integer getItemId() {
-            return itemId;
-        }
-
-        public Integer getPeriodId() {
-            return periodId;
-        }
-
-        public Double getQuantity() {
-            return quantity;
         }
     }
 }

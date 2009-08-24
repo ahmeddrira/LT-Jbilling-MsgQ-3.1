@@ -971,6 +971,32 @@ public class WSTest  extends TestCase {
 
 
             /*
+             * Test update current order with pricing fields and no 
+             * order lines. RulesMediationTask should create them.
+             */
+
+            // Call info pricing fields. See Mediation.drl, rule 'line creation'
+            PricingField duration = new PricingField("duration", 5); // 5 min
+            PricingField dst = new PricingField("dst", "12345678");
+            currentOrderAfter = api.updateCurrentOrder(USER_ID, null, 
+                    new PricingField[] { pf, duration, dst }, new Date(), 
+                    "Event from WS");
+
+            // asserts
+            assertEquals("1 order line", 1,
+                    currentOrderAfter.getOrderLines().length);
+            createdLine = currentOrderAfter.getOrderLines()[0];
+            assertEquals("Order line ids", newLine.getItemId(), 
+                    createdLine.getItemId());
+            assertEquals("Order line quantities", 28.0, 
+                    createdLine.getQuantity());
+            assertEquals("Order line price", 10.0f, createdLine.getPrice());
+            // Note that because of the pricing rule, the result should be 
+            // 225.0 + 5 minutes * 5.0 price.
+            assertEquals("Order line total", 250.0f, createdLine.getAmount());
+
+
+            /*
              * No main subscription order tests.
              */
 

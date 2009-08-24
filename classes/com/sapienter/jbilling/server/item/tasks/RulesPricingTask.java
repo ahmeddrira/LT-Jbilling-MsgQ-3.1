@@ -29,6 +29,10 @@ import org.drools.StatelessSession;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.tasks.Subscription;
+import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -75,6 +79,15 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
                 }
             }
             rulesMemoryContext.add(manager);
+
+            // Add the subscriptions
+            OrderBL order = new OrderBL();
+            for (OrderDTO myOrder : order.getActiveRecurringByUser(userId)) {
+                for (OrderLineDTO myLine : myOrder.getLines()) {
+                    rulesMemoryContext.add(new Subscription(myLine));
+                }
+            }
+
         } catch (Exception e) {
             throw new TaskException(e);
         }

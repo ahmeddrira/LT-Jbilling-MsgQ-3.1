@@ -5,7 +5,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.user.UserDTOEx
 import com.sapienter.jbilling.server.order.db.OrderLineDTO
 import com.sapienter.jbilling.server.order.task.CancellationFeeRulesTask.FeeOrderManager
-import com.sapienter.jbilling.server.item.tasks.RulesItemManager.Subscription
+import com.sapienter.jbilling.server.item.tasks.Subscription
 #globals
 global com.sapienter.jbilling.server.order.task.CancellationFeeRulesTask.FeeOrderManager order;
 

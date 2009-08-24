@@ -58,6 +58,7 @@ import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -72,6 +73,7 @@ import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
@@ -1092,16 +1094,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             userbl.set(getCallerId());
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            // convert order lines from WS to DTO
-            OrderBL bl = new OrderBL();
-            processItemLine(lines, languageId, getCallerCompanyId(), userId, 
-                    currencyId);
-            Vector<OrderLineDTO> orderLines = new Vector<OrderLineDTO>(
-                    lines.length);
-            for (OrderLineWS line : lines) {
-                orderLines.add(bl.getOrderLine(line));
-            }
-
             // pricing fields
             Vector<Record> records = null;
             PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
@@ -1113,6 +1105,36 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 }
                 records = new Vector<Record>(1);
                 records.add(record);
+            }
+
+            Vector<OrderLineDTO> orderLines = null;
+            OrderBL bl = new OrderBL();
+            if (lines != null) {
+                // convert order lines from WS to DTO
+                processItemLine(lines, languageId, getCallerCompanyId(), 
+                        userId, currencyId);
+                orderLines = new Vector<OrderLineDTO>(lines.length);
+                for (OrderLineWS line : lines) {
+                    orderLines.add(bl.getOrderLine(line));
+                }
+            } else if (records != null) {
+                // Since there are no lines, run the mediation process 
+                // rules to create them.
+                PluggableTaskManager<IMediationProcess> tm =
+                        new PluggableTaskManager<IMediationProcess>(
+                        getCallerCompanyId(),
+                        Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
+                IMediationProcess processTask = tm.getNextClass();
+
+                orderLines = processTask.process(records, "WS");
+
+                if (processTask.getCurrencyId() != null) {
+                    currencyId = processTask.getCurrencyId();
+                }
+            } else {
+                throw new SessionInternalError("Both the order lines and " +
+                        "pricing fields were null. At least one of either " +
+                        "must be provided.");
             }
 
             // do the update
@@ -1137,7 +1159,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         } catch (Exception e) {
             LOG.error("WS - getCurrentOrder", e);
-            throw new SessionInternalError("Error getting current order");
+            throw new SessionInternalError("Error updating current order");
         }
     }
 
@@ -1966,21 +1988,55 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             String fields) {
         LOG.debug("Call to validatePurchase " + userId + ' ' + itemId);
 
-        if (userId == null || itemId == null) {
+        if (userId == null) {
             return null;
         }
 
-        PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
+        try {
+            PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
                     fields);
-        // find the price first
-        ItemBL item = new ItemBL(itemId);
-        item.setPricingFields(new Vector(Arrays.asList(fieldsArray)));
-        Float price = item.getPrice(userId, getCallerCompanyId());
 
-        BigDecimal ret = new UserBL(userId).validatePurchase(new BigDecimal(price.toString()));
-        LOG.debug("Done");
-        return ret.setScale(4, Constants.BIGDECIMAL_ROUND).doubleValue();
+            if (itemId == null) {
+                if (fieldsArray == null) {
+                    return null;
+                }
+                // Since there is no item, run the mediation process rules
+                // to create line/s. Get the item id from the first line.
+
+                // fields need to be in records
+                Record record = new Record();
+                for (PricingField field : fieldsArray) {
+                    record.addField(field, false); // don't care about isKey
+                }
+                Vector<Record> records = new Vector<Record>(1);
+                records.add(record);
+
+                PluggableTaskManager<IMediationProcess> tm =
+                    new PluggableTaskManager<IMediationProcess>(
+                        getCallerCompanyId(),
+                        Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
+                IMediationProcess processTask = tm.getNextClass();
+
+                Vector<OrderLineDTO> lines = processTask.process(records, "WS");
+
+                if (lines.size() > 0) {
+                    itemId = lines.firstElement().getItem().getId();
+                } else {
+                    return null;
+                }
+            }
+
+            // find the price first
+            ItemBL item = new ItemBL(itemId);
+            item.setPricingFields(new Vector(Arrays.asList(fieldsArray)));
+            Float price = item.getPrice(userId, getCallerCompanyId());
+
+            BigDecimal ret = new UserBL(userId).validatePurchase(new BigDecimal(price.toString()));
+            LOG.debug("Done");
+            return ret.setScale(4, Constants.BIGDECIMAL_ROUND).doubleValue();
+        } catch (Exception e) {
+            LOG.error("WS - validatePurchase", e);
+            throw new SessionInternalError("Error validating purchase");
+        }
     }
-
-
 }

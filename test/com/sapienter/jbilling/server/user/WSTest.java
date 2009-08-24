@@ -882,6 +882,15 @@ Ch2->P1
             System.out.println("Validate with fields...");
             assertEquals("validate purchase 2", 2.8571, api.validatePurchase(myId, 1, pf));
 
+            // validate without item id (mediation should set item)
+            // duration field needed for rule to fire
+            PricingField[] pf2 = { new PricingField("src", "604"),
+                    new PricingField("dst", "512"), 
+                    new PricingField("duration", 1) };
+            System.out.println("Validate with fields and without itemId...");
+            assertEquals("validate purchase 2 without itemId", 2.8571, 
+                    api.validatePurchase(myId, null, pf2));
+
             // now create a one time order, the balance should decrease
             OrderWS order = getOrder();
             order.setUserId(myId);

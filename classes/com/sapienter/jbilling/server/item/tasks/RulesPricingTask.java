@@ -19,7 +19,6 @@
 */
 package com.sapienter.jbilling.server.item.tasks;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -27,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.drools.RuleBase;
 import org.drools.StatelessSession;
 
-import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.Subscription;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -56,11 +54,11 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        StatelessSession session = ruleBase.newStatelessSession();
+        StatelessSession mySession = ruleBase.newStatelessSession();
         Vector<Object> rulesMemoryContext = new Vector<Object>();
         
         PricingManager manager = new PricingManager(itemId, userId, currencyId, defaultPrice);
-        session.setGlobal("manager", manager);
+        mySession.setGlobal("manager", manager);
         
         if (fields != null && !fields.isEmpty()) {
             rulesMemoryContext.addAll(fields);
@@ -95,61 +93,8 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         for (Object o: rulesMemoryContext) {
         	LOG.debug("in memory context=" + o);
         }
-        session.executeWithResults(rulesMemoryContext);
+        mySession.executeWithResults(rulesMemoryContext);
 
         return new Float(manager.getPrice());
-    }
-
-    public static class PricingManager {
-        private final Integer itemId;
-        private final Integer userId;
-        private final Integer currencyId;
-        private BigDecimal price; // it is all about setting the value of this field ...
-        
-        public PricingManager(Integer itemId, Integer userId, 
-                Integer currencyId, Float price) {
-            this.itemId = itemId;
-            this.userId = userId;
-            this.currencyId = currencyId;
-            setPrice(price);
-        }
-        
-        public double getPrice() {
-            return price.doubleValue();
-        }
-        
-        public void setPrice(double defaultPrice) {
-        	LOG.debug("Setting price of item " + itemId + " to " + defaultPrice);
-            this.price = new BigDecimal(defaultPrice);
-        }
-        
-        public void setPrice(int price) {
-            setPrice((double) price);
-        }
-        
-        public void setByPercentage(double percentage) {
-            this.price = price.add(price.divide(new BigDecimal(100), Constants.BIGDECIMAL_SCALE, 
-                    Constants.BIGDECIMAL_ROUND).multiply(new BigDecimal(percentage)));
-        }
-        
-        public void setByPercentage(int percentage) {
-            setByPercentage((double) percentage);
-        }
-        
-        public Integer getCurrencyId() {
-            return currencyId;
-        }
-        public Integer getItemId() {
-            return itemId;
-        }
-        public Integer getUserId() {
-            return userId;
-        }
-        
-        public String toString() {
-        	return "PricingManages=currencyId: " + currencyId + " itemId: " + itemId + 
-        			" price " + price + " userId " + userId;
-        }
-        
     }
 }

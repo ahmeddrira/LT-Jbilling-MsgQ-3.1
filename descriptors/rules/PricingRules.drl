@@ -3,10 +3,10 @@ package PricingRule
 import com.sapienter.jbilling.server.user.ContactDTOEx
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.user.UserDTOEx
-import com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager
+import com.sapienter.jbilling.server.item.tasks.PricingManager
 
 #globals
-global com.sapienter.jbilling.server.item.tasks.RulesPricingTask.PricingManager manager
+global com.sapienter.jbilling.server.item.tasks.PricingManager manager
 
 rule '604 -  512'
 when

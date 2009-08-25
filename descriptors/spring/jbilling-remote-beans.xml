@@ -24,7 +24,7 @@
 
     <!-- Hessian Web Service -->
     <bean id="apiClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" lazy-init="true">
-        <property name="serviceUrl" value="http://localhost/billing/services/hessian.service"/>
+        <property name="serviceUrl" value="http://localhost:8080/billing/services/hessian.service"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
         <property name="hessian2" value="true"/>
         <property name="username" value="admin"/>

@@ -553,17 +553,18 @@
     <!-- Creates the full downloadable package -->
     <target name="packageImage" depends="jspc">
         <!-- make sure it'll get the latest binaries -->
-        <copy todir="${image.source.dir}/jbilling/server/default/deploy">
-            <fileset dir="${build.deploy.dir}" excludes="jbilling_api.jar"/>
+        <copy todir="${image.source.dir}/jbilling/webapps">
+            <fileset dir="${build.deploy.dir}">
+                <include name="billing.war"/>
+            </fileset>
         </copy>
-        <copy todir="${image.source.dir}/jbilling/server/default/conf" 
+        <copy todir="${image.source.dir}/jbilling/conf" 
               file="${source.resources.descriptor.dir}/ehcache.xml"/>
         <!-- if the app server was up, it generated temp files -->
-        <delete dir="${image.source.dir}/jbilling/server/default/tmp"/>
+        <delete dir="${image.source.dir}/jbilling/work"/>
         <delete>
-            <fileset dir="${image.source.dir}/jbilling/server">
-                <include name="**/*_jsp.java"/>
-                <include name="**/server.log.*"/>
+            <fileset dir="${image.source.dir}/jbilling/logs">
+                <include name="*.*"/>
             </fileset>
         </delete>
         <!-- ship with some additional files for the installer and
@@ -577,13 +578,6 @@
         <mkdir dir="${image.source.dir}/jbilling/resources/logos"/>
         <copy file="${source.view.dir}/graphics/jbilling-paper.jpg" 
               tofile="${image.source.dir}/jbilling/resources/logos/entity-1.jpg"/>
-        <!-- Make the classes created out of the jsp pages available -->
-        <mkdir dir="${image.source.dir}/jbilling/server/default/work/jboss.web/localhost/billing"/>
-        <copy todir="${image.source.dir}/jbilling/server/default/work/jboss.web/localhost/billing">
-            <fileset dir="${source.dir}\build\jsp-classes">
-                <include name="**/*.class"/>
-            </fileset>
-        </copy>
         <!-- include the jbilling api as well -->
         <mkdir dir="${image.source.dir}/jbilling/resources/api" />
         <copy todir="${image.source.dir}/jbilling/resources/api" 
@@ -604,21 +598,15 @@
         <zip filesonly="false" update="false"
              destfile="${image.target.dir}/jbilling-${version}-src.zip">
             <zipfileset dir="${source.dir}" prefix="jbilling/src"
-                        excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,velocity.log,build.properties,build.xml,license.txt,**/*.swp,**/*.jar,tmp/**"/>
+                        excludes="**/log4j.xml,**/postgres-ds.xml,**/server.xml,build/**,nbproject/**,activemq-data/**,*,**/*.swp,tmp/**,**/*.jasper,**/simple_invoice_jb.jrxml,**/Verisign.jar"/>
             <!-- the following three files are taken from the binary
                  view. My own are configured for my box -->
-            <zipfileset dir="${image.source.dir}/jbilling/server/default/conf" 
-                        includes="log4j.xml" prefix="jbilling/src/descriptors/jboss"/>
-            <zipfileset dir="${image.source.dir}/jbilling/server/default/deploy/jbossweb-tomcat50.sar" 
-                        includes="server.xml" prefix="jbilling/src/descriptors/jboss"/>
-            <zipfileset dir="${basedir}" includes="build.xml" prefix="jbilling/src"/>
+            <zipfileset dir="${image.source.dir}/jbilling/conf" 
+                        includes="log4j.xml" prefix="jbilling/src/descriptors/resources"/>
             <zipfileset dir="${basedir}" includes="build.properties.sample" 
                         fullpath="jbilling/src/build.properties"/>
-            <zipfileset dir="${basedir}" includes="license.txt" prefix="jbilling/src"/>
-            <zipfileset dir="${xdoclet.home.dir}" includes="*.jar" prefix="jbilling/src/libs/xdoclet"/>
-            <zipfileset dir="${libs.client.dir}" includes="*.jar" prefix="jbilling/src/libs/client"/>
-            <zipfileset dir="${junit.dir}" includes="junit.jar" prefix="jbilling/src/libs/junit"/>
-            <zipfileset dir="${source.dir}/libs/drools" includes="**/*.jar" prefix="jbilling/src/libs/drools"/>
+            <zipfileset dir="${basedir}" includes="build.xml" prefix="jbilling/src"/>
+            <zipfileset dir="${basedir}" includes="COPYING" prefix="jbilling/src"/>
         </zip>
     </target>
     

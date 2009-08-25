@@ -888,7 +888,7 @@ public class GatewayBL {
         ValidatorResults results = null;
 
         // Run the validation actions against the bean.
-        log.info("Validating " + name + " bean=" + bean);
+        log.info("Validating " + name); // can't print the bean... it put plain credit card numbers in the logs
         results = validator.validate();
         Form form = resources.getForm(Locale.getDefault(), name);
         // Iterate over each of the properties of the Bean which had messages.

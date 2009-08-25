@@ -527,6 +527,7 @@ public final class EntitySignup {
             { String.valueOf(newEntityId), "25","1","1" }, // Async payment processing (no parameters)
             { String.valueOf(newEntityId), "28","1","1" }, // BasicItemManager
             { String.valueOf(newEntityId), "33","1","1" }, // RulesMediationTask
+            { String.valueOf(newEntityId), "54","1","1" }, // Dynamic Balance
         };
         table = addTable(Constants.TABLE_PLUGGABLE_TASK, pluggableTaskColumns, pluggableTaskData, false);
         processTable(table);

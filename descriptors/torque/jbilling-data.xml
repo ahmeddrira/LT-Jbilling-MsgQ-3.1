@@ -312,6 +312,7 @@
     <EventLogMessage Id="30"/>    
     <EventLogMessage Id="31"/>
     <EventLogMessage Id="32"/>
+    <EventLogMessage Id="33"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>
@@ -2598,6 +2599,7 @@
     <PluggableTaskType Id="51" CategoryId="3" ClassName="com.sapienter.jbilling.server.invoice.task.NegativeBalanceInvoiceFilterTask" MinParameters="0"/>
     <PluggableTaskType Id="52" CategoryId="17" ClassName="com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask" MinParameters="1"/>
     <PluggableTaskType Id="53" CategoryId="17" ClassName="com.sapienter.jbilling.server.system.event.task.InternalEventsRulesTask" MinParameters="0"/>
+    <PluggableTaskType Id="54" CategoryId="17" ClassName="com.sapienter.jbilling.server.user.balance.DynamicBalanceManagerTask" MinParameters="0"/>
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
     <PluggableTaskTypeCategory Id="3" Description="invoice filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask"/>

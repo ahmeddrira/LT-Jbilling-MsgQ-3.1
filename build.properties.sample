@@ -50,9 +50,9 @@ version=1_1_3
 #Configure the context path for this application -->
 path=/billing
 #Configure properties to access Tomcat's Manager application -->
-url=http://localhost:8888/manager
+url=http://localhost:8080/manager
 username=admin
-password=admin
+password=123qwe
 
 #<!-- Build temporary directories -->
 build.dir=${basedir}/build

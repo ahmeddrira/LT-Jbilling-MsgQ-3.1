@@ -1336,7 +1336,7 @@ public class OrderBL extends ResultList
      * The order has to be set and made persitent with an ID
      * @param isNew
      */
-    private void setMainSubscription(Integer executorId) {
+    public void setMainSubscription(Integer executorId) {
         // set the field
         order.setIsCurrent(1);
         // there can only be one main subscription order

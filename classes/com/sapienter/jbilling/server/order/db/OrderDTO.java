@@ -72,7 +72,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
         )
 @Table(name="purchase_order")
 // No cache, mutable and critical
-public class OrderDTO  implements java.io.Serializable {
+public class OrderDTO implements java.io.Serializable {
 
 	private static Logger LOG = Logger.getLogger(OrderDTO.class);
 

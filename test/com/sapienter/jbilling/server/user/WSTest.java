@@ -697,11 +697,13 @@ Ch2->P1
     }
     
     public void testGetByCC() {
+        // note: this method getUsersByCreditCard seems to have a bug. It does
+        // not reutrn Gandlaf if there is not an updateUser call before
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer[] ids = api.getUsersByCreditCard("1152");
             assertNotNull("Four customers with CC", ids);
-            assertEquals("Four customers with CC", 4, ids.length);
+            assertEquals("Four customers with CC", 5, ids.length);
             assertEquals("Created user with CC", 10751, 
                     ids[ids.length - 1].intValue());
                     

@@ -46,12 +46,12 @@ import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
-import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
@@ -204,10 +204,16 @@ public class UserBL extends ResultList
             } else {
                 user.getCustomer().setPartner(null);
             }
-            
+
             user.getCustomer().setExcludeAging(dto.getCustomer().getExcludeAging());
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
+
+            // update the main order
+            if (dto.getCustomer().getCurrentOrderId() != null) {
+                OrderBL order = new OrderBL(dto.getCustomer().getCurrentOrderId());
+                order.setMainSubscription(executorId);
+            }
         }
         
         updateRoles(dto.getRoles(), dto.getMainRoleId());

@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
@@ -46,7 +47,8 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
  * @author Emil
  */
 public class WSTest  extends TestCase {
-	private static final Integer GANDALF_USER_ID = 2;
+
+    private static final Integer GANDALF_USER_ID = 2;
       
     public void testCreateUpdateDelete() {
         try {
@@ -900,7 +902,7 @@ public class WSTest  extends TestCase {
 
     public void testCurrentOrder() {
         try {
-            final Integer USER_ID = 2;
+            final Integer USER_ID = GANDALF_USER_ID;
             final Integer NO_MAIN_SUB_USER_ID = 1010;
 
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -1095,5 +1097,32 @@ public class WSTest  extends TestCase {
             Thread.sleep(t);
         } catch (InterruptedException e) {
         }
+    }
+
+    public void testMainOrder() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // note: for some reason, calling api.getUsersByCreditCard("1152") returns three users
+        // but after calling updateUser, it reutrns 4 because Gandalf is included.
+        // why is not picking him up before? What is updateUser doing that then the CC shows up?
+        // get gandalf's orders
+        Integer orders[] = api.getLastInvoices(GANDALF_USER_ID, 100);
+        // now get the user
+        UserWS user = api.getUserWS(GANDALF_USER_ID);
+        Integer mainOrder = user.getMainOrderId();
+        System.out.println("Gandalf's main order = " + mainOrder);
+        user.setMainOrderId(orders[orders.length - 1]);
+        System.out.println("Gandalf's new main order = " + user.getMainOrderId());
+        // update the user (so new main order)
+        user.setPassword(null);
+        api.updateUser(user);
+        // validate that the user does have the new main order
+        assertEquals("User does not have the correct main order", orders[orders.length - 1],
+                api.getUserWS(GANDALF_USER_ID).getMainOrderId());
+        // update the user (restore main order)
+        user.setMainOrderId(mainOrder);
+        api.updateUser(user);
+        assertEquals("User does not have the original main order", mainOrder,
+                api.getUserWS(GANDALF_USER_ID).getMainOrderId());
     }
 }

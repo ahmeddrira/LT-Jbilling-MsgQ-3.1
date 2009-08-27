@@ -99,6 +99,7 @@ public class UserWS implements Serializable {
         if (dto.getCustomer() != null) {
             partnerId = (dto.getCustomer().getPartner() == null) ? null : dto.getCustomer().getPartner().getId();
             parentId = (dto.getCustomer().getParent() == null) ? null : dto.getCustomer().getParent().getBaseUser().getId();
+            mainOrderId = dto.getCustomer().getCurrentOrderId();
             isParent = dto.getCustomer().getIsParent() == null ? false : 
                 dto.getCustomer().getIsParent().equals(new Integer(1));
             invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : 

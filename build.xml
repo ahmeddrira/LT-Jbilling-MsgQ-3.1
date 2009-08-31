@@ -795,7 +795,31 @@ server="upload.sourceforge.net" userid="anonymous">
         	<include name="InternalEventsRulesTask520.drl" />
         </rulebase>
     </target>
-    
+
+    <target name="export">
+        <tstamp/>
+        <!-- Create the zip file in the 'src' directory. -->
+        <delete file="${source.dir}/jbilling-exp-${DSTAMP}.zip"/>
+        <zip filesonly="false" update="false"
+             destfile="${source.dir}/jbilling-exp-${DSTAMP}.zip">
+            <!-- Copy jbilling.war and guvnor.war. -->
+            <zipfileset dir="${deploy.local.dir}" prefix="webapps" includes="*.war"/>
+            <!-- Copy the conf directory. -->
+            <zipfileset dir="${jbilling.conf.dir}" prefix="conf"/>
+            <!-- Copy the resources directory. -->
+            <zipfileset dir="${deploy.resources.dir}" prefix="resources"/>
+            <!-- Copy the DB dump (assumed to be 'data.sql' in the 'src' 
+                 directory). -->
+            <zipfileset dir="${source.dir}" includes="data.sql" fullpath="backup/data-${DSTAMP}.sql"/>
+            <!-- Copy the rules repository files (from 'bin' directory). -->
+            <zipfileset dir="${server.dir}/bin" includes="repository.xml" prefix="bin"/>
+            <zipfileset dir="${server.dir}/bin/repository" prefix="bin/repository"/>
+            <!-- Copy the extra libs required by Guvnor -->
+            <zipfileset dir="${server.dir}/lib/" includes="jsf*.jar" prefix="lib"/>
+            <zipfileset dir="${server.dir}/lib/" includes="jboss-faces.jar" prefix="lib"/>
+        </zip>
+    </target>
+
 </project>
 <!--
   <property name="showme" refid="test.classpath"/>

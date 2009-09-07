@@ -20,7 +20,8 @@
 
 package com.sapienter.jbilling.server.user;
 
-
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -46,6 +47,8 @@ import com.sapienter.jbilling.common.PermissionIdComparator;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.notification.INotificationSessionBean;
 import com.sapienter.jbilling.server.notification.MessageDTO;
@@ -57,13 +60,10 @@ import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDAS;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.report.db.ReportUserDAS;
 import com.sapienter.jbilling.server.report.db.ReportUserDTO;
-import com.sapienter.jbilling.server.user.balance.IUserBalanceValidation;
-import com.sapienter.jbilling.server.user.balance.ValidatorCreditLimit;
-import com.sapienter.jbilling.server.user.balance.ValidatorNone;
-import com.sapienter.jbilling.server.user.balance.ValidatorPrePaid;
 import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -78,6 +78,7 @@ import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDAS;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask;
 import com.sapienter.jbilling.server.user.validator.AlphaNumValidator;
 import com.sapienter.jbilling.server.user.validator.NoUserInfoInPasswordValidator;
 import com.sapienter.jbilling.server.user.validator.RepeatedPasswordValidator;
@@ -1310,25 +1311,45 @@ public class UserBL extends ResultList
         }
     }
 
-    public BigDecimal validatePurchase(BigDecimal amount) {
+    public ValidatePurchaseWS validatePurchase(ItemDTO item, BigDecimal amount, 
+            Vector<PricingField> pricingFields) {
         if (user.getCustomer() == null) {
             return null;
         }
         // TODO: find in the hierarchy tree the right user to use the
         // dynamic balance... a child might look up to the parent for this
         // (or not, if a flag is set).
-        
-        IUserBalanceValidation validator;
-        // simple factory ...
-        if (user.getCustomer().getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
-                amount.equals(BigDecimal.ZERO)) {
-            validator = new ValidatorNone();
-        } else if (user.getCustomer().getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
-            validator = new ValidatorCreditLimit();
-        } else {
-            validator = new ValidatorPrePaid();
+
+        ValidatePurchaseWS result = new ValidatePurchaseWS();
+
+        // call plug-ins
+        try {
+            PluggableTaskManager<IValidatePurchaseTask> taskManager =
+                    new PluggableTaskManager<IValidatePurchaseTask>(
+                    user.getCompany().getId(),
+                    Constants.PLUGGABLE_TASK_VALIDATE_PURCHASE);
+            IValidatePurchaseTask myTask = taskManager.getNextClass();
+                
+            while(myTask != null) {
+                myTask.validate(user.getCustomer(), item, amount, result, 
+                        pricingFields);
+                myTask = taskManager.getNextClass();
+            }
+        } catch (Exception e) {
+            // log stacktrace
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            pw.close();
+            LOG.error("Validate Purchase error: " + e.getMessage() + "\n" + 
+                    sw.toString());
+
+            result.setSuccess(false);
+            result.setAuthorized(false);
+            result.setQuantity(0.0);
+            result.setMessage(new String[] { "Error: " + e.getMessage() } );
         }
 
-        return validator.validate(user.getCustomer(), amount);
+        return result;
     }
 }

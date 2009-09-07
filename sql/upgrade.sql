@@ -27,3 +27,8 @@ insert into pluggable_task values (541, 1, 54, 1, 1);
 
 -- updateCurrentOrder event saving
 alter table mediation_record alter column mediation_process_id drop not null;
+
+-- validatePurchase changes
+insert into pluggable_task_type_category values (19, 'Validate Purchase', 'com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask');
+insert into pluggable_task_type values (55, 19, 'com.sapienter.jbilling.server.user.tasks.UserBalanceValidatePurchaseTask', 0);
+insert into pluggable_task_type values (56, 19, 'com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask', 0);

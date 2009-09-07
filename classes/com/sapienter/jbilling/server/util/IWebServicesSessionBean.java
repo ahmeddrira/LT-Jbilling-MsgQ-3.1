@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 
 /**
  * Interface for WebServicesSessionBean
@@ -265,7 +266,8 @@ public interface IWebServicesSessionBean {
      * @param fields
      * @return 0, if she can not. >o the number of quantities that she can buy
      */
-    Double validatePurchase(Integer userId, Integer itemId, String fields);
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, 
+            String fields);
 
     /*
      * ITEM

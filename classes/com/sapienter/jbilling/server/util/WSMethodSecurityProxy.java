@@ -305,7 +305,9 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             } else if(m.getName().equals("getUserWS") || 
                     m.getName().equals("deleteUser") ||
                     m.getName().equals("getUserContactsWS") ||
-                    m.getName().equals("updateCreditCard")) {
+                    m.getName().equals("updateCreditCard") ||
+                    m.getName().equals("getCurrentOrder") ||
+                    m.getName().equals("updateCurrentOrder")) {
                 Integer arg = (Integer) args[0];
             
                 if (arg != null) {
@@ -329,9 +331,7 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                     }
                 }
             } else if(m.getName().equals("getOrder") || 
-                    m.getName().equals("deleteOrder") ||
-                    m.getName().equals("getCurrentOrder") ||
-                    m.getName().equals("updateCurrentOrder")) {
+                    m.getName().equals("deleteOrder")) {
                 Integer arg = (Integer) args[0];
                 
                 if (arg != null) {

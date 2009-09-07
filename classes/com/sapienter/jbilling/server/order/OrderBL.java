@@ -1328,7 +1328,7 @@ public class OrderBL extends ResultList
      */
     public OrderDTO getCurrentOrder(Integer userId, Date date) {
         CurrentOrder co = new CurrentOrder(userId, date);
-        set(co.getCurrent());
+        set(orderDas.findNow(co.getCurrent()));
         return order;
     }
     

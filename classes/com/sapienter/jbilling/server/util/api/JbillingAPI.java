@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
 public interface JbillingAPI {
@@ -170,6 +171,6 @@ public interface JbillingAPI {
     
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) throws JbillingAPIException;
 
-    public Double validatePurchase(Integer userId, Integer itemId, PricingField[] fields) throws JbillingAPIException;
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) throws JbillingAPIException;
 
 }

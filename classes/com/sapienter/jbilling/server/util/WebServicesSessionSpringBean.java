@@ -88,6 +88,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
@@ -1984,7 +1985,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 		}
 	}
 
-    public Double validatePurchase(Integer userId, Integer itemId,
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
             String fields) {
         LOG.debug("Call to validatePurchase " + userId + ' ' + itemId);
 
@@ -2028,12 +2029,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
             // find the price first
             ItemBL item = new ItemBL(itemId);
-            item.setPricingFields(new Vector(Arrays.asList(fieldsArray)));
+            Vector<PricingField> fieldsVector = 
+                    new Vector(Arrays.asList(fieldsArray));
+            item.setPricingFields(fieldsVector);
             Float price = item.getPrice(userId, getCallerCompanyId());
 
-            BigDecimal ret = new UserBL(userId).validatePurchase(new BigDecimal(price.toString()));
+            ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(
+                    item.getEntity(), new BigDecimal(price.toString()), 
+                    fieldsVector);
             LOG.debug("Done");
-            return ret.setScale(4, Constants.BIGDECIMAL_ROUND).doubleValue();
+            return ret;
         } catch (Exception e) {
             LOG.error("WS - validatePurchase", e);
             throw new SessionInternalError("Error validating purchase");

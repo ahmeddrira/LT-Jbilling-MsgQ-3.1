@@ -794,6 +794,13 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="InternalEventsRulesTask520.drl" />
         </rulebase>
+        <rulebase 
+        	srcdir="${source.rules.dir}" 		
+        	tofile="${base_dir}/rules/ValidatePurchaseRules.pkg"
+        	classpathref="drools.run.classpath"
+        	binformat="package">
+        	<include name="ValidatePurchaseRules.drl" />
+        </rulebase>
     </target>
 
     <target name="export">

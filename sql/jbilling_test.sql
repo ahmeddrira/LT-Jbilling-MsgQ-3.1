@@ -11027,8 +11027,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 42	payment	19
 43	payment_info_cheque	17
 79	partner_range	2
-25	pluggable_task	55
-26	pluggable_task_parameter	82
 89	balance_type	0
 48	event_log	460
 21	purchase_order	1076
@@ -11039,6 +11037,8 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 76	contact_field	2025
 40	invoice_line	87
 49	order_process	86
+25	pluggable_task	57
+26	pluggable_task_parameter	83
 \.
 
 
@@ -14201,6 +14201,8 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 530	1	50	3	1
 540	1	53	1	2
 541	1	54	1	1
+550	1	55	1	1
+560	1	56	2	3
 \.
 
 
@@ -14266,6 +14268,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 790	530	applicationId	\N	test-applicationId	\N	1
 800	530	bnet	\N	test-bnet	\N	1
 8100	540	file	\N	InternalEventsRulesTask520.pkg	\N	1
+8200	560	file	\N	ValidatePurchaseRules.pkg	\N	1
 \.
 
 
@@ -14326,6 +14329,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 52	17	com.sapienter.jbilling.server.invoice.task.FileInvoiceExportTask	1
 53	17	com.sapienter.jbilling.server.system.event.task.InternalEventsRulesTask	0
 54	17	com.sapienter.jbilling.server.user.balance.DynamicBalanceManagerTask	0
+55	19	com.sapienter.jbilling.server.user.tasks.UserBalanceValidatePurchaseTask	0
+56	19	com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask	0
 \.
 
 
@@ -14352,6 +14357,7 @@ COPY pluggable_task_type_category (id, description, interface_name) FROM stdin;
 16	Mediation Processor	com.sapienter.jbilling.server.mediation.task.IMediationProcess
 17	Internal events	com.sapienter.jbilling.server.system.event.task.IInternalEventsTask
 18	External Provisioning	com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning
+19	Validate Purchase	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
 \.
 
 

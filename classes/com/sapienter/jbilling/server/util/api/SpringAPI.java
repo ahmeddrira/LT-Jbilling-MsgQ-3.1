@@ -35,6 +35,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
 
@@ -506,7 +507,7 @@ public class SpringAPI implements JbillingAPI {
 		}
 	}
 
-    public Double validatePurchase(Integer userId, Integer itemId,
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
             PricingField[] fields) throws JbillingAPIException {
         try {
             return session.validatePurchase(userId, itemId, 

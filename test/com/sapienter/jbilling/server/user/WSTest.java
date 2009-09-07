@@ -853,7 +853,13 @@ Ch2->P1
             System.out.println("Validate with fields...");
             PricingField pf[] =  { new PricingField("src", "604"),
                 new PricingField("dst", "512")};
-            assertEquals("validate purchase 1", 0.0, api.validatePurchase(myId, 1, pf));
+            ValidatePurchaseWS result = api.validatePurchase(myId, 1, pf);
+            assertEquals("validate purchase success 1", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 1", 
+                    Boolean.valueOf(false), result.getAuthorized());
+            assertEquals("validate purchase quantity 1", 0.0, 
+                    result.getQuantity());
 
 
             // add a payment
@@ -882,7 +888,13 @@ Ch2->P1
 
             // validate. room = 20, price = 7
             System.out.println("Validate with fields...");
-            assertEquals("validate purchase 2", 2.8571, api.validatePurchase(myId, 1, pf));
+            result = api.validatePurchase(myId, 1, pf);
+            assertEquals("validate purchase success 2", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 2", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 2", 2.8571, 
+                    result.getQuantity());
 
             // validate without item id (mediation should set item)
             // duration field needed for rule to fire
@@ -890,8 +902,13 @@ Ch2->P1
                     new PricingField("dst", "512"), 
                     new PricingField("duration", 1) };
             System.out.println("Validate with fields and without itemId...");
-            assertEquals("validate purchase 2 without itemId", 2.8571, 
-                    api.validatePurchase(myId, null, pf2));
+            result = api.validatePurchase(myId, null, pf2);
+            assertEquals("validate purchase success 2", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 2", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 2", 2.8571, 
+                    result.getQuantity());
 
             // now create a one time order, the balance should decrease
             OrderWS order = getOrder();
@@ -943,7 +960,13 @@ Ch2->P1
 
             // validate. room = 10, price = 10
             System.out.println("Validate with fields...");
-            assertEquals("validate purchase 3", 1.0, api.validatePurchase(myId, 1, null));
+            result = api.validatePurchase(myId, 1, null);
+            assertEquals("validate purchase success 3", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 3", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 3", 1.0, 
+                    result.getQuantity());
 
 
             // delete the order, the balance has to go back to 20
@@ -988,7 +1011,14 @@ Ch2->P1
             System.out.println("Validate with fields...");
             PricingField pf[] =  { new PricingField("src", "604"),
                 new PricingField("dst", "512")};
-            assertEquals("validate purchase 1", 142.8571, api.validatePurchase(myId, 1, pf));
+            ValidatePurchaseWS result = api.validatePurchase(myId, 1, pf);
+            assertEquals("validate purchase success 1", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 1", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 1", 142.8571, 
+                    result.getQuantity());
+
 
             // get the current balance, it should be null or 0
             System.out.println("Checking initial balance type and dynamic balance");
@@ -1010,7 +1040,13 @@ Ch2->P1
 
              // validate. room = 980, price = 10
             System.out.println("Validate with fields...");
-            assertEquals("validate purchase 2", 98.0, api.validatePurchase(myId, 1, null));
+            result = api.validatePurchase(myId, 1, null);
+            assertEquals("validate purchase success 2", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 2", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 2", 98.0, 
+                    result.getQuantity());
 
             // delete the order, the balance has to go back to 0
             System.out.println("deleting one time order");
@@ -1033,7 +1069,14 @@ Ch2->P1
 
              // validate. room = 980, price = 7
             System.out.println("Validate with fields...");
-            assertEquals("validate purchase 3", 140.0, api.validatePurchase(myId, 1, pf));
+            result = api.validatePurchase(myId, 1, pf);
+            assertEquals("validate purchase success 3", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 3", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            // rules limit max to 3 lemonades
+            assertEquals("validate purchase quantity 3", 2.0, 
+                    result.getQuantity());
 
 
             // add a payment. I'd like to call payInvoice but it's not finding the CC
@@ -1062,6 +1105,134 @@ Ch2->P1
 
             System.out.println("Removing");
             api.deleteUser(myId);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
+
+    public void testRulesValidatePurchaseTask() {
+        try {
+            // see ValidatePurchaseRules.drl
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create user
+            UserWS user = createUser(true, null, null);
+            Integer userId = user.getUserId();
+
+            // update to credit limit
+            user.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            user.setCreditLimit(1000.0);
+            api.updateUser(user);
+
+            // create an order for this user
+            OrderWS order = new OrderWS();
+            order.setUserId(userId);
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(2); // monthly
+            order.setCurrencyId(1); // USD
+
+            // a main subscription order
+            order.setIsCurrent(1);
+            Calendar cal = Calendar.getInstance();
+            cal.clear();
+            cal.set(2009, 1, 1);
+            order.setActiveSince(cal.getTime());
+
+            // order lines
+            OrderLineWS[] lines = new OrderLineWS[2];
+            lines[0] = new OrderLineWS();
+            lines[0].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            lines[0].setQuantity(1); 
+            lines[0].setItemId(2); // lemonade plan
+            // take the price and description from the item
+            lines[0].setUseItem(true);
+
+            lines[1] = new OrderLineWS();
+            lines[1].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            lines[1].setQuantity(3); 
+            lines[1].setItemId(1); // lemonade
+            // take the price and description from the item
+            lines[1].setUseItem(true);
+
+            // attach lines to order
+            order.setOrderLines(lines);
+
+            // create the order
+            Integer orderId = api.createOrder(order);
+
+
+            // try to get another lemonde
+            ValidatePurchaseWS result = api.validatePurchase(userId, 1, null);
+            assertEquals("validate purchase success 1", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 1", 
+                    Boolean.valueOf(false), result.getAuthorized());
+            assertEquals("validate purchase quantity 1", 0.0, 
+                    result.getQuantity());
+            assertEquals("validate purchase message 1", 
+                    "No more than 3 lemonades are allowed.", 
+                    result.getMessage()[0]);
+
+
+            // exception should be thrown
+            PricingField pf[] = { new PricingField("fail", "fail") };
+            result = api.validatePurchase(userId, 1, pf);
+            assertEquals("validate purchase success 2", Boolean.valueOf(false), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 2", 
+                    Boolean.valueOf(false), result.getAuthorized());
+            assertEquals("validate purchase quantity 2", 0.0, 
+                    result.getQuantity());
+            assertEquals("validate purchase message 2", 
+                    "Error: java.lang.RuntimeException: Throw exception rule", 
+                    result.getMessage()[0]);
+
+
+            // add 10 coffees to current order
+            OrderLineWS newLine = new OrderLineWS();
+            newLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            newLine.setItemId(new Integer(3));
+            newLine.setQuantity(new Double(10.0));
+            // take the price and description from the item
+            newLine.setUseItem(new Boolean(true));
+
+            // update the current order
+            OrderWS currentOrderAfter = api.updateCurrentOrder(userId, 
+                    new OrderLineWS[] { newLine }, null, new Date(), 
+                    "Event from WS");
+
+            // quantity available should be 10
+            result = api.validatePurchase(userId, 3, null);
+            assertEquals("validate purchase success 3", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 3", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 3", 10.0, 
+                    result.getQuantity());
+
+            // add another 10 coffees to current order
+            currentOrderAfter = api.updateCurrentOrder(userId, 
+                    new OrderLineWS[] { newLine }, null, new Date(), 
+                    "Event from WS");
+
+            // quantity available should be 0
+            result = api.validatePurchase(userId, 3, null);
+            assertEquals("validate purchase success 4", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 4", 
+                    Boolean.valueOf(false), result.getAuthorized());
+            assertEquals("validate purchase quantity 4", 0.0, 
+                    result.getQuantity());
+            assertEquals("validate purchase message 4", 
+                    "No more than 20 coffees are allowed.", 
+                    result.getMessage()[0]);
+
+
+            // clean up
+            api.deleteOrder(orderId);
+            api.deleteUser(userId);
     	} catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

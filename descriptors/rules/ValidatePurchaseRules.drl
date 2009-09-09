@@ -17,11 +17,14 @@ rule "Max 3 lemonades"
         ItemDTO( internalNumber == "DP-1" ) 
         // subscribed to plan with hard limit
         Subscription( itemId == 2 ) 
-        // current number of lemonades
-        Subscription( itemId == 1, $quantityAlready : quantity ) 
         $result : ValidatePurchaseWS( authorized == true, $quantityAvailable : quantity )
-        // no more than 3 lemonades
-        eval( $quantityAlready + $quantityAvailable > 3 )
+        // current number of lemonades, no more than 3 allowed
+        $quantityAlready : Double ( eval( doubleValue + $quantityAvailable.doubleValue() > 3 ) ) 
+                from accumulate( Subscription( itemId == 1, $quantity : quantity )
+                                 init ( double total = 0; ),
+                                 action( total += $quantity; ),
+                                 reverse( total -= $quantity; ),
+                                 result( total ) )
     then
         $result.setQuantity(3 - $quantityAlready);
         validatePurchase.addMessage("No more than 3 lemonades are allowed.");
@@ -40,11 +43,14 @@ rule "Max 200 coffees for current order"
     when
         // coffee, item id 3
         ItemDTO( internalNumber == "DP-3" )
-        // current number of coffees
-        OrderLineDTO( itemId == 3, $quantityAlready : quantity )
         $result : ValidatePurchaseWS(authorized == true, $quantityAvailable : quantity )
-        // no more than 20 coffees
-        eval( $quantityAlready + $quantityAvailable > 20 )
+        // current number of coffees, no more than 20 allowed
+        $quantityAlready : Double ( eval( doubleValue + $quantityAvailable.doubleValue() > 20 ) ) 
+                from accumulate( OrderLineDTO( itemId == 3, $quantity : quantity )
+                                 init ( double total = 0; ),
+                                 action( total += $quantity; ),
+                                 reverse( total -= $quantity; ),
+                                 result( total ) )
     then
         $result.setQuantity(20 - $quantityAlready);
         validatePurchase.addMessage("No more than 20 coffees are allowed.");

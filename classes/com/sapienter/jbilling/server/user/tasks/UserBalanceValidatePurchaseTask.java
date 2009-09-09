@@ -50,6 +50,12 @@ public class UserBalanceValidatePurchaseTask extends PluggableTask
             return result;
         }
 
+        // avoid divide by zero exception
+        if (amount.doubleValue() == 0.0) {
+            result.setQuantity(Double.MAX_VALUE);
+            return result;
+        }
+
         IUserBalanceValidation validator;
         // simple factory ...
         if (customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||

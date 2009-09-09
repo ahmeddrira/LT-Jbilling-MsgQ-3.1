@@ -1190,6 +1190,16 @@ Ch2->P1
                     result.getMessage()[0]);
 
 
+            // coffee quantity available should be 20
+            result = api.validatePurchase(userId, 3, null);
+            assertEquals("validate purchase success 3", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 3", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 3", 20.0, 
+                    result.getQuantity());
+
+
             // add 10 coffees to current order
             OrderLineWS newLine = new OrderLineWS();
             newLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);

@@ -582,6 +582,8 @@
         <mkdir dir="${image.source.dir}/jbilling/resources/api" />
         <copy todir="${image.source.dir}/jbilling/resources/api" 
                file="${build.deploy.dir}/jbilling_api.jar" />
+        <copy todir="${image.source.dir}/jbilling/resources/api"
+               file="${build.deploy.dir}/jbilling.jar" />
         
         <mkdir dir="${image.target.dir}"/>
         <zip filesonly="false" update="false"
@@ -811,6 +813,8 @@ server="upload.sourceforge.net" userid="anonymous">
              destfile="${source.dir}/jbilling-exp-${DSTAMP}.zip">
             <!-- Copy jbilling.war and guvnor.war. -->
             <zipfileset dir="${deploy.local.dir}" prefix="webapps" includes="*.war"/>
+            <!-- Copy the API jar file -->
+            <zipfileset dir="${build.deploy.dir}" prefix="resources/api" includes="jbilling_api.jar"/>
             <!-- Copy the conf directory. -->
             <zipfileset dir="${jbilling.conf.dir}" prefix="conf"/>
             <!-- Copy the resources directory. -->

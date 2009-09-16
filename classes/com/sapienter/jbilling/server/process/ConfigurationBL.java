@@ -68,7 +68,7 @@ public class ConfigurationBL {
 
 			if (!configuration.getGenerateReport().equals(
 					dto.getGenerateReport())) {
-				eLogger.audit(executorId,
+				eLogger.audit(executorId, null,
 						Constants.TABLE_BILLING_PROCESS_CONFIGURATION,
 						configuration.getId(),
 						EventLogger.MODULE_BILLING_PROCESS,
@@ -79,7 +79,7 @@ public class ConfigurationBL {
 						.setReviewStatus(dto.getGenerateReport() == 1 ? Constants.REVIEW_STATUS_GENERATED
 								: Constants.REVIEW_STATUS_APPROVED);
 			} else {
-				eLogger.audit(executorId,
+				eLogger.audit(executorId, null,
 						Constants.TABLE_BILLING_PROCESS_CONFIGURATION,
 						configuration.getId(),
 						EventLogger.MODULE_BILLING_PROCESS,
@@ -139,7 +139,7 @@ public class ConfigurationBL {
 
 	public void setReviewApproval(Integer executorId, boolean flag) {
 
-		eLogger.audit(executorId,
+		eLogger.audit(executorId, null,
 				Constants.TABLE_BILLING_PROCESS_CONFIGURATION, configuration
 						.getId(), EventLogger.MODULE_BILLING_PROCESS,
 				EventLogger.ROW_UPDATED, configuration.getReviewStatus(), null,

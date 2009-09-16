@@ -91,7 +91,7 @@ public class PluggableTaskBL<T> {
         }
         pluggableTask = das.save(dto);
         
-        eLogger.audit(executorId, Constants.TABLE_PLUGGABLE_TASK, 
+        eLogger.audit(executorId, null, Constants.TABLE_PLUGGABLE_TASK, 
                 dto.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_UPDATED, null, null, null);
         // clear the rules cache (just in case this plug-in was ruled based)
@@ -102,7 +102,7 @@ public class PluggableTaskBL<T> {
     }
     
     public void delete(Integer executor) {
-        eLogger.audit(executor, Constants.TABLE_PLUGGABLE_TASK, 
+        eLogger.audit(executor, null, Constants.TABLE_PLUGGABLE_TASK, 
                 pluggableTask.getId(), EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);
         das.delete(pluggableTask);
@@ -111,7 +111,7 @@ public class PluggableTaskBL<T> {
     }
 
     public void deleteParameter(Integer executor, Integer id) {
-        eLogger.audit(executor, Constants.TABLE_PLUGGABLE_TASK_PARAMETER, 
+        eLogger.audit(executor, null, Constants.TABLE_PLUGGABLE_TASK_PARAMETER, 
                 id, EventLogger.MODULE_TASK_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);
         PluggableTaskParameterDTO toDelete = dasParameter.find(id);

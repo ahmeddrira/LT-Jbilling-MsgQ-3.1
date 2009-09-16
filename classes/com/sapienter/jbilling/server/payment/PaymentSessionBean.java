@@ -140,7 +140,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             } else {
             	// audit that this guy was about to get a payment
             	EventLogger logger = new EventLogger();
-            	logger.auditBySystem(entityId, Constants.TABLE_BASE_USER, userId, 
+            	logger.auditBySystem(entityId, userId, Constants.TABLE_BASE_USER, userId, 
             			EventLogger.MODULE_PAYMENT_MAINTENANCE, EventLogger.PAYMENT_INSTRUMENT_NOT_FOUND,
             			null, null, null);
                 // update the invoice attempts

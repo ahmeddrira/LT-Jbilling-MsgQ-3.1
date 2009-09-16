@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.user;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -33,6 +34,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 /**
@@ -297,4 +299,6 @@ public interface IUserSessionBean {
         NotificationNotFoundException;
     
     public boolean isPasswordExpired(Integer userId);
+
+    public List<EventLogDTO> getEventLog(Integer userId);
 }

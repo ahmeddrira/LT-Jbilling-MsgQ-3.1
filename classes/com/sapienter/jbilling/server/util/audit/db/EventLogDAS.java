@@ -19,8 +19,13 @@
 */
 package com.sapienter.jbilling.server.util.audit.db;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
@@ -48,5 +53,13 @@ public class EventLogDAS extends AbstractDAS<EventLogDTO> {
         } 
         EventLogDTO latest = find(id);
         return latest.getOldNum();
+    }
+
+    public List<EventLogDTO> getEventsByAffectedUser(Integer userId) {
+		Criteria criteria = getSession().createCriteria(EventLogDTO.class)
+                .add(Restrictions.eq("affectedUser.id", userId))
+                .addOrder(Order.desc("createDatetime"));
+
+        return criteria.list();
     }
 }

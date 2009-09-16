@@ -116,14 +116,14 @@ public class AgeingBL {
         // log an event
         if (executorId != null) {
             // this came from the gui
-            eLogger.audit(executorId, Constants.TABLE_BASE_USER, 
+            eLogger.audit(executorId, userId, Constants.TABLE_BASE_USER, 
                     user.getEntity().getUserId(), 
                     EventLogger.MODULE_USER_MAINTENANCE, 
                     EventLogger.STATUS_CHANGE, 
                     user.getEntity().getStatus().getId(), null, null);
         } else {
             // this is from a process, no executor involved
-            eLogger.auditBySystem(user.getEntity().getEntity().getId(), 
+            eLogger.auditBySystem(user.getEntity().getEntity().getId(), userId,
                     Constants.TABLE_BASE_USER, 
                     user.getEntity().getUserId(), 
                     EventLogger.MODULE_USER_MAINTENANCE, 
@@ -313,7 +313,7 @@ public class AgeingBL {
             setUserStatus(null, user.getUserId(), nextStatus, today);
         } else {
             eLogger.warning(user.getEntity().getId(), user.getUserId(), 
-                    EventLogger.MODULE_USER_MAINTENANCE, 
+                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE, 
                     EventLogger.NO_FURTHER_STEP,
                     Constants.TABLE_BASE_USER);
         }

@@ -158,6 +158,8 @@ public final class Constants implements PermissionConstants, CommonConstants {
     public static final String REQUEST_USER_REPORT_ID = "user_report_id";
     // a row selected in the generic list
     public static final String REQUEST_SELECTION_ID = "selection_id";
+    // event log list
+    public static final String REQUEST_EVENT_LOG = "event_log";
     /*
      * for lists
      */

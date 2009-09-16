@@ -66,6 +66,10 @@ public class EventLogDTO  implements java.io.Serializable {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
     private UserDTO baseUser;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="affected_user_id")
+    private UserDTO affectedUser;
     
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="message_id", nullable=false)
@@ -106,10 +110,15 @@ public class EventLogDTO  implements java.io.Serializable {
     }
 
 	
-    public EventLogDTO(Integer id, JbillingTable jbillingTable, UserDTO baseUser, EventLogMessageDTO eventLogMessage, EventLogModuleDTO eventLogModule, CompanyDTO entity, int foreignId, int levelField, Integer oldNum, String oldStr, Date oldDate) {
+    public EventLogDTO(Integer id, JbillingTable jbillingTable, 
+            UserDTO baseUser, UserDTO affectedUser, 
+            EventLogMessageDTO eventLogMessage, 
+            EventLogModuleDTO eventLogModule, CompanyDTO entity, int foreignId,
+            int levelField, Integer oldNum, String oldStr, Date oldDate) {
        this.id = id;
        this.jbillingTable = jbillingTable;
        this.baseUser = baseUser;
+       this.affectedUser = affectedUser;
        this.eventLogMessage = eventLogMessage;
        this.eventLogModule = eventLogModule;
        this.company = entity;
@@ -131,6 +140,10 @@ public class EventLogDTO  implements java.io.Serializable {
     
     public UserDTO getBaseUser() {
         return this.baseUser;
+    }
+
+    public UserDTO getAffectedUser() {
+        return this.affectedUser;
     }
     
     public EventLogMessageDTO getEventLogMessage() {
@@ -171,7 +184,14 @@ public class EventLogDTO  implements java.io.Serializable {
 
     protected int getVersionNum() { return versionNum; }
 
-
+    public void touch() {
+        getJbillingTable().getName();
+        if (getBaseUser() != null) {
+            getBaseUser().getUserName();
+        }
+        getEventLogModule().getId();
+        getEventLogMessage().getId();
+    }
 }
 
 

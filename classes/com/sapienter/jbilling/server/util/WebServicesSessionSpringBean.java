@@ -1341,7 +1341,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             // unless the returned array is empty.
             if (result != null && result.length > 0) {
                 LOG.info("Registering transition list event");
-                evLog.audit(callerId, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
+                evLog.audit(callerId, null, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
                         EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
                         result[0].getId().toString(), null);
             }
@@ -1382,7 +1382,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             // unless the returned array is empty.
             if (result != null && result.length > 0) {
                 LOG.info("Registering transition list event");
-                evLog.audit(callerId, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
+                evLog.audit(callerId, null, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
                         EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
                         result[0].getId().toString(), null);
             }

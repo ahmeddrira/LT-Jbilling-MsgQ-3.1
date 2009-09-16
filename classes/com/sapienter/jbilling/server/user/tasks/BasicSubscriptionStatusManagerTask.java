@@ -168,7 +168,7 @@ public class BasicSubscriptionStatusManagerTask extends PluggableTask implements
         }
         
         if (retValue == false) {
-            new EventLogger().auditBySystem(entityId, 
+            new EventLogger().auditBySystem(entityId, payment.getUserId(),
                 Constants.TABLE_BASE_USER, payment.getUserId(), 
                 EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.SUBSCRIPTION_STATUS_NO_CHANGE,

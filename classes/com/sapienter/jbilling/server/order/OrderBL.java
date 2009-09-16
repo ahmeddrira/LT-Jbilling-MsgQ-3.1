@@ -253,8 +253,8 @@ public class OrderBL extends ResultList
         }
         order.setDeleted(1);
         
-        eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                order.getId(),
+        eLogger.audit(executorId, order.getBaseUserByUserId().getId(), 
+                Constants.TABLE_PUCHASE_ORDER, order.getId(),
                 EventLogger.MODULE_ORDER_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null,  
                 null, null);
@@ -348,7 +348,7 @@ public class OrderBL extends ResultList
             }
             
             // add a log row for convenience
-            eLogger.auditBySystem(entityId, 
+            eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
             		Constants.TABLE_PUCHASE_ORDER, order.getId(),
             		EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
 
@@ -571,6 +571,7 @@ public class OrderBL extends ResultList
     	   	if (newLine != null && !oldLine.getItemId().equals(newLine.getItemId())) {
                 if (executorId != null) {
         	   		eLogger.audit(executorId, 
+                            order.getBaseUserByUserId().getId(),
         	   				Constants.TABLE_ORDER_LINE,
         	   				newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
         	   				EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
@@ -579,6 +580,7 @@ public class OrderBL extends ResultList
                 } else {
                     // it is the mediation process
                     eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
+                            order.getBaseUserByUserId().getId(),
                             Constants.TABLE_ORDER_LINE,
                             newLine.getId(), EventLogger.MODULE_ORDER_MAINTENANCE,
                             EventLogger.ORDER_LINE_UPDATED, oldLine.getId(), 
@@ -589,13 +591,14 @@ public class OrderBL extends ResultList
     	}
 
         if (executorId != null) {
-            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                    order.getId(),
+            eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
                     EventLogger.ROW_UPDATED, null,  
                     null, null);
         } else {
             eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
+                    order.getBaseUserByUserId().getId(),
                     Constants.TABLE_PUCHASE_ORDER, 
                     order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
@@ -632,8 +635,8 @@ public class OrderBL extends ResultList
                 newDate.after(order.getNextBillableDay())) {
             // this audit can be added to the order details screen
             // otherwise the user can't account for the lost time
-            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                    order.getId(),
+            eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
                     EventLogger.ORDER_NEXT_BILL_DATE_UPDATED, null,  
                     null, order.getNextBillableDay());
@@ -767,13 +770,14 @@ public class OrderBL extends ResultList
             return;
         }
         if (executorId != null) {
-            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                    order.getId(), 
+            eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                    Constants.TABLE_PUCHASE_ORDER, order.getId(), 
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
                     EventLogger.ORDER_STATUS_CHANGE, 
                     order.getStatusId(), null, null);
         } else {
             eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
+                    order.getBaseUserByUserId().getId(),
                     Constants.TABLE_PUCHASE_ORDER, 
                     order.getId(), 
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
@@ -819,15 +823,15 @@ public class OrderBL extends ResultList
      }
     
     private void audit(Integer executorId, Date date) {
-        eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                order.getId(),
+        eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                Constants.TABLE_PUCHASE_ORDER, order.getId(),
                 EventLogger.MODULE_ORDER_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null,  
                 null, date);
     }        
     private void audit(Integer executorId, Integer in) {
-        eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                order.getId(),
+        eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                Constants.TABLE_PUCHASE_ORDER, order.getId(),
                 EventLogger.MODULE_ORDER_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, in,  
                 null, null);
@@ -1342,8 +1346,8 @@ public class OrderBL extends ResultList
         // there can only be one main subscription order
         Integer oldCurrent = order.getUser().getCustomer().getCurrentOrderId();
         if (oldCurrent == null || !oldCurrent.equals(order.getId())) {
-            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                    order.getId(),
+            eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
                     EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, oldCurrent,  
                     null, null);
@@ -1368,8 +1372,8 @@ public class OrderBL extends ResultList
         }
         // it is removing the main subscription
         if (order.getIsCurrent().intValue() == 1) {
-            eLogger.audit(executorId, Constants.TABLE_PUCHASE_ORDER, 
-                    order.getId(),
+            eLogger.audit(executorId, order.getBaseUserByUserId().getId(),
+                    Constants.TABLE_PUCHASE_ORDER, order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, 
                     EventLogger.ORDER_MAIN_SUBSCRIPTION_UPDATED, null,  
                     null, null);
@@ -1459,6 +1463,7 @@ public class OrderBL extends ResultList
     	
     	// add a log for provisioning module
 		eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(), 
+                order.getBaseUserByUserId().getId(),
                 Constants.TABLE_ORDER_LINE,  orderLineId,
 				EventLogger.MODULE_PROVISIONING, EventLogger.PROVISIONING_STATUS_CHANGE,
 				oldStatus, null, null);

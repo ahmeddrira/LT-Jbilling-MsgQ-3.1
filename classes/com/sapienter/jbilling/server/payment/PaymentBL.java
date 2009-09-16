@@ -196,7 +196,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         // add a log row for convenience
         UserDAS user = new UserDAS();
         eLogger.auditBySystem(user.find(dto.getUserId()).getCompany().getId(),
-                Constants.TABLE_PAYMENT, dto.getId(),
+                dto.getUserId(), Constants.TABLE_PAYMENT, dto.getId(),
                 EventLogger.MODULE_PAYMENT_MAINTENANCE,
                 EventLogger.ROW_CREATED, null, null, null);
 
@@ -229,7 +229,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         // we better log this, so this change can be traced
-        eLogger.audit(executorId, Constants.TABLE_PAYMENT, payment.getId(),
+        eLogger.audit(executorId, payment.getBaseUser().getId(), 
+                Constants.TABLE_PAYMENT, payment.getId(),
                 EventLogger.MODULE_PAYMENT_MAINTENANCE,
                 EventLogger.ROW_UPDATED, null, payment.getAmount().toString(),
                 null);
@@ -561,7 +562,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             payment.setUpdateDatetime(Calendar.getInstance().getTime());
             payment.setDeleted(new Integer(1));
 
-            eLogger.auditBySystem(entityId,
+            eLogger.auditBySystem(entityId, payment.getBaseUser().getId(),
                     Constants.TABLE_PAYMENT, payment.getId(),
                     EventLogger.MODULE_PAYMENT_MAINTENANCE,
                     EventLogger.ROW_DELETED, null, null, null);
@@ -806,7 +807,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             }
 
             // log that this was deleted, otherwise there will be no trace
-            eLogger.info(invoice.getBaseUser().getEntity().getId(), mapId,
+            eLogger.info(invoice.getBaseUser().getEntity().getId(), 
+                    payment.getBaseUser().getId(), mapId,
                     EventLogger.MODULE_PAYMENT_MAINTENANCE,
                     EventLogger.ROW_DELETED,
                     Constants.TABLE_PAYMENT_INVOICE_MAP);

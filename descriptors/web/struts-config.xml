@@ -632,6 +632,10 @@
             <forward name="done" path="/system/blacklist.jsp" redirect="false"/>
         </action>
 
+        <action path="/user/eventLog" type="com.sapienter.jbilling.client.user.EventLogAction" name="eventLog" scope="request" validate="false">
+            <forward name="displayLog" path="/user/listEventLog.jsp" redirect="false" />
+        </action>
+
     </action-mappings>
 
     <controller maxFileSize="10M" />

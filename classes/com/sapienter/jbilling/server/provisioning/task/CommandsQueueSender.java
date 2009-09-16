@@ -124,13 +124,15 @@ public class CommandsQueueSender {
 					+ param.getValue() + ")");
 		}
 
+        Integer userId = order.getUser().getId();
+
 		LOG.debug("adding event log messages");
 
 		// add a log for message id
-		eLogger.auditBySystem(entityId, Constants.TABLE_ORDER_LINE, order_line_id, EventLogger.MODULE_PROVISIONING,
+		eLogger.auditBySystem(entityId, userId, Constants.TABLE_ORDER_LINE, order_line_id, EventLogger.MODULE_PROVISIONING,
 				EventLogger.PROVISIONING_UUID, null, uid.toString(), null);
 		// add a log for command value
-		eLogger.auditBySystem(entityId, Constants.TABLE_ORDER_LINE, order_line_id, EventLogger.MODULE_PROVISIONING,
+		eLogger.auditBySystem(entityId, userId, Constants.TABLE_ORDER_LINE, order_line_id, EventLogger.MODULE_PROVISIONING,
 				EventLogger.PROVISIONING_COMMAND, null, command, null);
 
 		LOG.debug("Sending message for command '" + command + "'");

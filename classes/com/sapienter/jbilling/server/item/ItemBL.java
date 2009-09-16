@@ -125,7 +125,7 @@ public class ItemBL {
     public void update(Integer executorId, ItemDTO dto, 
             Integer languageId)  {
 
-        eLogger.audit(executorId, Constants.TABLE_ITEM, item.getId(),
+        eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, null);
         
@@ -215,7 +215,7 @@ public class ItemBL {
     
     public void delete(Integer executorId) {
         item.setDeleted(new Integer(1));
-        eLogger.audit(executorId, Constants.TABLE_ITEM, item.getId(),
+        eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null, null);
         

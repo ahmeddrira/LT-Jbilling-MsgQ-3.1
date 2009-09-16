@@ -109,7 +109,7 @@ public class CreditCardBL extends ResultList
     public void update(Integer executorId, CreditCardDTO dto, Integer userId)
             throws SessionInternalError {
         if (executorId != null) {
-            eLogger.audit(executorId, Constants.TABLE_CREDIT_CARD,
+            eLogger.audit(executorId, userId, Constants.TABLE_CREDIT_CARD,
                     creditCard.getId(),
                     EventLogger.MODULE_CREDIT_CARD_MAINTENANCE,
                     EventLogger.ROW_UPDATED, null,
@@ -148,7 +148,7 @@ public class CreditCardBL extends ResultList
 
     public void delete(Integer executorId) {
         // now delete this creditCard record
-        eLogger.audit(executorId, Constants.TABLE_CREDIT_CARD,
+        eLogger.audit(executorId, null, Constants.TABLE_CREDIT_CARD,
                 creditCard.getId(),
                 EventLogger.MODULE_CREDIT_CARD_MAINTENANCE,
                 EventLogger.ROW_DELETED, null, null, null);

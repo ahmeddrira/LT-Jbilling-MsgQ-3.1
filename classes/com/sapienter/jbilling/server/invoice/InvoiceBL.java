@@ -249,7 +249,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         contact.createForInvoice(contact.getDTO(), invoice.getId());
 
         // add a log row for convenience
-        eLogger.auditBySystem(entityId, Constants.TABLE_INVOICE, invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
+        eLogger.auditBySystem(entityId, userId, Constants.TABLE_INVOICE, 
+                invoice.getId(), EventLogger.MODULE_INVOICE_MAINTENANCE,
                 EventLogger.ROW_CREATED, null, null, null);
 
     }
@@ -356,7 +357,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         // log that this was deleted, otherwise there will be no trace
         if (executorId != null) {
-            eLogger.audit(executorId, Constants.TABLE_INVOICE, invoice.getId(),
+            eLogger.audit(executorId, invoice.getBaseUser().getId(), 
+                    Constants.TABLE_INVOICE, invoice.getId(),
                     EventLogger.MODULE_INVOICE_MAINTENANCE,
                     EventLogger.ROW_DELETED, null, null, null);
         }

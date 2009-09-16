@@ -76,8 +76,8 @@ public class AchBL {
     
     public void update(Integer executorId, AchDTO dto) {
         if (executorId != null) {
-            eLogger.audit(executorId, Constants.TABLE_ACH, 
-                    ach.getId(),
+            eLogger.audit(executorId, dto.getBaseUser().getId(), 
+                    Constants.TABLE_ACH, ach.getId(),
                     EventLogger.MODULE_CREDIT_CARD_MAINTENANCE, 
                     EventLogger.ROW_UPDATED, null,  
                     ach.getBankAccount(), null);
@@ -91,8 +91,8 @@ public class AchBL {
     
     public void delete(Integer executorId) {
         // now delete this ach record
-        eLogger.audit(executorId, Constants.TABLE_ACH, 
-                ach.getId(),
+        eLogger.audit(executorId, ach.getBaseUser().getId(), 
+                Constants.TABLE_ACH, ach.getId(),
                 EventLogger.MODULE_CREDIT_CARD_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
         

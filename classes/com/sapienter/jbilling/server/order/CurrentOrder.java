@@ -115,7 +115,7 @@ public class CurrentOrder {
                         CurrentOrder.class, e);
             }
             if (somePresent && !orderFound) {
-                eLogger.auditBySystem(entityId, Constants.TABLE_PUCHASE_ORDER, order.getEntity().getId(), 
+                eLogger.auditBySystem(entityId, userId, Constants.TABLE_PUCHASE_ORDER, order.getEntity().getId(), 
                         EventLogger.MODULE_MEDIATION, EventLogger.CURRENT_ORDER_FINISHED, 
                         subscriptionId, null, null);
             } else if (!somePresent) {

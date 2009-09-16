@@ -221,7 +221,8 @@ public class BasicOrderPeriodTask
         	// this order should not be in active status
         	periods.clear();
         	order.setOrderStatus(new OrderStatusDAS().find(Constants.ORDER_STATUS_FINISHED));
-        	new EventLogger().error(order.getBaseUserByUserId().getCompany().getId(), order.getId(), 
+        	new EventLogger().error(order.getBaseUserByUserId().getCompany().getId(), 
+                    order.getBaseUserByUserId().getId(), order.getId(), 
                     EventLogger.MODULE_BILLING_PROCESS,
                     EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
                     Constants.TABLE_PUCHASE_ORDER);

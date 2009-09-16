@@ -643,7 +643,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                         if (!reviewPresent) {  // review wasn't generated
                             LOG.warn("Review is required but not present for " +
                                     "entity " + entityId);
-                            eLogger.warning(entityId, config.getId(), 
+                            eLogger.warning(entityId, null, config.getId(), 
                                     EventLogger.MODULE_BILLING_PROCESS, 
                                     EventLogger.BILLING_REVIEW_NOT_GENERATED, 
                                     Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
@@ -660,7 +660,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                             LOG.warn("Review is required but is not approved" +
                                     ".Entity " + entityId + " hour is " + 
                                     now.get(GregorianCalendar.HOUR_OF_DAY));
-                            eLogger.warning(entityId, config.getId(), 
+                            eLogger.warning(entityId, null, config.getId(), 
                                     EventLogger.MODULE_BILLING_PROCESS, 
                                     EventLogger.BILLING_REVIEW_NOT_APPROVED, 
                                     Constants.TABLE_BILLING_PROCESS_CONFIGURATION);

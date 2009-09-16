@@ -162,7 +162,7 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
             user.getCustomer().setDynamicBalance(BigDecimal.ZERO);
         }
         
-        new EventLogger().auditBySystem(entityId, com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
+        new EventLogger().auditBySystem(entityId, userId, com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
                 user.getCustomer().getId(), EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.DYNAMIC_BALANCE_CHANGE, null,
                 user.getCustomer().getDynamicBalance().toString(), null);

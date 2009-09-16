@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
@@ -57,6 +58,8 @@ import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 
@@ -1034,5 +1037,14 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
         UserBL user;
         user = new UserBL(userId);
         return user.isPasswordExpired();
+    }
+
+    public List<EventLogDTO> getEventLog(Integer userId) {
+        List<EventLogDTO> events = new EventLogDAS().getEventsByAffectedUser(
+                userId);
+        for (EventLogDTO event : events) {
+            event.touch();
+        }
+        return events;
     }
 }

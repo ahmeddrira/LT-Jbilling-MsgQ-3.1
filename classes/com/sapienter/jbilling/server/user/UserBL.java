@@ -157,8 +157,8 @@ public class UserBL extends ResultList
     	
         if (changedPassword != null &&
                 !changedPassword.equals(user.getPassword())) {
-            eLogger.audit(executorId, Constants.TABLE_BASE_USER, user.getUserId(),
-                    EventLogger.MODULE_USER_MAINTENANCE, 
+            eLogger.audit(executorId, dto.getId(), Constants.TABLE_BASE_USER, 
+                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE, 
                     EventLogger.PASSWORD_CHANGE, null, user.getPassword(), 
                     null);
             user.setPassword(changedPassword);
@@ -733,8 +733,8 @@ public class UserBL extends ResultList
         user.getRoles().clear();
 
         if (executorId != null) {
-            eLogger.audit(executorId, Constants.TABLE_BASE_USER, user.getUserId(),
-                    EventLogger.MODULE_USER_MAINTENANCE, 
+            eLogger.audit(executorId, user.getId(), Constants.TABLE_BASE_USER, 
+                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE, 
                     EventLogger.ROW_DELETED, null, null, null);
         }
     }
@@ -990,7 +990,7 @@ public class UserBL extends ResultList
             // no update ... it's already there
             return;
         }
-        eLogger.auditBySystem(user.getEntity().getId(), 
+        eLogger.auditBySystem(user.getEntity().getId(), user.getId(),
                 Constants.TABLE_BASE_USER, user.getUserId(), 
                 EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.SUBSCRIPTION_STATUS_CHANGE,
@@ -1127,7 +1127,7 @@ public class UserBL extends ResultList
                 String newPassword = passwordCryptoService.encrypt(Util.getSysProp("lockout_password"));
 
                 user.setPassword(newPassword);
-                eLogger.auditBySystem(user.getEntity().getId(), 
+                eLogger.auditBySystem(user.getEntity().getId(), user.getId(),
                         Constants.TABLE_BASE_USER, user.getUserId(), 
                         EventLogger.MODULE_USER_MAINTENANCE, 
                         EventLogger.ACCOUNT_LOCKED, new Integer(total), 
@@ -1287,8 +1287,8 @@ public class UserBL extends ResultList
                 entry.setUser(user); 
                 entry = blacklistDAS.save(entry);
 
-                eLogger.audit(executorId, Constants.TABLE_BLACKLIST, 
-                        entry.getId(),
+                eLogger.audit(executorId, user.getId(), 
+                        Constants.TABLE_BLACKLIST, entry.getId(),
                         EventLogger.MODULE_BLACKLIST,
                         EventLogger.BLACKLIST_USER_ID_ADDED, null, null, null);
             }
@@ -1301,8 +1301,8 @@ public class UserBL extends ResultList
                 for (BlacklistDTO entry : blacklist) {
                     blacklistDAS.delete(entry);
 
-                    eLogger.audit(executorId, Constants.TABLE_BLACKLIST, 
-                            entry.getId(),
+                    eLogger.audit(executorId, user.getId(), 
+                            Constants.TABLE_BLACKLIST, entry.getId(),
                             EventLogger.MODULE_BLACKLIST, 
                             EventLogger.BLACKLIST_USER_ID_REMOVED, null,
                             null, null);

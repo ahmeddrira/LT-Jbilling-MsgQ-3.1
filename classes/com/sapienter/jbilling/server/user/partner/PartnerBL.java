@@ -133,7 +133,8 @@ public class PartnerBL extends ResultList
     
     public void update(Integer executorId, Partner dto) {
 
-        eLogger.audit(executorId, Constants.TABLE_PARTNER, partner.getId(),
+        eLogger.audit(executorId, dto.getBaseUser().getId(), 
+                Constants.TABLE_PARTNER, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, 
                 null);
@@ -193,7 +194,7 @@ public class PartnerBL extends ResultList
                     userId);
             if (payment == null) {
                 // this partner doesn't have a way to get paid
-                eLogger.warning(entityId, partnerId, 
+                eLogger.warning(entityId, userId, partnerId, 
                         EventLogger.MODULE_USER_MAINTENANCE, 
                         EventLogger.CANT_PAY_PARTNER, 
                         Constants.TABLE_PARTNER);
@@ -639,7 +640,8 @@ public class PartnerBL extends ResultList
      * @param ranges
      */
     public void setRanges(Integer executorId, PartnerRange[] ranges) {
-        eLogger.audit(executorId, Constants.TABLE_PARTNER_RANGE, partner.getId(),
+        eLogger.audit(executorId, partner.getBaseUser().getId(), 
+                Constants.TABLE_PARTNER_RANGE, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, null);
         // remove existing ranges (a clear will only set the partner_id = null)

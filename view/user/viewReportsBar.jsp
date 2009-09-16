@@ -55,6 +55,13 @@
 			</html:link>
 		</td>
 	</tr>
+	<tr>
+		<td class="leftMenuOption">
+			<html:link styleClass="leftMenu" page="/user/eventLog.do?action=displayLog">
+				<bean:message key="user.eventLog.initial.link"/>
+			</html:link>
+		</td>
+	</tr>
 	</logic:notPresent>
 	
 	<%-- not a report, this is the list of children accounts --%>

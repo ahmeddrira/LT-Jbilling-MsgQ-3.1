@@ -125,51 +125,55 @@ public class EventLogger {
         return new EventLogger();
     }
     
-    public void log(Integer level, Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)  {
+    public void log(Integer level, Integer entity, Integer userAffectedId, 
+            Integer rowId, Integer module, Integer message, String table)  {
         CompanyDAS company = new CompanyDAS();
+        UserDAS user= new UserDAS();
         EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), null,
-                eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
-                company.find(entity), rowId, level, null, null, null);
+                user.find(userAffectedId), eventLogMessageDAS.find(message), 
+                eventLogModuleDAS.find(module), company.find(entity), rowId, 
+                level, null, null, null);
         eventLogDAS.save(dto);
     }
     
-    public void debug(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)   {
-        log(LEVEL_DEBUG, entity, rowId, module, message, table);
+    public void debug(Integer entity, Integer userAffectedId, Integer rowId, 
+            Integer module, Integer message, String table)   {
+        log(LEVEL_DEBUG, entity, userAffectedId, rowId, module, message, table);
     }
     
-    public void info(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table) {
-        log(LEVEL_INFO, entity, rowId, module, message, table);
+    public void info(Integer entity, Integer userAffectedId, Integer rowId, 
+            Integer module, Integer message, String table) {
+        log(LEVEL_INFO, entity, userAffectedId, rowId, module, message, table);
     }
     
-    public void warning(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)   {
-        log(LEVEL_WARNING, entity, rowId, module, message, table);
+    public void warning(Integer entity, Integer userAffectedId, Integer rowId, 
+            Integer module, Integer message, String table)   {
+        log(LEVEL_WARNING, entity, userAffectedId, rowId, module, message, 
+                table);
     }
     
-    public void error(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)   {
-        log(LEVEL_ERROR, entity, rowId, module, message, table);
+    public void error(Integer entity, Integer userAffectedId, Integer rowId, 
+            Integer module, Integer message, String table)   {
+        log(LEVEL_ERROR, entity, userAffectedId, rowId, module, message, table);
     }
     
-    public void fatal(Integer entity, Integer rowId, Integer module, 
-            Integer message, String table)   {
-        log(LEVEL_FATAL, entity, rowId, module, message, table);
+    public void fatal(Integer entity, Integer userAffectedId, Integer rowId, 
+            Integer module, Integer message, String table)   {
+        log(LEVEL_FATAL, entity, userAffectedId, rowId, module, message, table);
     } 
     
     /*
      * This is intended for loggin a change in the database, where we want to 
      * keep track of what changed
      */
-    public void audit(Integer userExecutingId, String table, Integer rowId,
-            Integer module, Integer message, Integer oldInt, String oldStr,
-            Date oldDate) {
+    public void audit(Integer userExecutingId, Integer userAffectedId, 
+            String table, Integer rowId, Integer module, Integer message, 
+            Integer oldInt, String oldStr, Date oldDate) {
 
         UserDAS user= new UserDAS();
         
-        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), user.find(userExecutingId),
+        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), 
+                user.find(userExecutingId), user.find(userAffectedId), 
                 eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
                 user.find(userExecutingId).getCompany(), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
         eventLogDAS.save(dto);
@@ -181,13 +185,15 @@ public class EventLogger {
      * Same as previous but the change its not being done by any given user
      * (no executor) but by a batch process.
      */
-    public void auditBySystem(Integer entityId, String table, Integer rowId,
-            Integer module, Integer message, Integer oldInt, String oldStr,
-            Date oldDate) {
+    public void auditBySystem(Integer entityId, Integer userAffectedId, 
+            String table, Integer rowId, Integer module, Integer message, 
+            Integer oldInt, String oldStr, Date oldDate) {
         CompanyDAS company = new CompanyDAS();
-        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), null,
-                eventLogMessageDAS.find(message), eventLogModuleDAS.find(module),
-                company.find(entityId), rowId, LEVEL_INFO, oldInt, oldStr, oldDate);
+        UserDAS user= new UserDAS();
+        EventLogDTO dto = new EventLogDTO(null, jbDAS.findByName(table), null, 
+                user.find(userAffectedId), eventLogMessageDAS.find(message), 
+                eventLogModuleDAS.find(module), company.find(entityId), rowId, 
+                LEVEL_INFO, oldInt, oldStr, oldDate);
         eventLogDAS.save(dto);
 
     }

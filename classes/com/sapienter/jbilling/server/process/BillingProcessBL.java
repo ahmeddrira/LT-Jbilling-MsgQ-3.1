@@ -226,7 +226,7 @@ public class BillingProcessBL extends ResultList
                 retValue = invoice.getEntity();
                 createOrderProcess(newInvoice, retValue, null,
                         Constants.ORDER_PROCESS_ORIGIN_MANUAL);
-                eLogger.info(entityId, invoiceId,
+                eLogger.info(entityId, userId, invoiceId,
                         EventLogger.MODULE_INVOICE_MAINTENANCE,
                         EventLogger.INVOICE_ORDER_APPLIED,
                         Constants.TABLE_INVOICE);
@@ -772,8 +772,8 @@ public class BillingProcessBL extends ResultList
                 start != null && // it has to be recursive too
                 processDate.after(start)) {
 
-            eLogger.warning(entityId, order.getId(),
-                    EventLogger.MODULE_BILLING_PROCESS,
+            eLogger.warning(entityId, order.getBaseUserByUserId().getId(),
+                    order.getId(), EventLogger.MODULE_BILLING_PROCESS,
                     EventLogger.BILLING_PROCESS_UNBILLED_PERIOD,
                     Constants.TABLE_PUCHASE_ORDER);
 
@@ -1074,7 +1074,7 @@ public class BillingProcessBL extends ResultList
         if (configBL.getEntity().getGenerateReport().intValue() == 1 &&
                 !new Integer(configBL.getEntity().getReviewStatus()).equals(
                 Constants.REVIEW_STATUS_APPROVED) && !isReview) {
-            eLogger.warning(entityId, configBL.getEntity().getId(),
+            eLogger.warning(entityId, null, configBL.getEntity().getId(),
                     EventLogger.MODULE_BILLING_PROCESS,
                     EventLogger.BILLING_REVIEW_NOT_APPROVED,
                     Constants.TABLE_BILLING_PROCESS_CONFIGURATION);

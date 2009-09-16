@@ -68,8 +68,8 @@ public class ItemTypeBL {
     
     public void update(Integer executorId, ItemTypeDTO dto) 
             throws SessionInternalError {
-        eLogger.audit(executorId, Constants.TABLE_ITEM_TYPE, itemType.getId(),
-                EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
+        eLogger.audit(executorId, null, Constants.TABLE_ITEM_TYPE, 
+                itemType.getId(), EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null,  
                 itemType.getDescription(), null);
 
@@ -84,7 +84,7 @@ public class ItemTypeBL {
         DescriptionBL desc = new DescriptionBL();
         desc.delete(Constants.TABLE_ITEM_TYPE, itemTypeId);
 
-        eLogger.audit(executorId, Constants.TABLE_ITEM_TYPE, itemTypeId,
+        eLogger.audit(executorId, null, Constants.TABLE_ITEM_TYPE, itemTypeId,
                 EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
     }

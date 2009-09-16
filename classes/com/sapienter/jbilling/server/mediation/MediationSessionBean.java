@@ -231,7 +231,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
 
         cfgDAS.delete(cfgDAS.find(cfgId));
-        EventLogger.getInstance().audit(executorId, 
+        EventLogger.getInstance().audit(executorId, null, 
                 Constants.TABLE_MEDIATION_CFG, cfgId, 
                 EventLogger.MODULE_MEDIATION, EventLogger.ROW_DELETED, null, 
                 null, null);

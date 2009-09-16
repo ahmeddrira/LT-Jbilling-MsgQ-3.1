@@ -350,6 +350,8 @@
     </definition>
     <definition name="system.blacklist" extends="main"><put name="featureTitle" value="bar.system.blacklist" /><put name="body" value="/system/blacklistUpload.jsp" />
     </definition>
+    <definition name="user.eventLog.list" extends="main"><put name="featureTitle" value="bar.user.eventLog" /><put name="body" value="/user/listEventLogBody.jsp" />
+    </definition>
     <!-- 
            Mediation screens
      -->

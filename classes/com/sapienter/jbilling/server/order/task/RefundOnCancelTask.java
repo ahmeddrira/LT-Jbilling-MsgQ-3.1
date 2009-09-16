@@ -193,7 +193,8 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
         Integer newOrderId = orderBL.create(entityId, null, newOrder);
 
         // audit so we know why all these changes happened
-        new EventLogger().auditBySystem(entityId, Constants.TABLE_PUCHASE_ORDER, order.getId(),
+        new EventLogger().auditBySystem(entityId, userId,
+                Constants.TABLE_PUCHASE_ORDER, order.getId(),
                 EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ORDER_CANCEL_AND_CREDIT,
                 newOrderId, null, null);
 

@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -149,30 +150,43 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
     private void updateDynamicBalance(Integer entityId, Integer userId, BigDecimal amount) {
         UserDTO user = new UserDAS().find(userId);
 
-        if (user.getCustomer() == null ||
-                user.getCustomer().getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
+        CustomerDTO customer = user.getCustomer();
+
+        if (customer != null) {
+            // get the parent customer that pays, if it exists
+            while (customer.getParent() != null &&
+                    (customer.getInvoiceChild() == null ||
+                    customer.getInvoiceChild() == 0)) {
+                // go up one level
+                customer =  customer.getParent();
+            }
+        }
+
+        if (customer == null ||
+                customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
                 amount.equals(BigDecimal.ZERO)) {
             LOG.debug("Nothing to update");
             return;
         }
 
         LOG.debug("Updating dynamic balance for " + amount);
-        if (user.getCustomer().getDynamicBalance() == null) {
+        if (customer.getDynamicBalance() == null) {
             // initialize
-            user.getCustomer().setDynamicBalance(BigDecimal.ZERO);
+            customer.setDynamicBalance(BigDecimal.ZERO);
         }
         
-        new EventLogger().auditBySystem(entityId, userId, com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
+        new EventLogger().auditBySystem(entityId, customer.getBaseUser().getId(), 
+                com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
                 user.getCustomer().getId(), EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.DYNAMIC_BALANCE_CHANGE, null,
                 user.getCustomer().getDynamicBalance().toString(), null);
         
-        if (user.getCustomer().getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
-            user.getCustomer().setDynamicBalance(
-                    user.getCustomer().getDynamicBalance().subtract(amount));
-        } else if (user.getCustomer().getBalanceType() == Constants.BALANCE_PRE_PAID) {
-            user.getCustomer().setDynamicBalance(
-                    user.getCustomer().getDynamicBalance().add(amount));
+        if (customer.getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
+            customer.setDynamicBalance(
+                    customer.getDynamicBalance().subtract(amount));
+        } else if (customer.getBalanceType() == Constants.BALANCE_PRE_PAID) {
+            customer.setDynamicBalance(
+                    customer.getDynamicBalance().add(amount));
         }
     }
 }

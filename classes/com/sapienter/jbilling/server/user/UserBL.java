@@ -1316,9 +1316,6 @@ public class UserBL extends ResultList
         if (user.getCustomer() == null) {
             return null;
         }
-        // TODO: find in the hierarchy tree the right user to use the
-        // dynamic balance... a child might look up to the parent for this
-        // (or not, if a flag is set).
 
         ValidatePurchaseWS result = new ValidatePurchaseWS();
 

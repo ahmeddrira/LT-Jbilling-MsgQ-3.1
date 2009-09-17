@@ -1249,6 +1249,87 @@ Ch2->P1
     	}
     }
 
+    public void testUserBalancePurchaseTaskHierarchical() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create 2 users, child and parent
+            UserWS newUser = new UserWS();
+            newUser.setUserName("parent1");
+            newUser.setPassword("asdfasdf1");
+            newUser.setLanguageId(new Integer(1));
+            newUser.setMainRoleId(new Integer(5));
+            newUser.setIsParent(new Boolean(true));
+            newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+            newUser.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            newUser.setCreditLimit(2000.0);
+            
+            // add a contact
+            ContactWS contact = new ContactWS();
+            contact.setEmail("frodo@shire.com");
+            newUser.setContact(contact);
+            
+            System.out.println("Creating parent user ...");
+            // do the creation
+            Integer parentId = api.createUser(newUser);
+
+            // now create the child
+            newUser.setIsParent(new Boolean(false));
+            newUser.setParentId(parentId);
+            newUser.setUserName("child1");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.FALSE);
+            newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+            newUser.setCreditLimit(null);
+            Integer childId = api.createUser(newUser);
+ 
+            // validate a purchase for the child
+            // validate. room = 2000, price = 7
+            System.out.println("Validate with fields...");
+            PricingField pf[] =  { new PricingField("src", "604"),
+                new PricingField("dst", "512")};
+            ValidatePurchaseWS result = api.validatePurchase(childId, 1, pf);
+            assertEquals("validate purchase success", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity", 285.7143, 
+                    result.getQuantity());
+
+            // create an order for the child
+            OrderWS order = getOrder();
+            order.setUserId(childId);
+            System.out.println("creating one time order");
+            Integer orderId = api.createOrder(order);
+
+            // validate the balance of the parent
+            System.out.println("Validating new balance");
+            UserWS parentUser = api.getUserWS(parentId);
+            assertEquals("user should have 20 balance", 20.0,
+                    parentUser.getDynamicBalance());
+
+            // validate another purchase for the child
+            // validate. room = 1980, price = 10
+            System.out.println("Validate with fields...");
+            result = api.validatePurchase(childId, 1, null);
+            assertEquals("validate purchase success 2", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 2", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 2", 198.0, 
+                    result.getQuantity());
+
+
+            // clean up
+            api.deleteUser(parentId);
+            api.deleteUser(childId);
+
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
+
     // name changed so it is not called in normal test runs
     public void XXtestLoad() {
         try {

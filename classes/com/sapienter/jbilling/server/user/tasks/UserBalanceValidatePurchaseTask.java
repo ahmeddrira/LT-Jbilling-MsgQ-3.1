@@ -56,6 +56,14 @@ public class UserBalanceValidatePurchaseTask extends PluggableTask
             return result;
         }
 
+        // get the parent customer that pays, if it exists
+        while (customer.getParent() != null &&
+                (customer.getInvoiceChild() == null ||
+                customer.getInvoiceChild() == 0)) {
+            // go up one level
+            customer =  customer.getParent();
+        }
+
         IUserBalanceValidation validator;
         // simple factory ...
         if (customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||

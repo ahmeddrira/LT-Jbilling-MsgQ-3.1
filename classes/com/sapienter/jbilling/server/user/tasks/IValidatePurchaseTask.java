@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.user.tasks;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Vector;
 
 import com.sapienter.jbilling.server.item.PricingField;
@@ -33,7 +34,8 @@ import com.sapienter.jbilling.server.user.db.CustomerDTO;
  * Pluggable task type category for validatePurchase API method.
  */
 public interface IValidatePurchaseTask {
-    public ValidatePurchaseWS validate(CustomerDTO customer, ItemDTO item,
-            BigDecimal amount, ValidatePurchaseWS result, 
-            Vector<PricingField> fields) throws TaskException;
+    public ValidatePurchaseWS validate(CustomerDTO customer, 
+            List<ItemDTO> items, List<BigDecimal> amounts, 
+            ValidatePurchaseWS result, List<Vector<PricingField>> fields) 
+            throws TaskException;
 }

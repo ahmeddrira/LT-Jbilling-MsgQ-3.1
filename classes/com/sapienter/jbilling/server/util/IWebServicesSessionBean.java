@@ -269,6 +269,9 @@ public interface IWebServicesSessionBean {
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, 
             String fields);
 
+    public ValidatePurchaseWS validateMultiPurchase(Integer userId, 
+            Integer[] itemId, String[] fields);
+
     /*
      * ITEM
      */

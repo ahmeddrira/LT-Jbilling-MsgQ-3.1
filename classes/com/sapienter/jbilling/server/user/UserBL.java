@@ -1311,8 +1311,9 @@ public class UserBL extends ResultList
         }
     }
 
-    public ValidatePurchaseWS validatePurchase(ItemDTO item, BigDecimal amount, 
-            Vector<PricingField> pricingFields) {
+    public ValidatePurchaseWS validatePurchase(List<ItemDTO> items, 
+            List<BigDecimal> amounts, 
+            List<Vector<PricingField>> pricingFields) {
         if (user.getCustomer() == null) {
             return null;
         }
@@ -1328,7 +1329,7 @@ public class UserBL extends ResultList
             IValidatePurchaseTask myTask = taskManager.getNextClass();
                 
             while(myTask != null) {
-                myTask.validate(user.getCustomer(), item, amount, result, 
+                myTask.validate(user.getCustomer(), items, amounts, result, 
                         pricingFields);
                 myTask = taskManager.getNextClass();
             }

@@ -1330,6 +1330,66 @@ Ch2->P1
     	}
     }
 
+    public void testValidateMultiPurchase() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            UserWS myUser = createUser(true, null, null);
+            Integer myId = myUser.getUserId();
+
+            // update to credit limit
+            myUser.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            myUser.setCreditLimit(1000.0);
+            api.updateUser(myUser);
+
+            // validate with items only
+            // validate. room = 1000, price = 10 + 20 + 15 = 45
+            ValidatePurchaseWS result = api.validateMultiPurchase(myId, 
+                    new Integer[] { 1, 2, 251 }, null);
+            assertEquals("validate purchase success 1", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 1", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 1", 22.2222, 
+                    result.getQuantity());
+
+            // validate with pricing fields
+            // validate. room = 1000, price = 7 * 3 = 21
+            PricingField[] pf = { new PricingField("src", "604"),
+                new PricingField("dst", "512") };
+            result = api.validateMultiPurchase(myId, new Integer[] { 1, 1, 1 }, 
+                    new PricingField[][] { pf, pf, pf } );
+            assertEquals("validate purchase success 1", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 1", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 1", 47.6190, 
+                    result.getQuantity());
+
+            // validate without item ids (mediation should set item)
+            // duration field needed for rule to fire
+            // validate. room = 1000, price = 7 * 3 = 21
+            pf = new PricingField[] { new PricingField("src", "604"),
+                    new PricingField("dst", "512"), 
+                    new PricingField("duration", 1) };
+            System.out.println("Validate with fields and without itemId...");
+            result = api.validateMultiPurchase(myId, null,
+                    new PricingField[][] { pf, pf, pf } );
+            assertEquals("validate purchase success 2", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized 2", 
+                    Boolean.valueOf(true), result.getAuthorized());
+            assertEquals("validate purchase quantity 2", 47.6190, 
+                    result.getQuantity());
+
+
+            System.out.println("Removing");
+            api.deleteUser(myId);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
+    }
+
     // name changed so it is not called in normal test runs
     public void XXtestLoad() {
         try {

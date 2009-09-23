@@ -52,12 +52,18 @@ import com.sapienter.jbilling.server.util.Constants;
 public class RulesValidatePurchaseTask extends PluggableTask 
         implements IValidatePurchaseTask {
 
-    public ValidatePurchaseWS validate(CustomerDTO customer, ItemDTO item,
-            BigDecimal amount, ValidatePurchaseWS result, 
-            Vector<PricingField> fields) throws TaskException {
+    public ValidatePurchaseWS validate(CustomerDTO customer, 
+            List<ItemDTO> items, List<BigDecimal> amounts, 
+            ValidatePurchaseWS result, List<Vector<PricingField>> fields) 
+            throws TaskException {
 
         if (!result.getAuthorized()) {
             return result;
+        }
+
+        BigDecimal amount = new BigDecimal(0.0);
+        for (BigDecimal a : amounts) {
+            amount = amount.add(a);
         }
 
         Integer userId = customer.getBaseUser().getId();
@@ -73,14 +79,18 @@ public class RulesValidatePurchaseTask extends PluggableTask
 
         // add any pricing fields
         if (fields != null && !fields.isEmpty()) {
-            rulesMemoryContext.addAll(fields);
+            for (List<PricingField> pricingFields : fields) {
+                rulesMemoryContext.addAll(pricingFields);
+            }
         }
 
         // add the data
         rulesMemoryContext.add(customer);
         rulesMemoryContext.add(customer.getBaseUser());
-        rulesMemoryContext.add(item);
         rulesMemoryContext.add(result);
+        for (ItemDTO item : items) {
+            rulesMemoryContext.add(item);
+        }
 
         // add user contact info
         ContactBL contact = new ContactBL();

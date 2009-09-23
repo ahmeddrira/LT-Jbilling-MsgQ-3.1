@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.user.tasks;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Vector;
 
 import com.sapienter.jbilling.server.item.PricingField;
@@ -42,12 +43,18 @@ import com.sapienter.jbilling.server.util.Constants;
 public class UserBalanceValidatePurchaseTask extends PluggableTask 
         implements IValidatePurchaseTask {
 
-    public ValidatePurchaseWS validate(CustomerDTO customer, ItemDTO item,
-            BigDecimal amount, ValidatePurchaseWS result, 
-            Vector<PricingField> fields) throws TaskException {
+    public ValidatePurchaseWS validate(CustomerDTO customer, 
+            List<ItemDTO> items, List<BigDecimal> amounts, 
+            ValidatePurchaseWS result, List<Vector<PricingField>> fields) 
+            throws TaskException {
 
         if (!result.getAuthorized()) {
             return result;
+        }
+
+        BigDecimal amount = new BigDecimal(0.0);
+        for (BigDecimal a : amounts) {
+            amount = amount.add(a);
         }
 
         // avoid divide by zero exception

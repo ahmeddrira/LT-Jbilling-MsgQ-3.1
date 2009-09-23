@@ -516,4 +516,23 @@ public class SpringAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+
+    public ValidatePurchaseWS validateMultiPurchase(Integer userId, 
+            Integer[] itemIds, PricingField[][] fields) 
+            throws JbillingAPIException {
+        try {
+            String[] pricingFields = null;
+            if (fields != null) {
+                pricingFields = new String[fields.length];
+                for (int i = 0; i < pricingFields.length; i++) {
+                    pricingFields[i] = PricingField.setPricingFieldsValue(
+                            fields[i]);
+                }
+            }
+            return session.validateMultiPurchase(userId, itemIds, 
+                    pricingFields);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 }

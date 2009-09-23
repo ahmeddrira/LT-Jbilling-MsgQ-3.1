@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -1989,59 +1990,116 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             String fields) {
         LOG.debug("Call to validatePurchase " + userId + ' ' + itemId);
 
-        if (userId == null) {
-            return null;
+        Integer[] itemIds = null;
+        if (itemId != null) {
+            itemIds = new Integer[] { itemId };
+        }
+
+        String[] fieldsArray = null;
+        if (fields != null) {
+            fieldsArray = new String[] { fields };
         }
 
         try {
-            PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
-                    fields);
+            return doValidatePurchase(userId, itemIds, fieldsArray);
+        } catch (Exception e) {
+            LOG.error("WS - validatePurchase", e);
+            throw new SessionInternalError("Error validating purchase");
+        }
+    }
 
-            if (itemId == null) {
-                if (fieldsArray == null) {
-                    return null;
-                }
+    public ValidatePurchaseWS validateMultiPurchase(Integer userId, 
+            Integer[] itemIds, String[] fields) {
+        LOG.debug("Call to validateMultiPurchase " + userId + ' ' + 
+                Arrays.toString(itemIds));
+
+        try {
+            return doValidatePurchase(userId, itemIds, fields);
+        } catch (Exception e) {
+            LOG.error("WS - validateMultiPurchase", e);
+            throw new SessionInternalError("Error validating purchase");
+        }
+    }
+
+    private ValidatePurchaseWS doValidatePurchase(Integer userId, 
+            Integer[] itemIds, String[] fields) 
+            throws PluggableTaskException, TaskException {
+
+        if (userId == null || (itemIds == null && fields == null)) {
+            return null;
+        }
+
+        List<Vector<PricingField>> fieldsList = null;
+        if (fields != null) {
+            fieldsList = new Vector<Vector<PricingField>>(fields.length);
+            for (int i = 0; i < fields.length; i++) {
+                fieldsList.add(new Vector(Arrays.asList(
+                        PricingField.getPricingFieldsValue(fields[i]))));
+            }
+        }
+
+        List<Integer> itemIdsList = null;
+
+        if (itemIds != null) {
+            itemIdsList = new Vector(Arrays.asList(itemIds));
+        } else if (fields != null) {
+            itemIdsList = new LinkedList<Integer>();
+
+            for (Vector<PricingField> pricingFields : fieldsList) {
                 // Since there is no item, run the mediation process rules
-                // to create line/s. Get the item id from the first line.
+                // to create line/s. 
 
                 // fields need to be in records
                 Record record = new Record();
-                for (PricingField field : fieldsArray) {
+                for (PricingField field : pricingFields) {
                     record.addField(field, false); // don't care about isKey
                 }
                 Vector<Record> records = new Vector<Record>(1);
                 records.add(record);
 
                 PluggableTaskManager<IMediationProcess> tm =
-                    new PluggableTaskManager<IMediationProcess>(
+                        new PluggableTaskManager<IMediationProcess>(
                         getCallerCompanyId(),
                         Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                 IMediationProcess processTask = tm.getNextClass();
 
                 Vector<OrderLineDTO> lines = processTask.process(records, "WS");
 
-                if (lines.size() > 0) {
-                    itemId = lines.firstElement().getItem().getId();
-                } else {
-                    return null;
+                for (OrderLineDTO line : lines) {
+                    itemIdsList.add(line.getItem().getId());
                 }
             }
-
-            // find the price first
-            ItemBL item = new ItemBL(itemId);
-            Vector<PricingField> fieldsVector = 
-                    new Vector(Arrays.asList(fieldsArray));
-            item.setPricingFields(fieldsVector);
-            Float price = item.getPrice(userId, getCallerCompanyId());
-
-            ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(
-                    item.getEntity(), new BigDecimal(price.toString()), 
-                    fieldsVector);
-            LOG.debug("Done");
-            return ret;
-        } catch (Exception e) {
-            LOG.error("WS - validatePurchase", e);
-            throw new SessionInternalError("Error validating purchase");
+        } else {
+            return null;
         }
+
+        List<BigDecimal> prices = new Vector<BigDecimal>(itemIdsList.size());
+        List<ItemDTO> items = new Vector<ItemDTO>(itemIdsList.size());
+
+        // find the prices first
+        int itemNum = 0;
+        for (Integer itemId : itemIdsList) {
+            ItemBL item = new ItemBL(itemId);
+
+            if (fieldsList != null && !fieldsList.isEmpty()) {
+                int fieldsIndex = itemNum;
+                // just get first set of fields if only one set 
+                // for many items
+                if (fieldsIndex > fieldsList.size()) {
+                    fieldsIndex = 0;
+                }
+                item.setPricingFields(fieldsList.get(fieldsIndex));
+            }
+
+            prices.add(new BigDecimal(item.getPrice(userId, 
+                    getCallerCompanyId())));
+            items.add(item.getEntity());
+            itemNum++;
+        }
+
+        ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(items, 
+                prices, fieldsList);
+        LOG.debug("Done");
+        return ret;
     }
 }

@@ -132,6 +132,8 @@ public final class UserDTOEx extends UserDTO {
         mainRoleStr = dto.getRole();
         mainRoleId = dto.getMainRoleId();
         languageStr = dto.getLanguage();
+        setLanguage(dto.getLanguageId() == null ? null : 
+                new LanguageDAS().find(dto.getLanguageId()));
         statusStr = dto.getStatus();
         statusId = dto.getStatusId();
         subscriptionStatusId = dto.getSubscriberStatusId();

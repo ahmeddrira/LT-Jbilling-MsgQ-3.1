@@ -327,7 +327,42 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
-    
+
+    public void testLanguageId() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            UserWS newUser = new UserWS();
+            newUser.setUserName("language-test");
+            newUser.setPassword("asdfasdf1");
+            newUser.setLanguageId(new Integer(2)); // French
+            newUser.setMainRoleId(new Integer(5));
+            newUser.setIsParent(new Boolean(true));
+            newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+
+            // add a contact
+            ContactWS contact = new ContactWS();
+            contact.setEmail("frodo@shire.com");
+            newUser.setContact(contact);
+
+            System.out.println("Creating user ...");
+            // do the creation
+            Integer newUserId = api.createUser(newUser);
+
+            // get user
+            UserWS createdUser = api.getUserWS(newUserId);
+            assertEquals("Language id", 2, 
+                    createdUser.getLanguageId().intValue());
+
+            // clean up
+            api.deleteUser(newUserId);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
     public void testUserTransitions() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();

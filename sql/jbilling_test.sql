@@ -10955,7 +10955,6 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 COPY jbilling_table (id, name, next_id) FROM stdin;
 0	report	20
 1	report_field	1604
-3	language	2
 4	currency	11
 5	entity	3
 6	period_unit	5
@@ -11041,6 +11040,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 49	order_process	86
 25	pluggable_task	57
 26	pluggable_task_parameter	83
+3	language	3
 \.
 
 
@@ -11050,6 +11050,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 
 COPY language (id, code, description) FROM stdin;
 1	en	English
+2	fr	French
 \.
 
 

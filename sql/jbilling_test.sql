@@ -14334,6 +14334,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 54	17	com.sapienter.jbilling.server.user.balance.DynamicBalanceManagerTask	0
 55	19	com.sapienter.jbilling.server.user.tasks.UserBalanceValidatePurchaseTask	0
 56	19	com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask	0
+57	6	com.sapienter.jbilling.server.payment.tasks.PaymentsGatewayTask	4
 \.
 
 

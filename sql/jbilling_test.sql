@@ -853,7 +853,7 @@ CREATE TABLE invoice (
     due_date date NOT NULL,
     total double precision NOT NULL,
     payment_attempts integer DEFAULT 0 NOT NULL,
-    to_process smallint DEFAULT 1 NOT NULL,
+    status_id smallint DEFAULT 1 NOT NULL,
     balance double precision,
     carried_balance double precision NOT NULL,
     in_process_payment smallint DEFAULT 1 NOT NULL,
@@ -2965,6 +2965,8 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10740	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner1	0	2
 10741	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-01 00:00:00	\N	\N	partner2	0	1
 10742	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-03-05 00:00:00	\N	\N	partner3	0	2
+10743	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test1	0	1
+10744	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test2	0	1
 1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2007-12-28 14:40:46.604	admin	0	4
 \.
 
@@ -4038,6 +4040,8 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 112609	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner-customer3@partners.com	2009-06-23 20:34:20.542	0	1	10748	1
 112600	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner1@partners.com	2009-06-23 16:25:44.594	0	1	10740	4
 112602	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	partner3@partners.com	2009-06-23 16:37:05.548	0	1	10742	4
+112603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:01.034	0	1	10743	1
+112604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:02.556	0	1	10744	1
 112700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2009-07-20 16:42:04.934	0	1	\N	1
 \.
 
@@ -9453,6 +9457,8 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
 1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N
 1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N
+1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
+1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
 1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0	0
 1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0
 1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
@@ -10037,6 +10043,9 @@ COPY generic_status (id, dtype, status_value, can_login) FROM stdin;
 23	order_line_provisioning_status	4	\N
 24	order_line_provisioning_status	5	\N
 25	order_line_provisioning_status	6	\N
+26	invoice_status	1	\N
+27	invoice_status	2	\N
+28	invoice_status	3	\N
 \.
 
 
@@ -10049,6 +10058,7 @@ order_line_provisioning_status
 order_status
 subscriber_status
 user_status
+invoice_status
 \.
 
 
@@ -10815,6 +10825,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 89	1	description	1	None
 89	2	description	1	Pre-paid balance
 89	3	description	1	Credit limit
+90	1	description	1	Paid
+90	2	description	1	Unpaid
+90	3	description	1	Unpaid, balance carried to new invoice
 \.
 
 
@@ -10822,19 +10835,20 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 -- Data for Name: invoice; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoice_id, due_date, total, payment_attempts, to_process, balance, carried_balance, in_process_payment, is_review, currency_id, deleted, paper_invoice_batch_id, customer_notes, public_number, last_reminder, overdue_step, create_timestamp, optlock) FROM stdin;
-1	2006-07-26 00:00:00	\N	2	\N	2006-08-26	20	1	0	0	0	1	0	1	0	\N	\N	1	\N	\N	2006-07-26 09:43:43.428	1
-2	2006-07-26 00:00:00	\N	2	\N	2006-08-26	15	1	0	0	0	1	0	1	0	\N	\N	2	\N	\N	2006-07-26 09:48:16.931	1
-3	2006-07-26 00:00:00	\N	2	5	2006-08-26	35	1	0	0	0	1	0	1	0	\N	\N	3	\N	\N	2006-07-26 09:49:48.723	1
-4	2006-07-26 00:00:00	\N	2	5	2006-08-26	20	1	0	0	0	1	0	1	0	\N	\N	4	\N	\N	2006-07-26 09:50:36.882	1
-5	2006-08-26 00:00:00	2	2	15	2006-09-26	63	0	0	0	43	1	0	1	0	\N	\N	5	\N	\N	2006-12-19 16:05:00.329	1
-15	2006-09-26 00:00:00	12	2	\N	2006-10-26	83	1	0	0	63	1	0	1	0	\N	\N	6	\N	\N	2006-12-19 16:10:00.587	1
-35	2007-01-16 00:00:00	\N	2	\N	2007-02-16	15	0	1	15	0	1	0	1	0	\N	\N	7	\N	\N	2007-01-16 14:39:58.115	1
-45	2007-07-12 00:00:00	2	2	\N	2017-08-12	20	0	1	20	0	1	0	1	0	\N	\N	8	\N	\N	2007-07-12 13:20:29.858	1
-55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10	0	1	10	0	1	0	1	0	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
-65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15	0	1	15	0	1	0	1	0	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
-75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.989999771118164	0	1	12.989999771118164	0	1	0	1	0	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
-8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15	0	1	15	0	1	0	1	0	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
+COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoice_id, due_date, total, payment_attempts, status_id, balance, carried_balance, in_process_payment, is_review, currency_id, deleted, paper_invoice_batch_id, customer_notes, public_number, last_reminder, overdue_step, create_timestamp, optlock) FROM stdin;
+1	2006-07-26 00:00:00	\N	2	\N	2006-08-26	20	1	26	0	0	1	0	1	0	\N	\N	1	\N	\N	2006-07-26 09:43:43.428	1
+2	2006-07-26 00:00:00	\N	2	\N	2006-08-26	15	1	26	0	0	1	0	1	0	\N	\N	2	\N	\N	2006-07-26 09:48:16.931	1
+3	2006-07-26 00:00:00	\N	2	5	2006-08-26	35	1	28	35	0	1	0	1	0	\N	\N	3	\N	\N	2006-07-26 09:49:48.723	1
+4	2006-07-26 00:00:00	\N	2	5	2006-08-26	20	1	28	20	0	1	0	1	0	\N	\N	4	\N	\N	2006-07-26 09:50:36.882	1
+5	2006-08-26 00:00:00	2	2	15	2006-09-26	75	0	28	20	55	1	0	1	0	\N	\N	5	\N	\N	2006-12-19 16:05:00.329	1
+15	2006-09-26 00:00:00	12	2	\N	2006-10-26	95	1	26	20	75	1	0	1	0	\N	\N	6	\N	\N	2006-12-19 16:10:00.587	1
+35	2007-01-16 00:00:00	\N	2	\N	2007-02-16	15	0	27	15	0	1	0	1	0	\N	\N	7	\N	\N	2007-01-16 14:39:58.115	1
+45	2007-07-12 00:00:00	2	2	\N	2017-08-12	20	0	27	20	0	1	0	1	0	\N	\N	8	\N	\N	2007-07-12 13:20:29.858	1
+55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10	0	27	10	0	1	0	1	0	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
+65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15	0	27	15	0	1	0	1	0	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
+70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20	0	27	20	0	1	0	1	0	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
+75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.989999771118164	0	27	12.989999771118164	0	1	0	1	0	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
+8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15	0	27	15	0	1	0	1	0	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
 \.
 
 
@@ -10868,6 +10882,7 @@ COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, it
 46	45	1	20	1	20	0	2	Lemonade - all you can drink monthly	2	0	1
 56	55	1	10	1	10	0	1	Lemonade - 1 per day monthly pass Period from 10/01/2006 to 10/31/2006	53	0	1
 66	65	1	15	1	15	0	3	Coffee - one per day - Monthly Period from 09/26/2006 to 10/25/2006	63	0	1
+67	70	1	20	1	20	0	2	Lemonade - all you can drink monthly	10743	0	1
 76	75	1	12.989999771118164	1	12.989999771118164	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
 8600	8500	4	15	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
 \.
@@ -11033,6 +11048,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 21	purchase_order	1076
 22	order_line	2077
 39	invoice	86
+90	invoice_status	4
 29	contact_map	7907
 27	contact	1128
 76	contact_field	2025
@@ -11043,7 +11059,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 3	language	3
 \.
 
-
+--90	invoice	_status 4
 --
 -- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
@@ -13551,7 +13567,7 @@ COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_d
 3	2	1	4	10	2006-07-26 09:47:41.67	2006-12-21 11:04:44.875	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1
 4	2	1	4	20	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0	1
 5	2	1	4	10	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0	1
-6	2	1	4	83	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0	1
+6	2	1	4	95	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0	1
 1600	10746	1	4	100	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100	1
 1601	10746	1	4	50	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0	1
 1700	10747	1	4	50	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50	1
@@ -13588,7 +13604,7 @@ COPY payment_info_cheque (id, payment_id, bank, cheque_number, cheque_date, optl
 --
 
 COPY payment_invoice (id, payment_id, invoice_id, amount, create_datetime, optlock) FROM stdin;
-1	6	15	83	2006-12-21 11:08:11.928	1
+1	6	15	95	2006-12-21 11:08:11.928	1
 \.
 
 
@@ -15528,6 +15544,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
 107500	121	1	1	\N	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	0	1
 \.
+
 
 
 --
@@ -18874,6 +18891,8 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10740	4
 10741	4
 10742	4
+10743	5
+10744	5
 10746	5
 10747	5
 10748	5

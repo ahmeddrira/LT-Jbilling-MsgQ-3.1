@@ -104,7 +104,7 @@ public class BillingProcessTest extends TestCase {
         runDate = cal.getTime();
 
     }
-    
+
     public void testRetry() {
         try {
             // set the configuration to something we are sure about
@@ -283,7 +283,8 @@ public class BillingProcessTest extends TestCase {
             Integer reviewInvoiceId = invoice.getId();
             invoice = getNoReviewInvoice(remoteInvoice.getAllInvoices(121));
             assertNull("Overdue invoice not delegated", invoice.getInvoice());
-            assertEquals("Overdue invoice remains 'not paid'", 1, invoice.getToProcess().intValue());
+            assertEquals("Overdue invoice marked as 'unpaid and carried'",
+                    Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
             Integer overdueInvoiceId = invoice.getId();
 
@@ -293,7 +294,8 @@ public class BillingProcessTest extends TestCase {
 
             invoice = getNoReviewInvoice(remoteInvoice.getAllInvoices(121));
             assertNotNull("Overdue invoice still there", invoice);
-            assertEquals("Overdue invoice remains 'not paid'", 1, invoice.getToProcess().intValue());
+            assertEquals("Overdue invoice marked as 'unpaid and carried'",
+                    Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
 
             // run trigger, but too early (six days, instead of 5)    
@@ -328,7 +330,8 @@ public class BillingProcessTest extends TestCase {
 
             invoice = remoteInvoice.getInvoice(overdueInvoiceId);
             assertNotNull("Overdue invoice still there", invoice);
-            assertEquals("Overdue invoice remains 'not paid'", 1, invoice.getToProcess().intValue());
+            assertEquals("Overdue invoice marked as 'unpaid and carried'",
+                    Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
             invoice = remoteInvoice.getInvoice(reviewInvoiceId);
             assertNull("Review invoice not longer present", invoice);
@@ -408,8 +411,8 @@ public class BillingProcessTest extends TestCase {
             fail("Exception:" + e);
         }
     }
-   
-    
+
+
     public void testProcess() throws Exception {
         try {
             // get the latest process
@@ -427,15 +430,18 @@ public class BillingProcessTest extends TestCase {
                     getConfigurationDto(entityId);
             assertEquals("14.9 - Next billing date starting point", new Date(2006 - 1900,10 - 1,26),
                     configDto.getNextRunDate());
-            
-            // run trigger on the run date     
+
+            // run trigger on the run date
             remoteBillingProcess.trigger(runDate);
 
             // validate invoice delegation
             InvoiceDTO invoice = remoteInvoice.getInvoice(8500);
             assertNotNull("Overdue invoice still there", invoice);
             assertEquals("Overdue invoice is now  'paid'", 0, invoice.getToProcess().intValue());
-            assertEquals("Overdue invoice balance 0", 0.0F, invoice.getBalance());
+            assertEquals("Overdue invoice is now  'carried over'", Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(),
+                    invoice.getInvoiceStatus().getId());
+            assertEquals("Overdue invoice carried balance remains the same",
+                    15.0F, invoice.getBalance());
 
             // get the latest process
             BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(
@@ -451,7 +457,7 @@ public class BillingProcessTest extends TestCase {
             configDto = remoteBillingProcess.
                     getConfigurationDto(entityId);
             assertEquals("17 - Next billing date for a month later", new Date(2006 - 1900,11 - 1,26), configDto.getNextRunDate());
-            
+
             // verify that what just have run, is the same that was displayed
             // in the review
             assertEquals("17.1 - Review invoices = Process invoices",

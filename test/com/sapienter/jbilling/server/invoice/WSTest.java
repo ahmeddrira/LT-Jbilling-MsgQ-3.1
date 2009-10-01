@@ -39,7 +39,7 @@ import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
  * @author Emil
  */
 public class WSTest extends TestCase {
-      
+
     public void testGet() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -52,14 +52,14 @@ public class WSTest extends TestCase {
                 fail("Invoice 75 belongs to entity 2");
             } catch (Exception e) {
             }
-            
+
             System.out.println("Getting invoice");
             InvoiceWS retInvoice = api.getInvoiceWS(15);
             assertNotNull("invoice not returned", retInvoice);
             assertEquals("invoice id", retInvoice.getId(),
                     new Integer(15));
             System.out.println("Got = " + retInvoice);
-            
+
             // latest
             // first, from a guy that is not mine
             try {
@@ -74,7 +74,7 @@ public class WSTest extends TestCase {
                     new Integer(2));
             System.out.println("Got = " + retInvoice);
             Integer lastInvoice = retInvoice.getId();
-            
+
             // List of last
             // first, from a guy that is not mine
             try {
@@ -85,7 +85,7 @@ public class WSTest extends TestCase {
             System.out.println("Getting last 5 invoices");
             Integer invoices[] = api.getLastInvoices(2, 5);
             assertNotNull("invoice not returned", invoices);
-            
+
             retInvoice = api.getInvoiceWS(invoices[0]);
             assertEquals("invoice's user id", new Integer(2),
                     retInvoice.getUserId());
@@ -93,7 +93,7 @@ public class WSTest extends TestCase {
             for (int f = 0; f < invoices.length; f++) {
                 System.out.println(" Invoice " + (f + 1) + invoices[f]);
             }
-            
+
             // now I want just the two latest
             System.out.println("Getting last 2 invoices");
             invoices = api.getLastInvoices(2, 2);
@@ -104,7 +104,7 @@ public class WSTest extends TestCase {
             assertEquals("invoice's has to be latest", lastInvoice,
                     retInvoice.getId());
             assertEquals("there should be only 2", 2, invoices.length);
-            
+
             // get some by date
             System.out.println("Getting by date (empty)");
             Integer invoices2[] = api.getInvoicesByDate("2000-01-01", "2005-01-01");
@@ -113,7 +113,7 @@ public class WSTest extends TestCase {
             if (invoices2 != null) {
                 assertTrue("array not empty", invoices2.length == 0);
             }
-            
+
             System.out.println("Getting by date");
             invoices2 = api.getInvoicesByDate("2006-01-01", "2007-01-01");
             assertNotNull("invoice not returned", invoices2);
@@ -122,7 +122,7 @@ public class WSTest extends TestCase {
             retInvoice = api.getInvoiceWS(invoices2[0]);
             assertNotNull("invoice not there", retInvoice);
             System.out.println("Got invoice " + retInvoice);
-            
+
             System.out.println("Done!");
 
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public class WSTest extends TestCase {
             } catch(Exception e) {
                 //ok
             }
-            
+
             // try to delete an invoice that is not mine
             try {
                 api.deleteInvoice(new Integer(75));
@@ -151,12 +151,12 @@ public class WSTest extends TestCase {
             } catch(Exception e) {
                 //ok
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
-        
+
     }
 
     public void testCreateInvoice() {
@@ -166,7 +166,7 @@ public class WSTest extends TestCase {
 
             // setup order
             OrderWS order = new OrderWS();
-            order.setUserId(USER_ID); 
+            order.setUserId(USER_ID);
             order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
             order.setPeriod(1); // once
             order.setCurrencyId(1);
@@ -198,8 +198,14 @@ public class WSTest extends TestCase {
 
             assertEquals("Number of invoices returned", 1, invoices.length);
             InvoiceWS invoice = api.getInvoiceWS(invoices[0]);
+
+            assertNull("Invoice is not delegated.",
+                       invoice.getDelegatedInvoiceId());
+            assertTrue("Invoice does not have a carried balance.",
+                       (invoice.getCarriedBalance() == null || invoice.getCarriedBalance() == 0.0f));
+
             Integer[] invoicedOrderIds = invoice.getOrders();
-            assertEquals("Number of orders invoiced", 2, 
+            assertEquals("Number of orders invoiced", 2,
                     invoicedOrderIds.length);
             Arrays.sort(invoicedOrderIds);
             assertEquals("Order 1 invoiced", orderId1, invoicedOrderIds[0]);
@@ -240,7 +246,7 @@ public class WSTest extends TestCase {
             assertEquals("Number of invoices returned", 1, invoices.length);
             invoice = api.getInvoiceWS(invoices[0]);
             invoicedOrderIds = invoice.getOrders();
-            assertEquals("Number of orders invoiced", 2, 
+            assertEquals("Number of orders invoiced", 2,
                     invoicedOrderIds.length);
             Arrays.sort(invoicedOrderIds);
             assertEquals("Order 1 invoiced", orderId1, invoicedOrderIds[0]);
@@ -270,5 +276,67 @@ public class WSTest extends TestCase {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
+    }
+
+
+    /**
+     * Tests that when a past due invoice is processed it will generate a new invoice for the
+     * current period that contains all previously un-paid balances as the carried balance.
+     *
+     * Invoices that have been carried still show the original balance for reporting/paper-trail
+     * purposes, but will not be re-processed by the system as part of the normal billing process.
+     *
+     * @throws Exception
+     */
+    public void testCreateWithCarryOver() throws Exception {
+        final Integer USER_ID = 10743;          // user has one past-due invoice to be carried forward
+        final Integer OVERDUE_INVOICE_ID = 70;  // holds a $20 balance
+
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // new order witha  single line item
+        OrderWS order = new OrderWS();
+        order.setUserId(USER_ID);
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(1); // once
+        order.setCurrencyId(1);
+
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setDescription("Order line");
+        line.setItemId(1);
+        line.setQuantity(1);
+        line.setPrice(10.0f);
+        line.setAmount(10.0f);
+
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        // create order
+        Integer orderId = api.createOrder(order);
+
+        // create invoice
+        Integer invoiceId = api.createInvoice(USER_ID, false)[0];
+
+        // validate that the overdue invoice has been carried forward to the newly created invoice
+        InvoiceWS overdue = api.getInvoiceWS(OVERDUE_INVOICE_ID);
+
+        assertEquals("Status updated to 'unpaid and carried'",
+                     Constants.INVOICE_STATUS_UNPAID_AND_CARRIED, overdue.getStatusId());
+        assertEquals("Carried invoice will not be re-processed",
+                     0, overdue.getToProcess().intValue());
+        assertEquals("Overdue invoice holds original balance",
+                     20.0f, overdue.getBalance().floatValue());
+        assertEquals("Overdue invoice delegated to the newly created invoice",
+                     invoiceId, overdue.getDelegatedInvoiceId());
+
+        // validate that the newly created invoice contains the carried balance
+        InvoiceWS invoice = api.getInvoiceWS(invoiceId);
+
+        assertEquals("New invoice balance is equal to the current period charges",
+                     10.0f, invoice.getBalance().floatValue());
+        assertEquals("New invoice holds the carried balance equal to the old invoice balance",
+                     overdue.getBalance(), invoice.getCarriedBalance());       
+        assertEquals("New invoice total is equal to the current charges plus the carried total",
+                     30.0f, invoice.getTotal().floatValue());
     }
 }

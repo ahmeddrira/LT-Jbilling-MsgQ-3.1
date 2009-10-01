@@ -42,6 +42,8 @@ import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -188,6 +190,7 @@ public class BillingProcessBL extends ResultList
         // this is an isolated invoice that doesn't care about previous
         // overdue invoices
         newInvoice.setCarriedBalance(new Float(0));
+        newInvoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
 
         try {
             // put the order in the invoice using all the pluggable taks stuff
@@ -361,6 +364,7 @@ public class BillingProcessBL extends ResultList
                         holder.setDate(process.getBillingDate());
                         holder.setIsReview(isReview ? new Integer(1) : new Integer(0));
                         holder.setCarriedBalance(new Float(0));
+                        holder.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
 
                         // need to set a due date, so use the order default
                         OrderBL orderBl = new OrderBL();
@@ -387,13 +391,15 @@ public class BillingProcessBL extends ResultList
                     }
                     // update the amount of the new invoice that is due to
                     // previously unpaid overdue invoices
-                    float iBalance = (invoice.getBalance() == null) ? 0 : invoice.getBalance().
-                            floatValue();
-                    BigDecimal cBalance = new BigDecimal(holder.getCarriedBalance().toString());
-                    cBalance = cBalance.add(new BigDecimal(iBalance));
-                    holder.setCarriedBalance(new Float(cBalance.floatValue()));
 
-                    
+                    // carry the remaining balance, plus the previously carried balance to the new invoice
+                    BigDecimal balance = new BigDecimal((invoice.getBalance() == null) ? 0F : invoice.getBalance());
+                    BigDecimal carried = balance.add(new BigDecimal(holder.getCarriedBalance()));
+
+                    holder.setCarriedBalance(carried.floatValue());
+
+                    if (carried.floatValue() > 0F)
+                        invoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
                 }
 
                 LOG.debug("invoice " + invoice.getId() + " result " +
@@ -428,19 +434,14 @@ public class BillingProcessBL extends ResultList
                  */
                 composeInvoice(entityId, user.getUserId(), invoice);
                 
-                // if the new invoice is carrying old invoices, set the balance of those
-                // old invoices to 0. This needs to be done after the new invoice was
-                // composed, so the balance is available for the totals of the new order lines
                 if (!isReview) {
                     for (InvoiceDTO oldInvoice : invoice.getInvoices()) {
-                        // since this invoice is being delegated, reset its balance
-                        // this means that the delegated_invoice_id has to be set
-                        oldInvoice.setToProcess(new Integer(0));
-                        if (oldInvoice.getBalance() != null) {
-                            oldInvoice.setBalance(new Float(0));
-                        }
+                        // since this invoice is being delegated, mark it as being carried forward
+                        // so that it is not re-processed later. do not clear the old balance!
+                        oldInvoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
                     }
                 }
+
                 /*
                  * apply this object to the DB, generating the actual rows 
                  */
@@ -638,7 +639,14 @@ public class BillingProcessBL extends ResultList
         // The invoice row is created first
         // all that fits in the DTO goes there
         newInvoice.calculateTotal();
-        newInvoice.setBalance(newInvoice.getTotal().floatValue());
+        
+        if (newInvoice.getCarriedBalance() != null) {
+            newInvoice.setBalance(newInvoice.getTotal().subtract(
+                    new BigDecimal(newInvoice.getCarriedBalance())).floatValue());
+        } else {
+            newInvoice.setBalance(newInvoice.getTotal().floatValue());
+        }
+
         newInvoice.setInProcessPayment(new Integer(1));
         InvoiceBL invoiceBL = new InvoiceBL();
 

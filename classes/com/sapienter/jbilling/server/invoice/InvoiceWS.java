@@ -42,6 +42,7 @@ public class InvoiceWS implements Serializable {
     private java.util.Date dueDate;
     private java.lang.Float total;
     private java.lang.Integer toProcess;
+    private java.lang.Integer statusId;
     private java.lang.Float balance;
     private java.lang.Float carriedBalance;
     private java.lang.Integer inProcessPayment;
@@ -115,6 +116,14 @@ public class InvoiceWS implements Serializable {
     public void setToProcess(java.lang.Integer toProcess) {
         this.toProcess = toProcess;
 
+    }
+
+    public Integer getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
     }
 
     public java.lang.Float getBalance() {

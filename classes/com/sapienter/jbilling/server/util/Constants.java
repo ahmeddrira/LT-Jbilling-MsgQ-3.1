@@ -48,6 +48,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_BILLING_PROCESS_RUN_TOTAL_PM = "process_run_total_pm";
     public static final String TABLE_BILLING_PROCESS_CONFIGURATION = "billing_process_configuration";
     public static final String TABLE_INVOICE = "invoice";
+    public static final String TABLE_INVOICE_STATUS = "invoice_status";
     public static final String TABLE_INVOICE_LINE= "invoice_line";
     public static final String TABLE_EVENT_LOG = "event_log";
     public static final String TABLE_INTERNATIONAL_DESCRIPTION = "international_description";

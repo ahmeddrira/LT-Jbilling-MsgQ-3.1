@@ -59,6 +59,7 @@ import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
 import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
+import com.sapienter.jbilling.server.pluggableTask.PenaltyTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
@@ -731,7 +732,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
             int invoiceId = cachedResults.getInt(1);
             PluggableTaskManager taskManager = new PluggableTaskManager(
                     entityId, Constants.PLUGGABLE_TASK_PENALTY);
-            BasicPenaltyTask task = (BasicPenaltyTask) taskManager.getNextClass();
+            PenaltyTask task = (PenaltyTask) taskManager.getNextClass();
             while (task != null) {
                 try {
                     task.process(new Integer(invoiceId));
@@ -763,6 +764,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         retValue.setDueDate(i.getDueDate());
         retValue.setTotal(new Float(i.getTotal().floatValue()));
         retValue.setToProcess(i.getToProcess());
+        retValue.setStatusId(i.getInvoiceStatus().getId());
         retValue.setBalance(new Float(i.getBalance()));
         retValue.setCarriedBalance(new Float(i.getCarriedBalance()));
         retValue.setInProcessPayment(i.getInProcessPayment());

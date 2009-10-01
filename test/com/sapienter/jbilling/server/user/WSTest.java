@@ -77,7 +77,7 @@ public class WSTest extends TestCase {
 
             System.out.println("Getting balance of user 2");
             UserWS ret = api.getUserWS(new Integer(2));
-            assertEquals("Balance of Gandlaf starts at 1376690.0", 1376690.0, ret.getOwingBalance());
+            assertEquals("Balance of Gandlaf starts at 1376765", 1376765.0, ret.getOwingBalance());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,9 +297,9 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(1015,users.length);
+            assertEquals(1017,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 10751, users[1014].intValue());
+            assertEquals("Last returned user ", 10751, users[1016].intValue());
 
             /*
              * Get list of not active customers
@@ -739,7 +739,7 @@ Ch2->P1
             Integer[] ids = api.getUsersByCreditCard("1152");
             assertNotNull("Four customers with CC", ids);
             assertEquals("Four customers with CC", 5, ids.length);
-            assertEquals("Created user with CC", 10751, 
+            assertEquals("Created user with CC", 10751,
                     ids[ids.length - 1].intValue());
                     
             // get the user

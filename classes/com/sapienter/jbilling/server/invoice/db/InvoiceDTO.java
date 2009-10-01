@@ -69,7 +69,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class InvoiceDTO implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(InvoiceDTO.class);
-    
+
+    private static final int PROCESS = 1;
+    public static final int DO_NOT_PROCESS = 0;
+
     private int id;
     private BillingProcessDTO billingProcessDTO;
     private UserDTO baseUser;
@@ -80,7 +83,7 @@ public class InvoiceDTO implements Serializable {
     private Date dueDate;
     private BigDecimal total;
     private int paymentAttempts;
-    private Integer toProcess;
+    private InvoiceStatusDTO invoiceStatus;
     private Float balance;
     private Float carriedBalance;
     private int inProcessPayment;
@@ -128,8 +131,8 @@ public class InvoiceDTO implements Serializable {
         this.setPaperInvoiceBatch(invoice.getPaperInvoiceBatch());
         this.setPaymentAttempts(invoice.getPaymentAttempts());
         this.setPaymentMap(invoice.getPaymentMap());
-        this.setPublicNumber(invoice.getPublicNumber());
-        this.setToProcess(invoice.getToProcess());
+        this.setPublicNumber(invoice.getPublicNumber());        
+        this.setInvoiceStatus(invoice.getInvoiceStatus());
         this.setTotal(invoice.getTotal());
         setInvoiceLines(new Vector(invoice.getInvoiceLines()));
         setInvoices(new HashSet(invoice.getInvoices()));
@@ -138,7 +141,7 @@ public class InvoiceDTO implements Serializable {
     }
 
     public InvoiceDTO(int id, CurrencyDTO currencyDTO, Date createDatetime,
-            Date dueDate, BigDecimal total, int paymentAttempts, Integer toProcess,
+            Date dueDate, BigDecimal total, int paymentAttempts, InvoiceStatusDTO invoiceStatus,
             Float carriedBalance, int inProcessPayment, int isReview,
             Integer deleted, Date createTimestamp) {
         this.id = id;
@@ -147,7 +150,7 @@ public class InvoiceDTO implements Serializable {
         this.dueDate = dueDate;
         this.total = total;
         this.paymentAttempts = paymentAttempts;
-        this.toProcess = toProcess;
+        this.invoiceStatus = invoiceStatus;
         this.carriedBalance = carriedBalance;
         this.inProcessPayment = inProcessPayment;
         this.isReview = isReview;
@@ -252,13 +255,57 @@ public class InvoiceDTO implements Serializable {
         this.paymentAttempts = paymentAttempts;
     }
 
-    @Column(name = "to_process", nullable = false)
-    public Integer getToProcess() {
-        return this.toProcess;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id", nullable = false)
+    public InvoiceStatusDTO getInvoiceStatus() {
+        return invoiceStatus;
+    }
+
+    public void setInvoiceStatus(InvoiceStatusDTO invoiceStatus) {
+        this.invoiceStatus = invoiceStatus;
+    }
+
+    /**
+     * Returns 1 if this invoice is to be processed as part of the current billing
+     * cycle. If the invoice has already been paid or it's balance was carried over
+     * to another invoice this method will return 0, and should not be processed.
+     *
+     * @return returns 1 if this invoice is to be processed, 0 if not
+     */
+    @Transient
+    public Integer getToProcess() {        
+        if (getInvoiceStatus() != null) {
+            if (Constants.INVOICE_STATUS_PAID.equals(getInvoiceStatus().getId()))
+                return DO_NOT_PROCESS;
+
+            if (Constants.INVOICE_STATUS_UNPAID.equals(getInvoiceStatus().getId()))
+                return PROCESS;
+
+            if (Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.equals(getInvoiceStatus().getId()))
+                return DO_NOT_PROCESS;
+        }
+
+        return PROCESS;
     }
 
     public void setToProcess(Integer toProcess) {
-        this.toProcess = toProcess;
+        if (toProcess == null) {
+            setInvoiceStatus(null);
+            return;
+        }
+
+        // don't change carried invoices to 'unpaid' based on toProcess
+        if (getInvoiceStatus() != null
+                && toProcess == DO_NOT_PROCESS
+                && Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.equals(getInvoiceStatus().getId())) {
+            return;
+        }
+
+        setInvoiceStatus(new InvoiceStatusDAS().find(
+                (toProcess == DO_NOT_PROCESS
+                        ? Constants.INVOICE_STATUS_PAID
+                        : Constants.INVOICE_STATUS_UNPAID)
+        ));
     }
 
     @Column(name = "balance", precision = 17, scale = 17)

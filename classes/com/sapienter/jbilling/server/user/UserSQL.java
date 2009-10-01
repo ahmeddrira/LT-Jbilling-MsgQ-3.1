@@ -43,7 +43,7 @@ public interface UserSQL {
         "AND exists (" +
         "    select 1 " +
         "      from invoice i" +
-        "     where i.to_process = 1 " +
+        "     where i.status_id != 26 " + // 26 is paid. It should return upaid and carried
         "       and i.user_id = a.id " +
         "       and i.is_review = 0  " +
         "       and i.deleted = 0 " +

@@ -37,7 +37,7 @@ public interface InvoiceSQL {
     // Internal gets all the invoices ever
     static final String internalList = 
         "select i.id, i.public_number, bu.user_name, i.id, i.create_datetime, i.due_date, " +
-        "       c.symbol, i.total, i.balance, i.to_process " +
+        "       c.symbol, i.total, i.balance, i.status_id " +
         "  from invoice i, base_user bu, currency c " +
         " where i.user_id = bu.id " +
         "   and i.currency_id = c.id " +
@@ -90,7 +90,7 @@ public interface InvoiceSQL {
     // Invoices generated in a billing process
     static final String processList = 
         "select i.id, i.public_number, i.id, bu.user_name, co.organization_name, " +
-        "       i.due_date, c.symbol, i.total, i.to_process " +
+        "       i.due_date, c.symbol, i.total, i.status_id " +
         "  from invoice i, base_user bu, currency c, contact co " +
         " where i.billing_process_id = ? " +
         "   and bu.id = i.user_id " +
@@ -101,7 +101,7 @@ public interface InvoiceSQL {
     
     static final String processPrintableList = 
         "select i.id, i.public_number, i.id, bu.user_name, co.organization_name, " +
-        "       i.due_date, c.symbol, i.total, i.to_process " +
+        "       i.due_date, c.symbol, i.total, i.status_id " +
         "  from invoice i, base_user bu, currency c, contact co, customer cu " +
         " where i.billing_process_id = ? " +
         "   and bu.id = i.user_id " +
@@ -173,7 +173,7 @@ public interface InvoiceSQL {
     "   and b.deleted = 0 " +
     "   and i.deleted = 0 " +
     "   and i.is_review = 0 " +
-    "   and i.to_process = 1 " +
+    "   and i.status_id = 27 " +
     "   and i.due_date > ? " +
     "   and i.create_datetime <= ? " +
     "   and (i.last_reminder is null or " +
@@ -183,6 +183,9 @@ public interface InvoiceSQL {
     // For the overdue interest calculation only
     // All the invoices that are going overdue
     // Overdue step, 0 means no further process required
+    //
+    // status is unpaid (id 27) containing no delegated invoice or
+    // status is unpaid and carried (id 28) with delegated invoices.
     static final String overdue =
     "select i.id " +
     "  from invoice i, base_user b" +
@@ -191,8 +194,8 @@ public interface InvoiceSQL {
     "   and i.is_review = 0 " +
     "   and i.due_date < ? " +
     "   and i.deleted = 0 " +
-    "   and ( (i.to_process = 1 and i.delegated_invoice_id is null) or" +
-    "         (i.to_process = 0 and i.delegated_invoice_id is not null) )" +
+    "   and ( (i.status_id = 27 and i.delegated_invoice_id is null) or" +
+    "         (i.status_id = 28 and i.delegated_invoice_id is not null) )" +
     "   and (i.overdue_step != 0 or i.overdue_step is null)";
 
     // Invoice in ageing: any invoices that make this user applicable 
@@ -204,7 +207,7 @@ public interface InvoiceSQL {
     "  and i.due_date < ? " +
     "  and i.deleted = 0 " +
     "  and i.user_id = ? " +
-    "  and i.to_process = 1 " +
+    "  and i.status_id != 26 " +
     "  and i.id != ?";
  
 

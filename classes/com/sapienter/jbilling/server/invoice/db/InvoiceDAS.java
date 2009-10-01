@@ -29,6 +29,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
@@ -36,9 +37,13 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import com.sapienter.jbilling.server.util.Constants;
+
 import java.math.BigDecimal;
 
 public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
+    public static final Logger LOG = Logger.getLogger(InvoiceDAS.class);
+
 	// used for the web services call to get the latest X
 	public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class).add(
@@ -205,7 +210,8 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         addUserCriteria(criteria, userId);
         criteria
             .add(Restrictions.lt("dueDate", date))
-            .add(Restrictions.eq("toProcess", 1))
+            .createAlias("invoiceStatus", "s")
+                .add(Restrictions.eq("s.id", Constants.INVOICE_STATUS_UNPAID))
             .add(Restrictions.eq("isReview", 0))
             .setProjection(Projections.id())
             .addOrder(Order.desc("id"));
@@ -214,7 +220,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
 	/**
 	 * query="SELECT OBJECT(a) FROM invoice a WHERE a.billingProcess.id = ?1 AND
-	 * a.toProcess = 1 AND a.isReview = 0 AND a.inProcessPayment = 1 AND
+	 * a.invoiceStatus.id = 2 AND a.isReview = 0 AND a.inProcessPayment = 1 AND
 	 * a.deleted = 0" result-type-mapping="Local"
 	 * 
 	 * @param processId
@@ -225,7 +231,8 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 		BillingProcessDTO process = new BillingProcessDAS().find(processId);
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		criteria.add(Restrictions.eq("billingProcess", process));
-		criteria.add(Restrictions.eq("toProcess", 1));
+                criteria.createAlias("invoiceStatus", "s")
+                   .add(Restrictions.eq("s.id", Constants.INVOICE_STATUS_UNPAID));
 		criteria.add(Restrictions.eq("isReview", 0));
 		criteria.add(Restrictions.eq("inProcessPayment", 1));
 		criteria.add(Restrictions.eq("deleted", 0));
@@ -251,15 +258,20 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 		entity.setIsReview(invoice.getIsReview());
 		entity.setCurrency(invoice.getCurrency());
 		entity.setBaseUser(new UserDAS().find(userId));
-		// Initially the invoices are processable, this will be changed
-		// when the invoice gets fully paid. This doesn't mean that the
-		// invoice will be picked up by the main process, because of the
-		// due date. (fix: if the total is > 0)
-		if (invoice.getTotal().compareTo(new BigDecimal(0)) <= 0) {
-			entity.setToProcess(new Integer(0));
-		} else {
-			entity.setToProcess(new Integer(1));
-		}
+
+        // note: toProcess was replaced by a generic status InvoiceStatusDTO
+        // ideally we should replace it here too, however in this case PAID/UNPAID statuses have a different
+        // different meaning than "process" / "don't process" 
+
+        // Initially the invoices are processable, this will be changed
+        // when the invoice gets fully paid. This doesn't mean that the
+        // invoice will be picked up by the main process, because of the
+        // due date. (fix: if the total is > 0)
+        if (invoice.getTotal().compareTo(new BigDecimal(0)) <= 0) {
+            entity.setToProcess(new Integer(0));
+        } else {
+            entity.setToProcess(new Integer(1));
+        }
 
 		if (process != null) {
 			entity.setBillingProcess(process);
@@ -302,7 +314,9 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         addUserCriteria(criteria, userId);
         criteria.add(Restrictions.ne("balance", new Float(0)));
         criteria.add(Restrictions.eq("isReview", 0));
-        criteria.setProjection(Projections.sum("balance"));
+        criteria.createAlias("invoiceStatus", "s")
+                .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID)); // carried invoices still hold a balance
+        criteria.setProjection(Projections.sum("balance"));                   // only count unpaid invoices
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
         Float result = (Float) criteria.uniqueResult();
         if (result == null) {
@@ -317,28 +331,28 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
  *             query="SELECT OBJECT(a) 
  *                      FROM invoice a 
  *                     WHERE a.userId = ?1
- *                       AND a.toProcess = 1 
+ *                       AND a.invoiceStatus.id = 2 
  *                       AND a.isReview = 0
  *                       AND a.deleted = 0"
  *             result-type-mapping="Local"
 	 */
-	public Collection findProccesableByUser(UserDTO user) {
-		
-		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
-		criteria.add(Restrictions.eq("baseUser", user));
-		criteria.add(Restrictions.eq("toProcess", 1));
-		criteria.add(Restrictions.eq("isReview", 0));
-		criteria.add(Restrictions.eq("deleted", 0));
-		
-		return criteria.list();
-	}
-	
-	public Collection<InvoiceDTO> findByProcess(BillingProcessDTO process) {
-		
-		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
-		criteria.add(Restrictions.eq("billingProcess", process));
-		
-		return criteria.list();
-	}
+    public Collection findProccesableByUser(UserDTO user) {
+
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.createAlias("invoiceStatus", "s").add(Restrictions.eq("s.id", Constants.INVOICE_STATUS_UNPAID));
+        criteria.add(Restrictions.eq("isReview", 0));
+        criteria.add(Restrictions.eq("deleted", 0));
+
+        return criteria.list();
+    }
+
+    public Collection<InvoiceDTO> findByProcess(BillingProcessDTO process) {
+
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        criteria.add(Restrictions.eq("billingProcess", process));
+
+        return criteria.list();
+    }
 
 }

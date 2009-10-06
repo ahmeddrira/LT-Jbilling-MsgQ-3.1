@@ -211,7 +211,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         criteria
             .add(Restrictions.lt("dueDate", date))
             .createAlias("invoiceStatus", "s")
-                .add(Restrictions.eq("s.id", Constants.INVOICE_STATUS_UNPAID))
+                .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID))
             .add(Restrictions.eq("isReview", 0))
             .setProjection(Projections.id())
             .addOrder(Order.desc("id"));

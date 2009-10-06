@@ -881,6 +881,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         LOG.debug("Call to updateOrder ");
         validateOrder(order);
         try {
+            // start by locking the order
+            OrderBL oldOrder = new OrderBL();
+            oldOrder.setForUpdate(order.getId());
+
             // get the info from the caller
             UserBL bl = new UserBL(getCallerId());
             Integer executorId = bl.getEntity().getUserId();
@@ -898,8 +902,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             orderBL.set(dto);
             orderBL.recalculate(entityId);
             // update
-            orderBL.set(order.getId());
-            orderBL.update(executorId, dto);
+            //orderBL.set(order.getId());
+            oldOrder.update(executorId, dto);
         } catch (Exception e) {
             LOG.error("WS - updateOrder", e);
             throw new SessionInternalError("Error updating order");

@@ -125,11 +125,8 @@ public class Trigger {
 
             // the invoice penalties
             if (step == null || step.intValue() == 6) {
-                System.out.println("Starting invoice penalties at " + 
-                        Calendar.getInstance().getTime());
-                remoteInvoice.processOverdue(today);
-                System.out.println("Ended invoice penalties at " + 
-                        Calendar.getInstance().getTime());
+                // Penalty processing removed, now handled as an internal event
+                // based of the ageing NewUserStatusEvent
             }
             
             // update the listing statistics

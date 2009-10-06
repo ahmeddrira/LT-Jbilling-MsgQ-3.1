@@ -3023,7 +3023,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 65	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	authuser@pp.com	2007-05-10 10:56:43.379	0	1	33	4
 75	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	parent@pp.com	2007-05-22 16:03:39.757	0	1	43	1
 85	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	gandalf@prancingpony.me	2007-07-12 13:20:29.888	0	1	\N	1
-95	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:38:28.089	0	1	53	1
+95	\N	123 Fake Street	\N	Calgary	AB	H0H 0H0	CA	Test	User 53	\N	\N	\N	\N	\N	\N	\N	\N	test-admin@jbilling.com	2007-08-09 14:38:28.089	0	1	53	1
 96	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:42:13.216	0	1	\N	1
 105	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:58:15.504	0	1	63	1
 106	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	admin@jbilling.com	2007-08-09 14:59:04.445	0	1	\N	1
@@ -4052,9 +4052,10 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 
 COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 1	2	3	FAKE_2	1
-2	1	3		1
+2	1	3	255.255.255.0	1
 11	2	85	FAKE_2	1
-12	1	85		1
+12	1	85	255.255.255.1	1
+13	3	95	255.255.255.2	1
 21	2	125	FAKE_2	1
 22	1	125	serial-from-ws	1
 23	2	126	FAKE_2	1
@@ -6058,19 +6059,19 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 2047	3	1057	123.123.123.123	1
 2048	3	1128	123.123.123.123	1
 2049	3	1058	124.124.124.124	1
-202100	3	112500		0
+202100	3	112500	255.255.255.3	1
 202101	2	112500	CURRENCY_ROUTER	0
 202102	1	112500		0
-202103	3	112501		0
+202103	3	112501	255.255.255.4	1
 202104	2	112501	CURRENCY_ROUTER	0
 202105	1	112501		0
-202200	3	112600		0
+202200	3	112600	255.255.255.5	1
 202201	2	112600	FAKE_2	0
 202202	1	112600		0
-202300	3	112602		0
+202300	3	112602	255.255.255.6	1
 202301	2	112602	FAKE_2	0
 202302	1	112602		0
-202400	3	112700		0
+202400	3	112700	255.255.255.7	1
 202401	2	112700	FAKE_2	0
 202402	1	112700	serial-from-ws	0
 \.
@@ -10102,6 +10103,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	240	description	1	Currency test item
 14	250	description	1	Lemonade Plan
 14	251	description	1	Lemonade plan - Setup Fee
+14	270	description	1	Late payment penalty fee
 14	260	description	1	an item from ws
 17	1	description	1	One time
 17	2	description	1	Monthly
@@ -10915,6 +10917,7 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 240	DP-4	1	\N	0	0	0	2
 250	PL-01	1	\N	0	0	0	2
 251	ST-01	1	\N	0	0	0	2
+270	FE-01	1	\N	0	0	0	2
 \.
 
 
@@ -10931,6 +10934,7 @@ COPY item_price (id, item_id, currency_id, price, optlock) FROM stdin;
 140	240	11	15	0
 150	250	1	0	0
 151	251	1	15	0
+152	270	1	10	0
 \.
 
 
@@ -10960,6 +10964,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 240	1
 250	1
 251	22
+270	22
 \.
 
 
@@ -14222,6 +14227,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 541	1	54	1	1
 550	1	55	1	1
 560	1	56	2	3
+570	1	15	1	1
 \.
 
 
@@ -14288,6 +14294,8 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 800	530	bnet	\N	test-bnet	\N	1
 8100	540	file	\N	InternalEventsRulesTask520.pkg	\N	1
 8200	560	file	\N	ValidatePurchaseRules.pkg	\N	1
+8301	570	item	270	\N	\N	1
+8302	570	ageing_step	6	\N	\N	1
 \.
 
 
@@ -14310,7 +14318,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 12	7	com.sapienter.jbilling.server.pluggableTask.PaperInvoiceNotificationTask	1
 13	4	com.sapienter.jbilling.server.pluggableTask.CalculateDueDateDfFm	0
 14	3	com.sapienter.jbilling.server.pluggableTask.NoInvoiceFilterTask	0
-15	9	com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask	1
+15	17	com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask	2
 16	2	com.sapienter.jbilling.server.pluggableTask.OrderFilterAnticipatedTask	0
 17	5	com.sapienter.jbilling.server.pluggableTask.OrderPeriodAnticipateTask	0
 18	6	com.sapienter.jbilling.server.pluggableTask.PaymentBitMoversTask	0

@@ -43,8 +43,6 @@ process.run_partner=true
 process.run_order_expire=true
 # if the daily batch includes running the invoice reminder notificationprocess
 process.run_invoice_reminder=true
-# if the daily batch includes running the overdue penalties process
-process.run_penalty=true
 # if the daily batch includes running the list statistic collection process
 process.run_list=true
 # if the daily batch includes running the credit card expiration notification process

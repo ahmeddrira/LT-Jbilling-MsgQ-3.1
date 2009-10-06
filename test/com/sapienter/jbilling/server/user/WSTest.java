@@ -129,9 +129,9 @@ public class WSTest extends TestCase {
             
             // need an order for it
             OrderWS newOrder = getOrder();
-            
+
             CreateResponseWS mcRet = api.create(retUser,newOrder);
-            
+
             System.out.println("Validating new invoice");
             // validate that the results are reasonable
             assertNotNull("Mega call result can't be null", mcRet);
@@ -1446,4 +1446,40 @@ Ch2->P1
             fail("Exception caught:" + e);
         }
    }
+
+    public void testPenaltyTaskOrder() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        final Integer USER_ID = 53;
+        final Integer ORDER_ID = 35;
+        final Integer PENALTY_ITEM_ID = 270;
+
+        // pluggable BasicPenaltyTask is configured for ageing_step 6
+        // test that other status changes will not add a new order item
+        UserWS user = api.getUserWS(USER_ID);
+        user.setPassword(null);
+        user.setStatusId(2);
+        api.updateUser(user);
+
+        assertEquals("Status was changed", 2, api.getUserWS(USER_ID).getStatusId().intValue());
+        assertEquals("No new order was created", ORDER_ID, api.getLatestOrder(USER_ID).getId());
+
+
+        // new order will be created with the penalty item when status id = 6
+        user.setStatusId(6);
+        api.updateUser(user);
+
+        assertEquals("Status was changed", 6, api.getUserWS(USER_ID).getStatusId().intValue());
+
+        OrderWS order = api.getLatestOrder(USER_ID);
+        assertFalse("New order was created, id does not equal original", ORDER_ID.equals(order.getId()));
+        assertEquals("New order has one item", 1, order.getOrderLines().length);
+
+        OrderLineWS line = order.getOrderLines()[0];
+        assertEquals("New order contains penalty item", PENALTY_ITEM_ID, line.getItemId());
+        assertEquals("Order penalty value is the item price (not a percentage)", 10.00f, line.getAmount().floatValue());
+
+        // delete order and invoice
+        api.deleteOrder(order.getId());       
+    }    
 }

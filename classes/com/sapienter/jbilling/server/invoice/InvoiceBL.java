@@ -58,11 +58,6 @@ import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
-import com.sapienter.jbilling.server.pluggableTask.BasicPenaltyTask;
-import com.sapienter.jbilling.server.pluggableTask.PenaltyTask;
-import com.sapienter.jbilling.server.pluggableTask.TaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -717,34 +712,6 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         if (conn != null) { // only if somthing run
             conn.close();
         }
-
-    }
-
-    public void processOverdue(Date today, Integer entityId)
-            throws SQLException, PluggableTaskException {
-        LOG.debug("Processing overdue invoices for entity " + entityId);
-
-        prepareStatement(InvoiceSQL.overdue);
-        cachedResults.setInt(1, entityId.intValue());
-        cachedResults.setDate(2, new java.sql.Date(today.getTime()));
-        execute();
-        while (cachedResults.next()) {
-            int invoiceId = cachedResults.getInt(1);
-            PluggableTaskManager taskManager = new PluggableTaskManager(
-                    entityId, Constants.PLUGGABLE_TASK_PENALTY);
-            PenaltyTask task = (PenaltyTask) taskManager.getNextClass();
-            while (task != null) {
-                try {
-                    task.process(new Integer(invoiceId));
-                } catch (TaskException e2) {
-                    LOG.error("Error with penalty task for entity " + entityId);
-                    return;
-                }
-                task = (BasicPenaltyTask) taskManager.getNextClass();
-            }
-        }
-
-        conn.close();
 
     }
 

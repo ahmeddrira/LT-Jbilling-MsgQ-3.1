@@ -52,15 +52,6 @@ public interface IInvoiceSessionBean {
      */
     public void sendReminders(Date today) throws SessionInternalError;
 
-    public void processOverdue(Date today) throws SessionInternalError;
-
-    /**
-     * Again, this is only to allow the demarcation of a transaction.
-     */
-    public void processOverdue(Date today, Integer entityId)
-            throws SessionInternalError, SQLException,
-            PluggableTaskException;
-
     public InvoiceDTO getInvoiceEx(Integer invoiceId, Integer languageId);
 
     public byte[] getPDFInvoice(Integer invoiceId) throws SessionInternalError;

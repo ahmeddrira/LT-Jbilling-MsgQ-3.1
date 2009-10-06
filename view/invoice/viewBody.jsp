@@ -50,8 +50,8 @@
 					 scope="session"
 					 value='<%=Constants.TYPE_CUSTOMER.toString()%>'>
 	<logic:equal name='<%=Constants.SESSION_INVOICE_DTO%>' 
-		         property="toProcess"
-		         value="1"
+		         property="invoiceStatus.id"
+		         value="2"
 		         scope="session">
 	<p>
 		<html:link page="/paymentMaintain.do?action=current_invoice">
@@ -133,18 +133,23 @@
 		<td class="infoprompt"><bean:message key="invoice.is_payable.prompt"/></td>
 		<td class="infodata">	
 			<logic:equal name='<%=Constants.SESSION_INVOICE_DTO%>' 
-                         property="toProcess"
+                         property="invoiceStatus.id"
 				         scope="session"
 				         value="1">
-					<bean:message key="invoice.status.notPaid"/>
-			</logic:equal>
-			<logic:equal name='<%=Constants.SESSION_INVOICE_DTO%>' 
-                         property="toProcess"
-				         scope="session"
-				         value="0">
 					<bean:message key="invoice.status.paid"/>
 			</logic:equal>
-                        
+			<logic:equal name='<%=Constants.SESSION_INVOICE_DTO%>' 
+                         property="invoiceStatus.id"
+				         scope="session"
+				         value="2">
+					<bean:message key="invoice.status.notPaid"/>
+			</logic:equal>
+			<logic:equal name='<%=Constants.SESSION_INVOICE_DTO%>'
+                         property="invoiceStatus.id"
+				         scope="session"
+				         value="3">
+					<bean:message key="invoice.status.carried"/>
+			</logic:equal>
         </td>
 	</tr>
 	<tr class="infoA">

@@ -180,24 +180,6 @@ public interface InvoiceSQL {
     "        i.last_reminder <= ?)" +
     "   and b.entity_id = ?";
     
-    // For the overdue interest calculation only
-    // All the invoices that are going overdue
-    // Overdue step, 0 means no further process required
-    //
-    // status is unpaid (id 27) containing no delegated invoice or
-    // status is unpaid and carried (id 28) with delegated invoices.
-    static final String overdue =
-    "select i.id " +
-    "  from invoice i, base_user b" +
-    " where i.user_id = b.id " +
-    "   and b.entity_id = ? " +
-    "   and i.is_review = 0 " +
-    "   and i.due_date < ? " +
-    "   and i.deleted = 0 " +
-    "   and ( (i.status_id = 27 and i.delegated_invoice_id is null) or" +
-    "         (i.status_id = 28 and i.delegated_invoice_id is not null) )" +
-    "   and (i.overdue_step != 0 or i.overdue_step is null)";
-
     // Invoice in ageing: any invoices that make this user applicable 
     // to the ageing process (then what happends depends on the ageing config)
     static final String getOverdueForAgeing =

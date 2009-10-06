@@ -142,6 +142,10 @@ public class OrderBL extends ResultList
     public void set(Integer id) {
     	order = orderDas.find(id);
     }
+
+    public void setForUpdate(Integer id) {
+        order = orderDas.findForUpdate(id);
+    }
     
     public void set(OrderDTO newOrder) {
         order = newOrder;

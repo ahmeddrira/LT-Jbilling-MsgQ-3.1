@@ -119,42 +119,6 @@ public class InvoiceSessionBean implements IInvoiceSessionBean {
         }
     }
 
-    public void processOverdue(Date today) throws SessionInternalError {
-        try {
-            IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
-                    Context.getBean(Context.Name.INVOICE_SESSION);
-
-            // go over all the entities
-            for (Iterator it = new CompanyDAS().findEntities().iterator();
-                    it.hasNext();) {
-                CompanyDTO thisEntity = (CompanyDTO) it.next();
-                Integer entityId = thisEntity.getId();
-                PreferenceBL pref = new PreferenceBL();
-                try {
-                    pref.set(entityId,
-                            Constants.PREFERENCE_USE_OVERDUE_PENALTY);
-                } catch (EmptyResultDataAccessException e) {
-                }
-                if (pref.getInt() == 1) {
-                    invoiceSession.processOverdue(today, entityId);
-                }
-            }
-        } catch (Exception e) {
-            throw new SessionInternalError(e);
-        }
-    }
-
-    /**
-     * Again, this is only to allow the demarcation of a transaction.
-     */
-    @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public void processOverdue(Date today, Integer entityId)
-            throws SessionInternalError, SQLException,
-            PluggableTaskException {
-        InvoiceBL invoice = new InvoiceBL();
-        invoice.processOverdue(today, entityId);
-    }
-
     public InvoiceDTO getInvoiceEx(Integer invoiceId, Integer languageId)  {
         if (invoiceId == null) {
             return null;

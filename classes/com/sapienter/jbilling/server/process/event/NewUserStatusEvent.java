@@ -47,10 +47,25 @@ public class NewUserStatusEvent implements Event {
         return userId;
     }
 
+    /**
+     * Returns the status id (status_value) of the users original state before the status
+     * was changed and the event fired.
+     *
+     * @see com.sapienter.jbilling.server.util.db.AbstractGenericStatus#getId()
+     *
+     * @return users original status id
+     */
     public Integer getOldStatusId() {
         return oldStatusId;
     }
 
+    /**
+     * Returns the new status id (status_value) of the users newly assigned status.
+     *
+     * @see com.sapienter.jbilling.server.util.db.AbstractGenericStatus#getId()
+     *
+     * @return users new status id
+     */
     public Integer getNewStatusId() {
         return newStatusId;
     }

@@ -250,12 +250,6 @@ public class Trigger implements Job {
                     remoteInvoice.sendReminders(today);
                     LOG.info("Ended invoice reminders at " + Calendar.getInstance().getTime());
                 }
-                if (Util.getSysPropBooleanTrue("process.run_penalty")) {
-                    // the invoice penalties
-                    LOG.info("Starting invoice penalties at " + Calendar.getInstance().getTime());
-                    remoteInvoice.processOverdue(today);
-                    LOG.info("Ended invoice penalties at " + Calendar.getInstance().getTime());
-                }
                 if (Util.getSysPropBooleanTrue("process.run_list")) {
                     // update the listing statistics
                     LOG.info("Starting list stats at " + Calendar.getInstance().getTime());

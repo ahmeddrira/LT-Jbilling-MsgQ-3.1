@@ -54,7 +54,10 @@ import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
@@ -1912,7 +1915,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     private Integer getCallerCompanyId() {
         return WebServicesCaller.getCompanyId();
     }
-    
+
     @Override
     public Double isUserSubscribedTo(Integer userId, Integer itemId) {
 	    LOG.debug("Call to isUserSubscribedTo with params: userId = "
@@ -1929,7 +1932,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
   			LOG.debug("Done");
     	}
     }
-    
+
     @Override
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
     	LOG.debug("Call to getUserItemsByCategory with params: userId = "
@@ -1947,8 +1950,27 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     	}
     }
 
-	@Override
-	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) {        
+        try {
+            return new ItemBL().getAllItemsByType(itemTypeId);
+        } catch (Throwable e) {
+            LOG.error("Error retrieving items by category" , e);
+            throw new SessionInternalError("Error retrieving items by category");
+        }
+    }
+
+    public ItemTypeDTOEx[] getAllItemCategories() {
+        try {
+            return new ItemTypeBL().getAllItemTypes();
+        } catch (Throwable e) {
+            LOG.error("Error retrieving item types" , e);
+            throw new SessionInternalError("Error retrieving item types");
+        }
+
+    }
+
+    @Override
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
 		LOG.debug("Call to processPayment with params: payment Id = "
 				+ payment.getId());
 

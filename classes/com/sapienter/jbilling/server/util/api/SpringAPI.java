@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -483,7 +484,7 @@ public class SpringAPI implements JbillingAPI {
     		throw new JbillingAPIException(e);
     	}
     }
-    
+
     @Override
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId)
     		throws JbillingAPIException {
@@ -494,7 +495,23 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
-	/* 
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException {
+        try {
+            return session.getItemByCategory(itemTypeId);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
+
+    public ItemTypeDTOEx[] getAllItemCategories() throws JbillingAPIException {
+        try {
+            return session.getAllItemCategories();
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
+
+	/*
 	 * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
 	 */
 	@Override

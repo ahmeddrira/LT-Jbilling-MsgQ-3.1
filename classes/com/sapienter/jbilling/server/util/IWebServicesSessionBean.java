@@ -28,6 +28,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -37,6 +38,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 
 /**
  * Interface for WebServicesSessionBean
@@ -331,4 +333,8 @@ public interface IWebServicesSessionBean {
 	public Double isUserSubscribedTo(Integer userId, Integer itemId);
 
 	public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
+
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
+
+    public ItemTypeDTOEx[] getAllItemCategories();    
 }

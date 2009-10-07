@@ -29,6 +29,8 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.DescriptionBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
+import java.util.List;
+
 public class ItemTypeBL {
     private ItemTypeDAS itemTypeDas = null;
     private ItemTypeDTO itemType = null;
@@ -87,5 +89,21 @@ public class ItemTypeBL {
         eLogger.audit(executorId, null, Constants.TABLE_ITEM_TYPE, itemTypeId,
                 EventLogger.MODULE_ITEM_TYPE_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
+    }   
+
+    /**
+     * Returns all item types, or an empty array if none found.
+     *
+     * @return array of item types, empty if none found.
+     */
+    public ItemTypeDTOEx[] getAllItemTypes() {
+        List<ItemTypeDTO> results = new ItemTypeDAS().findAll();
+        ItemTypeDTOEx[] types = new ItemTypeDTOEx[results.size()];
+
+        int index = 0;
+        for (ItemTypeDTO type : results)
+            types[index++] = new ItemTypeDTOEx(type);
+
+        return types;
     }
 }

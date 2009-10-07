@@ -23,6 +23,8 @@ package com.sapienter.jbilling.server.item;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.List;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
@@ -534,6 +536,26 @@ public class ItemBL {
             items[index++] = getWS(getDTO(entity.getLanguageId(),
                     null, entityId, entity.getCurrencyId()));
         }
+
+        return items;
+    }
+
+    /**
+     * Returns all items for the given item type (category) id. If no results
+     * are found an empty array is returned.
+     *
+     * @see ItemDAS#findAllByItemType(Integer)
+     *
+     * @param itemTypeId item type (category) id
+     * @return array of found items, empty if none found
+     */
+    public ItemDTOEx[] getAllItemsByType(Integer itemTypeId) {
+        List<ItemDTO> results = new ItemDAS().findAllByItemType(itemTypeId);
+        ItemDTOEx[] items = new ItemDTOEx[results.size()];
+
+        int index = 0;
+        for (ItemDTO item : results)
+            items[index++] = getWS(item);
 
         return items;
     }

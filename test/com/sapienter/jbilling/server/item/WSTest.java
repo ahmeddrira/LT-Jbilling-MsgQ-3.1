@@ -345,4 +345,27 @@ public class WSTest  extends TestCase {
         }
         return null;
     }
+
+    public void testGetAllItemCategories() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        ItemTypeDTOEx[] types = api.getAllItemCategories();
+
+        assertEquals("4 item types", 4, types.length);
+
+        assertEquals(1, types[0].getId().intValue());
+        assertEquals("Drink passes", types[0].getDescription());
+    }
+
+    public void testGetItemsByCategory() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        final Integer DRINK_ITEM_CATEGORY_ID = 2;
+
+        ItemDTOEx[] items = api.getItemByCategory(DRINK_ITEM_CATEGORY_ID);
+
+        assertEquals("1 item in category 2", 1, items.length);
+        assertEquals(4, items[0].getId().intValue());
+        assertEquals("Poison Ivy juice (cold)", items[0].getDescription());
+    }
 }

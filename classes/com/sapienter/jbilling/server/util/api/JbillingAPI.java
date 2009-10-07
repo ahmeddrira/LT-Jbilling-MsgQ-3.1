@@ -25,6 +25,7 @@ import java.util.Date;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -150,7 +151,7 @@ public interface JbillingAPI {
     
     public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields)
     		throws JbillingAPIException;
-    
+
     public OrderWS rateOrder(OrderWS order) throws JbillingAPIException;
     
     public void updateItem(ItemDTOEx item) throws JbillingAPIException;
@@ -168,7 +169,11 @@ public interface JbillingAPI {
     public Double isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
     
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
-    
+
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException;
+
+    public ItemTypeDTOEx[] getAllItemCategories() throws JbillingAPIException;
+
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) throws JbillingAPIException;
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) throws JbillingAPIException;

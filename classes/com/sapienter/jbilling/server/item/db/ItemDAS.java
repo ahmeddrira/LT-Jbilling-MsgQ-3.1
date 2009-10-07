@@ -21,6 +21,26 @@ package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+
 public class ItemDAS extends AbstractDAS<ItemDTO> {
 
+    /**
+     * Returns a list of all items for the given item type (category) id.
+     * If no results are found an empty list will be returned.
+     *
+     * @param itemTypeId item type id
+     * @return list of items, empty if none found
+     */
+    @SuppressWarnings("unchecked")
+    public List<ItemDTO> findAllByItemType(Integer itemTypeId) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .createAlias("itemTypes", "type")
+                .add(Restrictions.eq("type.id", itemTypeId));
+
+        return criteria.list();
+    }
 }

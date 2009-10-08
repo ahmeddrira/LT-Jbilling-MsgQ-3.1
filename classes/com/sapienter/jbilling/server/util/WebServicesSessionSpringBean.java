@@ -54,7 +54,7 @@ import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
@@ -1959,7 +1959,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
-    public ItemTypeDTOEx[] getAllItemCategories() {
+    public ItemTypeWS[] getAllItemCategories() {
         try {
             return new ItemTypeBL().getAllItemTypes();
         } catch (Throwable e) {

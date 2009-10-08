@@ -25,7 +25,7 @@ import java.util.Date;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -172,7 +172,7 @@ public interface JbillingAPI {
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException;
 
-    public ItemTypeDTOEx[] getAllItemCategories() throws JbillingAPIException;
+    public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException;
 
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) throws JbillingAPIException;
 

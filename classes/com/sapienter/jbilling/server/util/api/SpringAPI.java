@@ -27,7 +27,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -503,7 +503,7 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
-    public ItemTypeDTOEx[] getAllItemCategories() throws JbillingAPIException {
+    public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException {
         try {
             return session.getAllItemCategories();
     	} catch (Exception e) {

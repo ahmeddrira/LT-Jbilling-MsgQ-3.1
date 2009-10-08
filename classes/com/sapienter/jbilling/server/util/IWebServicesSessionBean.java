@@ -28,7 +28,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.ItemTypeDTOEx;
+import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -336,5 +336,5 @@ public interface IWebServicesSessionBean {
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
 
-    public ItemTypeDTOEx[] getAllItemCategories();    
+    public ItemTypeWS[] getAllItemCategories();
 }

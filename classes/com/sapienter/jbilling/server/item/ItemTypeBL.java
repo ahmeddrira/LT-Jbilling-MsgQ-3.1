@@ -96,13 +96,13 @@ public class ItemTypeBL {
      *
      * @return array of item types, empty if none found.
      */
-    public ItemTypeDTOEx[] getAllItemTypes() {
+    public ItemTypeWS[] getAllItemTypes() {
         List<ItemTypeDTO> results = new ItemTypeDAS().findAll();
-        ItemTypeDTOEx[] types = new ItemTypeDTOEx[results.size()];
+        ItemTypeWS[] types = new ItemTypeWS[results.size()];
 
         int index = 0;
         for (ItemTypeDTO type : results)
-            types[index++] = new ItemTypeDTOEx(type);
+            types[index++] = new ItemTypeWS(type);
 
         return types;
     }

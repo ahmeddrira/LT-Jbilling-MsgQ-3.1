@@ -349,7 +349,7 @@ public class WSTest  extends TestCase {
     public void testGetAllItemCategories() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 
-        ItemTypeDTOEx[] types = api.getAllItemCategories();
+        ItemTypeWS[] types = api.getAllItemCategories();
 
         assertEquals("4 item types", 4, types.length);
 

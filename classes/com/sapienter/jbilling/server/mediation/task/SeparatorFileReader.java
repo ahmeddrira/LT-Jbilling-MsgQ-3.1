@@ -42,6 +42,6 @@ public class SeparatorFileReader extends AbstractFileReader {
     
     @Override
     protected String[] splitFields(String line) {
-        return line.split(fieldSeparator);
+        return line.split(fieldSeparator, -1);
     }
 }

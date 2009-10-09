@@ -959,6 +959,7 @@ Ch2->P1
             // cancellation fees rules that affect the balance.
             // increase the quantity of the one-time order
             System.out.println("adding quantity to one time order");
+            pause(2000); // pause while provisioning status is being updated
             order = api.getOrder(orderId);
             OrderLineWS line = order.getOrderLines()[0].getItemId() == 2 ?
                 order.getOrderLines()[0] : order.getOrderLines()[1];
@@ -1482,4 +1483,12 @@ Ch2->P1
         // delete order and invoice
         api.deleteOrder(order.getId());       
     }    
+
+    private void pause(long t) {
+        System.out.println("pausing for " + t + " ms...");
+        try {
+            Thread.sleep(t);
+        } catch (InterruptedException e) {
+        }
+    }
 }

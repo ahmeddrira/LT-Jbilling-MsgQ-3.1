@@ -58,7 +58,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
     public List<Integer> findIdsByUserAndItemTypeLatestFirst(Integer userId, Integer itemTypeId, int maxResults) {
         
         String hql = "select distinct(invoice.id)" +
-                     "  from Invoice invoice" +
+                     "  from InvoiceDTO invoice" +
                      "  inner join invoice.invoiceLines line" +
                      "  inner join line.item.itemTypes itemType" +
                      "  where invoice.baseUser.id = :userId" +

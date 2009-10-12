@@ -189,4 +189,13 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         }
         return result;
 	}
+
+    public OrderDTO findForUpdate(Integer id) {
+        OrderDTO retValue = super.findForUpdate(id);
+        // lock all the lines
+        for (OrderLineDTO line : retValue.getLines()) {
+            new OrderLineDAS().findForUpdate(line.getId());
+        }
+        return retValue;
+    }
 }

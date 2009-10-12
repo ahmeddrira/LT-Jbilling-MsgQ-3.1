@@ -43,6 +43,12 @@
         <property name="maxIdleTime" value="300" />
         <property name="minPoolSize" value="2" />
         <property name="checkoutTimeout" value="10000" />
+        <!-- for debug of leaks only: after ten seconds, throw an exception that tells who is holding
+            a connection
+        <property name="unreturnedConnectionTimeout" value="10"/>
+        <property name="debugUnreturnedConnectionStackTraces" value="true"/>
+        -->
+
     </bean>
        
     <tx:annotation-driven transaction-manager="transactionManager"/>

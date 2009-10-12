@@ -73,61 +73,64 @@
         <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
     </bean>
 
-
     <!-- RMI Session Bean Services (Note: used by jBilling tests and are unsecured) -->
+    <bean id="registry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean">
+        <property name="port" value="1199"/>
+    </bean>
+
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="itemSession"/>
         <property name="serviceName" value="ItemSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.item.IItemSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="listSession"/>
         <property name="serviceName" value="ListSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.list.IListSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="userSession"/>
         <property name="serviceName" value="UserSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.user.IUserSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="invoiceSession"/>
         <property name="serviceName" value="InvoiceSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.invoice.IInvoiceSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="orderSession"/>
         <property name="serviceName" value="OrderSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.order.IOrderSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="paymentSession"/>
         <property name="serviceName" value="PaymentSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.payment.IPaymentSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="mediationSession"/>
         <property name="serviceName" value="MediationSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.mediation.IMediationSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="billingProcessSession"/>
         <property name="serviceName" value="BillingProcessSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.process.IBillingProcessSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
         <property name="service" ref="provisioningProcessSession"/>
         <property name="serviceName" value="ProvisioningProcessSession"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean"/>
-        <property name="registryPort" value="1199"/>
+        <property name="registry" ref="registry"/>
     </bean>
 
 </beans>

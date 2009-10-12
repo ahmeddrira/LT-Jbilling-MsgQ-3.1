@@ -43,6 +43,12 @@
         <property name="maxIdleTime" value="300" />
         <property name="minPoolSize" value="2" />
         <property name="checkoutTimeout" value="10000" />
+        <!-- The next three properties deal with potential time outs by the DB server of idle connections. If this
+             happens regardless you can either reduce the seconds of testing (30 is the default)
+             or activate the property testConnectionOnCheckout -->
+        <property name="preferredTestQuery" value="select id from jbilling_table where id = 1" />
+        <property name="testConnectionOnCheckin" value="true" />
+        <property name="idleConnectionTestPeriod" value="30" />
         <!-- for debug of leaks only: after ten seconds, throw an exception that tells who is holding
             a connection
         <property name="unreturnedConnectionTimeout" value="10"/>

@@ -233,6 +233,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
         XML.append("</" + transactionType + ">");
         XML.append("</transaction>");
+	XML.append("<extraOptions><![CDATA[x_delim_char=|&x_encap_char=]]></extraOptions>");
         XML.append("</createCustomerProfileTransactionRequest>");
 
         return XML.toString();

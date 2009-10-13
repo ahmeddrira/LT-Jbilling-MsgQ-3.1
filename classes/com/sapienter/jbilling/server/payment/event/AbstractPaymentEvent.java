@@ -30,11 +30,6 @@ public abstract class AbstractPaymentEvent implements Event {
     
     public static AbstractPaymentEvent forPaymentResult(Integer entityId, PaymentDTOEx payment){
 		Integer result = payment.getPaymentResult().getId();
-        // some processors don't do anything (fake), only pass to the next 
-        // processor in the chain
-		if (result == null){
-			return null;
-		}
 		AbstractPaymentEvent event = null;
 		if (Constants.RESULT_UNAVAILABLE.equals(result)){
 			event = new PaymentProcessorUnavailableEvent(entityId, payment);
@@ -42,7 +37,11 @@ public abstract class AbstractPaymentEvent implements Event {
 			event = new PaymentSuccessfulEvent(entityId, payment);
 		} else if (Constants.RESULT_FAIL.equals(result)){
 			event = new PaymentFailedEvent(entityId, payment);
-		}
+		} else if (Constants.RESULT_NULL.equals(result)){
+           // some processors don't do anything (fake), only pass to the next
+           // processor in the chain
+            event = null;
+        }
 		return event;
     }
     

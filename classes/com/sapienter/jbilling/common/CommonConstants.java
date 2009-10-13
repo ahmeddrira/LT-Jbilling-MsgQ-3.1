@@ -54,8 +54,10 @@ public interface CommonConstants {
     public static final Integer RESULT_OK = new Integer(1);
     public static final Integer RESULT_FAIL = new Integer(2);
     public static final Integer RESULT_UNAVAILABLE = new Integer(3);   
-    public static final Integer RESULT_ENTERED = new Integer(4);   
-    
+    public static final Integer RESULT_ENTERED = new Integer(4);
+    // a special one, to represent 'no result' (for filers, routers, etc)
+    public static final Integer RESULT_NULL = new Integer(0);
+
     // user types, these have to by in synch with the user_type table
     // these are needed in the server side and the jsps
     public static final Integer TYPE_INTERNAL = new Integer(1);

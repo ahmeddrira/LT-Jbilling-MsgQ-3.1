@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.payment.blacklist.PhoneFilter;
 import com.sapienter.jbilling.server.payment.blacklist.UserIdFilter;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentResultDTO;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskBase;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -104,7 +105,11 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
         // All filters passed, continue onto a real payment processor
         // next in the chain.
         LOG.debug("Payment continuing on to next processor");
-        paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+        // this id of the payment result has to be null, so there isn't an event
+        // for processor unavailable
+        PaymentResultDTO result = new PaymentResultDTO();
+        result.setId(Constants.RESULT_NULL); 
+        paymentInfo.setPaymentResult(result);
         return true;
     }
 

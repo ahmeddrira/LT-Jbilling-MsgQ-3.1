@@ -39,8 +39,9 @@ public class CreditCardDTO
    private boolean typeHasBeenSet = false;
    private java.lang.Integer deleted;
    private boolean deletedHasBeenSet = false;
-   private java.lang.Integer securityCode;
+   private java.lang.String securityCode;
    private boolean securityCodeHasBeenSet = false;
+   private java.lang.String gatewayKey;
 
    private java.lang.Integer pk;
 
@@ -48,7 +49,7 @@ public class CreditCardDTO
    {
    }
 
-   public CreditCardDTO( java.lang.Integer id,java.lang.String number,java.util.Date expiry,java.lang.String name,java.lang.Integer type,java.lang.Integer deleted,java.lang.Integer securityCode )
+   public CreditCardDTO( java.lang.Integer id,java.lang.String number,java.util.Date expiry,java.lang.String name,java.lang.Integer type,java.lang.Integer deleted,java.lang.String securityCode )
    {
 	  this.id = id;
 	  idHasBeenSet = true;
@@ -84,6 +85,7 @@ public class CreditCardDTO
 	  deletedHasBeenSet = true;
 	  this.securityCode = otherValue.securityCode;
 	  securityCodeHasBeenSet = true;
+      this.gatewayKey = otherValue.gatewayKey;
 
 	  pk = this.getId();
    }
@@ -192,12 +194,12 @@ public class CreditCardDTO
    public boolean deletedHasBeenSet(){
 	  return deletedHasBeenSet;
    }
-   public java.lang.Integer getSecurityCode()
+   public java.lang.String getSecurityCode()
    {
 	  return this.securityCode;
    }
 
-   public void setSecurityCode( java.lang.Integer securityCode )
+   public void setSecurityCode( java.lang.String securityCode )
    {
 	  this.securityCode = securityCode;
 	  securityCodeHasBeenSet = true;
@@ -208,15 +210,25 @@ public class CreditCardDTO
 	  return securityCodeHasBeenSet;
    }
 
-   public String toString()
-   {
-	  StringBuffer str = new StringBuffer("{");
+    public String getGatewayKey() {
+        return gatewayKey;
+    }
 
-	  str.append("id=" + getId() + " " + "number=" + getNumber() + " " + "expiry=" + getExpiry() + " " + "name=" + getName() + " " + "type=" + getType() + " " + "deleted=" + getDeleted() + " " + "securityCode=" + getSecurityCode());
-	  str.append('}');
+    public void setGatewayKey(String gatewayKey) {
+        this.gatewayKey = gatewayKey;
+    }
 
-	  return(str.toString());
-   }
+    @Override
+    public String toString() {
+        return "CreditCardDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", deleted=" + deleted +
+                ", securityCode='" + securityCode + '\'' +
+                ", gatewayKey='" + gatewayKey + '\'' +
+                '}';
+    }
 
    /**
     * A Value Object has an identity if the attributes making its Primary Key have all been set. An object without identity is never equal to any other object.

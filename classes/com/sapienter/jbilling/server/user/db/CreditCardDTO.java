@@ -41,29 +41,34 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import com.sapienter.jbilling.common.JBCrypto;
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import org.apache.log4j.Logger;
 
 @Entity
 @TableGenerator(
-		name = "credit_card_GEN", 
-		table = "jbilling_table", 
-		pkColumnName = "name", 
-		valueColumnName = "next_id", 
-		pkColumnValue = "credit_card", 
+		name = "credit_card_GEN",
+		table = "jbilling_table",
+		pkColumnName = "name",
+		valueColumnName = "next_id",
+		pkColumnValue = "credit_card",
 		allocationSize = 100)
 @Table(name = "credit_card")
 public class CreditCardDTO implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(CreditCardDTO.class);
+
+    private static final String OBSCURED_NUMBER_FORMAT = "************"; // + last four digits
+
     private int id;
     private String ccNumber;
     private Date ccExpiry;
     private String name;
     private Integer ccType;
     private int deleted;
-    private Integer securityCode;
+    private String securityCode;
     private String ccNumberPlain;
+    private String gatewayKey;
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
     private Integer versionNum;
@@ -71,8 +76,7 @@ public class CreditCardDTO implements Serializable {
     public CreditCardDTO() {
     }
 
-    public CreditCardDTO(int id, String ccNumber, Date ccExpiry, int ccType,
-            int deleted) {
+    public CreditCardDTO(int id, String ccNumber, Date ccExpiry, int ccType, int deleted) {
         this.id = id;
         this.ccNumber = ccNumber;
         this.ccExpiry = ccExpiry;
@@ -81,7 +85,7 @@ public class CreditCardDTO implements Serializable {
     }
 
     public CreditCardDTO(int id, String ccNumber, Date ccExpiry, String name,
-            int ccType, int deleted, Integer securityCode,
+            int ccType, int deleted, String securityCode,
             String ccNumberPlain) {
         this.id = id;
         this.ccNumber = ccNumber;
@@ -92,15 +96,17 @@ public class CreditCardDTO implements Serializable {
         this.securityCode = securityCode;
         this.ccNumberPlain = ccNumberPlain;
     }
-    
+
     public CreditCardDTO(com.sapienter.jbilling.server.entity.CreditCardDTO oldCC) {
         this.id = oldCC.getId() == null ? 0 : oldCC.getId();
-        setName(oldCC.getName());
         this.ccExpiry = oldCC.getExpiry();
-        setNumber(oldCC.getNumber());
+        this.securityCode = oldCC.getSecurityCode();
         this.ccType = oldCC.getType();
         this.deleted = oldCC.getDeleted() == null ? 0 : oldCC.getDeleted();
-        this.securityCode = oldCC.getSecurityCode();
+        this.gatewayKey = oldCC.getGatewayKey();
+                
+        setName(oldCC.getName());
+        setNumber(oldCC.getNumber());
     }
 
     @Id
@@ -115,8 +121,10 @@ public class CreditCardDTO implements Serializable {
     }
 
     /**
-     * Do not use unless you know what you are doing. User getNumber() instead.
-     * @return
+     * Returns the raw encrypted credit card number as persisted to the database.
+     * Do not use unless you know what you are doing, use {@link #getNumber()} instead.
+     *
+     * @return raw encrypted credit card number
      */
     @Column(name = "cc_number", nullable = false, length = 100)
     public String getRawNumber() {
@@ -176,11 +184,24 @@ public class CreditCardDTO implements Serializable {
         this.name = name;
     }
 
+    @Transient
+    public Integer getType() {
+        return getCcType();
+    }
+
     @Column(name = "cc_type", nullable = false)
     public Integer getCcType() {
         return this.ccType;
     }
 
+    /**
+     * Sets the credit card type. Note that the {@link #setNumber(String)} attempts to auto-detect
+     * this value whenever a credit card number is set, eliminating the need to explicity
+     * set the type.
+     *
+     * @see com.sapienter.jbilling.common.CommonConstants PAYMENT_METHOD*
+     * @param ccType credit card type
+     */
     public void setCcType(Integer ccType) {
         this.ccType = ccType;
     }
@@ -194,12 +215,12 @@ public class CreditCardDTO implements Serializable {
         this.deleted = deleted;
     }
 
-    @Column(name = "security_code")
-    public Integer getSecurityCode() {
+    @Transient
+    public String getSecurityCode() {
         return this.securityCode;
     }
 
-    public void setSecurityCode(Integer securityCode) {
+    public void setSecurityCode(String securityCode) {
         this.securityCode = securityCode;
     }
 
@@ -210,6 +231,21 @@ public class CreditCardDTO implements Serializable {
 
     public void setCcNumberPlain(String ccNumberPlain) {
         this.ccNumberPlain = ccNumberPlain;
+    }
+
+    /**
+     * Returns a vendor specific gateway key that can be used to authenticate payments
+     * without sending the rest of the credit card details.
+     *
+     * @return unique gateway key
+     */
+    @Column(name = "gateway_key")
+    public String getGatewayKey() {
+        return gatewayKey;
+    }
+
+    public void setGatewayKey(String gatewayKey) {
+        this.gatewayKey = gatewayKey;
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "creditCard")
@@ -247,6 +283,13 @@ public class CreditCardDTO implements Serializable {
         return JBCrypto.getCreditCardCrypto().decrypt(getRawNumber());
     }
 
+    /**
+     * This method sets the current credit card number in an encrypted form,
+     * and attempts to auto-detect the credit card type from the given number.
+     *
+     * @see Util#getPaymentMethod(String)
+     * @param number credit card number
+     */
     @Transient
     public void setNumber(String number) {
         if (number == null) {
@@ -256,9 +299,23 @@ public class CreditCardDTO implements Serializable {
             String crip = JBCrypto.getCreditCardCrypto().encrypt(number);
             setRawNumber(crip);
             setCcNumberPlain(number.substring(number.length() - 4));
+
+            if (!number.startsWith(OBSCURED_NUMBER_FORMAT)) // leave the type as-is if the number has been obscured
+                setCcType(Util.getPaymentMethod(number));
         }
     }
-    
+
+    /**
+     * Obscures this credit cards stored number by replacing all but the last four digits
+     * with asterisks (*). This method will overwrite the current number rendering this
+     * credit card invalid for anything other than display purposes. 
+     */
+    public void obscureNumber() {
+        if (getRawNumber() != null && getCcNumberPlain() != null) {
+            setNumber(OBSCURED_NUMBER_FORMAT + getCcNumberPlain());
+        }
+    }
+
     @Transient
     public com.sapienter.jbilling.server.entity.CreditCardDTO getOldDTO() {
         com.sapienter.jbilling.server.entity.CreditCardDTO oldCC =
@@ -271,12 +328,8 @@ public class CreditCardDTO implements Serializable {
         oldCC.setNumber(this.getNumber());
         oldCC.setSecurityCode(this.getSecurityCode());
         oldCC.setType(this.getCcType());
+        oldCC.setGatewayKey(this.getGatewayKey());
 
         return oldCC;
-    }
-
-    @Transient
-    public Integer getType() {
-        return getCcType();
     }
 }

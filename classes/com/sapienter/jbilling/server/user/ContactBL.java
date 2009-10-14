@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDAS;
@@ -41,6 +42,7 @@ import com.sapienter.jbilling.server.user.contact.db.ContactMapDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactMapDTO;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDAS;
 import com.sapienter.jbilling.server.user.contact.db.ContactTypeDTO;
+import com.sapienter.jbilling.server.user.event.NewContactEvent;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
@@ -298,6 +300,10 @@ public class ContactBL {
         dto.setDeleted(0);
         dto.setVersionNum(0);
         dto.setId(0);
+        
+        NewContactEvent event = new NewContactEvent(contact, entityId);
+        EventManager.process(event);
+        
         contact = contactDas.save(new ContactDTO(dto)); // it won't take the Ex
         contact.setContactMap(map);
         map.setContact(contact);
@@ -348,6 +354,12 @@ public class ContactBL {
         contact.setStateProvince(dto.getStateProvince());
         contact.setTitle(dto.getTitle());
         contact.setInclude(dto.getInclude());
+        if (entityId == null) {
+        	setEntityFromUser(contact.getUserId());
+        }
+        
+        NewContactEvent event = new NewContactEvent(contact, entityId);
+        EventManager.process(event);
         
         updateCreateFields(dto.getFieldsTable(), true);
     }

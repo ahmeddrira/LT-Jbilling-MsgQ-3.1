@@ -297,7 +297,7 @@
         <column name="name" size="150" type="VARCHAR"/>
         <column name="cc_type" required="true" type="INTEGER"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
-        <column name="security_code" type="INTEGER"/>
+        <column name="gateway_key" size="100" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_cc_number">
             <index-column name="cc_number_plain"/>

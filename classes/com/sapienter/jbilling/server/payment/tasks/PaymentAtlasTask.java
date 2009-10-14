@@ -159,9 +159,9 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 				.put("amount", new Float(paymentInfo.getAmount() * 100f)
 						.intValue());
 		data.put("taxAmount", 0);
-		Integer securityCode = paymentInfo.getCreditCard().getSecurityCode();
+		String securityCode = paymentInfo.getCreditCard().getSecurityCode();
 		if (securityCode != null)
-			data.put("cvv2", String.valueOf(securityCode));
+			data.put("cvv2", securityCode);
 		data.put("expirationDate", CreditCardBL.get4digitExpiry(paymentInfo
 				.getCreditCard()));
 		data.put("transactionDate", paymentInfo.getPaymentDate());

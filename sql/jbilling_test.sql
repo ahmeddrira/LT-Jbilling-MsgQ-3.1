@@ -635,7 +635,7 @@ CREATE TABLE credit_card (
     name character varying(150),
     cc_type integer NOT NULL,
     deleted smallint DEFAULT 0 NOT NULL,
-    security_code integer,
+    gateway_key character varying(100),
     optlock integer NOT NULL
 );
 
@@ -7383,7 +7383,7 @@ COPY country (id, code) FROM stdin;
 -- Data for Name: credit_card; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, deleted, security_code, optlock) FROM stdin;
+COPY credit_card (id, cc_number, cc_number_plain, cc_expiry, name, cc_type, deleted, gateway_key, optlock) FROM stdin;
 1	eK5PSphYBEKP6gPO6jkwaPjQB1DaJ47O	\N	2100-09-12	1RCxmzv56rDXADMAP.DCnf	2	0	\N	1
 2	eK5PSphYBEKP6gPO6jkwaPjQB1DaJ47O	\N	2100-09-12	1RCxmzv56rDXADMAP.DCnf	2	0	\N	1
 3	a14159733ae22ce59f51625df2bd1c0649788742506e5046	\N	2100-09-12	5b33bc3de451b536128d58a67e34cc69	2	0	\N	1
@@ -9501,6 +9501,7 @@ COPY entity_payment_method_map (entity_id, payment_method_id) FROM stdin;
 2	1
 2	2
 2	3
+2	9
 \.
 
 
@@ -10151,6 +10152,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 35	6	description	1	Discovery
 35	7	description	1	Diners
 35	8	description	1	PayPal
+35	9	description	1	Payment Gateway Key
 41	1	description	1	Successful
 41	2	description	1	Failed
 41	3	description	1	Processor unavailable
@@ -13626,6 +13628,7 @@ COPY payment_method (id) FROM stdin;
 6
 7
 8
+9
 \.
 
 
@@ -14176,6 +14179,7 @@ COPY permission_type (id, description) FROM stdin;
 COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 120	1	1	1
 137	1	1	2
+120	12	1	3
 \.
 
 
@@ -14228,6 +14232,8 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 550	1	55	1	1
 560	1	56	2	3
 570	1	15	1	1
+580	2	58	1	1
+590	2	59	1	1
 \.
 
 
@@ -14296,6 +14302,8 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 8200	560	file	\N	ValidatePurchaseRules.pkg	\N	1
 8301	570	item	270	\N	\N	1
 8302	570	ageing_step	6	\N	\N	1
+8303	580	contactType	2	\N	\N	1
+8304	580	externalSavingPluginId	590	\N	\N	1
 \.
 
 
@@ -14359,6 +14367,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 55	19	com.sapienter.jbilling.server.user.tasks.UserBalanceValidatePurchaseTask	0
 56	19	com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask	0
 57	6	com.sapienter.jbilling.server.payment.tasks.PaymentsGatewayTask	4
+58	17	com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask	1
+59	6	com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage	0
 \.
 
 

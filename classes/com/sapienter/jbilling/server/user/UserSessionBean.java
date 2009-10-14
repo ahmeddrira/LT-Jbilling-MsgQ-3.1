@@ -480,18 +480,16 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     public Integer createCreditCard(Integer userId,
             CreditCardDTO dto) throws SessionInternalError {
         try {
+            // add the base user to the given CreditCardDTO
+            UserDTO user = new UserDAS().find(userId);
+            dto.getBaseUsers().add(user);
+
             // create the cc record
             CreditCardBL ccBL = new CreditCardBL();
             ccBL.create(dto);
-            // now find this user to add the cc to it
-//            ccBL.getEntity().setUserId(userId);
             
-            UserDTO user = new UserDAS().find(userId);
-            ccBL.getEntity().getBaseUsers().add(user);
             user.getCreditCards().add(ccBL.getEntity());
-            
             new UserDAS().save(user);
-            new CreditCardDAS().save(ccBL.getEntity());
             
             return ccBL.getEntity().getId();
         } catch (Exception e) {

@@ -295,14 +295,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 Integer userId = bl.create(dto);
                 if (newUser.getContact() != null) {
                     newUser.getContact().setId(0);
-                    cBl.createPrimaryForUser(new ContactDTOEx(
-                            newUser.getContact()), userId, entityId);
+                    cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
                 }
 
                 if (newUser.getCreditCard() != null) {
-                    newUser.getCreditCard().setId(null);
+                    CreditCardDTO card = new CreditCardDTO(newUser.getCreditCard()); // new CreditCardDTO
+                    card.setId(0);
+                    card.getBaseUsers().add(bl.getEntity());
+
                     CreditCardBL ccBL = new CreditCardBL();
-                    ccBL.create(new CreditCardDTO(newUser.getCreditCard()));
+                    ccBL.create(card);
                     
                     UserDTO userD = new UserDAS().find(userId);
                     userD.getCreditCards().add(ccBL.getEntity());

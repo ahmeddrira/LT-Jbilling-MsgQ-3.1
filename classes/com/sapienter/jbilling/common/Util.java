@@ -20,15 +20,10 @@
 
 package com.sapienter.jbilling.common;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.server.user.EntityBL;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Client miscelaneous utility functions
@@ -174,13 +169,25 @@ public class Util {
                 (cal.get(GregorianCalendar.MONTH) + 1) + "-" +
                 cal.get(GregorianCalendar.DATE); 
     }
-    
+
+    /**
+     * Returns the payment method for the given credit card. If this credit card
+     * has been obscured (by the {@link com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask} plug-in)
+     * then the payment type cannot detected and this method will return PAYMENT_METHOD_GATEWAY_KEY.
+     *
+     * @param creditCardNumber credit card number to parse
+     * @return payment method
+     */
     static public Integer getPaymentMethod(String creditCardNumber) {
         Integer retValue = null;
+
+        /*
+            This isn't 100% accurate as obscured credit card numbers may not always mean that a gateway key
+            is present. We should be checking CreditCardDTO to ensure that gatewayKey is not null when an
+            obscured credit card number is encountered.
+         */
         
-        char firstDigit = creditCardNumber.charAt(0);
-        
-        switch (firstDigit) {
+        switch (creditCardNumber.charAt(0)) {
         case '4':
             retValue = Constants.PAYMENT_METHOD_VISA;
             break;
@@ -198,7 +205,11 @@ public class Util {
         case '6':
             retValue = Constants.PAYMENT_METHOD_DISCOVERY;
             break;
+        case '*':
+            retValue = Constants.PAYMENT_METHOD_GATEWAY_KEY;
+            break;
         }
+
         return retValue;
     }     
 

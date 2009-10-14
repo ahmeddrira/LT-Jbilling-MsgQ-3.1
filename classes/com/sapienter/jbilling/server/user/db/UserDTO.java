@@ -479,22 +479,14 @@ public class UserDTO implements java.io.Serializable {
         return getCurrency().getId();
     }
 
+    @Override
     public String toString() {
-        return "[user = " +
+        /*  Avoid lazy loaded fields to prevent a LazyInitializationException
+            when printing users outside of the initial transaction. */
+        return "UserDTO{" +
                 "id=" + id +
-                ",currencyDTO=" + currencyDTO +
-                ",company=" + company +
-                ",subscriberStatus=" + subscriberStatus +
-                ",userStatus=" + userStatus +
-                ",language=" + language +
-                ",password=" + password +
-                ",deleted=" + deleted +
-                ",createDatetime=" + createDatetime +
-                ",lastStatusChange=" + lastStatusChange +
-                ",lastLogin=" + lastLogin +
-                ",userName=" + userName +
-                ",failedAttempts=" + failedAttempts +
-                "]";
+                ", userName='" + userName + '\'' +
+                '}';
     }
 
     public void touch() {

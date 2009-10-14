@@ -42,3 +42,9 @@ update invoice set status_id = 28 where id in (select id from invoice where to_p
 
 alter table invoice drop column to_process;
 
+-- external credit card storage
+insert into pluggable_task_type values (58, 17, 'com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask', 1);
+insert into pluggable_task_type values (59, 6, 'com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage', 0);
+
+insert into payment_method values (9);
+insert into international_description(53, 9, 'description', 'Payment Gateway Key');

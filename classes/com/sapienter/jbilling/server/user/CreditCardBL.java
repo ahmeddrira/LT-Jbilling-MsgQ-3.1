@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -39,7 +40,6 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
@@ -48,10 +48,12 @@ import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.system.event.EventManager;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.event.NewCreditCardEvent;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -96,13 +98,26 @@ public class CreditCardBL extends ResultList
         creditCard = pEntity;
     }
 
+    /**
+     * Creates a new persistant CreditCardDTO and emits a NewCreditCardEvent.
+     *
+     * @param dto credit card to persist
+     * @return id of persisted credit card
+     */
     public Integer create(CreditCardDTO dto) {
         dto.setId(0);
         dto.setVersionNum(null);
-        dto.setCcType(Util.getPaymentMethod(dto.getNumber()));
         dto.setDeleted(0);
+
         creditCard = creditCardDas.save(dto);
-        
+
+        if (!creditCard.getBaseUsers().isEmpty()) {
+            UserDTO user =  creditCard.getBaseUsers().iterator().next();
+            EventManager.process(new NewCreditCardEvent(creditCard,  user.getEntity().getId()));
+        } else {
+            LOG.error("Could not determine entity id of created CreditCardDTO, failed to emit NewCreditCardEvent!");
+        }
+       
         return creditCard.getId();
     }
 
@@ -136,11 +151,14 @@ public class CreditCardBL extends ResultList
 
         }
 
-
         UserDTO userD = new UserDAS().find(userId);
         dto.getBaseUsers().add(userD);
         creditCard.setBaseUsers(dto.getBaseUsers());
-        userD.getCreditCards().add(creditCard);
+        userD.getCreditCards().add(creditCard);        
+
+        NewCreditCardEvent event = new NewCreditCardEvent(creditCard, userD.getCompany().getId());     
+        EventManager.process(event);
+
         new UserDAS().save(userD);
         new CreditCardDAS().save(creditCard);
 

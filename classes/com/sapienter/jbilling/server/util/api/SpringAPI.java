@@ -45,8 +45,11 @@ public class SpringAPI implements JbillingAPI {
     private IWebServicesSessionBean session = null;
 
     public SpringAPI() throws JbillingAPIException {
-        session = (IWebServicesSessionBean) RemoteContext.getBean(
-                RemoteContext.Name.API_CLIENT);
+        this(RemoteContext.Name.API_CLIENT);
+    }
+
+    public SpringAPI(RemoteContext.Name bean) {
+        session = (IWebServicesSessionBean) RemoteContext.getBean(bean);
     }
 
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)

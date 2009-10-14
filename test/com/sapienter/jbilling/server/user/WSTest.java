@@ -24,13 +24,6 @@
  */
 package com.sapienter.jbilling.server.user;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
-
-import junit.framework.TestCase;
-
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
@@ -40,11 +33,18 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import com.sapienter.jbilling.server.util.api.SpringAPI;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
-import java.math.BigDecimal;
+import junit.framework.TestCase;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * @author Emil
@@ -326,6 +326,58 @@ public class WSTest extends TestCase {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
+    }
+
+    public void testCreditCardUpdates() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        /*  Note, a more direct test would be to write a unit test for the CreditCardDTO class itself,
+            but our current testing framework doesn't support this style. Instead, test CreditCardBL
+            which should the standard service interface for all credit card interaction.        
+         */
+
+        UserWS user = createUser(true, 43, null);
+
+        Integer userId = user.getUserId();
+        CreditCardDTO card = user.getCreditCard();
+
+        // Visa
+        card.setNumber("4111111111111985");
+        api.updateCreditCard(user.getUserId(), card);
+
+        user = api.getUserWS(userId);
+        assertEquals("card type Visa", Constants.PAYMENT_METHOD_VISA, user.getCreditCard().getType());
+
+        // Mastercard
+        card.setNumber("5111111111111985");
+        api.updateCreditCard(user.getUserId(), card);
+
+        user = api.getUserWS(userId);
+        assertEquals("card type Mastercard", Constants.PAYMENT_METHOD_MASTERCARD, user.getCreditCard().getType());
+        
+        // American Express
+        card.setNumber("3711111111111985");
+        api.updateCreditCard(user.getUserId(), card);
+
+        user = api.getUserWS(userId);
+        assertEquals("card type American Express", Constants.PAYMENT_METHOD_AMEX, user.getCreditCard().getType());
+
+        // Diners Club
+        card.setNumber("3811111111111985");
+        api.updateCreditCard(user.getUserId(), card);
+
+        user = api.getUserWS(userId);
+        assertEquals("card type Diners", Constants.PAYMENT_METHOD_DINERS, user.getCreditCard().getType());
+
+        // Discovery
+        card.setNumber("6111111111111985");
+        api.updateCreditCard(user.getUserId(), card);
+
+        user = api.getUserWS(userId);
+        assertEquals("card type Discovery", Constants.PAYMENT_METHOD_DISCOVERY, user.getCreditCard().getType());
+
+        //cleanup
+        api.deleteUser(user.getUserId());
     }
 
     public void testLanguageId() {
@@ -738,7 +790,8 @@ Ch2->P1
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer[] ids = api.getUsersByCreditCard("1152");
             assertNotNull("Four customers with CC", ids);
-            assertEquals("Four customers with CC", 5, ids.length);
+            assertEquals("Four customers with CC", 6, ids.length); // returns credit cards from both clients?
+                                                                   // 5 cards from entity 1, 1 card from entity 2
             assertEquals("Created user with CC", 10751,
                     ids[ids.length - 1].intValue());
                     

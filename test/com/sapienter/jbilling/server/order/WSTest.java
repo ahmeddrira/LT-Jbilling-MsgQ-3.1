@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
+import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
@@ -1124,5 +1125,47 @@ public class WSTest  extends TestCase {
         api.updateUser(user);
         assertEquals("User does not have the original main order", mainOrder,
                 api.getUserWS(GANDALF_USER_ID).getMainOrderId());
+    }
+
+    public void testOrderLineDescriptionLanguage() {
+        try {
+            final Integer USER_ID = 10750; // french speaker
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create order
+            OrderWS order = new OrderWS();
+            order.setUserId(USER_ID); 
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(1); // once
+            order.setCurrencyId(1);
+
+            OrderLineWS line = new OrderLineWS();
+            line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            line.setItemId(1);
+            line.setQuantity(1);
+            line.setUseItem(true);
+
+            order.setOrderLines(new OrderLineWS[] { line } );
+
+            // create order and invoice
+            Integer invoiceId = api.createOrderAndInvoice(order);
+
+            // check invoice line
+            InvoiceWS invoice = api.getInvoiceWS(invoiceId);
+            assertEquals("Number of invoice lines", 1, 
+                    invoice.getInvoiceLines().length);
+            InvoiceLineDTO invoiceLine = invoice.getInvoiceLines()[0];
+            assertEquals("French description", "French Lemonade", 
+                    invoiceLine.getDescription());
+
+            // clean up
+            api.deleteInvoice(invoiceId);
+            api.deleteOrder(invoice.getOrders()[0]);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
     }
 }

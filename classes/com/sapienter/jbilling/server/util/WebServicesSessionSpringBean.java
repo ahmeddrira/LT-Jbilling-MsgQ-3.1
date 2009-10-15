@@ -1709,10 +1709,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             UserBL bl = new UserBL(getCallerId());
             Integer executorId = bl.getEntity().getUserId();
             Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-            Integer languageId = bl.getEntity().getLanguageIdField();
 
             // we'll need the langauge later
             bl.set(order.getUserId());
+            Integer languageId = bl.getEntity().getLanguageIdField();
             // see if the related items should provide info
             processItemLine(order.getOrderLines(), languageId, entityId, 
                     order.getUserId(), order.getCurrencyId());

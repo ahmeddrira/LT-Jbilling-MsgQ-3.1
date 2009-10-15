@@ -297,9 +297,9 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(1017,users.length);
+            assertEquals(1018,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 10751, users[1016].intValue());
+            assertEquals("Last returned user ", 10761, users[1017].intValue());
 
             /*
              * Get list of not active customers
@@ -792,7 +792,7 @@ Ch2->P1
             assertNotNull("Four customers with CC", ids);
             assertEquals("Four customers with CC", 6, ids.length); // returns credit cards from both clients?
                                                                    // 5 cards from entity 1, 1 card from entity 2
-            assertEquals("Created user with CC", 10751,
+            assertEquals("Created user with CC", 10761,
                     ids[ids.length - 1].intValue());
                     
             // get the user

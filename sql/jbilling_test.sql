@@ -2968,6 +2968,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10743	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test1	0	1
 10744	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test2	0	1
 1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2007-12-28 14:40:46.604	admin	0	4
+10750	1	46f94c8de14fb36680850768ff1b7f2a	0	2	1	14	1	2009-10-15 11:12:45.123	\N	\N	french-speaker	0	3
 \.
 
 
@@ -4043,6 +4044,7 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 112603	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:01.034	0	1	10743	1
 112604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:02.556	0	1	10744	1
 112700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2009-07-20 16:42:04.934	0	1	\N	1
+112800	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	a@a.com	2009-10-15 11:12:45.18	0	1	10750	1
 \.
 
 
@@ -7120,6 +7122,7 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790508	112608	2	10	10747	1
 790509	112609	2	10	10748	1
 790600	112700	1	39	8500	1
+790700	112800	2	10	10750	1
 \.
 
 
@@ -9463,6 +9466,7 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0	0
 1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0
 1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
+106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0	0
 \.
 
 
@@ -10832,6 +10836,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 90	1	description	1	Paid
 90	2	description	1	Unpaid
 90	3	description	1	Unpaid, balance carried to new invoice
+14	1	description	2	French Lemonade
 \.
 
 
@@ -11043,9 +11048,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 87	generic_status	26
 88	order_line_provisioning_status	1
 51	preference	49
-10	base_user	1075
 11	partner	2
-12	customer	1067
 44	credit_card	1015
 42	payment	19
 43	payment_info_cheque	17
@@ -11056,17 +11059,19 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 22	order_line	2077
 39	invoice	86
 90	invoice_status	4
-29	contact_map	7907
-27	contact	1128
 76	contact_field	2025
 40	invoice_line	87
 49	order_process	86
 25	pluggable_task	57
 26	pluggable_task_parameter	83
 3	language	3
+10	base_user	1076
+12	customer	1068
+29	contact_map	7908
+27	contact	1129
 \.
 
---90	invoice	_status 4
+
 --
 -- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
@@ -15564,7 +15569,6 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 \.
 
 
-
 --
 -- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
@@ -18914,6 +18918,7 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10746	5
 10747	5
 10748	5
+10750	5
 \.
 
 

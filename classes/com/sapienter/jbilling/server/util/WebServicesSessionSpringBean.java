@@ -57,7 +57,6 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
@@ -74,6 +73,7 @@ import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
@@ -102,7 +102,6 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 @Transactional( propagation = Propagation.REQUIRED )
 @WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
@@ -1978,16 +1977,21 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
 		validatePayment(payment);
 
-        if (payment.getCreditCard() == null && payment.getAch() == null) {
-            throw new SessionInternalError("Credit card or ACH payments can " +
-                    "only be processed");
-        }
 
 		try {
+            PaymentDTOEx dto = new PaymentDTOEx(payment);
+
+            if (payment.getCreditCard() == null && payment.getAch() == null) {
+                PaymentDTO populated = PaymentBL.findPaymentInstrument(
+                        new UserBL(payment.getUserId()).getEntity().getCompany().getId(),
+                        payment.getUserId());
+                dto.setCreditCard(populated.getCreditCard());
+                dto.setAch(populated.getAch());
+            }
 
 			IPaymentSessionBean session = (IPaymentSessionBean) Context
 					.getBean(Context.Name.PAYMENT_SESSION);
-			PaymentDTOEx dto = new PaymentDTOEx(payment);
+			
 			Integer entityId = getCallerCompanyId();
 			Integer result = session.processAndUpdateInvoice(dto, null,
 					entityId);

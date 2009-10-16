@@ -454,8 +454,8 @@ public class WSTest extends TestCase {
             payment.setCurrencyId(new Integer(1));
             payment.setUserId(USER_ID);            
 
-            //UserWS user = api.getUserWS(USER_ID);         
-            //CreditCardDTO cc= user.getCreditCard();
+            UserWS user = api.getUserWS(USER_ID);         
+            CreditCardDTO originalCC= user.getCreditCard();
 
 
             /*
@@ -496,11 +496,36 @@ public class WSTest extends TestCase {
             assertEquals("correct invoice balance", 10.0f,
                     invoice2.getBalance());
 
+            // do it again, but using the credit card on file
+            // which is also 41111111111111
+            payment.setCreditCard(null);
+            System.out.println("processing payment.");
+            authInfo = api.processPayment(payment);
+            // check payment has zero balance
+            PaymentWS lastPayment2 = api.getLatestPayment(USER_ID);
+            assertNotNull("payment can not be null", lastPayment2);
+            assertNotNull("auth in payment can not be null",
+                    lastPayment2.getAuthorizationId());
+            assertEquals("correct payment amount", new Float(5),
+                    lastPayment2.getAmount());
+            assertEquals("correct payment balance", new Float(0),
+                    lastPayment2.getBalance());
+            assertFalse("Payment is not the same as preiouvs", lastPayment2.getId() == lastPayment.getId());
+
+            // check invoices still have balance
+            invoice1 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 10.0f,
+                    invoice1.getBalance());
+            invoice2 = api.getInvoiceWS(invoiceId1);
+            assertEquals("correct invoice balance", 10.0f,
+                    invoice2.getBalance());
+
 
             /*
              * do a successful payment of $5
              */
             cc.setNumber("4111111111111152");
+            payment.setCreditCard(cc);
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment);
 
@@ -531,8 +556,13 @@ public class WSTest extends TestCase {
 
 
             /*
-             * another payment for $10
+             * another payment for $10, this time with the user's credit card
              */
+            // update the credit card to the one that is good
+            api.updateCreditCard(USER_ID, cc);
+            // now the payment does not have a cc
+            payment.setCreditCard(null);
+
             payment.setAmount(new Float(10));
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment);
@@ -566,6 +596,7 @@ public class WSTest extends TestCase {
             /* 
              *another payment for $10
              */
+            payment.setCreditCard(cc);
             payment.setAmount(new Float(10));
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment);
@@ -597,6 +628,7 @@ public class WSTest extends TestCase {
 
 
             // clean up
+            api.updateCreditCard(USER_ID, originalCC);
             System.out.println("Deleting invoices and orders.");
             api.deleteInvoice(invoice1.getId());
             api.deleteInvoice(invoice2.getId());

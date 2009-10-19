@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import java.math.BigDecimal;
 
 @Entity
 @TableGenerator(
@@ -67,7 +68,7 @@ public class ItemDTO extends AbstractDescription {
     private int id;
     private CompanyDTO entity;
     private String internalNumber;
-    private Float percentage;
+    private BigDecimal percentage;
     private Integer priceManual;
     private Integer deleted;
     private Integer hasDecimals;
@@ -82,7 +83,7 @@ public class ItemDTO extends AbstractDescription {
     private Collection<String> strTypes = null; // for rules 'contains' operator
     private String promoCode = null;
     private Integer currencyId = null;
-    private Float price = null;
+    private BigDecimal price = null;
     private Integer orderLineTypeId = null;
     // all the prices.ItemPriceDTOEx  
     private Vector prices = null;
@@ -94,7 +95,7 @@ public class ItemDTO extends AbstractDescription {
         this.id = id;
     }
 
-    public ItemDTO(int id, String internalNumber, Float percentage, Integer priceManual, 
+    public ItemDTO(int id, String internalNumber, BigDecimal percentage, Integer priceManual,
             Integer hasDecimals, Integer deleted, CompanyDTO entity) {
         this.id = id;
         this.internalNumber = internalNumber;
@@ -112,7 +113,7 @@ public class ItemDTO extends AbstractDescription {
         this.hasDecimals = hasDecimals;
     }
 
-    public ItemDTO(int id, CompanyDTO entity, String internalNumber, Float percentage, Integer priceManual, Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes, Set<InvoiceLineDTO> invoiceLines, Set<ItemPriceDTO> itemPrices) {
+    public ItemDTO(int id, CompanyDTO entity, String internalNumber, BigDecimal percentage, Integer priceManual, Integer deleted, Integer hasDecimals, Set<OrderLineDTO> orderLineDTOs, Set<ItemTypeDTO> itemTypes, Set<InvoiceLineDTO> invoiceLines, Set<ItemPriceDTO> itemPrices) {
        this.id = id;
        this.entity = entity;
        this.internalNumber = internalNumber;
@@ -130,7 +131,7 @@ public class ItemDTO extends AbstractDescription {
     public ItemDTO(int id,String number, CompanyDTO entity, 
             String description,
             Integer manualPrice, Integer deleted, Integer currencyId,
-            Float price, Float percentage, Integer orderLineTypeId,
+            BigDecimal price, BigDecimal percentage, Integer orderLineTypeId,
             Integer hasDecimals ) {
         this(id, number, percentage, manualPrice, hasDecimals, deleted, entity);
         setDescription(description);
@@ -175,12 +176,12 @@ public class ItemDTO extends AbstractDescription {
         this.internalNumber = internalNumber;
     }
     
-    @Column(name="percentage", precision=17, scale=17)
-    public Float getPercentage() {
+    @Column(name="percentage")
+    public BigDecimal getPercentage() {
         return this.percentage;
     }
     
-    public void setPercentage(Float percentage) {
+    public void setPercentage(BigDecimal percentage) {
         this.percentage = percentage;
     }
     
@@ -370,7 +371,7 @@ public class ItemDTO extends AbstractDescription {
      * @return
      */
     @Transient
-    public Float getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -378,7 +379,7 @@ public class ItemDTO extends AbstractDescription {
      * @param price
      */
     @Transient
-    public void setPrice(Float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
     /**

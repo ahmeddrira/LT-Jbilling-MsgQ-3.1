@@ -81,10 +81,10 @@ public class CurrencyBL {
         return currency;
     }
 
-    public Float convert(Integer fromCurrencyId, Integer toCurrencyId,
-            Float amount, Integer entityId) 
+    public BigDecimal convert(Integer fromCurrencyId, Integer toCurrencyId,
+            BigDecimal amount, Integer entityId)
             throws SessionInternalError {
-        Float retValue = null;
+        BigDecimal retValue = null;
         
         LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId +
                 " am " + amount + " en " + entityId);
@@ -100,10 +100,9 @@ public class CurrencyBL {
         return retValue;         
     }
     
-    public Float convertToPivot(Integer currencyId, Float amount, 
+    public BigDecimal convertToPivot(Integer currencyId, BigDecimal amount,
             Integer entityId) 
             throws SessionInternalError {
-        Float retValue = null;
         CurrencyExchangeDTO exchange = null;
         
         if (currencyId.intValue() == 1) {
@@ -115,15 +114,13 @@ public class CurrencyBL {
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
         tmp = tmp.divide(new BigDecimal(exchange.getRate()), CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
-        retValue = new Float(tmp.floatValue());
         
-        return retValue;
+        return tmp;
     }
     
-    public Float convertPivotToCurrency(Integer currencyId, Float amount,
+    public BigDecimal convertPivotToCurrency(Integer currencyId, BigDecimal amount,
             Integer entityId) 
             throws SessionInternalError {
-        Float retValue = null;
         CurrencyExchangeDTO exchange = null;
         
         if (currencyId.intValue() == 1) {
@@ -135,9 +132,8 @@ public class CurrencyBL {
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
         tmp = tmp.multiply(new BigDecimal(exchange.getRate()));
-        retValue = new Float(tmp.floatValue());
         
-        return retValue;
+        return tmp;
     }
     
     public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId)

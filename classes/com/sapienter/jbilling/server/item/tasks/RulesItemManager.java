@@ -236,7 +236,7 @@ public class RulesItemManager extends BasicItemManager {
 
             // now add the percentage amount based on the order line item amount
             BigDecimal percentage = new BigDecimal(percentageLine.getItem().getPercentage().toString());
-            BigDecimal base = new BigDecimal(line.getPrice() * line.getQuantity());
+            BigDecimal base = line.getPrice().multiply(new BigDecimal(line.getQuantity()));
             BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE,
                     Constants.BIGDECIMAL_ROUND).multiply(percentage).add(
                         new BigDecimal(percentageLine.getAmount().toString()));

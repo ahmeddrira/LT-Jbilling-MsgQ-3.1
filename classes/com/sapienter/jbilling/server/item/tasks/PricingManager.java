@@ -36,20 +36,24 @@ public class PricingManager {
     private BigDecimal price; // it is all about setting the value of this field ...
 
     public PricingManager(Integer itemId, Integer userId,
-            Integer currencyId, Float price) {
+            Integer currencyId, BigDecimal price) {
         this.itemId = itemId;
         this.userId = userId;
         this.currencyId = currencyId;
         setPrice(price);
     }
 
-    public double getPrice() {
-        return price.doubleValue();
+    public BigDecimal getPrice() {
+        return price;
     }
 
     public void setPrice(double defaultPrice) {
         LOG.debug("Setting price of item " + itemId + " to " + defaultPrice);
         this.price = new BigDecimal(defaultPrice);
+    }
+
+    public void setPrice(BigDecimal defaultPrice) {
+        this.price = defaultPrice;
     }
 
     public void setPrice(int price) {

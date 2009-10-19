@@ -27,7 +27,6 @@ import org.drools.RuleBase;
 import org.drools.StatelessSession;
 
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.tasks.Subscription;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
@@ -38,13 +37,14 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
+import java.math.BigDecimal;
 
 public class RulesPricingTask extends PluggableTask implements IPricing {
     
     private static final Logger LOG = Logger.getLogger(RulesPricingTask.class);
 
-    public Float getPrice(Integer itemId, Integer userId, Integer currencyId,
-            Vector<PricingField> fields, Float defaultPrice) 
+    public BigDecimal getPrice(Integer itemId, Integer userId, Integer currencyId,
+            Vector<PricingField> fields, BigDecimal defaultPrice)
             throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules
@@ -95,6 +95,6 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         }
         mySession.executeWithResults(rulesMemoryContext);
 
-        return new Float(manager.getPrice());
+        return manager.getPrice();
     }
 }

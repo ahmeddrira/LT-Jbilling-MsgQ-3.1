@@ -122,7 +122,7 @@ public class BasicCompositionTask extends PluggableTask
                         }
                         invoiceLine = new InvoiceLineDTO(null, desc,
                                 calculatePeriodAmount(orderLine.getAmount(), period),
-                                orderLine.getPrice(), orderLine.getQuantity(),
+                                orderLine.getPrice().floatValue(), orderLine.getQuantity(),
                                 type, new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);
 
@@ -144,7 +144,7 @@ public class BasicCompositionTask extends PluggableTask
                         invoiceLine = new InvoiceLineDTO(null,
                                 orderLine.getDescription(),
                                 calculatePeriodAmount(orderLine.getAmount(), period),
-                                orderLine.getPrice(),
+                                orderLine.getPrice().floatValue(),
                                 null, Constants.INVOICE_LINE_TYPE_TAX,
                                 new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);

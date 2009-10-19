@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.List;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
@@ -45,12 +44,12 @@ import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.math.BigDecimal;
 
 public class ItemBL {
     private ItemDAS itemDas = null;
@@ -247,11 +246,11 @@ public class ItemBL {
     /**
      * @return The price in the requested currency
      */
-    private Float getPriceByCurrency(Integer currencyId, Integer entityId) 
+    private BigDecimal getPriceByCurrency(Integer currencyId, Integer entityId)
             throws SessionInternalError {
-        Float retValue = null;
+        BigDecimal retValue = null;
         int prices = 0;
-        Float aPrice = null;
+        BigDecimal aPrice = null;
         Integer aCurrency = null;
         // may be the item has a price in this currency
         for (Iterator it = item.getItemPrices().iterator(); it.hasNext(); ) {
@@ -296,7 +295,7 @@ public class ItemBL {
      * @return
      * @throws SessionInternalError
      */
-    public Float getPrice(Integer userId, Integer entityId) 
+    public BigDecimal getPrice(Integer userId, Integer entityId)
             throws SessionInternalError {
         UserBL user = new UserBL(userId);
         return getPrice(userId, user.getCurrencyId(), entityId);
@@ -310,9 +309,9 @@ public class ItemBL {
      * @return The price in the requested currency. It always returns a price,
      * otherwise an exception for lack of pricing for an item
      */
-    public Float getPrice(Integer userId, Integer currencyId, Integer entityId) 
+    public BigDecimal getPrice(Integer userId, Integer currencyId, Integer entityId)
             throws SessionInternalError {
-        Float retValue = null;
+        BigDecimal retValue = null;
         CurrencyBL currencyBL;
         
         if (currencyId == null || entityId == null) {
@@ -329,7 +328,7 @@ public class ItemBL {
         }
 
         // try to get cached item price for this currency
-        retValue = (Float) cache.getFromCache(item.getId() + 
+        retValue = (BigDecimal) cache.getFromCache(item.getId() +
                 currencyId.toString(), cacheModel);
 
         if (retValue == null) {
@@ -409,7 +408,7 @@ public class ItemBL {
 
         retValue.setEntity(new CompanyDAS().find(other.getEntityId()));
         retValue.setNumber(other.getNumber());
-        retValue.setPercentage(other.getPercentage());
+        retValue.setPercentage(other.getPercentage() == null ? null : new BigDecimal(other.getPercentage()));
         retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
@@ -417,7 +416,7 @@ public class ItemBL {
         retValue.setTypes(other.getTypes());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
-        retValue.setPrice(other.getPrice());
+        retValue.setPrice(new BigDecimal(other.getPrice()));
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
         // convert prices between DTO and DTOEx (WS)
@@ -430,7 +429,7 @@ public class ItemBL {
                 itemPrice.setId(otherPrice.getId());
                 itemPrice.setCurrency(new CurrencyDAS().find(
                         otherPrice.getCurrencyId()));
-                itemPrice.setPrice(otherPrice.getPrice());
+                itemPrice.setPrice(otherPrice.getPrice() == null ? null : new BigDecimal(otherPrice.getPrice()));
                 itemPrice.setName(otherPrice.getName());
                 itemPrice.setPriceForm(otherPrice.getPriceForm());
                 prices.add(itemPrice);
@@ -451,7 +450,7 @@ public class ItemBL {
 
         retValue.setEntityId(other.getEntity().getId());
         retValue.setNumber(other.getInternalNumber());
-        retValue.setPercentage(other.getPercentage());
+        retValue.setPercentage(other.getPercentage() == null ? null : other.getPercentage().floatValue());
         retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
@@ -459,7 +458,7 @@ public class ItemBL {
         retValue.setTypes(other.getTypes());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
-        retValue.setPrice(other.getPrice());
+        retValue.setPrice(other.getPrice() == null ? null : other.getPrice().floatValue());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
         retValue.setPrices(other.getPrices());
 
@@ -472,7 +471,7 @@ public class ItemBL {
                 ItemPriceDTO otherPrice = (ItemPriceDTO) otherPrices.get(i);
                 itemPrice.setId(otherPrice.getId());
                 itemPrice.setCurrencyId(otherPrice.getCurrency().getId());
-                itemPrice.setPrice(otherPrice.getPrice());
+                itemPrice.setPrice(otherPrice.getPrice() == null ? null : otherPrice.getPrice().floatValue());
                 itemPrice.setName(otherPrice.getName());
                 itemPrice.setPriceForm(otherPrice.getPriceForm());
                 prices.add(itemPrice);

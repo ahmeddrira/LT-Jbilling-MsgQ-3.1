@@ -47,4 +47,5 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (59, 6, 'com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage', 0);
 
 insert into payment_method (id) values (9);
-insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (53, 9, 'description', 'Payment Gateway Key');
+alter table credit_card drop column security_code;
+alter table credit_card add column gateway_key varchar(100);

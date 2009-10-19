@@ -94,9 +94,7 @@ public abstract class PluggableTask {
     /**
      * Any pluggable task can get a rule base that takes the task's 
      * parameters as the configuration for the rule agent.
-     * TODO: RuleBase is thread safe. There should be only one per pluggable task id.
-     * So they can be cached in a simple hashmap, but you need to invalidate an entry
-     * in the cache if the pluggable task is updated or deleted.
+     * TODO: Use standard cache rather than custom solution
      * @return
      * @throws IOException
      * @throws Exception

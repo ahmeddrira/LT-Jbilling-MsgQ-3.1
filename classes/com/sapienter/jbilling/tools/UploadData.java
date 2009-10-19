@@ -50,6 +50,7 @@ import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
 import com.sapienter.jbilling.server.util.RemoteContext;
+import java.math.BigDecimal;
 
 
 /**
@@ -399,7 +400,7 @@ public class UploadData {
 		            if (fields[total] != null && fields[total].length() > 0) {
 		            	price = Float.valueOf(fields[total]);
 		            }
-		            thisLine.setPrice(price);
+		            thisLine.setPrice(new BigDecimal(price));
 		            thisLine.setDescription(prop.getProperty("order_description"));
 		            //System.out.println("desc = " + thisLine.getDescription());
 		            thisOrder = remoteOrder.recalculate(thisOrder, entityId);
@@ -468,7 +469,7 @@ public class UploadData {
                 item.setDeleted(new Integer(0));
                 item.setNumber(fields[0]);
                 if (fields[1].trim().length() > 0) {
-                    item.setPercentage(Float.valueOf(fields[1]));
+                    item.setPercentage(new BigDecimal(Float.valueOf(fields[1])));
                     item.setCurrencyId(currencyId);
                 } else {
                     item.setPercentage(null);
@@ -476,7 +477,7 @@ public class UploadData {
                 }
                 item.setPriceManual(Integer.valueOf(fields[2]));
                 if (item.getPercentage() == null) {
-                    item.setPrice(Float.valueOf(fields[3]));
+                    item.setPrice(new BigDecimal(Float.valueOf(fields[3])));
                 } else {
                     item.setPrice(null);
                 }

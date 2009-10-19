@@ -92,6 +92,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import java.math.BigDecimal;
 
 /**
  * @author Emil
@@ -1178,7 +1179,7 @@ public class OrderBL extends ResultList
         	return null;
         }
         OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-        		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), line.getCreateDatetime(),
+        		line.getAmount(), line.getQuantity(), line.getPrice() == null ? null : line.getPrice().floatValue(), line.getItemPrice(), line.getCreateDatetime(),
         		line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(), 
         		line.getPurchaseOrder().getId(), null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
         return retValue;
@@ -1208,7 +1209,7 @@ public class OrderBL extends ResultList
         dto.setItemId(ws.getItemId());
     	dto.setItemPrice(ws.getItemPrice());
     	dto.setOrderLineType(new OrderLineTypeDAS().find(ws.getTypeId()));
-    	dto.setPrice(ws.getPrice());
+    	dto.setPrice(new BigDecimal(ws.getPrice()));
     	dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
     	dto.setQuantity(ws.getQuantity());
     	dto.setVersionNum(ws.getVersionNum());
@@ -1231,7 +1232,7 @@ public class OrderBL extends ResultList
             ItemDAS item = new ItemDAS();
             line.setItem(item.find(dto.getItemId()));
             line.setItemPrice(dto.getItemPrice());
-            line.setPrice(dto.getPrice());
+            line.setPrice(new BigDecimal(dto.getPrice()));
             line.setQuantity(dto.getQuantity());
             line.setProvisioningStatus(provisioningStatusDas.find(
                     dto.getProvisioningStatusId()));

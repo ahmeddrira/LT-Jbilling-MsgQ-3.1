@@ -868,9 +868,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             //line.setItem(itemDas.find(line.getItemId()));
             if (line.getUseItem().booleanValue()) {
                 if (item.getPrice() == null) {
-                    line.setPrice(item.getPercentage());
+                    line.setPrice(item.getPercentage().floatValue());
                 } else {
-                    line.setPrice(item.getPrice());
+                    line.setPrice(item.getPrice().floatValue());
                 }
                 if (line.getDescription() == null ||
                         line.getDescription().length() == 0) {
@@ -1790,7 +1790,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (line.getDeleted() == 0) {
 
             	OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-                		line.getAmount(), line.getQuantity(), line.getPrice(), line.getItemPrice(), 
+                		line.getAmount(), line.getQuantity(), line.getPrice().floatValue(), line.getItemPrice(),
                 		line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
                 		line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
                 		null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
@@ -2123,8 +2123,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 item.setPricingFields(fieldsList.get(fieldsIndex));
             }
 
-            prices.add(new BigDecimal(item.getPrice(userId, 
-                    getCallerCompanyId())));
+            prices.add(item.getPrice(userId, 
+                    getCallerCompanyId()));
             items.add(item.getEntity());
             itemNum++;
         }

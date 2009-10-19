@@ -51,6 +51,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
 import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
+import java.math.BigDecimal;
 
 @Entity
 @TableGenerator(
@@ -73,7 +74,7 @@ public class OrderLineDTO implements Serializable, Comparable {
     private OrderDTO orderDTO;
     private Float amount;
     private Double quantity;
-    private Float price;
+    private BigDecimal price;
     private Integer itemPrice;
     private Date createDatetime;
     private int deleted;
@@ -115,7 +116,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.deleted = deleted;
     }
     public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, float amount, 
-    		Double quantity, Float price, Integer itemPrice, Date createDatetime, Integer deleted, String description, ProvisioningStatusDTO provisioningStatus, String provisioningRequestId) {
+    		Double quantity, BigDecimal price, Integer itemPrice, Date createDatetime, Integer deleted, String description, ProvisioningStatusDTO provisioningStatus, String provisioningRequestId) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
        this.item = item;
@@ -191,11 +192,11 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
     
     @Column(name="price", precision=17, scale=17)
-    public Float getPrice() {
+    public BigDecimal getPrice() {
         return this.price;
     }
     
-    public void setPrice(Float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
     

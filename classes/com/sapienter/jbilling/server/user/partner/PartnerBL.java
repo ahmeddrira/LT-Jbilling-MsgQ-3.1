@@ -370,7 +370,7 @@ public class PartnerBL extends ResultList
             // convert then the payment amout
             CurrencyBL currency = new CurrencyBL();
             BigDecimal paymentAmount = new BigDecimal(currency.convert(paymentCurrencyId, 
-                    currencyId, payment.getEntity().getAmount(), entityId).toString());
+                    currencyId, new BigDecimal(payment.getEntity().getAmount()), entityId).toString());
             LOG.debug("payment amount = " + paymentAmount);
             BigDecimal amount = new BigDecimal(calculateCommission(paymentAmount.floatValue(), currencyId, 
                     payment.getEntity().getBaseUser(), payout != null)); 
@@ -538,7 +538,7 @@ public class PartnerBL extends ResultList
                 partnerCurrencyId = partner.getUser().getEntity().getCurrencyId();
             }
             result = currency.convert(partnerCurrencyId, 
-                    currencyId, new Float(fee.floatValue()), 
+                    currencyId, new BigDecimal(fee.floatValue()),
                     partner.getUser().getEntity().getId()).floatValue();
         } else {
             throw new SessionInternalError(

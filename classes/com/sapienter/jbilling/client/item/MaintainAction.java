@@ -37,6 +37,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Context;
+import java.math.BigDecimal;
 
 public class MaintainAction extends CrudActionBase<ItemDTO> {
 
@@ -72,7 +73,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         dto.setNumber((String) myForm.get(FIELD_INTERNAL_NUMBER));
         dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
         dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));
-        dto.setPercentage(string2float((String) myForm.get(FIELD_PERCENTAGE)));
+        dto.setPercentage(new BigDecimal(string2float((String) myForm.get(FIELD_PERCENTAGE))));
         dto.setHasDecimals((Boolean) myForm.get(FIELD_HAS_DECIMALS) ? 1 : 0);
 
         // because of the bad idea of using the same bean for item/type/price,
@@ -99,7 +100,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
                 } else {
                     atLeastOnePriceFound = true;
                 }
-                nextPrice.setPrice(price);
+                nextPrice.setPrice(new BigDecimal(price));
             }
         }
 
@@ -153,7 +154,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         // the prices have to be localized
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);
-            pr.setPriceForm(float2string(pr.getPrice()));
+            pr.setPriceForm(float2string(pr.getPrice().floatValue()));
         }
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());
         myForm.set(FIELD_DESCRIPTION, dto.getDescription());
@@ -164,7 +165,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         myForm.set(FIELD_LANGUAGE, languageId);
         myForm.set(FIELD_HAS_DECIMALS, dto.getHasDecimals().intValue() > 0);
         if (dto.getPercentage() != null) {
-            myForm.set(FIELD_PERCENTAGE, float2string(dto.getPercentage()));
+            myForm.set(FIELD_PERCENTAGE, float2string(dto.getPercentage().floatValue()));
         } else {
             // otherwise it will pickup the percentage of a 
             // previously edited item!

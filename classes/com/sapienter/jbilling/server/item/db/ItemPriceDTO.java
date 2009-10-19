@@ -37,6 +37,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.math.BigDecimal;
 
 @Entity
 @TableGenerator(
@@ -55,7 +56,7 @@ public class ItemPriceDTO  implements java.io.Serializable {
     private Integer id;
     private CurrencyDTO currencyDTO;
     private ItemDTO item;
-    private Float price;
+    private BigDecimal price;
     private int versionNum;
 
     // transient
@@ -68,12 +69,12 @@ public class ItemPriceDTO  implements java.io.Serializable {
     }
 
 	
-    public ItemPriceDTO(Integer id, Float price) {
+    public ItemPriceDTO(Integer id, BigDecimal price) {
         this.id = id;
         this.price = price;
     }
 
-    public ItemPriceDTO(Integer id, ItemDTO item, Float price, CurrencyDTO currencyDTO) {
+    public ItemPriceDTO(Integer id, ItemDTO item, BigDecimal price, CurrencyDTO currencyDTO) {
        this.id = id;
        this.item = item;
        this.price = price;
@@ -119,11 +120,11 @@ public class ItemPriceDTO  implements java.io.Serializable {
     }
     
     @Column(name="price", nullable=false, precision=17, scale=17)
-    public Float getPrice() {
+    public BigDecimal getPrice() {
         return this.price;
     }
     
-    public void setPrice(Float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

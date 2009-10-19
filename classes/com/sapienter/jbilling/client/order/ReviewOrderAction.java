@@ -54,6 +54,7 @@ import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.util.Context;
+import java.math.BigDecimal;
 
 /**
  * @author Emil
@@ -97,7 +98,7 @@ public class ReviewOrderAction extends Action {
                 for(OrderLineDTO line : newOrder.getLines()) {
                 	if (line.getDeleted() == 0) {
         	            line.setPriceStr(FormHelper.float2string(
-            	                line.getPrice(), session));
+            	                line.getPrice().floatValue(), session));
                     	hashlines.put(line.getItemId(), line);
                     }
                 }
@@ -122,8 +123,8 @@ public class ReviewOrderAction extends Action {
                     for(OrderLineDTO line : newOrder.getLines()) {
                         if (!line.getEditable().booleanValue()) //probalby a tax
                             continue;
-                        line.setPrice(FormHelper.string2float(
-                                line.getPriceStr(), session));
+                        line.setPrice(new BigDecimal(FormHelper.string2float(
+                                line.getPriceStr(), session)));
                         log.debug("line = " + line);
                         if (line.getPrice() == null) {
                             String field = Resources.getMessage(request, 

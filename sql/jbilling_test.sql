@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'SQL_ASCII';
+SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -14215,7 +14215,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 21	1	22	2	1
 23	1	23	1	1
 31	1	26	1	1
-410	1	31	1	1
 420	1	33	1	1
 421	1	32	1	3
 430	1	30	1	1
@@ -14239,6 +14238,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 570	1	15	1	1
 580	2	58	1	1
 590	2	59	1	1
+410	1	60	1	1
 \.
 
 
@@ -14374,6 +14374,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 57	6	com.sapienter.jbilling.server.payment.tasks.PaymentsGatewayTask	4
 58	17	com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask	1
 59	6	com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage	0
+60	14	com.sapienter.jbilling.server.item.tasks.RulesPricingTask2	0
 \.
 
 

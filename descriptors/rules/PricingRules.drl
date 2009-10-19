@@ -3,35 +3,33 @@ package PricingRule
 import com.sapienter.jbilling.server.user.ContactDTOEx
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.user.UserDTOEx
-import com.sapienter.jbilling.server.item.tasks.PricingManager
+import com.sapienter.jbilling.server.item.tasks.PricingResult
 
-#globals
-global com.sapienter.jbilling.server.item.tasks.PricingManager manager
+import java.math.BigDecimal;
 
 rule '604 -  512'
 when
     exists(PricingField( name == "src", strValue matches "^604.*"))
     exists(PricingField( name == "dst", strValue matches "^512.*"))
-    PricingManager( itemId == 1 )
+    $result : PricingResult( itemId == 1 )
 then
-   manager.setPrice(7);
+   $result.setPrice("7");
    System.out.println("2 - Processing line starting with 604 ending with 512 for item 1");
 end
 
 rule "special for item 2"
 	dialect "java"
 	when
-	PricingManager( itemId == 2 )
-	PricingManager( userId == 2 )
+    	$result : PricingResult( itemId == 2, userId == 2 )
 	then
-	manager.setPrice(30);
+        $result.setPrice("30");
 end
 
 rule 'PricingField test1'
 	dialect "java"
 when
 	$newPrice : PricingField( name == "newPrice" )
-	PricingManager( itemId == 1 )
+	$result : PricingResult( itemId == 1 )
 then
-	manager.setPrice($newPrice.getDoubleValue());
+	$result.setPrice(new BigDecimal($newPrice.getDoubleValue()));
 end

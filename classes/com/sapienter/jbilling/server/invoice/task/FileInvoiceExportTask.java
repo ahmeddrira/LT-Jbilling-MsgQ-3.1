@@ -21,6 +21,7 @@
 
 package com.sapienter.jbilling.server.invoice.task;
 
+import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.NewInvoiceEvent;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
@@ -31,6 +32,7 @@ import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.MathContext;
@@ -57,8 +59,16 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
 
         LOG.debug("Exporting invoice " + myEvent.getInvoice().getId());
 
+        // get filename
+        String filename = (String) parameters.get(FILE);
+        if (!(new File(filename)).isAbsolute()) {
+            // prepend the default directory if file path is relative
+            String defaultDir = Util.getSysProp("base_dir");
+            filename = defaultDir + filename;
+        }
+
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter((String) parameters.get(FILE), true));
+            BufferedWriter out = new BufferedWriter(new FileWriter(filename, true));
             for (InvoiceLineDTO line : myEvent.getInvoice().getInvoiceLines()) {
                 out.write(composeLine(myEvent.getInvoice(), line, myEvent.getUserId()));
                 out.newLine();

@@ -813,6 +813,8 @@ server="upload.sourceforge.net" userid="anonymous">
              destfile="${source.dir}/jbilling-exp-${DSTAMP}.zip">
             <!-- Copy jbilling.war and guvnor.war. -->
             <zipfileset dir="${deploy.local.dir}" prefix="webapps" includes="*.war"/>
+            <!-- Copy jasperserver -->
+            <zipfileset dir="${deploy.local.dir}" prefix="webapps" includes="jasperserver/**/*"/>
             <!-- Copy the API jar file -->
             <zipfileset dir="${build.deploy.dir}" prefix="resources/api" includes="jbilling_api.jar"/>
             <!-- Copy the conf directory. -->
@@ -822,6 +824,9 @@ server="upload.sourceforge.net" userid="anonymous">
             <!-- Copy the DB dump (assumed to be 'data.sql' in the 'src' 
                  directory). -->
             <zipfileset dir="${source.dir}" includes="data.sql" fullpath="backup/data-${DSTAMP}.sql"/>
+            <!-- Copy the reports DB dump (assumed to be reports.sql in the 
+                 'src' directory). -->
+            <zipfileset dir="${source.dir}" includes="reports.sql" fullpath="backup/reports-${DSTAMP}.sql"/>
             <!-- Copy the rules repository files (from 'bin' directory). -->
             <zipfileset dir="${server.dir}/bin" includes="repository.xml" prefix="bin"/>
             <zipfileset dir="${server.dir}/bin/repository" prefix="bin/repository"/>

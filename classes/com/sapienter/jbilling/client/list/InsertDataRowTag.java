@@ -48,6 +48,7 @@ import sun.jdbc.rowset.CachedRowSet;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.list.ListDTO;
+import java.math.BigDecimal;
 
 /**
  * This tag will display all the colums of a query previously done with 
@@ -175,7 +176,11 @@ public class InsertDataRowTag extends BodyTagSupport {
                     if (method == ListTagBase.METHOD_JDBC) {
                         dec = results.getFloat(f);
                     } else {
-                        dec = ((Float) dtoLine[f-1]).floatValue();
+                        if (dtoLine[f-1] instanceof BigDecimal) {
+                            dec = ((BigDecimal) dtoLine[f-1]).floatValue();
+                        } else {
+                            dec = ((Float) dtoLine[f-1]).floatValue();
+                        }
                     }
                     //log.debug("bp4-2");
                     Locale loc = (Locale) session.getAttribute(

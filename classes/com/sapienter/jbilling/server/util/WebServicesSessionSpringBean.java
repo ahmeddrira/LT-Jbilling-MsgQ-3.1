@@ -197,6 +197,36 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     /**
+     * Returns the invoices for the user within the given date range.
+     */
+    public Integer[] getUserInvoicesByDate(Integer userId, String since, 
+            String until) throws SessionInternalError {
+        LOG.debug("Call to getUserInvoicesByDate " + userId + " " + since + 
+                " " + until);
+        try {
+            if (userId == null || since == null || until == null) {
+                return null;
+            }
+
+            Date dSince = com.sapienter.jbilling.common.Util.parseDate(since);
+            Date dUntil = com.sapienter.jbilling.common.Util.parseDate(until);
+
+            InvoiceBL invoiceBl = new InvoiceBL();
+
+            Integer[] results = invoiceBl.getUserInvoicesByDate(userId, dSince,
+                    dUntil);
+
+            LOG.debug("Done");
+            return results;
+
+        } catch (Exception e) {
+            LOG.error("Exception in web service: getting invoices by date" +
+                    since + until, e);
+            throw new SessionInternalError("Error getting last invoices");
+        }
+    }
+
+    /**
      * Deletes an invoice 
      * @param invoiceId
      * The id of the invoice to delete

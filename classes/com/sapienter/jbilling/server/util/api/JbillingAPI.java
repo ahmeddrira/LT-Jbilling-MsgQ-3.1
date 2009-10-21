@@ -50,6 +50,9 @@ public interface JbillingAPI {
     public Integer[] getInvoicesByDate(String since, String until)
             throws JbillingAPIException;
 
+    public Integer[] getUserInvoicesByDate(Integer userId, String since, 
+            String until) throws JbillingAPIException;
+
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
             throws JbillingAPIException;
 

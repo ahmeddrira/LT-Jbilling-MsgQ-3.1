@@ -355,4 +355,14 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         return criteria.list();
     }
 
+    public List<Integer> findIdsByUserAndDate(Integer userId, Date since, 
+            Date until) {
+        Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
+        addUserCriteria(criteria, userId);
+        addPeriodCriteria(criteria, since, until);
+        criteria.setProjection(Projections.id()).addOrder(Order.desc("id"));
+
+        return criteria.list();
+    }
+
 }

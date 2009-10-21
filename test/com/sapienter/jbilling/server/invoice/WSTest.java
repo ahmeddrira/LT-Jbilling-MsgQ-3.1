@@ -339,4 +339,49 @@ public class WSTest extends TestCase {
         assertEquals("New invoice total is equal to the current charges plus the carried total",
                      30.0f, invoice.getTotal().floatValue());
     }
+
+    public void testGetUserInvoicesByDate() {
+        try {
+            final Integer USER_ID = 2; // user has some invoices
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // invoice dates: 2006-07-26
+            // select the week
+            Integer[] result = api.getUserInvoicesByDate(USER_ID, "2006-07-23",
+                    "2006-07-29");
+            // note: invoice 1 gets deleted
+            assertEquals("Number of invoices returned", 3, result.length);
+            assertEquals("Invoice id 4", 4, result[0].intValue());
+            assertEquals("Invoice id 3", 3, result[1].intValue());
+            assertEquals("Invoice id 2", 2, result[2].intValue());
+
+            // test since date inclusive
+            result = api.getUserInvoicesByDate(USER_ID, "2006-07-26",
+                    "2006-07-29");
+            assertEquals("Number of invoices returned", 3, result.length);
+            assertEquals("Invoice id 4", 4, result[0].intValue());
+            assertEquals("Invoice id 3", 3, result[1].intValue());
+            assertEquals("Invoice id 2", 2, result[2].intValue());
+
+            // test until date inclusive
+            result = api.getUserInvoicesByDate(USER_ID, "2006-07-23",
+                    "2006-07-26");
+            assertEquals("Number of invoices returned", 3, result.length);
+            assertEquals("Invoice id 4", 4, result[0].intValue());
+            assertEquals("Invoice id 3", 3, result[1].intValue());
+            assertEquals("Invoice id 2", 2, result[2].intValue());
+
+            // test date with no invoices
+            result = api.getUserInvoicesByDate(USER_ID, "2005-07-23",
+                    "2005-07-29");
+            // Note: CXF returns null for empty array
+            if (result != null) {
+                assertEquals("Number of invoices returned", 0, result.length);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

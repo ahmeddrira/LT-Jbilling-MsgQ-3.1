@@ -625,7 +625,21 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         List<Integer> result = new InvoiceDAS().findIdsOverdueForUser(userId, date);
         return result.toArray(new Integer[result.size()]);
     }
-   
+
+    public Integer[] getUserInvoicesByDate(Integer userId, Date since, 
+            Date until) {
+        // add a day to include the until date
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(until);
+        cal.add(GregorianCalendar.DAY_OF_MONTH, 1);
+        until = cal.getTime();
+
+        List<Integer> result = new InvoiceDAS().findIdsByUserAndDate(
+                userId, since, until);
+
+        return result.toArray(new Integer[result.size()]);
+    }
+
     public Integer[] getManyWS(Integer userId, Integer number)
             throws NamingException, SessionInternalError {
         List<Integer> result = new InvoiceDAS().findIdsByUserLatestFirst(

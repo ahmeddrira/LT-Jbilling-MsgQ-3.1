@@ -179,6 +179,15 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
+    public Integer[] getUserInvoicesByDate(Integer userId, String since,
+            String until) throws JbillingAPIException {
+        try {
+            return session.getUserInvoicesByDate(userId, since, until);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
             throws JbillingAPIException {
         try {

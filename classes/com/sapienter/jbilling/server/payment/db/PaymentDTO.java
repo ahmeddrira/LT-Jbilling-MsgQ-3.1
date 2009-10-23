@@ -92,6 +92,10 @@ public class PaymentDTO implements Serializable {
 	public PaymentDTO() {
 	}
 
+    public PaymentDTO(int id) {
+        this.id = id;
+    }
+
 	public PaymentDTO(PaymentDTOEx dto) {
 		setId(dto.getId());
 		setAmount(new Float(dto.getAmount()));

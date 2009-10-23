@@ -32,6 +32,7 @@ public class PaymentAuthorizationDTO
 {
    private java.lang.Integer id;
    private boolean idHasBeenSet = false;
+   private Integer paymentId;
    private java.lang.String processor;
    private boolean processorHasBeenSet = false;
    private java.lang.String code1;
@@ -61,10 +62,11 @@ public class PaymentAuthorizationDTO
    {
    }
 
-   public PaymentAuthorizationDTO( java.lang.Integer id,java.lang.String processor,java.lang.String code1,java.lang.String code2,java.lang.String code3,java.lang.String approvalCode,java.lang.String AVS,java.lang.String transactionId,java.lang.String MD5,java.lang.String cardCode,java.util.Date createDate,java.lang.String responseMessage )
+    public PaymentAuthorizationDTO( java.lang.Integer id,Integer paymentId,java.lang.String processor,java.lang.String code1,java.lang.String code2,java.lang.String code3,java.lang.String approvalCode,java.lang.String AVS,java.lang.String transactionId,java.lang.String MD5,java.lang.String cardCode,java.util.Date createDate,java.lang.String responseMessage )
    {
 	  this.id = id;
 	  idHasBeenSet = true;
+      this.paymentId = paymentId;
 	  this.processor = processor;
 	  processorHasBeenSet = true;
 	  this.code1 = code1;
@@ -95,6 +97,7 @@ public class PaymentAuthorizationDTO
    {
 	  this.id = otherValue.id;
 	  idHasBeenSet = true;
+      this.paymentId = otherValue.paymentId;
 	  this.processor = otherValue.processor;
 	  processorHasBeenSet = true;
 	  this.code1 = otherValue.code1;
@@ -146,6 +149,14 @@ public class PaymentAuthorizationDTO
 
 		  pk = id;
    }
+
+    public Integer getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(Integer paymentId) {
+        this.paymentId = paymentId;
+    }
 
    public boolean idHasBeenSet(){
 	  return idHasBeenSet;
@@ -320,7 +331,7 @@ public class PaymentAuthorizationDTO
    {
 	  StringBuffer str = new StringBuffer("{");
 
-	  str.append("id=" + getId() + " " + "processor=" + getProcessor() + " " + "code1=" + getCode1() + " " + "code2=" + getCode2() + " " + "code3=" + getCode3() + " " + "approvalCode=" + getApprovalCode() + " " + "AVS=" + getAVS() + " " + "transactionId=" + getTransactionId() + " " + "MD5=" + getMD5() + " " + "cardCode=" + getCardCode() + " " + "createDate=" + getCreateDate() + " " + "responseMessage=" + getResponseMessage());
+	  str.append("id=" + getId() + " paymentId=" + paymentId + " " + "processor=" + getProcessor() + " " + "code1=" + getCode1() + " " + "code2=" + getCode2() + " " + "code3=" + getCode3() + " " + "approvalCode=" + getApprovalCode() + " " + "AVS=" + getAVS() + " " + "transactionId=" + getTransactionId() + " " + "MD5=" + getMD5() + " " + "cardCode=" + getCardCode() + " " + "createDate=" + getCreateDate() + " " + "responseMessage=" + getResponseMessage());
 	  str.append('}');
 
 	  return(str.toString());
@@ -371,6 +382,14 @@ public class PaymentAuthorizationDTO
 	  {
 		 PaymentAuthorizationDTO that = (PaymentAuthorizationDTO) other;
 		 boolean lEquals = true;
+		 if( this.paymentId == null )
+		 {
+			lEquals = lEquals && ( that.paymentId == null );
+		 }
+		 else
+		 {
+			lEquals = lEquals && this.paymentId.equals( that.paymentId );
+		 }
 		 if( this.processor == null )
 		 {
 			lEquals = lEquals && ( that.processor == null );
@@ -471,6 +490,8 @@ public class PaymentAuthorizationDTO
    public int hashCode(){
 	  int result = 17;
       result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
+
+      result = 37*result + ((this.paymentId != null) ? this.paymentId.hashCode() : 0);
 
       result = 37*result + ((this.processor != null) ? this.processor.hashCode() : 0);
 

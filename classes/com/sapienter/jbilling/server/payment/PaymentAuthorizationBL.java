@@ -86,8 +86,9 @@ public class PaymentAuthorizationBL {
             throw new SessionInternalError(e);
         }
 
-        // original dto would like to know the created id
+        // original dto would like to know the created id and the payment id
         dto.setId(paymentAuthorization.getId());
+        dto.setPayment(new PaymentDTO(paymentId));
     }
     
     public PaymentAuthorizationDTO getDTO() {

@@ -257,6 +257,8 @@ public class PaymentAuthorizationDTO implements Serializable {
         oldDTO.setProcessor(this.getProcessor());
         oldDTO.setResponseMessage(this.getResponseMessage());
         oldDTO.setTransactionId(this.getTransactionId());
+        oldDTO.setPaymentId(this.getPayment() != null ? 
+                this.getPayment().getId() : null);
         
         return oldDTO;
     }

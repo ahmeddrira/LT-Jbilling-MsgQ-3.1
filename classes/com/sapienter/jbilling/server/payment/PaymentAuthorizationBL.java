@@ -85,6 +85,9 @@ public class PaymentAuthorizationBL {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
+
+        // original dto would like to know the created id
+        dto.setId(paymentAuthorization.getId());
     }
     
     public PaymentAuthorizationDTO getDTO() {

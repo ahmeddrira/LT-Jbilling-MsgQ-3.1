@@ -46,5 +46,8 @@ public class PaymentAuthorizationDTOEx extends PaymentAuthorizationDTO implement
     public void setResult(Boolean result) {
         this.result = result;
     }
-    
+
+    public String toString() {
+        return super.toString() + " result=" + result;
+    }
 }

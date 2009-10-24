@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -35,6 +36,7 @@ public class PricingField implements Serializable {
     private Double doubleValue;
     private Integer intValue;
     private Integer position = 1;
+    private UUID resultId; // at the time, only used for mediation of batch
     
     public enum Type { STRING, INTEGER, FLOAT, DATE };
     
@@ -187,7 +189,8 @@ public class PricingField implements Serializable {
     }
     
     public String toString() {
-        return "name: " + name + " type: " + type + " value: " + getValue();
+        return "name: " + name + " type: " + type + " value: " + getValue() +
+                " position: " + position + " resultId: " + resultId;
     }
 
     public void setDateValue(Date dateValue) {
@@ -235,4 +238,14 @@ public class PricingField implements Serializable {
 		}
 		return result.toString();
 	}
+
+    public UUID getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(UUID resultId) {
+        this.resultId = resultId;
+    }
+
+    
 }

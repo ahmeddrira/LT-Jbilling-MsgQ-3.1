@@ -42,7 +42,9 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.IMediationReader;
+import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -267,39 +269,36 @@ public class MediationSessionBean implements IMediationSessionBean {
         LOG.debug("Normalizing record ...");
         MediationRecordDAS recordDAS = new MediationRecordDAS();
         MediationRecordDTO record = recordDAS.find(thisGroup.get(0).getKey());
-        Vector<OrderLineDTO> lines = processTask.process(thisGroup, cfg.getName());
-        Integer userId = processTask.getUserId();
+        Vector<MediationResult> results = processTask.process(thisGroup, cfg.getName());
 
-        if (userId == null || lines == null || lines.size() == 0) {
-            LOG.debug("No results from mediation process task " + thisGroup);
-        } else {
-            // this process came from a different transaction (persistent context)
-            MediationProcessDAS processDAS = new MediationProcessDAS();
-            processDAS.reattach(process);
-            // determine the currency for this event
-            Integer currencyId = processTask.getCurrencyId();
+        MediationProcessDAS processDAS = new MediationProcessDAS();
+        processDAS.reattach(process);
+        // this process came from a different transaction (persistent context)
+        for (MediationResult result : results) {
+            // determine the currency for this result
+            Integer currencyId = result.getCurrencyId();
             if (currencyId == null) {
-                UserBL user = new UserBL(userId);
+                UserBL user = new UserBL(result.getUserId());
                 currencyId = user.getCurrencyId();
             }
 
             // add the lines to the customer's current order
             OrderBL order = new OrderBL();
-            order.setUserCurrent(userId);
-            Vector<OrderLineDTO> newLines = order.updateCurrent(entityId, executorId, userId, currencyId, lines,
-                    thisGroup, processTask.getEventDate());
+            Vector<OrderLineDTO> newLines = order.updateCurrent(entityId, executorId,
+                    result.getUserId(), currencyId, result.getLines(),
+                    result.getEventDate(), result.getCurrentOrder());
             process.setOrdersAffected(process.getOrdersAffected() + 1);
 
             // relate this order with this process
             MediationOrderMap map = new MediationOrderMap();
             map.setMediationProcessId(process.getId());
-            map.setOrderId(order.getEntity().getId());
+            map.setOrderId(result.getCurrentOrder().getId());
             MediationMapDAS mapDas = new MediationMapDAS();
             mapDas.save(map);
 
             // add the record lines
-            saveEventRecordLines(newLines, record, processTask.getEventDate(), 
-                    processTask.getDescription());
+            saveEventRecordLines(newLines, record, result.getEventDate(),
+                    result.getDescription());
         }
 
         // mark the record as done

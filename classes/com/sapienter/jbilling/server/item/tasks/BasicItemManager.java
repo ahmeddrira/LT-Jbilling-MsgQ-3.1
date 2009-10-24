@@ -25,7 +25,6 @@ import java.util.Vector;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -70,14 +69,13 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
         OrderLineDTO myLine = new OrderLineDTO();
-        ItemDTO item = new ItemDTO();
-        item.setId(itemID);
-        myLine.setItem(item);
+        myLine.setItem(new ItemDTO(itemID));
         myLine.setQuantity(quantity);
         populateOrderLine(language, userId, entityId, currencyId, myLine, records);
         myLine.setDefaults();
         if (line == null) { // not yet there
             newOrder.getLines().add(myLine);
+            myLine.setPurchaseOrder(newOrder);
             latestLine = myLine;
         } else {
             // the item is there, I just have to update the quantity
@@ -131,7 +129,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             BigDecimal additionAmount = null;
             // normal price, multiply by quantity
             if (item.getPercentage() == null) {
-                additionAmount = new BigDecimal(line.getPrice().toString());
+                additionAmount = line.getPrice();
                 additionAmount = additionAmount.multiply(
                         new BigDecimal(line.getQuantity().toString()));
             } else {

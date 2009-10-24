@@ -42,6 +42,7 @@
         <fileset dir="${source.lib.dir}">
             <include name="log4j*.jar"/>
         </fileset>
+        <pathelement location="${source.lib.dir}/spring.jar"/>
     </path>
     
     <path id="run.classpath">

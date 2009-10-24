@@ -986,9 +986,12 @@ Ch2->P1
 
             // validate without item id (mediation should set item)
             // duration field needed for rule to fire
-            PricingField[] pf2 = { new PricingField("src", "604"),
+            PricingField[] pf2 = {
+		    new PricingField("src", "604"),
                     new PricingField("dst", "512"), 
-                    new PricingField("duration", 1) };
+                    new PricingField("duration", 1),
+             	    new PricingField("userfield", myUser.getUserName()),
+                    new PricingField("start", new Date()) };
             System.out.println("Validate with fields and without itemId...");
             result = api.validatePurchase(myId, null, pf2);
             assertEquals("validate purchase success 2", Boolean.valueOf(true), 
@@ -1457,9 +1460,12 @@ Ch2->P1
             // validate without item ids (mediation should set item)
             // duration field needed for rule to fire
             // validate. room = 1000, price = 7 * 3 = 21
-            pf = new PricingField[] { new PricingField("src", "604"),
-                    new PricingField("dst", "512"), 
-                    new PricingField("duration", 1) };
+            pf = new PricingField[] {
+		    new PricingField("src", "604"),
+                    new PricingField("dst", "512"),
+                    new PricingField("duration", 1),
+             	    new PricingField("userfield", myUser.getUserName()),
+                    new PricingField("start", new Date()) };
             System.out.println("Validate with fields and without itemId...");
             result = api.validateMultiPurchase(myId, null,
                     new PricingField[][] { pf, pf, pf } );

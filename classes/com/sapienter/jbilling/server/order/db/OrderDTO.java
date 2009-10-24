@@ -147,7 +147,9 @@ public class OrderDTO implements java.io.Serializable {
     	this.notes = other.getNotes();
     	this.notesInInvoice = other.getNotesInInvoice();
     	this.orderProcesses.addAll(other.getOrderProcesses());
-    	this.lines.addAll(other.getLines());
+	for (OrderLineDTO line: other.getLines()) {
+		this.lines.add(new OrderLineDTO(line));
+	}
     	this.isCurrent = other.getIsCurrent();
     	this.versionNum = other.getVersionNum();
     	this.cycleStarts = other.getCycleStarts();
@@ -679,6 +681,9 @@ public class OrderDTO implements java.io.Serializable {
         for (InvoiceDTO invoice: getInvoices()) {
             invoice.getCreateDatetime();
         }
+        for (OrderProcessDTO process: getOrderProcesses()) {
+            process.getPeriodStart();
+        }
 		getOrderBillingType().getId();
 		getOrderPeriod().getId();
         getOrderStatus().getId();
@@ -709,7 +714,6 @@ public class OrderDTO implements java.io.Serializable {
 	     "notes=" + notes + "," +
 	     "notesInInvoice=" + notesInInvoice + "," +
 	     "orderProcesses=" + orderProcesses + "," +
-	     "lines=" + lines   + "," +
 	     "isCurrent=" + isCurrent + "," +
 	     "versionNum=" + versionNum +
 	     " lines:[");

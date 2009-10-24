@@ -7,44 +7,59 @@ import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import java.math.BigDecimal;
-import com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager
+import com.sapienter.jbilling.server.order.OrderLineBL;
+import com.sapienter.jbilling.server.order.OrderBL;
 
-#globals
-global com.sapienter.jbilling.server.item.tasks.RulesItemManager.OrderManager order;
 
 rule "Lemon and Coffee discount"
 	when
-	    exists ItemDTO(id == 2) # Lemonade
-	    exists ItemDTO(id == 3) # Coffee
+        $order : OrderDTO( )    # any order
+        OrderLineDTO( itemId == 2) from $order.lines # Lemonade
+        OrderLineDTO( itemId == 3) from $order.lines # Coffee
+        # only if the discount is not already there
+        # otherwise an infinite loop happens (the no-loop attribute would
+        # have the same effect)
+        not ( OrderLineDTO( itemId == 14) from $order.lines )
 	then
-	    order.addItem(14); # 10% discount
+        OrderLineBL.addItem($order, 14); # 10% discount
+        update($order);
 end
+
 
 rule "Lemonade Plan"
     when
-        ItemDTO(id == 250) # Plan
+        $order : OrderDTO( )    # any order
+        $planLine : OrderLineDTO( itemId == 250) from $order.lines # Plan
     then
-        order.removeItem(250); # Plan is only for grouping
-        order.addItem(1); # The monthly lemonade subscription
-        OrderDTO newOrder = order.createOrder(251, 1.0);  # The setup fee
+        $order.getLines().remove($planLine); # Plan is only for grouping
+        OrderLineBL.addItem($order, 1); # The monthly lemonade subscription
+        update($order);
+        # now add an new order
+        OrderDTO newOrder = OrderBL.createAsWithLine($order, 251, 1.0);  # The setup fee
         newOrder.setOrderPeriodId(1); # It should be one time
-        newOrder.setNotes("As part of plan. Order " + order.getOrder().getId());
+        newOrder.setNotes("As part of plan. ");
+        insert(newOrder);
 end
+
 
 rule 'rateOrder test1'
 	dialect "java"
 when
 	$field : PricingField( name == "add" )
-	$line  : OrderLineDTO( )
+	$order  : OrderDTO( )
 then
-	$line.setPrice($line.getPrice().add(new BigDecimal($field.getDoubleValue())));
+    for (OrderLineDTO line: $order.getLines()) {
+        line.setPrice(line.getPrice().add(new BigDecimal($field.getDoubleValue())));
+    }
 end
 
 rule 'rateOrder test2'
 	dialect "java"
 when
 	$field : PricingField( name == "subtract" )
-	$line  : OrderLineDTO( )
+	$order  : OrderDTO( )
 then
-	$line.setPrice($line.getPrice().subtract(new BigDecimal( $field.getDoubleValue())));
+    for (OrderLineDTO line: $order.getLines()) {
+        line.setPrice(line.getPrice().subtract(new BigDecimal( $field.getDoubleValue())));
+    }
 end

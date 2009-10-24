@@ -58,7 +58,6 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
      * @return
      */
     public T save(T newEntity) {
-        //T retValue = em.merge(newEntity);
         T retValue = (T) getSession().merge(newEntity);
         return retValue;
     }
@@ -211,6 +210,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
      * no longer make it to the database.
      */
     public void detach(T dto) {
+        getSession().flush(); // without this, get ready for the evil 'nonthreadsafe access to session'
         getSession().evict(dto);
     }
     

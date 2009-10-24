@@ -14193,7 +14193,6 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 --
 
 COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM stdin;
-1	1	29	1	3
 2	1	3	1	1
 3	1	37	2	2
 4	1	5	1	1
@@ -14217,7 +14216,6 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 31	1	26	1	1
 420	1	33	1	1
 421	1	32	1	3
-430	1	30	1	1
 431	1	1	2	1
 440	1	39	1	1
 450	1	41	1	1
@@ -14239,6 +14237,8 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 580	2	58	1	1
 590	2	59	1	1
 410	1	60	1	1
+1	1	61	1	3
+430	1	62	1	1
 \.
 
 
@@ -14280,7 +14280,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 550	421	suffix	\N	csv	\N	1
 560	450	file	\N	CancelFees.pkg	\N	1
 570	430	file	\N	ItemsRules.pkg	\N	1
-580	420	file	\N	Mediation.pkg	\N	1
 590	410	file	\N	PricingRules.pkg	\N	1
 600	1	file	\N	ItemsRules.pkg	\N	1
 610	460	enable_filter_user_id	\N	true	\N	1
@@ -14309,6 +14308,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 8302	570	ageing_step	6	\N	\N	1
 8303	580	contactType	2	\N	\N	1
 8304	580	externalSavingPluginId	590	\N	\N	1
+580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg	\N	1
 \.
 
 
@@ -14375,6 +14375,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 58	17	com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask	1
 59	6	com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage	0
 60	14	com.sapienter.jbilling.server.item.tasks.RulesPricingTask2	0
+61	13	com.sapienter.jbilling.server.order.task.RulesItemManager2	0
+62	1	com.sapienter.jbilling.server.order.task.RulesLineTotalTask2	0
 \.
 
 

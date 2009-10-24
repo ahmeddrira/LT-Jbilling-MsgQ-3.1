@@ -152,20 +152,6 @@ public class OrderBL extends ResultList
         order = newOrder;
     }
 
-    public void setUserCurrent(Integer userId) {
-        UserBL user = new UserBL(userId);
-        Integer orderId = user.getEntity().getCustomer().getCurrentOrderId();
-        if (orderId != null) {
-            set(orderId);
-            // deleted does not count
-            if (order.getDeleted() == 1) {
-                order = null;
-            }
-        } else {
-            order = null;
-        }
-    }
-
     public OrderWS getWS(Integer languageId) throws NamingException {
         OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(), 
         		order.getNotify(), order.getActiveSince(), order.getActiveUntil(), 
@@ -1247,45 +1233,25 @@ public class OrderBL extends ResultList
      * @param userId
      * @param currencyId
      * @param lines
-     * @param records
      * @param eventDate
+     * @param readyOrder The current order, detached, with all the lines already applied and ready
+     * for saving
      * @return detached lines that have been added or modified. The amount is only the updated
      * amount
      */
     public Vector<OrderLineDTO> updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId, 
-            Vector<OrderLineDTO> lines, Vector<Record> records, Date eventDate) {
+            Vector<OrderLineDTO> lines, Date eventDate, OrderDTO readyOrder) {
         
         try {
             Vector<OrderLineDTO> newLines = new Vector<OrderLineDTO>();
-            UserBL user = new UserBL(userId);
-            Integer language = user.getEntity().getLanguageIdField();
-            CurrentOrder co = new CurrentOrder(userId, eventDate);
-            
-            Integer currentOrderId = co.getCurrent();
-            if (currentOrderId == null) {
-                // this is almost an error, put them in a new order?
-                currentOrderId = co.create(eventDate, currencyId, entityId);
-                LOG.warn("Created current one-time order without a suitable main " +
-                        "subscription order:" + currentOrderId);
-            }
                     
-            // update an existing order
-            order = orderDas.findNow(currentOrderId);
             // get detached lines of this order, to later compare with the modified one
+	    order = new OrderDAS().find(readyOrder.getId());
             Vector<OrderLineDTO> oldLines = new Vector<OrderLineDTO>();
             for (OrderLineDTO line: order.getLines()) {
                 oldLines.add(new OrderLineDTO(line));
             }
-            for (OrderLineDTO line: lines) {
-                addItem(line.getItemId(), line.getQuantity(), language, userId, 
-                        entityId, currencyId, records);
-            }
-            
-            //link the new lines to this order
-            for (OrderLineDTO line: order.getLines()) {
-                line.setPurchaseOrder(order);
-            }
-            
+                        
             // see which lines have changed, for the return
             Collections.sort(oldLines, new Comparator<OrderLineDTO>(){ 
                 public int compare(OrderLineDTO a, OrderLineDTO b) {
@@ -1293,8 +1259,9 @@ public class OrderBL extends ResultList
                 }
             });
             // save now the order, so all its lines are in the session
-            new OrderDAS().save(order);
-            for (OrderLineDTO line : order.getLines()) {
+            readyOrder = new OrderDAS().save(readyOrder);
+
+            for (OrderLineDTO line : readyOrder.getLines()) {
                 int index = Collections.binarySearch(oldLines, line, new Comparator<OrderLineDTO>() {
                     public int compare(OrderLineDTO a, OrderLineDTO b) {
                         return new Integer(a.getId()).compareTo(new Integer(b.getId()));
@@ -1309,12 +1276,13 @@ public class OrderBL extends ResultList
                         newLines.add(diffLine);
                         EventManager.process(new NewQuantityEvent(entityId,
                                 oldLines.get(index).getQuantity(),
-                                line.getQuantity(), currentOrderId, oldLines.get(index),line));
+                                line.getQuantity(), readyOrder.getId(), oldLines.get(index),line));
                         
                     }
+		    // line.setVersionNum(diffLine.getVersionNum());
                 } else {
                     EventManager.process(new NewQuantityEvent(entityId,
-                                0.0, line.getQuantity(), currentOrderId, line, null));
+                                0.0, line.getQuantity(), readyOrder.getId(), line, null));
                     // new line, attach to session
                     newLines.add(line);
                 }
@@ -1340,7 +1308,39 @@ public class OrderBL extends ResultList
         set(orderDas.findNow(co.getCurrent()));
         return order;
     }
-    
+
+    /**
+     * For the mediation process, get or create a current order. The returned
+     * order is not attached to the session.
+     *
+     * @param userId
+     * @param eventDate
+     * @param currencyId
+     * @param entityId
+     * @return
+     */
+    public static OrderDTO getOrCreateCurrentOrder(Integer userId, Date eventDate,
+            Integer currencyId) {
+        CurrentOrder co = new CurrentOrder(userId, eventDate);
+
+        Integer currentOrderId = co.getCurrent();
+        if (currentOrderId == null) {
+            // this is almost an error, put them in a new order?
+            currentOrderId = co.create(eventDate, currencyId, new UserBL().getEntityId(userId));
+            LOG.warn("Created current one-time order without a suitable main " +
+                    "subscription order:" + currentOrderId);
+        }
+
+        OrderDTO order =  new OrderDAS().findNow(currentOrderId);
+        // the order needs to be detached. All changes by the mediation process
+        // should not apply immediately
+        // yet, avoid some lazy initialization
+         order.touch();
+         new OrderDAS().detach(order);
+        //return new OrderDTO(order);
+        return order;
+    }
+ 
     /**
      * The order has to be set and made persitent with an ID
      * @param isNew
@@ -1473,4 +1473,21 @@ public class OrderBL extends ResultList
 				EventLogger.MODULE_PROVISIONING, EventLogger.PROVISIONING_STATUS_CHANGE,
 				oldStatus, null, null);
     }
+
+    public static OrderDTO createAsWithLine(OrderDTO order, Integer itemId, Double quantity) {
+            // copy the current order
+            OrderDTO newOrder = new OrderDTO(order);
+            newOrder.setId(0);
+            newOrder.setVersionNum(null);
+            // the period needs to be in the session
+            newOrder.setOrderPeriodId(order.getOrderPeriod().getId());
+            // the status should be active
+            newOrder.setOrderStatus(new OrderStatusDAS().find(Constants.ORDER_STATUS_ACTIVE));
+            // but without the lines
+            newOrder.getLines().clear();
+            // but do get the new line in
+            OrderLineBL.addItem(newOrder, itemId, quantity);
+            
+            return new OrderDAS().save(newOrder);
+        }
 }

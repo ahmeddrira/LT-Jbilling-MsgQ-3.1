@@ -34,8 +34,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Vector;
 import org.apache.log4j.Logger;
-import org.drools.RuleBase;
-import org.drools.StatelessSession;
 
 /**
  *
@@ -43,28 +41,24 @@ import org.drools.StatelessSession;
  */
 public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
 
-    private static final Logger LOG = Logger.getLogger(RulesPricingTask2.class);
+    protected Logger setLog() {
+        return Logger.getLogger(RulesPricingTask2.class);
+    }
     
     public BigDecimal getPrice(Integer itemId, Integer userId, Integer currencyId,
             Vector<PricingField> fields, BigDecimal defaultPrice)
             throws TaskException {
-        // now we have the line with good defaults, the order and the item
-        // These have to be visible to the rules
-        RuleBase ruleBase;
-        try {
-            ruleBase = readRule();
-        } catch (Exception e) {
-            throw new TaskException(e);
-        }
-        StatelessSession mySession = ruleBase.newStatelessSession();
-        Vector<Object> rulesMemoryContext = new Vector<Object>();
 
         // the result goes in the memory context
         PricingResult result = new PricingResult(itemId, userId, currencyId);
-        result.setPrice(defaultPrice); // set the default
         rulesMemoryContext.add(result);
 
         if (fields != null && !fields.isEmpty()) {
+            // bind the pricing fields to this result
+            result.setPricingFieldsResultId(result.getId());
+            for (PricingField field : fields) {
+                field.setResultId(result.getId());
+            }
             rulesMemoryContext.addAll(fields);
         }
 
@@ -92,12 +86,13 @@ public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        // then execute the rules
-        for (Object o: rulesMemoryContext) {
-        	LOG.debug("in memory context=" + o);
-        }
-        mySession.executeWithResults(rulesMemoryContext);
 
+        executeRules();
+
+        // the rules might not have any price for this. Use the default then.
+        if (result.getPrice() == null) {
+            result.setPrice(defaultPrice); // set the default
+        }
         return result.getPrice();
     }
 }

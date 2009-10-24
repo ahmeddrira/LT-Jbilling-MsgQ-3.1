@@ -1350,4 +1350,8 @@ public class UserBL extends ResultList
 
         return result;
     }
+
+    public Integer getLanguage() {
+        return user.getLanguageIdField();
+    }
 }

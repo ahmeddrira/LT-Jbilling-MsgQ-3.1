@@ -244,11 +244,25 @@ public class ItemBL {
     }
     
     /**
+     * This is the basic price, without any plug-ins applied.
+     * It only takes into account the currency and makes the necessary
+     * conversions.
+     * It uses a cache to avoid repeating this look-up too often
      * @return The price in the requested currency
      */
-    private BigDecimal getPriceByCurrency(Integer currencyId, Integer entityId)
+    public BigDecimal getPriceByCurrency(Integer currencyId, Integer entityId)
             throws SessionInternalError {
         BigDecimal retValue = null;
+
+        // try to get cached item price for this currency
+        retValue = (BigDecimal) cache.getFromCache(item.getId() +
+                currencyId.toString(), cacheModel);
+
+        if (retValue != null) {
+            return retValue;
+        }
+
+        // get the item's defualt price
         int prices = 0;
         BigDecimal aPrice = null;
         Integer aCurrency = null;
@@ -284,7 +298,10 @@ public class ItemBL {
                         item.getId());
             }
         }
-        
+
+        cache.putInCache(item.getId() + currencyId.toString(), cacheModel,
+                retValue);
+
         return retValue;
     }
     
@@ -327,16 +344,7 @@ public class ItemBL {
             throw new SessionInternalError(e);
         }
 
-        // try to get cached item price for this currency
-        retValue = (BigDecimal) cache.getFromCache(item.getId() +
-                currencyId.toString(), cacheModel);
-
-        if (retValue == null) {
-            // get the item's defualt price
-            retValue = getPriceByCurrency(currencyId, entityId);
-            cache.putInCache(item.getId() + currencyId.toString(), cacheModel,
-                    retValue);
-        }
+        retValue = getPriceByCurrency(currencyId, entityId);
         
         // run a plug-in with external logic (rules), if available
         try {

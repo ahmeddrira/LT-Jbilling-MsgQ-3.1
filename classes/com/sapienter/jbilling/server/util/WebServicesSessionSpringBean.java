@@ -62,6 +62,7 @@ import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
+import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -1149,14 +1150,22 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
             Vector<OrderLineDTO> orderLines = null;
             OrderBL bl = new OrderBL();
+            OrderDTO readyOrder = null;
             if (lines != null) {
+                // get the current order
+                bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId));
                 // convert order lines from WS to DTO
                 processItemLine(lines, languageId, getCallerCompanyId(), 
                         userId, currencyId);
                 orderLines = new Vector<OrderLineDTO>(lines.length);
                 for (OrderLineWS line : lines) {
                     orderLines.add(bl.getOrderLine(line));
+                    // add the line to the current order
+                    bl.addItem(line.getItemId(), line.getQuantity(), languageId, userId,
+                            getCallerCompanyId(), currencyId, records);
                 }
+                readyOrder = bl.getDTO();
+
             } else if (records != null) {
                 // Since there are no lines, run the mediation process 
                 // rules to create them.
@@ -1166,10 +1175,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                 IMediationProcess processTask = tm.getNextClass();
 
-                orderLines = processTask.process(records, "WS");
+                MediationResult result = processTask.process(records, "WS").firstElement();
+                readyOrder = result.getCurrentOrder();
 
-                if (processTask.getCurrencyId() != null) {
-                    currencyId = processTask.getCurrencyId();
+                if (result.getCurrencyId() != null) {
+                    currencyId = result.getCurrencyId();
+                }
+
+                // the mediation process might not have anything for you...
+                if (readyOrder == null) {
+                    LOG.debug("Call to updateOrder did not resolve to a current order lines = " +
+                            Arrays.toString(lines) + " fields= " + Arrays.toString(fieldsArray));
+                    return null;
                 }
             } else {
                 throw new SessionInternalError("Both the order lines and " +
@@ -1180,7 +1197,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             // do the update
             Vector<OrderLineDTO> newLines = bl.updateCurrent(
                     getCallerCompanyId(), getCallerId(), userId, currencyId, 
-                    orderLines, records, date);
+                    orderLines, date, readyOrder);
 
             // save the event
             MediationRecordDTO record = new MediationRecordDTO("" + 
@@ -2101,6 +2118,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         List<Integer> itemIdsList = null;
+        List<BigDecimal> prices = new Vector<BigDecimal>();
+        List<ItemDTO> items = new Vector<ItemDTO>();
 
         if (itemIds != null) {
             itemIdsList = new Vector(Arrays.asList(itemIds));
@@ -2109,7 +2128,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
             for (Vector<PricingField> pricingFields : fieldsList) {
                 // Since there is no item, run the mediation process rules
-                // to create line/s. 
+                // to create line/s. This will run pricing and item management
+		// rules as well
 
                 // fields need to be in records
                 Record record = new Record();
@@ -2125,20 +2145,21 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                 IMediationProcess processTask = tm.getNextClass();
 
-                Vector<OrderLineDTO> lines = processTask.process(records, "WS");
+                MediationResult result = processTask.process(records, "WS").firstElement();
 
-                for (OrderLineDTO line : lines) {
-                    itemIdsList.add(line.getItem().getId());
+		// from the lines, get the items and prices
+                for (OrderLineDTO line : result.getLines()) {
+                    items.add(new ItemBL(line.getItemId()).getEntity());
+		    prices.add(line.getPrice());
                 }
             }
         } else {
             return null;
         }
 
-        List<BigDecimal> prices = new Vector<BigDecimal>(itemIdsList.size());
-        List<ItemDTO> items = new Vector<ItemDTO>(itemIdsList.size());
-
         // find the prices first
+	// this will do nothing if the mediation process was uses. In that case
+	// the itemIdsList will be empty
         int itemNum = 0;
         for (Integer itemId : itemIdsList) {
             ItemBL item = new ItemBL(itemId);

@@ -19,188 +19,48 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.drools.RuleBase;
 
-import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.db.OrderLineDTO;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
-import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.db.UserDAS;
+import com.sapienter.jbilling.server.rule.RulesBaseTask;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
 
-public class RulesMediationTask extends PluggableTask implements
+public class RulesMediationTask extends RulesBaseTask implements
         IMediationProcess {
 
-    private Vector<Record> records = null;
-    private ProcessManager manager = null;
-    private static final Logger LOG = Logger.getLogger(RulesMediationTask.class);
-    
-    public Integer getUserId() {
-        return manager.getUserId();
+    private Vector<MediationResult> results = new Vector();
+
+    protected Logger setLog() {
+        return Logger.getLogger(RulesMediationTask.class);
     }
-    
-    public Integer getCurrencyId() {
-        return manager.getCurrencyId();
-    }
-    
-    public Date getEventDate() {
-        return manager.getEventDate();
-    }
-    
-    public String getDescription() {
-        return manager.getDescription();
-    }
-    
-    public Vector<OrderLineDTO> process(Vector<Record> records, String configurationName) 
+        
+    public Vector<MediationResult> process(Vector<Record> records, String configurationName)
             throws TaskException {
-        RuleBase ruleBase;
-        try {
-            ruleBase = readRule();
-        } catch (Exception e) {
-            throw new TaskException(e);
-        }
-        session = ruleBase.newStatefulSession();
-        Vector<Object> rulesMemoryContext = new Vector<Object>();
+ 
+	results.clear(); // delete this line for endless pain debugging
         for (Record record: records) {
+            // one result per record
+            MediationResult result = new MediationResult(configurationName);
+            rulesMemoryContext.add(result);
+            results.add(result); // for easy retrival later
+
             for (PricingField field: record.getFields()) {
+                field.setResultId(result.getId());
                 rulesMemoryContext.add(field);
             }
         }
+
+        // add the company
+        rulesMemoryContext.add(new CompanyDAS().find(getEntityId()));
         
-        this.records = records;
-        
-        manager = new ProcessManager(configurationName);
-        session.setGlobal("mediationManager", manager);
-        // the manager needs to be also an object in the working memory
-        rulesMemoryContext.add(manager);
         // then execute the rules
-        executeStatefulRules(session, rulesMemoryContext);
+        executeRules();
         
-        return manager.getLines();
-    }
-    
-    public class ProcessManager {
-        private Vector <OrderLineDTO> lines = null;
-        private Integer userId = null;
-        private Integer currencyId = null;
-        private final String configurationName;
-        private Date eventDate = null;
-        private String description = null;
-
-        
-        public ProcessManager(String configurationName) {
-            this.configurationName = configurationName;
-            lines = new Vector<OrderLineDTO>();
-        }
-        
-        public String getConfigurationName() {
-            return configurationName;
-        }
-        
-        public int getTotalRecords() {
-            return records.size();
-        }
-        
-        public Vector<OrderLineDTO> getLines() {
-            return lines;
-        }
-        
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        
-        public void addLine(Integer itemId, Integer quantity) {
-        	addLine(itemId, new Double(quantity));
-        }
-        
-        public void addLine(Integer itemId, Double quantity) {
-            OrderLineDTO line =  new OrderLineDTO();
-            line.setItemId(itemId);
-            line.setQuantity(quantity);
-            line.setDefaults();
-            lines.add(line);
-        }
-        
-        public Integer getUserId() {
-            return userId;
-        }
-        
-        public Integer getCurrencyId() {
-            return currencyId;
-        }
-        
-        public void setUserFromUsername(String username) 
-                throws TaskException {
-            try {
-                UserBL user = new UserBL(username, getEntityId());
-                userId = user.getEntity().getUserId();
-            } catch (Exception e) {
-                throw new TaskException(e);
-            } 
-        }
-
-        public void setUserFromCustomField(Integer typeId, String value) throws TaskException {
-            try {
-                UserBL user = new UserBL();
-                CachedRowSet set = user.getByCustomField(getEntityId(), typeId, value);
-                if (set.next()) {
-                    userId = set.getInt(1);
-                    if (set.next()) {
-                        throw new TaskException("Too many users found for type " + typeId + " value " + value);
-                    }
-                    set.close();
-                } else {
-                    throw new TaskException("User not found for type " + typeId + " value " + value);
-                }
-            } catch (Exception e) {
-                throw new TaskException(e);
-            }
-        }
-        
-        public void setUserFromId(Integer userId) throws TaskException {
-        	UserDAS das = new UserDAS();
-        	if (das.findNow(userId) != null) {
-        		this.userId = userId;
-        	} else {
-        		throw new TaskException("User id " + userId + " does not exist");
-        	}
-        }
-        
-        public void setCurrencyId(Integer currencyId) {
-            this.currencyId = currencyId;
-        }
-
-        public void setEventDate(Date date) {
-            eventDate = date;
-        }
-
-        public void setEventDate(String date, String format) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-
-            try {
-                eventDate = dateFormat.parse(date);
-            } catch (ParseException e) {
-                eventDate = null;
-                LOG.warn("Exception parsing a string date to set the event date", e);
-            }
-        }
-        
-        public Date getEventDate() {
-            return eventDate;
-        }
+        return results;
     }
 }

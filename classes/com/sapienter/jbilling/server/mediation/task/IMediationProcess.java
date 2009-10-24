@@ -19,23 +19,14 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.Date;
 import java.util.Vector;
 
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
 
 public interface IMediationProcess {
 
-    public Vector<OrderLineDTO> process(Vector<Record> records, String configurationName) throws TaskException ;
+    public Vector<MediationResult> process(Vector<Record> records, String configurationName) throws TaskException ;
     
-    public Integer getUserId();
-    
-    public Integer getCurrencyId();
-    
-    public Date getEventDate();
-    
-    public String getDescription();
 }

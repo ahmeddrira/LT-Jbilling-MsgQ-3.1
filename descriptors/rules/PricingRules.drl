@@ -4,32 +4,40 @@ import com.sapienter.jbilling.server.user.ContactDTOEx
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.user.UserDTOEx
 import com.sapienter.jbilling.server.item.tasks.PricingResult
-
 import java.math.BigDecimal;
+import org.apache.log4j.Logger;
+
+global org.apache.log4j.Logger LOG;
 
 rule '604 -  512'
 when
-    exists(PricingField( name == "src", strValue matches "^604.*"))
-    exists(PricingField( name == "dst", strValue matches "^512.*"))
-    $result : PricingResult( itemId == 1 )
+    $src : PricingField( name == "src", strValue matches "^604.*")
+    $dst : PricingField( name == "dst", strValue matches "^512.*", resultId == $src.resultId)
+	$result : PricingResult( itemId == 1, price == null, pricingFieldsResultId == $src.resultId )
 then
-   $result.setPrice("7");
-   System.out.println("2 - Processing line starting with 604 ending with 512 for item 1");
+   modify( $result ) {
+       setPrice("7");
+   }
+   LOG.debug("Processing line starting with 604 ending with 512 for item 1. Price now 7");
 end
 
 rule "special for item 2"
-	dialect "java"
-	when
-    	$result : PricingResult( itemId == 2, userId == 2 )
-	then
-        $result.setPrice("30");
+    dialect "java"
+when
+    $result : PricingResult( itemId == 2, userId == 2 )
+then
+    $result.setPrice("30");
 end
+
 
 rule 'PricingField test1'
 	dialect "java"
 when
 	$newPrice : PricingField( name == "newPrice" )
-	$result : PricingResult( itemId == 1 )
+	$result : PricingResult( itemId == 1, price == null, pricingFieldsResultId == $newPrice.resultId )
 then
-	$result.setPrice(new BigDecimal($newPrice.getDoubleValue()));
+	modify($result) {
+        setPrice(new BigDecimal($newPrice.getDoubleValue()));
+    }
+    LOG.debug("Setting price of item 1 to " + $result.getPrice());
 end

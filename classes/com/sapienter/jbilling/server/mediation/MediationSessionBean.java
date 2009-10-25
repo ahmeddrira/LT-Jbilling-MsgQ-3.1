@@ -282,11 +282,6 @@ public class MediationSessionBean implements IMediationSessionBean {
                 currencyId = user.getCurrencyId();
             }
 
-            // add the lines to the customer's current order
-            OrderBL order = new OrderBL();
-            Vector<OrderLineDTO> newLines = order.updateCurrent(entityId, executorId,
-                    result.getUserId(), currencyId, result.getLines(),
-                    result.getEventDate(), result.getCurrentOrder());
             process.setOrdersAffected(process.getOrdersAffected() + 1);
 
             // relate this order with this process
@@ -297,7 +292,7 @@ public class MediationSessionBean implements IMediationSessionBean {
             mapDas.save(map);
 
             // add the record lines
-            saveEventRecordLines(newLines, record, result.getEventDate(),
+            saveEventRecordLines(result.getDiffLines(), record, result.getEventDate(),
                     result.getDescription());
         }
 
@@ -305,7 +300,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         record.setFinished(Calendar.getInstance().getTime());
     }
 
-    public void saveEventRecordLines(Vector<OrderLineDTO> newLines, 
+    public void saveEventRecordLines(List<OrderLineDTO> newLines,
             MediationRecordDTO record, Date eventDate, String description) {
         MediationRecordLineDAS mediationRecordLineDas = 
             new MediationRecordLineDAS();

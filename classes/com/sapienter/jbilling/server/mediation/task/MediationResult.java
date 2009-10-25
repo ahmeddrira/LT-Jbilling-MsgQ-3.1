@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.rule.Result;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,10 @@ public class MediationResult extends Result {
 
     private static final Logger LOG = Logger.getLogger(MediationResult.class);
 
-    private Vector<OrderLineDTO> lines = null;
+    // the lines that where 'created' by the mediation process
+    private List<OrderLineDTO> lines = null;
+    // the difference lines of the current orders, comparing the original lines
+    private List<OrderLineDTO> diffLines = null;
     private OrderDTO currentOrder = null;
     private Integer userId = null;
     private Integer currencyId = null;
@@ -53,7 +57,7 @@ public class MediationResult extends Result {
         return configurationName;
     }
 
-    public Vector<OrderLineDTO> getLines() {
+    public List<OrderLineDTO> getLines() {
         return lines;
     }
 
@@ -119,6 +123,15 @@ public class MediationResult extends Result {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
+    public List<OrderLineDTO> getDiffLines() {
+        return diffLines;
+    }
+
+    public void setDiffLines(List<OrderLineDTO> diffLines) {
+        this.diffLines = diffLines;
+    }
+
 
     
 }

@@ -22,10 +22,15 @@ package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -33,10 +38,60 @@ import java.math.BigDecimal;
  */
 public class OrderLineBL {
 
-    public static void addLine(OrderDTO order, OrderLineDTO line) {
+    public static void generateQuantityEvents() {
+        //TODO: otherwise anything related to mediation will not update the
+        // dynamic balance
+    }
+
+    public static List<OrderLineDTO> diffOrderLines(List<OrderLineDTO> lines1,
+            List<OrderLineDTO> lines2) {
+        Vector<OrderLineDTO> diffLines = new Vector<OrderLineDTO>();
+
+        Collections.sort(lines1, new Comparator<OrderLineDTO>() {
+
+            public int compare(OrderLineDTO a, OrderLineDTO b) {
+                return new Integer(a.getId()).compareTo(new Integer(b.getId()));
+            }
+        });
+
+        for (OrderLineDTO line : lines2) {
+
+            int index = Collections.binarySearch(lines1, line, new Comparator<OrderLineDTO>() {
+                public int compare(OrderLineDTO a, OrderLineDTO b) {
+                    return new Integer(a.getId()).compareTo(new Integer(b.getId()));
+                }
+            });
+            
+            if (index >= 0) {
+                OrderLineDTO diffLine = new OrderLineDTO(lines1.get(index));
+                // will fail if amounts or quantities are null...
+                diffLine.setAmount(line.getAmount().floatValue() - diffLine.getAmount().floatValue());
+                diffLine.setQuantity(line.getQuantity() - diffLine.getQuantity());
+                if (diffLine.getAmount() != 0 || diffLine.getQuantity() != 0) {
+                    diffLines.add(diffLine);
+                }
+            } else {
+                // new line
+                diffLines.add(line);
+            }
+        }
+
+        return diffLines;
+    }
+
+    public static List<OrderLineDTO> copy(List<OrderLineDTO> lines) {
+        Vector<OrderLineDTO> retValue = new Vector<OrderLineDTO>(lines.size());
+        for (OrderLineDTO line : lines) {
+            retValue.add(new OrderLineDTO(line));
+        }
+        return retValue;
+    }
+
+
+    public static void addLine(OrderDTO order, OrderLineDTO line, boolean persist) {
         UserBL user = new UserBL(order.getUserId());
         addItem(line.getItemId(), line.getQuantity(), user.getLanguage(), order.getUserId(),
-                user.getEntity().getEntity().getId(), order.getCurrencyId(), order, line);
+                user.getEntity().getEntity().getId(), order.getCurrencyId(), order, line, persist);
     }
 
 
@@ -51,12 +106,13 @@ public class OrderLineBL {
     public static void addItem(OrderDTO order, Integer itemId, Double quantity) {
         UserBL user = new UserBL(order.getUserId());
         addItem(itemId, quantity, user.getLanguage(), order.getUserId(), 
-                user.getEntity().getEntity().getId(), order.getCurrencyId(), order, null);
+                user.getEntity().getEntity().getId(), order.getCurrencyId(), 
+                order, null, false);
     }
 
     public static void addItem(Integer itemID, Double quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO newOrder, OrderLineDTO myLine) {
+            OrderDTO newOrder, OrderLineDTO myLine, boolean persist) {
         // check if the item is already in the order
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
@@ -72,6 +128,12 @@ public class OrderLineBL {
         if (line == null) { // not yet there
             newOrder.getLines().add(myLine);
             myLine.setPurchaseOrder(newOrder);
+            // save the order (with the new line). Otherwise
+            // the diff line will have a '0' for the order id and the
+            // saving of the mediation record lines gets really complicated
+            if (persist) {
+                new OrderDAS().save(newOrder);
+            }
         } else {
             // the item is there, I just have to update the quantity
         	BigDecimal dec = new BigDecimal( line.getQuantity().toString() );
@@ -83,6 +145,7 @@ public class OrderLineBL {
             dec = dec.add(new BigDecimal(myLine.getAmount().toString()));
             line.setAmount(new Float(dec.floatValue()));
         }
+
     }
     /**
      * Returns an order line with everything correctly

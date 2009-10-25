@@ -9,6 +9,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.order.db.OrderLineDTO
 import com.sapienter.jbilling.server.item.tasks.PricingResult
 import org.apache.log4j.Logger;
+import java.util.List;
 
 global org.apache.log4j.Logger LOG;
 
@@ -39,6 +40,14 @@ function PricingResult priceRequest(Integer itemId, MediationResult result) {
     pricing.setPricingFieldsResultId(result.getId());
     return pricing;
  }
+
+function void addLine(MediationResult result) {
+    List<OrderLineDTO> originalLines = OrderLineBL.copy(result.getCurrentOrder().getLines());
+    // I need to pass the price, even if it is null
+    OrderLineBL.addLine(result.getCurrentOrder(), result.getLines().get(0), true);
+    result.setDiffLines(OrderLineBL.diffOrderLines(originalLines, result.getCurrentOrder().getLines()));
+    result.setDone(true);
+}
 
 
 rule 'user setter'
@@ -109,10 +118,8 @@ when
     $result : MediationResult( currentOrder != null, done == false )
     $phoneCalled : PricingField( name == "dst", resultId == $result.id)
 then
-    // I need to pass the price, even if it is null
-    OrderLineBL.addLine($result.getCurrentOrder(), $result.getLines().get(0));
+    addLine($result); # will add the first line to the current order
     $result.setDescription("Phone call to " + $phoneCalled);
-    $result.setDone(true);
     retract($result); # done
     # to allow item management rules
     insert($result.getCurrentOrder());

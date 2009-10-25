@@ -66,7 +66,7 @@ public interface IMediationSessionBean {
             Vector<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg) throws TaskException;
 
-    public void saveEventRecordLines(Vector<OrderLineDTO> newLines, 
+    public void saveEventRecordLines(List<OrderLineDTO> newLines,
             MediationRecordDTO record, Date eventDate, String description);
 
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId);

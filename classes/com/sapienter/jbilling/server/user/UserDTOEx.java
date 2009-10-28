@@ -437,10 +437,10 @@ public final class UserDTOEx extends UserDTO {
         this.userIdBlacklisted = userIdBlacklisted;
     }
 
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
     public BigDecimal getBalance() {
-        if (balance == null) {
-            balance = new UserBL().getBalance(getId());
-        }
         return balance;
     }
 }

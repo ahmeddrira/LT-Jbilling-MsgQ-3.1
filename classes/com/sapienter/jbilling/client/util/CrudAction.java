@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.client.util;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.OptimisticLockException;
@@ -358,6 +359,14 @@ public abstract class CrudAction extends Action {
 
     protected final Float string2float(String arg) {
         return getFormHelper().string2float(arg);
+    }
+
+    protected final BigDecimal string2BigDecimal(String arg) {
+        Float f = string2float(arg);
+        if (f != null)
+            return new BigDecimal(f);
+        
+        return null;
     }
 
     protected final Double string2double(String arg) {

@@ -72,8 +72,8 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
                 Constants.SESSION_ENTITY_ID_KEY)));
         dto.setNumber((String) myForm.get(FIELD_INTERNAL_NUMBER));
         dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
-        dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));
-        dto.setPercentage(new BigDecimal(string2float((String) myForm.get(FIELD_PERCENTAGE))));
+        dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));                
+        dto.setPercentage(string2BigDecimal((String) myForm.get(FIELD_PERCENTAGE)));
         dto.setHasDecimals((Boolean) myForm.get(FIELD_HAS_DECIMALS) ? 1 : 0);
 
         // because of the bad idea of using the same bean for item/type/price,
@@ -154,7 +154,8 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         // the prices have to be localized
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);
-            pr.setPriceForm(float2string(pr.getPrice().floatValue()));
+            if (pr.getPrice() != null)
+                pr.setPriceForm(float2string(pr.getPrice().floatValue()));
         }
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());
         myForm.set(FIELD_DESCRIPTION, dto.getDescription());

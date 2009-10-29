@@ -2607,6 +2607,10 @@
     <PluggableTaskType Id="59" CategoryId="13" ClassName="com.sapienter.jbilling.server.order.task.RulesItemManager2" MinParameters="0"/>
     <PluggableTaskType Id="60" CategoryId="1" ClassName="com.sapienter.jbilling.server.order.task.RulesLineTotalTask2" MinParameters="0"/>
     <PluggableTaskType Id="61" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask2" MinParameters="0"/>
+    <PluggableTaskType Id="62" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask" MinParameters="1"/>
+    <PluggableTaskType Id="63" CategoryId="6" ClassName="com.sapienter.jbilling.server.pluggableTask.PaymentFakeExternalStorage" MinParameters="0"/>
+    <PluggableTaskType Id="64" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask" MinParameters="3"/>
+    <PluggableTaskType Id="65" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask" MinParameters="3"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

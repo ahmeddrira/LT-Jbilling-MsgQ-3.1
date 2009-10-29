@@ -108,8 +108,10 @@ public class PaymentDTO implements Serializable {
 		setIsRefund(dto.getIsRefund());
 		setPaymentMethod(new PaymentMethodDTO(dto.getPaymentMethod().getId()));
 		setPaymentDate(dto.getPaymentDate());
-		setPaymentResult(new PaymentResultDTO(dto.getPaymentResult().getId()));
-		setUpdateDatetime(dto.getUpdateDatetime());
+        setUpdateDatetime(dto.getUpdateDatetime());
+
+        if (dto.getPaymentResult() != null)
+		    setPaymentResult(new PaymentResultDTO(dto.getPaymentResult().getId()));
 	}
 
 	public PaymentDTO(int id, CurrencyDTO currencyDTO,

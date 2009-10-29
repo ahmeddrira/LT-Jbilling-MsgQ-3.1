@@ -115,13 +115,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
             CreditCardDTO creditCard = ev.getCreditCard();
             String gateWayKey = externalCCStorage.storeCreditCard(null, creditCard);
-
-            if (gateWayKey != null) {
-                creditCard.setGatewayKey(gateWayKey);
-            } else {
-                LOG.warn("gateway key returned from external store is null, credit card number will still be obscured");
-            }
-            creditCard.obscureNumber();
+            updateCreditCard(creditCard, gateWayKey);
 
         } else if (event instanceof NewContactEvent) {
             LOG.debug("Processing NewContactEvent ...");
@@ -142,14 +136,25 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                 } else {
                     /*  call the external store without a credit card. It's possible the payment gateway
                         may have some vendor specific recovery facilities, or perhaps they operate on different
-                        data? We'll leave it open ended so we don't restrict possible client implentations.
+                        data? We'll leave it open ended so we don't restrict possible client implementations.
                      */
-                    LOG.error("Cannot determine credit card for storage, invoking external store with contact only");
-                    externalCCStorage.storeCreditCard(contact, null);
+                    LOG.warn("Cannot determine credit card for storage, invoking external store with contact only");
+                    String gateWayKey = externalCCStorage.storeCreditCard(contact, null);
+                    updateCreditCard(creditCard, gateWayKey);
                 }
             }
         } else {
             throw new PluggableTaskException("Cant not process event " + event);
+        }
+    }
+
+    private void updateCreditCard(CreditCardDTO creditCard, String gatewayKey) {
+        if (gatewayKey != null) {
+            LOG.debug("Storing gateway key: " + gatewayKey);
+            creditCard.setGatewayKey(gatewayKey);
+            creditCard.obscureNumber();
+        } else {
+            LOG.warn("gateway key returned from external store is null, credit card will not be obscured!");
         }
     }
 }

@@ -50,29 +50,37 @@ public class PaymentDTOEx extends PaymentDTO {
     private PaymentAuthorizationDTO authorization = null; // useful in refuds
 
     public PaymentDTOEx(PaymentDTO dto) {
-        // TODO: this is not complete
         userId = dto.getBaseUser().getId();
+        
         setId(dto.getId());
-        setAmount(new Float(dto.getAmount()));
-        setAttempt(dto.getAttempt());
-        setBalance(dto.getBalance());
-        setCreateDatetime(dto.getCreateDatetime());
         setCurrency(dto.getCurrency());
+        setAmount(new Float(dto.getAmount()));
+        setBalance(dto.getBalance());
+        setAttempt(dto.getAttempt());
+
+        setCreditCard(dto.getCreditCard());
+        setAch(dto.getAch());
+
         setDeleted(dto.getDeleted());
         setIsPreauth(dto.getIsPreauth());
         setIsRefund(dto.getIsRefund());
+
+        setPaymentDate(dto.getPaymentDate());
+        setCreateDatetime(dto.getCreateDatetime());
+        setUpdateDatetime(dto.getUpdateDatetime());
+
         if (dto.getPaymentMethod() != null) {
             setPaymentMethod(dto.getPaymentMethod());
         }
-        setPaymentDate(dto.getPaymentDate());
+
         if (dto.getPaymentResult() != null) {
             setPaymentResult(dto.getPaymentResult());
         }
-        setUpdateDatetime(dto.getUpdateDatetime());
-        
+
         invoiceIds = new Vector<Integer>();
         paymentMaps = new Vector();
     }
+
     public PaymentDTOEx(PaymentWS dto) {
         setId(dto.getId());
         setAmount(new Float(dto.getAmount()));

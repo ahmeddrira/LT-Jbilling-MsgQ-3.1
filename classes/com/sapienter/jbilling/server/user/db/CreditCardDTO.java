@@ -40,6 +40,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
@@ -248,6 +249,18 @@ public class CreditCardDTO implements Serializable {
         this.gatewayKey = gatewayKey;
     }
 
+    /**
+     * Returns true if this credit card should be handled using the stored gateway key instead
+     * of the stored credit card number. This usually means that the credit card number has
+     * been obscured and cannot be used to make a payment.
+     *
+     * @return true if gateway key should be used for payment, false if not
+     */
+    @Transient
+    public boolean useGatewayKey() {        
+        return (Constants.PAYMENT_METHOD_GATEWAY_KEY.equals(getCcType()) || getGatewayKey() != null);
+    }
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "creditCard")
     public Set<PaymentDTO> getPayments() {
         return this.payments;
@@ -299,9 +312,7 @@ public class CreditCardDTO implements Serializable {
             String crip = JBCrypto.getCreditCardCrypto().encrypt(number);
             setRawNumber(crip);
             setCcNumberPlain(number.substring(number.length() - 4));
-
-            if (!number.startsWith(OBSCURED_NUMBER_FORMAT)) // leave the type as-is if the number has been obscured
-                setCcType(Util.getPaymentMethod(number));
+            setCcType(Util.getPaymentMethod(number));
         }
     }
 

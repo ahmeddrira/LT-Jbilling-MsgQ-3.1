@@ -27,9 +27,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 -- migration
 alter table invoice add column status_id integer;
 
-update invoice set status_id = 26 where to_process = 1;
-update invoice set status_id = 27 where to_process = 0 and delegated_invoice_id is null;
-update invoice set status_id = 28 where to_process = 0 and delegated_invoice_id is not null;
+update invoice set status_id = 26 where to_process = 0 and delegated_invoice_id is null;     -- mark as paid
+update invoice set status_id = 28 where to_process = 0 and delegated_invoice_id is not null; -- mark carried over
+update invoice set status_id = 27 where to_process = 1;                                      -- mark as unpaid
 
 -- balance adjustment will need to be handled manually. a carried invoices balance will not be zeroed, and should
 -- be equal to the total of all invoice lines for that invoice. a quick script can easily be created to handle this

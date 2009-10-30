@@ -23,16 +23,13 @@ package com.sapienter.jbilling.server.system.event.task;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import org.drools.RuleBase;
-import org.drools.StatelessSession;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.rule.RulesBaseTask;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.util.Context;
 
@@ -43,14 +40,16 @@ import com.sapienter.jbilling.server.util.Context;
  * It inserts into the rules memory context the received event object,
  * plus the publically accessible objects the event contains.
  */
-public class InternalEventsRulesTask extends PluggableTask 
+public class InternalEventsRulesTask extends RulesBaseTask
         implements IInternalEventsTask {
-
-    private static final Logger LOG = Logger.getLogger(
-            InternalEventsRulesTask.class);
 
     private static final Class<Event>[] DEFAULT_SUBSCRIBED_EVENTS = 
             new Class[] { };
+
+    @Override
+    protected Logger setLog() {
+        return Logger.getLogger(InternalEventsRulesTask.class);
+    }
 
     /**
      * Returns the subscribed events from the Spring configuration.
@@ -89,16 +88,6 @@ public class InternalEventsRulesTask extends PluggableTask
      * it contains into the rules memory context. Executes the rules. 
      */
     public void process(Event event) throws PluggableTaskException {
-        // setup rules
-        RuleBase ruleBase;
-        try {
-            ruleBase = readRule();
-        } catch (Exception e) {
-            throw new PluggableTaskException(e);
-        }
-        StatelessSession session = ruleBase.newStatelessSession();
-        Vector<Object> rulesMemoryContext = new Vector<Object>();
-
         // add event
         rulesMemoryContext.add(event);
 
@@ -117,11 +106,9 @@ public class InternalEventsRulesTask extends PluggableTask
                     rulesMemoryContext.add(method.invoke(event));
                 }
             }
+            executeRules();
         } catch (Exception e) {
             throw new PluggableTaskException("Error extracting event fields.", e);
         }
-
-        // run the rules
-        session.executeWithResults(rulesMemoryContext);
-    }
+   }
 }

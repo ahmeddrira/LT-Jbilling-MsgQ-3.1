@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -75,6 +76,8 @@ public class BasicCompositionTask extends PluggableTask
 
         for (int orderIndex = 0; orderIndex < invoiceDTO.getOrders().size(); orderIndex++) {
             OrderDTO order = (OrderDTO) invoiceDTO.getOrders().get(orderIndex);
+            // for saving the amount this order contributed to the invoice
+            BigDecimal orderContribution = new BigDecimal(0);
             // check if this order has notes that should make it into the invoice
             if (order.getNotesInInvoice() != null &&
                     order.getNotesInInvoice().intValue() == 1 &&
@@ -120,12 +123,14 @@ public class BasicCompositionTask extends PluggableTask
                         } else {
                             type = Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT;
                         }
+                        Float periodAmount = calculatePeriodAmount(
+                                orderLine.getAmount(), period);
                         invoiceLine = new InvoiceLineDTO(null, desc,
-                                calculatePeriodAmount(orderLine.getAmount(), period),
-                                orderLine.getPrice().floatValue(), orderLine.getQuantity(),
-                                type, new Integer(0), orderLine.getItemId(),
-                                order.getUser().getId(), null);
-
+                                periodAmount, orderLine.getPrice().floatValue(), 
+                                orderLine.getQuantity(), type, new Integer(0), 
+                                orderLine.getItemId(), order.getUser().getId(), null);
+                        orderContribution = orderContribution.add(
+                                new BigDecimal(periodAmount));
                     } else if (orderLine.getOrderLineType().getId() ==
                             Constants.ORDER_LINE_TYPE_TAX) {
                         // tax lines have to be consolidated
@@ -135,28 +140,36 @@ public class BasicCompositionTask extends PluggableTask
                             // we have this tax already: add up the total
                             invoiceLine = (InvoiceLineDTO) invoiceDTO.getResultLines().get(taxLine);
                             BigDecimal tmpDec = new BigDecimal(invoiceLine.getAmount().toString());
-                            tmpDec = tmpDec.add(calculatePeriodAmount(
-                                    new BigDecimal(orderLine.getAmount().toString()), period));
+                            BigDecimal periodAmount = calculatePeriodAmount(
+                                    new BigDecimal(orderLine.getAmount().toString()), period);
+                            tmpDec = tmpDec.add(periodAmount);
                             invoiceLine.setAmount(new Float(tmpDec.floatValue()));
+                            orderContribution = orderContribution.add(periodAmount);
                             continue;
                         }
                         // it is not there yet: add
+                        Float periodAmount = calculatePeriodAmount(
+                            orderLine.getAmount(), period);
                         invoiceLine = new InvoiceLineDTO(null,
-                                orderLine.getDescription(),
-                                calculatePeriodAmount(orderLine.getAmount(), period),
+                                orderLine.getDescription(), periodAmount,
                                 orderLine.getPrice().floatValue(),
                                 null, Constants.INVOICE_LINE_TYPE_TAX,
                                 new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);
+                        orderContribution = orderContribution.add(
+                                new BigDecimal(periodAmount));
                     } else if (orderLine.getOrderLineType().getId() ==
                             Constants.ORDER_LINE_TYPE_PENALTY) {
+                        Float periodAmount = calculatePeriodAmount(
+                                orderLine.getAmount(), period);
                         invoiceLine = new InvoiceLineDTO(null,
-                                orderLine.getDescription(),
-                                calculatePeriodAmount(orderLine.getAmount(), period),
+                                orderLine.getDescription(), periodAmount,  
                                 null, null,
                                 Constants.INVOICE_LINE_TYPE_PENALTY,
                                 new Integer(0), orderLine.getItemId(),
                                 order.getUser().getId(), null);
+                        orderContribution = orderContribution.add(
+                                new BigDecimal(periodAmount));
                     }
 
                     // for the invoice to make sense when it is displayed,
@@ -167,6 +180,9 @@ public class BasicCompositionTask extends PluggableTask
                     invoiceDTO.addResultLine(invoiceLine);
                 }
             }
+            // save the order contribution
+            saveOrderTotalContributionToInvoice(order.getId(), 
+                    invoiceDTO, orderContribution);
         }
 
         /*
@@ -305,5 +321,22 @@ public class BasicCompositionTask extends PluggableTask
     // convenience method, since all is done in Floats
     public Float calculatePeriodAmount(Float fullPrice, PeriodOfTime period) {
         return calculatePeriodAmount(new BigDecimal(fullPrice.toString()), period).floatValue();
+    }
+
+    /**
+     * Saves the amount the order contributed to the invoice total. 
+     */
+    protected void saveOrderTotalContributionToInvoice(Integer orderId, 
+            NewInvoiceDTO invoiceDTO, BigDecimal amount) {
+        // save order's contribution to the invoice total
+        Map<Integer, BigDecimal> orderTotalContributions = 
+                invoiceDTO.getOrderTotalContributions();
+        BigDecimal total = orderTotalContributions.get(orderId);
+        if (total == null) {
+            total = amount;
+        } else {
+            total = total.add(amount);
+        }
+        orderTotalContributions.put(orderId, total);
     }
 }

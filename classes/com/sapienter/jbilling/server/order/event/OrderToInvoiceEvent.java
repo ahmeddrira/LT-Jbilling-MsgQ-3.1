@@ -26,7 +26,8 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.system.event.Event;
 
 /**
- * This event is triggered when an order was added to invoice
+ * This event is triggered BEFORE an order is added to an invoice.
+ * Allows for the order to be modified before going on an invoice.
  *
  * @author Mary Krylenko
  *

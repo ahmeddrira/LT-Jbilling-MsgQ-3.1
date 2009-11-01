@@ -52,6 +52,7 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderProcessDAS;
 import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.order.event.OrderAddedOnInvoiceEvent;
 import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentBL;
@@ -206,10 +207,15 @@ public class BillingProcessBL extends ResultList
                 return null;
             }
 
+            // process events before orders added to invoice
             processOrderToInvoiceEvents(newInvoice, entityId);
 
             // generate the invoice lines
             composeInvoice(entityId, userId, newInvoice);
+
+            // process events after orders added to invoice
+            processOrderAddedOnInvoiceEvents(newInvoice, entityId);
+
             // put the resulting invoice in the database
             if (invoiceId == null) {
                 // it is a new invoice from a singe order
@@ -312,6 +318,7 @@ public class BillingProcessBL extends ResultList
 
         if (!isReview) {
             for (Map.Entry<TimePeriod, NewInvoiceDTO> newInvoiceEntry : newInvoices.entrySet()) {
+                // process events before orders added to invoice
                 processOrderToInvoiceEvents(newInvoiceEntry.getValue(), entityId);
             }
         }
@@ -435,6 +442,9 @@ public class BillingProcessBL extends ResultList
                 composeInvoice(entityId, user.getUserId(), invoice);
                 
                 if (!isReview) {
+                    // process events after orders added to invoice
+                    processOrderAddedOnInvoiceEvents(invoice, entityId);
+
                     for (InvoiceDTO oldInvoice : invoice.getInvoices()) {
                         // since this invoice is being delegated, mark it as being carried forward
                         // so that it is not re-processed later. do not clear the old balance!
@@ -1111,6 +1121,27 @@ public class BillingProcessBL extends ResultList
             for (PeriodOfTime period : periods.get(i)) {
                 OrderToInvoiceEvent newEvent =
                         new OrderToInvoiceEvent(entityId, userId, order);
+                newEvent.setStart(period.getStart());
+                newEvent.setEnd(period.getEnd());
+                EventManager.process(newEvent);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void processOrderAddedOnInvoiceEvents(NewInvoiceDTO newInvoice, Integer entityId) {
+        Vector<OrderDTO> orders = newInvoice.getOrders();
+        Vector<Vector<PeriodOfTime>> periods = newInvoice.getPeriods();
+        for (int i = 0; i < orders.size(); i++) {
+            OrderDTO order = orders.get(i);
+            Integer userId = findUserId(order);
+            for (PeriodOfTime period : periods.get(i)) {
+                LOG.info("Number of orders in map: " + newInvoice.getOrderTotalContributions().size());
+                LOG.info("Map: " + newInvoice.getOrderTotalContributions());
+                OrderAddedOnInvoiceEvent newEvent =
+                        new OrderAddedOnInvoiceEvent(entityId, userId, order, 
+                        newInvoice.getOrderTotalContributions().get(
+                        order.getId()));
                 newEvent.setStart(period.getStart());
                 newEvent.setEnd(period.getEnd());
                 EventManager.process(newEvent);

@@ -26,8 +26,10 @@ package com.sapienter.jbilling.server.invoice;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -46,6 +48,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
     private Set<InvoiceDTO> invoices = null;
     private Vector<InvoiceLineDTO> resultLines = null;
     private Vector<Vector<PeriodOfTime>> periods = new Vector<Vector<PeriodOfTime>>();
+    private Map<Integer, BigDecimal> orderTotalContributions = null;
     private Integer entityId = null;
     private Date billingDate = null;
     private TimePeriod dueDatePeriod = null;
@@ -56,6 +59,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         orders = new Vector<OrderDTO>();
         invoices = new HashSet<InvoiceDTO>();
         resultLines = new Vector<InvoiceLineDTO>();
+        orderTotalContributions = new HashMap<Integer, BigDecimal>();
         LOG.debug("New invoice object with date = " + billingDate);
     }
 
@@ -202,5 +206,9 @@ public class NewInvoiceDTO extends InvoiceDTO {
 
     public void setDueDatePeriod(TimePeriod dueDatePeriod) {
         this.dueDatePeriod = dueDatePeriod;
+    }
+
+    public Map<Integer, BigDecimal> getOrderTotalContributions() {
+        return orderTotalContributions;
     }
 }

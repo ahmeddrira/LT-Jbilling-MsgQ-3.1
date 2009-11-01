@@ -25,7 +25,7 @@ import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.event.NewOrderEvent;
 import com.sapienter.jbilling.server.order.event.NewQuantityEvent;
 import com.sapienter.jbilling.server.order.event.OrderDeletedEvent;
-import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
+import com.sapienter.jbilling.server.order.event.OrderAddedOnInvoiceEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentDeletedEvent;
 import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
@@ -50,7 +50,7 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         OrderDeletedEvent.class,
         NewOrderEvent.class,
         PaymentDeletedEvent.class,
-        OrderToInvoiceEvent.class,
+        OrderAddedOnInvoiceEvent.class,
         NewQuantityEvent.class
     };
 
@@ -85,10 +85,11 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         } else if (event instanceof PaymentDeletedEvent) {
             PaymentDeletedEvent payment = (PaymentDeletedEvent) event;
             return new BigDecimal(payment.getPayment().getAmount()).multiply(new BigDecimal(-1));
-        } else if (event instanceof OrderToInvoiceEvent) {
-            OrderToInvoiceEvent order = (OrderToInvoiceEvent) event;
+        } else if (event instanceof OrderAddedOnInvoiceEvent) {
+            OrderAddedOnInvoiceEvent orderOnInvoiceEvent = (OrderAddedOnInvoiceEvent) event;
+            OrderAddedOnInvoiceEvent order = (OrderAddedOnInvoiceEvent) event;
             if (order.getOrder().getOrderPeriod().getId() !=  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
-                return order.getOrder().getTotal().multiply(new BigDecimal(-1));
+                return orderOnInvoiceEvent.getTotalInvoiced().multiply(new BigDecimal(-1));
             } else {
                 return BigDecimal.ZERO;
             }
@@ -135,8 +136,8 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         } else if (event instanceof PaymentDeletedEvent) {
             PaymentDeletedEvent payment = (PaymentDeletedEvent) event;
             return payment.getPayment().getBaseUser().getId();
-        } else if (event instanceof OrderToInvoiceEvent) {
-            OrderToInvoiceEvent order = (OrderToInvoiceEvent) event;
+        } else if (event instanceof OrderAddedOnInvoiceEvent) {
+            OrderAddedOnInvoiceEvent order = (OrderAddedOnInvoiceEvent) event;
             return order.getOrder().getBaseUserByUserId().getId();
         } else if (event instanceof NewQuantityEvent) {
             NewQuantityEvent nq = (NewQuantityEvent) event;

@@ -1073,12 +1073,18 @@ Ch2->P1
             order = getOrder();
             order.setUserId(myId);
             order.setPeriod(2);
+
+            // make it half a month to test pro-rating
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_MONTH, 15);
+            order.setActiveUntil(cal.getTime());
+
             System.out.println("creating recurring order and invoice");
             api.createOrderAndInvoice(order);
             System.out.println("Validating new balance");
             myUser = api.getUserWS(myId);
-            assertEquals("user should have 0 balance", 0.0,
-                    myUser.getDynamicBalance());
+            assertEquals("user should have 10 balance", 10.0,
+                    myUser.getDynamicBalance(), 1.0);
             
             System.out.println("Removing");
             api.deleteUser(myId);

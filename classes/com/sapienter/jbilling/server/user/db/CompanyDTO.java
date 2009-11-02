@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.user.db;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -63,7 +64,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 @Entity
 @Table(name="entity")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class CompanyDTO  implements java.io.Serializable {
 
 
@@ -72,6 +73,7 @@ public class CompanyDTO  implements java.io.Serializable {
      private LanguageDTO language;
      private String externalId;
      private String description;
+     private BigDecimal rechargeThreshold;
      private Date createDatetime;
      private Set<AgeingEntityStepDTO> ageingEntitySteps = new HashSet<AgeingEntityStepDTO>(0);
      private Set<PaymentMethodDTO> paymentMethods = new HashSet<PaymentMethodDTO>(0);
@@ -104,12 +106,13 @@ public class CompanyDTO  implements java.io.Serializable {
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStepDTO> ageingEntitySteps, Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<ReportDTO> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations, Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
+    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, BigDecimal rechargeThreshold, Date createDatetime, Set<AgeingEntityStepDTO> ageingEntitySteps, Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<ReportDTO> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations, Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.language = language;
        this.externalId = externalId;
        this.description = description;
+       this.rechargeThreshold = rechargeThreshold;
        this.createDatetime = createDatetime;
        this.ageingEntitySteps = ageingEntitySteps;
        this.paymentMethods = paymentMethods;
@@ -177,6 +180,16 @@ public class CompanyDTO  implements java.io.Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Column(name = "recharge_threshold", nullable = true)
+    public BigDecimal getRechargeThreshold() {
+        return rechargeThreshold;
+    }
+
+    public void setRechargeThreshold(BigDecimal rechargeThreshold) {
+        this.rechargeThreshold = rechargeThreshold;
+    }
+
     @Column(name="create_datetime", nullable=false, length=29)
     public Date getCreateDatetime() {
         return this.createDatetime;
@@ -185,7 +198,7 @@ public class CompanyDTO  implements java.io.Serializable {
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
     }
-    
+
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="company")
     @OrderBy (
         clause = "status_id"

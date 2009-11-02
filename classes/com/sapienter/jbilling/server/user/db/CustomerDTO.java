@@ -44,8 +44,11 @@ import org.apache.log4j.Logger;
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDeliveryMethodDTO;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.event.DynamicBalanceChangeEvent;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerDAS;
+import com.sapienter.jbilling.server.system.event.EventManager;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -81,6 +84,7 @@ public class CustomerDTO  implements java.io.Serializable {
      private Integer currentOrderId;
      private int balanceType = Constants.BALANCE_NO_DYNAMIC;
      private BigDecimal dynamicBalance;
+     private BigDecimal autoRecharge;
      private BigDecimal creditLimit;
      private int versionNum;
 
@@ -96,6 +100,7 @@ public class CustomerDTO  implements java.io.Serializable {
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
         this.excludeAging = excludeAging;
     }
+
     public CustomerDTO(int id, UserDTO baseUser, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, Partner partner, 
     		Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, 
     		Integer dueDateValue, Integer dfFm, CustomerDTO parent, Integer isParent, int excludeAging, Integer invoiceChild, Integer currentOrderId) {
@@ -138,7 +143,10 @@ public class CustomerDTO  implements java.io.Serializable {
         setBalanceType(user.getBalanceType() == null ? Constants.BALANCE_NO_DYNAMIC :
             user.getBalanceType());
         setCreditLimit(user.getCreditLimit() == null ? null : new BigDecimal(user.getCreditLimit()));
-        setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));
+        setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));        
+        setAutoRecharge(user.getAutoRecharge() == null ? null : new BigDecimal(user.getAutoRecharge()));
+
+        LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }
    
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="customer_GEN")
@@ -295,6 +303,18 @@ public class CustomerDTO  implements java.io.Serializable {
         this.balanceType = balanceType;
     }
 
+    @Column(name = "auto_recharge")
+    public BigDecimal getAutoRecharge() {
+        if (autoRecharge == null)
+            return BigDecimal.ZERO;
+                                                           
+        return autoRecharge;
+    }
+
+    public void setAutoRecharge(BigDecimal autoRecharge) {
+        this.autoRecharge = autoRecharge;
+    }
+
     @Column(name="credit_limit")
     public BigDecimal getCreditLimit() {
         if (creditLimit == null) {
@@ -334,6 +354,14 @@ public class CustomerDTO  implements java.io.Serializable {
         return (getChildren().size() == 0) ? null : new Integer(getChildren().size());
     }
 
+    @Override
+    public String toString() {
+        return "CustomerDTO{" +
+                "id=" + id +
+                ", baseUser.userId=" + baseUser.getUserId() +
+                ", baseUser.userName=" + baseUser.getUserName() +
+                '}';
+    }
 }
 
 

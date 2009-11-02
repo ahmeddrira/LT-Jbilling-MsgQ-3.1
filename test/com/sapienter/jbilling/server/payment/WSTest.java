@@ -531,7 +531,7 @@ public class WSTest extends TestCase {
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
-            assertEquals("Auth id", 115, authInfo.getId().intValue());
+            assertEquals("Auth id", 116, authInfo.getId().intValue());
             assertTrue("Payment Authorization result should be OK", 
                     authInfo.getResult().booleanValue());
 

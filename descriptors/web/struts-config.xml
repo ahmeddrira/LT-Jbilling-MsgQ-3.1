@@ -107,6 +107,7 @@
             <form-property name="chbx_excludeAging" type="java.lang.Boolean" />
             <form-property name="balance_type" type="java.lang.Integer" />
             <form-property name="credit_limit" type="java.lang.String" />
+            <form-property name="auto_recharge" type="java.lang.String" />
         </form-bean>
         <form-bean name="contact" type="com.sapienter.jbilling.client.util.DynaForm">
             <form-property name="organizationName" type="java.lang.String" />

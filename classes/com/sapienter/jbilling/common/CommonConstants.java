@@ -131,6 +131,7 @@ public interface CommonConstants {
     public static Integer PREFERENCE_ALLOW_INVOICES_WITHOUT_ORDERS = new Integer(46);
     public static Integer PREFERENCE_MEDIATION_JDBC_READER_LAST_ID = new Integer(47);
     public static Integer PREFERENCE_USE_PROVISIONING = new Integer(48);
+    public static Integer PREFERENCE_AUTO_RECHARGE_THRESHOLD = new Integer(49);
 
     // order status, in synch with db
     public static final Integer ORDER_STATUS_ACTIVE = new Integer(1);

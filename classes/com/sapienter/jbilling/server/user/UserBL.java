@@ -209,6 +209,7 @@ public class UserBL extends ResultList
             user.getCustomer().setExcludeAging(dto.getCustomer().getExcludeAging());
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
+            user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
 
             // update the main order
             if (dto.getCustomer().getCurrentOrderId() != null) {
@@ -319,6 +320,7 @@ public class UserBL extends ResultList
             user.getCustomer().setBalanceType(dto.getCustomer().getBalanceType());
             user.getCustomer().setCreditLimit(dto.getCustomer().getCreditLimit());
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
+            user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
                     dto.getLanguageId(), roles, dto.getCurrencyId(),

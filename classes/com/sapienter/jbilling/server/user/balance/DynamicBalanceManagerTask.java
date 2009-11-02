@@ -31,10 +31,12 @@ import com.sapienter.jbilling.server.payment.event.PaymentSuccessfulEvent;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
+import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.event.DynamicBalanceChangeEvent;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.math.BigDecimal;
 import org.apache.log4j.Logger;
@@ -150,44 +152,53 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
 
     private void updateDynamicBalance(Integer entityId, Integer userId, BigDecimal amount) {
         UserDTO user = new UserDAS().find(userId);
-
         CustomerDTO customer = user.getCustomer();
 
+        // get the parent customer that pays, if it exists
         if (customer != null) {
-            // get the parent customer that pays, if it exists
-            while (customer.getParent() != null &&
-                    (customer.getInvoiceChild() == null ||
-                    customer.getInvoiceChild() == 0)) {
-                // go up one level
-                customer =  customer.getParent();
+            while (customer.getParent() != null
+                    && (customer.getInvoiceChild() == null || customer.getInvoiceChild() == 0)) {                
+                customer =  customer.getParent(); // go up one level
             }
         }
 
-        if (customer == null ||
-                customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
-                amount.equals(BigDecimal.ZERO)) {
+        // fail fast condition, no dynamic balance or ammount is zero
+        if (customer == null
+                || customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC
+                || amount.equals(BigDecimal.ZERO)) {
             LOG.debug("Nothing to update");
             return;
         }
 
-        LOG.debug("Updating dynamic balance for " + amount);
-        if (customer.getDynamicBalance() == null) {
-            // initialize
-            customer.setDynamicBalance(BigDecimal.ZERO);
-        }
-        
-        new EventLogger().auditBySystem(entityId, customer.getBaseUser().getId(), 
-                com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
-                user.getCustomer().getId(), EventLogger.MODULE_USER_MAINTENANCE,
-                EventLogger.DYNAMIC_BALANCE_CHANGE, null,
-                user.getCustomer().getDynamicBalance().toString(), null);
-        
+        LOG.debug("Updating dynamic balance to " + amount);
+        BigDecimal balance = (customer.getDynamicBalance() == null ? BigDecimal.ZERO : customer.getDynamicBalance());
+
         if (customer.getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
-            customer.setDynamicBalance(
-                    customer.getDynamicBalance().subtract(amount));
+            customer.setDynamicBalance(balance.subtract(amount));
+
         } else if (customer.getBalanceType() == Constants.BALANCE_PRE_PAID) {
-            customer.setDynamicBalance(
-                    customer.getDynamicBalance().add(amount));
+            customer.setDynamicBalance(balance.add(amount));
+
+        } else {
+            customer.setDynamicBalance(balance);
+        }
+
+        new EventLogger().auditBySystem(entityId,
+                                        customer.getBaseUser().getId(),
+                                        com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
+                                        user.getCustomer().getId(),
+                                        EventLogger.MODULE_USER_MAINTENANCE,
+                                        EventLogger.DYNAMIC_BALANCE_CHANGE,
+                                        null,
+                                        customer.getDynamicBalance().toString(),
+                                        null);
+
+        if (!balance.equals(customer.getDynamicBalance())) {
+            DynamicBalanceChangeEvent event = new DynamicBalanceChangeEvent(user.getEntity().getId(),
+                                                                            user.getUserId(),
+                                                                            customer.getDynamicBalance(), // new
+                                                                            balance);                     // old
+            EventManager.process(event);
         }
     }
 }

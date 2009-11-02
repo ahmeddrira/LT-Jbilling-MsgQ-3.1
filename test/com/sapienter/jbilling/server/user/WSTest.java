@@ -71,13 +71,14 @@ public class WSTest extends TestCase {
         }
     }
 
-    public void testOwningBalance() {
+    public void testOwingBalance() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             System.out.println("Getting balance of user 2");
             UserWS ret = api.getUserWS(new Integer(2));
             assertEquals("Balance of Gandlaf starts at 1376765", 1376765.0, ret.getOwingBalance());
+            System.out.println("Gandalf's balance: " + ret.getOwingBalance());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -838,7 +839,12 @@ Ch2->P1
             CreditCardDTO cc = new CreditCardDTO();
             cc.setName("Frodo Baggins");
             cc.setNumber(goodCC ? "4111111111111152" : "4111111111111111");
-            cc.setExpiry(new Date(new Date().getTime() + 1000000));
+
+            // valid credit card must have a future expiry date to be valid for payment processing
+            Calendar expiry = Calendar.getInstance();
+            expiry.set(Calendar.YEAR, expiry.get(Calendar.YEAR) + 1);
+            cc.setExpiry(expiry.getTime());        
+
             newUser.setCreditCard(cc);
             
             System.out.println("Creating user ...");
@@ -1547,7 +1553,56 @@ Ch2->P1
 
         // delete order and invoice
         api.deleteOrder(order.getId());       
-    }    
+    }
+
+    public void testAutoRecharge() throws Exception {
+        System.out.println("Starting auto-recharge test.");
+
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        UserWS user = createUser(true, null, null);
+
+        user.setBalanceType(Constants.BALANCE_PRE_PAID);
+        user.setAutoRecharge(25.00); // automatically charge this user $25 when the balance drops below the threshold        
+                                     // company (entity id 1) recharge threshold is set to $5
+        api.updateUser(user);
+        user = api.getUserWS(user.getUserId());
+
+        assertEquals("Automatic recharge value updated", 25.00, user.getAutoRecharge());
+
+        // create an order for $10,
+        OrderWS order = new OrderWS();
+        order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(new Integer(1));
+        order.setCurrencyId(new Integer(1));
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2008, 9, 3);
+        order.setCycleStarts(cal.getTime());
+
+        OrderLineWS lines[] = new OrderLineWS[1];
+        OrderLineWS line = new OrderLineWS();
+        line.setPrice(new Float(10));
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setQuantity(new Integer(1));
+        line.setAmount(new Float(10));
+        line.setDescription("Fist line");
+        line.setItemId(new Integer(1));
+        lines[0] = line;
+
+        order.setOrderLines(lines);
+        Integer orderId = api.createOrder(order); // should emit a NewOrderEvent that will be handled by the DynamicBalanceManagerTask
+                                                  // where the user's dynamic balance will be updated to reflect the charges
+                                                                                                                                                      
+        // user's balance should be 0 - 10 + 25 = 15 (initial balance, minus order, plus auto-recharge).
+        UserWS updated = api.getUserWS(user.getUserId());
+        assertEquals("balance updated with auto-recharge payment", 15.00, updated.getDynamicBalance());
+                
+        // cleanup
+        api.deleteOrder(orderId);
+        api.deleteUser(user.getUserId());
+    }
 
     private void pause(long t) {
         System.out.println("pausing for " + t + " ms...");

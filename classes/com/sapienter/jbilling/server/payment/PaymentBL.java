@@ -133,9 +133,9 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         return paymentDas;
     }
 
-    public String getMethodDescription(PaymentMethodDTO method,
-            Integer languageId) {
-        return method.getDescription(languageId);
+    public String getMethodDescription(PaymentMethodDTO method, Integer languageId) {
+        // load directly from the DB, otherwise proxies get in the way 
+        return new PaymentMethodDAS().find(method.getId()).getDescription(languageId);
     }
 
     public void set(Integer id) {

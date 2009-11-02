@@ -104,12 +104,23 @@
 			property="customer.dynamicBalance" scope="session"/>
         </td>
 	</tr>
+        
+    <tr class="infoA">
+        <td class="infoprompt">
+            <bean:message key="user.prompt.autoRecharge"/>
+        </td>
+        <td class="infodata">
+            <bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'
+                        property="customer.autoRecharge"
+                        scope="session"/>
+        </td>
+    </tr>
     
     <logic:equal name='<%=Constants.SESSION_CUSTOMER_DTO%>'
 					 property="customer.balanceType"
 					 scope="session"
 					 value='<%=Constants.BALANCE_CREDIT_LIMIT.toString()%>'>
-        <tr class="infoA">
+        <tr class="infoB">
             <td class="infoprompt"><bean:message key="user.prompt.creditLimit"/></td>
         
 		    <td  class="infodata"><bean:write name='<%=Constants.SESSION_CUSTOMER_DTO%>'

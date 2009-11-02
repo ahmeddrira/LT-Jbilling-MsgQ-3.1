@@ -73,7 +73,6 @@ public class CompanyDTO  implements java.io.Serializable {
      private LanguageDTO language;
      private String externalId;
      private String description;
-     private BigDecimal rechargeThreshold;
      private Date createDatetime;
      private Set<AgeingEntityStepDTO> ageingEntitySteps = new HashSet<AgeingEntityStepDTO>(0);
      private Set<PaymentMethodDTO> paymentMethods = new HashSet<PaymentMethodDTO>(0);
@@ -106,13 +105,12 @@ public class CompanyDTO  implements java.io.Serializable {
         this.description = description;
         this.createDatetime = createDatetime;
     }
-    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, BigDecimal rechargeThreshold, Date createDatetime, Set<AgeingEntityStepDTO> ageingEntitySteps, Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<ReportDTO> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations, Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
+    public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String externalId, String description, Date createDatetime, Set<AgeingEntityStepDTO> ageingEntitySteps, Set<PaymentMethodDTO> paymentMethods, Set<OrderPeriodDTO> orderPeriodDTOs, Set<BillingProcessDTO> billingProcesses, Set<UserDTO> baseUsers, Set<ContactTypeDTO> contactTypes, Set<ItemDTO> items, Set<EventLogDTO> eventLogs, Set<NotificationMessageDTO> notificationMessages, Set<ReportDTO> reports, Set<ContactFieldTypeDTO> contactFieldTypes, Set<CurrencyDTO> currencyDTOs, Set<ItemTypeDTO> itemTypes, Set<BillingProcessConfigurationDTO> billingProcessConfigurations, Set<InvoiceDeliveryMethodDTO> invoiceDeliveryMethods, Set<ListEntityDTO> listEntities) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.language = language;
        this.externalId = externalId;
        this.description = description;
-       this.rechargeThreshold = rechargeThreshold;
        this.createDatetime = createDatetime;
        this.ageingEntitySteps = ageingEntitySteps;
        this.paymentMethods = paymentMethods;
@@ -179,15 +177,6 @@ public class CompanyDTO  implements java.io.Serializable {
     
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Column(name = "recharge_threshold", nullable = true)
-    public BigDecimal getRechargeThreshold() {
-        return rechargeThreshold;
-    }
-
-    public void setRechargeThreshold(BigDecimal rechargeThreshold) {
-        this.rechargeThreshold = rechargeThreshold;
     }
 
     @Column(name="create_datetime", nullable=false, length=29)

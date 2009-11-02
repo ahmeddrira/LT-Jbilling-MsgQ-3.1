@@ -64,6 +64,7 @@ public class UserWS implements Serializable {
     private Double owingBalance = null;
     private Integer balanceType = null;
     private Double dynamicBalance = null;
+    private Double autoRecharge = null;
     private Double creditLimit = null;
 
     public Integer getPartnerId() {
@@ -113,6 +114,7 @@ public class UserWS implements Serializable {
             balanceType = dto.getCustomer().getBalanceType();
             dynamicBalance = dto.getCustomer().getDynamicBalance() == null ? null :
                 dto.getCustomer().getDynamicBalance().doubleValue();
+            autoRecharge = dto.getCustomer().getAutoRecharge() == null ? null : dto.getCustomer().getAutoRecharge().doubleValue();
             creditLimit = dto.getCustomer().getCreditLimit() == null ? null :
                 dto.getCustomer().getCreditLimit().doubleValue();
         }
@@ -375,4 +377,11 @@ public class UserWS implements Serializable {
         this.dynamicBalance = dynamicBalance;
     }
 
+    public Double getAutoRecharge() {
+        return autoRecharge;
+    }
+
+    public void setAutoRecharge(Double autoRecharge) {
+        this.autoRecharge = autoRecharge;
+    }
 }

@@ -1101,6 +1101,13 @@
                     <var-value>^[0-9\.\,\-]*$</var-value>
                 </var>
             </field>
+            <field property="auto_recharge" depends="mask">
+                <arg0 key="user.prompt.autoRecharge" />
+                <var>
+                    <var-name>mask</var-name>
+                    <var-value>^[0-9\.\,\-]*$</var-value>
+                </var>
+            </field>
         </form>
         <form name="signup">
             <field property="address1" depends="required">

@@ -707,7 +707,8 @@ CREATE TABLE customer (
     optlock integer NOT NULL,
     balance_type integer NOT NULL,
     dynamic_balance double precision,
-    credit_limit double precision
+    credit_limit double precision,
+    auto_recharge double precision
 );
 
 
@@ -8451,1022 +8452,1022 @@ COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlo
 -- Data for Name: customer; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit) FROM stdin;
-2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
-12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N
-22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
-32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	1	1	\N	\N
-42	53	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N
-52	63	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N
-62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-65	76	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-66	77	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-67	78	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-68	79	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-69	80	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-70	81	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-71	82	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-72	83	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-73	84	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-74	85	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-75	86	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-76	87	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-77	88	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-78	89	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-79	90	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-80	91	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-81	92	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-82	93	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-83	94	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-84	95	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-85	96	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-86	97	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-87	98	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-88	99	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-89	100	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-90	101	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-91	102	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-92	103	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-93	104	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-94	105	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-95	106	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-96	107	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-97	108	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-98	109	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-99	110	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-100	111	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-101	112	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-102	113	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-103	114	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-104	115	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-105	116	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-106	117	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-107	118	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-108	119	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-109	120	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-111	122	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-112	123	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-113	124	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-114	125	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-116	127	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-117	128	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-118	129	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-119	130	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-120	131	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-121	132	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-122	133	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-123	134	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-124	135	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-125	136	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-126	137	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-127	138	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-128	139	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-129	140	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-130	141	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-131	142	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-132	143	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-133	144	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-134	145	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-135	146	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-136	147	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-137	148	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-138	149	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-139	150	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-140	151	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-141	152	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-142	153	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-143	154	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-144	155	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-145	156	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-146	157	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-147	158	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-148	159	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-149	160	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-150	161	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-151	162	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-152	163	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-153	164	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-154	165	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-155	166	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-156	167	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-157	168	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-158	169	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-159	170	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-160	171	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-161	172	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-162	173	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-163	174	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-164	175	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-165	176	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-166	177	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-167	178	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-168	179	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-169	180	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-170	181	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-171	182	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-172	183	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-173	184	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
-110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
-174	185	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-175	186	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-176	187	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-177	188	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-178	189	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-179	190	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-180	191	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-181	192	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-182	193	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-183	194	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-184	195	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-185	196	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-186	197	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-187	198	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-188	199	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-189	200	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-190	201	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-191	202	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-192	203	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-193	204	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-194	205	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-195	206	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-196	207	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-197	208	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-198	209	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-199	210	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-200	211	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-201	212	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-202	213	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-203	214	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-204	215	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-205	216	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-206	217	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-207	218	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-208	219	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-209	220	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-210	221	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-211	222	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-212	223	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-213	224	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-214	225	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-215	226	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-216	227	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-217	228	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-218	229	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-219	230	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-220	231	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-221	232	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-222	233	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-223	234	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-224	235	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-225	236	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-226	237	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-227	238	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-228	239	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-229	240	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-230	241	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-231	242	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-232	243	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-233	244	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-234	245	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-235	246	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-236	247	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-237	248	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-238	249	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-239	250	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-240	251	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-241	252	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-242	253	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-243	254	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-244	255	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-245	256	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-246	257	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-247	258	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-248	259	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-249	260	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-250	261	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-251	262	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-252	263	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-253	264	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-254	265	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-255	266	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-256	267	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-257	268	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-258	269	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-259	270	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-260	271	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-261	272	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-262	273	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-263	274	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-264	275	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-265	276	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-266	277	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-267	278	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-268	279	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-269	280	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-270	281	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-271	282	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-272	283	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-273	284	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-274	285	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-275	286	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-276	287	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-277	288	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-278	289	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-279	290	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-280	291	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-281	292	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-282	293	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-283	294	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-284	295	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-285	296	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-286	297	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-287	298	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-288	299	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-289	300	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-290	301	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-291	302	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-292	303	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-293	304	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-294	305	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-295	306	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-296	307	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-297	308	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-298	309	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-299	310	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-300	311	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-301	312	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-302	313	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-303	314	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-304	315	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-305	316	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-306	317	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-307	318	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-308	319	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-309	320	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-310	321	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-311	322	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-312	323	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-313	324	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-314	325	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-315	326	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-316	327	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-317	328	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-318	329	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-319	330	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-320	331	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-321	332	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-322	333	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-323	334	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-324	335	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-325	336	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-326	337	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-327	338	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-328	339	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-329	340	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-330	341	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-331	342	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-332	343	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-333	344	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-334	345	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-335	346	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-336	347	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-337	348	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-338	349	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-339	350	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-340	351	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-341	352	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-342	353	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-343	354	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-344	355	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-345	356	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-346	357	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-347	358	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-348	359	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-349	360	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-350	361	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-351	362	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-352	363	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-353	364	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-354	365	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-355	366	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-356	367	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-357	368	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-358	369	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-359	370	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-360	371	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-361	372	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-362	373	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-363	374	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-364	375	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-365	376	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-366	377	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-367	378	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-368	379	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-369	380	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-370	381	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-371	382	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-372	383	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-373	384	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-374	385	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-375	386	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-376	387	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-377	388	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-378	389	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-379	390	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-380	391	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-381	392	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-382	393	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-383	394	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-384	395	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-385	396	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-386	397	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-387	398	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-388	399	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-389	400	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-390	401	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-391	402	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-392	403	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-393	404	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-394	405	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-395	406	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-396	407	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-397	408	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-398	409	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-399	410	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-400	411	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-401	412	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-402	413	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-403	414	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-404	415	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-405	416	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-406	417	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-407	418	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-408	419	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-409	420	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-410	421	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-411	422	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-412	423	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-413	424	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-414	425	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-415	426	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-416	427	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-417	428	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-418	429	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-419	430	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-420	431	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-421	432	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-422	433	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-423	434	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-424	435	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-425	436	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-426	437	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-427	438	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-428	439	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-429	440	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-430	441	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-431	442	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-432	443	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-433	444	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-434	445	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-435	446	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-436	447	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-437	448	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-438	449	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-439	450	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-440	451	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-441	452	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-442	453	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-443	454	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-444	455	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-445	456	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-446	457	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-447	458	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-448	459	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-449	460	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-450	461	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-451	462	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-452	463	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-453	464	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-454	465	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-455	466	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-456	467	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-457	468	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-458	469	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-459	470	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-460	471	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-461	472	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-462	473	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-463	474	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-464	475	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-465	476	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-466	477	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-467	478	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-468	479	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-469	480	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-470	481	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-471	482	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-472	483	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-473	484	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-474	485	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-475	486	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-476	487	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-477	488	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-478	489	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-479	490	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-480	491	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-481	492	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-482	493	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-483	494	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-484	495	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-485	496	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-486	497	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-487	498	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-488	499	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-489	500	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-490	501	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-491	502	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-492	503	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-493	504	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-494	505	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-495	506	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-496	507	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-497	508	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-498	509	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-499	510	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-500	511	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-501	512	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-502	513	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-503	514	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-504	515	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-505	516	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-506	517	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-507	518	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-508	519	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-509	520	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-510	521	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-511	522	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-512	523	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-513	524	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-514	525	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-515	526	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-516	527	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-517	528	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-518	529	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-519	530	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-520	531	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-521	532	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-522	533	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-523	534	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-524	535	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-525	536	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-526	537	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-527	538	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-528	539	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-529	540	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-530	541	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-531	542	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-532	543	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-533	544	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-534	545	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-535	546	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-536	547	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-537	548	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-538	549	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-539	550	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-540	551	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-541	552	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-542	553	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-543	554	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-544	555	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-545	556	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-546	557	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-547	558	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-548	559	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-549	560	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-550	561	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-551	562	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-552	563	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-553	564	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-554	565	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-555	566	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-556	567	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-557	568	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-558	569	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-559	570	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-560	571	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-561	572	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-562	573	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-563	574	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-564	575	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-565	576	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-566	577	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-567	578	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-568	579	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-569	580	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-570	581	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-571	582	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-572	583	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-573	584	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-574	585	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-575	586	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-576	587	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-577	588	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-578	589	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-579	590	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-580	591	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-581	592	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-582	593	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-583	594	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-584	595	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-585	596	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-586	597	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-587	598	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-588	599	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-589	600	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-590	601	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-591	602	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-592	603	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-593	604	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-594	605	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-595	606	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-596	607	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-597	608	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-598	609	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-599	610	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-600	611	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-601	612	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-602	613	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-603	614	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-604	615	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-605	616	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-606	617	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-607	618	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-608	619	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-609	620	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-610	621	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-611	622	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-612	623	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-613	624	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-614	625	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-615	626	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-616	627	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-617	628	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-618	629	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-619	630	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-620	631	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-621	632	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-622	633	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-623	634	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-624	635	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-625	636	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-626	637	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-627	638	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-628	639	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-629	640	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-630	641	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-631	642	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-632	643	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-633	644	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-634	645	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-635	646	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-636	647	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-637	648	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-638	649	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-639	650	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-640	651	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-641	652	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-642	653	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-643	654	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-644	655	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-645	656	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-646	657	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-647	658	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-648	659	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-649	660	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-650	661	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-651	662	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-652	663	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-653	664	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-654	665	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-655	666	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-656	667	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-657	668	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-658	669	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-659	670	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-660	671	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-661	672	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-662	673	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-663	674	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-664	675	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-665	676	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-666	677	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-667	678	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-668	679	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-669	680	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-670	681	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-671	682	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-672	683	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-673	684	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-674	685	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-675	686	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-676	687	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-677	688	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-678	689	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-679	690	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-680	691	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-681	692	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-682	693	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-683	694	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-684	695	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-685	696	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-686	697	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-687	698	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-688	699	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-689	700	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-690	701	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-691	702	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-692	703	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-693	704	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-694	705	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-695	706	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-696	707	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-697	708	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-698	709	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-699	710	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-700	711	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-701	712	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-702	713	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-703	714	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-704	715	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-705	716	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-706	717	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-707	718	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-708	719	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-709	720	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-710	721	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-711	722	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-712	723	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-713	724	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-714	725	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-715	726	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-716	727	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-717	728	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-718	729	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-719	730	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-720	731	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-721	732	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-722	733	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-723	734	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-724	735	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-725	736	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-726	737	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-727	738	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-728	739	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-729	740	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-730	741	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-731	742	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-732	743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-733	744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-734	745	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-735	746	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-736	747	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-737	748	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-738	749	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-739	750	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-740	751	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-741	752	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-742	753	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-743	754	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-744	755	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-745	756	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-746	757	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-747	758	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-748	759	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-749	760	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-750	761	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-751	762	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-752	763	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-753	764	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-754	765	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-755	766	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-756	767	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-757	768	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-758	769	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-759	770	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-760	771	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-761	772	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-762	773	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-763	774	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-764	775	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-765	776	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-766	777	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-767	778	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-768	779	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-769	780	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-770	781	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-771	782	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-772	783	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-773	784	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-774	785	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-775	786	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-776	787	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-777	788	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-778	789	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-779	790	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-780	791	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-781	792	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-782	793	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-783	794	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-784	795	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-785	796	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-786	797	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-787	798	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-788	799	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-789	800	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-790	801	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-791	802	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-792	803	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-793	804	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-794	805	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-795	806	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-796	807	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-797	808	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-798	809	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-799	810	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-800	811	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-801	812	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-802	813	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-803	814	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-804	815	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-805	816	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-806	817	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-807	818	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-808	819	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-809	820	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-810	821	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-811	822	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-812	823	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-813	824	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-814	825	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-815	826	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-816	827	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-817	828	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-818	829	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-819	830	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-820	831	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-821	832	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-822	833	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-823	834	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-824	835	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-825	836	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-826	837	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-827	838	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-828	839	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-829	840	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-830	841	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-831	842	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-832	843	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-833	844	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-834	845	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-835	846	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-836	847	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-837	848	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-838	849	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-839	850	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-840	851	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-841	852	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-842	853	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-843	854	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-844	855	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-845	856	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-846	857	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-847	858	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-848	859	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-849	860	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-850	861	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-851	862	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-852	863	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-853	864	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-854	865	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-855	866	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-856	867	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-857	868	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-858	869	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-859	870	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-860	871	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-861	872	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-862	873	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-863	874	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-864	875	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-865	876	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-866	877	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-867	878	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-868	879	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-869	880	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-870	881	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-871	882	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-872	883	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-873	884	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-874	885	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-875	886	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-876	887	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-877	888	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-878	889	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-879	890	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-880	891	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-881	892	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-882	893	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-883	894	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-884	895	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-885	896	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-886	897	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-887	898	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-888	899	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-889	900	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-890	901	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-891	902	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-892	903	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-893	904	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-894	905	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-895	906	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-896	907	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-897	908	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-898	909	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-899	910	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-900	911	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-901	912	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-902	913	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-903	914	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-904	915	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-905	916	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-906	917	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-907	918	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-908	919	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-909	920	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-910	921	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-911	922	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-912	923	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-913	924	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-914	925	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-915	926	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-916	927	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-917	928	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-918	929	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-919	930	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-920	931	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-921	932	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-922	933	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-923	934	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-924	935	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-925	936	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-926	937	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-927	938	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-928	939	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-929	940	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-930	941	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-931	942	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-932	943	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-933	944	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-934	945	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-935	946	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-936	947	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-937	948	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-938	949	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-939	950	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-940	951	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-941	952	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-942	953	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-943	954	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-944	955	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-945	956	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-946	957	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-947	958	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-948	959	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-949	960	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-950	961	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-951	962	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-952	963	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-953	964	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-954	965	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-955	966	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-956	967	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-957	968	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-958	969	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-959	970	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-960	971	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-961	972	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-962	973	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-963	974	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-964	975	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-965	976	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-966	977	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-967	978	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-968	979	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-969	980	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-970	981	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-971	982	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-972	983	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-973	984	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-974	985	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-975	986	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-976	987	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-977	988	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-978	989	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-979	990	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-980	991	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-981	992	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-982	993	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-983	994	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-984	995	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-985	996	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-986	997	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-987	998	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-988	999	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-990	1001	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-991	1002	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-992	1003	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-993	1004	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-994	1005	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-995	1006	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-996	1007	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-997	1008	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-998	1009	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-999	1010	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1000	1011	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1001	1012	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1002	1013	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1003	1014	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1004	1015	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1005	1016	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1006	1017	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1007	1018	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1008	1019	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1009	1020	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1010	1021	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1011	1022	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1012	1023	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1013	1024	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1014	1025	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1015	1026	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1016	1027	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1017	1028	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1018	1029	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1019	1030	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1020	1031	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1021	1032	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1022	1033	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1023	1034	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1024	1035	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1025	1036	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1026	1037	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1027	1038	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1028	1039	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1030	1041	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1031	1042	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1032	1043	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1033	1044	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1034	1045	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1035	1046	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1036	1047	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1037	1048	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1038	1049	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1039	1050	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1040	1051	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1041	1052	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1042	1053	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1043	1054	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1045	1056	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1046	1057	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1047	1058	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1048	1059	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1049	1060	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1050	1061	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1051	1062	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1052	1063	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1053	1064	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1054	1065	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1055	1066	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1056	1067	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1057	1068	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1058	1069	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1059	1070	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1060	1071	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1061	1072	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1062	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N
-1063	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N
-1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N
-1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N
-1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N
-1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N
-1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0	0
-1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0
-1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0
-106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0	0
+COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_method_id, notes, auto_payment_type, due_date_unit_id, due_date_value, df_fm, parent_id, is_parent, exclude_aging, invoice_child, current_order_id, optlock, balance_type, dynamic_balance, credit_limit, auto_recharge) FROM stdin;
+2	13	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
+12	23	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
+22	33	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
+32	43	\N	0	1	\N	1	\N	\N	\N	\N	1	0	\N	\N	1	1	\N	\N	\N
+42	53	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
+52	63	\N	0	1	\N	1	3	\N	0	\N	0	0	\N	\N	1	1	\N	\N	\N
+62	73	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+63	74	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+64	75	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+65	76	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+66	77	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+67	78	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+68	79	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+69	80	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+70	81	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+71	82	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+72	83	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+73	84	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+74	85	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+75	86	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+76	87	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+77	88	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+78	89	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+79	90	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+80	91	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+81	92	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+82	93	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+83	94	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+84	95	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+85	96	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+86	97	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+87	98	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+88	99	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+89	100	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+90	101	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+91	102	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+92	103	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+93	104	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+94	105	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+95	106	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+96	107	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+97	108	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+98	109	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+99	110	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+100	111	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+101	112	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+102	113	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+103	114	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+104	115	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+105	116	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+106	117	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+107	118	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+108	119	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+109	120	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+111	122	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+112	123	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+113	124	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+114	125	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+116	127	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+117	128	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+118	129	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+119	130	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+120	131	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+121	132	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+122	133	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+123	134	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+124	135	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+125	136	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+126	137	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+127	138	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+128	139	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+129	140	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+130	141	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+131	142	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+132	143	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+133	144	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+134	145	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+135	146	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+136	147	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+137	148	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+138	149	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+139	150	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+140	151	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+141	152	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+142	153	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+143	154	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+144	155	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+145	156	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+146	157	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+147	158	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+148	159	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+149	160	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+150	161	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+151	162	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+152	163	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+153	164	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+154	165	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+155	166	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+156	167	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+157	168	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+158	169	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+159	170	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+160	171	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+161	172	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+162	173	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+163	174	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+164	175	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+165	176	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+166	177	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+167	178	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+168	179	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+169	180	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+170	181	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+171	182	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+172	183	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+173	184	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
+110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
+174	185	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+175	186	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+176	187	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+177	188	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+178	189	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+179	190	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+180	191	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+181	192	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+182	193	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+183	194	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+184	195	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+185	196	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+186	197	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+187	198	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+188	199	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+189	200	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+190	201	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+191	202	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+192	203	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+193	204	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+194	205	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+195	206	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+196	207	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+197	208	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+198	209	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+199	210	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+200	211	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+201	212	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+202	213	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+203	214	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+204	215	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+205	216	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+206	217	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+207	218	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+208	219	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+209	220	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+210	221	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+211	222	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+212	223	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+213	224	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+214	225	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+215	226	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+216	227	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+217	228	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+218	229	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+219	230	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+220	231	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+221	232	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+222	233	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+223	234	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+224	235	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+225	236	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+226	237	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+227	238	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+228	239	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+229	240	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+230	241	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+231	242	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+232	243	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+233	244	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+234	245	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+235	246	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+236	247	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+237	248	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+238	249	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+239	250	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+240	251	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+241	252	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+242	253	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+243	254	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+244	255	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+245	256	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+246	257	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+247	258	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+248	259	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+249	260	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+250	261	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+251	262	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+252	263	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+253	264	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+254	265	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+255	266	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+256	267	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+257	268	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+258	269	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+259	270	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+260	271	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+261	272	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+262	273	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+263	274	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+264	275	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+265	276	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+266	277	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+267	278	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+268	279	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+269	280	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+270	281	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+271	282	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+272	283	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+273	284	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+274	285	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+275	286	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+276	287	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+277	288	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+278	289	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+279	290	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+280	291	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+281	292	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+282	293	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+283	294	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+284	295	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+285	296	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+286	297	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+287	298	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+288	299	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+289	300	\N	\N	3	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+290	301	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+291	302	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+292	303	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+293	304	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+294	305	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+295	306	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+296	307	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+297	308	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+298	309	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+299	310	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+300	311	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+301	312	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+302	313	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+303	314	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+304	315	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+305	316	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+306	317	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+307	318	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+308	319	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+309	320	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+310	321	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+311	322	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+312	323	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+313	324	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+314	325	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+315	326	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+316	327	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+317	328	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+318	329	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+319	330	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+320	331	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+321	332	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+322	333	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+323	334	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+324	335	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+325	336	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+326	337	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+327	338	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+328	339	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+329	340	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+330	341	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+331	342	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+332	343	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+333	344	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+334	345	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+335	346	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+336	347	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+337	348	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+338	349	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+339	350	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+340	351	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+341	352	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+342	353	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+343	354	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+344	355	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+345	356	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+346	357	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+347	358	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+348	359	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+349	360	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+350	361	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+351	362	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+352	363	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+353	364	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+354	365	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+355	366	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+356	367	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+357	368	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+358	369	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+359	370	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+360	371	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+361	372	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+362	373	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+363	374	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+364	375	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+365	376	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+366	377	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+367	378	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+368	379	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+369	380	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+370	381	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+371	382	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+372	383	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+373	384	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+374	385	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+375	386	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+376	387	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+377	388	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+378	389	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+379	390	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+380	391	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+381	392	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+382	393	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+383	394	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+384	395	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+385	396	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+386	397	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+387	398	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+388	399	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+389	400	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+390	401	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+391	402	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+392	403	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+393	404	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+394	405	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+395	406	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+396	407	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+397	408	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+398	409	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+399	410	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+400	411	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+401	412	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+402	413	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+403	414	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+404	415	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+405	416	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+406	417	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+407	418	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+408	419	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+409	420	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+410	421	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+411	422	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+412	423	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+413	424	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+414	425	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+415	426	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+416	427	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+417	428	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+418	429	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+419	430	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+420	431	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+421	432	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+422	433	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+423	434	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+424	435	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+425	436	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+426	437	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+427	438	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+428	439	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+429	440	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+430	441	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+431	442	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+432	443	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+433	444	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+434	445	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+435	446	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+436	447	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+437	448	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+438	449	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+439	450	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+440	451	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+441	452	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+442	453	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+443	454	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+444	455	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+445	456	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+446	457	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+447	458	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+448	459	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+449	460	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+450	461	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+451	462	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+452	463	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+453	464	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+454	465	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+455	466	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+456	467	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+457	468	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+458	469	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+459	470	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+460	471	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+461	472	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+462	473	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+463	474	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+464	475	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+465	476	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+466	477	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+467	478	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+468	479	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+469	480	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+470	481	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+471	482	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+472	483	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+473	484	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+474	485	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+475	486	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+476	487	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+477	488	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+478	489	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+479	490	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+480	491	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+481	492	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+482	493	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+483	494	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+484	495	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+485	496	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+486	497	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+487	498	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+488	499	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+489	500	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+490	501	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+491	502	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+492	503	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+493	504	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+494	505	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+495	506	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+496	507	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+497	508	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+498	509	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+499	510	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+500	511	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+501	512	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+502	513	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+503	514	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+504	515	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+505	516	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+506	517	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+507	518	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+508	519	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+509	520	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+510	521	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+511	522	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+512	523	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+513	524	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+514	525	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+515	526	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+516	527	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+517	528	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+518	529	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+519	530	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+520	531	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+521	532	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+522	533	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+523	534	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+524	535	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+525	536	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+526	537	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+527	538	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+528	539	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+529	540	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+530	541	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+531	542	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+532	543	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+533	544	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+534	545	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+535	546	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+536	547	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+537	548	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+538	549	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+539	550	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+540	551	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+541	552	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+542	553	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+543	554	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+544	555	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+545	556	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+546	557	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+547	558	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+548	559	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+549	560	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+550	561	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+551	562	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+552	563	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+553	564	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+554	565	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+555	566	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+556	567	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+557	568	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+558	569	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+559	570	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+560	571	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+561	572	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+562	573	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+563	574	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+564	575	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+565	576	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+566	577	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+567	578	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+568	579	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+569	580	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+570	581	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+571	582	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+572	583	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+573	584	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+574	585	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+575	586	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+576	587	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+577	588	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+578	589	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+579	590	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+580	591	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+581	592	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+582	593	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+583	594	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+584	595	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+585	596	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+586	597	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+587	598	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+588	599	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+589	600	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+590	601	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+591	602	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+592	603	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+593	604	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+594	605	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+595	606	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+596	607	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+597	608	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+598	609	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+599	610	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+600	611	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+601	612	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+602	613	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+603	614	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+604	615	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+605	616	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+606	617	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+607	618	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+608	619	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+609	620	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+610	621	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+611	622	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+612	623	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+613	624	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+614	625	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+615	626	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+616	627	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+617	628	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+618	629	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+619	630	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+620	631	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+621	632	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+622	633	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+623	634	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+624	635	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+625	636	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+626	637	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+627	638	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+628	639	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+629	640	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+630	641	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+631	642	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+632	643	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+633	644	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+634	645	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+635	646	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+636	647	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+637	648	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+638	649	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+639	650	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+640	651	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+641	652	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+642	653	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+643	654	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+644	655	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+645	656	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+646	657	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+647	658	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+648	659	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+649	660	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+650	661	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+651	662	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+652	663	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+653	664	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+654	665	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+655	666	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+656	667	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+657	668	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+658	669	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+659	670	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+660	671	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+661	672	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+662	673	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+663	674	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+664	675	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+665	676	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+666	677	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+667	678	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+668	679	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+669	680	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+670	681	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+671	682	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+672	683	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+673	684	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+674	685	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+675	686	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+676	687	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+677	688	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+678	689	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+679	690	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+680	691	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+681	692	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+682	693	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+683	694	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+684	695	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+685	696	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+686	697	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+687	698	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+688	699	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+689	700	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+690	701	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+691	702	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+692	703	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+693	704	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+694	705	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+695	706	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+696	707	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+697	708	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+698	709	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+699	710	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+700	711	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+701	712	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+702	713	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+703	714	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+704	715	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+705	716	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+706	717	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+707	718	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+708	719	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+709	720	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+710	721	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+711	722	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+712	723	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+713	724	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+714	725	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+715	726	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+716	727	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+717	728	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+718	729	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+719	730	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+720	731	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+721	732	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+722	733	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+723	734	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+724	735	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+725	736	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+726	737	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+727	738	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+728	739	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+729	740	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+730	741	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+731	742	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+732	743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+733	744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+734	745	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+735	746	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+736	747	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+737	748	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+738	749	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+739	750	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+740	751	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+741	752	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+742	753	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+743	754	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+744	755	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+745	756	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+746	757	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+747	758	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+748	759	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+749	760	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+750	761	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+751	762	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+752	763	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+753	764	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+754	765	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+755	766	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+756	767	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+757	768	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+758	769	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+759	770	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+760	771	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+761	772	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+762	773	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+763	774	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+764	775	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+765	776	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+766	777	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+767	778	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+768	779	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+769	780	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+770	781	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+771	782	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+772	783	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+773	784	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+774	785	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+775	786	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+776	787	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+777	788	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+778	789	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+779	790	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+780	791	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+781	792	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+782	793	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+783	794	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+784	795	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+785	796	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+786	797	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+787	798	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+788	799	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+789	800	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+790	801	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+791	802	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+792	803	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+793	804	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+794	805	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+795	806	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+796	807	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+797	808	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+798	809	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+799	810	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+800	811	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+801	812	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+802	813	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+803	814	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+804	815	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+805	816	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+806	817	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+807	818	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+808	819	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+809	820	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+810	821	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+811	822	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+812	823	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+813	824	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+814	825	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+815	826	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+816	827	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+817	828	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+818	829	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+819	830	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+820	831	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+821	832	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+822	833	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+823	834	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+824	835	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+825	836	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+826	837	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+827	838	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+828	839	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+829	840	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+830	841	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+831	842	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+832	843	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+833	844	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+834	845	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+835	846	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+836	847	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+837	848	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+838	849	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+839	850	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+840	851	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+841	852	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+842	853	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+843	854	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+844	855	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+845	856	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+846	857	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+847	858	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+848	859	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+849	860	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+850	861	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+851	862	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+852	863	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+853	864	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+854	865	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+855	866	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+856	867	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+857	868	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+858	869	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+859	870	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+860	871	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+861	872	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+862	873	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+863	874	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+864	875	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+865	876	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+866	877	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+867	878	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+868	879	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+869	880	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+870	881	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+871	882	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+872	883	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+873	884	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+874	885	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+875	886	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+876	887	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+877	888	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+878	889	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+879	890	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+880	891	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+881	892	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+882	893	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+883	894	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+884	895	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+885	896	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+886	897	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+887	898	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+888	899	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+889	900	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+890	901	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+891	902	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+892	903	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+893	904	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+894	905	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+895	906	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+896	907	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+897	908	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+898	909	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+899	910	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+900	911	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+901	912	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+902	913	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+903	914	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+904	915	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+905	916	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+906	917	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+907	918	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+908	919	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+909	920	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+910	921	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+911	922	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+912	923	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+913	924	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+914	925	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+915	926	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+916	927	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+917	928	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+918	929	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+919	930	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+920	931	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+921	932	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+922	933	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+923	934	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+924	935	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+925	936	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+926	937	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+927	938	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+928	939	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+929	940	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+930	941	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+931	942	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+932	943	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+933	944	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+934	945	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+935	946	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+936	947	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+937	948	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+938	949	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+939	950	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+940	951	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+941	952	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+942	953	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+943	954	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+944	955	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+945	956	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+946	957	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+947	958	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+948	959	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+949	960	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+950	961	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+951	962	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+952	963	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+953	964	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+954	965	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+955	966	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+956	967	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+957	968	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+958	969	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+959	970	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+960	971	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+961	972	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+962	973	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+963	974	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+964	975	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+965	976	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+966	977	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+967	978	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+968	979	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+969	980	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+970	981	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+971	982	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+972	983	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+973	984	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+974	985	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+975	986	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+976	987	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+977	988	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+978	989	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+979	990	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+980	991	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+981	992	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+982	993	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+983	994	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+984	995	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+985	996	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+986	997	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+987	998	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+988	999	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+990	1001	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+991	1002	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+992	1003	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+993	1004	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+994	1005	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+995	1006	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+996	1007	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+997	1008	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+998	1009	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+999	1010	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1000	1011	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1001	1012	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1002	1013	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1003	1014	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1004	1015	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1005	1016	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1006	1017	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1007	1018	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1008	1019	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1009	1020	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1010	1021	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1011	1022	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1012	1023	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1013	1024	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1014	1025	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1015	1026	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1016	1027	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1017	1028	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1018	1029	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1019	1030	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1020	1031	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1021	1032	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1022	1033	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1023	1034	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1024	1035	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1025	1036	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1026	1037	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1027	1038	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1028	1039	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1030	1041	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1031	1042	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1032	1043	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1033	1044	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1034	1045	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1035	1046	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1036	1047	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1037	1048	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1038	1049	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1039	1050	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1040	1051	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1041	1052	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1042	1053	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1043	1054	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1045	1056	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1046	1057	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1047	1058	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1048	1059	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1049	1060	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1050	1061	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1051	1062	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1052	1063	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1053	1064	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1054	1065	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1055	1066	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1056	1067	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1057	1068	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1058	1069	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1059	1070	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1060	1071	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1061	1072	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1062	10730	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N	\N
+1063	10731	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	\N	2	1	\N	\N	\N
+1064	10746	10	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	\N	1	1	\N	\N	\N
+1065	10747	11	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N
+1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N
+1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
+1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0	0	\N
+1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0	\N
+1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
+106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0	0	\N
 \.
 
 
@@ -11011,7 +11012,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 45	user_credit_card_map	5
 46	event_log_module	11
 47	event_log_message	17
-50	preference_type	36
+50	preference_type	50
 52	notification_message_type	21
 53	notification_message	27
 54	notification_message_section	43
@@ -14237,10 +14238,10 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 580	2	58	1	1
 590	2	59	1	1
 410	1	60	1	1
+600	1	63	1	1
 1	1	61	1	3
 430	1	62	1	1
 \.
-
 
 --
 -- Data for Name: pluggable_task_parameter; Type: TABLE DATA; Schema: public; Owner: jbilling
@@ -14377,6 +14378,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 60	14	com.sapienter.jbilling.server.item.tasks.RulesPricingTask2	0
 61	13	com.sapienter.jbilling.server.order.task.RulesItemManager2	0
 62	1	com.sapienter.jbilling.server.order.task.RulesLineTotalTask2	0
+63	17	com.sapienter.jbilling.server.user.tasks.AutoRechargeTask	0
 \.
 
 
@@ -14449,6 +14451,7 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 45	43	5	1	460	\N	\N
 46	44	5	1	1	\N	\N
 15	19	5	1	1023	\N	\N
+47	49	5	1	\N	\N	5
 \.
 
 
@@ -14505,6 +14508,7 @@ COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM st
 46	0	\N	\N
 47	0	\N	\N
 48	1	\N	\N
+49	\N	\N	\N
 \.
 
 

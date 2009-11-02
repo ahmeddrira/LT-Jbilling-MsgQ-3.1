@@ -246,6 +246,12 @@ public class MaintainAction extends Action {
                             new ActionError("user.edit.error.invalidNonCreditLimit"));
                 }
 
+                if (!((Integer) userForm.get("balance_type")).equals(Constants.BALANCE_PRE_PAID) &&
+                        ((String) userForm.get("auto_recharge")).trim().length() != 0) {
+                    errors.add(ActionErrors.GLOBAL_ERROR,
+                            new ActionError("user.edit.error.invalidNonAutoRecharge"));
+                }
+
                 if (errors.isEmpty()) {              
                     // create a dto with the info from the form
                     UserDTOEx dto = new UserDTOEx();
@@ -290,6 +296,11 @@ public class MaintainAction extends Action {
                         String cl = (String) userForm.get("credit_limit");
                         dto.getCustomer().setCreditLimit(cl.trim().length() == 0 ? null :
                                 new BigDecimal(cl));
+
+                        String recharge = (String) userForm.get("auto_recharge");
+                        dto.getCustomer().setAutoRecharge(recharge.trim().length() == 0
+                                                          ? null
+                                                          : new BigDecimal(recharge));
 
                         if (partnerId != null && partnerId.length() > 0) {
                             dto.getCustomer().setPartner(new Partner(Integer.valueOf(

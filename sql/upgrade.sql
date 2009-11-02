@@ -56,5 +56,10 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (62, 1, 'com.sapienter.jbilling.server.order.task.RulesLineTotalTask2', 0);
 
 -- world pay task
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (63, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask', 3)
-insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (64, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask', 3)
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (63, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask', 3);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (64, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask', 3);
+
+-- automatic recharge task
+alter table customer add column auto_recharge double precision;
+insert into preference_type (id, int_def_value, str_def_value, float_def_value) values (49, null, null, null);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (65, 17, 'com.sapienter.jbilling.server.user.tasks.AutoRechargeTask', 0);

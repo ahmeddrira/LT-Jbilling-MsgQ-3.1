@@ -356,6 +356,7 @@
         <column name="balance_type" type="INTEGER" default="1" required="true"/>
         <column name="dynamic_balance" type="DOUBLE"/>
         <column name="credit_limit" type="DOUBLE"/>
+        <column name="auto_recharge" type="DOUBLE"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="customer_i_2">
             <index-column name="user_id"/>

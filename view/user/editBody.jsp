@@ -363,6 +363,13 @@
 		        	<html:text property="credit_limit" size="10" />
  	        	</td>
 	        </tr>
+             <tr class="form">
+                 <td></td>
+                 <td class="form_prompt"><bean:message key="user.prompt.autoRecharge"/></td>
+                 <td>
+                     <html:text property="auto_recharge" size="10"/>
+                 </td>
+             </tr>
 
 		</logic:equal>
 			<tr class="form">

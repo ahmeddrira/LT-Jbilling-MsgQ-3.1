@@ -980,10 +980,8 @@ public class WSTest  extends TestCase {
             // Call info pricing fields. See Mediation.drl, rule 'line creation'
             PricingField duration = new PricingField("duration", 5); // 5 min
             PricingField dst = new PricingField("dst", "12345678");
-            PricingField userfield = new PricingField("userfield", "gandalf");
-            PricingField eventDate = new PricingField("start", new Date());
             currentOrderAfter = api.updateCurrentOrder(USER_ID, null, 
-                    new PricingField[] { pf, userfield, duration, dst, eventDate }, new Date(),
+                    new PricingField[] { pf, duration, dst }, new Date(),
                     "Event from WS");
 
             // asserts

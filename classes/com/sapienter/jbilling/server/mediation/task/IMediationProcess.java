@@ -19,14 +19,15 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.Vector;
 
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import java.util.List;
 
 
 public interface IMediationProcess {
 
-    public Vector<MediationResult> process(Vector<Record> records, String configurationName) throws TaskException ;
+    public void process(List<Record> records, List<MediationResult> results, String configurationName)
+            throws TaskException ;
     
 }

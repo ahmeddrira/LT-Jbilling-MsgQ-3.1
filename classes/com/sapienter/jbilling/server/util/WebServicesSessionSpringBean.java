@@ -104,6 +104,7 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Transactional( propagation = Propagation.REQUIRED )
 @WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
@@ -1174,7 +1175,12 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                 IMediationProcess processTask = tm.getNextClass();
 
-                MediationResult result = processTask.process(records, "WS").firstElement();
+                MediationResult result = new MediationResult("WS");
+                result.setUserId(userId);
+                result.setEventDate(new Date());
+                ArrayList results = new ArrayList(1);
+                results.add(result);
+                processTask.process(records, results, "WS");
                 diffLines = result.getDiffLines();
 
                 if (result.getCurrencyId() != null) {
@@ -2140,12 +2146,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                 IMediationProcess processTask = tm.getNextClass();
 
-                MediationResult result = processTask.process(records, "WS").firstElement();
+                MediationResult result = new MediationResult("WS");
+                result.setUserId(userId);
+                result.setEventDate(new Date());
+                ArrayList results = new ArrayList(1);
+                results.add(result);
+                processTask.process(records, results, "WS");
 
-		// from the lines, get the items and prices
+		        // from the lines, get the items and prices
                 for (OrderLineDTO line : result.getLines()) {
                     items.add(new ItemBL(line.getItemId()).getEntity());
-		    prices.add(line.getPrice());
+                    prices.add(line.getPrice());
                 }
             }
         } else {

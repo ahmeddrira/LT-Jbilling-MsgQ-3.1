@@ -19,7 +19,6 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -29,23 +28,38 @@ import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.rule.RulesBaseTask;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import java.util.List;
 
 public class RulesMediationTask extends RulesBaseTask implements
         IMediationProcess {
-
-    private Vector<MediationResult> results = new Vector();
 
     protected Logger setLog() {
         return Logger.getLogger(RulesMediationTask.class);
     }
         
-    public Vector<MediationResult> process(Vector<Record> records, String configurationName)
+    public void process(List<Record> records, List<MediationResult> results, String configurationName)
             throws TaskException {
  
-	results.clear(); // delete this line for endless pain debugging
+        int index = -1; // to track the results list
+        // if results are passed, there has to be one per record
+        if (results != null && results.size() > 0) {
+            if (records.size() != results.size()) {
+                throw new TaskException("If results are passed, there have to be the same number as" +
+                        " records");
+            }
+            index = 0;
+        } else if (results == null) {
+            throw new TaskException("The results array can not be null");
+        }
+
         for (Record record: records) {
             // one result per record
-            MediationResult result = new MediationResult(configurationName);
+            MediationResult result = null;
+            if (index >= 0) {
+                result = results.get(index++);
+            } else {
+                result = new MediationResult(configurationName);
+            }
             rulesMemoryContext.add(result);
             results.add(result); // for easy retrival later
 
@@ -60,7 +74,5 @@ public class RulesMediationTask extends RulesBaseTask implements
         
         // then execute the rules
         executeRules();
-        
-        return results;
     }
 }

@@ -43,8 +43,6 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.IMediationReader;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
-import com.sapienter.jbilling.server.order.OrderBL;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -57,6 +55,7 @@ import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import java.util.ArrayList;
 
 /**
  *
@@ -269,7 +268,8 @@ public class MediationSessionBean implements IMediationSessionBean {
         LOG.debug("Normalizing record ...");
         MediationRecordDAS recordDAS = new MediationRecordDAS();
         MediationRecordDTO record = recordDAS.find(thisGroup.get(0).getKey());
-        Vector<MediationResult> results = processTask.process(thisGroup, cfg.getName());
+        ArrayList<MediationResult> results = new ArrayList<MediationResult>(0);
+        processTask.process(thisGroup, results, cfg.getName());
 
         MediationProcessDAS processDAS = new MediationProcessDAS();
         processDAS.reattach(process);

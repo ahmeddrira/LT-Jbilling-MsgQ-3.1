@@ -288,6 +288,12 @@ public class BillingProcessTest extends TestCase {
             assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
             Integer overdueInvoiceId = invoice.getId();
 
+            // validate that the review left the order 107600 is still active
+            // This is a pro-rated order with only a fraction of a period to
+            // invoice.
+            OrderDTO proRateOrder = remoteOrder.getOrder(107600);
+            assertEquals("Pro-rate order should remain active", Constants.ORDER_STATUS_ACTIVE, proRateOrder.getStatusId());
+
             // disapprove the review
             remoteBillingProcess.setReviewApproval(new Integer(1), entityId,
                     new Boolean(false));
@@ -506,7 +512,8 @@ public class BillingProcessTest extends TestCase {
                     orderTotal += orderDto.getTotal().floatValue();
                     if (orderProcess.getPurchaseOrder().getId() >= 103 && 
                             orderProcess.getPurchaseOrder().getId() <= 108 || 
-                            orderProcess.getPurchaseOrder().getId() == 113) {
+                            orderProcess.getPurchaseOrder().getId() == 113 ||
+                            orderProcess.getPurchaseOrder().getId() == 107600) {
                     	isProRated = true;
                     }
                 }

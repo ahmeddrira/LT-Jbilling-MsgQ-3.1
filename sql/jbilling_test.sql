@@ -9386,7 +9386,6 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 986	997	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 987	998	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 988	999	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
-989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 990	1001	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 991	1002	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 992	1003	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
@@ -9468,6 +9467,7 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0	\N
 1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
 106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0	0	\N
+989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	0
 \.
 
 
@@ -9953,6 +9953,11 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 459013	1	\N	22	207600	2009-07-20 16:41:59.952	2	15	31	5	\N	\N	0	\N
 459014	1	\N	39	8500	2009-07-20 16:42:04.941	2	9	25	\N	\N	\N	0	\N
 459015	1	\N	21	107500	2009-07-20 16:42:04.953	2	7	13	1	\N	\N	0	\N
+460001	1	\N	22	207700	2009-11-04 17:37:58.703	2	15	31	2	\N	\N	0	1000
+460002	1	\N	22	207700	2009-11-04 17:37:58.705	2	15	29	\N	ca3ebd8e-3f51-4f40-aead-e42a2c288f1b	\N	0	1000
+460003	1	\N	22	207700	2009-11-04 17:37:58.706	2	15	30	\N	activate_user	\N	0	1000
+460004	1	\N	21	107600	2009-11-04 17:37:58.871	2	7	25	\N	\N	\N	0	1000
+460005	1	\N	22	207700	2009-11-04 17:37:58.994	2	15	31	3	\N	\N	0	1000
 \.
 
 
@@ -11065,9 +11070,7 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 43	payment_info_cheque	17
 79	partner_range	2
 89	balance_type	0
-48	event_log	460
-21	purchase_order	1076
-22	order_line	2077
+48	event_log	461
 39	invoice	86
 90	invoice_status	4
 76	contact_field	2025
@@ -11082,6 +11085,8 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 27	contact	1129
 14	item	27
 15	item_price	17
+21	purchase_order	1077
+22	order_line	2078
 \.
 
 
@@ -13499,6 +13504,7 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 2056	1055	3	1	15	1	15	0	2007-12-28 14:47:08.524	0	Coffee - one per day - Monthly	\N	\N	1
 2066	1065	3	1	15	1	15	0	2008-03-06 09:19:01.556	0	Coffee - one per day - Monthly	\N	\N	1
 207600	107500	251	3	15	1	15	0	2009-07-20 16:41:52.245	0	Lemonade plan - Setup Fee	20	d85d1780-1594-4c25-8980-39ddaf2e15ce	5
+207700	107600	2	1	20	1	20	0	2009-11-04 17:37:51.128	0	Lemonade - all you can drink monthly	20	ca3ebd8e-3f51-4f40-aead-e42a2c288f1b	2
 \.
 
 
@@ -15586,6 +15592,7 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 1055	2	2	1	2007-09-15	\N	\N	2007-12-28 14:47:08.494	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
 1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
 107500	121	1	1	\N	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	0	1
+107600	1000	2	1	2006-10-30	2006-11-15	2006-10-15	2009-11-04 17:37:51.128	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	0
 \.
 
 

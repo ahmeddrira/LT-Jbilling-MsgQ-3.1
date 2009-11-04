@@ -10838,6 +10838,9 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 90	2	description	1	Unpaid
 90	3	description	1	Unpaid, balance carried to new invoice
 14	1	description	2	French Lemonade
+14	2600	description	1	Lemonade - Generic
+14	2601	description	1	Lemonade - Included in plan
+14	2602	description	1	Lemonade 
 \.
 
 
@@ -10926,6 +10929,9 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 250	PL-01	1	\N	0	0	0	2
 251	ST-01	1	\N	0	0	0	2
 270	FE-01	1	\N	0	0	0	2
+2600	DR-01	1	\N	0	0	0	2
+2601	DR--02	1	\N	0	0	0	2
+2602	DR-03	1	\N	0	0	0	2
 \.
 
 
@@ -10943,6 +10949,9 @@ COPY item_price (id, item_id, currency_id, price, optlock) FROM stdin;
 150	250	1	0	0
 151	251	1	15	0
 152	270	1	10	0
+1600	2600	1	0	0
+1601	2601	1	0	0
+1602	2602	1	3.5	0
 \.
 
 
@@ -10973,6 +10982,9 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 250	1
 251	22
 270	22
+2600	1
+2601	1
+2602	1
 \.
 
 
@@ -10990,8 +11002,6 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 8	entity_delivery_method_map	4
 9	user_status	9
 13	item_type	22
-14	item	26
-15	item_price	16
 17	order_period	4
 18	order_line_type	4
 19	order_billing_type	3
@@ -11070,6 +11080,8 @@ COPY jbilling_table (id, name, next_id) FROM stdin;
 12	customer	1068
 29	contact_map	7908
 27	contact	1129
+14	item	27
+15	item_price	17
 \.
 
 
@@ -14242,6 +14254,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 1	1	61	1	3
 430	1	62	1	1
 \.
+
 
 --
 -- Data for Name: pluggable_task_parameter; Type: TABLE DATA; Schema: public; Owner: jbilling

@@ -1167,4 +1167,44 @@ public class WSTest  extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+
+    public void testItemSwappingRules() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+            // add items to a user subscribed to 1
+            System.out.println("Testing item swapping - included in plan");
+            OrderWS order = createMockOrder(1070, 1, 1);
+            order.getOrderLines()[0].setItemId(2600); // the generic lemonade
+            order.getOrderLines()[0].setUseItem(true);
+
+            int orderId = api.createOrder(order);
+            order = api.getOrder(orderId);
+            assertEquals("Order should have one line", 1, order.getOrderLines().length);
+            assertEquals("Order should have the included in plan line", 2601, 
+                    order.getOrderLines()[0].getItemId().intValue());
+
+            // cleanup
+            api.deleteOrder(orderId);
+
+            // now a guy without the plan (user 33)
+            System.out.println("Testing item swapping - NOT included in plan");
+            order = createMockOrder(33, 1, 1);
+            order.getOrderLines()[0].setItemId(2600); // the generic lemonade
+            order.getOrderLines()[0].setUseItem(true);
+
+            orderId = api.createOrder(order);
+            order = api.getOrder(orderId);
+            assertEquals("Order should have one line", 1, order.getOrderLines().length);
+            assertEquals("Order should have the priced item line", 2602,
+                    order.getOrderLines()[0].getItemId().intValue());
+
+            // cleanup
+            api.deleteOrder(orderId);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
 }

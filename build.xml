@@ -43,6 +43,7 @@
             <include name="log4j*.jar"/>
         </fileset>
         <pathelement location="${source.lib.dir}/spring.jar"/>
+        <pathelement location="${source.lib.dir}/hibernate3.jar"/>
     </path>
     
     <path id="run.classpath">

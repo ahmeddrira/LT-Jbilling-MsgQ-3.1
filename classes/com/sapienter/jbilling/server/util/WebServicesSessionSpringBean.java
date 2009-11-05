@@ -24,6 +24,8 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -2128,35 +2130,54 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             itemIdsList = new LinkedList<Integer>();
 
             for (Vector<PricingField> pricingFields : fieldsList) {
-                // Since there is no item, run the mediation process rules
-                // to create line/s. This will run pricing and item management
-		// rules as well
+                try {
+                    // Since there is no item, run the mediation process rules
+                    // to create line/s. This will run pricing and 
+                    // item management rules as well
 
-                // fields need to be in records
-                Record record = new Record();
-                for (PricingField field : pricingFields) {
-                    record.addField(field, false); // don't care about isKey
-                }
-                Vector<Record> records = new Vector<Record>(1);
-                records.add(record);
+                    // fields need to be in records
+                    Record record = new Record();
+                    for (PricingField field : pricingFields) {
+                        record.addField(field, false); // don't care about isKey
+                    }
+                    Vector<Record> records = new Vector<Record>(1);
+                    records.add(record);
 
-                PluggableTaskManager<IMediationProcess> tm =
-                        new PluggableTaskManager<IMediationProcess>(
-                        getCallerCompanyId(),
-                        Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
-                IMediationProcess processTask = tm.getNextClass();
+                    PluggableTaskManager<IMediationProcess> tm =
+                            new PluggableTaskManager<IMediationProcess>(
+                            getCallerCompanyId(),
+                            Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
+                    IMediationProcess processTask = tm.getNextClass();
 
-                MediationResult result = new MediationResult("WS");
-                result.setUserId(userId);
-                result.setEventDate(new Date());
-                ArrayList results = new ArrayList(1);
-                results.add(result);
-                processTask.process(records, results, "WS");
+                    MediationResult result = new MediationResult("WS");
+                    result.setUserId(userId);
+                    result.setEventDate(new Date());
+                    ArrayList results = new ArrayList(1);
+                    results.add(result);
+                    processTask.process(records, results, "WS");
 
-		        // from the lines, get the items and prices
-                for (OrderLineDTO line : result.getLines()) {
-                    items.add(new ItemBL(line.getItemId()).getEntity());
-                    prices.add(line.getPrice());
+                    // from the lines, get the items and prices
+                    for (OrderLineDTO line : result.getLines()) {
+                        items.add(new ItemBL(line.getItemId()).getEntity());
+                        prices.add(line.getPrice());
+                    }
+                } catch (Exception e) {
+                    // log stacktrace
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    pw.close();
+                    LOG.error("Validate Purchase error: " + e.getMessage() + 
+                            "\n" + sw.toString());
+
+                    ValidatePurchaseWS result = new ValidatePurchaseWS();
+                    result.setSuccess(false);
+                    result.setAuthorized(false);
+                    result.setQuantity(0.0);
+                    result.setMessage(new String[] { "Error: " + 
+                            e.getMessage() } );
+
+                    return result;
                 }
             }
         } else {

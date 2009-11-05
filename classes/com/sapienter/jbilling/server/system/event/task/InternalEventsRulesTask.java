@@ -47,7 +47,7 @@ public class InternalEventsRulesTask extends RulesBaseTask
             new Class[] { };
 
     @Override
-    protected Logger setLog() {
+    protected Logger getLog() {
         return Logger.getLogger(InternalEventsRulesTask.class);
     }
 

@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  */
 public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
 
-    protected Logger setLog() {
+    protected Logger getLog() {
         return Logger.getLogger(RulesPricingTask2.class);
     }
     

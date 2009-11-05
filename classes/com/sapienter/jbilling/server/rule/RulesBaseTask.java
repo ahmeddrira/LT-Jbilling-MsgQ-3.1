@@ -32,7 +32,7 @@ import org.drools.StatelessSession;
  */
 public abstract class RulesBaseTask extends PluggableTask {
     
-    protected Logger LOG = setLog(); // to be set by the real plug-in
+    protected Logger LOG = getLog(); // to be set by the real plug-in
 
     private StatelessSession statelessSession = null;
     protected Vector<Object> rulesMemoryContext = new Vector<Object>();
@@ -42,8 +42,6 @@ public abstract class RulesBaseTask extends PluggableTask {
         for (Object o: rulesMemoryContext) {
         	LOG.debug("in memory context=" + o);
         }
-
-
 
         RuleBase ruleBase;
         try {
@@ -58,5 +56,5 @@ public abstract class RulesBaseTask extends PluggableTask {
         statelessSession.executeWithResults(rulesMemoryContext);
     }
 
-    protected abstract Logger setLog();
+    protected abstract Logger getLog();
 }

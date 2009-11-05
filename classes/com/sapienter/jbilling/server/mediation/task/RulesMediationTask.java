@@ -33,7 +33,7 @@ import java.util.List;
 public class RulesMediationTask extends RulesBaseTask implements
         IMediationProcess {
 
-    protected Logger setLog() {
+    protected Logger getLog() {
         return Logger.getLogger(RulesMediationTask.class);
     }
         

@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
  */
 public class RulesItemManager2 extends RulesBaseTask implements IItemPurchaseManager {
 
-    protected Logger setLog() {
+    protected Logger getLog() {
         return Logger.getLogger(RulesItemManager2.class);
     }
 

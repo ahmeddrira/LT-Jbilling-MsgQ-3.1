@@ -48,4 +48,8 @@ public class NewOrderEvent implements Event {
         return order;
     }
 
+    public String toString() {
+        return "NewOrderEvent: entityId = " + entityId + " order = " + order;
+    }
+
 }

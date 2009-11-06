@@ -469,6 +469,14 @@ public class SpringAPI implements JbillingAPI {
     		throw new JbillingAPIException(e);
     	}
     }
+
+    public OrderWS[] rateOrders(OrderWS orders[]) throws JbillingAPIException {
+    	try {
+    		return session.rateOrders(orders);
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
     
     public void updateItem(ItemDTOEx item) throws JbillingAPIException {
     	try {

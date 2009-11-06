@@ -202,6 +202,8 @@ public interface IWebServicesSessionBean {
 
     public OrderWS rateOrder(OrderWS order) throws SessionInternalError;
 
+    public OrderWS[] rateOrders(OrderWS orders[]) throws SessionInternalError;
+
     public void updateItem(ItemDTOEx item);
 
     public Integer createOrderAndInvoice(OrderWS order)

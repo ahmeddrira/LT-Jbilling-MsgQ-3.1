@@ -175,6 +175,27 @@ public class WSTest  extends TestCase {
             assertEquals(l[0].getPrice(), 9.0F);
             assertEquals(l[1].getPrice(), 29.0F);
 
+    		System.out.println("Testing double rating with both orders in one shot");
+    		// rate an order, use "add" pricing field rule (adds 10 to price in all items of order)
+    		OrderWS newOrder1 = prepareOrder();
+            newOrder1.setPricingFields(PricingField.setPricingFieldsValue(new PricingField[] { add }));
+
+            OrderWS newOrder2 = prepareOrder();
+            newOrder2.setPricingFields(PricingField.setPricingFieldsValue(new PricingField[] { subtract }));
+
+            OrderWS orders[] = api.rateOrders(new OrderWS[] {newOrder1, newOrder2});
+            l = orders[0].getOrderLines();
+            assertNotNull(l);
+            assertTrue(l.length == 2);
+            assertTrue(l[0].getPrice() == 20.0F);
+            assertTrue(l[1].getPrice() == 40.0F);
+
+            l = orders[1].getOrderLines();
+            assertNotNull(l);
+            assertEquals(l.length, 2);
+            assertEquals(l[0].getPrice(), 9.0F);
+            assertEquals(l[1].getPrice(), 29.0F);
+
     		System.out.println("Done!");
         	
     	} catch (Exception e) {

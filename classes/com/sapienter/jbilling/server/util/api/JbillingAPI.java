@@ -156,6 +156,8 @@ public interface JbillingAPI {
     		throws JbillingAPIException;
 
     public OrderWS rateOrder(OrderWS order) throws JbillingAPIException;
+
+    public OrderWS[] rateOrders(OrderWS orders[]) throws JbillingAPIException;
     
     public void updateItem(ItemDTOEx item) throws JbillingAPIException;
     

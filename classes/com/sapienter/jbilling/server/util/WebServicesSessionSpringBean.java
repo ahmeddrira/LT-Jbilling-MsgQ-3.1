@@ -854,6 +854,21 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ordr;
     }
 
+    public OrderWS[] rateOrders(OrderWS orders[]) 
+            throws SessionInternalError {
+        
+        if (orders == null || orders.length == 0) {
+            LOG.debug("Call to rateOrders without orders to rate");
+            return null;
+        }
+
+        OrderWS retValue[] = new OrderWS[orders.length];
+        for (int index = 0; index < orders.length; index++) {
+            retValue[index] = doCreateOrder(orders[index],false);
+        }
+        return retValue;
+    }
+
     public void updateItem(ItemDTOEx item) {
 
         try {

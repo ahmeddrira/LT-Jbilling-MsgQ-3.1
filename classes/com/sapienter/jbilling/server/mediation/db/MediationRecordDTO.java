@@ -16,9 +16,9 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 package com.sapienter.jbilling.server.mediation.db;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Vector;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,7 +41,7 @@ public class MediationRecordDTO implements Serializable {
     private Date finished;
     private int optlock;
     private MediationProcess process;
-    private Collection<MediationRecordLineDTO> lines = new Vector<MediationRecordLineDTO>();
+    private Collection<MediationRecordLineDTO> lines = new ArrayList<MediationRecordLineDTO>();
 
     // needed by Hibernate
     protected MediationRecordDTO() {

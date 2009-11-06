@@ -28,7 +28,7 @@ package com.sapienter.jbilling.server.item;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -204,7 +204,7 @@ public class WSTest  extends TestCase {
             assertEquals("Description", "Lemonade - 1 per day monthly pass", 
                     items[0].getDescription());
             assertEquals("Price", new Float(10), items[0].getPrice());
-            assertEquals("Price Vector", new Float(10), 
+            assertEquals("Price List", new Float(10), 
                     (getCurrencyPrice(items[0].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(1), items[0].getId());
             assertEquals("Number", "DP-1", items[0].getNumber());
@@ -213,7 +213,7 @@ public class WSTest  extends TestCase {
             assertEquals("Description", "Lemonade - all you can drink monthly", 
                     items[1].getDescription());
             assertEquals("Price", new Float(20), items[1].getPrice());
-            assertEquals("Price Vector", new Float(20), 
+            assertEquals("Price List", new Float(20), 
                     (getCurrencyPrice(items[1].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(2), items[1].getId());
             assertEquals("Number", "DP-2", items[1].getNumber());
@@ -222,7 +222,7 @@ public class WSTest  extends TestCase {
             assertEquals("Description", "Coffee - one per day - Monthly", 
                     items[2].getDescription());
             assertEquals("Price", new Float(15), items[2].getPrice());
-            assertEquals("Price Vector", new Float(15), 
+            assertEquals("Price List", new Float(15), 
                     (getCurrencyPrice(items[2].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(3), items[2].getId());
             assertEquals("Number", "DP-3", items[2].getNumber());
@@ -250,7 +250,7 @@ public class WSTest  extends TestCase {
             assertEquals("Description", "an item from ws", 
                     items[lastItem].getDescription());
             assertEquals("Price", new Float(29.5), items[lastItem].getPrice());
-            assertEquals("Price Vector", new Float(29.5), 
+            assertEquals("Price List", new Float(29.5), 
                     (getCurrencyPrice(items[lastItem].getPrices(), 1).getPrice()));
             assertEquals("Type 1", new Integer(1), items[lastItem].getTypes()[0]);
 
@@ -319,7 +319,7 @@ public class WSTest  extends TestCase {
 
             assertEquals("Price in USD", 1, item.getCurrencyId().intValue());
             assertEquals("Converted price AUD->USD", 10.0F, item.getPrice());
-            assertEquals("Price Vector size", 2, item.getPrices().size());
+            assertEquals("Price List size", 2, item.getPrices().size());
 
             ItemPriceDTOEx priceUSD = getCurrencyPrice(item.getPrices(), 1);
             assertEquals("USD currency", priceUSD.getCurrencyId().intValue(), 1);
@@ -335,7 +335,7 @@ public class WSTest  extends TestCase {
     	}
     }
 
-    private ItemPriceDTOEx getCurrencyPrice(Vector prices, int currencyId) {
+    private ItemPriceDTOEx getCurrencyPrice(List prices, int currencyId) {
         Iterator iter = prices.iterator();
         while (iter.hasNext()) {
             ItemPriceDTOEx itemPrice = (ItemPriceDTOEx) iter.next();

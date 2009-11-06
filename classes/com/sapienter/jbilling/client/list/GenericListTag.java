@@ -21,7 +21,7 @@
 package com.sapienter.jbilling.client.list;
 
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
@@ -44,6 +44,7 @@ import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 /**
  * Prepares the result set so the InsertDataRowTag can then render
@@ -114,7 +115,7 @@ public class GenericListTag extends ListTagBase {
                     type.equals(Constants.LIST_TYPE_PAYMENT)) {
                 isPaged = true;
             }
-            Vector<String> listColumns = new Vector<String>();
+            List<String> listColumns = new ArrayList<String>();
             // *** EDIT HERE *** to add another list
             if (type.equals(Constants.LIST_TYPE_ITEM_TYPE)) {
                 listColumns.add("item.type.prompt.id");

@@ -22,7 +22,7 @@ package com.sapienter.jbilling.server.mediation.task;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.commons.digester.Digester;
 import org.apache.log4j.Logger;
@@ -40,7 +40,7 @@ public abstract class AbstractReader extends PluggableTask implements
     protected String formatFileName = null;
     protected Format format = null;
     
-    public boolean validate(Vector<String> messages) {
+    public boolean validate(List<String> messages) {
         String formatFile = (String) parameters.get("format_file");
         if (formatFile == null) {
             messages.add("parameter format_file is required");

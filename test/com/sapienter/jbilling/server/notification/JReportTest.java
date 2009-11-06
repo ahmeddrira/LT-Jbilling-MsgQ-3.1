@@ -26,7 +26,7 @@ package com.sapienter.jbilling.server.notification;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -49,7 +49,7 @@ public class JReportTest extends TestCase {
 			cal.add(Calendar.DATE, 10);
 			invoice.setDueDate(cal.getTime());
 				
-			Vector lines = new Vector();
+			List lines = new ArrayList();
 			lines.add(new InvoiceLineDTO(new Integer(1), "10 classes of yoga", new Float(105.383838834), 
 					new Float(10.532342342), new Integer(10), null, null));
 			lines.add(new InvoiceLineDTO(new Integer(1), "suntaning ", new Float(100), 

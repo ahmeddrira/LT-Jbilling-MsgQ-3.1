@@ -28,7 +28,7 @@ import java.util.Date;
 
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
-import java.util.Vector;
+import java.util.List;
 
 
 
@@ -37,7 +37,7 @@ import java.util.Vector;
  */
 public class BillingProcessDTOEx extends BillingProcessDTO {
 
-    private Vector<BillingProcessRunDTOEx> runs = null;
+    private List<BillingProcessRunDTOEx> runs = null;
     private BillingProcessRunDTOEx grandTotal = null;
     private Integer retries = null;
     private Date billingDateEnd = null;
@@ -76,14 +76,14 @@ public class BillingProcessDTOEx extends BillingProcessDTO {
     /**
      * @return
      */
-    public Vector<BillingProcessRunDTOEx> getRuns() {
+    public List<BillingProcessRunDTOEx> getRuns() {
         return runs;
     }
 
     /**
      * @param runs
      */
-    public void setRuns(Vector<BillingProcessRunDTOEx> runs) {
+    public void setRuns(List<BillingProcessRunDTOEx> runs) {
         this.runs = runs;
     }
 

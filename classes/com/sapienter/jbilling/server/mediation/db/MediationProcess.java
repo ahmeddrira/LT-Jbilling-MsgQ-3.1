@@ -20,9 +20,9 @@
 package com.sapienter.jbilling.server.mediation.db;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Vector;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -70,10 +70,10 @@ public class MediationProcess implements Serializable {
 
     @OneToMany(fetch=FetchType.LAZY)
     @JoinColumn (name = "mediation_process_id") 
-    public Collection<MediationOrderMap> orderMap = new Vector<MediationOrderMap>(0);
+    public Collection<MediationOrderMap> orderMap = new ArrayList<MediationOrderMap>(0);
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="process")
-    public Collection<MediationRecordDTO> records = new Vector<MediationRecordDTO>(0);
+    public Collection<MediationRecordDTO> records = new ArrayList<MediationRecordDTO>(0);
 
     @Version
     @Column(name="OPTLOCK")

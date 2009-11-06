@@ -25,9 +25,10 @@
 package com.sapienter.jbilling.client.list;
 
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.list.PagedListDTO;
+import java.util.ArrayList;
 
 /**
  * @author Emil
@@ -37,7 +38,7 @@ import com.sapienter.jbilling.server.list.PagedListDTO;
  */
 public class PagedList extends PagedListDTO {
     private Hashtable parameters = null;
-    private Vector pageFrom = null;
+    private List pageFrom = null;
     private Boolean direction = null;
     // works as an index, starting with 0.
     // It is always displayed + 1.
@@ -60,7 +61,7 @@ public class PagedList extends PagedListDTO {
     }
     public PagedList(PagedListDTO dto) {
         super(dto);
-        pageFrom = new Vector();
+        pageFrom = new ArrayList();
         direction = new Boolean(false);
         currentPage = new Integer(0);
     }
@@ -91,10 +92,10 @@ public class PagedList extends PagedListDTO {
     public void setDirection(Boolean direction) {
         this.direction = direction;
     }
-    public Vector getPageFrom() {
+    public List getPageFrom() {
         return pageFrom;
     }
-    public void setPageFrom(Vector pageFrom) {
+    public void setPageFrom(List pageFrom) {
         this.pageFrom = pageFrom;
     }
     public Hashtable getParameters() {

@@ -23,7 +23,7 @@ package com.sapienter.jbilling.server.user;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -46,6 +46,7 @@ import com.sapienter.jbilling.server.user.event.NewContactEvent;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.JbillingTableDAS;
+import java.util.ArrayList;
 
 public class ContactBL {
     private static final Logger LOG = Logger.getLogger(ContactBL.class);             
@@ -182,9 +183,9 @@ public class ContactBL {
         return retValue;
     }
     
-    public Vector<ContactDTOEx> getAll(Integer userId) 
+    public List<ContactDTOEx> getAll(Integer userId) 
             throws NamingException {
-        Vector<ContactDTOEx> retValue = new Vector<ContactDTOEx>();
+        List<ContactDTOEx> retValue = new ArrayList<ContactDTOEx>();
         UserBL user = new UserBL(userId);
         entityId = user.getEntityId(userId);
         for (ContactTypeDTO type: user.getEntity().getEntity().getContactTypes()) {

@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -50,6 +50,8 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO;
+import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * @author Emil
@@ -193,7 +195,7 @@ public class CurrencyBL {
     public CurrencyDTO[] getCurrencies(Integer languageId, 
             Integer entityId) 
             throws NamingException, SQLException {
-        Vector result = new Vector();
+        List result = new ArrayList();
         
         CurrencyDTO[] all = getSymbols();
         for (int f = 1; f < all.length; f++) {

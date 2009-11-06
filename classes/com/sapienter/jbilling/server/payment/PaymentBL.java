@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -78,6 +77,7 @@ import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import java.util.ArrayList;
 
 public class PaymentBL extends ResultList implements PaymentSQL {
 
@@ -679,21 +679,21 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
     }
 
-    private Vector<PaymentDTO> getPaymentsWithBalance(Integer userId) {
+    private List<PaymentDTO> getPaymentsWithBalance(Integer userId) {
         // this will usually return 0 or 1 records, rearly a few more
-        Vector<PaymentDTO> paymentsVector = null;
+        List<PaymentDTO> paymentsList = null;
         Collection payments = paymentDas.findWithBalance(userId);
 
         if (payments != null) {
-            paymentsVector = new Vector<PaymentDTO>(payments); // needed for the
+            paymentsList = new ArrayList<PaymentDTO>(payments); // needed for the
             // sort
-            Collections.sort(paymentsVector, new PaymentEntityComparator());
-            Collections.reverse(paymentsVector);
+            Collections.sort(paymentsList, new PaymentEntityComparator());
+            Collections.reverse(paymentsList);
         } else {
-            paymentsVector = new Vector<PaymentDTO>(); // empty
+            paymentsList = new ArrayList<PaymentDTO>(); // empty
         }
 
-        return paymentsVector;
+        return paymentsList;
     }
 
     /**
@@ -702,7 +702,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      */
     public void automaticPaymentApplication(InvoiceDTO invoice)
             throws SQLException {
-        Vector payments = getPaymentsWithBalance(invoice.getBaseUser().getUserId());
+        List payments = getPaymentsWithBalance(invoice.getBaseUser().getUserId());
 
         for (int f = 0; f < payments.size() && invoice.getBalance().floatValue() > 0; f++) {
             payment = (PaymentDTO) payments.get(f);
@@ -725,7 +725,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         Collection<InvoiceDTO> invoiceCollection = new InvoiceDAS()
                 .findWithBalanceByUser(payment.getBaseUser());
         // sort from oldest to newest
-        Vector<InvoiceDTO> invoices = new Vector<InvoiceDTO>(invoiceCollection);
+        List<InvoiceDTO> invoices = new ArrayList<InvoiceDTO>(invoiceCollection);
         Collections.sort(invoices, new InvoiceIdComparator());
 
         for (InvoiceDTO invoice : invoices) {

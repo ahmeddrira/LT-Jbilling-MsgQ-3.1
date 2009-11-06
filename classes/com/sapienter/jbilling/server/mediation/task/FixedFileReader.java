@@ -20,16 +20,17 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.mediation.FormatField;
+import java.util.ArrayList;
 
 public class FixedFileReader extends AbstractFileReader {
 
     @Override
     protected String[] splitFields(String line) {
-        Vector<String> fields = new Vector<String>();
+        List<String> fields = new ArrayList<String>();
         
         for(FormatField formatField: format.getFields()) {
             if (formatField.getStartPosition() == null || formatField.getLength() == null ||

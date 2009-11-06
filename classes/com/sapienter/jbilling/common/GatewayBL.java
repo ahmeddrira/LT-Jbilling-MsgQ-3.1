@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -62,7 +62,6 @@ import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
@@ -74,6 +73,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 /**
  * @author Emil Moved to the common package bacause the web services can use the
@@ -210,7 +210,7 @@ public class GatewayBL {
 
     private String text; // 3
 
-    private Vector resultFields = null;
+    private List resultFields = null;
 
     private JNDILookup EJBFactory = null;
 
@@ -230,7 +230,7 @@ public class GatewayBL {
 
         log = Logger.getLogger(GatewayBL.class);
         InputStream[] ins = new InputStream[2];
-        resultFields = new Vector();
+        resultFields = new ArrayList();
 
         try {
             // first add the description of all the validators, in common with
@@ -381,7 +381,7 @@ public class GatewayBL {
             }
 
             // now add all the orders
-            Vector orderLines = new Vector();
+            List orderLines = new ArrayList();
             int lineNumber = 1;
             while (true) {
                 String prefix = "s_line_" + lineNumber + "_";

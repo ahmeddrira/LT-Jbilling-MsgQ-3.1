@@ -21,19 +21,20 @@
 package com.sapienter.jbilling.server.user;
 
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.util.db.MenuOptionDTO;
+import java.util.ArrayList;
 
 
 public class MenuOption extends MenuOptionDTO implements Comparator {
     private String display;
     private Boolean selected;
-    private Vector options;
+    private List options;
     private Integer parentId;
 
     public MenuOption() {
-        options = new Vector();
+        options = new ArrayList();
     }
     
     // this makes the object ordenable, so the options get sorted for
@@ -53,7 +54,7 @@ public class MenuOption extends MenuOptionDTO implements Comparator {
     /**
      * @return
      */
-    public Vector getOptions() {
+    public List getOptions() {
         return options;
     }
 
@@ -74,7 +75,7 @@ public class MenuOption extends MenuOptionDTO implements Comparator {
     /**
      * @param vector
      */
-    public void setOptions(Vector vector) {
+    public void setOptions(List vector) {
         options = vector;
     }
 

@@ -19,10 +19,10 @@
 */
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.mediation.Record;
 
 public interface IMediationReader extends Iterable<Record> {
-    public boolean validate(Vector<String> messages);
+    public boolean validate(List<String> messages);
 }

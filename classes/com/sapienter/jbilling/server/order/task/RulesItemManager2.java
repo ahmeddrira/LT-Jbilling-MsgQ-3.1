@@ -38,7 +38,7 @@ import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -56,7 +56,7 @@ public class RulesItemManager2 extends RulesBaseTask implements IItemPurchaseMan
 
     public void addItem(Integer itemID, Double quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO order, Vector<Record> records) throws TaskException {
+            OrderDTO order, List<Record> records) throws TaskException {
         // start by calling the standard plug-in
         BasicItemManager manager = new BasicItemManager();
         manager.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);

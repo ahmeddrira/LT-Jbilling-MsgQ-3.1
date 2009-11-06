@@ -39,7 +39,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -52,7 +52,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -96,6 +95,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import javax.sql.DataSource;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -554,7 +554,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             Collection lines = section.getNotificationMessageLines();
             int checkOrder = 0; // there's nothing to assume that the lines
             // will be retrived in order, but the have to!
-            Vector vLines = new Vector<NotificationMessageSectionDTO>(lines);
+            List vLines = new ArrayList<NotificationMessageSectionDTO>(lines);
             Collections.sort(vLines, new NotificationLineEntityComparator());
             for (Iterator it2 = vLines.iterator(); it2.hasNext();) {
                 NotificationMessageLineDTO line = (NotificationMessageLineDTO) it2
@@ -817,10 +817,10 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             BigDecimal taxTotal = new BigDecimal(0);
             int taxItemIndex = 0;
             // I need a copy, so to not affect the real invoice
-            Vector<InvoiceLineDTO> lines = new Vector<InvoiceLineDTO>(invoice.getInvoiceLines());
+            List<InvoiceLineDTO> lines = new ArrayList<InvoiceLineDTO>(invoice.getInvoiceLines());
            // Collections.copy(lines, invoice.getInvoiceLines());
 
-            Vector<InvoiceLineDTO> linesRemoved = new Vector<InvoiceLineDTO>();
+            List<InvoiceLineDTO> linesRemoved = new ArrayList<InvoiceLineDTO>();
             for (InvoiceLineDTO line: lines) {
                 // log.debug("Processing line " + line);
                 // process the tax, if this line is one

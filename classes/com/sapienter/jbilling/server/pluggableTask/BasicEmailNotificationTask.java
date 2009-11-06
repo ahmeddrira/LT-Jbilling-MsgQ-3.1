@@ -21,7 +21,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Vector;
+import java.util.List;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -38,6 +38,7 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import java.util.ArrayList;
 import javax.mail.Message;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -161,8 +162,8 @@ public class BasicEmailNotificationTask extends PluggableTask
         try {
             msg = new MimeMessageHelper(mimeMsg, doHTML || message.getAttachmentFile() != null);
             ContactBL contact = new ContactBL();
-            Vector contacts = contact.getAll(user.getUserId());
-            Vector addresses = new Vector<InternetAddress>();
+            List contacts = contact.getAll(user.getUserId());
+            List addresses = new ArrayList<InternetAddress>();
             boolean atLeastOne = false;
             for (int f = 0; f < contacts.size(); f++) {
                 ContactDTOEx record = (ContactDTOEx) contacts.get(f);

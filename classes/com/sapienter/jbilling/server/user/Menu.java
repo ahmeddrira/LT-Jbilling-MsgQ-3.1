@@ -24,38 +24,39 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import java.util.ArrayList;
 
 public class Menu implements Serializable {
     private Hashtable options;
-    private Vector rootOptions; 
+    private List rootOptions; 
     private MenuOption selectedOption;
     private MenuOption selectedSubOption;
-    private Vector subOptions;
-    private Vector lmOptions;
+    private List subOptions;
+    private List lmOptions;
     
     public Menu() {
-        rootOptions = new Vector();
-        subOptions = new Vector();
-        lmOptions = new Vector();
+        rootOptions = new ArrayList();
+        subOptions = new ArrayList();
+        lmOptions = new ArrayList();
         options = new Hashtable();
     }
     
-    public Vector getOptions() {
+    public List getOptions() {
         return rootOptions;
     }
     
-    public Vector getSubOptions() {
+    public List getSubOptions() {
         return subOptions;
     }
     
-    public Vector getLMOptions() {
+    public List getLMOptions() {
         return lmOptions;
     }
     
@@ -94,7 +95,7 @@ public class Menu implements Serializable {
         }   
         
         // set the suboptions according to the initially selected option
-        setVector(selectedOption, subOptions);        
+        setList(selectedOption, subOptions);        
 
         // here the options are sorted, using the MenuOption compare method.
         // therefore, any option can be passed as the second parameter
@@ -123,7 +124,7 @@ public class Menu implements Serializable {
         int level = option.getLevelField();
         switch (level) {
         case 1: // redefine the suboptions
-            setVector(option, subOptions);
+            setList(option, subOptions);
             // update who is selected and who's not
             selectedOption.setSelected(new Boolean(false));
             selectedOption = option;
@@ -137,7 +138,7 @@ public class Menu implements Serializable {
             log.debug("option selected now suboptions size = " + subOptions.size());
         break;
         case 2: // redefine the lf options
-            setVector(option, lmOptions);
+            setList(option, lmOptions);
             // update the selected flag of the suboptions
             if (selectedSubOption != null) {
                 selectedSubOption.setSelected(new Boolean(false));
@@ -156,7 +157,7 @@ public class Menu implements Serializable {
         return retValue;
     }
     
-    private void setVector(MenuOption option, Vector toSet) {
+    private void setList(MenuOption option, List toSet) {
         toSet.clear();
         for (Iterator it = option.getOptions().iterator(); it.hasNext(); ) {
             Integer key = (Integer) it.next();

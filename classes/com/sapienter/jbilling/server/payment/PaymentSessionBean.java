@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -58,6 +58,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import java.util.ArrayList;
 
 /**
  *
@@ -273,7 +274,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
         try {
             if (dto.getIsRefund() == 0 && invoiceId != null) {
                 InvoiceBL bl = new InvoiceBL(invoiceId);
-                Vector inv = new Vector();
+                List inv = new ArrayList();
                 inv.add(invoiceId);
                 dto.setInvoiceIds(inv);
                 return processAndUpdateInvoice(dto, bl.getEntity());

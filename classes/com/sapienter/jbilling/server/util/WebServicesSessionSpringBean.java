@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 import javax.jws.WebService;
 import javax.naming.NamingException;
@@ -483,7 +483,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         ContactWS[] dtos = null;
         try {
             ContactBL contact = new ContactBL();
-            Vector result = contact.getAll(userId);
+            List result = contact.getAll(userId);
             dtos = new ContactWS[result.size()];
             for (int f = 0; f < result.size(); f++) {
                 dtos[f] = new ContactWS((ContactDTOEx) result.get(f));
@@ -1140,7 +1140,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             Integer languageId = userbl.getEntity().getLanguageIdField();
 
             // pricing fields
-            Vector<Record> records = null;
+            List<Record> records = null;
             PricingField[] fieldsArray = PricingField.getPricingFieldsValue(
                     pricing);
             if (fieldsArray != null) {
@@ -1148,7 +1148,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 for (PricingField field : fieldsArray) {
                     record.addField(field, false); // don't care about isKey
                 }
-                records = new Vector<Record>(1);
+                records = new ArrayList<Record>(1);
                 records.add(record);
             }
 
@@ -1209,7 +1209,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
             IMediationSessionBean mediation = (IMediationSessionBean) 
                     Context.getBean(Context.Name.MEDIATION_SESSION);
-            mediation.saveEventRecordLines(new Vector(diffLines), record, date,
+            mediation.saveEventRecordLines(new ArrayList(diffLines), record, date,
                     eventDescription);
 
             record.setFinished(new Date());
@@ -1459,7 +1459,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             PricingField[] fields = PricingField.getPricingFieldsValue(pricing);
 
             ItemBL helper = new ItemBL(itemId);
-            Vector<PricingField> f = new Vector<PricingField>();
+            List<PricingField> f = new ArrayList<PricingField>();
             f.addAll(Arrays.asList(fields));
             helper.setPricingFields(f);
             UserBL user = new UserBL(getCallerId());
@@ -1833,7 +1833,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
 
-        Vector<OrderLineWS> lines = new Vector<OrderLineWS>();
+        List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator<OrderLineDTO> it = order.getLines().iterator(); it.hasNext();) {
             OrderLineDTO line = (OrderLineDTO) it.next();
             LOG.info("copying line: " + line);
@@ -2111,25 +2111,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             return null;
         }
 
-        List<Vector<PricingField>> fieldsList = null;
+        List<List<PricingField>> fieldsList = null;
         if (fields != null) {
-            fieldsList = new Vector<Vector<PricingField>>(fields.length);
+            fieldsList = new ArrayList<List<PricingField>>(fields.length);
             for (int i = 0; i < fields.length; i++) {
-                fieldsList.add(new Vector(Arrays.asList(
+                fieldsList.add(new ArrayList(Arrays.asList(
                         PricingField.getPricingFieldsValue(fields[i]))));
             }
         }
 
         List<Integer> itemIdsList = null;
-        List<BigDecimal> prices = new Vector<BigDecimal>();
-        List<ItemDTO> items = new Vector<ItemDTO>();
+        List<BigDecimal> prices = new ArrayList<BigDecimal>();
+        List<ItemDTO> items = new ArrayList<ItemDTO>();
 
         if (itemIds != null) {
-            itemIdsList = new Vector(Arrays.asList(itemIds));
+            itemIdsList = new ArrayList(Arrays.asList(itemIds));
         } else if (fields != null) {
             itemIdsList = new LinkedList<Integer>();
 
-            for (Vector<PricingField> pricingFields : fieldsList) {
+            for (List<PricingField> pricingFields : fieldsList) {
                 try {
                     // Since there is no item, run the mediation process rules
                     // to create line/s. This will run pricing and 
@@ -2140,7 +2140,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     for (PricingField field : pricingFields) {
                         record.addField(field, false); // don't care about isKey
                     }
-                    Vector<Record> records = new Vector<Record>(1);
+                    List<Record> records = new ArrayList<Record>(1);
                     records.add(record);
 
                     PluggableTaskManager<IMediationProcess> tm =

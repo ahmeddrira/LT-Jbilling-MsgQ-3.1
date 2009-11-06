@@ -27,7 +27,7 @@ package com.sapienter.jbilling.server.user;
 
 import java.sql.SQLException;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -40,6 +40,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import java.util.ArrayList;
 
 /**
  * @author Emil
@@ -112,7 +113,7 @@ public class EntityBL extends ResultList
     
     public Integer[] getAllIDs() 
             throws SQLException, NamingException {
-        Vector list = new Vector();
+        List list = new ArrayList();
         
         prepareStatement(EntitySQL.listAll);
         execute();

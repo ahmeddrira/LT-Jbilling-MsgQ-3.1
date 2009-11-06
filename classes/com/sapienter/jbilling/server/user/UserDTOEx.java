@@ -23,7 +23,7 @@ package com.sapienter.jbilling.server.user;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.PermissionIdComparator;
@@ -39,6 +39,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /**
  * @author emilc
@@ -62,9 +63,9 @@ public final class UserDTOEx extends UserDTO {
     public static final Integer SUBSCRIBER_DISCONTINUED = new Integer(7);
     
     private Menu menu = null;
-    private Vector<PermissionDTO> allPermissions = null;
-    private Vector<PermissionDTO> permissionsTypeId = null; // same as before but sorted by type
-    private Vector<Integer> roles = null;
+    private List<PermissionDTO> allPermissions = null;
+    private List<PermissionDTO> permissionsTypeId = null; // same as before but sorted by type
+    private List<Integer> roles = null;
     private Integer mainRoleId = null;
     private String mainRoleStr = null;
     private String languageStr = null;
@@ -78,7 +79,7 @@ public final class UserDTOEx extends UserDTO {
     private String currencySymbol = null;
     private String currencyName = null;
     private Locale locale = null;
-    private Vector<String> blacklistMatches = null;
+    private List<String> blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
     private BigDecimal balance = null; // calculated in real-time. Not a DB field
 
@@ -109,8 +110,8 @@ public final class UserDTOEx extends UserDTO {
         // the entity id
         setEntityId(entityId);
         // the permissions are defaulted to nothing
-        allPermissions = new Vector();
-        roles = new Vector<Integer>();
+        allPermissions = new ArrayList();
+        roles = new ArrayList<Integer>();
         if (roleId != null) {
             // we ask for at least one role for this user
             roles.add(roleId);
@@ -139,7 +140,7 @@ public final class UserDTOEx extends UserDTO {
         subscriptionStatusId = dto.getSubscriberStatusId();
         setEntityId(entityId);
         
-        roles = new Vector<Integer>();
+        roles = new ArrayList<Integer>();
         roles.add(mainRoleId);
         
         if (mainRoleId.equals(Constants.TYPE_CUSTOMER)) {
@@ -156,11 +157,11 @@ public final class UserDTOEx extends UserDTO {
        super(user); 
     }
 
-    public Vector<PermissionDTO> getAllPermissions() {
+    public List<PermissionDTO> getAllPermissions() {
         return this.allPermissions;
     }
-    // this expects the Vector to be sorted already
-    public void setAllPermissions(Vector<PermissionDTO> permissions) {
+    // this expects the List to be sorted already
+    public void setAllPermissions(List<PermissionDTO> permissions) {
         this.allPermissions = permissions;
     }
     
@@ -183,7 +184,7 @@ public final class UserDTOEx extends UserDTO {
      */
     public boolean isGranted(Integer typeId, Integer foreignId) {
         if (permissionsTypeId == null) {
-            permissionsTypeId = new Vector<PermissionDTO>();
+            permissionsTypeId = new ArrayList<PermissionDTO>();
             permissionsTypeId.addAll(allPermissions);
             Collections.sort(permissionsTypeId, new PermissionTypeIdComparator());
           /*
@@ -259,7 +260,7 @@ public final class UserDTOEx extends UserDTO {
     public void setMainRoleId(Integer integer) {
         mainRoleId = integer;
         if (roles == null) {
-            roles = new Vector<Integer>();
+            roles = new ArrayList<Integer>();
         }
         if (!roles.contains(integer)) {
             roles.add(integer);
@@ -421,11 +422,11 @@ public final class UserDTOEx extends UserDTO {
         return getId();
     }
 
-    public Vector<String> getBlacklistMatches() {
+    public List<String> getBlacklistMatches() {
         return blacklistMatches;
     }
 
-    public void setBlacklistMatches(Vector<String> blacklistMatches) {
+    public void setBlacklistMatches(List<String> blacklistMatches) {
         this.blacklistMatches = blacklistMatches;
     }
 

@@ -22,7 +22,7 @@ package com.sapienter.jbilling.server.payment.blacklist;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -96,7 +96,7 @@ public class BlacklistBL {
      * returned by filters the user fails on, or null if the blacklist
      * preference isn't enabled.
      */
-    public static Vector<String> getBlacklistMatches(Integer userId) {
+    public static List<String> getBlacklistMatches(Integer userId) {
         Integer entityId = new UserDAS().find(userId).getCompany().getId();
 
         PaymentFilterTask blacklist = instantiatePaymentFilter(entityId);

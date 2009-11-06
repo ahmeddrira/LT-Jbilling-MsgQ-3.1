@@ -32,7 +32,7 @@ import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,7 +46,7 @@ public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
     }
     
     public BigDecimal getPrice(Integer itemId, Integer userId, Integer currencyId,
-            Vector<PricingField> fields, BigDecimal defaultPrice)
+            List<PricingField> fields, BigDecimal defaultPrice)
             throws TaskException {
 
         // the result goes in the memory context

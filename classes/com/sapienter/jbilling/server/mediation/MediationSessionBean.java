@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -68,7 +68,7 @@ public class MediationSessionBean implements IMediationSessionBean {
     public void trigger() {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         MediationProcessDAS processDAS = new MediationProcessDAS();
-        Vector<String> errorMessages = new Vector<String>();
+        List<String> errorMessages = new ArrayList<String>();
         IMediationSessionBean local = (IMediationSessionBean) Context.getBean(
                 Context.Name.MEDIATION_SESSION);
 
@@ -108,7 +108,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                         MediationProcess process = local.createProcessRecord(cfg);
 
                         int lastPosition = 0;
-                        Vector<Record> thisGroup = new Vector<Record>();
+                        List<Record> thisGroup = new ArrayList<Record>();
                         for (Record record : reader) {
                             if (lastPosition >= record.getPosition()) {
                                 // end of this group
@@ -193,7 +193,7 @@ public class MediationSessionBean implements IMediationSessionBean {
     public List updateAllConfiguration(Integer executorId, List<MediationConfiguration> configurations)
             throws InvalidArgumentException {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
-        Vector<MediationConfiguration> retValue = new Vector<MediationConfiguration>();
+        List<MediationConfiguration> retValue = new ArrayList<MediationConfiguration>();
         try {
 
             for (MediationConfiguration cfg : configurations) {
@@ -239,7 +239,7 @@ public class MediationSessionBean implements IMediationSessionBean {
     }
 
     public boolean isBeenProcessed(
-            MediationProcess process, Vector<Record> thisGroup) {
+            MediationProcess process, List<Record> thisGroup) {
         // validate that this group has not been already processed
         MediationRecordDAS recordDas = new MediationRecordDAS();
         String key = thisGroup.get(0).getKey();
@@ -256,7 +256,7 @@ public class MediationSessionBean implements IMediationSessionBean {
 
     @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void normalizeRecordGroup(IMediationProcess processTask, Integer executorId,
-            MediationProcess process, Vector<Record> thisGroup, Integer entityId,
+            MediationProcess process, List<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg)
             throws TaskException {
         // validate that this group has not been already processed

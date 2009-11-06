@@ -21,7 +21,7 @@ package com.sapienter.jbilling.server.notification.task;
 
 import java.io.FileWriter;
 import java.util.Calendar;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +47,7 @@ public class TestNotificationTask extends PluggableTask implements NotificationT
             
             // find the address
             ContactBL contact = new ContactBL();
-            Vector<ContactDTOEx> emails = contact.getAll(user.getUserId());
+            List<ContactDTOEx> emails = contact.getAll(user.getUserId());
             
             // find the from
             String from = (String) parameters.get(PARAMETER_FROM);

@@ -22,7 +22,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 
 import java.io.IOException;
 import java.util.Random;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
@@ -41,6 +40,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.util.Constants;
+import java.util.ArrayList;
 
 public class PaymentAuthorizeNetTask extends PluggableTask
             implements PaymentTask {
@@ -353,7 +353,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
 
     private NameValuePair[] addAVSFields(Integer userId, NameValuePair[] fields) {
         try {
-            Vector result = new Vector();
+            List result = new ArrayList();
             for (int f = 0; f < fields.length; f++) {
                 result.add(fields[f]);
             }
@@ -382,7 +382,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
         }
     }
     
-    private void considerField(Vector fields, String dbField, 
+    private void considerField(List fields, String dbField, 
             String aNetField) {
         if (dbField != null && dbField.length() > 0) {
             NameValuePair field = new NameValuePair(aNetField, dbField);

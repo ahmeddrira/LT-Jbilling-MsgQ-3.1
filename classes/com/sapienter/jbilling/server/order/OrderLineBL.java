@@ -27,10 +27,10 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  *
@@ -45,7 +45,7 @@ public class OrderLineBL {
 
     public static List<OrderLineDTO> diffOrderLines(List<OrderLineDTO> lines1,
             List<OrderLineDTO> lines2) {
-        Vector<OrderLineDTO> diffLines = new Vector<OrderLineDTO>();
+        List<OrderLineDTO> diffLines = new ArrayList<OrderLineDTO>();
 
         Collections.sort(lines1, new Comparator<OrderLineDTO>() {
 
@@ -80,7 +80,7 @@ public class OrderLineBL {
     }
 
     public static List<OrderLineDTO> copy(List<OrderLineDTO> lines) {
-        Vector<OrderLineDTO> retValue = new Vector<OrderLineDTO>(lines.size());
+        List<OrderLineDTO> retValue = new ArrayList<OrderLineDTO>(lines.size());
         for (OrderLineDTO line : lines) {
             retValue.add(new OrderLineDTO(line));
         }

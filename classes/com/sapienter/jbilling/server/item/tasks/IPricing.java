@@ -19,7 +19,7 @@
 */
 package com.sapienter.jbilling.server.item.tasks;
 
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -27,5 +27,5 @@ import java.math.BigDecimal;
 
 public interface IPricing {
     public BigDecimal getPrice(Integer itemId, Integer userId, Integer currencyId,
-            Vector<PricingField> fields, BigDecimal defaultPrice) throws TaskException ;
+            List<PricingField> fields, BigDecimal defaultPrice) throws TaskException ;
 }

@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -41,13 +41,14 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceLineDTO;
 import com.sapienter.jbilling.server.order.TimePeriod;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.process.PeriodOfTime;
+import java.util.ArrayList;
 
 public class NewInvoiceDTO extends InvoiceDTO {
 
-    private Vector<OrderDTO> orders = null;
+    private List<OrderDTO> orders = null;
     private Set<InvoiceDTO> invoices = null;
-    private Vector<InvoiceLineDTO> resultLines = null;
-    private Vector<Vector<PeriodOfTime>> periods = new Vector<Vector<PeriodOfTime>>();
+    private List<InvoiceLineDTO> resultLines = null;
+    private List<List<PeriodOfTime>> periods = new ArrayList<List<PeriodOfTime>>();
     private Map<Integer, BigDecimal> orderTotalContributions = null;
     private Integer entityId = null;
     private Date billingDate = null;
@@ -56,9 +57,9 @@ public class NewInvoiceDTO extends InvoiceDTO {
     private static final Logger LOG = Logger.getLogger(NewInvoiceDTO.class);
 
     public NewInvoiceDTO() {
-        orders = new Vector<OrderDTO>();
+        orders = new ArrayList<OrderDTO>();
         invoices = new HashSet<InvoiceDTO>();
-        resultLines = new Vector<InvoiceLineDTO>();
+        resultLines = new ArrayList<InvoiceLineDTO>();
         orderTotalContributions = new HashMap<Integer, BigDecimal>();
         LOG.debug("New invoice object with date = " + billingDate);
     }
@@ -90,7 +91,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         }
     }
 
-    public void addOrder(OrderDTO order, Date start, Date end, Vector<PeriodOfTime> periods) throws SessionInternalError {
+    public void addOrder(OrderDTO order, Date start, Date end, List<PeriodOfTime> periods) throws SessionInternalError {
         Logger.getLogger(NewInvoiceDTO.class).debug("Adding order " +
                 order.getId() + " to new invoice");
         orders.add(order);
@@ -107,7 +108,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         invoices.add(line);
     }
 
-    public Vector getOrders() {
+    public List getOrders() {
         return orders;
     }
 
@@ -115,7 +116,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         return invoices;
     }
 
-    public Vector getResultLines() {
+    public List getResultLines() {
         return resultLines;
     }
 
@@ -182,7 +183,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
     /**
      * @return
      */
-    public Vector<Vector<PeriodOfTime>> getPeriods() {
+    public List<List<PeriodOfTime>> getPeriods() {
         return periods;
     }
 

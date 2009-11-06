@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.drools.FactHandle;
@@ -142,7 +142,7 @@ public abstract class PluggableTask {
         rulesCache.remove(taskId);
     }
     
-    protected void executeStatefulRules(StatefulSession session, Vector context) {
+    protected void executeStatefulRules(StatefulSession session, List context) {
         handlers = new Hashtable<Object,FactHandle>();
         for (Object o: context) {
         	if (o != null) {

@@ -51,7 +51,7 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import java.math.BigDecimal;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.persistence.Transient;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -134,10 +134,10 @@ public class InvoiceDTO implements Serializable {
         this.setPublicNumber(invoice.getPublicNumber());        
         this.setInvoiceStatus(invoice.getInvoiceStatus());
         this.setTotal(invoice.getTotal());
-        setInvoiceLines(new Vector(invoice.getInvoiceLines()));
+        setInvoiceLines(new ArrayList(invoice.getInvoiceLines()));
         setInvoices(new HashSet(invoice.getInvoices()));
         setOrderProcesses(new HashSet(invoice.getOrderProcesses()));
-        setPaymentMap(new Vector(invoice.getPaymentMap()));
+        setPaymentMap(new ArrayList(invoice.getPaymentMap()));
     }
 
     public InvoiceDTO(int id, CurrencyDTO currencyDTO, Date createDatetime,

@@ -20,10 +20,11 @@
 package com.sapienter.jbilling.server.item;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * @author Emil
@@ -216,7 +217,7 @@ public class PricingField implements Serializable {
 		if (fields == null || fields.length == 0) {
 			return null;
 		}
-		Vector<PricingField> result = new Vector<PricingField>();
+		List<PricingField> result = new ArrayList<PricingField>();
 		for (int i = 0; i < fields.length; i++) {
 			if (fields[i] != null && !fields[i].equals("") && fields[i].split(":").length == 4) {
 				result.add(new PricingField(fields[i]));

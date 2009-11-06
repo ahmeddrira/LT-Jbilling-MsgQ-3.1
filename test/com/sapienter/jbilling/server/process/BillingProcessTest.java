@@ -188,8 +188,8 @@ public class BillingProcessTest extends TestCase {
             
             // the billing process has to have a total paid equal to the invoice
             BillingProcessDTOEx process = remoteBillingProcess.getDto(2, 1);
-            BillingProcessRunDTOEx run = process.getRuns().lastElement();
-            BillingProcessRunTotalDTOEx total = run.getTotals().firstElement();
+            BillingProcessRunDTOEx run = process.getRuns().get(process.getRuns().size() - 1);
+            BillingProcessRunTotalDTOEx total = run.getTotals().get(0);
             assertEquals("Retry total paid equals to invoice total", 
                     invoice.getTotal().floatValue(), total.getTotalPaid().floatValue());
            

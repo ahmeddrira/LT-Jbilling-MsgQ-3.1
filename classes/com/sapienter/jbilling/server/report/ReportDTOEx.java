@@ -21,12 +21,13 @@
 package com.sapienter.jbilling.server.report;
 
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.report.db.ReportDTO;
+import java.util.ArrayList;
 
 
 public class ReportDTOEx extends ReportDTO {
@@ -89,7 +90,7 @@ public class ReportDTOEx extends ReportDTO {
     /*
      * Private fields
      */
-    private Vector<Field> fields = null;
+    private List<Field> fields = null;
     private Integer userReportId = null; // for when this report has been loaded from a user's saved
     private Locale locale = null;
 
@@ -102,12 +103,12 @@ public class ReportDTOEx extends ReportDTO {
     
     // can't have the Logger here, it is not serializable !
     
-    private Vector errorFields = null;
-    private Vector errorCodes = null;
+    private List errorFields = null;
+    private List errorCodes = null;
     
     // this are dynamic parameters usually coming from the gui. They will
     // replace sql parameters '?'
-    private Vector dynamicParameters = null;
+    private List dynamicParameters = null;
     
     /*
      * Constructs
@@ -124,12 +125,12 @@ public class ReportDTOEx extends ReportDTO {
         ordenable = new Boolean(false);
         wherable = new Boolean(false);
         setIdColumn(new Integer(0));
-        fields = new Vector();
+        fields = new ArrayList();
         ordenableFields = new Integer(0);
         
-        errorFields = new Vector();
-        errorCodes = new Vector();
-        dynamicParameters = new Vector();
+        errorFields = new ArrayList();
+        errorCodes = new ArrayList();
+        dynamicParameters = new ArrayList();
         
     }
     
@@ -143,11 +144,11 @@ public class ReportDTOEx extends ReportDTO {
         errorCodes.add(new Integer(code));
     }
     
-    public Vector getErrorFields() {
+    public List getErrorFields() {
         return errorFields;
     }
 
-    public Vector getErrorCodes() {
+    public List getErrorCodes() {
         return errorCodes;
     }
 
@@ -170,8 +171,8 @@ public class ReportDTOEx extends ReportDTO {
 
     	boolean retValue = true;
         int fieldsOrdered = 0;
-        errorFields = new Vector();
-        errorCodes = new Vector();
+        errorFields = new ArrayList();
+        errorCodes = new ArrayList();
         
         LOG.debug("validating report. aggregated=" + isAgregated);
         
@@ -314,7 +315,7 @@ public class ReportDTOEx extends ReportDTO {
      
     
 
-    public Vector<Field> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 

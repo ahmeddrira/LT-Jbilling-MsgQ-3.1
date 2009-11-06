@@ -24,9 +24,9 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.rule.Result;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,7 +50,7 @@ public class MediationResult extends Result {
 
     public MediationResult(String configurationName) {
         this.configurationName = configurationName;
-        lines = new Vector<OrderLineDTO>();
+        lines = new ArrayList<OrderLineDTO>();
     }
 
     public String getConfigurationName() {

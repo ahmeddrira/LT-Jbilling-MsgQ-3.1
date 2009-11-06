@@ -30,10 +30,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -91,6 +90,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 
@@ -261,7 +261,7 @@ public class UserBL extends ResultList
         
         Integer newId;
         LOG.debug("Creating user " + dto);
-        Vector<Integer> roles = new Vector<Integer>();
+        List<Integer> roles = new ArrayList<Integer>();
         if (dto.getRoles() == null || dto.getRoles().size() == 0) {
             if (dto.getMainRoleId() != null) {
                 roles.add(dto.getMainRoleId());
@@ -333,7 +333,7 @@ public class UserBL extends ResultList
     }    
 
     private Integer create(Integer entityId, String userName, String password,
-            Integer languageId, Vector<Integer> roles, Integer currencyId, 
+            Integer languageId, List<Integer> roles, Integer currencyId, 
 			Integer statusId, Integer subscriberStatusId) 
            throws SessionInternalError {
         // Default the language and currency to that one of the entity         
@@ -460,8 +460,8 @@ public class UserBL extends ResultList
          return user;
      }
      
-     public Vector<PermissionDTO> getPermissions() { 
-         Vector<PermissionDTO> ret = new Vector<PermissionDTO>();
+     public List<PermissionDTO> getPermissions() { 
+         List<PermissionDTO> ret = new ArrayList<PermissionDTO>();
 
          LOG.debug("Reading permisions for user " + user.getUserId());
          
@@ -495,7 +495,7 @@ public class UserBL extends ResultList
          return ret;
      }
      
-    public Menu getMenu(Vector<PermissionDTO> permissions) 
+    public Menu getMenu(List<PermissionDTO> permissions) 
             throws NamingException, SessionInternalError {
 
         Menu menu = new Menu();
@@ -1315,7 +1315,7 @@ public class UserBL extends ResultList
 
     public ValidatePurchaseWS validatePurchase(List<ItemDTO> items, 
             List<BigDecimal> amounts, 
-            List<Vector<PricingField>> pricingFields) {
+            List<List<PricingField>> pricingFields) {
         if (user.getCustomer() == null) {
             return null;
         }

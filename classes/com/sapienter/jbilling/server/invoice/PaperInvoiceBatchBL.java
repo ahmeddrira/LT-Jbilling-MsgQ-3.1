@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -123,7 +123,7 @@ public class PaperInvoiceBatchBL {
             entityId + "-";
     	// now go through each of the invoices
         // first - sort them
-        Vector invoices = new Vector(batch.getInvoices());
+        List invoices = new ArrayList(batch.getInvoices());
         Collections.sort(invoices, new InvoiceEntityComparator());
         Integer[] invoicesIds = new Integer[invoices.size()];
 
@@ -241,7 +241,7 @@ public class PaperInvoiceBatchBL {
             SessionInternalError, DocumentException,
             IOException {
         NotificationBL notif = new NotificationBL();
-        Vector invoices = new Vector();
+        List invoices = new ArrayList();
 
         int generated = 0;
         while (cachedRowSet.next()) {

@@ -28,7 +28,7 @@ package com.sapienter.jbilling.client.report;
 import java.io.PrintWriter;
 import java.sql.ResultSetMetaData;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -88,7 +88,7 @@ public class DownloadTag extends TagSupport {
             String fieldSeparator = "";
             
             // print the column titles
-            Vector fields = report.getFields();
+            List fields = report.getFields();
             int f = (new Integer(report.getIdColumn()).intValue() == 1) ? 1 : 0;
             for ( ; f < fields.size(); f++) {
                 Field field = (Field) fields.get(f);

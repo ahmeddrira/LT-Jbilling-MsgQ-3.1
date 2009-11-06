@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import org.drools.RuleBase;
 import org.drools.StatelessSession;
@@ -44,7 +43,7 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.util.Constants;
+import java.util.ArrayList;
 
 /**
  * Pluggable task allows running rules for validatePurchase API method.
@@ -54,7 +53,7 @@ public class RulesValidatePurchaseTask extends PluggableTask
 
     public ValidatePurchaseWS validate(CustomerDTO customer, 
             List<ItemDTO> items, List<BigDecimal> amounts, 
-            ValidatePurchaseWS result, List<Vector<PricingField>> fields) 
+            ValidatePurchaseWS result, List<List<PricingField>> fields) 
             throws TaskException {
 
         if (!result.getAuthorized()) {
@@ -75,7 +74,7 @@ public class RulesValidatePurchaseTask extends PluggableTask
             throw new TaskException(e);
         }
         StatelessSession mySession = ruleBase.newStatelessSession();
-        Vector<Object> rulesMemoryContext = new Vector<Object>();
+        List<Object> rulesMemoryContext = new ArrayList<Object>();
 
         // add any pricing fields
         if (fields != null && !fields.isEmpty()) {

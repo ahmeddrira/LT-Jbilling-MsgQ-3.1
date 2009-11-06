@@ -24,7 +24,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -46,6 +46,7 @@ import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserSQL;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 public class RepeatedPasswordValidator {
 
@@ -72,7 +73,7 @@ public class RepeatedPasswordValidator {
     	cachedResults.setInt(2, userId);
     	cachedResults.execute(conn);
 
-    	Vector<String> result = new Vector<String>();
+    	List<String> result = new ArrayList<String>();
 
     	while (cachedResults.next()) {
     		result.add(cachedResults.getString(1));

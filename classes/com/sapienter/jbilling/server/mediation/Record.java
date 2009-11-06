@@ -19,17 +19,18 @@
 */
 package com.sapienter.jbilling.server.mediation;
 
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.item.PricingField;
+import java.util.ArrayList;
 
 public class Record {
-    private Vector<PricingField> fields = null;
+    private List<PricingField> fields = null;
     private int position;
     private StringBuffer key = null;
     
     public Record() {
-        fields = new Vector<PricingField>();
+        fields = new ArrayList<PricingField>();
         key = new StringBuffer(100);
     }
     
@@ -51,7 +52,7 @@ public class Record {
         }
     }
 
-    public Vector<PricingField> getFields() {
+    public List<PricingField> getFields() {
         return fields;
     }
     

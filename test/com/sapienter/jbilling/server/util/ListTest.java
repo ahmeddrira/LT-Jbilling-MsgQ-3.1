@@ -24,7 +24,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import junit.framework.TestCase;
 import sun.jdbc.rowset.CachedRowSet;
@@ -133,7 +133,7 @@ public class ListTest extends TestCase {
             parameters.put("userType", new Integer(2));
             parameters.put("entityId", new Integer(301));
             Integer start = null, end = null;
-            Vector pagesFrom = new Vector();
+            List pagesFrom = new ArrayList();
             do {
                 CachedRowSet result = remoteSession.getPage(start, null, 10, 
                         new Integer(1), new Integer(301),

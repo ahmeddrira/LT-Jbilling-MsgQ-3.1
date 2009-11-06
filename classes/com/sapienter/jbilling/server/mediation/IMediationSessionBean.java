@@ -22,7 +22,7 @@ package com.sapienter.jbilling.server.mediation;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
@@ -59,11 +59,11 @@ public interface IMediationSessionBean {
     public void delete(Integer executorId, Integer cfgId);
 
     public boolean isBeenProcessed(MediationProcess process, 
-            Vector<Record> thisGroup);
+            List<Record> thisGroup);
 
     public void normalizeRecordGroup(IMediationProcess processTask, 
             Integer executorId, MediationProcess process, 
-            Vector<Record> thisGroup, Integer entityId,
+            List<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg) throws TaskException;
 
     public void saveEventRecordLines(List<OrderLineDTO> newLines,

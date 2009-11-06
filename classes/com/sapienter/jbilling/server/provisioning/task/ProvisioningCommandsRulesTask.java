@@ -22,10 +22,9 @@ package com.sapienter.jbilling.server.provisioning.task;
 
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Vector;
+import java.util.List;
 
 import javax.jms.JMSException;
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 import org.drools.RuleBase;
@@ -42,6 +41,7 @@ import com.sapienter.jbilling.server.provisioning.event.SubscriptionInactiveEven
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.util.Constants;
+import java.util.ArrayList;
 
 /**
  * @author othman
@@ -150,7 +150,7 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 	 */
 	protected void processRules(OrderDTO newOrder, String eventType)
 			throws TaskException {
-		Vector<Object> rulesMemoryContext = new Vector<Object>();
+		List<Object> rulesMemoryContext = new ArrayList<Object>();
 		CommandManager commandManager = new CommandManager(eventType, newOrder);
 
 		session.setGlobal("command", commandManager);
@@ -184,7 +184,7 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 	 */
 	protected void processRules(OrderDTO newOrder, OrderLineDTO line,
 			String eventType) throws TaskException {
-		Vector<Object> rulesMemoryContext = new Vector<Object>();
+		List<Object> rulesMemoryContext = new ArrayList<Object>();
 		CommandManager commandManager = new CommandManager(eventType, newOrder);
 
 		session.setGlobal("command", commandManager);

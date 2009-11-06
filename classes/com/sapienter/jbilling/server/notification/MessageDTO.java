@@ -22,9 +22,11 @@ package com.sapienter.jbilling.server.notification;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Vector;
 
 import com.sapienter.jbilling.common.Constants;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 public class MessageDTO implements Serializable {
     // message type definitions (synch with DB)
@@ -53,7 +55,7 @@ public class MessageDTO implements Serializable {
      */
     private HashMap parameters = null;
     // this is the message itself, after being loaded from the DB
-    private Vector content = null;
+    private List content = null;
     
     public MessageDTO() {
         parameters = new HashMap();
@@ -168,6 +170,6 @@ public class MessageDTO implements Serializable {
     }
     
     public void setContentSize(int i) {
-        content.setSize(i);
+        ((Vector) content).setSize(i);
     }
 }

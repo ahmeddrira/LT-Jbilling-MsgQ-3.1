@@ -20,7 +20,7 @@
 package com.sapienter.jbilling.server.item.tasks;
 
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.drools.RuleBase;
@@ -38,13 +38,14 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class RulesPricingTask extends PluggableTask implements IPricing {
     
     private static final Logger LOG = Logger.getLogger(RulesPricingTask.class);
 
     public BigDecimal getPrice(Integer itemId, Integer userId, Integer currencyId,
-            Vector<PricingField> fields, BigDecimal defaultPrice)
+            List<PricingField> fields, BigDecimal defaultPrice)
             throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules
@@ -55,7 +56,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
             throw new TaskException(e);
         }
         StatelessSession mySession = ruleBase.newStatelessSession();
-        Vector<Object> rulesMemoryContext = new Vector<Object>();
+        List<Object> rulesMemoryContext = new ArrayList<Object>();
         
         PricingManager manager = new PricingManager(itemId, userId, currencyId, defaultPrice);
         mySession.setGlobal("manager", manager);

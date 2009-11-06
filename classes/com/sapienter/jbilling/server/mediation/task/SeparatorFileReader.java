@@ -20,7 +20,7 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.Vector;
+import java.util.List;
 
 public class SeparatorFileReader extends AbstractFileReader {
     
@@ -30,7 +30,7 @@ public class SeparatorFileReader extends AbstractFileReader {
     }
     
     @Override
-    public boolean validate(Vector<String> messages) {
+    public boolean validate(List<String> messages) {
         boolean retValue = super.validate(messages); 
         
         // optionals

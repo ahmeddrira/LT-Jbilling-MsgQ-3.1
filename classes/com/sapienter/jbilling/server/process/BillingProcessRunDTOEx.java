@@ -25,22 +25,23 @@
 package com.sapienter.jbilling.server.process;
 
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
+import java.util.ArrayList;
 
 /**
  * @author Emil
  */
 public class BillingProcessRunDTOEx extends ProcessRunDTO {
 
-    Vector<BillingProcessRunTotalDTOEx> totals = null;
+    List<BillingProcessRunTotalDTOEx> totals = null;
     /**
      * 
      */
     public BillingProcessRunDTOEx() {
         super();
-        totals = new Vector<BillingProcessRunTotalDTOEx>();
+        totals = new ArrayList<BillingProcessRunTotalDTOEx>();
         setInvoicesGenerated(0);
     }
 
@@ -63,14 +64,14 @@ public class BillingProcessRunDTOEx extends ProcessRunDTO {
         setPaymentFinished(paymentFinished);
         setInvoicesGenerated(invoiceGenerated);
         
-        totals = new Vector<BillingProcessRunTotalDTOEx>();
+        totals = new ArrayList<BillingProcessRunTotalDTOEx>();
     }
 
-    public Vector<BillingProcessRunTotalDTOEx> getTotals() {
+    public List<BillingProcessRunTotalDTOEx> getTotals() {
         return totals;
     }
 
-    public void setTotals(Vector<BillingProcessRunTotalDTOEx> totals) {
+    public void setTotals(List<BillingProcessRunTotalDTOEx> totals) {
         this.totals = totals;
     }
 

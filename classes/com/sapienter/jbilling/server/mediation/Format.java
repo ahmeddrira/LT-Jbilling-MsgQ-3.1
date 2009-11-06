@@ -19,20 +19,21 @@
 */
 package com.sapienter.jbilling.server.mediation;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Format {
-    private Vector<FormatField> fields = null;
+    private List<FormatField> fields = null;
     
     public Format() {
-        fields = new Vector<FormatField>();
+        fields = new ArrayList<FormatField>();
     }
     
     public void addField(FormatField newField) {
         fields.add(newField);
     }
 
-    public Vector<FormatField> getFields() {
+    public List<FormatField> getFields() {
         return fields;
     }
     

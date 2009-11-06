@@ -23,7 +23,7 @@ package com.sapienter.jbilling.server.util;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -55,6 +55,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.util.db.MenuOptionDAS;
 import com.sapienter.jbilling.server.util.db.MenuOptionDTO;
+import java.util.ArrayList;
 
 /**
  * 
@@ -264,7 +265,7 @@ public class DTOFactory {
 
 	public static Collection<ReportDTOEx> reportEJB2DTOEx(
 			Collection<ReportDTO> reports, boolean filter) {
-		Vector<ReportDTOEx> dtos = new Vector<ReportDTOEx>();
+		List<ReportDTOEx> dtos = new ArrayList<ReportDTOEx>();
 
 		for (ReportDTO report : reports) {
 
@@ -285,7 +286,7 @@ public class DTOFactory {
 	}
 
 	public static Collection reportEJB2DTO(Collection<ReportDTO> reports) {
-		Vector dtos = new Vector();
+		List dtos = new ArrayList();
 
 		for (ReportDTO report : reports) {
 			dtos.add(getReportDTOEx(report, null));
@@ -295,7 +296,7 @@ public class DTOFactory {
 	}
 
 	public static Collection reportUserEJB2DTO(Collection reports) {
-		Vector dtos = new Vector();
+		List dtos = new ArrayList();
 
 		for (Iterator it = reports.iterator(); it.hasNext();) {
 			ReportUserDTO reportEJB = (ReportUserDTO) it.next();

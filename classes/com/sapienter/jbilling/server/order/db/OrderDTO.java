@@ -25,9 +25,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Vector;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -60,6 +59,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.util.ArrayList;
 
 @Entity
 @TableGenerator(
@@ -100,13 +100,13 @@ public class OrderDTO implements java.io.Serializable {
      private String notes;
      private Integer notesInInvoice;
      private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
-     private List<OrderLineDTO> lines = new Vector<OrderLineDTO>(0);
+     private List<OrderLineDTO> lines = new ArrayList<OrderLineDTO>(0);
      private Integer isCurrent;
      private Integer versionNum;
      // other non-persitent fields
-     private Collection<OrderProcessDTO> nonReviewPeriods = new Vector<OrderProcessDTO>(0);
-     private Collection<InvoiceDTO> invoices = new Vector<InvoiceDTO>(0);
-     private Collection<BillingProcessDTO> billingProcesses = new Vector<BillingProcessDTO>(0);
+     private Collection<OrderProcessDTO> nonReviewPeriods = new ArrayList<OrderProcessDTO>(0);
+     private Collection<InvoiceDTO> invoices = new ArrayList<InvoiceDTO>(0);
+     private Collection<BillingProcessDTO> billingProcesses = new ArrayList<BillingProcessDTO>(0);
      private String periodStr = null;
      private String billingTypeStr = null;
      private String statusStr = null;
@@ -114,7 +114,7 @@ public class OrderDTO implements java.io.Serializable {
      private String currencySymbol = null;
      private String currencyName = null;
      private BigDecimal total = null;
-     private Vector<PricingField> pricingFields = null;
+     private List<PricingField> pricingFields = null;
 
     public OrderDTO() {
     }
@@ -582,9 +582,9 @@ public class OrderDTO implements java.io.Serializable {
 	}
     
     public void addExtraFields(Integer languageId) {
-    	invoices = new Vector<InvoiceDTO>();
-    	billingProcesses = new Vector<BillingProcessDTO>();
-    	nonReviewPeriods = new Vector<OrderProcessDTO>();
+    	invoices = new ArrayList<InvoiceDTO>();
+    	billingProcesses = new ArrayList<BillingProcessDTO>();
+    	nonReviewPeriods = new ArrayList<OrderProcessDTO>();
     	
     	for (OrderProcessDTO process: getOrderProcesses()) {
     		if (process.getIsReview() == 1) continue;
@@ -743,11 +743,11 @@ public class OrderDTO implements java.io.Serializable {
     }
     
     @Transient
-    public Vector<PricingField> getPricingFields() {
+    public List<PricingField> getPricingFields() {
     	return this.pricingFields;
     }
     
-    public void setPricingFields(Vector<PricingField> fields) {
+    public void setPricingFields(List<PricingField> fields) {
     	this.pricingFields = fields;
     }
 

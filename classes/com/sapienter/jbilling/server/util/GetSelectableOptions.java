@@ -24,11 +24,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.common.JNDILookup;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.UserDTOEx;
+import java.util.ArrayList;
 
 /*
  * This is a JDBC call for a list of code - description pairs used
@@ -38,7 +39,7 @@ public class GetSelectableOptions {
     
     public static Collection getOptions(String type, Integer languageId, 
             Integer entityId, Integer executorType) throws SessionInternalError {
-        Vector retValue = new Vector();
+        List retValue = new ArrayList();
         try {
             String sql = null;
             JNDILookup jndi = JNDILookup.getFactory();

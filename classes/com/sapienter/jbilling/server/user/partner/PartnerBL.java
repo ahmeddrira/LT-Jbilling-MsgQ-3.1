@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -67,6 +67,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import java.util.ArrayList;
 import javax.sql.DataSource;
 
 /**
@@ -558,7 +559,7 @@ public class PartnerBL extends ResultList
         int totalCustomers = getCustomersCount();
         // if there were more than just 20 rows, this would have to
         // be done all with plain sql instead of ejbs
-        Vector<PartnerRange> rates = new Vector(partner.getRanges());
+        List<PartnerRange> rates = new ArrayList(partner.getRanges());
         Collections.sort(rates, new PartnerRangeComparator());
         partnerRange = null; // to get an exception if there are no ranges
         

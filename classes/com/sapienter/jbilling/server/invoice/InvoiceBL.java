@@ -28,10 +28,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -70,6 +69,7 @@ import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
@@ -504,7 +504,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         cachedResults = getInvoicesByCreateDate(entityId, since, until);
 
         // get ids for return
-        Vector ids = new Vector();
+        List ids = new ArrayList();
         while (cachedResults.next()) {
             ids.add(new Integer(cachedResults.getInt(1)));
         }
@@ -654,7 +654,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
 
-    public InvoiceWS[] DTOtoWS(Vector dtos) {
+    public InvoiceWS[] DTOtoWS(List dtos) {
         InvoiceWS retValue[] = new InvoiceWS[dtos.size()];
         for (int f = 0; f < retValue.length; f++) {
             retValue[f] = InvoiceBL.getWS((InvoiceDTO) dtos.get(f));
@@ -799,7 +799,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
         InvoiceDTO invoiceDTO = new InvoiceDTO(invoice);
         // make sure that the lines are properly ordered
-        Vector<InvoiceLineDTO> orderdLines = new Vector<InvoiceLineDTO>(invoiceDTO.getInvoiceLines());
+        List<InvoiceLineDTO> orderdLines = new ArrayList<InvoiceLineDTO>(invoiceDTO.getInvoiceLines());
         Collections.sort(orderdLines, new InvoiceLineComparator());
         invoiceDTO.setInvoiceLines(orderdLines);
         
@@ -837,7 +837,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
      * 
      * @param lines
      */
-    private void addHeadersFooters(Vector<InvoiceLineDTO> lines, ResourceBundle bundle) {
+    private void addHeadersFooters(List<InvoiceLineDTO> lines, ResourceBundle bundle) {
         Integer nowProcessing = new Integer(-1);
         Float total = null;
         int totalLines = lines.size();

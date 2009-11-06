@@ -31,10 +31,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * @author Emil
@@ -56,7 +57,7 @@ public class DocumentationIndex {
             File dir = new File(dirName);
             String filesNames[] = dir.list();
             
-            Vector entries = new Vector();
+            List entries = new ArrayList();
             for (int f = 0; f < filesNames.length; f++) {
                 File thisFile = new File(dirName + "/" + filesNames[f]);
                 // skip directories

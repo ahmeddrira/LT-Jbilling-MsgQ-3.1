@@ -21,7 +21,7 @@
 package com.sapienter.jbilling.client.list;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +48,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 /**
  * All the parameters of the list have to come from the request (hidden fields
@@ -382,7 +383,7 @@ public class GenericListAction extends Action {
     
     private void reset(PagedList dto) {
         dto.setCurrentPage(new Integer(0));
-        Vector starts = new Vector();
+        List starts = new ArrayList();
         starts.add(null);
         dto.setPageFrom(starts);
         dto.setDoSearch(null);

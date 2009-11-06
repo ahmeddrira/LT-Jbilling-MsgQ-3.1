@@ -25,18 +25,19 @@
 package com.sapienter.jbilling.server.pluggableTask.admin;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 public class PluggableTaskManager<T> {
 
     private static final Logger LOG = Logger.getLogger(PluggableTaskManager.class);
 
-    private Vector<PluggableTaskDTO> classes = null;
+    private List<PluggableTaskDTO> classes = null;
 
     private Iterator it = null;
 
@@ -48,7 +49,7 @@ public class PluggableTaskManager<T> {
         try {
             lastProcessingOrder = 0;
 
-            classes = new Vector<PluggableTaskDTO>();
+            classes = new ArrayList<PluggableTaskDTO>();
             classes.addAll(((PluggableTaskDAS) Context.getBean(Context.Name.PLUGGABLE_TASK_DAS)).findByEntityCategory(
                     entityId, taskCategory));
 
@@ -60,7 +61,7 @@ public class PluggableTaskManager<T> {
         }
     }
 
-    public Vector<PluggableTaskDTO> getAllTasks() {
+    public List<PluggableTaskDTO> getAllTasks() {
         return classes;
     }
 

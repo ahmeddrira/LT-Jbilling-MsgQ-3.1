@@ -18,7 +18,6 @@ package com.sapienter.jbilling.server.item.tasks;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.drools.FactHandle;
@@ -42,17 +41,18 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RulesItemManager extends BasicItemManager {
 
     private static final Logger LOG = Logger.getLogger(RulesItemManager.class);
     protected OrderManager helperOrder = null;
-    private Vector<Record> records;
+    private List<Record> records;
 
     public void addItem(Integer itemID, Double quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO order, Vector<Record> records) throws TaskException {
+            OrderDTO order, List<Record> records) throws TaskException {
         super.addItem(itemID, quantity, language, userId, entityId, currencyId,
                 order, records);
         this.records = records;
@@ -70,7 +70,7 @@ public class RulesItemManager extends BasicItemManager {
             throw new TaskException(e);
         }
         session = ruleBase.newStatefulSession();
-        Vector<Object> rulesMemoryContext = new Vector<Object>();
+        List<Object> rulesMemoryContext = new ArrayList<Object>();
         rulesMemoryContext.add(helperOrder);
 
         // add OrderDTO to rules memory context

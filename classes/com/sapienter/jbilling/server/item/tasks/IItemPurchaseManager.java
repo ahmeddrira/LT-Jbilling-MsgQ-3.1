@@ -19,7 +19,7 @@
 */
 package com.sapienter.jbilling.server.item.tasks;
 
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -28,6 +28,6 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 public interface IItemPurchaseManager {
     public void addItem(Integer itemID, Double quantity, Integer language, 
             Integer userId, Integer entityId, Integer currencyId, OrderDTO order,
-            Vector<Record> records)
+            List<Record> records)
             throws TaskException ;
 }

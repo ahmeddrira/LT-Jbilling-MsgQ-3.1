@@ -21,19 +21,20 @@
 package com.sapienter.jbilling.server.list;
 
 import java.io.Serializable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListDTO implements Serializable {
-    private Vector<Object[]> lines = null;
+    private List<Object[]> lines = null;
     private Integer types[] = null;
     
     public ListDTO() {
-        lines = new Vector<Object[]>();
+        lines = new ArrayList<Object[]>();
     }
     /**
      * @return
      */
-    public Vector<Object[]> getLines() {
+    public List<Object[]> getLines() {
         return lines;
     }
 
@@ -47,7 +48,7 @@ public class ListDTO implements Serializable {
     /**
      * @param vector
      */
-    public void setLines(Vector<Object[]> vector) {
+    public void setLines(List<Object[]> vector) {
         lines = vector;
     }
 

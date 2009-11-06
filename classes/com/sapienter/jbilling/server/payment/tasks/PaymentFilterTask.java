@@ -21,11 +21,9 @@ package com.sapienter.jbilling.server.payment.tasks;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.AddressFilter;
 import com.sapienter.jbilling.server.payment.blacklist.BlacklistFilter;
@@ -41,6 +39,7 @@ import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskBase;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Constants;
+import java.util.ArrayList;
 
 /**
  * Blacklist filter payment processor, which calls enabled filters (configured 
@@ -118,8 +117,8 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
      * response message is added to the returned results vector. An empty
      * returned vector means the user id didn't match any blacklist entries.
      */
-    public Vector<String> getBlacklistMatches(Integer userId) {
-        Vector<String> results = new Vector<String>();
+    public List<String> getBlacklistMatches(Integer userId) {
+        List<String> results = new ArrayList<String>();
         List<BlacklistFilter> filters = getEnabledFilters();
         for (BlacklistFilter filter : filters) {
             BlacklistFilter.Result result = filter.checkUser(userId);

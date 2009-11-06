@@ -20,8 +20,9 @@
 
 package com.sapienter.jbilling.server.item;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 
 public class ItemDTOEx
    extends java.lang.Object
@@ -44,7 +45,7 @@ public class ItemDTOEx
     private Float price = null;
     private Integer orderLineTypeId = null;
     // all the prices.ItemPriceDTOEx  
-    private Vector<ItemPriceDTOEx> prices = null;
+    private List<ItemPriceDTOEx> prices = null;
     
     public ItemDTOEx(Integer id,String number, Integer entity, 
             String description,
@@ -57,11 +58,11 @@ public class ItemDTOEx
         setCurrencyId(currencyId);
         setPrice(price);
         setOrderLineTypeId(orderLineTypeId);
-        //types = new Vector();
+        //types = new ArrayList();
     }
 
     public ItemDTOEx() {
-        //types = new Vector();
+        //types = new ArrayList();
     }
 
    public ItemDTOEx( java.lang.Integer id,java.lang.String number,java.lang.Float percentage,java.lang.Integer priceManual,java.lang.Integer hasDecimals,java.lang.Integer deleted,java.lang.Integer entityId )
@@ -305,7 +306,7 @@ public class ItemDTOEx
      * Rules only work on collections of strings (oparator contains)
      */
     public Collection<String> getStrTypes() {
-        Vector<String> retValue = new Vector<String>();
+        List<String> retValue = new ArrayList<String>();
         for (Integer i: types) {
             retValue.add(i.toString());
         }
@@ -377,14 +378,14 @@ public class ItemDTOEx
     /**
      * @return
      */
-    public Vector<ItemPriceDTOEx> getPrices() {
+    public List<ItemPriceDTOEx> getPrices() {
         return prices;
     }
 
     /**
      * @param prices
      */
-    public void setPrices(Vector<ItemPriceDTOEx> prices) {
+    public void setPrices(List<ItemPriceDTOEx> prices) {
         this.prices = prices;
     }
 }

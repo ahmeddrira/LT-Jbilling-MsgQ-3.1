@@ -21,7 +21,7 @@
 package com.sapienter.jbilling.client.payment;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 public class MaintainAction extends Action {
 
@@ -156,7 +157,7 @@ public class MaintainAction extends Action {
                             // I need to update the DTO, so the left bar can
                             // make the right decitions
                             if (invoiceId != null) {
-                                Vector<Integer> invoices = new Vector<Integer>();
+                                List<Integer> invoices = new ArrayList<Integer>();
                                 invoices.add(invoiceId);
                                 paymentDto.setInvoiceIds(invoices);
                             } 

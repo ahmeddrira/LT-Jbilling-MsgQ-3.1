@@ -20,7 +20,7 @@
 
 package com.sapienter.jbilling.server.payment;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.util.ArrayList;
 
 public class PaymentDTOEx extends PaymentDTO {
     
@@ -41,8 +42,8 @@ public class PaymentDTOEx extends PaymentDTO {
     private AchDTO ach = null;
     private CreditCardDTO creditCard = null;
     private String method = null;
-    private Vector<Integer> invoiceIds = null;
-    private Vector paymentMaps = null;
+    private List<Integer> invoiceIds = null;
+    private List paymentMaps = null;
     private PaymentDTOEx payment = null; // for refunds
     private String resultStr = null;
     private Integer payoutId = null;
@@ -77,8 +78,8 @@ public class PaymentDTOEx extends PaymentDTO {
             setPaymentResult(dto.getPaymentResult());
         }
 
-        invoiceIds = new Vector<Integer>();
-        paymentMaps = new Vector();
+        invoiceIds = new ArrayList<Integer>();
+        paymentMaps = new ArrayList();
     }
 
     public PaymentDTOEx(PaymentWS dto) {
@@ -131,8 +132,8 @@ public class PaymentDTOEx extends PaymentDTO {
             ach = null;
         }
 
-        invoiceIds = new Vector<Integer>();
-        paymentMaps = new Vector();
+        invoiceIds = new ArrayList<Integer>();
+        paymentMaps = new ArrayList();
         
         if (dto.getInvoiceIds() != null) {
             for (int f = 0; f < dto.getInvoiceIds().length; f++) {
@@ -155,8 +156,8 @@ public class PaymentDTOEx extends PaymentDTO {
      */
     public PaymentDTOEx() {
         super();
-        invoiceIds = new Vector<Integer>();
-        paymentMaps = new Vector();
+        invoiceIds = new ArrayList<Integer>();
+        paymentMaps = new ArrayList();
     }
 
     /**
@@ -175,8 +176,8 @@ public class PaymentDTOEx extends PaymentDTO {
 //        super(id, amount, balance, createDateTime, updateDateTime,
 //                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
 //                isPreauth, currencyId, null, null);
-//        invoiceIds = new Vector<Integer>();
-//        paymentMaps = new Vector();
+//        invoiceIds = new ArrayList<Integer>();
+//        paymentMaps = new ArrayList();
 //    }
 
     /**
@@ -184,8 +185,8 @@ public class PaymentDTOEx extends PaymentDTO {
      */
 //    public PaymentDTOEx(PaymentDTO otherValue) {
 //        super(otherValue);
-//        invoiceIds = new Vector<Integer>();
-//        paymentMaps = new Vector();
+//        invoiceIds = new ArrayList<Integer>();
+//        paymentMaps = new ArrayList();
 //    }
 
     public boolean validate() {
@@ -286,14 +287,14 @@ public class PaymentDTOEx extends PaymentDTO {
     /**
      * @return
      */
-    public Vector<Integer> getInvoiceIds() {
+    public List<Integer> getInvoiceIds() {
         return invoiceIds;
     }
 
     /**
      * @param vector
      */
-    public void setInvoiceIds(Vector vector) {
+    public void setInvoiceIds(List vector) {
         invoiceIds = vector;
     }
 
@@ -367,7 +368,7 @@ public class PaymentDTOEx extends PaymentDTO {
 	public void setAch(AchDTO ach) {
 		this.ach = ach;
 	}
-    public Vector getPaymentMaps() {
+    public List getPaymentMaps() {
         Logger.getLogger(PaymentDTOEx.class).debug("Returning " + 
                 paymentMaps.size() + " elements in the map");
         return paymentMaps;

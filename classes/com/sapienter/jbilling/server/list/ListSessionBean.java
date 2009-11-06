@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -50,6 +50,7 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.GetSelectableOptions;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.util.ArrayList;
 
 /**
  * 
@@ -299,7 +300,7 @@ public class ListSessionBean implements IListSessionBean {
                 retValue.setListId(listId);
             }
             // find the searcheable fields
-            Vector fields = new Vector();
+            List fields = new ArrayList();
             // find the key id, it is now the only one ordenable
             for (Iterator it = bl.getEntity().getListFields().iterator(); it
                     .hasNext();) {

@@ -17,7 +17,7 @@ package com.sapienter.jbilling.client.item;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +84,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         }
 
         // get the prices. At least one has to be present
-        dto.setPrices((Vector) myForm.get(FIELD_PRICES));
+        dto.setPrices((List) myForm.get(FIELD_PRICES));
         boolean atLeastOnePriceFound = false;
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO nextPrice = (ItemPriceDTO) dto.getPrices().get(f);

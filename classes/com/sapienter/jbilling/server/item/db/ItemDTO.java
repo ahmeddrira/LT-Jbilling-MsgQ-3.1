@@ -22,7 +22,7 @@ package com.sapienter.jbilling.server.item.db;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -50,6 +50,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDescription;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Entity
 @TableGenerator(
@@ -86,7 +87,7 @@ public class ItemDTO extends AbstractDescription {
     private BigDecimal price = null;
     private Integer orderLineTypeId = null;
     // all the prices.ItemPriceDTOEx  
-    private Vector prices = null;
+    private List prices = null;
 
     public ItemDTO() {
     }
@@ -138,7 +139,7 @@ public class ItemDTO extends AbstractDescription {
         setCurrencyId(currencyId);
         setPrice(price);
         setOrderLineTypeId(orderLineTypeId);
-        //types = new Vector();
+        //types = new ArrayList();
     }
 
 
@@ -305,7 +306,7 @@ public class ItemDTO extends AbstractDescription {
     public void setTypes(Integer[] vector) {
         types = vector;
 
-        strTypes = new Vector<String>(types.length);
+        strTypes = new ArrayList<String>(types.length);
         for (Integer i: types) {
             strTypes.add(i.toString());
         }
@@ -386,7 +387,7 @@ public class ItemDTO extends AbstractDescription {
      * @return
      */
     @Transient
-    public Vector getPrices() {
+    public List getPrices() {
         return prices;
     }
 
@@ -394,7 +395,7 @@ public class ItemDTO extends AbstractDescription {
      * @param prices
      */
     @Transient
-    public void setPrices(Vector prices) {
+    public void setPrices(List prices) {
         this.prices = prices;
     }
 }

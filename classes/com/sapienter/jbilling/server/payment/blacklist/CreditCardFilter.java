@@ -20,9 +20,8 @@
 package com.sapienter.jbilling.server.payment.blacklist;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.blacklist.db.BlacklistDAS;
@@ -31,6 +30,7 @@ import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Util;
+import java.util.ArrayList;
 
 /**
  * Filters credit card numbers.
@@ -39,7 +39,7 @@ public class CreditCardFilter implements BlacklistFilter {
 
     public Result checkPayment(PaymentDTOEx paymentInfo) {
         if (paymentInfo.getCreditCard() != null) {
-            List<CreditCardDTO> creditCards = new Vector<CreditCardDTO>(1);
+            List<CreditCardDTO> creditCards = new ArrayList<CreditCardDTO>(1);
             // need to convert EJB 2 entity DTO type to Hibernate DTO type
             CreditCardDTO creditCard = new CreditCardDTO();
             // DB compares encrypted data
@@ -64,7 +64,7 @@ public class CreditCardFilter implements BlacklistFilter {
         }
 
         // create a list of credit card numbers
-        List<String> ccNumbers = new Vector<String>(creditCards.size());
+        List<String> ccNumbers = new ArrayList<String>(creditCards.size());
         for (CreditCardDTO cc : creditCards) {
             // it needs the encrypted numbers because it will use a query with them later
             ccNumbers.add(cc.getRawNumber());

@@ -23,7 +23,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import java.util.ArrayList;
 
 public class BasicOrderPeriodTask
     extends PluggableTask
@@ -43,7 +44,7 @@ public class BasicOrderPeriodTask
     
     protected Date viewLimit = null;
     private static final Logger LOG = Logger.getLogger(BasicOrderPeriodTask.class);
-    private Vector<PeriodOfTime> periods = new Vector<PeriodOfTime>();
+    private List<PeriodOfTime> periods = new ArrayList<PeriodOfTime>();
 
     
     public BasicOrderPeriodTask() {
@@ -233,8 +234,8 @@ public class BasicOrderPeriodTask
         
         // make sure the last period actually reflects the last adjustments
         if (periods.size() > 0) {
-	        PeriodOfTime lastOne = periods.lastElement();
-	        periods.remove(periods.lastElement());
+	        PeriodOfTime lastOne = periods.get(periods.size() - 1);
+	        periods.remove(lastOne);
 	        periods.add(new PeriodOfTime(lastOne.getStart(), endOfPeriod, lastOne.getDaysInCycle(),
 	        		periods.size() + 1));
         }
@@ -311,7 +312,7 @@ public class BasicOrderPeriodTask
     	
     }
 
-	public Vector<PeriodOfTime> getPeriods() {
+	public List<PeriodOfTime> getPeriods() {
 		return periods;
 	}
     

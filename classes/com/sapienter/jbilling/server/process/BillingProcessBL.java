@@ -30,7 +30,7 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -43,7 +43,6 @@ import com.sapienter.jbilling.server.invoice.NewInvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDAS;
-import com.sapienter.jbilling.server.invoice.db.InvoiceStatusDTO;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.list.ResultList;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -72,7 +71,6 @@ import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.PreferenceBL;
@@ -80,6 +78,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 public class BillingProcessBL extends ResultList
@@ -688,8 +687,9 @@ public class BillingProcessBL extends ResultList
 
             LOG.debug(" ... order " + order.getId());
             // this will help later
-            Date startOfBillingPeriod = (Date) newInvoice.getPeriods().get(f).firstElement().getStart();
-            Date endOfBillingPeriod = (Date) newInvoice.getPeriods().get(f).lastElement().getEnd();
+            List<PeriodOfTime> periodsList = newInvoice.getPeriods().get(f);
+            Date startOfBillingPeriod = (Date) periodsList.get(0).getStart();
+            Date endOfBillingPeriod = periodsList.get(periodsList.size() - 1).getEnd();
             Integer periods = (Integer) newInvoice.getPeriods().get(f).size();
 
             // We don't update orders if this is just a review
@@ -766,7 +766,7 @@ public class BillingProcessBL extends ResultList
         }
         Date start = optask.calculateStart(order);
         Date end = optask.calculateEnd(order, processDate, maxPeriods, start);
-        Vector<PeriodOfTime> periods = optask.getPeriods();
+        List<PeriodOfTime> periods = optask.getPeriods();
         // there isn't anything billable from this order
         if (periods.size() == 0) {
             return false;
@@ -879,7 +879,7 @@ public class BillingProcessBL extends ResultList
                 new BillingProcessRunDTOEx();
         int totalInvoices = 0;
         int runsCounter = 0;
-        Vector<BillingProcessRunDTOEx> runs = new Vector<BillingProcessRunDTOEx>();
+        List<BillingProcessRunDTOEx> runs = new ArrayList<BillingProcessRunDTOEx>();
         // go throuhg every run
         for (Iterator it = billingProcess.getProcessRuns().iterator();
                 it.hasNext();) {
@@ -981,7 +981,7 @@ public class BillingProcessBL extends ResultList
 
     public Integer[] getToRetry(Integer entityId)
             throws SQLException, Exception {
-        Vector list = new Vector();
+        List list = new ArrayList();
 
         prepareStatement(ProcessSQL.findToRetry);
         cachedResults.setInt(1, entityId.intValue());
@@ -1041,7 +1041,7 @@ public class BillingProcessBL extends ResultList
     }
 
     public BillingProcessRunTotalDTOEx getTotal(CurrencyDTO currency,
-            Vector totals) {
+            List totals) {
         BillingProcessRunTotalDTOEx retValue = null;
         for (int f = 0; f < totals.size(); f++) {
             BillingProcessRunTotalDTOEx total = (BillingProcessRunTotalDTOEx) totals.get(f);
@@ -1113,8 +1113,8 @@ public class BillingProcessBL extends ResultList
 
     @SuppressWarnings("unchecked")
     private void processOrderToInvoiceEvents(NewInvoiceDTO newInvoice, Integer entityId) {
-        Vector<OrderDTO> orders = newInvoice.getOrders();
-        Vector<Vector<PeriodOfTime>> periods = newInvoice.getPeriods();
+        List<OrderDTO> orders = newInvoice.getOrders();
+        List<List<PeriodOfTime>> periods = newInvoice.getPeriods();
         for (int i = 0; i < orders.size(); i++) {
             OrderDTO order = orders.get(i);
             Integer userId = findUserId(order);
@@ -1130,8 +1130,8 @@ public class BillingProcessBL extends ResultList
 
     @SuppressWarnings("unchecked")
     private void processOrderAddedOnInvoiceEvents(NewInvoiceDTO newInvoice, Integer entityId) {
-        Vector<OrderDTO> orders = newInvoice.getOrders();
-        Vector<Vector<PeriodOfTime>> periods = newInvoice.getPeriods();
+        List<OrderDTO> orders = newInvoice.getOrders();
+        List<List<PeriodOfTime>> periods = newInvoice.getPeriods();
         for (int i = 0; i < orders.size(); i++) {
             OrderDTO order = orders.get(i);
             Integer userId = findUserId(order);

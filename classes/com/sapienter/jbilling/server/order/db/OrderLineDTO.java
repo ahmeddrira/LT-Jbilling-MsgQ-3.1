@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,6 +51,7 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDAS;
 import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Entity
 @TableGenerator(
@@ -81,7 +81,7 @@ public class OrderLineDTO implements Serializable, Comparable {
     private String description;
     private Integer versionNum;
     private Boolean editable = null;
-    private List<MediationRecordLineDTO> events = new Vector<MediationRecordLineDTO>(0);
+    private List<MediationRecordLineDTO> events = new ArrayList<MediationRecordLineDTO>(0);
      //provisioning fields
      private ProvisioningStatusDTO provisioningStatus;
      private String provisioningRequestId;

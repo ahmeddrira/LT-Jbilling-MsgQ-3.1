@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.client.task;
 
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,6 +34,7 @@ import com.sapienter.jbilling.server.pluggableTask.IPluggableTaskSessionBean;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
 import com.sapienter.jbilling.server.util.Context;
+import java.util.ArrayList;
 
 public class MaintainAction extends
 		UpdateOnlyCrudActionBase<PluggableTaskDTO> {
@@ -115,8 +115,8 @@ public class MaintainAction extends
 				|| super.isCancelled(request);
 	}
 	
-	private Vector<PluggableTaskParameterDTO> getParamsImpl(PluggableTaskDTO dto){
-		return new Vector<PluggableTaskParameterDTO>(dto.getParameters());
+	private List<PluggableTaskParameterDTO> getParamsImpl(PluggableTaskDTO dto){
+		return new ArrayList<PluggableTaskParameterDTO>(dto.getParameters());
 	}
 
 

@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.item;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -50,6 +49,7 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class ItemBL {
     private ItemDAS itemDas = null;
@@ -57,7 +57,7 @@ public class ItemBL {
     private static final Logger LOG = Logger.getLogger(ItemBL.class);
     private EventLogger eLogger = null;
     private String priceCurrencySymbol = null;
-    private Vector<PricingField> pricingFields = null;
+    private List<PricingField> pricingFields = null;
 
     // item price cache for getPrice()
     private CacheProviderFacade cache;
@@ -164,7 +164,7 @@ public class ItemBL {
     	// may be there's just one simple price
     	if (dto.getPrices() == null) {
     		if (dto.getPrice() != null) {
-    			Vector prices = new Vector();
+    			List prices = new ArrayList();
     			// get the defualt currency of the entity
                 CurrencyDTO currency = new CurrencyDAS().findNow(
                         dto.getCurrencyId());
@@ -428,9 +428,9 @@ public class ItemBL {
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
         // convert prices between DTO and DTOEx (WS)
-        Vector otherPrices = other.getPrices();
+        List otherPrices = other.getPrices();
         if (otherPrices != null) {
-            Vector prices = new Vector(otherPrices.size());
+            List prices = new ArrayList(otherPrices.size());
             for (int i = 0; i < otherPrices.size(); i++) {
                 ItemPriceDTO itemPrice = new ItemPriceDTO();
                 ItemPriceDTOEx otherPrice = (ItemPriceDTOEx) otherPrices.get(i);
@@ -471,9 +471,9 @@ public class ItemBL {
         retValue.setPrices(other.getPrices());
 
         // convert prices between DTOEx (WS) and DTO
-        Vector otherPrices = other.getPrices();
+        List otherPrices = other.getPrices();
         if (otherPrices != null) {
-            Vector prices = new Vector(otherPrices.size());
+            List prices = new ArrayList(otherPrices.size());
             for (int i = 0; i < otherPrices.size(); i++) {
                 ItemPriceDTOEx itemPrice = new ItemPriceDTOEx();
                 ItemPriceDTO otherPrice = (ItemPriceDTO) otherPrices.get(i);
@@ -496,8 +496,8 @@ public class ItemBL {
      * will do.
      * @return
      */
-    private Vector findPrices(Integer entityId, Integer languageId) {
-        Vector retValue = new Vector();
+    private List findPrices(Integer entityId, Integer languageId) {
+        List retValue = new ArrayList();
 
         // go over all the curencies of this entity
         for (CurrencyDTO currency: item.getEntity().getCurrencies()) {
@@ -567,7 +567,7 @@ public class ItemBL {
         return items;
     }
 
-    public void setPricingFields(Vector<PricingField> fields) {
+    public void setPricingFields(List<PricingField> fields) {
         pricingFields = fields;
     }
 

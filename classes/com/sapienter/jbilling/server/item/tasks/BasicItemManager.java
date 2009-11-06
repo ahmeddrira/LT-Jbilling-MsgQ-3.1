@@ -20,7 +20,7 @@
 package com.sapienter.jbilling.server.item.tasks;
 
 import java.math.BigDecimal;
-import java.util.Vector;
+import java.util.List;
 
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
@@ -32,6 +32,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
+import java.util.ArrayList;
 
 public class BasicItemManager extends PluggableTask implements IItemPurchaseManager {
 
@@ -40,7 +41,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
     
     public void addItem(Integer itemID, Integer quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO newOrder, Vector<Record> records) throws TaskException {
+            OrderDTO newOrder, List<Record> records) throws TaskException {
     	
     	addItem(itemID, new Double(quantity), language, userId, entityId, currencyId,
             newOrder, records);
@@ -48,7 +49,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
     
     public void addItem(Integer itemID, Double quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO newOrder, Vector<Record> records) throws TaskException {
+            OrderDTO newOrder, List<Record> records) throws TaskException {
 
         // Validate decimal quantity with the item
     	if( quantity != null && (quantity % 1) > 0 ) {
@@ -101,10 +102,10 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
      */
     public void populateOrderLine(Integer language, Integer userId, 
             Integer entityId, Integer currencyId, OrderLineDTO line, 
-            Vector<Record> records) {
+            List<Record> records) {
         ItemBL itemBL = new ItemBL(line.getItemId());
         if (records != null) {
-            Vector<PricingField> fields = new Vector<PricingField>();
+            List<PricingField> fields = new ArrayList<PricingField>();
             for (Record record : records) {
                 fields.addAll(record.getFields());
             }

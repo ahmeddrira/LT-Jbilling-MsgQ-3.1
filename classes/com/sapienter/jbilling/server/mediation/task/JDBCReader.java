@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -102,7 +102,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
     }
 
     @Override
-    public boolean validate(Vector<String> messages) {
+    public boolean validate(List<String> messages) {
         try {
             connection = getConnection();
             keyColumnNames = getKeyColumnNames();
@@ -353,7 +353,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
     protected void recordRead(Record record, int[] keyColumnIndices) 
             throws SQLException{
         if (markMethod == MarkMethod.TIMESTAMP) {
-            Vector<PricingField> fields = record.getFields();
+            List<PricingField> fields = record.getFields();
 
             // contruct primary key SQL if not yet done
             if (primaryKeySQL == null) {

@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -94,7 +94,7 @@ public class FormHelper {
 	}
 	
     public String getOptionDescription(Integer id, String optionType) throws SessionInternalError {
-        Vector<?> options = (Vector<?>) mySession.getAttribute("SESSION_" + optionType);
+        List<?> options = (List<?>) mySession.getAttribute("SESSION_" + optionType);
         if (options == null) {
             throw new SessionInternalError("can't find the vector of options" +
                     " in the session:" + optionType);

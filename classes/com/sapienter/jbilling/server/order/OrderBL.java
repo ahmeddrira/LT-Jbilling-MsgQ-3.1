@@ -27,9 +27,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.Vector;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -92,6 +91,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /**
  * @author Emil
@@ -168,7 +168,7 @@ public class OrderBL extends ResultList
         retValue.setPeriodStr(order.getOrderPeriod().getDescription(languageId));
         retValue.setBillingTypeStr(order.getOrderBillingType().getDescription(languageId));
 
-        Vector<OrderLineWS> lines = new Vector<OrderLineWS>();
+        List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
         for (Iterator it = order.getLines().iterator(); it.hasNext();) {
             OrderLineDTO line = (OrderLineDTO) it.next();
             if (line.getDeleted() == 0) {
@@ -185,7 +185,7 @@ public class OrderBL extends ResultList
     }
 
     public void addItem(Integer itemID, Double quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId, Vector<Record> records)
+            Integer userId, Integer entityId, Integer currencyId, List<Record> records)
             throws ItemDecimalsException {
 
         try {
@@ -218,7 +218,7 @@ public class OrderBL extends ResultList
     }
 
     public void addItem(Integer itemID, Integer quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId, Vector<Record> records)
+            Integer userId, Integer entityId, Integer currencyId, List<Record> records)
             throws ItemDecimalsException {
         addItem(itemID, new Double(quantity), language, userId, entityId, currencyId, records);
     }
@@ -384,8 +384,8 @@ public class OrderBL extends ResultList
         // NewQuantityEvent is generated when an order line and it's quantity 
         // has changed, including from >0 to 0 (deleted) and 0 to >0 (added).
         // First, copy and sort new and old order lines by order line id.
-        Vector<OrderLineDTO> oldOrderLines = new Vector(oldOrder.getLines());
-        Vector<OrderLineDTO> newOrderLines = new Vector(newOrder.getLines());
+        List<OrderLineDTO> oldOrderLines = new ArrayList(oldOrder.getLines());
+        List<OrderLineDTO> newOrderLines = new ArrayList(newOrder.getLines());
         Comparator<OrderLineDTO> sortByOrderLineId = new Comparator<OrderLineDTO>() {
 
             public int compare(OrderLineDTO ol1, OrderLineDTO ol2) {
@@ -1083,7 +1083,7 @@ public class OrderBL extends ResultList
             throws SessionInternalError {
         // find the order records first
         try {
-            Vector result = new Vector();
+            List result = new ArrayList();
             prepareStatement(OrderSQL.getByUserAndPeriod);
             cachedResults.setInt(1, userId.intValue());
             cachedResults.setInt(2, statusId.intValue());
@@ -1237,15 +1237,15 @@ public class OrderBL extends ResultList
      * @return detached lines that have been added or modified. The amount is only the updated
      * amount
      */
-    public Vector<OrderLineDTO> updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId,
-            Vector<OrderLineDTO> lines, Date eventDate, OrderDTO readyOrder) {
+    public List<OrderLineDTO> updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId,
+            List<OrderLineDTO> lines, Date eventDate, OrderDTO readyOrder) {
 
         try {
-            Vector<OrderLineDTO> newLines = new Vector<OrderLineDTO>();
+            List<OrderLineDTO> newLines = new ArrayList<OrderLineDTO>();
 
             // get detached lines of this order, to later compare with the modified one
             order = new OrderDAS().find(readyOrder.getId());
-            Vector<OrderLineDTO> oldLines = new Vector<OrderLineDTO>();
+            List<OrderLineDTO> oldLines = new ArrayList<OrderLineDTO>();
             for (OrderLineDTO line : order.getLines()) {
                 oldLines.add(new OrderLineDTO(line));
             }
@@ -1452,7 +1452,7 @@ public class OrderBL extends ResultList
         retValue.setCycleStarts(other.getCycleStarts());
         retValue.setVersionNum(other.getVersionNum());
         if (other.getPricingFields() != null) {
-            Vector<PricingField> pf = new Vector<PricingField>();
+            List<PricingField> pf = new ArrayList<PricingField>();
             pf.addAll(Arrays.asList(PricingField.getPricingFieldsValue(other.getPricingFields())));
             retValue.setPricingFields(pf);
         }

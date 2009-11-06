@@ -29,7 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -56,7 +56,7 @@ public abstract class AbstractFileReader extends AbstractReader {
     }
     
     @Override
-    public boolean validate(Vector<String> messages) {
+    public boolean validate(List<String> messages) {
         boolean retValue = super.validate(messages); 
         
         // optionals

@@ -21,7 +21,8 @@ package com.sapienter.jbilling.server.rule;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.drools.RuleBase;
 import org.drools.StatelessSession;
@@ -35,7 +36,7 @@ public abstract class RulesBaseTask extends PluggableTask {
     protected Logger LOG = getLog(); // to be set by the real plug-in
 
     private StatelessSession statelessSession = null;
-    protected Vector<Object> rulesMemoryContext = new Vector<Object>();
+    protected List<Object> rulesMemoryContext = new ArrayList<Object>();
 
     protected void executeRules() throws TaskException {
         // show what's in first

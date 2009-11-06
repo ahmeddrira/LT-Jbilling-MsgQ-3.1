@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -300,7 +300,7 @@ public class BasicCompositionTask extends PluggableTask
         return retValue.toString();
     }
 
-    private int taxLinePresent(Vector lines, String desc) {
+    private int taxLinePresent(List lines, String desc) {
         for (int f = 0; f < lines.size(); f++) {
             InvoiceLineDTO line = (InvoiceLineDTO) lines.get(f);
             if (line.getTypeId() == Constants.ORDER_LINE_TYPE_TAX) {

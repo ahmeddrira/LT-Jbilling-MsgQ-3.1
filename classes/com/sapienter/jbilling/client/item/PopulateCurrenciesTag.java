@@ -27,7 +27,7 @@ package com.sapienter.jbilling.client.item;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
@@ -56,7 +56,7 @@ public class PopulateCurrenciesTag extends TagSupport {
         DynaValidatorForm form = (DynaValidatorForm) session.getAttribute(
                 "item");
 
-        Vector prices = (Vector) form.get("prices");
+        List prices = (List) form.get("prices");
         if (prices.size() > 0) {
             // it's been done already
             return SKIP_BODY;

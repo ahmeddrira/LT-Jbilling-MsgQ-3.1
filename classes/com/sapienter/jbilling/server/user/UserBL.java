@@ -147,7 +147,7 @@ public class UserBL extends ResultList
      * @param dto This is the user that will be updated 
      */
     public void update(Integer executorId, UserDTOEx dto) 
-            throws NamingException, SessionInternalError {
+            throws SessionInternalError {
         // password is the only one that might've not been set
     	String changedPassword = dto.getPassword();
     	if (changedPassword != null){
@@ -256,8 +256,7 @@ public class UserBL extends ResultList
         }
     }
     
-    public Integer create(UserDTOEx dto) throws NamingException, 
-            SessionInternalError {
+    public Integer create(UserDTOEx dto) throws SessionInternalError {
         
         Integer newId;
         LOG.debug("Creating user " + dto);
@@ -616,8 +615,7 @@ public class UserBL extends ResultList
         return retValue;
     }
 
-    public UserWS getUserWS() 
-            throws NamingException, SessionInternalError {
+    public UserWS getUserWS() throws SessionInternalError {
         UserDTOEx dto = DTOFactory.getUserDTOEx(user);
         UserWS retValue = new UserWS(dto);
         // the contact is not included in the Ex
@@ -874,61 +872,64 @@ public class UserBL extends ResultList
 
     
     public UserTransitionResponseWS[] getUserTransitionsById(Integer entityId, 
-            Integer last, Date to) 
-    		throws SQLException, NamingException {
-    	
-    	UserTransitionResponseWS[] result = null;
-    	java.sql.Date toDate = null;
-    	String query = UserSQL.findUserTransitions;
-    	if (last.intValue() > 0) {
-    		query += UserSQL.findUserTransitionsByIdSuffix;
-    	}
-    	if (to != null) {
-    		query += UserSQL.findUserTransitionsUpperDateSuffix;
-    		toDate = new java.sql.Date(to.getTime());
-    	}
+            Integer last, Date to)  {
 
-    	int pos = 2;
-    	LOG.info("Getting transaction list by Id. query --> " + query);
-    	prepareStatement(query);
-    	cachedResults.setInt(1, entityId);
+        try {
+            UserTransitionResponseWS[] result = null;
+            java.sql.Date toDate = null;
+            String query = UserSQL.findUserTransitions;
+            if (last.intValue() > 0) {
+                query += UserSQL.findUserTransitionsByIdSuffix;
+            }
+            if (to != null) {
+                query += UserSQL.findUserTransitionsUpperDateSuffix;
+                toDate = new java.sql.Date(to.getTime());
+            }
 
-    	if (last.intValue() > 0) {
-    		cachedResults.setInt(pos, last);
-    		pos++;
-    	}
-    	if (toDate != null) {
-    		cachedResults.setDate(pos, toDate);
-    	}
+            int pos = 2;
+            LOG.info("Getting transaction list by Id. query --> " + query);
+            prepareStatement(query);
+            cachedResults.setInt(1, entityId);
 
-    	execute();
-    	conn.close();
-    	
-    	if (cachedResults == null || !cachedResults.next()) {
-    		return null;
-    	}
-    	
-    	// Load the results into a linked list.
-    	List tempList = new LinkedList();
-    	UserTransitionResponseWS temp;
-    	do {
-    		temp = new UserTransitionResponseWS();
-    		temp.setId(cachedResults.getInt(1));
-    		temp.setToStatusId(Integer.parseInt(cachedResults.getString(2)));
-    		temp.setTransitionDate(new Date(cachedResults.getDate(3).getTime()));
-    		temp.setUserId(cachedResults.getInt(5));
-    		temp.setFromStatusId(cachedResults.getInt(4));
-    		tempList.add(temp);
-    	} while (cachedResults.next());
-    	
-    	// The list is now ready. Convert into an array and return.
-    	result = new UserTransitionResponseWS[tempList.size()];
-    	int count = 0;
-    	for (Iterator i = tempList.iterator(); i.hasNext(); ) {
-    		result[count] = (UserTransitionResponseWS)i.next();
-    		count++;
-    	}
-    	return result;
+            if (last.intValue() > 0) {
+                cachedResults.setInt(pos, last);
+                pos++;
+            }
+            if (toDate != null) {
+                cachedResults.setDate(pos, toDate);
+            }
+
+            execute();
+            conn.close();
+
+            if (cachedResults == null || !cachedResults.next()) {
+                return null;
+            }
+
+            // Load the results into a linked list.
+            List tempList = new LinkedList();
+            UserTransitionResponseWS temp;
+            do {
+                temp = new UserTransitionResponseWS();
+                temp.setId(cachedResults.getInt(1));
+                temp.setToStatusId(Integer.parseInt(cachedResults.getString(2)));
+                temp.setTransitionDate(new Date(cachedResults.getDate(3).getTime()));
+                temp.setUserId(cachedResults.getInt(5));
+                temp.setFromStatusId(cachedResults.getInt(4));
+                tempList.add(temp);
+            } while (cachedResults.next());
+
+            // The list is now ready. Convert into an array and return.
+            result = new UserTransitionResponseWS[tempList.size()];
+            int count = 0;
+            for (Iterator i = tempList.iterator(); i.hasNext();) {
+                result[count] = (UserTransitionResponseWS) i.next();
+                count++;
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new SessionInternalError("Getting transitions", UserBL.class, e);
+        }
     }
 
     public BigDecimal getBalance(Integer userId) {
@@ -936,55 +937,58 @@ public class UserBL extends ResultList
                 new PaymentDAS().findTotalBalanceByUser(userId));
     }
 
-    public UserTransitionResponseWS[] getUserTransitionsByDate(Integer entityId, 
-            Date from, Date to)
-    		throws SQLException, NamingException {
-    	
-    	UserTransitionResponseWS[] result = null;
-    	java.sql.Date toDate = null;
-    	String query = UserSQL.findUserTransitions;
-    	query += UserSQL.findUserTransitionsByDateSuffix;
+    public UserTransitionResponseWS[] getUserTransitionsByDate(Integer entityId,
+            Date from, Date to) {
+        try {
+ 
+            UserTransitionResponseWS[] result = null;
+            java.sql.Date toDate = null;
+            String query = UserSQL.findUserTransitions;
+            query += UserSQL.findUserTransitionsByDateSuffix;
 
-    	if (to != null) {
-    		query += UserSQL.findUserTransitionsUpperDateSuffix;
-    		toDate = new java.sql.Date(to.getTime());
-    	}
-    	LOG.info("Getting transaction list by date. query --> " + query);
+            if (to != null) {
+                query += UserSQL.findUserTransitionsUpperDateSuffix;
+                toDate = new java.sql.Date(to.getTime());
+            }
+            LOG.info("Getting transaction list by date. query --> " + query);
 
-    	prepareStatement(query);
-    	cachedResults.setInt(1, entityId);
-    	cachedResults.setDate(2, new java.sql.Date(from.getTime()));
-    	if (toDate != null) {
-    		cachedResults.setDate(3, toDate);
-    	}
-    	execute();
-    	conn.close();
-    	
-    	if (cachedResults == null || !cachedResults.next()) {
-    		return null;
-    	}
-    	
-    	// Load the results into a linked list.
-    	List tempList = new LinkedList();
-    	UserTransitionResponseWS temp;
-    	do {
-    		temp = new UserTransitionResponseWS();
-    		temp.setId(cachedResults.getInt(1));
-    		temp.setToStatusId(Integer.parseInt(cachedResults.getString(2)));
-    		temp.setTransitionDate(new Date(cachedResults.getDate(3).getTime()));
-    		temp.setUserId(cachedResults.getInt(5));
-    		temp.setFromStatusId(cachedResults.getInt(4));
-    		tempList.add(temp);
-    	} while (cachedResults.next());
-    	
-    	// The list is now ready. Convert into an array and return.
-    	result = new UserTransitionResponseWS[tempList.size()];
-    	int count = 0;
-    	for (Iterator i = tempList.iterator(); i.hasNext(); ) {
-    		result[count] = (UserTransitionResponseWS)i.next();
-    		count++;
-    	}
-    	return result;
+            prepareStatement(query);
+            cachedResults.setInt(1, entityId);
+            cachedResults.setDate(2, new java.sql.Date(from.getTime()));
+            if (toDate != null) {
+                cachedResults.setDate(3, toDate);
+            }
+            execute();
+            conn.close();
+
+            if (cachedResults == null || !cachedResults.next()) {
+                return null;
+            }
+
+            // Load the results into a linked list.
+            List tempList = new LinkedList();
+            UserTransitionResponseWS temp;
+            do {
+                temp = new UserTransitionResponseWS();
+                temp.setId(cachedResults.getInt(1));
+                temp.setToStatusId(Integer.parseInt(cachedResults.getString(2)));
+                temp.setTransitionDate(new Date(cachedResults.getDate(3).getTime()));
+                temp.setUserId(cachedResults.getInt(5));
+                temp.setFromStatusId(cachedResults.getInt(4));
+                tempList.add(temp);
+            } while (cachedResults.next());
+
+            // The list is now ready. Convert into an array and return.
+            result = new UserTransitionResponseWS[tempList.size()];
+            int count = 0;
+            for (Iterator i = tempList.iterator(); i.hasNext();) {
+                result[count] = (UserTransitionResponseWS) i.next();
+                count++;
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new SessionInternalError("Finding transitions", UserBL.class, e);
+        }
     }
     
     public void updateSubscriptionStatus(Integer id) {

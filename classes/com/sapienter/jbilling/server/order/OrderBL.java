@@ -151,7 +151,7 @@ public class OrderBL extends ResultList
         order = newOrder;
     }
 
-    public OrderWS getWS(Integer languageId) throws NamingException {
+    public OrderWS getWS(Integer languageId) {
         OrderWS retValue = new OrderWS(order.getId(), order.getBillingTypeId(),
                 order.getNotify(), order.getActiveSince(), order.getActiveUntil(),
                 order.getCreateDate(), order.getNextBillableDay(),
@@ -1064,16 +1064,13 @@ public class OrderBL extends ResultList
                 date.before(order.getNextBillableDay());
     }
 
-    public Integer[] getListIds(Integer userId, Integer number,
-            Integer entityId)
-            throws Exception {
+    public Integer[] getListIds(Integer userId, Integer number, Integer entityId) {
 
         List<Integer> result = orderDas.findIdsByUserLatestFirst(userId, number);
         return result.toArray(new Integer[result.size()]);
     }
 
-    public Integer[] getListIdsByItemType(Integer userId, Integer itemTypeId, Integer number)
-            throws Exception {
+    public Integer[] getListIdsByItemType(Integer userId, Integer itemTypeId, Integer number) {
 
         List<Integer> result = orderDas.findIdsByUserAndItemTypeLatestFirst(userId, itemTypeId, number);
         return result.toArray(new Integer[result.size()]);

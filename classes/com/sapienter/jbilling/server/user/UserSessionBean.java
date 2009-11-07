@@ -32,7 +32,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
-import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -46,7 +45,6 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.process.AgeingBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.AchDTO;
-import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
@@ -953,14 +951,10 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
 
     public Partner getPartnerDTO(Integer partnerId) 
             throws SessionInternalError {
-        try {
-            PartnerBL partnerBL = new PartnerBL(partnerId);
-            Partner retValue = partnerBL.getDTO();
-            retValue.touch();
-            return retValue;
-        } catch (NamingException e) {
-            throw new SessionInternalError(e);
-        }
+        PartnerBL partnerBL = new PartnerBL(partnerId);
+        Partner retValue = partnerBL.getDTO();
+        retValue.touch();
+        return retValue;
     } 
 
     public PartnerPayout getPartnerLastPayoutDTO(Integer partnerId) 

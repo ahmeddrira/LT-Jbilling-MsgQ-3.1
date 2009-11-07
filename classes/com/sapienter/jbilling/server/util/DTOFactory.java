@@ -109,8 +109,7 @@ public class DTOFactory {
 		return getUserDTOEx(user);
 	}
 
-	public static UserDTOEx getUserDTOEx(UserDTO user) throws NamingException,
-			SessionInternalError {
+	public static UserDTOEx getUserDTOEx(UserDTO user) throws SessionInternalError {
 		UserDTOEx dto = new UserDTOEx(user);
 
 		// get the status

@@ -35,15 +35,17 @@ import java.io.StringWriter;
  * exception stack trace from the server to the client. 
  */
 public class WSExceptionAdvice implements ThrowsAdvice {
+
+    private static final Logger LOG = Logger.getLogger(WSExceptionAdvice.class);
+
     public void afterThrowing(Exception throwable) {
-        Logger log = Logger.getLogger(WSExceptionAdvice.class);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);
         pw.close();
 
-        log.error(throwable.getMessage() + "\n" + sw.toString());
+        LOG.error(throwable.getMessage() + "\n" + sw.toString());
 
-        throw new SessionInternalError(throwable.getMessage());
+        throw new SessionInternalError(throwable);
     }
 }

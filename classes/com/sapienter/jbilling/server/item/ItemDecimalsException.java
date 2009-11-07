@@ -19,7 +19,7 @@
 */
 package com.sapienter.jbilling.server.item;
 
-public class ItemDecimalsException extends Exception {
+public class ItemDecimalsException extends RuntimeException {
 
 	/**
      * Constructor for ItemDecimalsException.

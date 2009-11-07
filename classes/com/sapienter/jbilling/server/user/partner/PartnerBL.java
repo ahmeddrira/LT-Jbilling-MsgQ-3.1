@@ -591,8 +591,7 @@ public class PartnerBL extends ResultList
         return retValue;
     }
     
-    public Partner getDTO() 
-            throws NamingException {
+    public Partner getDTO() {
         partner.setRelatedClerkUserId(partner.getBaseUserByRelatedClerk().getId());
         return partner;
     }

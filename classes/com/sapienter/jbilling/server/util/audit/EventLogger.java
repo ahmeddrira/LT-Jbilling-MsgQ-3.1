@@ -20,10 +20,8 @@
 
 package com.sapienter.jbilling.server.util.audit;
 
-import java.sql.SQLException;
 import java.util.Date;
 
-import javax.naming.NamingException;
 
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.UserDAS;
@@ -205,9 +203,7 @@ public class EventLogger {
      * webservice call.
      * @return the id of the last queried transitions list.
      */
-    public Integer getLastTransitionEvent(Integer entityId) 
-    		throws SQLException, NamingException {
-    	
+    public Integer getLastTransitionEvent(Integer entityId)  {
     	return eventLogDAS.getLastTransitionEvent(entityId);
     }
 }

@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.List;
 
 import javax.jws.WebService;
 import javax.naming.NamingException;
@@ -112,36 +111,27 @@ import java.util.ArrayList;
 @WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
-    private static final Logger LOG = Logger.getLogger(
-            WebServicesSessionSpringBean.class);
+    private static final Logger LOG = Logger.getLogger(WebServicesSessionSpringBean.class);
 
     /*
      * INVOICES
      */
     public InvoiceWS getInvoiceWS(Integer invoiceId)
             throws SessionInternalError {
-        LOG.debug("Call to getInvoiceWS " + invoiceId);
-        try {
-            if (invoiceId == null) {
-                return null;
-            }
-            InvoiceDTO invoice = new InvoiceDAS().find(invoiceId);
-            
-            if (invoice.getDeleted() == 1 || invoice.getIsReview() == 1) {
-                return null;
-            }
-
-            LOG.debug("Done");
-            return new InvoiceBL().getWS(invoice);
-        } catch (Exception e) {
-            LOG.error("WS - getInvoiceWS", e);
-            throw new SessionInternalError("Error getting invoice");
+        if (invoiceId == null) {
+            return null;
         }
+        InvoiceDTO invoice = new InvoiceDAS().find(invoiceId);
+
+        if (invoice.getDeleted() == 1 || invoice.getIsReview() == 1) {
+            return null;
+        }
+
+        return InvoiceBL.getWS(invoice);
     }
 
     public InvoiceWS getLatestInvoice(Integer userId)
             throws SessionInternalError {
-        LOG.debug("Call to getLatestInvoice " + userId);
         InvoiceWS retValue = null;
         try {
             if (userId == null) {
@@ -152,9 +142,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (invoiceId != null) {
                 retValue = bl.getWS(new InvoiceDAS().find(invoiceId));
             }
-            LOG.debug("Done");
             return retValue;
-        } catch (Exception e) {
+        } catch (Exception e) { // needed because the sql exception :(
             LOG.error("Exception in web service: getting latest invoice" +
                     " for user " + userId, e);
             throw new SessionInternalError("Error getting latest invoice");
@@ -163,25 +152,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public Integer[] getLastInvoices(Integer userId, Integer number)
             throws SessionInternalError {
-        LOG.debug("Call to getLastInvoices " + userId + " " + number);
-        try {
-            if (userId == null || number == null) {
-                return null;
-            }
-
-            InvoiceBL bl = new InvoiceBL();
-            LOG.debug("Done");
-            return bl.getManyWS(userId, number);
-        } catch (Exception e) {
-            LOG.error("Exception in web service: getting last invoices" +
-                    " for user " + userId, e);
-            throw new SessionInternalError("Error getting last invoices");
+        if (userId == null || number == null) {
+            return null;
         }
+
+        InvoiceBL bl = new InvoiceBL();
+        return bl.getManyWS(userId, number);
     }
 
     public Integer[] getInvoicesByDate(String since, String until)
             throws SessionInternalError {
-        LOG.debug("Call to getInvoicesByDate " + since + " " + until);
         try {
             Date dSince = com.sapienter.jbilling.common.Util.parseDate(since);
             Date dUntil = com.sapienter.jbilling.common.Util.parseDate(until);
@@ -192,9 +172,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             Integer entityId = getCallerCompanyId();
 
             InvoiceBL invoiceBl = new InvoiceBL();
-            LOG.debug("Done");
             return invoiceBl.getInvoicesByCreateDateArray(entityId, dSince, dUntil);
-        } catch (Exception e) {
+        } catch (Exception e) { // needed for the SQLException :(
             LOG.error("Exception in web service: getting invoices by date" +
                     since + until, e);
             throw new SessionInternalError("Error getting last invoices");
@@ -206,29 +185,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUserInvoicesByDate(Integer userId, String since, 
             String until) throws SessionInternalError {
-        LOG.debug("Call to getUserInvoicesByDate " + userId + " " + since + 
-                " " + until);
-        try {
-            if (userId == null || since == null || until == null) {
-                return null;
-            }
-
-            Date dSince = com.sapienter.jbilling.common.Util.parseDate(since);
-            Date dUntil = com.sapienter.jbilling.common.Util.parseDate(until);
-
-            InvoiceBL invoiceBl = new InvoiceBL();
-
-            Integer[] results = invoiceBl.getUserInvoicesByDate(userId, dSince,
-                    dUntil);
-
-            LOG.debug("Done");
-            return results;
-
-        } catch (Exception e) {
-            LOG.error("Exception in web service: getting invoices by date" +
-                    since + until, e);
-            throw new SessionInternalError("Error getting last invoices");
+        if (userId == null || since == null || until == null) {
+            return null;
         }
+
+        Date dSince = com.sapienter.jbilling.common.Util.parseDate(since);
+        Date dUntil = com.sapienter.jbilling.common.Util.parseDate(until);
+
+        InvoiceBL invoiceBl = new InvoiceBL();
+
+        Integer[] results = invoiceBl.getUserInvoicesByDate(userId, dSince,
+                dUntil);
+
+        return results;
     }
 
     /**
@@ -237,16 +206,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * The id of the invoice to delete
      */
     public void deleteInvoice(Integer invoiceId) {
-        LOG.debug("Call to deleteInvoice " + invoiceId);
-        try {
-            Integer executorId = getCallerId();
-            InvoiceBL invoice = new InvoiceBL(invoiceId);
-            invoice.delete(executorId);
-            LOG.debug("Done");
-        } catch (Exception e) {
-            LOG.error("WS - deleteUser", e);
-            throw new SessionInternalError("Error deleting user");
-        }
+        Integer executorId = getCallerId();
+        InvoiceBL invoice = new InvoiceBL(invoiceId);
+        invoice.delete(executorId);
     }
 
     /**
@@ -256,43 +218,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
             throws SessionInternalError {
-        LOG.debug("Call to createInvoice - userId: " + userId + 
-                " onlyRecurring: " + onlyRecurring);
-        try {
-            UserDTO user = new UserDAS().find(userId);
-            BillingProcessBL processBL = new BillingProcessBL();
+        UserDTO user = new UserDAS().find(userId);
+        BillingProcessBL processBL = new BillingProcessBL();
 
-            BillingProcessConfigurationDTO config = 
-                    new BillingProcessConfigurationDAS().findByEntity(
-                    user.getCompany());
+        BillingProcessConfigurationDTO config =
+                new BillingProcessConfigurationDAS().findByEntity(
+                user.getCompany());
 
-            // Create a mock billing process object, because the method 
-            // we are calling was meant to be called by the billing process. 
-            BillingProcessDTO billingProcess = new BillingProcessDTO();
-            billingProcess.setId(0);
-            billingProcess.setEntity(user.getCompany());
-            billingProcess.setBillingDate(new Date());
-            billingProcess.setPeriodUnit(config.getPeriodUnit());
-            billingProcess.setPeriodValue(config.getPeriodValue());
-            billingProcess.setIsReview(0);
-            billingProcess.setRetriesToDo(0);
+        // Create a mock billing process object, because the method
+        // we are calling was meant to be called by the billing process.
+        BillingProcessDTO billingProcess = new BillingProcessDTO();
+        billingProcess.setId(0);
+        billingProcess.setEntity(user.getCompany());
+        billingProcess.setBillingDate(new Date());
+        billingProcess.setPeriodUnit(config.getPeriodUnit());
+        billingProcess.setPeriodValue(config.getPeriodValue());
+        billingProcess.setIsReview(0);
+        billingProcess.setRetriesToDo(0);
 
-            InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
-                    user, false, onlyRecurring);
+        InvoiceDTO[] newInvoices = processBL.generateInvoice(billingProcess,
+                user, false, onlyRecurring);
 
-            if (newInvoices != null) {
-                Integer[] invoiceIds = new Integer[newInvoices.length];
-                for (int i = 0; i < newInvoices.length; i++) {
-                    invoiceIds[i] = newInvoices[i].getId();
-                }
-                return invoiceIds;
-            } else {
-                return new Integer[] { };
+        if (newInvoices != null) {
+            Integer[] invoiceIds = new Integer[newInvoices.length];
+            for (int i = 0; i < newInvoices.length; i++) {
+                invoiceIds[i] = newInvoices[i].getId();
             }
-
-        } catch (Exception e) {
-            LOG.error("WS - createInvoice", e);
-            throw new SessionInternalError("Error generating invoices.");
+            return invoiceIds;
+        } else {
+            return new Integer[]{};
         }
     }
 
@@ -313,80 +267,50 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer createUser(UserWS newUser)
             throws SessionInternalError {
 
-        LOG.debug("Call to createUser ");
         validateUser(newUser);
         newUser.setUserId(0);
 
-        try {
-            Integer entityId = getCallerCompanyId();
-            UserBL bl = new UserBL();
-            LOG.info("WS - Creating user " + newUser);
+        Integer entityId = getCallerCompanyId();
+        UserBL bl = new UserBL();
 
-            if (!bl.exists(newUser.getUserName(), entityId)) {
+        if (!bl.exists(newUser.getUserName(), entityId)) {
 
-                ContactBL cBl = new ContactBL();
-                UserDTOEx dto = new UserDTOEx(newUser, entityId);
-                Integer userId = bl.create(dto);
-                if (newUser.getContact() != null) {
-                    newUser.getContact().setId(0);
-                    cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
-                }
-
-                if (newUser.getCreditCard() != null) {
-                    CreditCardDTO card = new CreditCardDTO(newUser.getCreditCard()); // new CreditCardDTO
-                    card.setId(0);
-                    card.getBaseUsers().add(bl.getEntity());
-
-                    CreditCardBL ccBL = new CreditCardBL();
-                    ccBL.create(card);
-                    
-                    UserDTO userD = new UserDAS().find(userId);
-                    userD.getCreditCards().add(ccBL.getEntity());
-                }
-                LOG.debug("Done");
-                return userId;
+            ContactBL cBl = new ContactBL();
+            UserDTOEx dto = new UserDTOEx(newUser, entityId);
+            Integer userId = bl.create(dto);
+            if (newUser.getContact() != null) {
+                newUser.getContact().setId(0);
+                cBl.createPrimaryForUser(new ContactDTOEx(newUser.getContact()), userId, entityId);
             }
-            LOG.debug("Done");
-            return null;
-        // need to catch every single one to be able to throw inside
-        } catch (NamingException e) {
-            LOG.error("WS user creation error", e);
-            throw new SessionInternalError("Error creating user");
+
+            if (newUser.getCreditCard() != null) {
+                CreditCardDTO card = new CreditCardDTO(newUser.getCreditCard()); // new CreditCardDTO
+                card.setId(0);
+                card.getBaseUsers().add(bl.getEntity());
+
+                CreditCardBL ccBL = new CreditCardBL();
+                ccBL.create(card);
+
+                UserDTO userD = new UserDAS().find(userId);
+                userD.getCreditCards().add(ccBL.getEntity());
+            }
+            return userId;
         }
+        return null;
     }
 
-    public void deleteUser(Integer userId)
-            throws SessionInternalError {
-        LOG.debug("Call to deleteUser " + userId);
-        try {
-            UserBL bl = new UserBL();
-            Integer executorId = getCallerId();
-            bl.set(userId);
-            bl.delete(executorId);
-            LOG.debug("Done");
-        } catch (Exception e) {
-            LOG.error("WS - deleteUser", e);
-            throw new SessionInternalError("Error deleting user");
-        }
+    public void deleteUser(Integer userId) throws SessionInternalError {
+        UserBL bl = new UserBL();
+        Integer executorId = getCallerId();
+        bl.set(userId);
+        bl.delete(executorId);
     }
 
     public void updateUserContact(Integer userId, Integer typeId,
-            ContactWS contact)
-            throws SessionInternalError {
-
-        LOG.debug("Call to updateUserContact " + userId + " " + typeId);
-        try {
-            LOG.info("WS - Updating contact for user " + userId);
-
-            // update the contact
-            ContactBL cBl = new ContactBL();
-            cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
-            LOG.debug("Done");
-
-        } catch (Exception e) {
-            LOG.error("WS - updateUserContact", e);
-            throw new SessionInternalError("Error updating contact");
-        }
+            ContactWS contact) throws SessionInternalError {
+        // update the contact
+        ContactBL cBl = new ContactBL();
+        cBl.updateForUser(new ContactDTOEx(contact), userId, typeId);
     }
 
     /**
@@ -395,57 +319,47 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void updateUser(UserWS user)
             throws SessionInternalError {
 
-        LOG.debug("Call to updateUser ");
         validateUser(user);
 
-        try {
-            UserBL bl = new UserBL(user.getUserId());
+        UserBL bl = new UserBL(user.getUserId());
 
-            // get the entity
-            Integer entityId = getCallerCompanyId();
-            Integer executorId = getCallerId();
-            LOG.info("WS - Updating user " + user);
+        // get the entity
+        Integer entityId = getCallerCompanyId();
+        Integer executorId = getCallerId();
 
-            // Check whether the password changes or not.
-            if (user.getPassword() != null) {
-                JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(bl.getMainRole());
-                String newPassword = passwordCryptoService.encrypt(user.getPassword());
-                String oldPassword = bl.getEntity().getPassword();
-                if (!newPassword.equals(oldPassword)) {
-                    // If the password is changing, validate it
-                    if (!bl.validatePassword(user.getPassword())) {
-                        throw new SessionInternalError("Error updating user");
-                    }
+        // Check whether the password changes or not.
+        if (user.getPassword() != null) {
+            JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(bl.getMainRole());
+            String newPassword = passwordCryptoService.encrypt(user.getPassword());
+            String oldPassword = bl.getEntity().getPassword();
+            if (!newPassword.equals(oldPassword)) {
+                // If the password is changing, validate it
+                if (!bl.validatePassword(user.getPassword())) {
+                    throw new SessionInternalError("Error updating user");
                 }
             }
-
-            // convert to a DTO
-            UserDTOEx dto = new UserDTOEx(user, entityId);
-
-            // update the user info
-            bl.update(executorId, dto);
-
-            // now update the contact info
-            if (user.getContact() != null) {
-                ContactBL cBl = new ContactBL();
-                cBl.updatePrimaryForUser(new ContactDTOEx(user.getContact()),
-                        user.getUserId());
-            }
-
-            // and the credit card
-            if (user.getCreditCard() != null) {
-                IUserSessionBean sess = (IUserSessionBean) Context.getBean(
-                        Context.Name.USER_SESSION);
-                sess.updateCreditCard(executorId, user.getUserId(),
-                        new CreditCardDTO(user.getCreditCard()));
-            }
-
-        } catch (Exception e) {
-            LOG.error("WS - updateUser", e);
-            throw new SessionInternalError("Error updating user");
         }
-        LOG.debug("Done");
 
+        // convert to a DTO
+        UserDTOEx dto = new UserDTOEx(user, entityId);
+
+        // update the user info
+        bl.update(executorId, dto);
+
+        // now update the contact info
+        if (user.getContact() != null) {
+            ContactBL cBl = new ContactBL();
+            cBl.updatePrimaryForUser(new ContactDTOEx(user.getContact()),
+                    user.getUserId());
+        }
+
+        // and the credit card
+        if (user.getCreditCard() != null) {
+            IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                    Context.Name.USER_SESSION);
+            sess.updateCreditCard(executorId, user.getUserId(),
+                    new CreditCardDTO(user.getCreditCard()));
+        }
     }
 
     /**
@@ -455,20 +369,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public UserWS getUserWS(Integer userId)
             throws SessionInternalError {
-        LOG.debug("Call to getUserWS " + userId);
         UserWS dto = null;
         // calling from dot.net seems to not have a context set. So then when calling
         // getCallerPrincipal the client gets a 'No security context set' exception
         // log.debug("principal = " + context.getCallerPrincipal().getName());
-        try {
-            UserBL bl = new UserBL(userId);
-            dto = bl.getUserWS();
-        } catch (Exception e) {
-            LOG.error("WS - getUserWS", e);
-            throw new SessionInternalError("Error getting user");
-        }
+        UserBL bl = new UserBL(userId);
+        dto = bl.getUserWS();
 
-        LOG.debug("Done");
         return dto;
     }
 
@@ -479,21 +386,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public ContactWS[] getUserContactsWS(Integer userId)
             throws SessionInternalError {
-        LOG.debug("Call to getUserContactsWS " + userId);
         ContactWS[] dtos = null;
-        try {
-            ContactBL contact = new ContactBL();
-            List result = contact.getAll(userId);
-            dtos = new ContactWS[result.size()];
-            for (int f = 0; f < result.size(); f++) {
-                dtos[f] = new ContactWS((ContactDTOEx) result.get(f));
-            }
-        } catch (Exception e) {
-            LOG.error("WS - getUserWS", e);
-            throw new SessionInternalError("Error getting user");
+        ContactBL contact = new ContactBL();
+        List result = contact.getAll(userId);
+        dtos = new ContactWS[result.size()];
+        for (int f = 0; f < result.size(); f++) {
+            dtos[f] = new ContactWS((ContactDTOEx) result.get(f));
         }
 
-        LOG.debug("Done");
         return dtos;
     }
 
@@ -502,35 +402,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer getUserId(String username)
             throws SessionInternalError {
-        LOG.debug("Call to getUserId " + username);
-        try {
-            UserDAS das = new UserDAS();
-            Integer retValue = das.findByUserName(username, 
-                    getCallerCompanyId()).getId();
-            LOG.debug("Done " + retValue);
-            return retValue;
-
-        } catch (Exception e) {
-            LOG.error("WS - getUserId", e);
-            throw new SessionInternalError("Error getting user id username = " + username +
-                    " root " + WebServicesCaller.getUserName());
-        }
-
+        UserDAS das = new UserDAS();
+        Integer retValue = das.findByUserName(username,
+                getCallerCompanyId()).getId();
+        return retValue;
     }
 
     /**
      * Retrieves an array of users in the required status 
      */
-    public Integer[] getUsersInStatus(Integer statusId)
-            throws SessionInternalError {
-        LOG.debug("Call to getUsersInStatus " + statusId);
-        try {
-            Integer entityId = getCallerCompanyId();
-            return getUsersByStatus(statusId, entityId, true);
-        } catch (Exception e) {
-            LOG.error("WS - getUsersInStatus", e);
-            throw new SessionInternalError("Error getting users in status");
-        }
+    public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError {
+        Integer entityId = getCallerCompanyId();
+        return getUsersByStatus(statusId, entityId, true);
     }
 
     /**
@@ -538,14 +421,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersNotInStatus(Integer statusId)
             throws SessionInternalError {
-        LOG.debug("Call to getUsersNotInStatus " + statusId);
-        try {
-            Integer entityId = getCallerCompanyId();
-            return getUsersByStatus(statusId, entityId, false);
-        } catch (Exception e) {
-            LOG.error("WS - getUsersNotInStatus", e);
-            throw new SessionInternalError("Error getting users not in status");
-        }
+        Integer entityId = getCallerCompanyId();
+        return getUsersByStatus(statusId, entityId, false);
     }
 
     /**
@@ -553,7 +430,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersByCustomField(Integer typeId, String value)
             throws SessionInternalError {
-        LOG.debug("Call to getUsersByCustomField " + typeId + " " + value);
         try {
             UserBL bl = new UserBL();
             Integer entityId = getCallerCompanyId();
@@ -567,9 +443,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 f++;
             }
             users.close();
-            LOG.debug("done");
             return ret;
-        } catch (Exception e) {
+        } catch (Exception e) { // can't remove because of the SQL Exception :(
             LOG.error("WS - getUsersByCustomField", e);
             throw new SessionInternalError("Error getting users by custom field");
         }
@@ -586,30 +461,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     /**
      * Retrieves an array of users in the required status 
      */
-    public Integer[] getUsersByCreditCard(String number)
-            throws SessionInternalError {
-        LOG.debug("Call to getUsersByCreditCard " + number);
-        try {
-            Integer entityId = getCallerCompanyId();
+    public Integer[] getUsersByCreditCard(String number) throws SessionInternalError {
+        Integer entityId = getCallerCompanyId();
 
-//            CachedRowSet users = bl.getByCCNumber(entityId, number);
-//            LOG.debug("getUsersByCreditCard - got collection. Now converting");
-//            
-//            Integer[] ret = new Integer[users.size()];
-//            int f = 0;
-//            while (users.next()) {
-//                ret[f] = users.getInt(1);
-//                f++;
-//            }
-//            users.close();
-            
-            Integer[] ret = getByCCNumber(entityId, number);
-            LOG.debug("done");
-            return ret;
-        } catch (Exception e) {
-            LOG.error("WS - getUsersByCustomField", e);
-            throw new SessionInternalError("Error getting users by custom field");
-        }
+        Integer[] ret = getByCCNumber(entityId, number);
+        return ret;
     }
 
     /**
@@ -619,8 +475,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             boolean in)
             throws SessionInternalError {
         try {
-            LOG.debug("getting list of users. status:" + statusId +
-                    " entity:" + entityId + " in:" + in);
             UserBL bl = new UserBL();
             CachedRowSet users = bl.getByStatus(entityId, statusId, in);
             LOG.debug("got collection. Now converting");
@@ -631,9 +485,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 f++;
             }
             users.close();
-            LOG.debug("done");
             return ret;
-        } catch (Exception e) {
+        } catch (Exception e) { // can't remove because of SQLException :(
             throw new SessionInternalError(e);
         }
     }
@@ -646,7 +499,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public CreateResponseWS create(UserWS user, OrderWS order)
             throws SessionInternalError {
 
-        LOG.debug("Call to create ");
         validateCaller();
 
         CreateResponseWS retValue = new CreateResponseWS();
@@ -685,7 +537,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError("Invoice expected for order: " + orderId);
         }
 
-        LOG.debug("Done");
         return retValue;
     }
 
@@ -702,36 +553,27 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throws SessionInternalError {
         Integer retValue = null;
 
-        LOG.debug("Call to authenticate " + username);
-        try {
-            // the caller will tell us what entity is this
-            UserBL bl = new UserBL();
-            Integer entityId = getCallerCompanyId();
+        // the caller will tell us what entity is this
+        UserBL bl = new UserBL();
+        Integer entityId = getCallerCompanyId();
 
-            // prepare the DTO for the authentication call
-            UserDTOEx user = new UserDTOEx();
-            user.setEntityId(entityId);
-            user.setUserName(username);
-            user.setPassword(password);
+        // prepare the DTO for the authentication call
+        UserDTOEx user = new UserDTOEx();
+        user.setEntityId(entityId);
+        user.setUserName(username);
+        user.setPassword(password);
 
-            // do the authentication
-            IUserSessionBean myRemoteSession = (IUserSessionBean) 
-                    Context.getBean(Context.Name.USER_SESSION);
-            retValue = myRemoteSession.authenticate(user);
-            if (retValue.equals(Constants.AUTH_OK)) {
-                // see if the password is not expired
-                bl.set(user.getUserName(), entityId);
-                if (bl.isPasswordExpired()) {
-                    retValue = WebServicesConstants.AUTH_EXPIRED;
-                }
+        // do the authentication
+        IUserSessionBean myRemoteSession = (IUserSessionBean) Context.getBean(Context.Name.USER_SESSION);
+        retValue = myRemoteSession.authenticate(user);
+        if (retValue.equals(Constants.AUTH_OK)) {
+            // see if the password is not expired
+            bl.set(user.getUserName(), entityId);
+            if (bl.isPasswordExpired()) {
+                retValue = WebServicesConstants.AUTH_EXPIRED;
             }
-
-        } catch (Exception e) {
-            LOG.error("WS - authenticate: ", e);
-            throw new SessionInternalError("Error authenticating user");
         }
 
-        LOG.debug("Done");
         return retValue;
     }
 
@@ -745,7 +587,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * calling getLatestPayment
      */
     public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError {
-        LOG.debug("Call to payInvoice " + invoiceId);
         
         if (invoiceId == null) {
             throw new SessionInternalError("Can not pay null invoice");
@@ -765,7 +606,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             result.setResult(new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_OK));
         }
         
-        LOG.debug("Done");
         return result;
     }
 
@@ -778,25 +618,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
             throws SessionInternalError {
-        LOG.debug("Call to updateCreditCard " + userId);
-        try {
-            if (creditCard != null && (creditCard.getName() == null ||
-                    creditCard.getExpiry() == null)) {
-                LOG.debug("WS - updateCreditCard: " + "credit card validation error.");
-                throw new SessionInternalError("Missing cc data.");
-            }
-
-            Integer executorId = getCallerId();
-            IUserSessionBean sess = (IUserSessionBean) Context.getBean(
-                    Context.Name.USER_SESSION);
-            CreditCardDTO cc = creditCard != null ? new CreditCardDTO(creditCard) : null;
-
-            sess.updateCreditCard(executorId, userId, cc);
-        } catch (Exception e) {
-            LOG.error("WS - updateCreditCard: ", e);
-            throw new SessionInternalError("Error updating user's credit card");
+        if (creditCard != null && (creditCard.getName() == null ||
+                creditCard.getExpiry() == null)) {
+            LOG.debug("WS - updateCreditCard: " + "credit card validation error.");
+            throw new SessionInternalError("Missing cc data.");
         }
-        LOG.debug("Done");
+
+        Integer executorId = getCallerId();
+        IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                Context.Name.USER_SESSION);
+        CreditCardDTO cc = creditCard != null ? new CreditCardDTO(creditCard) : null;
+
+        sess.updateCreditCard(executorId, userId, cc);
 
     }
 
@@ -810,47 +643,40 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
             throws SessionInternalError {
 
-        LOG.debug("Call to createOrderPreAuthorize ");
         PaymentAuthorizationDTOEx retValue = null;
         // start by creating the order. It'll do the checks as well
         Integer orderId = createOrder(order);
 
-        try {
-            Integer userId = order.getUserId();
-            CreditCardDTO cc = getCreditCard(userId);
-            UserBL user = new UserBL();
-            Integer entityId = user.getEntityId(userId);
-            if (cc != null) {
-                CreditCardBL ccBl = new CreditCardBL();
-                OrderDAS das = new OrderDAS();
-                OrderDTO dbOrder = das.find(orderId);
+        Integer userId = order.getUserId();
+        CreditCardDTO cc = getCreditCard(userId);
+        UserBL user = new UserBL();
+        Integer entityId = user.getEntityId(userId);
+        if (cc != null) {
+            CreditCardBL ccBl = new CreditCardBL();
+            OrderDAS das = new OrderDAS();
+            OrderDTO dbOrder = das.find(orderId);
 
+            try {
                 retValue = ccBl.validatePreAuthorization(entityId, userId, cc,
                         dbOrder.getTotal().floatValue(), dbOrder.getCurrencyId());
+            } catch (PluggableTaskException e) {
+                throw new SessionInternalError("doing validation", WebServicesSessionSpringBean.class, e);
             }
-        } catch (Exception e) {
-            LOG.debug("Exception:", e);
-            throw new SessionInternalError("error pre-validating order");
         }
-        LOG.debug("Done");
         return retValue;
     }
 
     public Integer createOrder(OrderWS order)
             throws SessionInternalError {
 
-        LOG.debug("Call to createOrder ");
         Integer orderId = doCreateOrder(order, true).getId();
-        LOG.debug("Done");
         return orderId;
     }
 
     public OrderWS rateOrder(OrderWS order)
             throws SessionInternalError {
 
-        LOG.debug("Call to rateOrder ");
         OrderWS ordr = doCreateOrder(order, false);
-        LOG.debug("Done");
         return ordr;
     }
 
@@ -870,35 +696,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public void updateItem(ItemDTOEx item) {
+        UserBL bl = new UserBL(getCallerId());
+        Integer executorId = bl.getEntity().getUserId();
+        Integer languageId = bl.getEntity().getLanguageIdField();
 
-        try {
-            LOG.debug("Call to updateItem ");
-            UserBL bl = new UserBL(getCallerId());
-            Integer executorId = bl.getEntity().getUserId();
-            Integer languageId = bl.getEntity().getLanguageIdField();
+        // do some transformation from WS to DTO :(
+        ItemBL itemBL = new ItemBL();
+        ItemDTO dto = itemBL.getDTO(item);
 
-            // do some transformation from WS to DTO :(
-            ItemBL itemBL = new ItemBL();
-            ItemDTO dto = itemBL.getDTO(item);
-
-            IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
-                    Context.Name.ITEM_SESSION);
-            itemSession.update(executorId, dto, languageId);
-            LOG.debug("Done updateItem ");
-        } catch (SessionInternalError e) {
-            LOG.error("WS - updateItem", e);
-            throw new SessionInternalError("Error updating item ");
-        }
+        IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
+                Context.Name.ITEM_SESSION);
+        itemSession.update(executorId, dto, languageId);
     }
 
     public Integer createOrderAndInvoice(OrderWS order)
             throws SessionInternalError {
 
-        LOG.debug("Call to createOrderAndInvoice ");
         Integer orderId = doCreateOrder(order, true).getId();
         InvoiceDTO invoice = doCreateInvoice(orderId);
 
-        LOG.debug("Done");
         return invoice == null ? null : invoice.getId();
     }
 
@@ -932,7 +748,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void updateOrder(OrderWS order)
             throws SessionInternalError {
-        LOG.debug("Call to updateOrder ");
         validateOrder(order);
         try {
             // start by locking the order
@@ -958,149 +773,91 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             // update
             //orderBL.set(order.getId());
             oldOrder.update(executorId, dto);
-        } catch (Exception e) {
+        } catch (Exception e) { // checked exceptions force :(
             LOG.error("WS - updateOrder", e);
             throw new SessionInternalError("Error updating order");
         }
-        LOG.debug("Done");
 
     }
 
-    public OrderWS getOrder(Integer orderId)
-            throws SessionInternalError {
-        try {
-            LOG.debug("order requested " + orderId);
+    public OrderWS getOrder(Integer orderId) throws SessionInternalError {
             // get the info from the caller
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            // now get the order. Avoid the proxy since this is for the client
-            OrderDAS das = new OrderDAS();
-            OrderDTO order = das.findNow(orderId);
-            if (order == null) { // not found
-                LOG.debug("Done");
-                return null;
-            }
-            OrderBL bl = new OrderBL(order);
-            if (order.getDeleted() == 1) {
-                LOG.debug("Returning deleted order " + orderId);
-            }
-            LOG.debug("Done");
-            return bl.getWS(languageId);
-        } catch (Exception e) {
-            LOG.error("WS - getOrder", e);
-            throw new SessionInternalError("Error getting order");
+        // now get the order. Avoid the proxy since this is for the client
+        OrderDAS das = new OrderDAS();
+        OrderDTO order = das.findNow(orderId);
+        if (order == null) { // not found
+            return null;
         }
+        OrderBL bl = new OrderBL(order);
+        if (order.getDeleted() == 1) {
+            LOG.debug("Returning deleted order " + orderId);
+        }
+        return bl.getWS(languageId);
     }
 
     public Integer[] getOrderByPeriod(Integer userId, Integer periodId)
             throws SessionInternalError {
-        LOG.debug("Call to getOrderByPeriod " + userId + " " + periodId);
         if (userId == null || periodId == null) {
             return null;
         }
-        try {
-            // now get the order
-            OrderBL bl = new OrderBL();
-            LOG.debug("Done");
-            return bl.getByUserAndPeriod(userId, periodId);
-        } catch (Exception e) {
-            LOG.error("WS - getOrderByPeriod", e);
-            throw new SessionInternalError("Error getting orders for a user " +
-                    "by period");
-        }
+        // now get the order
+        OrderBL bl = new OrderBL();
+        return bl.getByUserAndPeriod(userId, periodId);
     }
 
-    public OrderLineWS getOrderLine(Integer orderLineId)
-            throws SessionInternalError {
-        try {
-            LOG.debug("WS - getOrderLine " + orderLineId);
-            // now get the order
-            OrderBL bl = new OrderBL();
-            OrderLineWS retValue = null;
+    public OrderLineWS getOrderLine(Integer orderLineId) throws SessionInternalError {
+        // now get the order
+        OrderBL bl = new OrderBL();
+        OrderLineWS retValue = null;
 
-            retValue = bl.getOrderLineWS(orderLineId);
+        retValue = bl.getOrderLineWS(orderLineId);
 
-            LOG.debug("Done");
-            return retValue;
-        } catch (Exception e) {
-            LOG.error("WS - getOrderLine", e);
-            throw new SessionInternalError("Error getting order line");
-        }
+        return retValue;
     }
 
-    public void updateOrderLine(OrderLineWS line)
-            throws SessionInternalError {
-        LOG.debug("Call to updateOrderLine ");
-        try {
+    public void updateOrderLine(OrderLineWS line) throws SessionInternalError {
             // now get the order
-            OrderBL bl = new OrderBL();
-            bl.updateOrderLine(line);
-//            LOG.debug("WS - updateOrderLine " + line); // cant be earlier - no session
-        } catch (Exception e) {
-            LOG.error("WS - updateOrderLine", e);
-            throw new SessionInternalError("Error updating order line");
-        }
-        LOG.debug("Done");
+        OrderBL bl = new OrderBL();
+        bl.updateOrderLine(line);
     }
 
-    public OrderWS getLatestOrder(Integer userId)
-            throws SessionInternalError {
-        LOG.debug("Call to getLatestOrder " + userId);
+    public OrderWS getLatestOrder(Integer userId) throws SessionInternalError {
         if (userId == null) {
             throw new SessionInternalError("User id can not be null");
         }
-        try {
-            OrderWS retValue = null;
-            // get the info from the caller
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+        OrderWS retValue = null;
+        // get the info from the caller
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            // now get the order
-            OrderBL bl = new OrderBL();
-            Integer orderId = bl.getLatest(userId);
-            if (orderId != null) {
-                bl.set(orderId);
-                retValue = bl.getWS(languageId);
-            }
-            LOG.debug("Done");
-            return retValue;
-        } catch (Exception e) {
-            LOG.error("WS - getLatestOrder", e);
-            throw new SessionInternalError("Error getting latest order");
+        // now get the order
+        OrderBL bl = new OrderBL();
+        Integer orderId = bl.getLatest(userId);
+        if (orderId != null) {
+            bl.set(orderId);
+            retValue = bl.getWS(languageId);
         }
+        return retValue;
     }
 
     public Integer[] getLastOrders(Integer userId, Integer number)
             throws SessionInternalError {
-        LOG.debug("Call to getLastOrders " + userId + " " + number);
         if (userId == null || number == null) {
             return null;
         }
-        try {
-            UserBL userbl = new UserBL();
+        UserBL userbl = new UserBL();
 
-            OrderBL order = new OrderBL();
-            LOG.debug("Done");
-            return order.getListIds(userId, number, userbl.getEntityId(userId));
-        } catch (Exception e) {
-            LOG.error("WS - getLastOrders", e);
-            throw new SessionInternalError("Error getting last orders");
-        }
+        OrderBL order = new OrderBL();
+        return order.getListIds(userId, number, userbl.getEntityId(userId));
     }
 
-    public void deleteOrder(Integer id)
-            throws SessionInternalError {
-        LOG.debug("Call to deleteOrder " + id);
-        try {
-            // now get the order
-            OrderBL bl = new OrderBL(id);
-            bl.delete(getCallerId());
-        } catch (Exception e) {
-            LOG.error("WS - deleteOrder", e);
-            throw new SessionInternalError("Error deleting order");
-        }
-        LOG.debug("Done");
+    public void deleteOrder(Integer id) throws SessionInternalError {
+        // now get the order
+        OrderBL bl = new OrderBL(id);
+        bl.delete(getCallerId());
     }
 
     /**
@@ -1108,26 +865,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * date. Returns null for users with no main subscription order.
      */
     public OrderWS getCurrentOrder(Integer userId, Date date) {
-        LOG.debug("Call to getCurrentOrder " + userId);
-        try {
-            OrderWS retValue = null;
-            // get the info from the caller
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+        OrderWS retValue = null;
+        // get the info from the caller
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            // now get the current order
-            OrderBL bl = new OrderBL();
-            if (bl.getCurrentOrder(userId, date) != null) {
-                retValue = bl.getWS(languageId);
-            }
-
-            LOG.debug("Done");
-            return retValue;
-
-        } catch (Exception e) {
-            LOG.error("WS - getCurrentOrder", e);
-            throw new SessionInternalError("Error getting current order");
+        // now get the current order
+        OrderBL bl = new OrderBL();
+        if (bl.getCurrentOrder(userId, date) != null) {
+            retValue = bl.getWS(languageId);
         }
+
+        return retValue;
     }
 
     /**
@@ -1137,8 +886,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
             String pricing, Date date, String eventDescription) {
-        LOG.debug("Call to updateCurrentOrder - userId: " + userId + 
-            " lines: " + Arrays.toString(lines) + " date: " + date);
         try {
             UserBL userbl = new UserBL(userId);
             // check user has a main subscription order
@@ -1243,109 +990,68 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer applyPayment(PaymentWS payment, Integer invoiceId)
             throws SessionInternalError {
-        LOG.debug("Call to applyPayment " + invoiceId);
         validatePayment(payment);
-        try {
-            //TODO Validate that the user ID of the payment is the same as the
-            // owner of the invoice
-            payment.setIsRefund(new Integer(0));
-            IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(
-                    Context.Name.PAYMENT_SESSION);
-            LOG.debug("Done");
-            return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
-        } catch (Exception e) {
-            LOG.error("WS - applyPayment", e);
-            throw new SessionInternalError("Error applying payment");
-        }
+        //TODO Validate that the user ID of the payment is the same as the
+        // owner of the invoice
+        payment.setIsRefund(new Integer(0));
+        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(
+                Context.Name.PAYMENT_SESSION);
+        return session.applyPayment(new PaymentDTOEx(payment), invoiceId);
     }
 
     public PaymentWS getPayment(Integer paymentId)
             throws SessionInternalError {
-        LOG.debug("Call to getPayment " + paymentId);
-        try {
-            // get the info from the caller
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+        // get the info from the caller
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            PaymentBL bl = new PaymentBL(paymentId);
-            LOG.debug("Done");
-            return PaymentBL.getWS(bl.getDTOEx(languageId));
-        } catch (Exception e) {
-            LOG.error("WS - getPayment", e);
-            throw new SessionInternalError("Error getting payment");
-        }
+        PaymentBL bl = new PaymentBL(paymentId);
+        return PaymentBL.getWS(bl.getDTOEx(languageId));
     }
 
-    public PaymentWS getLatestPayment(Integer userId)
-            throws SessionInternalError {
-        LOG.debug("Call to getLatestPayment " + userId);
-        try {
-            PaymentWS retValue = null;
-            // get the info from the caller
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+    public PaymentWS getLatestPayment(Integer userId) throws SessionInternalError {
+        PaymentWS retValue = null;
+        // get the info from the caller
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            PaymentBL bl = new PaymentBL();
-            Integer paymentId = bl.getLatest(userId);
-            if (paymentId != null) {
-                bl.set(paymentId);
-                retValue = PaymentBL.getWS(bl.getDTOEx(languageId));
-            }
-            LOG.debug("Done");
-            return retValue;
-        } catch (Exception e) {
-            LOG.error("WS - getLatestPayment", e);
-            throw new SessionInternalError("Error getting latest payment");
+        PaymentBL bl = new PaymentBL();
+        Integer paymentId = bl.getLatest(userId);
+        if (paymentId != null) {
+            bl.set(paymentId);
+            retValue = PaymentBL.getWS(bl.getDTOEx(languageId));
         }
+        return retValue;
     }
 
-    public Integer[] getLastPayments(Integer userId, Integer number)
-            throws SessionInternalError {
-        LOG.debug("Call to getLastPayments " + userId + " " + number);
+    public Integer[] getLastPayments(Integer userId, Integer number) throws SessionInternalError {
         if (userId == null || number == null) {
             return null;
         }
-        LOG.debug("WS - getLastPayments " + userId + " " + number);
-        try {
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            PaymentBL payment = new PaymentBL();
-            LOG.debug("Done");
-            return payment.getManyWS(userId, number, languageId);
-        } catch (Exception e) {
-            LOG.error("WS - getLastPayments", e);
-            throw new SessionInternalError("Error getting last payments");
-        }
+        PaymentBL payment = new PaymentBL();
+        return payment.getManyWS(userId, number, languageId);
     }
 
     /*
      * ITEM
      */
-    public Integer createItem(ItemDTOEx item)
-            throws SessionInternalError {
-        LOG.debug("Call to createItem ");
+    public Integer createItem(ItemDTOEx item) throws SessionInternalError {
         ItemBL itemBL = new ItemBL();
         ItemDTO dto = itemBL.getDTO(item);
         if (!ItemBL.validate(dto)) {
             throw new SessionInternalError("invalid argument");
         }
-        try {
-            // get the info from the caller
-            UserBL bl = new UserBL(getCallerId());
-            Integer languageId = bl.getEntity().getLanguageIdField();
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
-            dto.setEntity(new CompanyDTO(entityId));
+        // get the info from the caller
+        UserBL bl = new UserBL(getCallerId());
+        Integer languageId = bl.getEntity().getLanguageIdField();
+        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+        dto.setEntity(new CompanyDTO(entityId));
 
-            // call the creation
-            LOG.debug("Done");
-            return itemBL.create(dto, languageId);
-
-        } catch (Exception e) {
-            LOG.error("WS - createItem", e);
-            throw new SessionInternalError("Error creating item");
-        }
-
+        // call the creation
+        return itemBL.create(dto, languageId);
     }
 
     /**
@@ -1353,16 +1059,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return an array of items from the caller's entity
      */
     public ItemDTOEx[] getAllItems() throws SessionInternalError {
-        LOG.debug("Call to getAllItems ");
-        try {
-            Integer entityId = getCallerCompanyId();
-            ItemBL itemBL = new ItemBL();
-            LOG.debug("Done");
-            return itemBL.getAllItems(entityId);
-        } catch (Exception e) {
-            LOG.error("WS - getAllItems", e);
-            throw new SessionInternalError("Error getting all items");
-        }
+        Integer entityId = getCallerCompanyId();
+        ItemBL itemBL = new ItemBL();
+        return itemBL.getAllItems(entityId);
     }
 
     /**
@@ -1384,45 +1083,39 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
             throws SessionInternalError {
 
-        LOG.debug("Call to getUserTransitions " + from + " " + to);
         UserTransitionResponseWS[] result = null;
         Integer last = null;
         // Obtain the current entity and language Ids
 
-        try {
-            UserBL user = new UserBL();
-            Integer callerId = getCallerId();
-            Integer entityId = getCallerCompanyId();
-            EventLogger evLog = EventLogger.getInstance();
+        UserBL user = new UserBL();
+        Integer callerId = getCallerId();
+        Integer entityId = getCallerCompanyId();
+        EventLogger evLog = EventLogger.getInstance();
 
-            if (from == null) {
-                last = evLog.getLastTransitionEvent(entityId);
-            }
-
-            if (last != null) {
-                result = user.getUserTransitionsById(entityId, last, to);
-            } else {
-                result = user.getUserTransitionsByDate(entityId, from, to);
-            }
-
-            if (result == null) {
-                LOG.info("Data retrieved but resultset is null");
-            } else {
-                LOG.info("Data retrieved. Result size = " + result.length);
-            }
-
-            // Log the last value returned if there was any. This happens always,
-            // unless the returned array is empty.
-            if (result != null && result.length > 0) {
-                LOG.info("Registering transition list event");
-                evLog.audit(callerId, null, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
-                        EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
-                        result[0].getId().toString(), null);
-            }
-        } catch (Exception e) {
-            throw new SessionInternalError("Error accessing database [" + e.getLocalizedMessage() + "]", this.getClass(), e);
+        if (from == null) {
+            last = evLog.getLastTransitionEvent(entityId);
         }
-        LOG.debug("Done");
+
+        if (last != null) {
+            result = user.getUserTransitionsById(entityId, last, to);
+        } else {
+            result = user.getUserTransitionsByDate(entityId, from, to);
+        }
+
+        if (result == null) {
+            LOG.info("Data retrieved but resultset is null");
+        } else {
+            LOG.info("Data retrieved. Result size = " + result.length);
+        }
+
+        // Log the last value returned if there was any. This happens always,
+        // unless the returned array is empty.
+        if (result != null && result.length > 0) {
+            LOG.info("Registering transition list event");
+            evLog.audit(callerId, null, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
+                    EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
+                    result[0].getId().toString(), null);
+        }
         return result;
     }
 
@@ -1434,62 +1127,48 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
             throws SessionInternalError {
 
-        LOG.debug("Call to getUserTransitionsAfterId " + id);
         UserTransitionResponseWS[] result = null;
         // Obtain the current entity and language Ids
 
-        try {
-            UserBL user = new UserBL();
-            Integer callerId = getCallerId();
-            Integer entityId = getCallerCompanyId();
-            EventLogger evLog = EventLogger.getInstance();
+        UserBL user = new UserBL();
+        Integer callerId = getCallerId();
+        Integer entityId = getCallerCompanyId();
+        EventLogger evLog = EventLogger.getInstance();
 
-            result = user.getUserTransitionsById(entityId, id, null);
+        result = user.getUserTransitionsById(entityId, id, null);
 
-            if (result == null) {
-                LOG.info("Data retrieved but resultset is null");
-            } else {
-                LOG.info("Data retrieved. Result size = " + result.length);
-            }
-
-            // Log the last value returned if there was any. This happens always,
-            // unless the returned array is empty.
-            if (result != null && result.length > 0) {
-                LOG.info("Registering transition list event");
-                evLog.audit(callerId, null, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
-                        EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
-                        result[0].getId().toString(), null);
-            }
-        } catch (Exception e) {
-            throw new SessionInternalError("Error accessing database [" + e.getLocalizedMessage() + "]", this.getClass(), e);
+        if (result == null) {
+            LOG.debug("Data retrieved but resultset is null");
+        } else {
+            LOG.debug("Data retrieved. Result size = " + result.length);
         }
-        LOG.debug("Done");
+
+        // Log the last value returned if there was any. This happens always,
+        // unless the returned array is empty.
+        if (result != null && result.length > 0) {
+            LOG.debug("Registering transition list event");
+            evLog.audit(callerId, null, Constants.TABLE_EVENT_LOG, callerId, EventLogger.MODULE_WEBSERVICES,
+                    EventLogger.USER_TRANSITIONS_LIST, result[result.length - 1].getId(),
+                    result[0].getId().toString(), null);
+        }
         return result;
     }
 
     public ItemDTOEx getItem(Integer itemId, Integer userId, String pricing) {
+        PricingField[] fields = PricingField.getPricingFieldsValue(pricing);
 
-        try {
-            LOG.debug("Call to getItem");
-            PricingField[] fields = PricingField.getPricingFieldsValue(pricing);
+        ItemBL helper = new ItemBL(itemId);
+        List<PricingField> f = new ArrayList<PricingField>();
+        f.addAll(Arrays.asList(fields));
+        helper.setPricingFields(f);
+        UserBL user = new UserBL(getCallerId());
+        Integer callerId = user.getEntity().getUserId();
+        Integer entityId = user.getEntityId(callerId);
+        Integer languageId = user.getEntity().getLanguageIdField();
+        Integer currencyId = user.getCurrencyId();
 
-            ItemBL helper = new ItemBL(itemId);
-            List<PricingField> f = new ArrayList<PricingField>();
-            f.addAll(Arrays.asList(fields));
-            helper.setPricingFields(f);
-            UserBL user = new UserBL(getCallerId());
-            Integer callerId = user.getEntity().getUserId();
-            Integer entityId = user.getEntityId(callerId);
-            Integer languageId = user.getEntity().getLanguageIdField();
-            Integer currencyId = user.getCurrencyId();
-
-            ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
-            LOG.debug("Done");
-            return retValue;
-        } catch (Exception e) {
-            LOG.error("WS - getItem", e);
-            throw new SessionInternalError("Error getting item " + itemId);
-        }
+        ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
+        return retValue;
     }
 
     private Integer zero2null(Integer var) {
@@ -1693,13 +1372,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     private void validateCaller() {
         String root = WebServicesCaller.getUserName();
-        try {
-            UserBL bl = new UserBL();
-            bl.setRoot(root);
-            bl.getEntityId(bl.getEntity().getUserId());
-        } catch (Exception e) {
-            throw new SessionInternalError("Error identifiying the caller");
-        }
+        UserBL bl = new UserBL();
+        bl.setRoot(root);
+        bl.getEntityId(bl.getEntity().getUserId());
     }
 
     private PaymentDTOEx doPayInvoice(InvoiceDTO invoice, CreditCardDTO creditCard)
@@ -1710,28 +1385,23 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             return null;
         }
 
-        try {
-            IPaymentSessionBean payment = (IPaymentSessionBean) Context.getBean(
-                    Context.Name.PAYMENT_SESSION);
-            PaymentDTOEx paymentDto = new PaymentDTOEx();
-            paymentDto.setIsRefund(0);
-            paymentDto.setAmount(invoice.getBalance());
-            paymentDto.setCreditCard(creditCard);
-            paymentDto.setCurrency(new CurrencyDAS().find(invoice.getCurrency().getId()));
-            paymentDto.setUserId(invoice.getBaseUser().getUserId());
-            paymentDto.setPaymentMethod( new PaymentMethodDAS().find(
-                    com.sapienter.jbilling.common.Util.getPaymentMethod(
-                    creditCard.getNumber())));
-            paymentDto.setPaymentDate(new Date());
+        IPaymentSessionBean payment = (IPaymentSessionBean) Context.getBean(
+                Context.Name.PAYMENT_SESSION);
+        PaymentDTOEx paymentDto = new PaymentDTOEx();
+        paymentDto.setIsRefund(0);
+        paymentDto.setAmount(invoice.getBalance());
+        paymentDto.setCreditCard(creditCard);
+        paymentDto.setCurrency(new CurrencyDAS().find(invoice.getCurrency().getId()));
+        paymentDto.setUserId(invoice.getBaseUser().getUserId());
+        paymentDto.setPaymentMethod(new PaymentMethodDAS().find(
+                com.sapienter.jbilling.common.Util.getPaymentMethod(
+                creditCard.getNumber())));
+        paymentDto.setPaymentDate(new Date());
 
-            // make the call
-            payment.processAndUpdateInvoice(paymentDto, invoice);
+        // make the call
+        payment.processAndUpdateInvoice(paymentDto, invoice);
 
-            return paymentDto;
-        } catch (Exception e) {
-            LOG.error("WS - make payment:", e);
-            throw new SessionInternalError("Error while making payment for invoice: " + invoice.getId());
-        }
+        return paymentDto;
     }
 
     /**
@@ -1756,7 +1426,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     result = paymentDto.getCreditCard();
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // forced by checked exceptions :(
             LOG.error("WS - finding a credit card", e);
             throw new SessionInternalError("Error finding a credit card for user: " + userId);
         }
@@ -1768,66 +1438,65 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throws SessionInternalError {
 
         validateOrder(order);
+        // get the info from the caller
+        UserBL bl = new UserBL(getCallerId());
+        Integer executorId = bl.getEntity().getUserId();
+        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+
+        // we'll need the langauge later
+        bl.set(order.getUserId());
+        Integer languageId = bl.getEntity().getLanguageIdField();
+        // see if the related items should provide info
         try {
-            // get the info from the caller
-            UserBL bl = new UserBL(getCallerId());
-            Integer executorId = bl.getEntity().getUserId();
-            Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+            processItemLine(order.getOrderLines(), languageId, entityId,
+                       order.getUserId(), order.getCurrencyId());
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+        // call the creation
+        OrderBL orderBL = new OrderBL();
+        OrderDTO dto = orderBL.getDTO(order);
+        LOG.debug("Order has " + order.getOrderLines().length + " lines");
 
-            // we'll need the langauge later
-            bl.set(order.getUserId());
-            Integer languageId = bl.getEntity().getLanguageIdField();
-            // see if the related items should provide info
-            processItemLine(order.getOrderLines(), languageId, entityId, 
-                    order.getUserId(), order.getCurrencyId());
-            // call the creation
-            OrderBL orderBL = new OrderBL();
-            OrderDTO dto = orderBL.getDTO(order);
-            LOG.debug("Order has " + order.getOrderLines().length + " lines");
+        // make sure this shows as a new order, not as an update
+        dto.setId(null);
+        dto.setVersionNum(null);
+        for (OrderLineDTO line : dto.getLines()) {
+            line.setId(0);
+            line.setVersionNum(null);
+        }
 
-            // make sure this shows as a new order, not as an update
-            dto.setId(null);
-            dto.setVersionNum(null);
-            for (OrderLineDTO line : dto.getLines()) {
-                line.setId(0);
-                line.setVersionNum(null);
-            }
-
-            LOG.info("before cycle start");
-            // set a default cycle starts if needed (obtained from the main 
-            // subscription order, if it exists)
-            if (dto.getCycleStarts() == null && dto.getIsCurrent() == null) {
-                Integer mainOrderId = orderBL.getMainOrderId(dto.getUser().getId());
-                if (mainOrderId != null) {
-                    // only set a default if preference use current order is set
-                    PreferenceBL preferenceBL = new PreferenceBL();
-                    try {
-                        preferenceBL.set(entityId, Constants.PREFERENCE_USE_CURRENT_ORDER);
-                    } catch (EmptyResultDataAccessException e) {
+        LOG.info("before cycle start");
+        // set a default cycle starts if needed (obtained from the main
+        // subscription order, if it exists)
+        if (dto.getCycleStarts() == null && dto.getIsCurrent() == null) {
+            Integer mainOrderId = orderBL.getMainOrderId(dto.getUser().getId());
+            if (mainOrderId != null) {
+                // only set a default if preference use current order is set
+                PreferenceBL preferenceBL = new PreferenceBL();
+                try {
+                    preferenceBL.set(entityId, Constants.PREFERENCE_USE_CURRENT_ORDER);
+                } catch (EmptyResultDataAccessException e) {
                     // default preference will be used
                     }
-                    if (preferenceBL.getInt() != 0) {
-                        OrderDAS das = new OrderDAS();
-                        OrderDTO mainOrder = das.findNow(mainOrderId);
-                        LOG.debug("Copying cycle starts from main order");
-                        dto.setCycleStarts(mainOrder.getCycleStarts());
-                    }
+                if (preferenceBL.getInt() != 0) {
+                    OrderDAS das = new OrderDAS();
+                    OrderDTO mainOrder = das.findNow(mainOrderId);
+                    LOG.debug("Copying cycle starts from main order");
+                    dto.setCycleStarts(mainOrder.getCycleStarts());
                 }
             }
-
-            orderBL.set(dto);
-            orderBL.recalculate(entityId);
-            if (create) {
-                LOG.debug("creating order");
-                Integer id = orderBL.create(entityId, executorId, dto);
-                orderBL.set(id);
-                return orderBL.getWS(languageId);
-            }
-            return getWSFromOrder(orderBL, languageId);
-        } catch (Exception e) {
-            LOG.error("WS error creating order:", e);
-            throw new SessionInternalError("error creating purchase order");
         }
+
+        orderBL.set(dto);
+        orderBL.recalculate(entityId);
+        if (create) {
+            LOG.debug("creating order");
+            Integer id = orderBL.create(entityId, executorId, dto);
+            orderBL.set(id);
+            return orderBL.getWS(languageId);
+        }
+        return getWSFromOrder(orderBL, languageId);
     }
 
     private OrderWS getWSFromOrder(OrderBL bl, Integer languageId) {
@@ -1870,19 +1539,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     private InvoiceDTO findInvoice(Integer invoiceId) {
         final InvoiceDTO invoice;
-        try {
-            invoice = new InvoiceBL(invoiceId).getEntity();
-        } catch (Exception e) {
-            LOG.error("WS: findInvoice error: ", e);
-            throw new SessionInternalError("Configuration problems");
-        } 
+        invoice = new InvoiceBL(invoiceId).getEntity();
         return invoice;
     }
 
     // TODO: This method is not secured or in a jUnit test
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
             throws SessionInternalError {
-        LOG.debug("Call to getLatestInvoiceByItemType " + userId + " " + itemTypeId);
         InvoiceWS retValue = null;
         try {
             if (userId == null) {
@@ -1893,9 +1556,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (invoiceId != null) {
                 retValue = bl.getWS(new InvoiceDAS().find(invoiceId));
             }
-            LOG.debug("Done");
             return retValue;
-        } catch (Exception e) {
+        } catch (Exception e) { // forced by SQLException
             LOG.error("Exception in web service: getting latest invoice" +
                     " for user " + userId, e);
             throw new SessionInternalError("Error getting latest invoice");
@@ -1909,69 +1571,46 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     // TODO: This method is not secured or in a jUnit test
     public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
             throws SessionInternalError {
-        LOG.debug("Call to getLastInvoicesByItemType " + userId + " " + itemTypeId + " " + number);
-        try {
-            if (userId == null || itemTypeId == null || number == null) {
-                return null;
-            }
-
-            InvoiceBL bl = new InvoiceBL();
-            LOG.debug("Done");
-            return bl.getManyByItemTypeWS(userId, itemTypeId, number);
-        } catch (Exception e) {
-            LOG.error("Exception in web service: getting last invoices by item type" +
-                    " for user " + userId, e);
-            throw new SessionInternalError("Error getting last invoices by item type");
+        if (userId == null || itemTypeId == null || number == null) {
+            return null;
         }
+
+        InvoiceBL bl = new InvoiceBL();
+        return bl.getManyByItemTypeWS(userId, itemTypeId, number);
     }
 
     // TODO: This method is not secured or in a jUnit test
     public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId)
             throws SessionInternalError {
-        LOG.debug("Call to getLatestOrderByItemType " + userId + " " + itemTypeId);
         if (userId == null) {
             throw new SessionInternalError("User id can not be null");
         }
         if (itemTypeId == null) {
             throw new SessionInternalError("itemTypeId can not be null");
         }
-        try {
-            OrderWS retValue = null;
-            // get the info from the caller
-            UserBL userbl = new UserBL(getCallerId());
-            Integer languageId = userbl.getEntity().getLanguageIdField();
+        OrderWS retValue = null;
+        // get the info from the caller
+        UserBL userbl = new UserBL(getCallerId());
+        Integer languageId = userbl.getEntity().getLanguageIdField();
 
-            // now get the order
-            OrderBL bl = new OrderBL();
-            Integer orderId = bl.getLatestByItemType(userId, itemTypeId);
-            if (orderId != null) {
-                bl.set(orderId);
-                retValue = bl.getWS(languageId);
-            }
-            LOG.debug("Done");
-            return retValue;
-        } catch (Exception e) {
-            LOG.error("WS - getLatestOrder", e);
-            throw new SessionInternalError("Error getting latest order");
+        // now get the order
+        OrderBL bl = new OrderBL();
+        Integer orderId = bl.getLatestByItemType(userId, itemTypeId);
+        if (orderId != null) {
+            bl.set(orderId);
+            retValue = bl.getWS(languageId);
         }
+        return retValue;
     }
 
     // TODO: This method is not secured or in a jUnit test
     public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
             throws SessionInternalError {
-        LOG.debug("Call to getLastOrdersByItemType " + userId + " " + itemTypeId + " " + number);
         if (userId == null || number == null) {
             return null;
         }
-        try {
-            OrderBL order = new OrderBL();
-            return order.getListIdsByItemType(userId, itemTypeId, number);
-        } catch (Exception e) {
-            LOG.error("WS - getLastOrdersByItemType", e);
-            throw new SessionInternalError("Error getting last orders by item type");
-        } finally {
-            LOG.debug("Done");
-        }
+        OrderBL order = new OrderBL();
+        return order.getListIdsByItemType(userId, itemTypeId, number);
     }
 
     private Integer getCallerId() {
@@ -1984,109 +1623,70 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     @Override
     public Double isUserSubscribedTo(Integer userId, Integer itemId) {
-	    LOG.debug("Call to isUserSubscribedTo with params: userId = "
-	    			+ userId + ", itemId = " + itemId);
-    	Double result = Double.valueOf(0);
-    	try {
-    		OrderDAS das = new OrderDAS();
-    		result = das.findIsUserSubscribedTo(userId, itemId);
-    		return result;
-    	} catch (Throwable e) {
-    		LOG.error("Error determining if user is subscribed to item", e);
-    		throw new SessionInternalError("Error determining if user is subscribed to item");
-    	} finally {
-  			LOG.debug("Done");
-    	}
+        Double result = Double.valueOf(0);
+        OrderDAS das = new OrderDAS();
+        result = das.findIsUserSubscribedTo(userId, itemId);
+        return result;
     }
 
     @Override
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
-    	LOG.debug("Call to getUserItemsByCategory with params: userId = "
-    			+ userId + ", categoryId = " + categoryId);
     	Integer[] result = null;
-    	try {
-    		OrderDAS das = new OrderDAS();
-    		result = das.findUserItemsByCategory(userId, categoryId);
-    		return result;
-    	} catch (Throwable e) {
-    		LOG.error("Error retrieving user items by category", e);
-    		throw new SessionInternalError("Error retrieving user items by category");
-    	} finally {
-   			LOG.debug("Done");
-    	}
+        OrderDAS das = new OrderDAS();
+        result = das.findUserItemsByCategory(userId, categoryId);
+        return result;
     }
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId) {        
-        try {
-            return new ItemBL().getAllItemsByType(itemTypeId);
-        } catch (Throwable e) {
-            LOG.error("Error retrieving items by category" , e);
-            throw new SessionInternalError("Error retrieving items by category");
-        }
+        return new ItemBL().getAllItemsByType(itemTypeId);
     }
 
     public ItemTypeWS[] getAllItemCategories() {
-        try {
-            return new ItemTypeBL().getAllItemTypes();
-        } catch (Throwable e) {
-            LOG.error("Error retrieving item types" , e);
-            throw new SessionInternalError("Error retrieving item types");
-        }
-
+        return new ItemTypeBL().getAllItemTypes();
     }
 
     @Override
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
-		LOG.debug("Call to processPayment with params: payment Id = "
-				+ payment.getId());
 
 		validatePayment(payment);
 
+        PaymentDTOEx dto = new PaymentDTOEx(payment);
 
-		try {
-            PaymentDTOEx dto = new PaymentDTOEx(payment);
-
-            if (payment.getCreditCard() == null && payment.getAch() == null) {
-                PaymentDTO populated = PaymentBL.findPaymentInstrument(
-                        new UserBL(payment.getUserId()).getEntity().getCompany().getId(),
-                        payment.getUserId());
-                dto.setCreditCard(populated.getCreditCard());
-                dto.setAch(populated.getAch());
+        if (payment.getCreditCard() == null && payment.getAch() == null) {
+            PaymentDTO populated = null;
+            try {
+                populated = PaymentBL.findPaymentInstrument(
+                    new UserBL(payment.getUserId()).getEntity().getCompany().getId(),
+                    payment.getUserId());
+            } catch (Exception e) {
+                throw new SessionInternalError(e);
             }
+            dto.setCreditCard(populated.getCreditCard());
+            dto.setAch(populated.getAch());
+        }
 
-			IPaymentSessionBean session = (IPaymentSessionBean) Context
-					.getBean(Context.Name.PAYMENT_SESSION);
-			
-			Integer entityId = getCallerCompanyId();
-			Integer result = session.processAndUpdateInvoice(dto, null,
-					entityId);
-			LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
-			PaymentAuthorizationDTOEx auth = null;
-			if (dto !=null && dto.getAuthorization() != null) {
-				LOG.debug("PaymentAuthorizationDTO Id ="
-						+ dto.getAuthorization().getId());
-				auth = new PaymentAuthorizationDTOEx(dto.getAuthorization()
-						.getOldDTO());
-				LOG.debug("PaymentAuthorizationDTOEx Id =" + auth.getId());
-				auth.setResult(result.equals(Constants.RESULT_OK));
-				
-			} else {
-				auth = new PaymentAuthorizationDTOEx();
-				auth.setResult(result.equals(Constants.RESULT_FAIL));				
-			}
-			return auth;
-		} catch (Throwable e) {
-			LOG.error("Error processing payment ", e);
-			throw new SessionInternalError("Error processing payment");
-		} finally {
-			LOG.debug("Done");
-		}
+        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+
+        Integer entityId = getCallerCompanyId();
+        Integer result = session.processAndUpdateInvoice(dto, null,
+                entityId);
+        LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
+        PaymentAuthorizationDTOEx auth = null;
+        if (dto != null && dto.getAuthorization() != null) {
+            LOG.debug("PaymentAuthorizationDTO Id =" + dto.getAuthorization().getId());
+            auth = new PaymentAuthorizationDTOEx(dto.getAuthorization().getOldDTO());
+            LOG.debug("PaymentAuthorizationDTOEx Id =" + auth.getId());
+            auth.setResult(result.equals(Constants.RESULT_OK));
+
+        } else {
+            auth = new PaymentAuthorizationDTOEx();
+            auth.setResult(result.equals(Constants.RESULT_FAIL));
+        }
+        return auth;
 	}
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
             String fields) {
-        LOG.debug("Call to validatePurchase " + userId + ' ' + itemId);
-
         Integer[] itemIds = null;
         if (itemId != null) {
             itemIds = new Integer[] { itemId };
@@ -2097,30 +1697,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             fieldsArray = new String[] { fields };
         }
 
-        try {
-            return doValidatePurchase(userId, itemIds, fieldsArray);
-        } catch (Exception e) {
-            LOG.error("WS - validatePurchase", e);
-            throw new SessionInternalError("Error validating purchase");
-        }
+        return doValidatePurchase(userId, itemIds, fieldsArray);
     }
 
     public ValidatePurchaseWS validateMultiPurchase(Integer userId, 
             Integer[] itemIds, String[] fields) {
-        LOG.debug("Call to validateMultiPurchase " + userId + ' ' + 
-                Arrays.toString(itemIds));
 
-        try {
-            return doValidatePurchase(userId, itemIds, fields);
-        } catch (Exception e) {
-            LOG.error("WS - validateMultiPurchase", e);
-            throw new SessionInternalError("Error validating purchase");
-        }
+        return doValidatePurchase(userId, itemIds, fields);
     }
 
     private ValidatePurchaseWS doValidatePurchase(Integer userId, 
-            Integer[] itemIds, String[] fields) 
-            throws PluggableTaskException, TaskException {
+            Integer[] itemIds, String[] fields) {
 
         if (userId == null || (itemIds == null && fields == null)) {
             return null;
@@ -2224,7 +1811,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(items, 
                 prices, fieldsList);
-        LOG.debug("Done");
         return ret;
     }
 }

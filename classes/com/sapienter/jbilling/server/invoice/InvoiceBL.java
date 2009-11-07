@@ -32,8 +32,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.List;
 
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -641,14 +639,14 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
     public Integer[] getManyWS(Integer userId, Integer number)
-            throws NamingException, SessionInternalError {
+            throws SessionInternalError {
         List<Integer> result = new InvoiceDAS().findIdsByUserLatestFirst(
                 userId, number);
         return result.toArray(new Integer[result.size()]);
     }
 
     public Integer[] getManyByItemTypeWS(Integer userId, Integer itemTypeId, Integer number)
-            throws NamingException, SessionInternalError {
+            throws SessionInternalError {
         List<Integer> result = new InvoiceDAS().findIdsByUserAndItemTypeLatestFirst(userId, itemTypeId, number);
         return result.toArray(new Integer[result.size()]);
     }
@@ -666,7 +664,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
 
     
 
-    public void sendReminders(Date today) throws SQLException, NamingException,
+    public void sendReminders(Date today) throws SQLException,
             SessionInternalError {
         GregorianCalendar cal = new GregorianCalendar();
 
@@ -925,7 +923,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
     }
 
     // given the current invoice, it will 'rewind' to the previous one
-    public void setPrevious() throws SQLException, NamingException,
+    public void setPrevious() throws SQLException,
             EmptyResultDataAccessException {
 
         prepareStatement(InvoiceSQL.previous);

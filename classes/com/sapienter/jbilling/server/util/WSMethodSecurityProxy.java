@@ -250,7 +250,6 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
     
     public void before(final Method m, final Object[] args, final Object bean)
             throws SecurityException {
-        LOG.info("invoke, m=" + m.getName());
         if (!isMethodPresent(m)) {
             return;
         }
@@ -405,6 +404,5 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
             LOG.error("Exception ", e);
             throw new SecurityException(e.getMessage());
         } 
-        LOG.debug("Done");
     }
 }

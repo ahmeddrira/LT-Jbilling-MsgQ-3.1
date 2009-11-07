@@ -183,8 +183,7 @@ public class ContactBL {
         return retValue;
     }
     
-    public List<ContactDTOEx> getAll(Integer userId) 
-            throws NamingException {
+    public List<ContactDTOEx> getAll(Integer userId)  {
         List<ContactDTOEx> retValue = new ArrayList<ContactDTOEx>();
         UserBL user = new UserBL(userId);
         entityId = user.getEntityId(userId);

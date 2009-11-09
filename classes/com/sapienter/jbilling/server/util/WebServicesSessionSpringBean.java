@@ -1161,11 +1161,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         List<PricingField> f = new ArrayList<PricingField>();
         f.addAll(Arrays.asList(fields));
         helper.setPricingFields(f);
-        UserBL user = new UserBL(getCallerId());
-        Integer callerId = user.getEntity().getUserId();
-        Integer entityId = user.getEntityId(callerId);
-        Integer languageId = user.getEntity().getLanguageIdField();
-        Integer currencyId = user.getCurrencyId();
+
+        UserBL caller = new UserBL(getCallerId());
+        Integer callerId = caller.getEntity().getUserId();
+        Integer entityId = caller.getEntityId(callerId);
+        Integer languageId = caller.getEntity().getLanguageIdField();
+
+        // use the currency of the given user if provided, otherwise
+        // default to the currency of the caller (admin user)
+        Integer currencyId = (userId != null
+                              ? new UserBL(userId).getCurrencyId()
+                              : caller.getCurrencyId());
 
         ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
         return retValue;

@@ -25,6 +25,7 @@
  */
 package com.sapienter.jbilling.server.item;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -80,7 +81,7 @@ public class WSTest  extends TestCase {
     		JbillingAPI api = JbillingAPIFactory.getAPI();
     		
     		// Tests item pricing for user "gandalf" (id 2)
-    		PricingField pf = new PricingField("newPrice", 50.0);
+    		PricingField pf = new PricingField("newPrice", new BigDecimal("50.0"));
     		ItemDTOEx it = api.getItem(new Integer(1), new Integer(2), 
     				new PricingField[] { pf });
     		assertTrue(it.getPrice().equals(new Float(50.0F)));
@@ -150,8 +151,8 @@ public class WSTest  extends TestCase {
     		JbillingAPI api = JbillingAPIFactory.getAPI();
     		
     		// Tests item pricing for user "gandalf" (id 2)
-    		PricingField add = new PricingField("add", 10.0);
-    		PricingField subtract = new PricingField("subtract", 1.0);
+    		PricingField add = new PricingField("add", new BigDecimal("10.0"));
+    		PricingField subtract = new PricingField("subtract", new BigDecimal("1.0"));
     		
     		System.out.println("Testing pricing fields on order rating 1");
     		// rate an order, use "add" pricing field rule (adds 10 to price in all items of order)

@@ -371,7 +371,50 @@
         </exec>
         <echo>Ready. Start-up Tomcat and run 'ant test'</echo>
     </target>
-    
+
+    <target  name="test-unit">
+        <javac debug="on"
+               destdir="${build.test.dir}"
+               srcdir="${source.test.dir}">
+            <include name="**/PricingFieldTest.java"/> <!-- source to test/unit path when available -->
+            <classpath  refid="run.classpath"/>
+            <classpath  refid="test.classpath"/>
+        </javac>
+
+        <copy  file="${source.spring.descriptor.dir}/jbilling-database.xml" todir="${build.test.dir}"/>
+
+        <junit printsummary="off" haltonfailure="true">
+            <classpath>
+                <path refid="run.classpath"/>
+                <path refid="test.classpath"/>
+                <path refid="spring.classpath"/>
+                <pathelement path="${build.test.dir}"/>
+            </classpath>
+
+            <formatter type="brief" usefile="false"/>
+
+            <test name="com.sapienter.jbilling.server.item.PricingFieldTest"/>
+
+            <!-- ideally we should be able to run ALL unit tests on the path, but our current
+                 structure doesn't allow it as we can't differentiate between a ws test, unit test etc.
+
+                 todo: break tests into separate paths so we can use batchtest; any additional unit tests will run automatically
+                        test/ws/... Web Service tests
+                        test/unit/... Unit tests for domain objects, don't require container or db access
+                        test/integration/... Mediation, Provisioning, Process tests
+            -->
+            <!--
+            <batchtest  fork="yes">
+                <fileset dir="${source.test.dir}">
+                    <include name="**/*Test*.java"/>
+                    <exclude name="**/*Tester*.java"/>
+                    <exclude name="**/*TestCase*.java"/>
+                </fileset>
+            </batchtest>
+            -->
+        </junit>
+    </target>
+
     <target name="test-ws" depends="jar_api">
         <javac debug="on" destdir="${build.test.dir}"
                srcdir="${source.test.dir}"
@@ -474,8 +517,8 @@
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest"/>
         </junit>
     </target>
-    
-    <target name="test" depends="prepare-test, test-ws, test-partners, test-process, test-mediation, test-provisioning">
+
+    <target name="test" depends="prepare-test, test-unit, test-ws, test-partners, test-process, test-mediation, test-provisioning">
     </target>
     
     <!--

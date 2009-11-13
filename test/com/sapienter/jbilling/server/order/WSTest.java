@@ -24,6 +24,7 @@
  */
 package com.sapienter.jbilling.server.order;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -952,7 +953,7 @@ public class WSTest  extends TestCase {
              */
 
             // A pricing rule. See PricingRules.drl, rule 'PricingField test1'.
-            PricingField pf = new PricingField("newPrice", 5.0);
+            PricingField pf = new PricingField("newPrice", new BigDecimal("5.0"));
             newLine.setQuantity(1);
             currentOrderAfter = api.updateCurrentOrder(USER_ID, 
                     new OrderLineWS[] { newLine }, new PricingField[] { pf }, 

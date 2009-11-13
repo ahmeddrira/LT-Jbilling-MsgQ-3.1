@@ -100,8 +100,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
     public JDBCReader() {
 
     }
-
-    @Override
+  
     public boolean validate(List<String> messages) {
         try {
             connection = getConnection();
@@ -123,7 +122,6 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
         return true;
     }
 
-    @Override
     public Iterator<Record> iterator() {
         try {
             return new Reader(getRecords());
@@ -381,7 +379,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
                     case INTEGER:
                         ps.setInt(i + 2, field.getIntValue());
                         break;
-                    case FLOAT:
+                    case DECIMAL:
                         ps.setDouble(i + 2, field.getDoubleValue());
                         break;
                     case DATE:
@@ -492,9 +490,9 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
                                     records.getInt(i + 1)), isKeyIndex(i));
                             break;
 
-                        case FLOAT:
-                            currentRecord.addField(new PricingField(columnNames[i], 
-                                    records.getDouble(i + 1)), isKeyIndex(i));
+                        case DECIMAL:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                    records.getBigDecimal(i + 1)), isKeyIndex(i));
                             break;
 
                         case DATE:
@@ -564,7 +562,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
                     case Types.FLOAT:
                     case Types.NUMERIC:
                     case Types.REAL:
-                        columnTypes[i] = PricingField.Type.FLOAT;
+                        columnTypes[i] = PricingField.Type.DECIMAL;
                         break;
 
                     case Types.DATE:

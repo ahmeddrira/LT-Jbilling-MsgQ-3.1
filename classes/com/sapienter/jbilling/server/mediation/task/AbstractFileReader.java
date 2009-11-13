@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
@@ -239,10 +240,10 @@ public abstract class AbstractFileReader extends AbstractReader {
                                     AbstractFileReader.class,e);
                         }
                         break;
-                    case FLOAT:
+                    case DECIMAL:
                         String floatStr = tokens[tkIdx++].trim();
                         record.addField(new PricingField(field.getName(), floatStr.length() > 0 ?
-                                Double.valueOf(floatStr) : null), field.getIsKey());
+                                new BigDecimal(floatStr) : null), field.getIsKey());
                         break;
                 }
             }

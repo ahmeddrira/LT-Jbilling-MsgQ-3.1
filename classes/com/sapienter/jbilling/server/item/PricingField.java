@@ -20,196 +20,295 @@
 package com.sapienter.jbilling.server.item;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Emil
  */
 public class PricingField implements Serializable {
+
+    private static final long serialVersionUID = -1917848593328757599L;
+
     private final String name;
-    private String strValue;
-    private Date dateValue;
     private final Type type;
-    private Double doubleValue;
-    private Integer intValue;
     private Integer position = 1;
+    private String value = null;
     private UUID resultId; // at the time, only used for mediation of batch
     
-    public enum Type { STRING, INTEGER, FLOAT, DATE };
-    
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-    
-    public Integer getPosition() {
-        return position;
-    }
-    
+    public enum Type { STRING, INTEGER, DECIMAL, DATE }
+
+    /**
+     * Constructs a new PricingField from a given encoded String.
+     *
+     * This constructor is designed for internal use only.
+     *
+     * @see #encode(PricingField)
+     * @param encoded encoded string to parse
+     */
     public PricingField(String encoded) {
     	String[] fields = encoded.split(":");
-    	if (fields == null || fields.length != 4) {
-    		name = "";
-    		type = Type.INTEGER;
-    		intValue = 0;
+
+        if (fields == null || fields.length != 4) {
+    		this.name = "";
+    		this.type = Type.INTEGER;
+            this.value = "0";
     		return;
     	}
+
     	this.name = fields[0];
     	this.position = Integer.parseInt(fields[1]);
     	this.type = mapType(fields[2]);
-    	if (type != null) {
-    		switch(type) {
-    			case STRING  : setStrValue(fields[3]); break;
-    			case INTEGER : setIntValue(Integer.parseInt(fields[3])); break;
-    			case FLOAT   : setDoubleValue(Double.parseDouble(fields[3])); break;
-    			case DATE    : setDateValue(new Date(Long.parseLong(fields[3]))); break;
-    		}
-    	}
+    	this.value = fields[3]; 
     }
-    
+
+    /**
+     * Copy constructor, creates a new instance of the given PricingField with
+     * the same member values.
+     *
+     * @param field pricing field to copy
+     */
     public PricingField(PricingField field) {
         this.name = field.getName();
-        this.strValue = field.getStrValue();
-        this.dateValue = field.getDateValue();
         this.type = field.getType();
-        this.doubleValue = field.getDoubleValue();
-        this.intValue = field.getIntValue();
         this.position = field.getPosition();
+        this.value = field.getStrValue();
     }
-    
-    public PricingField(String name, String strValue) {
+
+    /**
+     * Constructs a new PricingField of type {@code STRING}
+     *
+     * @param name field name
+     * @param value field value
+     */
+    public PricingField(String name, String value) {
         this.name = name;
-        this.strValue = strValue;
-        type = Type.STRING;
-        intValue = null;
-        dateValue = null;
-        doubleValue = null;
+        this.type = Type.STRING;
+        setStrValue(value);
     }
 
-    public PricingField(String name, Date dateValue) {
+    /**
+     * Constructs a new PricingField of type {@code DATE}
+     *
+     * @param name field name
+     * @param value field value
+     */
+    public PricingField(String name, Date value) {
         this.name = name;
-        this.dateValue = dateValue;
-        type = Type.DATE;
-        intValue = null;
-        strValue = null;
-        doubleValue = null;
+        this.type = Type.DATE;
+        setDateValue(value);
     }
 
-    public PricingField(String name, Integer intValue) {
+    /**
+     * Constructs a new PricingField of type {@code INTEGER}
+     *
+     * @param name field name
+     * @param value field value
+     */
+    public PricingField(String name, Integer value) {
         this.name = name;
-        this.intValue = intValue;
-        type = Type.INTEGER;
-        strValue = null;
-        dateValue = null;
-        doubleValue = null;
+        this.type = Type.INTEGER;
+        setIntValue(value);
     }
-    
-    public PricingField(String name, Double doubleValue) {
+
+    /**
+     * Constructs a new PricingField of type {@code DECIMAL}
+     *
+     * @param name field name
+     * @param value field value
+     */
+    public PricingField(String name, BigDecimal value) {
         this.name = name;
-        this.doubleValue = doubleValue;
-        type = Type.FLOAT;
-        strValue = null;
-        intValue = null;
-        dateValue = null;
-    }
-
-    public Date getDateValue() {
-        return dateValue;
-    }
-    
-    public Calendar getCalendarValue() {
-    	Calendar cal = Calendar.getInstance();
-    	cal.setTime(dateValue);
-    	return cal;
-    }
-
-    // This method is only here for backward compatibility
-    public Double getFloatValue() {
-        return getDoubleValue();
-    }
-
-    public Integer getIntValue() {
-        return intValue;
-    }
-    
-    public Double getDoubleValue() {
-        return doubleValue;
+        this.type = Type.DECIMAL;
+        setDecimalValue(value);        
     }
 
     public String getName() {
         return name;
     }
 
-    public String getStrValue() {
-        return strValue;
-    }
-
     public Type getType() {
         return type;
     }
-    
-    public Object getValue() {
-        if (strValue != null) 
-            return strValue;
-        if (intValue != null)
-            return intValue;
-        if (dateValue != null)
-            return dateValue;
-        if (doubleValue != null)
-            return doubleValue;
-        
-        return null;
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
-    
-    public static Type mapType(String myType) {
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public UUID getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(UUID resultId) {
+        this.resultId = resultId;
+    }
+
+    /**
+     * Returns this pricing fields value as a raw type.
+     *
+     * @return pricing field value
+     */
+    public Object getValue() {
+        switch (type) {
+            case STRING  : return value;
+            case DATE    : return getDateValue(); 
+            case INTEGER : return getIntValue();
+            case DECIMAL : return getDecimalValue();
+            default: return null;
+        }        
+    }
+
+    public String getStrValue() {
+        return value;
+    }
+
+    public void setStrValue(String value) {
+        this.value = value;
+    }
+
+
+    public Date getDateValue() {
+        if (value == null) return null;
+        return new Date(Long.parseLong(value));
+    }
+
+    public void setDateValue(Date value) {
+        if (value != null)
+            this.value = String.valueOf(value.getTime());
+    }
+
+    public Calendar getCalendarValue() {
+        if (value == null) return null;
+
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(getDateValue());
+    	return cal;
+    }
+
+    public Integer getIntValue() {
+        if (value == null) return null;
+        return Integer.valueOf(value);
+    }
+
+    public void setIntValue(Integer value) {
+        if (value != null)
+            this.value = value.toString();
+    }
+
+    public BigDecimal getDecimalValue() {
+        if (value == null) return null;
+        return new BigDecimal(value);
+    }
+
+    public void setDecimalValue(BigDecimal value) {
+        if (value != null)
+            this.value = value.toString();
+    }
+
+    /**
+     * Returns the decimal value as a double. This method is provided for backwards
+     * compatibility, use {@link PricingField#getDecimalValue()} instead.
+     *
+     * @return decimal value as a double
+     */
+    public Double getDoubleValue() {
+        BigDecimal value = getDecimalValue();
+        return (value != null ? value.doubleValue() : null);
+    }
+
+    /**
+     * @see #getDoubleValue()
+     * @return decimal value as a float
+     */
+    public Double getFloatValue() {
+        return getDoubleValue();
+    }
+
+    /**
+     * Returns an appropriate {@link Type} for the given string, or null if no matching type found.
+     *
+     * Type strings:
+     *      string
+     *      integer
+     *      float
+     *      double
+     *      decimal
+     *      date
+     *
+     * @param myType type string
+     * @return matching type
+     */
+    public static Type mapType(String myType) {  // todo: should be a member of the Type enum eg, Type$fromString(...);
         if (myType.equalsIgnoreCase("string")) {
             return Type.STRING;
         } else if (myType.equalsIgnoreCase("integer")) {
             return Type.INTEGER;
-        } else if (myType.equalsIgnoreCase("float") || myType.equalsIgnoreCase("double")) {
-            return Type.FLOAT;
+        } else if (myType.equalsIgnoreCase("float") || myType.equalsIgnoreCase("double") || myType.equalsIgnoreCase("decimal")) {
+            return Type.DECIMAL;
         } else if (myType.equalsIgnoreCase("date")) {
             return Type.DATE;
         } else {
             return null;
         }
     }
-    
+
+    /**
+     * Encodes a pricing field as a string. The encoded string is a semi-colon
+     * delimited string in the format {@code :name:position:type:value}, where name and position are
+     * optional.
+     *
+     * Example:
+     *      :src::string:310-1010
+     *      :dst::string:1-800-123-4567
+     *      :userid:integer:1234
+     *  
+     * @param field field to encode
+     * @return encoded string
+     */
     public static String encode(PricingField field) {
-    	StringBuffer sb = new StringBuffer(field.getName() + ":" + field.getPosition());
+    	StringBuffer sb = new StringBuffer()
+            .append(field.getName())
+            .append(":")
+            .append(field.getPosition());
+
     	switch(field.getType()) {
-    	case STRING  : sb.append(":string:" + field.getStrValue()); break;
-    	case INTEGER : sb.append(":integer:" + field.getIntValue()); break;
-    	case FLOAT   : sb.append(":float:" + field.getFloatValue()); break;
-    	case DATE    : sb.append(":date:" + field.getDateValue().getTime()); break;
+            case STRING:
+                sb.append(":string:");
+                break;
+
+            case INTEGER:
+                sb.append(":integer:");
+                break;
+
+            case DECIMAL:
+                sb.append(":float:");
+                break;
+
+            case DATE:
+                sb.append(":date:");
+                break;
     	}
+
+        sb.append(field.getStrValue());
+
     	return sb.toString();
     }
-    
-    public String toString() {
-        return "name: " + name + " type: " + type + " value: " + getValue() +
-                " position: " + position + " resultId: " + resultId;
-    }
 
-    public void setDateValue(Date dateValue) {
-        this.dateValue = dateValue;
-    }
-
-    public void setIntValue(Integer intValue) {
-        this.intValue = intValue;
-    }
-
-    public void setStrValue(String strValue) {
-        this.strValue = strValue;
-    }
-    
-    public void setDoubleValue(Double doubleValue) {
-        this.doubleValue = doubleValue;
-    }
-    
+    /**
+     * Parses a comma separated list of encoded PricingField strings and returns
+     * an array of fields.
+     *
+     * @param pricingFields comma separated list of encoded pricing field strings
+     * @return array of fields
+     */
     public static PricingField[] getPricingFieldsValue(String pricingFields) {
 		if (pricingFields == null)
 			return null;
@@ -223,11 +322,18 @@ public class PricingField implements Serializable {
 				result.add(new PricingField(fields[i]));
 			}
 		}
-		return result.toArray(new PricingField[0]);
+		return result.toArray(new PricingField[0]); 
 	}
 
+    /**
+     * Returns a comma separated list of encoded PricingField strings from the given
+     * array of fields.
+     *
+     * @param pricingFields array of fields to convert
+     * @return comma separated list of encoded pricing field strings
+     */
 	public static String setPricingFieldsValue(PricingField[] pricingFields) {
-		PricingField[] fields = pricingFields;
+		PricingField[] fields = pricingFields; // defensive copy
 		StringBuffer result = new StringBuffer();
 		if (fields != null && fields.length > 0) {
 			for (int i = 0; i < fields.length; i++) {
@@ -240,13 +346,12 @@ public class PricingField implements Serializable {
 		return result.toString();
 	}
 
-    public UUID getResultId() {
-        return resultId;
+    @Override
+    public String toString() {
+        return "name: " + name
+                + " type: " + type
+                + " value: " + getValue() 
+                + " position: " + position
+                + " resultId: " + resultId;
     }
-
-    public void setResultId(UUID resultId) {
-        this.resultId = resultId;
-    }
-
-    
 }

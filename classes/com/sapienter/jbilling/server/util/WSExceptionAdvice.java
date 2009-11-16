@@ -27,6 +27,7 @@ import org.springframework.aop.ThrowsAdvice;
 import com.sapienter.jbilling.common.SessionInternalError;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 
 /**
  * Re-throws any exceptions from the API as SessionInternalErrors to
@@ -38,7 +39,7 @@ public class WSExceptionAdvice implements ThrowsAdvice {
 
     private static final Logger LOG = Logger.getLogger(WSExceptionAdvice.class);
 
-    public void afterThrowing(Exception throwable) {
+    public void afterThrowing(Method method, Object[] args, Exception throwable) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);
@@ -46,6 +47,8 @@ public class WSExceptionAdvice implements ThrowsAdvice {
 
         LOG.error(throwable.getMessage() + "\n" + sw.toString());
 
-        throw new SessionInternalError(throwable);
+        String message = "Error calling jBilling API. Method: " + method.getName();
+
+        throw new SessionInternalError(message, throwable);
     }
 }

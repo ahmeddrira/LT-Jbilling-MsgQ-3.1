@@ -63,4 +63,8 @@ public class SessionInternalError extends RuntimeException {
         log.fatal("Internal error: " + e.getMessage() +
                 "\n" + sw.toString());
     }
+
+    public SessionInternalError(String message, Throwable e) {
+        super(message + " Cause: " + e.getMessage(), e);
+    }
 }

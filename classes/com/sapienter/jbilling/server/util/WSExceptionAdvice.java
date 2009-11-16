@@ -39,13 +39,13 @@ public class WSExceptionAdvice implements ThrowsAdvice {
 
     private static final Logger LOG = Logger.getLogger(WSExceptionAdvice.class);
 
-    public void afterThrowing(Method method, Object[] args, Exception throwable) {
+    public void afterThrowing(Method method, Object[] args, Object target, Exception throwable) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);
         pw.close();
 
-        LOG.error(throwable.getMessage() + "\n" + sw.toString());
+        LOG.debug(throwable.getMessage() + "\n" + sw.toString());
 
         String message = "Error calling jBilling API. Method: " + method.getName();
 

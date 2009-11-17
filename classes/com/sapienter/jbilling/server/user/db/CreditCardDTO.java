@@ -305,7 +305,7 @@ public class CreditCardDTO implements Serializable {
      */
     @Transient
     public void setNumber(String number) {
-        if (number == null) {
+        if (number == null || number.trim().equals("")) {
             setRawNumber(null);
             setCcNumberPlain(null);
         } else {

@@ -30,8 +30,12 @@ import junit.framework.TestCase;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class PricingFieldTest extends TestCase {
+
+    private Date DATE_VALUE;
+    private String DATE_VALUE_STRING;
 
     public PricingFieldTest() {
         super();
@@ -39,6 +43,13 @@ public class PricingFieldTest extends TestCase {
 
     public PricingFieldTest(String name) {
         super(name);
+
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.clear();
+        calendar.set(2009, 11, 16);
+
+        DATE_VALUE = calendar.getTime();
+        DATE_VALUE_STRING = String.valueOf(DATE_VALUE.getTime());        
     }
 
     @Override
@@ -55,9 +66,8 @@ public class PricingFieldTest extends TestCase {
         PricingField string = new PricingField("str field", "Some String");
         assertEquals("Some String", string.getValue());
 
-        Date day = new Date(2009 - 1900, 11, 10);
-        PricingField date = new PricingField("date field", day);
-        assertEquals(day, date.getValue());
+        PricingField date = new PricingField("date field", DATE_VALUE);
+        assertEquals(DATE_VALUE, date.getValue());
 
         PricingField integer = new PricingField("int field", 2009);
         assertEquals(2009, ((Integer) integer.getValue()).intValue());
@@ -70,9 +80,8 @@ public class PricingFieldTest extends TestCase {
         PricingField string = new PricingField("str field", "Some String");
         assertEquals("Some String", string.getStrValue());
 
-        Date day = new Date(2009 - 1900, 11, 10);
-        PricingField date = new PricingField("date field", day);
-        assertEquals("1260421200000", date.getStrValue());
+        PricingField date = new PricingField("date field", DATE_VALUE);
+        assertEquals(DATE_VALUE_STRING, date.getStrValue());
 
         PricingField integer = new PricingField("int field", 2009);
         assertEquals("2009", integer.getStrValue());
@@ -82,23 +91,21 @@ public class PricingFieldTest extends TestCase {
     }
 
     public void testGetDateValue() {
-        Date day = new Date(2009 - 1900, 11, 10);
-        PricingField date = new PricingField("date field", day);
+        PricingField date = new PricingField("date field", DATE_VALUE);
 
         assertEquals(PricingField.Type.DATE, date.getType());
-        assertEquals(day, date.getDateValue());
+        assertEquals(DATE_VALUE, date.getDateValue());
     }
 
     public void testGetCalendarValue() {
-        Date day = new Date(2009 - 1900, 11, 10);
-        PricingField date = new PricingField("date field", day);
+        PricingField date = new PricingField("date field", DATE_VALUE);
 
         assertEquals(PricingField.Type.DATE, date.getType());
 
         Calendar calendar = date.getCalendarValue();
         assertEquals(2009, calendar.get(Calendar.YEAR));
         assertEquals(11, calendar.get(Calendar.MONTH));
-        assertEquals(10, calendar.get(Calendar.DAY_OF_MONTH));  
+        assertEquals(16, calendar.get(Calendar.DAY_OF_MONTH));  
     }
 
     public void testGetIntegerValue() {
@@ -119,9 +126,8 @@ public class PricingFieldTest extends TestCase {
         PricingField string = new PricingField("str field", "Some String");
         assertEquals("str field:1:string:Some String", PricingField.encode(string));
 
-        Date day = new Date(2009 - 1900, 11, 10);
-        PricingField date = new PricingField("date field", day);
-        assertEquals("date field:1:date:1260421200000", PricingField.encode(date));
+        PricingField date = new PricingField("date field", DATE_VALUE);
+        assertEquals("date field:1:date:" + DATE_VALUE_STRING, PricingField.encode(date));
 
         PricingField integer = new PricingField("int field", 2009);
         assertEquals("int field:1:integer:2009", PricingField.encode(integer));
@@ -135,9 +141,8 @@ public class PricingFieldTest extends TestCase {
         assertEquals(PricingField.Type.STRING, string.getType());
         assertEquals("Some String", string.getStrValue());      
 
-        PricingField date = new PricingField("date field:1:date:1260421200000");
-        Date day = new Date(2009 - 1900, 11, 10);
-        assertEquals(day.getTime(), date.getDateValue().getTime());        
+        PricingField date = new PricingField("date field:1:date:" + DATE_VALUE_STRING);
+        assertEquals(DATE_VALUE.getTime(), date.getDateValue().getTime());
 
         PricingField integer = new PricingField("int field:1:integer:2009");
         assertEquals(PricingField.Type.INTEGER, integer.getType());

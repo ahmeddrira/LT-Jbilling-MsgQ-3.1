@@ -697,8 +697,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     /**
-     * make sure to call this only with the configuration for automatic
-     * application of unsued payments is set
+     * Given an invoice, the system will look for any payment with a balance
+     * and get the invoice paid with this payment.
      */
     public void automaticPaymentApplication(InvoiceDTO invoice)
             throws SQLException {
@@ -714,8 +714,8 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     }
 
     /**
-     * make sure to call this only with the configuration for automatic
-     * application of unused payments is set
+     * Give an payment (already set in this object), it will look for any
+     * invoices with a balance and get them paid, starting wiht the oldest.
      */
     public void automaticPaymentApplication() throws SQLException {
         if (payment.getBalance() <= 0) {
@@ -835,43 +835,5 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         dto.setInvoiceId(map.getInvoiceEntity().getId());
         dto.setCurrencyId(map.getPayment().getCurrency().getId());
         return dto;
-    }
-
-    /**
-     * Checks first if the configuration is for automatic linking. Looks for any
-     * invoice with balance, and then links it with any payment with balance.
-     * 
-     * @return
-     */
-    public boolean linkPaymentsWithInvoice(Integer userId) {
-        LOG.debug("Attempting to link payments to invoices. User " + userId);
-        boolean retValue = false;
-        try {
-            UserBL user = new UserBL(userId);
-            Integer entityId = user.getEntityId(userId);
-            ConfigurationBL conf = new ConfigurationBL(entityId);
-            if (conf.getEntity().getAutoPaymentApplication() == 1) {
-                // now find an invoice
-                InvoiceBL invBl = new InvoiceBL();
-                Integer invoiceId = null;
-                CachedRowSet set = invBl.getPayableInvoicesByUser(userId);
-                if (set.next()) {
-                    invoiceId = set.getInt(1);
-                    invBl.set(invoiceId);
-                    automaticPaymentApplication(invBl.getEntity());
-                    LOG.debug("done");
-                } else {
-                    set.close();
-                    LOG.debug("Can't find any invoice to pay");
-                }
-
-            } else {
-                LOG.debug("Configuration set to not link payments");
-            }
-        } catch (Exception e) {
-            throw new SessionInternalError("Linking payments to invoices",
-                    PaymentBL.class, e);
-        }
-        return retValue;
     }
 }

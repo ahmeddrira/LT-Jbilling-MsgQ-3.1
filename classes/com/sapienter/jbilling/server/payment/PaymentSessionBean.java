@@ -475,6 +475,10 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     float paid = applyPayment(payment, invoiceBl.getEntity(), true);
                     // link it with the invoice
                     paymentBl.createMap(invoiceBl.getEntity(), new Float(paid));
+                } else {
+                    // this payment was done without an explicit invoice
+                    // We'll try to link it to invoices with balances then
+                    paymentBl.automaticPaymentApplication();
                 }
                 // let know about this payment with an event
                 PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
@@ -607,9 +611,8 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     
                     // link to unpaid invoices
                     // TODO avoid sending two emails
-                    PaymentBL bl = new PaymentBL();
-                    bl.linkPaymentsWithInvoice(userId);
-                    
+                    PaymentBL bl = new PaymentBL(payment);
+                    bl.automaticPaymentApplication();
                 } else {
                     LOG.debug("wrong currency " + currency);
                 }

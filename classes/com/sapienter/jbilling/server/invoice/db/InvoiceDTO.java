@@ -294,13 +294,6 @@ public class InvoiceDTO implements Serializable {
             return;
         }
 
-        // don't change carried invoices to 'unpaid' based on toProcess
-        if (getInvoiceStatus() != null
-                && toProcess == DO_NOT_PROCESS
-                && Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.equals(getInvoiceStatus().getId())) {
-            return;
-        }
-
         setInvoiceStatus(new InvoiceStatusDAS().find(
                 (toProcess == DO_NOT_PROCESS
                         ? Constants.INVOICE_STATUS_PAID

@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.jws.WebService;
-import javax.naming.NamingException;
 
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;

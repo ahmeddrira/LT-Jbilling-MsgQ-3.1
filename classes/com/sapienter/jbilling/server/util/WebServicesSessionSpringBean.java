@@ -940,7 +940,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
                 MediationResult result = new MediationResult("WS");
                 result.setUserId(userId);
-                result.setEventDate(new Date());
+                result.setEventDate(date);
                 ArrayList results = new ArrayList(1);
                 results.add(result);
                 processTask.process(records, results, "WS");

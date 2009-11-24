@@ -47,10 +47,12 @@ public class MediationResult extends Result {
     private final String configurationName;
     private Date eventDate = null;
     private String description = null;
+    private boolean persist = false; // whether changes are allowed to the DB
 
-    public MediationResult(String configurationName) {
+    public MediationResult(String configurationName, boolean persist) {
         this.configurationName = configurationName;
         lines = new ArrayList<OrderLineDTO>();
+        this.persist = persist;
     }
 
     public String getConfigurationName() {
@@ -132,7 +134,13 @@ public class MediationResult extends Result {
         this.diffLines = diffLines;
     }
 
+    public void setPersist(boolean persist) {
+        this.persist = persist;
+    }
 
-    
+    public boolean getPersist() {
+        return persist;
+    }
+
 }
 

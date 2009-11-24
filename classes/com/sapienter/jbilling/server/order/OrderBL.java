@@ -380,12 +380,13 @@ public class OrderBL extends ResultList
      * Generates a NewQuantityEvent for each order line that has had
      * its quantity modified (including those added or deleted).
      */
-    public void checkOrderLineQuantities(OrderDTO oldOrder, OrderDTO newOrder) {
+    public void checkOrderLineQuantities(List<OrderLineDTO> oldLines, 
+            List<OrderLineDTO> newLines, Integer entityId, Integer orderId) {
         // NewQuantityEvent is generated when an order line and it's quantity 
         // has changed, including from >0 to 0 (deleted) and 0 to >0 (added).
         // First, copy and sort new and old order lines by order line id.
-        List<OrderLineDTO> oldOrderLines = new ArrayList(oldOrder.getLines());
-        List<OrderLineDTO> newOrderLines = new ArrayList(newOrder.getLines());
+        List<OrderLineDTO> oldOrderLines = new ArrayList(oldLines);
+        List<OrderLineDTO> newOrderLines = new ArrayList(newLines);
         Comparator<OrderLineDTO> sortByOrderLineId = new Comparator<OrderLineDTO>() {
 
             public int compare(OrderLineDTO ol1, OrderLineDTO ol2) {
@@ -409,8 +410,6 @@ public class OrderBL extends ResultList
 
         Iterator<OrderLineDTO> itOldLines = oldOrderLines.iterator();
         Iterator<OrderLineDTO> itNewLines = newOrderLines.iterator();
-        Integer entityId = oldOrder.getBaseUserByUserId().getCompany().getId();
-        Integer orderId = oldOrder.getId();
 
         // Step through the sorted order lines, checking if it exists only in 
         // one, the other or both. If both, then check if quantity has changed.
@@ -517,7 +516,9 @@ public class OrderBL extends ResultList
          */
 
         // generate new quantity events as necessary
-        checkOrderLineQuantities(order, dto);
+        checkOrderLineQuantities(order.getLines(), dto.getLines(), 
+                order.getBaseUserByUserId().getCompany().getId(), 
+                order.getId());
 
         OrderLineDTO oldLine = null;
         int nonDeletedLines = 0;
@@ -1220,82 +1221,6 @@ public class OrderBL extends ResultList
             line.setProvisioningRequestId(dto.getProvisioningRequestId());
         }
     }
-
-    /**
-     * Updates the one-time order that holds the period's charges.
-     * @param entityId
-     * @param executorId
-     * @param userId
-     * @param currencyId
-     * @param lines
-     * @param eventDate
-     * @param readyOrder The current order, detached, with all the lines already applied and ready
-     * for saving
-     * @return detached lines that have been added or modified. The amount is only the updated
-     * amount
-     */
-    public List<OrderLineDTO> updateCurrent(Integer entityId, Integer executorId, Integer userId, Integer currencyId,
-            List<OrderLineDTO> lines, Date eventDate, OrderDTO readyOrder) {
-
-        try {
-            List<OrderLineDTO> newLines = new ArrayList<OrderLineDTO>();
-
-            // get detached lines of this order, to later compare with the modified one
-            order = new OrderDAS().find(readyOrder.getId());
-            List<OrderLineDTO> oldLines = new ArrayList<OrderLineDTO>();
-            for (OrderLineDTO line : order.getLines()) {
-                oldLines.add(new OrderLineDTO(line));
-            }
-
-            // see which lines have changed, for the return
-            Collections.sort(oldLines, new Comparator<OrderLineDTO>() {
-
-                public int compare(OrderLineDTO a, OrderLineDTO b) {
-                    return new Integer(a.getId()).compareTo(new Integer(b.getId()));
-                }
-            });
-            // save now the order, so all its lines are in the session
-            readyOrder = new OrderDAS().save(readyOrder);
-
-            for (OrderLineDTO line : readyOrder.getLines()) {
-                int index = Collections.binarySearch(oldLines, line, new Comparator<OrderLineDTO>() {
-
-                    public int compare(OrderLineDTO a, OrderLineDTO b) {
-                        return new Integer(a.getId()).compareTo(new Integer(b.getId()));
-                    }
-                });
-                if (index >= 0) {
-                    OrderLineDTO diffLine = new OrderLineDTO(oldLines.get(index));
-                    // will fail if amounts or quantities are null...
-                    diffLine.setAmount(line.getAmount().floatValue() - diffLine.getAmount().floatValue());
-                    diffLine.setQuantity(line.getQuantity() - diffLine.getQuantity());
-                    if (diffLine.getAmount() != 0 || diffLine.getQuantity() != 0) {
-                        newLines.add(diffLine);
-                        EventManager.process(new NewQuantityEvent(entityId,
-                                oldLines.get(index).getQuantity(),
-                                line.getQuantity(), readyOrder.getId(), oldLines.get(index), line));
-
-                    }
-                } else {
-                    EventManager.process(new NewQuantityEvent(entityId,
-                            0.0, line.getQuantity(), readyOrder.getId(), line, null));
-                    // new line, attach to session
-                    newLines.add(line);
-                }
-            }
-
-            // it should be at least one...
-            if (newLines.size() == 0) {
-                LOG.warn("No lines updated after update current");
-            }
-
-            return newLines;
-
-        } catch (Exception e) {
-            throw new SessionInternalError("Updating current order", OrderBL.class, e);
-        }
-    }
-
 
    /**
      * Returns the current one-time order for this user for the given date.

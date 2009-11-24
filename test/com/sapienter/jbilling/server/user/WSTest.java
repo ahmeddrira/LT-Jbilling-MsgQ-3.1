@@ -42,6 +42,7 @@ import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -1610,5 +1611,104 @@ Ch2->P1
             Thread.sleep(t);
         } catch (InterruptedException e) {
         }
+    }
+
+    public void testUpdateCurrentOrderNewQuantityEvents() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // create user
+            UserWS user = createUser(true, null, null);
+            Integer userId = user.getUserId();
+
+            // update to credit limit
+            user.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            user.setCreditLimit(1000.0);
+            api.updateUser(user);
+
+            // create an order for this user
+            OrderWS order = new OrderWS();
+            order.setUserId(userId);
+            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+            order.setPeriod(2); // monthly
+            order.setCurrencyId(1); // USD
+
+            // a main subscription order
+            order.setIsCurrent(1);
+            Calendar cal = Calendar.getInstance();
+            cal.clear();
+            cal.set(2009, 1, 1);
+            order.setActiveSince(cal.getTime());
+
+            // order lines
+            OrderLineWS[] lines = new OrderLineWS[2];
+            lines[0] = new OrderLineWS();
+            lines[0].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            lines[0].setQuantity(1); 
+            lines[0].setItemId(2); // lemonade plan
+            // take the price and description from the item
+            lines[0].setUseItem(true);
+
+            lines[1] = new OrderLineWS();
+            lines[1].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            lines[1].setQuantity(3); 
+            lines[1].setItemId(1); // lemonade
+            // take the price and description from the item
+            lines[1].setUseItem(true);
+
+            // attach lines to order
+            order.setOrderLines(lines);
+
+            // create the order
+            Integer orderId = api.createOrder(order);
+
+
+            // add 10 coffees to current order
+            OrderLineWS newLine = new OrderLineWS();
+            newLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            newLine.setItemId(new Integer(3));
+            newLine.setQuantity(new Double(10.0));
+            // take the price and description from the item
+            newLine.setUseItem(new Boolean(true));
+
+            // update the current order
+            OrderWS currentOrderAfter = api.updateCurrentOrder(userId, 
+                    new OrderLineWS[] { newLine }, null, new Date(), 
+                    "Event from WS");
+
+            // check dynamic balance increased (credit limit type)
+            user = api.getUserWS(userId);
+            assertEquals("dynamic balance", 150.0, user.getDynamicBalance());
+
+            // add another 10 coffees to current order
+            currentOrderAfter = api.updateCurrentOrder(userId, 
+                    new OrderLineWS[] { newLine }, null, new Date(), 
+                    "Event from WS");
+
+            // check dynamic balance increased (credit limit type)
+            user = api.getUserWS(userId);
+            assertEquals("dynamic balance", 300.0, user.getDynamicBalance());
+
+            // update current order using pricing fields 
+            PricingField pf = new PricingField("newPrice", new BigDecimal("5.0"));
+            PricingField duration = new PricingField("duration", 5); // 5 min
+            PricingField dst = new PricingField("dst", "12345678");
+            currentOrderAfter = api.updateCurrentOrder(userId, null, 
+                    new PricingField[] { pf, duration, dst }, new Date(),
+                    "Event from WS");
+
+            // check dynamic balance increased (credit limit type)
+            // 300 + 5 minutes * 5.0 price
+            user = api.getUserWS(userId);
+            assertEquals("dynamic balance", 325.0, user.getDynamicBalance());
+
+
+            // clean up
+            api.deleteOrder(orderId);
+            api.deleteUser(userId);
+    	} catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+    	}
     }
 }

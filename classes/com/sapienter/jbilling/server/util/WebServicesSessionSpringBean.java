@@ -928,6 +928,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                             getCallerCompanyId(), currencyId, records);
                 }
                 diffLines = OrderLineBL.diffOrderLines(oldLines, bl.getDTO().getLines());
+                // generate NewQuantityEvents
+                bl.checkOrderLineQuantities(oldLines, bl.getDTO().getLines(), 
+                        getCallerCompanyId(), bl.getDTO().getId());
 
             } else if (records != null) {
                 // Since there are no lines, run the mediation process 
@@ -938,7 +941,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                 IMediationProcess processTask = tm.getNextClass();
 
-                MediationResult result = new MediationResult("WS");
+                MediationResult result = new MediationResult("WS", true);
                 result.setUserId(userId);
                 result.setEventDate(date);
                 ArrayList results = new ArrayList(1);
@@ -1756,7 +1759,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                             Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
                     IMediationProcess processTask = tm.getNextClass();
 
-                    MediationResult result = new MediationResult("WS");
+                    MediationResult result = new MediationResult("WS", false);
                     result.setUserId(userId);
                     result.setEventDate(new Date());
                     ArrayList results = new ArrayList(1);

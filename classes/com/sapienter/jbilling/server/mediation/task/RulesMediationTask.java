@@ -58,7 +58,7 @@ public class RulesMediationTask extends RulesBaseTask implements
             if (index >= 0) {
                 result = results.get(index++);
             } else {
-                result = new MediationResult(configurationName);
+                result = new MediationResult(configurationName, true);
             }
             rulesMemoryContext.add(result);
             results.add(result); // for easy retrival later

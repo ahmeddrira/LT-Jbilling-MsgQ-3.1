@@ -90,8 +90,23 @@ public class OrderLineBL {
 
     public static void addLine(OrderDTO order, OrderLineDTO line, boolean persist) {
         UserBL user = new UserBL(order.getUserId());
+        OrderLineDTO oldLine = order.getLine(line.getItemId());
         addItem(line.getItemId(), line.getQuantity(), user.getLanguage(), order.getUserId(),
                 user.getEntity().getEntity().getId(), order.getCurrencyId(), order, line, persist);
+
+        if (persist) {
+            // generate NewQuantityEvent
+            OrderLineDTO newLine = order.getLine(line.getItemId());
+            OrderBL orderBl = new OrderBL();
+            List<OrderLineDTO> oldLines = new ArrayList<OrderLineDTO>(1);
+            List<OrderLineDTO> newLines = new ArrayList<OrderLineDTO>(1);
+            if (oldLine != null) {
+                oldLines.add(oldLine);
+            }
+            newLines.add(newLine);
+            orderBl.checkOrderLineQuantities(oldLines, newLines, 
+                    user.getEntity().getEntity().getId(), order.getId());
+        }
     }
 
 

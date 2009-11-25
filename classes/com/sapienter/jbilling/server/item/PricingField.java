@@ -19,26 +19,22 @@
 */
 package com.sapienter.jbilling.server.item;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Emil
  */
-public class PricingField implements Serializable {
-
-    private static final long serialVersionUID = -1917848593328757599L;
+public class PricingField {
 
     private final String name;
     private final Type type;
     private Integer position = 1;
     private String value = null;
-    private UUID resultId; // at the time, only used for mediation of batch
+    private long resultId; // at the time, only used for mediation of batch
     
     public enum Type { STRING, INTEGER, DECIMAL, DATE }
 
@@ -143,11 +139,11 @@ public class PricingField implements Serializable {
         return position;
     }
 
-    public UUID getResultId() {
+    public long getResultId() {
         return resultId;
     }
 
-    public void setResultId(UUID resultId) {
+    public void setResultId(long resultId) {
         this.resultId = resultId;
     }
 
@@ -181,8 +177,11 @@ public class PricingField implements Serializable {
     }
 
     public void setDateValue(Date value) {
-        if (value != null)
+        if (value != null) {
             this.value = String.valueOf(value.getTime());
+        } else {
+            this.value = null;
+        }
     }
 
     public Calendar getCalendarValue() {
@@ -199,8 +198,11 @@ public class PricingField implements Serializable {
     }
 
     public void setIntValue(Integer value) {
-        if (value != null)
+        if (value != null) {
             this.value = value.toString();
+        } else {
+            this.value = null;
+        }
     }
 
     public BigDecimal getDecimalValue() {
@@ -209,8 +211,11 @@ public class PricingField implements Serializable {
     }
 
     public void setDecimalValue(BigDecimal value) {
-        if (value != null)
+        if (value != null) {
             this.value = value.toString();
+        } else {
+            this.value = null;
+        }
     }
 
     /**

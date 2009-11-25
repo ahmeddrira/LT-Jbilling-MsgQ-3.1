@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.item.tasks;
 
 import com.sapienter.jbilling.server.rule.Result;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 /**
  *
@@ -33,7 +32,7 @@ public class PricingResult extends Result {
     private final Integer userId;
     private final Integer currencyId;
     private BigDecimal price;
-    private UUID pricingFieldsResultId;
+    private long pricingFieldsResultId;
 
     public PricingResult(Integer itemId, Integer userId, Integer currencyId) {
         this.itemId = itemId;
@@ -65,11 +64,11 @@ public class PricingResult extends Result {
         this.price = new BigDecimal(price);
     }
 
-    public UUID getPricingFieldsResultId() {
+    public long getPricingFieldsResultId() {
         return pricingFieldsResultId;
     }
 
-    public void setPricingFieldsResultId(UUID pricingFieldsResultId) {
+    public void setPricingFieldsResultId(long pricingFieldsResultId) {
         this.pricingFieldsResultId = pricingFieldsResultId;
     }
 

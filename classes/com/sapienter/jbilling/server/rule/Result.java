@@ -19,7 +19,7 @@
 */
 package com.sapienter.jbilling.server.rule;
 
-import java.util.UUID;
+import com.sapienter.jbilling.server.util.IdGenerator;
 
 /**
  *
@@ -27,7 +27,7 @@ import java.util.UUID;
  */
 public abstract class Result {
     private boolean done = false;
-    private final UUID id = UUID.randomUUID();
+    private final long id = IdGenerator.getInstance().getId();
 
     public boolean isDone() {
         return done;
@@ -37,7 +37,7 @@ public abstract class Result {
         this.done = done;
     }
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 

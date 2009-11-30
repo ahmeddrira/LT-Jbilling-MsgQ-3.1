@@ -53,7 +53,7 @@ rule "Max 200 coffees for current order"
                 from accumulate( OrderLineDTO( itemId == 3, $quantity : quantity )
                                  init ( BigDecimal total = new BigDecimal("0"); ),
                                  action( total = total.add($quantity); ),
-                                 reverse( total = total.substract($quantity); ),
+                                 reverse( total = total.subtract($quantity); ),
                                  result( total.doubleValue() ) )
     then
         $result.setQuantity(20 - $quantityAlready);

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.invoice;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -159,10 +160,10 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         }
         // ensure that there are only two decimals in the invoice
         if (newInvoice.getTotal() != null) {
-            newInvoice.setTotal(newInvoice.getTotal().setScale(2, Constants.BIGDECIMAL_ROUND));
+            newInvoice.setTotal(newInvoice.getTotal().setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
         }
         if (newInvoice.getBalance() != null) {
-            newInvoice.setBalance(new Float(Util.round(newInvoice.getBalance().floatValue(), 2)));
+            newInvoice.setBalance(newInvoice.getBalance().setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
         }
 
         // create the invoice row
@@ -374,7 +375,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         addition.calculateTotal();
         BigDecimal balance = new BigDecimal(invoice.getBalance().toString());
         balance = balance.add(new BigDecimal(addition.getTotal().toString()));
-        invoice.setBalance(new Float(balance.floatValue()));
+        invoice.setBalance(balance);
         if (invoice.getBalance().floatValue() <= 0.001F) {
             invoice.setToProcess(new Integer(0));
         }
@@ -741,11 +742,11 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         retValue.setCreateTimeStamp(i.getCreateTimestamp());
         retValue.setLastReminder(i.getLastReminder());
         retValue.setDueDate(i.getDueDate());
-        retValue.setTotal(new Float(i.getTotal().floatValue()));
+        retValue.setTotal(i.getTotal());
         retValue.setToProcess(i.getToProcess());
         retValue.setStatusId(i.getInvoiceStatus().getId());
-        retValue.setBalance(new Float(i.getBalance()));
-        retValue.setCarriedBalance(new Float(i.getCarriedBalance()));
+        retValue.setBalance(i.getBalance());
+        retValue.setCarriedBalance(i.getCarriedBalance());
         retValue.setInProcessPayment(i.getInProcessPayment());
         retValue.setDeleted(i.getDeleted());
         retValue.setPaymentAttempts(i.getPaymentAttempts());
@@ -813,7 +814,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         // add a grand total final line
         InvoiceLineDTO total = new InvoiceLineDTO();
         total.setDescription(bundle.getString("invoice.line.total"));
-        total.setAmount(invoice.getTotal().floatValue());
+        total.setAmount(invoice.getTotal());
         total.setIsPercentage(0);
         invoiceDTO.getInvoiceLines().add(total);
 
@@ -837,7 +838,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
      */
     private void addHeadersFooters(List<InvoiceLineDTO> lines, ResourceBundle bundle) {
         Integer nowProcessing = new Integer(-1);
-        Float total = null;
+        BigDecimal total = null;
         int totalLines = lines.size();
         int subaccountNumber = 0;
 
@@ -859,7 +860,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                     idx++;
                     totalLines++;
                 }
-                total = new Float(0);
+                total = BigDecimal.ZERO;
 
                 // now the header anouncing a new subaccout
                 InvoiceLineDTO headerLine = new InvoiceLineDTO();
@@ -893,7 +894,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                         Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT) {
                     BigDecimal decTotal = new BigDecimal(total.toString());
                     decTotal = decTotal.add(new BigDecimal(line.getAmount().toString()));
-                    total = new Float(decTotal.floatValue());
+                    total = decTotal;
                 } else {
                     // this is the last total to display, from now on the
                     // lines are not of subaccounts

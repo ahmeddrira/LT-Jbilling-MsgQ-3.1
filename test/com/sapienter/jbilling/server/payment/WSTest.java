@@ -25,6 +25,8 @@
  */
 package com.sapienter.jbilling.server.payment;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -56,7 +58,7 @@ public class WSTest extends TestCase {
              * apply payment
              */
             PaymentWS payment = new PaymentWS();
-            payment.setAmount(new Float(15));
+            payment.setAmount(new BigDecimal("15.00"));
             payment.setIsRefund(new Integer(0));
             payment.setMethodId(Constants.PAYMENT_METHOD_CHEQUE);
             payment.setPaymentDate(Calendar.getInstance().getTime());
@@ -82,31 +84,23 @@ public class WSTest extends TestCase {
             System.out.println("Getting created payment");
             PaymentWS retPayment = api.getPayment(ret);
             assertNotNull("didn't get payment ", retPayment);
-            assertEquals("created payment result", retPayment.getResultId(),
-                    payment.getResultId());
-            assertEquals("created payment cheque ", retPayment.getCheque().getNumber(),
-                    payment.getCheque().getNumber());
-            assertEquals("created payment user ", retPayment.getUserId(), 
-                    payment.getUserId());
+            assertEquals("created payment result", retPayment.getResultId(), payment.getResultId());
+            assertEquals("created payment cheque ", retPayment.getCheque().getNumber(), payment.getCheque().getNumber());
+            assertEquals("created payment user ", retPayment.getUserId(),  payment.getUserId());
+
             System.out.println("Validated created payment and paid invoice");
             assertNotNull("payment not related to invoice", retPayment.getInvoiceIds());
-            assertTrue("payment not related to invoice", 
-                    retPayment.getInvoiceIds().length == 1);
-            assertEquals("payment not related to invoice", 
-                    retPayment.getInvoiceIds()[0], new Integer(35));
+            assertTrue("payment not related to invoice", retPayment.getInvoiceIds().length == 1);
+            assertEquals("payment not related to invoice", retPayment.getInvoiceIds()[0], new Integer(35));
             
             InvoiceWS retInvoice = api.getInvoiceWS(retPayment.getInvoiceIds()[0]);
             assertNotNull("New invoice not present", retInvoice);
-            assertEquals("Balance of invoice should be total of order", retInvoice.getBalance(),
-                    new Float(0));
-            assertEquals("Total of invoice should be total of order", retInvoice.getTotal(),
-                    new Float(15));
+            assertEquals("Balance of invoice should be total of order", BigDecimal.ZERO, retInvoice.getBalanceAsDecimal());
+            assertEquals("Total of invoice should be total of order", new BigDecimal("15"), retInvoice.getTotalAsDecimal());
             assertEquals("New invoice not paid", retInvoice.getToProcess(), new Integer(0));
             assertNotNull("invoice not related to payment", retInvoice.getPayments());
-            assertTrue("invoice not related to payment", 
-                    retInvoice.getPayments().length == 1);
-            assertEquals("invoice not related to payment", 
-                    retInvoice.getPayments()[0].intValue(), retPayment.getId());
+            assertTrue("invoice not related to payment", retInvoice.getPayments().length == 1);
+            assertEquals("invoice not related to payment", retInvoice.getPayments()[0].intValue(), retPayment.getId());
             
             /*
              * get latest
@@ -116,12 +110,10 @@ public class WSTest extends TestCase {
             retPayment = api.getLatestPayment(new Integer(2));
             assertNotNull("didn't get payment ", retPayment);
             assertEquals("latest id", ret.intValue(), retPayment.getId());
-            assertEquals("created payment result", retPayment.getResultId(),
-                    payment.getResultId());
-            assertEquals("created payment cheque ", retPayment.getCheque().getNumber(),
-                    payment.getCheque().getNumber());
-            assertEquals("created payment user ", retPayment.getUserId(), 
-                    payment.getUserId());
+            assertEquals("created payment result", retPayment.getResultId(), payment.getResultId());
+            assertEquals("created payment cheque ", retPayment.getCheque().getNumber(), payment.getCheque().getNumber());
+            assertEquals("created payment user ", retPayment.getUserId(), payment.getUserId());
+
             try {
                 System.out.println("Getting latest - invalid");
                 retPayment = api.getLatestPayment(new Integer(13));
@@ -133,21 +125,18 @@ public class WSTest extends TestCase {
              * get last
              */
             System.out.println("Getting last");
-            Integer retPayments[] = api.getLastPayments(new Integer(2), 
-            		new Integer(2));
+            Integer retPayments[] = api.getLastPayments(new Integer(2), new Integer(2));
             assertNotNull("didn't get payment ", retPayments);
             // fetch the payment
             
             
             retPayment = api.getPayment(retPayments[0]);
             
-            assertEquals("created payment result", retPayment.getResultId(),
-                    payment.getResultId());
-            assertEquals("created payment cheque ", retPayment.getCheque().getNumber(),
-                    payment.getCheque().getNumber());
-            assertEquals("created payment user ", retPayment.getUserId(), 
-                    payment.getUserId());
+            assertEquals("created payment result", retPayment.getResultId(), payment.getResultId());
+            assertEquals("created payment cheque ", retPayment.getCheque().getNumber(), payment.getCheque().getNumber());
+            assertEquals("created payment user ", retPayment.getUserId(), payment.getUserId());
             assertTrue("No more than two records", retPayments.length <= 2);
+
             try {
                 System.out.println("Getting last - invalid");
                 retPayments = api.getLastPayments(new Integer(13), 
@@ -178,8 +167,10 @@ public class WSTest extends TestCase {
             Integer userId = 1000; // starting user id
 
             // expected filter response messages
-            String[] message = { "User id is blacklisted.", 
-                    "Name is blacklisted.", "Address is blacklisted.",
+            String[] message = {
+                    "User id is blacklisted.",
+                    "Name is blacklisted.",
+                    "Address is blacklisted.",
                     "Phone number is blacklisted.", 
                     "Credit card number is blacklisted.", 
                     "IP address is blacklisted." };
@@ -230,10 +221,8 @@ public class WSTest extends TestCase {
             	assertNotNull("Payment result empty", authInfo);
 
                 // check that it was failed by the test blacklist filter
-                assertFalse("Payment wasn't failed for user: " + userId, 
-                        authInfo.getResult().booleanValue());
-                assertEquals("Processor response", message[i], 
-                    authInfo.getResponseMessage());
+                assertFalse("Payment wasn't failed for user: " + userId, authInfo.getResult().booleanValue());
+                assertEquals("Processor response", message[i], authInfo.getResponseMessage());
 
                 // remove invoice and order
                 api.deleteInvoice(invoiceId);
@@ -252,7 +241,7 @@ public class WSTest extends TestCase {
             final Integer userId = 868; // this is a user with a good CC
             
             // put a pre-auth record on this user
-            api.createOrderPreAuthorize(com.sapienter.jbilling.server.order.WSTest.createMockOrder(userId, 3, 3.45F));
+            api.createOrderPreAuthorize(com.sapienter.jbilling.server.order.WSTest.createMockOrder(userId, 3, new BigDecimal("3.45")));
             Integer orderId = api.getLatestOrder(userId).getId();
             
             // user should a a pre-auth
@@ -322,8 +311,8 @@ public class WSTest extends TestCase {
 
             // check all their records are now blacklisted
             user = api.getUserWS(USER_ID);
-            assertEquals("User records should be blacklisted.", 
-                    Arrays.toString(messages), 
+            assertEquals("User records should be blacklisted.",
+                    Arrays.toString(messages),
                     Arrays.toString(user.getBlacklistMatches()));
 
             // clean-up
@@ -375,10 +364,8 @@ public class WSTest extends TestCase {
             System.out.println("Making payment in USD...");
             PaymentAuthorizationDTOEx authInfo = api.payInvoice(invoiceIdUSD);
 
-            assertTrue("USD Payment should be successful", 
-                    authInfo.getResult().booleanValue());
-            assertEquals("Should be processed by 'first_fake_processor'", 
-                    authInfo.getProcessor(), "first_fake_processor");
+            assertTrue("USD Payment should be successful", authInfo.getResult().booleanValue());
+            assertEquals("Should be processed by 'first_fake_processor'", authInfo.getProcessor(), "first_fake_processor");
 
             // create a new order in AUD and invoice it
             order.setUserId(USER_AUD);
@@ -392,10 +379,8 @@ public class WSTest extends TestCase {
             System.out.println("Making payment in AUD...");
             authInfo = api.payInvoice(invoiceIdAUD);
 
-            assertTrue("AUD Payment should be successful", 
-                    authInfo.getResult().booleanValue());
-            assertEquals("Should be processed by 'second_fake_processor'", 
-                    authInfo.getProcessor(), "second_fake_processor");
+            assertTrue("AUD Payment should be successful", authInfo.getResult().booleanValue());
+            assertEquals("Should be processed by 'second_fake_processor'", authInfo.getProcessor(), "second_fake_processor");
 
             // remove invoices and orders
             System.out.println("Deleting invoices and orders.");
@@ -417,7 +402,7 @@ public class WSTest extends TestCase {
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
             System.out.println("Getting an invoice paid, and validating the payment.");
-            OrderWS order = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER, 3, 3.45F);
+            OrderWS order = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER, 3, new BigDecimal("3.45"));
             Integer invoiceId = api.createOrderAndInvoice(order);
             PaymentAuthorizationDTOEx auth = api.payInvoice(invoiceId);
             assertNotNull("auth can not be null", auth);
@@ -440,14 +425,13 @@ public class WSTest extends TestCase {
             final Integer USER_ID = new Integer(1071);
 
             // first, create two unpaid invoices
-            OrderWS order = com.sapienter.jbilling.server.order.WSTest.
-                    createMockOrder(USER_ID, 1, 10.0F);
+            OrderWS order = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER_ID, 1, new BigDecimal("10.00"));
             Integer invoiceId1 = api.createOrderAndInvoice(order);
             Integer invoiceId2 = api.createOrderAndInvoice(order);
 
             // create the payment
             PaymentWS payment = new PaymentWS();
-            payment.setAmount(new Float(5));
+            payment.setAmount(new BigDecimal("5.00"));
             payment.setIsRefund(new Integer(0));
             payment.setMethodId(Constants.PAYMENT_METHOD_VISA);
             payment.setPaymentDate(Calendar.getInstance().getTime());
@@ -475,26 +459,20 @@ public class WSTest extends TestCase {
 
             // check payment failed
             assertNotNull("Payment result not null", authInfo);
-            assertFalse("Payment Authorization result should be FAILED",
-                    authInfo.getResult().booleanValue());
+            assertFalse("Payment Authorization result should be FAILED", authInfo.getResult().booleanValue());
 
             // check payment has zero balance
             PaymentWS lastPayment = api.getLatestPayment(USER_ID);
             assertNotNull("payment can not be null", lastPayment);
-            assertNotNull("auth in payment can not be null", 
-                    lastPayment.getAuthorizationId());
-            assertEquals("correct payment amount", new Float(5), 
-                    lastPayment.getAmount());
-            assertEquals("correct payment balance", new Float(0), 
-                    lastPayment.getBalance());
+            assertNotNull("auth in payment can not be null", lastPayment.getAuthorizationId());
+            assertEquals("correct payment amount", new BigDecimal("5"), lastPayment.getAmountAsDecimal());
+            assertEquals("correct payment balance", BigDecimal.ZERO, lastPayment.getBalanceAsDecimal());
 
             // check invoices still have balance
             InvoiceWS invoice1 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 10.0f,
-                    invoice1.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("10.0"), invoice1.getBalanceAsDecimal());
             InvoiceWS invoice2 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 10.0f,
-                    invoice2.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("10.0"), invoice2.getBalanceAsDecimal());
 
             // do it again, but using the credit card on file
             // which is also 41111111111111
@@ -504,21 +482,16 @@ public class WSTest extends TestCase {
             // check payment has zero balance
             PaymentWS lastPayment2 = api.getLatestPayment(USER_ID);
             assertNotNull("payment can not be null", lastPayment2);
-            assertNotNull("auth in payment can not be null",
-                    lastPayment2.getAuthorizationId());
-            assertEquals("correct payment amount", new Float(5),
-                    lastPayment2.getAmount());
-            assertEquals("correct payment balance", new Float(0),
-                    lastPayment2.getBalance());
+            assertNotNull("auth in payment can not be null", lastPayment2.getAuthorizationId());
+            assertEquals("correct payment amount", new BigDecimal("5"), lastPayment2.getAmountAsDecimal());
+            assertEquals("correct payment balance", BigDecimal.ZERO, lastPayment2.getBalanceAsDecimal());
             assertFalse("Payment is not the same as preiouvs", lastPayment2.getId() == lastPayment.getId());
 
             // check invoices still have balance
             invoice1 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 10.0f,
-                    invoice1.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("10"), invoice1.getBalanceAsDecimal());
             invoice2 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 10.0f,
-                    invoice2.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("10"), invoice2.getBalanceAsDecimal());
 
 
             /*
@@ -532,30 +505,23 @@ public class WSTest extends TestCase {
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
             assertEquals("Auth id", 116, authInfo.getId().intValue());
-            assertTrue("Payment Authorization result should be OK", 
-                    authInfo.getResult().booleanValue());
+            assertTrue("Payment Authorization result should be OK", authInfo.getResult().booleanValue());
 
             // check payment was made
             lastPayment = api.getLatestPayment(USER_ID);
             assertNotNull("payment can not be null", lastPayment);
-            assertNotNull("auth in payment can not be null", 
-                    lastPayment.getAuthorizationId());
-            assertEquals("payment ids match", lastPayment.getId(), 
-                    authInfo.getPaymentId().intValue());
-            assertEquals("correct payment amount", new Float(5), 
-                    lastPayment.getAmount());
-            assertEquals("correct payment balance", new Float(0), 
-                    lastPayment.getBalance());
+            assertNotNull("auth in payment can not be null", lastPayment.getAuthorizationId());
+            assertEquals("payment ids match", lastPayment.getId(), authInfo.getPaymentId().intValue());
+            assertEquals("correct payment amount", new BigDecimal("5"), lastPayment.getAmountAsDecimal());
+            assertEquals("correct payment balance", BigDecimal.ZERO, lastPayment.getBalanceAsDecimal());
 
             // check invoice 1 was partially paid (balance 5)
             invoice1 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 5.0f, 
-                    invoice1.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("5.0"), invoice1.getBalanceAsDecimal());
 
             // check invoice 2 wan't paid at all
             invoice2 = api.getInvoiceWS(invoiceId2);
-            assertEquals("correct invoice balance", 10.0f, 
-                    invoice2.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("10.0"), invoice2.getBalanceAsDecimal());
 
 
             /*
@@ -566,68 +532,56 @@ public class WSTest extends TestCase {
             // now the payment does not have a cc
             payment.setCreditCard(null);
 
-            payment.setAmount(new Float(10));
+            payment.setAmount(new BigDecimal("10.00"));
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment);
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
-            assertTrue("Payment Authorization result should be OK", 
-                    authInfo.getResult().booleanValue());
+            assertTrue("Payment Authorization result should be OK", authInfo.getResult().booleanValue());
 
             // check payment was made
             lastPayment = api.getLatestPayment(USER_ID);
             assertNotNull("payment can not be null", lastPayment);
-            assertNotNull("auth in payment can not be null", 
-                    lastPayment.getAuthorizationId());
-            assertEquals("correct payment amount", new Float(10), 
-                    lastPayment.getAmount());
-            assertEquals("correct payment balance", new Float(0), 
-                    lastPayment.getBalance());
+            assertNotNull("auth in payment can not be null", lastPayment.getAuthorizationId());
+            assertEquals("correct payment amount", new BigDecimal("10"), lastPayment.getAmountAsDecimal());
+            assertEquals("correct payment balance", BigDecimal.ZERO, lastPayment.getBalanceAsDecimal());
 
             // check invoice 1 is fully paid (balance 0)
             invoice1 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 0.0f, 
-                    invoice1.getBalance());
+            assertEquals("correct invoice balance", BigDecimal.ZERO, invoice1.getBalanceAsDecimal());
 
             // check invoice 2 was partially paid (balance 5)
             invoice2 = api.getInvoiceWS(invoiceId2);
-            assertEquals("correct invoice balance", 5.0f, 
-                    invoice2.getBalance());
+            assertEquals("correct invoice balance", new BigDecimal("5"), invoice2.getBalanceAsDecimal());
 
 
             /* 
              *another payment for $10
              */
             payment.setCreditCard(cc);
-            payment.setAmount(new Float(10));
+            payment.setAmount(new BigDecimal("10.00"));
             System.out.println("processing payment.");
             authInfo = api.processPayment(payment);
 
             // check payment successful
             assertNotNull("Payment result not null", authInfo);
-            assertTrue("Payment Authorization result should be OK", 
-                    authInfo.getResult().booleanValue());
+            assertTrue("Payment Authorization result should be OK", authInfo.getResult().booleanValue());
 
             // check payment was made
             lastPayment = api.getLatestPayment(USER_ID);
             assertNotNull("payment can not be null", lastPayment);
-            assertNotNull("auth in payment can not be null", 
-                    lastPayment.getAuthorizationId());
-            assertEquals("correct  payment amount", new Float(10), 
-                    lastPayment.getAmount());
-            assertEquals("correct  payment balance", new Float(5), 
-                    lastPayment.getBalance());
+            assertNotNull("auth in payment can not be null", lastPayment.getAuthorizationId());
+            assertEquals("correct  payment amount", new BigDecimal("10"), lastPayment.getAmountAsDecimal());
+            assertEquals("correct  payment balance", new BigDecimal("5"), lastPayment.getBalanceAsDecimal());
 
             // check invoice 1 balance is unchanged
             invoice1 = api.getInvoiceWS(invoiceId1);
-            assertEquals("correct invoice balance", 0.0f, 
-                    invoice1.getBalance());
+            assertEquals("correct invoice balance", BigDecimal.ZERO, invoice1.getBalanceAsDecimal());
 
             // check invoice 2 is fully paid (balance 0)
             invoice2 = api.getInvoiceWS(invoiceId2);
-            assertEquals("correct invoice balance", 0.0f, 
-                    invoice2.getBalance());
+            assertEquals("correct invoice balance", BigDecimal.ZERO, invoice2.getBalanceAsDecimal());
 
 
             // clean up
@@ -642,5 +596,15 @@ public class WSTest extends TestCase {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
+    }
+    
+    public static void assertEquals(BigDecimal expected, BigDecimal actual) {
+        assertEquals(null, expected, actual);
+    }
+
+    public static void assertEquals(String message, BigDecimal expected, BigDecimal actual) {
+        assertEquals(message,
+                     (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
+                     (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
     }
 }

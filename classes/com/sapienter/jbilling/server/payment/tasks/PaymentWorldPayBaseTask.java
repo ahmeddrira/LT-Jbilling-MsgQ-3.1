@@ -347,9 +347,9 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      * @param amount dollar float value to format
      * @return formatted amount as a string
      */
-	public static String formatDollarAmount(float amount) {
-		amount = Math.abs(amount); // for credits
-		return (new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN)).toPlainString();
+	public static String formatDollarAmount(BigDecimal amount) {
+		amount = amount.abs().setScale(2, RoundingMode.HALF_EVEN); // gateway format, do not change!
+		return amount.toPlainString();
 	}
 
     /**

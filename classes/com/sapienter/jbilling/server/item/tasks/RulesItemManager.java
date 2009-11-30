@@ -50,11 +50,10 @@ public class RulesItemManager extends BasicItemManager {
     protected OrderManager helperOrder = null;
     private List<Record> records;
 
-    public void addItem(Integer itemID, Double quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO order, List<Record> records) throws TaskException {
-        super.addItem(itemID, quantity, language, userId, entityId, currencyId,
-                order, records);
+    public void addItem(Integer itemID, BigDecimal quantity, Integer language,
+                        Integer userId, Integer entityId, Integer currencyId,
+                        OrderDTO order, List<Record> records) throws TaskException {       
+        super.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
         this.records = records;
         helperOrder = new OrderManager(order, language, userId, entityId, currencyId);
         processRules(order);
@@ -151,10 +150,10 @@ public class RulesItemManager extends BasicItemManager {
 
         public OrderLineDTO addItem(Integer itemID, Integer quantity)
                 throws TaskException {
-            return addItem(itemID, new Double(quantity));
+            return addItem(itemID, new BigDecimal(quantity));
         }
 
-        public OrderLineDTO addItem(Integer itemID, Double quantity)
+        public OrderLineDTO addItem(Integer itemID, BigDecimal quantity)
                 throws TaskException {
             LOG.debug("Adding item " + itemID + " q: " + quantity);
 
@@ -179,7 +178,7 @@ public class RulesItemManager extends BasicItemManager {
         }
 
         public OrderLineDTO addItem(Integer itemId) throws TaskException {
-            return addItem(itemId, 1.0);
+            return addItem(itemId, 1);
         }
 
         public void removeItem(Integer itemId) {
@@ -201,7 +200,7 @@ public class RulesItemManager extends BasicItemManager {
             if (updateLine == null) {
                 // no luck, create a new one
                 updateLine = addItem(itemId);
-                updateLine.setAmount(0.0F); // starts from 0
+                updateLine.setAmount(BigDecimal.ZERO); // starts from 0
                 updateLine.setTotalReadOnly(true);
             }
 
@@ -212,7 +211,7 @@ public class RulesItemManager extends BasicItemManager {
             BigDecimal base = new BigDecimal(itemDto.getPrice().toString());
             BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(percentage).add(
                     new BigDecimal(updateLine.getAmount().toString()));
-            updateLine.setAmount(result.floatValue());
+            updateLine.setAmount(result);
 
             return updateLine;
         }
@@ -229,22 +228,27 @@ public class RulesItemManager extends BasicItemManager {
             if (percentageLine == null) {
                 // add percentage item
                 percentageLine = addItem(percentageItemId);
-                percentageLine.setAmount(0.0F);
+                percentageLine.setAmount(BigDecimal.ZERO);
                 percentageLine.setTotalReadOnly(true);
             }
 
             // now add the percentage amount based on the order line item amount
             BigDecimal percentage = new BigDecimal(percentageLine.getItem().getPercentage().toString());
-            BigDecimal base = line.getPrice().multiply(new BigDecimal(line.getQuantity()));
+            BigDecimal base = line.getPrice().multiply(line.getQuantity());
             BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE,
                     Constants.BIGDECIMAL_ROUND).multiply(percentage).add(
                         new BigDecimal(percentageLine.getAmount().toString()));
-            percentageLine.setAmount(result.floatValue());
+            percentageLine.setAmount(result);
 
             return percentageLine;
         }
 
-        public OrderDTO createOrder(Integer itemId, Double quantity) 
+        public OrderDTO createOrder(Integer itemId, Double quantity) throws TaskException {
+            BigDecimal quant = new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            return createOrder(itemId, quant);
+        }
+
+        public OrderDTO createOrder(Integer itemId, BigDecimal quantity)
                 throws TaskException {
             // copy the current order
             OrderDTO newOrder = new OrderDTO(order);

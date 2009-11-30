@@ -58,6 +58,7 @@ import java.util.Date;
 public class AutoRechargeTask extends PluggableTask implements IInternalEventsTask {
 
     private static final Logger LOG = Logger.getLogger(AutoRechargeTask.class);
+
     @SuppressWarnings("unchecked")
     private static final Class<Event>[] events = new Class[]{
         DynamicBalanceChangeEvent.class
@@ -93,7 +94,7 @@ public class AutoRechargeTask extends PluggableTask implements IInternalEventsTa
         if (payment != null) {
             payment.setIsRefund(0);
             payment.setAttempt(1);
-            payment.setAmount(customer.getAutoRecharge().floatValue());
+            payment.setAmount(customer.getAutoRecharge());
             payment.setCurrency(user.getCurrency());
             payment.setUserId(user.getId());
             payment.setPaymentDate(new Date());

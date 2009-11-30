@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.util.db;
 
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,76 +40,73 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class PreferenceTypeDTO  implements java.io.Serializable {
 
-     private int id;
-     private Integer intDefValue;
-     private String strDefValue;
-     private Double floatDefValue;
-     private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
+    private int id;
+    private Integer intDefValue;
+    private String strDefValue;
+    private BigDecimal floatDefValue;
+    private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
 
     public PreferenceTypeDTO() {
     }
 
-	
     public PreferenceTypeDTO(int id) {
         this.id = id;
     }
-    public PreferenceTypeDTO(int id, Integer intDefValue, String strDefValue, Double floatDefValue, Set<PreferenceDTO> preferences) {
-       this.id = id;
-       this.intDefValue = intDefValue;
-       this.strDefValue = strDefValue;
-       this.floatDefValue = floatDefValue;
-       this.preferences = preferences;
+
+    public PreferenceTypeDTO(int id, Integer intDefValue, String strDefValue, BigDecimal floatDefValue,
+                             Set<PreferenceDTO> preferences) {
+        this.id = id;
+        this.intDefValue = intDefValue;
+        this.strDefValue = strDefValue;
+        this.floatDefValue = floatDefValue;
+        this.preferences = preferences;
     }
-   
-     @Id 
-    
+
+    @Id
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     @Column(name="int_def_value")
     public Integer getIntDefValue() {
         return this.intDefValue;
     }
-    
+
     public void setIntDefValue(Integer intDefValue) {
         this.intDefValue = intDefValue;
     }
-    
+
     @Column(name="str_def_value", length=200)
     public String getStrDefValue() {
         return this.strDefValue;
     }
-    
+
     public void setStrDefValue(String strDefValue) {
         this.strDefValue = strDefValue;
     }
-    
+
     @Column(name="float_def_value", precision=17, scale=17)
-    public Double getFloatDefValue() {
+    public BigDecimal getFloatDefValue() {
         return this.floatDefValue;
     }
-    
-    public void setFloatDefValue(Double floatDefValue) {
+
+    public void setFloatDefValue(BigDecimal floatDefValue) {
         this.floatDefValue = floatDefValue;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="preferenceType")
+    
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="preferenceType")
     public Set<PreferenceDTO> getPreferences() {
         return this.preferences;
     }
-    
+
     public void setPreferences(Set<PreferenceDTO> preferences) {
         this.preferences = preferences;
     }
-
-
-
-
 }
 
 

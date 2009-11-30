@@ -308,7 +308,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         PaymentBL payment = new PaymentBL();
         message.addParameter("method", payment.getMethodDescription(dto
                 .getPaymentMethod(), languageId));
-        message.addParameter("total", Util.formatMoney(dto.getAmount(), dto
+        message.addParameter("total", Util.formatMoney(dto.getAmount().floatValue(), dto
                 .getUserId(), dto.getCurrency().getId(), true));
 
         message.addParameter("payment", payment.getEntity());
@@ -421,8 +421,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             if (invoiceId != null) {
                 invoice.set(invoiceId);
 
-                message.addParameter("total", Util.float2string(invoice
-                        .getEntity().getBalance(), user.getLocale()));
+                message.addParameter("total", Util.decimal2string(invoice.getEntity().getBalance(), user.getLocale()));
                 message.addParameter("invoice", invoice.getEntity());
             } else {
                 LOG.warn("user " + userId + " has no invoice but an ageing "
@@ -469,10 +468,9 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         return retValue;
     }
 
-    public MessageDTO getPayoutMessage(Integer entityId, Integer languageId,
-            double total, Date startDate, Date endDate, boolean clerk,
-            Integer partnerId) throws SessionInternalError,
-            NotificationNotFoundException {
+    public MessageDTO getPayoutMessage(Integer entityId, Integer languageId, BigDecimal total, Date startDate,
+                                       Date endDate, boolean clerk, Integer partnerId)
+            throws SessionInternalError, NotificationNotFoundException {
 
         MessageDTO message = new MessageDTO();
         if (!clerk) {
@@ -485,8 +483,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             EntityBL en = new EntityBL(entityId);
 
             setContent(message, message.getTypeId(), entityId, languageId);
-            message.addParameter("total", Util.float2string(new Float(total),
-                    en.getLocale()));
+            message.addParameter("total", Util.decimal2string(total, en.getLocale()));
 
             message.addParameter("company", new CompanyDAS().find(entityId)
                     .getDescription());
@@ -831,8 +828,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     taxTotal = taxTotal.add(new BigDecimal(line.getAmount()
                             .toString()));
                     // add the tax amount as an array parameter
-                    parameters.put("taxItem_" + taxItemIndex, Util
-                            .float2string(line.getPrice(), locale));
+                    parameters.put("taxItem_" + taxItemIndex, Util.decimal2string(line.getPrice(), locale));
                     taxItemIndex++;
                     // taxes are not displayed as invoice lines
                     linesRemoved.add(line); // can't do lines.remove(): ConcurrentModificationException

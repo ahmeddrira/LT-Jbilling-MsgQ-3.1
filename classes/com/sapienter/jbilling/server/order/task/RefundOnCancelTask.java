@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.order.task;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -46,13 +47,16 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class RefundOnCancelTask extends PluggableTask implements IInternalEventsTask {
 
-    private enum EventType { PERIOD_CANCELLED_EVENT, NEW_QUANTITY_EVENT } 
-
-    private static final Class<Event> events[] = new Class[] { PeriodCancelledEvent.class, 
-            NewQuantityEvent.class };
-
     private static final Logger LOG = Logger.getLogger(RefundOnCancelTask.class);
 
+    private enum EventType { PERIOD_CANCELLED_EVENT, NEW_QUANTITY_EVENT } 
+
+    @SuppressWarnings("unchecked")
+    private static final Class<Event> events[] = new Class[] {
+            PeriodCancelledEvent.class,
+            NewQuantityEvent.class
+    };
+   
     public Class<Event>[] getSubscribedEvents() {
         return events;
     }
@@ -70,7 +74,7 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
         } else if (event instanceof NewQuantityEvent) {
             NewQuantityEvent myEvent = (NewQuantityEvent) event;
             // don't process if new quantity has increased instead of decreased
-            if (myEvent.getNewQuantity() > myEvent.getOldQuantity()) {
+            if (myEvent.getNewQuantity().compareTo(myEvent.getOldQuantity()) > 0) {
                 return;
             }
             order = new OrderDAS().find(myEvent.getOrderId());
@@ -128,28 +132,32 @@ public class RefundOnCancelTask extends PluggableTask implements IInternalEvents
         if (eventType == EventType.PERIOD_CANCELLED_EVENT) {
             for (OrderLineDTO line : order.getLines()) {
                 OrderLineDTO newLine = new OrderLineDTO(line);
+
                 // reset so they get inserted
                 newLine.setId(0);
                 newLine.setVersionNum(null);
                 newLine.setPurchaseOrder(newOrder);
                 newOrder.getLines().add(newLine);
+
                 // make the order negative (refund/credit)
-                newLine.setQuantity(-line.getQuantity());
+                newLine.setQuantity(line.getQuantity().negate());
             }
         } else {
             // NEW_QUANTITY_EVENT
             NewQuantityEvent myEvent = (NewQuantityEvent) event;
             OrderLineDTO newLine = new OrderLineDTO(myEvent.getOrderLine());
+
             // reset so it gets inserted
             newLine.setId(0);
             newLine.setVersionNum(null);
             newLine.setPurchaseOrder(newOrder);
             newOrder.getLines().add(newLine);
+
             // set quantity as the difference between the old and new quantities
-            double newQuantity = myEvent.getOldQuantity().doubleValue() - 
-                    myEvent.getNewQuantity().doubleValue();
+            BigDecimal quantity = myEvent.getOldQuantity().subtract(myEvent.getNewQuantity());
+
             // make the order negative (refund/credit)
-            newLine.setQuantity(new Double(-newQuantity));
+            newLine.setQuantity(quantity.negate());
         }
 
         // add extra lines with items from the parameters

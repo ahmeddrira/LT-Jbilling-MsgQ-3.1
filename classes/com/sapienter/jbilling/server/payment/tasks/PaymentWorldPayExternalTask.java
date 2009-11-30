@@ -35,6 +35,7 @@ import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -58,7 +59,7 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
             if the payment amount is negative or refund is set, do a Credit transaction.
          */
         prepareExternalPayment(payment);
-        SvcType transaction = (payment.getAmount() < 0 || payment.getIsRefund() != 0
+        SvcType transaction = (BigDecimal.ZERO.compareTo(payment.getAmount()) > 0 || payment.getIsRefund() != 0
                                ? SvcType.REFUND_CREDIT
                                : (payment.getCreditCard().useGatewayKey()
                                   ? SvcType.RE_AUTHORIZE
@@ -189,7 +190,7 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
         PaymentDTO paymentInfo = new PaymentDTO();
         paymentInfo.setBaseUser(user);
         paymentInfo.setCurrency(user.getCurrency());
-        paymentInfo.setAmount(0.0f);
+        paymentInfo.setAmount(BigDecimal.ZERO);
         paymentInfo.setCreditCard(creditCard);
         paymentInfo.setPaymentMethod(new PaymentMethodDAS().find(Util.getPaymentMethod(creditCard.getNumber())));
         paymentInfo.setIsRefund(0);

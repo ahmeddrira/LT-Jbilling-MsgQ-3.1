@@ -95,32 +95,32 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
     }
 
 
-	public Double findTotalForPeriod(Integer userId, Date start, Date end) {
+	public BigDecimal findTotalForPeriod(Integer userId, Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);
 		addPeriodCriteria(criteria, start, end);
 		criteria.setProjection(Projections.sum("total"));
-		return (Double) criteria.uniqueResult();
+		return (BigDecimal) criteria.uniqueResult();
 	}
 
-	public Double findAmountForPeriodByItem(Integer userId, Integer itemId,
+	public BigDecimal findAmountForPeriodByItem(Integer userId, Integer itemId,
 			Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);
 		addPeriodCriteria(criteria, start, end);
 		addItemCriteria(criteria, itemId);
 		criteria.setProjection(Projections.sum("invoiceLines.amount"));
-		return (Double) criteria.uniqueResult();
+		return (BigDecimal) criteria.uniqueResult();
 	}
 
-	public Double findQuantityForPeriodByItem(Integer userId, Integer itemId,
+	public BigDecimal findQuantityForPeriodByItem(Integer userId, Integer itemId,
 			Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);
 		addPeriodCriteria(criteria, start, end);
 		addItemCriteria(criteria, itemId);
 		criteria.setProjection(Projections.sum("invoiceLines.quantity"));
-		return (Double) criteria.uniqueResult();
+		return (BigDecimal) criteria.uniqueResult();
 	}
 
 	public Integer findLinesForPeriodByItem(Integer userId, Integer itemId,
@@ -133,24 +133,24 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 		return (Integer) criteria.uniqueResult();
 	}
 
-	public Double findAmountForPeriodByItemCategory(Integer userId,
+	public BigDecimal findAmountForPeriodByItemCategory(Integer userId,
 			Integer categoryId, Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);
 		addPeriodCriteria(criteria, start, end);
 		addItemCategoryCriteria(criteria, categoryId);
 		criteria.setProjection(Projections.sum("invoiceLines.amount"));
-		return (Double) criteria.uniqueResult();
+		return (BigDecimal) criteria.uniqueResult();
 	}
 
-	public Double findQuantityForPeriodByItemCategory(Integer userId,
+	public BigDecimal findQuantityForPeriodByItemCategory(Integer userId,
 			Integer categoryId, Date start, Date end) {
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		addUserCriteria(criteria, userId);
 		addPeriodCriteria(criteria, start, end);
 		addItemCategoryCriteria(criteria, categoryId);
 		criteria.setProjection(Projections.sum("invoiceLines.quantity"));
-		return (Double) criteria.uniqueResult();
+		return (BigDecimal) criteria.uniqueResult();
 	}
 
 	public Integer findLinesForPeriodByItemCategory(Integer userId,
@@ -301,7 +301,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
 
 		Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
 		criteria.add(Restrictions.eq("baseUser", user));
-		criteria.add(Restrictions.ne("balance", new Float(0)));
+		criteria.add(Restrictions.ne("balance", BigDecimal.ZERO));
 		criteria.add(Restrictions.eq("isReview", 0));
 		criteria.add(Restrictions.eq("deleted", 0));
 		
@@ -312,18 +312,14 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
     public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(InvoiceDTO.class);
         addUserCriteria(criteria, userId);
-        criteria.add(Restrictions.ne("balance", new Float(0)));
+        criteria.add(Restrictions.ne("balance", BigDecimal.ZERO));
         criteria.add(Restrictions.eq("isReview", 0));
         criteria.createAlias("invoiceStatus", "s")
                 .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID)); // carried invoices still hold a balance
         criteria.setProjection(Projections.sum("balance"));                   // only count unpaid invoices
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
-        Float result = (Float) criteria.uniqueResult();
-        if (result == null) {
-            return new BigDecimal(0);
-        } else {
-            return new BigDecimal(result);
-        }
+
+        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
     }
 
 	/*

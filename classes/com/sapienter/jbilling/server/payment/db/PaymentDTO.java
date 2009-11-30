@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.payment.db;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,24 +70,22 @@ public class PaymentDTO implements Serializable {
 	private PaymentResultDTO paymentResult;
 	private AchDTO ach;
 	private Integer attempt;
-	private Float amount;
+    private BigDecimal amount;
 	private Date createDatetime;
 	private Date paymentDate;
 	private int deleted;
 	private int isRefund;
 	private PartnerPayout payoutId;
-	private Float balance;
-	private Date updateDatetime;
+    private BigDecimal balance;
+    private Date updateDatetime;
 	private Integer isPreauth;
 	private PaymentInfoChequeDTO paymentInfoCheque;
 	
-	private Set<PaymentInvoiceMapDTO> invoicesMap = new HashSet<PaymentInvoiceMapDTO>(
-			0);
-	
-	private Set<PaymentAuthorizationDTO> paymentAuthorizations = new HashSet<PaymentAuthorizationDTO>(
-			0);
+	private Set<PaymentInvoiceMapDTO> invoicesMap = new HashSet<PaymentInvoiceMapDTO>(0);
+	private Set<PaymentAuthorizationDTO> paymentAuthorizations = new HashSet<PaymentAuthorizationDTO>(0);
 	private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
 	private Set<PartnerPayout> partnerPayouts = new HashSet<PartnerPayout>(0);
+
 	private int versionNum;
 
 	public PaymentDTO() {
@@ -98,7 +97,7 @@ public class PaymentDTO implements Serializable {
 
 	public PaymentDTO(PaymentDTOEx dto) {
 		setId(dto.getId());
-		setAmount(new Float(dto.getAmount()));
+		setAmount(dto.getAmount());
 		setAttempt(dto.getAttempt());
 		setBalance(dto.getBalance());
 		setCreateDatetime(dto.getCreateDatetime());
@@ -115,7 +114,7 @@ public class PaymentDTO implements Serializable {
 	}
 
 	public PaymentDTO(int id, CurrencyDTO currencyDTO,
-			PaymentMethodDTO paymentMethod, Float amount, Date createDatetime,
+			PaymentMethodDTO paymentMethod, BigDecimal amount, Date createDatetime,
 			int deleted, int isRefund, Integer isPreauth) {
 		this.id = id;
 		this.currencyDTO = currencyDTO;
@@ -130,9 +129,9 @@ public class PaymentDTO implements Serializable {
 	public PaymentDTO(int id, UserDTO baseUser, CurrencyDTO currencyDTO,
 			PaymentMethodDTO paymentMethod, PaymentDTO payment,
 			CreditCardDTO creditCard, PaymentResultDTO paymentResult, AchDTO ach,
-			Integer attempt, Float amount, Date createDatetime,
+			Integer attempt, BigDecimal amount, Date createDatetime,
 			Date paymentDate, int deleted, int isRefund, PartnerPayout payoutId,
-			Float balance, Date updateDatetime, int isPreauth,
+			BigDecimal balance, Date updateDatetime, int isPreauth,
 			Set<PaymentAuthorizationDTO> paymentAuthorizations,
 			Set<PaymentDTO> payments, Set<PartnerPayout> partnerPayouts,
 			PaymentInfoChequeDTO paymentInfoCheque) {
@@ -160,7 +159,7 @@ public class PaymentDTO implements Serializable {
 		this.paymentInfoCheque = paymentInfoCheque;
 	}
 
-	public PaymentDTO(int id2, Float amount2, Float balance2,
+	public PaymentDTO(int id2, BigDecimal amount2, BigDecimal balance2,
 			Date createDatetime2, Date updateDatetime2, Date paymentDate2,
 			Integer attempt2, int deleted2, PaymentMethodDTO paymentMethod2,
 			PaymentResultDTO paymentResult2, int isRefund2, Integer isPreauth2,
@@ -298,12 +297,17 @@ public class PaymentDTO implements Serializable {
 		this.attempt = attempt;
 	}
 
+    /**
+     * Returns the dollar value of the payment made.
+     *
+     * @return payment amount
+     */
 	@Column(name = "amount", nullable = false, precision = 17, scale = 17)
-	public Float getAmount() {
+	public BigDecimal getAmount() {
 		return this.amount;
 	}
 
-	public void setAmount(Float amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 
@@ -352,12 +356,18 @@ public class PaymentDTO implements Serializable {
 		this.payoutId = payoutId;
 	}
 
+    /**
+     * Returns the remaining balance left over from this payment. A payment amount can be
+     * greater than the user's current owing balance, leaving a remainder.
+     * 
+     * @return remaining balance of this payment
+     */
 	@Column(name = "balance", precision = 17, scale = 17)
-	public Float getBalance() {
+	public BigDecimal getBalance() {
 		return this.balance;
 	}
 
-	public void setBalance(Float balance) {
+	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
 

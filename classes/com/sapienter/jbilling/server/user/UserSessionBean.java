@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -136,8 +137,9 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     /**
      * This returns more than a DTOEx, it includes the permissions and menu that
      * the GUI needs
-     * @param userId
-     * @return
+     * @param username user name
+     * @param entityId entity id
+     * @return DTO for GUI
      */
     public UserDTOEx getGUIDTO(String username, Integer entityId) {
         UserDTOEx retValue;
@@ -778,12 +780,13 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
                                 (Integer) value, null, null);
                         
                     } else if (value instanceof String) {
-                        preference.createUpdateForEntity(entityId, preferenceId, null, 
-                                (String) value, null);
+                        preference.createUpdateForEntity(entityId, preferenceId, null, (String) value, null);
                     } else if (value instanceof Float) {
-                        preference.createUpdateForEntity(entityId, preferenceId, null, 
-                                null, (Float) value);
+                        preference.createUpdateForEntity(entityId, preferenceId, null, null, new BigDecimal(value.toString()));
+                    } else if (value instanceof BigDecimal) {
+                        preference.createUpdateForEntity(entityId, preferenceId, null, null, (BigDecimal) value);
                     }
+
                 } else {
                     preference.createUpdateForEntity(entityId, preferenceId, null, 
                             null, null);
@@ -794,35 +797,34 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
         }
     }
 
-    public void updatePreference(Integer userId, Integer typeId, Integer intValue,
-            String strValue, Float floatValue) 
+    public void updatePreference(Integer userId, Integer typeId, Integer intValue, String strValue, BigDecimal decimalValue) 
         throws SessionInternalError {
         try {
-            LOG.debug("updateing preference " + typeId + " for user " +
-                    userId);
+            LOG.debug("updating preference " + typeId + " for user " + userId);
             PreferenceBL preference = new PreferenceBL();
-            preference.createUpdateForUser(userId, typeId, intValue, strValue, 
-                    floatValue);
+            preference.createUpdateForUser(userId, typeId, intValue, strValue, decimalValue);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
         
     }
+    
     /**
      * This now only working with String parameters
-     * @param entityId
-     * @param params
+     *
+     * @param entityId entity id
+     * @param preferenceId preference Id
+     * @param paramStr String parameter value (optional)
+     * @param paramInt Integer parameter value (optional)
+     * @param paramDecimal BigDecimal parameter value (option)
      * @throws SessionInternalError
      */
-    public void setEntityParameter(Integer entityId, Integer preferenceId,
-            String paramStr, Integer paramInt, Float paramFloat) 
-            throws SessionInternalError {
+    public void setEntityParameter(Integer entityId, Integer preferenceId, String paramStr, Integer paramInt,
+                                   BigDecimal paramDecimal) throws SessionInternalError {
         try {
-        	LOG.debug("updateing preference " + preferenceId + " for entity " +
-        			entityId);
+        	LOG.debug("updating preference " + preferenceId + " for entity " + entityId);
             PreferenceBL preference = new PreferenceBL();
-            preference.createUpdateForEntity(entityId, preferenceId, paramInt, 
-                    paramStr, paramFloat);
+            preference.createUpdateForEntity(entityId, preferenceId, paramInt, paramStr, paramDecimal);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

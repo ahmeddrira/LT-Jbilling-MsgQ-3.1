@@ -20,15 +20,15 @@
 
 package com.sapienter.jbilling.server.payment;
 
-import java.sql.SQLException;
-import java.util.Date;
-
-import org.springframework.dao.EmptyResultDataAccessException;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.blacklist.CsvProcessor;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import org.springframework.dao.EmptyResultDataAccessException;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.Date;
 
 /**
  *
@@ -65,7 +65,7 @@ public interface IPaymentSessionBean {
     /**
      * This method soft deletes a payment
      * 
-     * @param integer
+     * @param paymentId
      * @throws SessionInternalError
      */
     public void deletePayment(Integer paymentId) throws SessionInternalError;
@@ -106,7 +106,7 @@ public interface IPaymentSessionBean {
      * @param success
      * @throws SessionInternalError
      */
-    public float applyPayment(PaymentDTO payment, InvoiceDTO invoice,
+    public BigDecimal applyPayment(PaymentDTO payment, InvoiceDTO invoice,
             boolean success) throws SQLException;
 
     /**
@@ -130,7 +130,7 @@ public interface IPaymentSessionBean {
             Integer partnerId, Boolean process) throws SessionInternalError;
 
     public Boolean processPaypalPayment(Integer invoiceId, String entityEmail,
-            Float amount, String currency, Integer paramUserId, 
+            BigDecimal amount, String currency, Integer paramUserId, 
             String userEmail) throws SessionInternalError;
     
     /** 

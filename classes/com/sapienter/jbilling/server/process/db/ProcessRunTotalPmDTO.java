@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.process.db;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +52,7 @@ public class ProcessRunTotalPmDTO implements Serializable {
 
     private int id;
     private PaymentMethodDTO paymentMethod;
-    private float total;
+    private BigDecimal total;
     private ProcessRunTotalDTO processRunTotal;
 	private int versionNum;
 
@@ -59,12 +60,12 @@ public class ProcessRunTotalPmDTO implements Serializable {
 	}
 
 
-    public ProcessRunTotalPmDTO(int id, float total) {
+    public ProcessRunTotalPmDTO(int id, BigDecimal total) {
         this.id = id;
         this.total = total;
     }
 
-    public ProcessRunTotalPmDTO(int id, PaymentMethodDTO paymentMethod, float total) {
+    public ProcessRunTotalPmDTO(int id, PaymentMethodDTO paymentMethod, BigDecimal total) {
         this.id = id;
         this.paymentMethod = paymentMethod;
         this.total = total;
@@ -83,11 +84,11 @@ public class ProcessRunTotalPmDTO implements Serializable {
 
 
     @Column(name = "total", nullable = false, precision = 17, scale = 17)
-    public float getTotal() {
+    public BigDecimal getTotal() {
         return this.total;
     }
 
-    public void setTotal(float total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 

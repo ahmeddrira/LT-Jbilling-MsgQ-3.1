@@ -115,7 +115,7 @@ public class CurrencyBL {
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp = tmp.divide(new BigDecimal(exchange.getRate()), CommonConstants.BIGDECIMAL_SCALE, CommonConstants.BIGDECIMAL_ROUND);
+        tmp = tmp.divide(exchange.getRate());
         
         return tmp;
     }
@@ -133,7 +133,7 @@ public class CurrencyBL {
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp = tmp.multiply(new BigDecimal(exchange.getRate()));
+        tmp = tmp.multiply(exchange.getRate());
         
         return tmp;
     }
@@ -206,17 +206,16 @@ public class CurrencyBL {
             newCurrency.setName(currency.getDescription(languageId));
             // find the system rate
             if (f == 1) {
-                newCurrency.setSysRate(1.0);
+                newCurrency.setSysRate(new BigDecimal("1.0"));
             } else {
-                newCurrency.setSysRate(new CurrencyExchangeDAS().findExchange(new Integer(0),
-                        currencyId).getRate());
+                newCurrency.setSysRate(new CurrencyExchangeDAS().findExchange(new Integer(0), currencyId).getRate());
             }
             // may be there's an entity rate
             EntityBL en = new EntityBL(entityId);
             CurrencyExchangeDTO exchange = new CurrencyExchangeDAS().findExchange(entityId,
                     currencyId);
             if (exchange != null) {
-                newCurrency.setRate(Util.float2string(exchange.getRate(), en.getLocale()));
+                newCurrency.setRate(exchange.getRate().toString());
             }
             // let's see if this currency is in use by this entity
             newCurrency.setInUse(new Boolean(entityHasCurrency(entityId, 
@@ -251,8 +250,7 @@ public class CurrencyBL {
                     exchange.setCreateDatetime(Calendar.getInstance().getTime());
                     exchange.setCurrency(new CurrencyDAS().find(currencies[f].getId()));
                     exchange.setEntityId(entityId);
-                    exchange.setRate(Util.string2float(currencies[f].getRate(), 
-                            entity.getLocale()));
+                    exchange.setRate(currencies[f].getRateAsDecimal());
                     new CurrencyExchangeDAS().save(exchange);
                 }
             }

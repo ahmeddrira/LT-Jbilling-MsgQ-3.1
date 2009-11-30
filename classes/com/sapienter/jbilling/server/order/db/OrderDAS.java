@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.order.db;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -137,7 +138,7 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 		return criteria.list();
 	}
 	
-	public Double findIsUserSubscribedTo(Integer userId, Integer itemId) {
+	public BigDecimal findIsUserSubscribedTo(Integer userId, Integer itemId) {
 		String hql = 
 				"select sum(l.quantity) " +
 				"from OrderDTO o " +
@@ -149,17 +150,15 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 				"o.deleted = 0 and " +
 				"l.deleted = 0";
 
-        Double result = (Double) getSession()
+        BigDecimal result = (BigDecimal) getSession()
                 .createQuery(hql)
                 .setInteger("userId", userId)
                 .setInteger("itemId", itemId)
                 .setInteger("periodVal", Constants.ORDER_PERIOD_ONCE)
                 .setInteger("status", Constants.ORDER_STATUS_ACTIVE)
                 .uniqueResult();
-        if (result == null) {
-            result = Double.valueOf(0);
-        }
-        return result;
+        
+        return (result == null ? BigDecimal.ZERO : result);
 	}
 	
 	public Integer[] findUserItemsByCategory(Integer userId, 

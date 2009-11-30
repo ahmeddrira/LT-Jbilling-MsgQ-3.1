@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.invoice.db;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,9 +55,11 @@ public class InvoiceLineDTO implements Serializable {
     private InvoiceLineTypeDTO invoiceLineType;
     private ItemDTO item;
     private InvoiceDTO invoice;
-    private Float amount;
-    private Double quantity;
-    private Float price;
+
+    private BigDecimal amount;
+    private BigDecimal quantity;
+    private BigDecimal price;
+
     private Integer deleted;
     private String description;
     private Integer sourceUserId;
@@ -66,15 +69,14 @@ public class InvoiceLineDTO implements Serializable {
     public InvoiceLineDTO() {
     }
 
-    public InvoiceLineDTO(int id, Float amount, Integer deleted,
-            Integer isPercentage) {
+    public InvoiceLineDTO(int id, BigDecimal amount, Integer deleted, Integer isPercentage) {
         this.id = id;
         this.amount = amount;
         this.deleted = deleted;
         this.isPercentage = isPercentage;
     }
     
-    public InvoiceLineDTO(Integer id, String description, Float amount, Float price, Double quantity,
+    public InvoiceLineDTO(Integer id, String description, BigDecimal amount, BigDecimal price, BigDecimal quantity,
             Integer typeId, Integer deleted, Integer itemId, Integer sourceUserId, Integer isPercentage) {
         setId(id == null ? 0 : id);
         setDescription(description);
@@ -90,8 +92,8 @@ public class InvoiceLineDTO implements Serializable {
     }
 
     public InvoiceLineDTO(int id, InvoiceLineTypeDTO invoiceLineType,
-            ItemDTO item, InvoiceDTO invoice, Float amount, Double quantity,
-            Float price, Integer deleted, String description,
+            ItemDTO item, InvoiceDTO invoice, BigDecimal amount, BigDecimal quantity,
+            BigDecimal price, Integer deleted, String description,
             Integer sourceUserId, Integer isPercentage) {
         this.id = id;
         this.invoiceLineType = invoiceLineType;
@@ -106,8 +108,8 @@ public class InvoiceLineDTO implements Serializable {
         this.isPercentage = isPercentage;
     }
 
-    public InvoiceLineDTO(int id2, String description2, Float amount,
-            Float price, Double quantity2, Integer deleted, ItemDTO item,
+    public InvoiceLineDTO(int id2, String description2, BigDecimal amount,
+            BigDecimal price, BigDecimal quantity2, Integer deleted, ItemDTO item,
             Integer sourceUserId2, Integer isPercentage) {
         this.id = id2;
         this.description = description2;
@@ -162,34 +164,45 @@ public class InvoiceLineDTO implements Serializable {
         this.invoice = invoice;
     }
 
+    /**
+     * Returns the total amount for this line. Usually this would be
+     * the {@code price * quantity}
+     *
+     * @return amount
+     */
     @Column(name = "amount", nullable = false, precision = 17, scale = 17)
-    public Float getAmount() {
+    public BigDecimal getAmount() {
         return this.amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
     @Column(name = "quantity")
-    public Double getQuantity() {
+    public BigDecimal getQuantity() {
         return this.quantity;
     }
 
-    public void setQuantity(Double quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
     public void setQuantity(Integer quantity) {
-        setQuantity(new Double(quantity));
+        setQuantity(new BigDecimal(quantity));
     }
 
+    /**
+     * Returns the price of a single unit of this item.
+     *
+     * @return unit price
+     */
     @Column(name = "price", precision = 17, scale = 17)
-    public Float getPrice() {
+    public BigDecimal getPrice() {
         return this.price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -220,6 +233,15 @@ public class InvoiceLineDTO implements Serializable {
         this.sourceUserId = sourceUserId;
     }
 
+    /**
+     * Indicates whether or not the item referenced by this line is
+     * a percentage item or not.
+     *
+     * 1 - Item is a percentage item
+     * 0 - Item is not a percentage item
+     *
+     * @return 1 if item is percentage, 0 if not
+     */
     @Column(name = "is_percentage", nullable = false)
     public Integer getIsPercentage() {
         return this.isPercentage;

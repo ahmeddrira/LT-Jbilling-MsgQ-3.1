@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.util.api;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -495,8 +496,7 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
-    @Override
-    public Double isUserSubscribedTo(Integer userId, Integer itemId)
+    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId)
     		throws JbillingAPIException {
     	try {
     		return session.isUserSubscribedTo(userId, itemId);

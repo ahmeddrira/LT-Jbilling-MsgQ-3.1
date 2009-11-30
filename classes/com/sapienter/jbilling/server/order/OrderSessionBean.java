@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.order;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 
@@ -216,24 +217,20 @@ public class OrderSessionBean implements IOrderSessionBean {
         }
     }
 
-    public OrderDTO addItem(Integer itemID, Double quantity, OrderDTO order, 
-            Integer languageId, Integer userId, Integer entityId) 
-            throws SessionInternalError, ItemDecimalsException {
+    public OrderDTO addItem(Integer itemID, BigDecimal quantity, OrderDTO order, Integer languageId, Integer userId,
+                            Integer entityId) throws SessionInternalError, ItemDecimalsException {
 
         LOG.debug("Adding item " + itemID + " q:" + quantity);
 
         OrderBL bl = new OrderBL(order);
-        bl.addItem(itemID, quantity, languageId, userId, entityId, 
-                order.getCurrencyId());
+        bl.addItem(itemID, quantity, languageId, userId, entityId, order.getCurrencyId());
         return order;
     }
     
-    public OrderDTO addItem(Integer itemID, Integer quantity, OrderDTO order,
-             Integer languageId, Integer userId, Integer entityId) 
-             throws SessionInternalError, ItemDecimalsException {
+    public OrderDTO addItem(Integer itemID, Integer quantity, OrderDTO order, Integer languageId, Integer userId,
+                            Integer entityId) throws SessionInternalError, ItemDecimalsException {
 
-        return addItem(itemID, new Double(quantity), order, languageId, userId,
-                entityId);
+        return addItem(itemID, new BigDecimal(quantity), order, languageId, userId, entityId);
     }
 
     public OrderDTO recalculate(OrderDTO modifiedOrder, Integer entityId) 

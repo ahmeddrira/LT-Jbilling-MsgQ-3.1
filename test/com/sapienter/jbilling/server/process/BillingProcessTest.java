@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.process;
 
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -191,7 +192,7 @@ public class BillingProcessTest extends TestCase {
             BillingProcessRunDTOEx run = process.getRuns().get(process.getRuns().size() - 1);
             BillingProcessRunTotalDTOEx total = run.getTotals().get(0);
             assertEquals("Retry total paid equals to invoice total", 
-                    invoice.getTotal().floatValue(), total.getTotalPaid().floatValue());
+                    invoice.getTotal(), total.getTotalPaid());
            
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,7 +286,7 @@ public class BillingProcessTest extends TestCase {
             assertNull("Overdue invoice not delegated", invoice.getInvoice());
             assertEquals("Overdue invoice marked as 'unpaid and carried'",
                     Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
-            assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
+            assertEquals("Overdue invoice balance 15", new BigDecimal("15.0"), invoice.getBalance());
             Integer overdueInvoiceId = invoice.getId();
 
             // validate that the review left the order 107600 is still active
@@ -302,7 +303,7 @@ public class BillingProcessTest extends TestCase {
             assertNotNull("Overdue invoice still there", invoice);
             assertEquals("Overdue invoice marked as 'unpaid and carried'",
                     Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
-            assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
+            assertEquals("Overdue invoice balance 15", new BigDecimal("15.0"), invoice.getBalance());
 
             // run trigger, but too early (six days, instead of 5)    
             cal.set(2006, GregorianCalendar.OCTOBER, 20); 
@@ -338,7 +339,7 @@ public class BillingProcessTest extends TestCase {
             assertNotNull("Overdue invoice still there", invoice);
             assertEquals("Overdue invoice marked as 'unpaid and carried'",
                     Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
-            assertEquals("Overdue invoice balance 15", 15.0F, invoice.getBalance());
+            assertEquals("Overdue invoice balance 15", new BigDecimal("15.0"), invoice.getBalance());
             invoice = remoteInvoice.getInvoice(reviewInvoiceId);
             assertNull("Review invoice not longer present", invoice);
 
@@ -447,7 +448,7 @@ public class BillingProcessTest extends TestCase {
             assertEquals("Overdue invoice is now  'carried over'", Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(),
                     invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice carried balance remains the same",
-                    15.0F, invoice.getBalance());
+                    new BigDecimal("15.0"), invoice.getBalance());
 
             // get the latest process
             BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(
@@ -475,9 +476,8 @@ public class BillingProcessTest extends TestCase {
             BillingProcessRunTotalDTOEx bTotal = (BillingProcessRunTotalDTOEx)
                     lastDtoB.getGrandTotal().getTotals().get(0);
             assertEquals("17.2 - Review invoiced = Process invoiced",
-                    aTotal.getTotalInvoiced().floatValue(),
-                    bTotal.getTotalInvoiced().floatValue(),
-                    1.00F);
+                    aTotal.getTotalInvoiced(),
+                    bTotal.getTotalInvoiced());
 
             // verify that the transition from pending unsubscription to unsubscribed worked
             assertEquals("User should stay on pending unsubscription",
@@ -498,18 +498,16 @@ public class BillingProcessTest extends TestCase {
     // Yet, the periods have to be added in this function
     public void testGeneratedInvoices() {
         try {
-            Collection<InvoiceDTO> invoices = remoteBillingProcess.getGeneratedInvoices(
-                    PROCESS_ID);
+            Collection<InvoiceDTO> invoices = remoteBillingProcess.getGeneratedInvoices(PROCESS_ID);
             // we know that only one invoice should be generated
             assertEquals("Invoices generated", 998, invoices.size());
             
             for (InvoiceDTO invoice : invoices) {
-                float orderTotal = 0F;
+                BigDecimal orderTotal = BigDecimal.ZERO;
                 boolean isProRated = false;
                 for (OrderProcessDTO orderProcess: invoice.getOrderProcesses()) {
-                    OrderDTO orderDto = remoteOrder.getOrderEx(orderProcess.getPurchaseOrder().getId(),
-                            languageId);
-                    orderTotal += orderDto.getTotal().floatValue();
+                    OrderDTO orderDto = remoteOrder.getOrderEx(orderProcess.getPurchaseOrder().getId(), languageId);
+                    orderTotal = orderTotal.add(orderDto.getTotal());
                     if (orderProcess.getPurchaseOrder().getId() >= 103 && 
                             orderProcess.getPurchaseOrder().getId() <= 108 || 
                             orderProcess.getPurchaseOrder().getId() == 113 ||
@@ -519,9 +517,8 @@ public class BillingProcessTest extends TestCase {
                 }
 
                 if (!isProRated) {
-	                assertEquals("Orders total = Invoice " + invoice.getId()
-	                        + " total", orderTotal, invoice.getTotal().floatValue()
-	                        - invoice.getCarriedBalance().floatValue(), 0.005F);
+	                assertEquals("Orders total = Invoice " + invoice.getId() + " total",
+                                 orderTotal, invoice.getTotal().subtract(invoice.getCarriedBalance()));
                 } else {
                 	// TODO: add exact calculations for pro-rated invoices
                 }
@@ -553,12 +550,16 @@ public class BillingProcessTest extends TestCase {
             }
             
             assertNotNull("The payment processing did not run", run.getPaymentFinished());
+
             // we know that the only one invoice will be payed in full
             assertEquals("Invoices in the grand total", new Integer(998), process.getGrandTotal().getInvoicesGenerated());
-            assertTrue("Total invoiced is consitent", Math.abs(((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced().floatValue() -
-                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid().floatValue() - 
-                    ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalNotPaid().floatValue()) < 1);
-            InvoiceDTO invoice =remoteInvoice.getAllInvoices(1067).iterator().next();
+            assertTrue("Total invoiced is consitent",
+                       ((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalInvoiced()
+                               .subtract(((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalPaid())
+                               .subtract(((BillingProcessRunTotalDTOEx) process.getGrandTotal().getTotals().get(0)).getTotalNotPaid())
+                               .abs()
+                               .floatValue() < 1);
+            InvoiceDTO invoice = remoteInvoice.getAllInvoices(1067).iterator().next();
             assertEquals("Invoice is paid", new Integer(0), invoice.getToProcess());
             
         } catch (Exception e) {
@@ -585,12 +586,10 @@ public class BillingProcessTest extends TestCase {
                 OrderDTO order = remoteOrder.getOrder(f);
                 
                 if (order.getNextBillableDay() != null) {
-                           
                     if (dates[f] == null ){
                         assertNull("Order " + order.getId(),order.getNextBillableDay());
                     } else {
-                        assertEquals("Order " + order.getId(), parseDate(dates[f]),
-                                order.getNextBillableDay());
+                        assertEquals("Order " + order.getId(), parseDate(dates[f]), order.getNextBillableDay());
                     } 
                 }
             }
@@ -606,8 +605,7 @@ public class BillingProcessTest extends TestCase {
         try {
             for (int f = 0; f < orders.length; f++) {
                 OrderDTO order = remoteOrder.getOrder(new Integer(orders[f]));
-                assertEquals("Order " + order.getId(), order.getStatusId(), 
-                        Constants.ORDER_STATUS_FINISHED); 
+                assertEquals("Order " + order.getId(), order.getStatusId(), Constants.ORDER_STATUS_FINISHED);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -622,8 +620,7 @@ public class BillingProcessTest extends TestCase {
         try {
             for (int f = 0; f < orders.length; f++) {
                 OrderDTO order = remoteOrder.getOrder(new Integer(orders[f]));
-                assertEquals("Order " + order.getId(), order.getStatusId(), 
-                        Constants.ORDER_STATUS_ACTIVE); 
+                assertEquals("Order " + order.getId(), order.getStatusId(), Constants.ORDER_STATUS_ACTIVE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -651,29 +648,21 @@ public class BillingProcessTest extends TestCase {
        
         try {
             // get the latest process
-            BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(
-                    remoteBillingProcess.getLast(entityId),
-                    languageId);
+            BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(remoteBillingProcess.getLast(entityId), languageId);
             
             for (int f = 0; f < orders.length; f++) {
-                OrderDTO order = remoteOrder.getOrderEx(
-                        new Integer(orders[f]), languageId);
+                OrderDTO order = remoteOrder.getOrderEx(new Integer(orders[f]), languageId);
                 Date from = parseDate(dateRanges[f][0]);
                 Date to = parseDate(dateRanges[f][1]);
                 Integer number = Integer.valueOf(dateRanges[f][2]);
                 
-                OrderProcessDTO period = (OrderProcessDTO)
-                        order.getPeriods().toArray()[0];
-                assertTrue("(from) Order " + order.getId(),period.getPeriodStart().compareTo(
-                        from) == 0);
+                OrderProcessDTO period = (OrderProcessDTO) order.getPeriods().toArray()[0];
+                assertTrue("(from) Order " + order.getId(),period.getPeriodStart().compareTo(from) == 0);
                 assertTrue("(to) Order " + order.getId(),period.getPeriodEnd().compareTo(to) == 0);
-                assertEquals("(number) Order " + order.getId(), number, 
-                        period.getPeriodsIncluded());
+                assertEquals("(number) Order " + order.getId(), number, period.getPeriodsIncluded());
  
-                OrderProcessDTO process = (OrderProcessDTO)
-                        order.getOrderProcesses().toArray()[0];
-                assertEquals("(process) Order " + order.getId(),lastDto.getId(), 
-                        process.getBillingProcess().getId()); 
+                OrderProcessDTO process = (OrderProcessDTO) order.getOrderProcesses().toArray()[0];
+                assertEquals("(process) Order " + order.getId(),lastDto.getId(), process.getBillingProcess().getId()); 
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -686,8 +675,7 @@ public class BillingProcessTest extends TestCase {
         int orders[] = {101, 109, 111};
         try {
             for (int f = 0; f < orders.length; f++) {
-                OrderDTO order = remoteOrder.getOrderEx(
-                        new Integer(orders[f]), languageId);
+                OrderDTO order = remoteOrder.getOrderEx(new Integer(orders[f]), languageId);
                 
                 assertTrue("1 - Order " + order.getId(),order.getPeriods().isEmpty());
                 assertTrue("2 - Order " + order.getId(),order.getOrderProcesses().isEmpty());
@@ -716,43 +704,37 @@ public class BillingProcessTest extends TestCase {
             cal.set(2006, GregorianCalendar.DECEMBER, 1);
             remoteBillingProcess.reviewUsersStatus(cal.getTime());
             UserDTOEx user = remoteUser.getUserDTOEx(userId);
-            assertEquals("Grace period", UserDTOEx.STATUS_ACTIVE,
-                    user.getStatusId());
+            assertEquals("Grace period", UserDTOEx.STATUS_ACTIVE, user.getStatusId());
                     
             // when the grace over, she should be warned
             cal.set(2006, GregorianCalendar.DECEMBER, 2);
             remoteBillingProcess.reviewUsersStatus(cal.getTime());
             user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1,
-                    user.getStatusId().intValue());
+            assertEquals("to overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1, user.getStatusId().intValue());
 
             // two day after, the status should be the same
             cal.set(2006, GregorianCalendar.DECEMBER, 4);
             remoteBillingProcess.reviewUsersStatus(cal.getTime());
             user = remoteUser.getUserDTOEx(userId);
-            assertEquals("still overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1,
-                    user.getStatusId().intValue());
+            assertEquals("still overdue", UserDTOEx.STATUS_ACTIVE.intValue() + 1, user.getStatusId().intValue());
 
             // after three days of the warning, fire the next one
             cal.set(2006, GregorianCalendar.DECEMBER, 5);
             remoteBillingProcess.reviewUsersStatus(cal.getTime());
             user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to overdue 2", UserDTOEx.STATUS_ACTIVE.intValue() + 2,
-                    user.getStatusId().intValue());
+            assertEquals("to overdue 2", UserDTOEx.STATUS_ACTIVE.intValue() + 2, user.getStatusId().intValue());
 
             // the next day it goes to suspended
             cal.set(2006, GregorianCalendar.DECEMBER, 6);
             remoteBillingProcess.reviewUsersStatus(cal.getTime());
             user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to suspended", UserDTOEx.STATUS_ACTIVE.intValue() + 4,
-                    user.getStatusId().intValue());
+            assertEquals("to suspended", UserDTOEx.STATUS_ACTIVE.intValue() + 4, user.getStatusId().intValue());
 
             // two days for suspended 3
             cal.set(2006, GregorianCalendar.DECEMBER, 8);
             remoteBillingProcess.reviewUsersStatus(cal.getTime());
             user = remoteUser.getUserDTOEx(userId);
-            assertEquals("to suspended 3", UserDTOEx.STATUS_ACTIVE.intValue() + 6,
-                    user.getStatusId().intValue());
+            assertEquals("to suspended 3", UserDTOEx.STATUS_ACTIVE.intValue() + 6, user.getStatusId().intValue());
 
             // 30 days for deleted
             cal.add(GregorianCalendar.DATE, 30);
@@ -997,5 +979,15 @@ public class BillingProcessTest extends TestCase {
         } while(it.hasNext());
 
         return null;
+    }    
+
+    public static void assertEquals(BigDecimal expected, BigDecimal actual) {
+        assertEquals(null, expected, actual);
+    }
+
+    public static void assertEquals(String message, BigDecimal expected, BigDecimal actual) {
+        assertEquals(message,
+                     (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
+                     (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
     }
 }

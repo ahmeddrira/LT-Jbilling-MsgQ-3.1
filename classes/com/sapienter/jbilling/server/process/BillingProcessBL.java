@@ -189,7 +189,7 @@ public class BillingProcessBL extends ResultList
         newInvoice.setDueDatePeriod(period);
         // this is an isolated invoice that doesn't care about previous
         // overdue invoices
-        newInvoice.setCarriedBalance(new Float(0));
+        newInvoice.setCarriedBalance(BigDecimal.ZERO);
         newInvoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
 
         try {
@@ -361,15 +361,15 @@ public class BillingProcessBL extends ResultList
                         // Since there are no new invoices (therefore no orders),
                         // don't let invoices with positive balances generate
                         // an invoice.
-                        if (invoice.getBalance() > 0) {
+                        if (BigDecimal.ZERO.compareTo(invoice.getBalance()) < 0) {
                             continue;
                         }
-
+                        
                         // no invoice/s yet (no applicable orders), so create one
                         holder = new NewInvoiceDTO();
                         holder.setDate(process.getBillingDate());
                         holder.setIsReview(isReview ? new Integer(1) : new Integer(0));
-                        holder.setCarriedBalance(new Float(0));
+                        holder.setCarriedBalance(BigDecimal.ZERO);
                         holder.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID));
 
                         // need to set a due date, so use the order default
@@ -399,10 +399,9 @@ public class BillingProcessBL extends ResultList
                     // previously unpaid overdue invoices
 
                     // carry the remaining balance, plus the previously carried balance to the new invoice
-                    BigDecimal balance = new BigDecimal((invoice.getBalance() == null) ? 0F : invoice.getBalance());
-                    BigDecimal carried = balance.add(new BigDecimal(holder.getCarriedBalance()));
-
-                    holder.setCarriedBalance(carried.floatValue());
+                    BigDecimal balance = (invoice.getBalance() == null) ? BigDecimal.ZERO : invoice.getBalance();
+                    BigDecimal carried = balance.add(holder.getCarriedBalance());
+                    holder.setCarriedBalance(carried);
 
                     if (carried.floatValue() > 0F)
                         invoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
@@ -570,7 +569,7 @@ public class BillingProcessBL extends ResultList
                                     order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE);
                         }
                         thisInvoice.setIsReview(isReview ? new Integer(1) : new Integer(0));
-                        thisInvoice.setCarriedBalance(new Float(0));
+                        thisInvoice.setCarriedBalance(BigDecimal.ZERO);
                         thisInvoice.setDueDatePeriod(dueDatePeriod);
                     } else {
                         LOG.debug("invoice found for period " + dueDatePeriod);
@@ -650,10 +649,9 @@ public class BillingProcessBL extends ResultList
         newInvoice.calculateTotal();
         
         if (newInvoice.getCarriedBalance() != null) {
-            newInvoice.setBalance(newInvoice.getTotal().subtract(
-                    new BigDecimal(newInvoice.getCarriedBalance())).floatValue());
+            newInvoice.setBalance(newInvoice.getTotal().subtract(newInvoice.getCarriedBalance()));
         } else {
-            newInvoice.setBalance(newInvoice.getTotal().floatValue());
+            newInvoice.setBalance(newInvoice.getTotal());
         }
 
         newInvoice.setInProcessPayment(new Integer(1));
@@ -899,23 +897,20 @@ public class BillingProcessBL extends ResultList
                 ProcessRunTotalDTO totalRow =
                         (ProcessRunTotalDTO) it2.next();
 
-                BillingProcessRunTotalDTOEx totalDto =
-                        getTotal(totalRow.getCurrency(), runDto.getTotals());
-                BillingProcessRunTotalDTOEx sum =
-                        getTotal(totalRow.getCurrency(), grandTotal.getTotals());
-                BigDecimal totalTmp = new BigDecimal(totalDto.getTotalInvoiced().toString());
-                totalTmp = totalTmp.add(new BigDecimal(sum.getTotalInvoiced().toString()));
-                sum.setTotalInvoiced(new Float(totalTmp.floatValue()));
+                BillingProcessRunTotalDTOEx totalDto = getTotal(totalRow.getCurrency(), runDto.getTotals());
+                BillingProcessRunTotalDTOEx sum = getTotal(totalRow.getCurrency(), grandTotal.getTotals());
 
-                totalTmp = new BigDecimal(totalDto.getTotalPaid().toString());
-                totalTmp = totalTmp.add(new BigDecimal(sum.getTotalPaid().toString()));
-                sum.setTotalPaid(new Float(totalTmp.toString()));
+                BigDecimal totalTmp = totalDto.getTotalInvoiced().add(sum.getTotalInvoiced());
+                sum.setTotalInvoiced(totalTmp);
+
+                totalTmp = totalDto.getTotalPaid().add(sum.getTotalPaid());
+                sum.setTotalPaid(totalTmp);
+
                 // can't add up the not paid, because many runs will try to
                 // get the same invoices paid, so the not paid field gets
-                // duplicated ammounts.
-                totalTmp = new BigDecimal(sum.getTotalInvoiced().toString());
-                totalTmp = totalTmp.subtract(new BigDecimal(sum.getTotalPaid().toString()));
-                sum.setTotalNotPaid(new Float(totalTmp.floatValue()));
+                // duplicated amounts.
+                totalTmp = sum.getTotalInvoiced().subtract(sum.getTotalPaid());
+                sum.setTotalNotPaid(totalTmp);
 
                 // make sure this total has the currency name initialized
                 if (sum.getCurrencyName() == null) {
@@ -1005,19 +1000,15 @@ public class BillingProcessBL extends ResultList
      * this is a retry, otherwise the processId.
      * @param processId
      * @param runId
-     * @param newInvoice
+     * @param invoiceId
      * @throws SessionInternalError
-     * @throws CreateException
      */
-    public void generatePayment(Integer processId, Integer runId,
-            Integer invoiceId)
-            throws SessionInternalError {
+    public void generatePayment(Integer processId, Integer runId, Integer invoiceId) throws SessionInternalError {
 
         try {
             InvoiceBL invoiceBL = new InvoiceBL(invoiceId);
             InvoiceDTO newInvoice = invoiceBL.getEntity();
-            IPaymentSessionBean paymentSess = (IPaymentSessionBean)
-                    Context.getBean(Context.Name.PAYMENT_SESSION);
+            IPaymentSessionBean paymentSess = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
             Integer result = paymentSess.generatePayment(newInvoice);
             Integer currencyId = newInvoice.getCurrency().getId();
             BillingProcessRunBL run = new BillingProcessRunBL();
@@ -1029,19 +1020,16 @@ public class BillingProcessBL extends ResultList
             // null means that the payment wasn't successful
             // otherwise the result is the method id
             if (result != null) {
-                run.updateNewPayment(currencyId, result, newInvoice.getTotal(),
-                        true);
+                run.updateNewPayment(currencyId, result, newInvoice.getTotal(), true);
             } else {
-                run.updateNewPayment(currencyId, result, newInvoice.getTotal(),
-                        false);
+                run.updateNewPayment(currencyId, result, newInvoice.getTotal(), false);
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
 
-    public BillingProcessRunTotalDTOEx getTotal(CurrencyDTO currency,
-            List totals) {
+    public BillingProcessRunTotalDTOEx getTotal(CurrencyDTO currency, List totals) {
         BillingProcessRunTotalDTOEx retValue = null;
         for (int f = 0; f < totals.size(); f++) {
             BillingProcessRunTotalDTOEx total = (BillingProcessRunTotalDTOEx) totals.get(f);
@@ -1055,16 +1043,14 @@ public class BillingProcessBL extends ResultList
         if (retValue == null) {
             CurrencyDAS curDas = new CurrencyDAS();
             CurrencyDTO curDto = curDas.find(currency.getId());
-            retValue = new BillingProcessRunTotalDTOEx(null, curDto,
-                    new Float(0), new Float(0), new Float(0));
+            retValue = new BillingProcessRunTotalDTOEx(null, curDto, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
             totals.add(retValue);
         }
 
         return retValue;
     }
 
-    public BillingProcessDTOEx getReviewDTO(Integer entityId,
-            Integer languageId) {
+    public BillingProcessDTOEx getReviewDTO(Integer entityId, Integer languageId) {
         billingProcess = billingProcessDas.findReview(entityId);
         if (billingProcess == null) {
             System.out.println("Don't found the billingProcess");

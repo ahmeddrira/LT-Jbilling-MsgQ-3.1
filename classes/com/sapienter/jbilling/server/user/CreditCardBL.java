@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -290,10 +291,8 @@ public class CreditCardBL extends ResultList
      * @return
      * @throws com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException
      */
-    public PaymentAuthorizationDTOEx validatePreAuthorization(Integer entityId,
-            Integer userId, CreditCardDTO cc,
-            Float amount, Integer currencyId)
-            throws PluggableTaskException {
+    public PaymentAuthorizationDTOEx validatePreAuthorization(Integer entityId, Integer userId, CreditCardDTO cc,
+                                                              BigDecimal amount, Integer currencyId) throws PluggableTaskException {
 
         // create a new payment record
         PaymentDTOEx paymentDto = new PaymentDTOEx();
@@ -301,11 +300,12 @@ public class CreditCardBL extends ResultList
         paymentDto.setCurrency(new CurrencyDAS().find(currencyId));
         paymentDto.setCreditCard(cc);
         paymentDto.setUserId(userId);
-        paymentDto.setIsPreauth(new Integer(1));
+        paymentDto.setIsPreauth(1);
+
         // filler fields, required
-        paymentDto.setIsRefund(new Integer(0));
+        paymentDto.setIsRefund(0);
         paymentDto.setPaymentMethod(new PaymentMethodDAS().find(Util.getPaymentMethod(cc.getNumber())));
-        paymentDto.setAttempt(new Integer(1));
+        paymentDto.setAttempt(1);
         paymentDto.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_ENTERED)); // to be updated later
         paymentDto.setPaymentDate(Calendar.getInstance().getTime());
         paymentDto.setBalance(amount);
@@ -314,9 +314,7 @@ public class CreditCardBL extends ResultList
         payment.create(paymentDto); // this updates the id
 
         // use the payment processor configured 
-        PluggableTaskManager taskManager =
-                new PluggableTaskManager(entityId,
-                Constants.PLUGGABLE_TASK_PAYMENT);
+        PluggableTaskManager taskManager = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_PAYMENT);
         PaymentTask task = (PaymentTask) taskManager.getNextClass();
 
         boolean processNext = true;
@@ -336,11 +334,10 @@ public class CreditCardBL extends ResultList
         payment.getEntity().setPaymentResult(paymentDto.getPaymentResult());
 
         //create the return value
-        PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(
-                paymentDto.getAuthorization().getOldDTO());
+        PaymentAuthorizationDTOEx retValue = new PaymentAuthorizationDTOEx(paymentDto.getAuthorization().getOldDTO());
         if (paymentDto.getPaymentResult().getId() != Constants.RESULT_OK) {
             // if it was not successfull, it should not have balance
-            payment.getEntity().setBalance(0F);
+            payment.getEntity().setBalance(BigDecimal.ZERO);
             retValue.setResult(false);
         } else {
             retValue.setResult(true);

@@ -47,6 +47,7 @@ public class PaymentDTOEx extends PaymentDTO {
     private PaymentDTOEx payment = null; // for refunds
     private String resultStr = null;
     private Integer payoutId = null;
+
     // now we only support one of these
     private PaymentAuthorizationDTO authorization = null; // useful in refuds
 
@@ -55,7 +56,7 @@ public class PaymentDTOEx extends PaymentDTO {
         
         setId(dto.getId());
         setCurrency(dto.getCurrency());
-        setAmount(new Float(dto.getAmount()));
+        setAmount(dto.getAmount());
         setBalance(dto.getBalance());
         setAttempt(dto.getAttempt());
 
@@ -84,9 +85,9 @@ public class PaymentDTOEx extends PaymentDTO {
 
     public PaymentDTOEx(PaymentWS dto) {
         setId(dto.getId());
-        setAmount(new Float(dto.getAmount()));
+        setAmount(dto.getAmountAsDecimal());
         setAttempt(dto.getAttempt());
-        setBalance(dto.getBalance());
+        setBalance(dto.getBalanceAsDecimal());
         setCreateDatetime(dto.getCreateDatetime());
         setCurrency(new CurrencyDTO(dto.getCurrencyId()));
         setDeleted(dto.getDeleted());
@@ -159,35 +160,6 @@ public class PaymentDTOEx extends PaymentDTO {
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
     }
-
-    /**
-     * @param id
-     * @param amount
-     * @param createDateTime
-     * @param attempt
-     * @param deleted
-     * @param methodId
-     */
-//    public PaymentDTOEx(Integer id, Float amount, Date createDateTime,
-//            Date updateDateTime,
-//            Date paymentDate, Integer attempt, Integer deleted,
-//            Integer methodId, Integer resultId, Integer isRefund,
-//            Integer isPreauth, Integer currencyId, Float balance) {
-//        super(id, amount, balance, createDateTime, updateDateTime,
-//                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
-//                isPreauth, currencyId, null, null);
-//        invoiceIds = new ArrayList<Integer>();
-//        paymentMaps = new ArrayList();
-//    }
-
-    /**
-     * @param otherValue
-     */
-//    public PaymentDTOEx(PaymentDTO otherValue) {
-//        super(otherValue);
-//        invoiceIds = new ArrayList<Integer>();
-//        paymentMaps = new ArrayList();
-//    }
 
     public boolean validate() {
         boolean retValue = true;

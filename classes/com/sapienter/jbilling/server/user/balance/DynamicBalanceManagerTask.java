@@ -46,7 +46,9 @@ import org.apache.log4j.Logger;
  * @author emilc
  */
 public class DynamicBalanceManagerTask extends PluggableTask implements IInternalEventsTask {
+    private static final Logger LOG = Logger.getLogger(DynamicBalanceManagerTask.class);
 
+    @SuppressWarnings("unchecked")
     private static final Class<Event> events[] = new Class[] { 
         PaymentSuccessfulEvent.class,
         OrderDeletedEvent.class,
@@ -55,8 +57,6 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         OrderAddedOnInvoiceEvent.class,
         NewQuantityEvent.class
     };
-
-    private static final Logger LOG = Logger.getLogger(DynamicBalanceManagerTask.class);
 
     public Class<Event>[] getSubscribedEvents() {
         return events;
@@ -69,7 +69,8 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
     private BigDecimal determineAmount(Event event) {
         if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent payment = (PaymentSuccessfulEvent) event;
-            return new BigDecimal(payment.getPayment().getAmount());
+            return payment.getPayment().getAmount();
+
         } else if (event instanceof OrderDeletedEvent) {
             OrderDeletedEvent order = (OrderDeletedEvent) event;
             if (order.getOrder().getOrderPeriod().getId() ==  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
@@ -77,6 +78,7 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
             } else {
                 return BigDecimal.ZERO;
             }
+
         } else if (event instanceof NewOrderEvent) {
             NewOrderEvent order = (NewOrderEvent) event;
             if (order.getOrder().getOrderPeriod().getId() ==  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
@@ -84,10 +86,13 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
             } else {
                 return BigDecimal.ZERO;
             }
+
         } else if (event instanceof PaymentDeletedEvent) {
             PaymentDeletedEvent payment = (PaymentDeletedEvent) event;
-            return new BigDecimal(payment.getPayment().getAmount()).multiply(new BigDecimal(-1));
+            return payment.getPayment().getAmount().multiply(new BigDecimal(-1));
+
         } else if (event instanceof OrderAddedOnInvoiceEvent) {
+
             OrderAddedOnInvoiceEvent orderOnInvoiceEvent = (OrderAddedOnInvoiceEvent) event;
             OrderAddedOnInvoiceEvent order = (OrderAddedOnInvoiceEvent) event;
             if (order.getOrder().getOrderPeriod().getId() !=  com.sapienter.jbilling.server.util.Constants.ORDER_PERIOD_ONCE) {
@@ -95,6 +100,7 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
             } else {
                 return BigDecimal.ZERO;
             }
+
         } else if (event instanceof NewQuantityEvent) {
             NewQuantityEvent nq = (NewQuantityEvent) event;
 
@@ -105,17 +111,18 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
                 if (nq.getNewOrderLine() == null) {
                     // new
                     oldTotal = BigDecimal.ZERO;
-                    newTotal = new BigDecimal(nq.getOrderLine().getAmount());
-                    if (nq.getNewQuantity() == 0.0) {
+                    newTotal = nq.getOrderLine().getAmount();
+                    if (nq.getNewQuantity().compareTo(BigDecimal.ZERO) == 0) {
                         // it is a delete
                         newTotal = newTotal.multiply(new BigDecimal(-1));
                     }
                 } else {
                     // old
-                    oldTotal = new BigDecimal(nq.getOrderLine().getAmount());
-                    newTotal = new BigDecimal(nq.getNewOrderLine().getAmount());
+                    oldTotal = nq.getOrderLine().getAmount();
+                    newTotal = nq.getNewOrderLine().getAmount();
                 }
                 return newTotal.subtract(oldTotal).multiply(new BigDecimal(-1));
+                
             } else {
                 return BigDecimal.ZERO;
             }

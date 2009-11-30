@@ -22,6 +22,8 @@ package com.sapienter.jbilling.server.invoice;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 
 /**
@@ -34,88 +36,94 @@ public class InvoiceWS implements Serializable {
     private Integer userId = null;
     private InvoiceLineDTO invoiceLines[] = null;
     private Integer orders[] = null;
-    // original DTO
-    private java.lang.Integer id;
-    private java.util.Date createDateTime;
-    private java.util.Date createTimeStamp;
-    private java.util.Date lastReminder;
-    private java.util.Date dueDate;
-    private java.lang.Float total;
-    private java.lang.Integer toProcess;
-    private java.lang.Integer statusId;
-    private java.lang.Float balance;
-    private java.lang.Float carriedBalance;
-    private java.lang.Integer inProcessPayment;
-    private java.lang.Integer deleted;
-    private java.lang.Integer paymentAttempts;
-    private java.lang.Integer isReview;
-    private java.lang.Integer currencyId;
-    private java.lang.String customerNotes;
-    private java.lang.String number;
-    private java.lang.Integer overdueStep;
 
-    public java.lang.Integer getId() {
+    // original DTO
+    private Integer id;
+    private Date createDateTime;
+    private Date createTimeStamp;
+    private Date lastReminder;
+    private Date dueDate;
+    private String total;
+    private Integer toProcess;
+    private Integer statusId;
+    private String balance;
+    private String carriedBalance;
+    private Integer inProcessPayment;
+    private Integer deleted;
+    private Integer paymentAttempts;
+    private Integer isReview;
+    private Integer currencyId;
+    private String customerNotes;
+    private String number;
+    private Integer overdueStep;
+
+    public InvoiceWS() {
+        super();
+    }
+
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(java.lang.Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-
-    public java.util.Date getCreateDateTime() {
+    public Date getCreateDateTime() {
         return this.createDateTime;
     }
 
-    public void setCreateDateTime(java.util.Date createDateTime) {
+    public void setCreateDateTime(Date createDateTime) {
         this.createDateTime = createDateTime;
-
     }
 
-
-    public java.util.Date getCreateTimeStamp() {
+    public Date getCreateTimeStamp() {
         return this.createTimeStamp;
     }
 
-    public void setCreateTimeStamp(java.util.Date createTimeStamp) {
+    public void setCreateTimeStamp(Date createTimeStamp) {
         this.createTimeStamp = createTimeStamp;
-
     }
 
-    public java.util.Date getLastReminder() {
+    public Date getLastReminder() {
         return this.lastReminder;
     }
 
-    public void setLastReminder(java.util.Date lastReminder) {
+    public void setLastReminder(Date lastReminder) {
         this.lastReminder = lastReminder;
-
     }
 
-    public java.util.Date getDueDate() {
+    public Date getDueDate() {
         return this.dueDate;
     }
 
     public void setDueDate(java.util.Date dueDate) {
         this.dueDate = dueDate;
-
     }
 
-    public java.lang.Float getTotal() {
+    public String getTotal() {
         return this.total;
     }
 
-    public void setTotal(java.lang.Float total) {
-        this.total = total;
-
+    public BigDecimal getTotalAsDecimal() {
+        return (total == null ? null : new BigDecimal(total));
     }
 
-    public java.lang.Integer getToProcess() {
+    public void setTotal(String total) {
+        this.total = total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        if (total != null)
+            this.total = total.toString();
+    }
+
+    public Integer getToProcess() {
         return this.toProcess;
     }
 
-    public void setToProcess(java.lang.Integer toProcess) {
+    public void setToProcess(Integer toProcess) {
         this.toProcess = toProcess;
-
     }
 
     public Integer getStatusId() {
@@ -126,141 +134,111 @@ public class InvoiceWS implements Serializable {
         this.statusId = statusId;
     }
 
-    public java.lang.Float getBalance() {
+    public String getBalance() {
         return this.balance;
     }
 
-    public void setBalance(java.lang.Float balance) {
-        this.balance = balance;
-
+    public BigDecimal getBalanceAsDecimal() {
+        return (balance == null ? null : new BigDecimal(balance));
     }
 
-    public java.lang.Float getCarriedBalance() {
+    public void setBalance(String balance) {
+        this.balance = balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        if (balance != null)
+            this.balance = balance.toString();
+    }
+
+    public String getCarriedBalance() {
         return this.carriedBalance;
     }
 
-    public void setCarriedBalance(java.lang.Float carriedBalance) {
-        this.carriedBalance = carriedBalance;
-
+    public BigDecimal getCarriedBalanceAsDecimal() {
+        return (carriedBalance == null ? null : new BigDecimal(carriedBalance));
     }
 
-    public java.lang.Integer getInProcessPayment() {
+    public void setCarriedBalance(String carriedBalance) {
+        this.carriedBalance = carriedBalance;
+    }
+
+    public void setCarriedBalance(BigDecimal carriedBalance) {
+        if (carriedBalance != null)
+            this.carriedBalance = carriedBalance.toString();
+    }
+
+    public Integer getInProcessPayment() {
         return this.inProcessPayment;
     }
 
-    public void setInProcessPayment(java.lang.Integer inProcessPayment) {
+    public void setInProcessPayment(Integer inProcessPayment) {
         this.inProcessPayment = inProcessPayment;
-
     }
 
-    public java.lang.Integer getDeleted() {
+    public Integer getDeleted() {
         return this.deleted;
     }
 
-    public void setDeleted(java.lang.Integer deleted) {
+    public void setDeleted(Integer deleted) {
         this.deleted = deleted;
-
     }
 
-    public java.lang.Integer getPaymentAttempts() {
+    public Integer getPaymentAttempts() {
         return this.paymentAttempts;
     }
 
-    public void setPaymentAttempts(java.lang.Integer paymentAttempts) {
+    public void setPaymentAttempts(Integer paymentAttempts) {
         this.paymentAttempts = paymentAttempts;
-
     }
 
-    public java.lang.Integer getIsReview() {
+    public Integer getIsReview() {
         return this.isReview;
     }
 
-    public void setIsReview(java.lang.Integer isReview) {
+    public void setIsReview(Integer isReview) {
         this.isReview = isReview;
-
     }
 
-    public java.lang.Integer getCurrencyId() {
+    public Integer getCurrencyId() {
         return this.currencyId;
     }
 
-    public void setCurrencyId(java.lang.Integer currencyId) {
+    public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
-
     }
 
-    public java.lang.String getCustomerNotes() {
+    public String getCustomerNotes() {
         return this.customerNotes;
     }
 
-    public void setCustomerNotes(java.lang.String customerNotes) {
+    public void setCustomerNotes(String customerNotes) {
         this.customerNotes = customerNotes;
-
     }
 
-    public java.lang.String getNumber() {
+    public String getNumber() {
         return this.number;
     }
 
-    public void setNumber(java.lang.String number) {
+    public void setNumber(String number) {
         this.number = number;
-
     }
 
-    public java.lang.Integer getOverdueStep() {
+    public Integer getOverdueStep() {
         return this.overdueStep;
     }
 
-    public void setOverdueStep(java.lang.Integer overdueStep) {
+    public void setOverdueStep(Integer overdueStep) {
         this.overdueStep = overdueStep;
-
     }
 
-    public java.lang.Integer getUserId() {
+    public Integer getUserId() {
         return this.userId;
     }
 
-    public void setUserId(java.lang.Integer userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
-
     }
-
-    public String toString() {
-        StringBuffer str = new StringBuffer();
-
-        str.append("delegated invoice = [" + delegatedInvoiceId + "]");
-        str.append(" payments = ");
-        if (payments != null) {
-            for (int f = 0; f < payments.length; f++) {
-                str.append(payments[f].toString());
-            }
-        }
-        str.append(" userId = [" + userId);
-        str.append(" invoiceLines = ");
-
-        if (invoiceLines != null) {
-            for (InvoiceLineDTO line : invoiceLines) {
-                str.append(line.toString());
-            }
-        }
-        str.append(" orders = ");
-        for (int f = 0; f < orders.length; f++) {
-            str.append(orders[f].toString());
-        }
-        str.append("InvoiceDTO = [" + super.toString());
-        return str.toString();
-    }
-
-    /**
-     * 
-     */
-    public InvoiceWS() {
-        super();
-    }
-
-    /**
-     * @param otherValue
-     */
 
     public Integer getDelegatedInvoiceId() {
         return delegatedInvoiceId;
@@ -294,4 +272,37 @@ public class InvoiceWS implements Serializable {
         this.payments = payments;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer str = new StringBuffer();
+
+        str.append("delegated invoice = [")
+                .append(delegatedInvoiceId)
+                .append("]")
+                .append(" payments = ");
+
+        if (payments != null) {
+            for (int f = 0; f < payments.length; f++) {
+                str.append(payments[f].toString());
+            }
+        }
+
+        str.append(" userId = [")
+                .append(userId)
+                .append(" invoiceLines = ");
+
+        if (invoiceLines != null) {
+            for (InvoiceLineDTO line : invoiceLines) {
+                str.append(line.toString());
+            }
+        }
+
+        str.append(" orders = ");
+        for (int f = 0; f < orders.length; f++) {
+            str.append(orders[f].toString());
+        }
+
+        str.append("InvoiceDTO = [").append(super.toString());
+        return str.toString();
+    }
 }

@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.provisioning.task;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,25 +48,19 @@ import java.util.ArrayList;
  * @author othman
  * 
  */
-public class ProvisioningCommandsRulesTask extends PluggableTask implements
-		IInternalEventsTask {
-	public static final String ACTIVATED_EVENT_TYPE = "activated";
+public class ProvisioningCommandsRulesTask extends PluggableTask implements IInternalEventsTask {
+	private static final Logger LOG = Logger.getLogger(ProvisioningCommandsRulesTask.class);
+
+    public static final String ACTIVATED_EVENT_TYPE = "activated";
 	public static final String DEACTIVATED_EVENT_TYPE = "deactivated";
-	private static final Logger LOG = Logger
-			.getLogger(ProvisioningCommandsRulesTask.class);
+
+    @SuppressWarnings("unchecked")
 	private static final Class<Event> events[] = new Class[] {
-			SubscriptionActiveEvent.class, SubscriptionInactiveEvent.class,
-			NewQuantityEvent.class };
+			SubscriptionActiveEvent.class,
+            SubscriptionInactiveEvent.class,
+			NewQuantityEvent.class
+    };
 
-	// protected helperCommand;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seecom.sapienter.jbilling.server.system.event.task.IInternalEventsTask#
-	 * getSubscribedEvents()
-	 */
-	@Override
 	public Class<Event>[] getSubscribedEvents() {
 		return events;
 	}
@@ -74,10 +69,8 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sapienter.jbilling.server.system.event.task.IInternalEventsTask#process
-	 * (com.sapienter.jbilling.server.system.event.Event)
+	 * com.sapienter.jbilling.server.system.event.task.IInternalEventsTask#process(com.sapienter.jbilling.server.system.event.Event)
 	 */
-	@Override
 	public void process(Event event) throws PluggableTaskException {
 		try {
 
@@ -107,10 +100,10 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 			} else if (event instanceof NewQuantityEvent) {
 				NewQuantityEvent newQuantity = (NewQuantityEvent) event;
 
-				if ((newQuantity.getOldQuantity() != 0)
-						&& (newQuantity.getNewQuantity() != 0)) {
-					return;
-				}
+                if (BigDecimal.ZERO.compareTo(newQuantity.getOldQuantity()) != 0
+                        && BigDecimal.ZERO.compareTo(newQuantity.getNewQuantity()) != 0) {
+                    return;
+                }
 
 				Integer orderId = newQuantity.getOrderId();
 				OrderDAS orderDb = new OrderDAS();
@@ -122,11 +115,11 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements
 
 				String typeEvent = "";
 
-				if (newQuantity.getOldQuantity() == 0) {
+				if (BigDecimal.ZERO.compareTo(newQuantity.getOldQuantity()) == 0) {
 					typeEvent = ACTIVATED_EVENT_TYPE;
 				}
 
-				if (newQuantity.getNewQuantity() == 0) {
+				if (BigDecimal.ZERO.compareTo(newQuantity.getNewQuantity()) == 0) {
 					typeEvent = DEACTIVATED_EVENT_TYPE;
 				}
 

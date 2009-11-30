@@ -311,8 +311,8 @@ public class MediationSessionBean implements IMediationSessionBean {
             recordLine.setEventDate(eventDate);
             OrderLineDTO dbLine = new OrderLineDAS().find(line.getId());
             recordLine.setOrderLine(dbLine);
-            recordLine.setAmount(new BigDecimal(line.getAmount().doubleValue()));
-            recordLine.setQuantity(new BigDecimal(line.getQuantity()));
+            recordLine.setAmount(line.getAmount());
+            recordLine.setQuantity(line.getQuantity());
             recordLine.setRecord(record);
             recordLine.setDescription(description);
 

@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.provisioning;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,7 +82,7 @@ public class ProvisioningTest extends TestCase {
             provisioningStatus[4] = Constants.PROVISIONING_STATUS_PENDING_INACTIVE;
             provisioningStatus[5] = null;
 
-            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, 77f);
+            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, new BigDecimal("77"));
 
             newOrder.setActiveSince(null);
 
@@ -151,7 +153,7 @@ public class ProvisioningTest extends TestCase {
             provisioningStatus[4] = Constants.PROVISIONING_STATUS_PENDING_INACTIVE;
             provisioningStatus[5] = null;
 
-            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, 77f);
+            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, new BigDecimal("77"));
 
             // newOrder.setActiveSince(weeksFromToday(1));
             Calendar cal = Calendar.getInstance();
@@ -226,7 +228,7 @@ public class ProvisioningTest extends TestCase {
             provisioningStatus[4] = Constants.PROVISIONING_STATUS_PENDING_INACTIVE;
             provisioningStatus[5] = null;
 
-            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, 77f);
+            OrderWS newOrder = createMockOrder(USER_ID, ORDER_LINES_COUNT, new BigDecimal("77"));
 
             // newOrder.setActiveSince(weeksFromToday(1));
             Calendar cal = Calendar.getInstance();
@@ -292,7 +294,7 @@ public class ProvisioningTest extends TestCase {
         }
     }
 
-    public static OrderWS createMockOrder(int userId, int orderLinesCount, float linePrice) {
+    public static OrderWS createMockOrder(int userId, int orderLinesCount, BigDecimal linePrice) {
         OrderWS order = new OrderWS();
 
         order.setUserId(userId);
@@ -310,7 +312,7 @@ public class ProvisioningTest extends TestCase {
             nextLine.setItemId(itemIds[i]);
             nextLine.setQuantity(1);
             nextLine.setPrice(linePrice);
-            nextLine.setAmount(nextLine.getQuantity().floatValue() * linePrice);
+            nextLine.setAmount(nextLine.getQuantityAsDecimal().multiply(linePrice));
             nextLine.setProvisioningStatusId(provisioningStatus[i]);
             lines.add(nextLine);
         }
@@ -351,7 +353,7 @@ public class ProvisioningTest extends TestCase {
             Integer ret = api.createOrder(order);
             assertNotNull("The order was not created", ret);
 
-            pause(4000); // wait for MDBs to complete
+            pause(12000); // wait for MDBs to complete
             System.out.println("Getting back order " + ret);
 
             // check TestExternalProvisioningMDB was successful

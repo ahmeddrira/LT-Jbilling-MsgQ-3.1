@@ -23,6 +23,8 @@ package com.sapienter.jbilling.server.invoice.db;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * @author abimael
@@ -30,8 +32,8 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
  */
 public class InvoiceLineDAS extends AbstractDAS<InvoiceLineDTO> {
 
-	public InvoiceLineDTO create(String description, Float amount,
-			Double quantity, Float price, Integer typeId, ItemDTO itemId,
+	public InvoiceLineDTO create(String description, BigDecimal amount,
+			BigDecimal quantity, BigDecimal price, Integer typeId, ItemDTO itemId,
 			Integer sourceUserId, Integer isPercentage) {
 
 		InvoiceLineDTO newEntity = new InvoiceLineDTO();

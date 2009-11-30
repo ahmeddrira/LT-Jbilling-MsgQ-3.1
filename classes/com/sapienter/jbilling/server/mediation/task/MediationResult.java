@@ -19,9 +19,12 @@
  */
 package com.sapienter.jbilling.server.mediation.task;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.rule.Result;
+
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ public class MediationResult extends Result {
 
     // the lines that where 'created' by the mediation process
     private List<OrderLineDTO> lines = null;
+
     // the difference lines of the current orders, comparing the original lines
     private List<OrderLineDTO> diffLines = null;
     private OrderDTO currentOrder = null;
@@ -76,10 +80,14 @@ public class MediationResult extends Result {
     }
 
     public void addLine(Integer itemId, Integer quantity) {
-        addLine(itemId, new Double(quantity));
+        addLine(itemId, new BigDecimal(quantity));
     }
 
     public void addLine(Integer itemId, Double quantity) {
+        addLine(itemId, new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
+    }
+
+    public void addLine(Integer itemId, BigDecimal quantity) {
         OrderLineDTO line = new OrderLineDTO();
         line.setItemId(itemId);
         line.setQuantity(quantity);

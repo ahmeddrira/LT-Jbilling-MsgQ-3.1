@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item.tasks;
 
 import com.sapienter.jbilling.server.rule.Result;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  *
@@ -71,8 +72,6 @@ public class PricingResult extends Result {
     public void setPricingFieldsResultId(long pricingFieldsResultId) {
         this.pricingFieldsResultId = pricingFieldsResultId;
     }
-
-
 
     public String toString() {
         return  "PricingResult:" +

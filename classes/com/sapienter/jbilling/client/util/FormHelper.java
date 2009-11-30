@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.client.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -45,14 +46,22 @@ public class FormHelper {
         return mySession.getId();
     }
 
+	public Float string2float(String arg) {
+		return string2float(arg, mySession);
+	}
+
+    public BigDecimal string2decimal(String arg) {
+        return string2decimal(arg, mySession);
+    }
+
 	public String float2string(Float arg) {
 		return float2string(arg, mySession);
 	}
 
-	public Float string2float(String arg) {
-		return string2float(arg, mySession);
-	}
-	
+    public String decimal2string(BigDecimal arg) {
+        return decimal2string(arg, mySession);
+    }
+
 	public Integer parseInteger(String text){
 		if (text == null){
 			text = "";
@@ -65,7 +74,7 @@ public class FormHelper {
 		String value = (String) form.get(fieldName);
 		return parseInteger(value);
 	}
-	
+
 	public static Float string2float(String arg, HttpSession sess) {
 		if (arg == null || arg.trim().length() == 0) {
 			return null;
@@ -80,6 +89,26 @@ public class FormHelper {
 		}
 	}
 
+    public static BigDecimal string2decimal(String arg, HttpSession sess) {
+        if (arg == null || arg.trim().equals(""))
+            return null;
+
+        UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
+		NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+
+        if (nf instanceof DecimalFormat) {
+            ((DecimalFormat) nf).setParseBigDecimal(true);
+
+            try {
+                return (BigDecimal) nf.parse(arg);
+            } catch (ParseException e) {
+                return null;
+            }
+        }
+
+        return new BigDecimal(arg);        
+    }
+
 	public static String float2string(Float arg, HttpSession sess) {
 		if (arg == null) {
 			return null;
@@ -92,7 +121,19 @@ public class FormHelper {
 		}
 		return nf.format(arg);
 	}
-	
+
+    public static String decimal2string(BigDecimal arg, HttpSession sess) {
+        if (arg == null) return null;
+
+        UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
+        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+
+		if (nf instanceof DecimalFormat) {
+			((DecimalFormat) nf).applyPattern("0.00");
+		}
+		return nf.format(arg);
+    }
+
     public String getOptionDescription(Integer id, String optionType) throws SessionInternalError {
         List<?> options = (List<?>) mySession.getAttribute("SESSION_" + optionType);
         if (options == null) {
@@ -114,7 +155,7 @@ public class FormHelper {
     
     public static void cleanUpSession(HttpSession session) {
         Enumeration<?> entries = session.getAttributeNames();
-        for (String entry = (String)entries.nextElement(); 
+        for (String entry = (String)entries.nextElement();
                 entries.hasMoreElements();
                 entry = (String)entries.nextElement()) {
             if (!entry.startsWith("sys_") && !entry.startsWith("org.apache.struts")) {
@@ -125,8 +166,5 @@ public class FormHelper {
                 entries = session.getAttributeNames();
             }                
         }
-        
-    }        
-    
-
+    }
 }

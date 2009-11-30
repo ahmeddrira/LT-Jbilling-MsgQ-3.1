@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.pluggableTask;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Random;
 import java.util.List;
 
@@ -252,7 +253,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     */
   
     public NameValuePair[] getChargeData(String login, 
-            String transaction, boolean test, Float amount, String cc_number, 
+            String transaction, boolean test, BigDecimal amount, String cc_number,
             String cc_expiry, String currencyCode, boolean isCharge,
             Integer paymentId) {
 
@@ -279,7 +280,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     // Since now a refund is done only when linked to a previous payment, 
     // I assume that the currency is not required
     private NameValuePair[] getRefundData(String login, 
-            String transaction, boolean test, Float amount, String cc_number, 
+            String transaction, boolean test, BigDecimal amount, String cc_number,
             String cc_expiry, String transactionId) {
     
         NameValuePair[] data = {
@@ -300,7 +301,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     }
 
     private NameValuePair[] getACHChargeData(String login, 
-            String transaction, boolean test, Float amount,String aba, 
+            String transaction, boolean test, BigDecimal amount,String aba,
 			String account,
 			Integer type, String bank, String name, String currencyCode) {
 
@@ -326,7 +327,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
     }
 
     private NameValuePair[] getACHRefundData(String login, 
-            String transaction, boolean test, Float amount, String aba, 
+            String transaction, boolean test, BigDecimal amount, String aba, 
 			String account,
 			Integer type, String bank, String name,String transactionId) {
 

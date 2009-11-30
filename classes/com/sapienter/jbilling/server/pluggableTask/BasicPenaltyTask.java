@@ -205,7 +205,7 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
         String description = item.getEntity().getDescription(languageId) + getInvoiceDelegatedDescription(invoice);
 
         OrderLineDTO line = new OrderLineDTO();
-        line.setAmount(fee.floatValue());
+        line.setAmount(fee);
         line.setDescription(description);
         line.setItemId(getPenaltyItemId());
         line.setTypeId(Constants.ORDER_LINE_TYPE_PENALTY);

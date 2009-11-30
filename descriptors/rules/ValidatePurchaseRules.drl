@@ -7,6 +7,7 @@ import com.sapienter.jbilling.server.item.tasks.Subscription;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import java.math.BigDecimal;
 
 #globals
 global com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask$ValidatePurchase validatePurchase;
@@ -14,17 +15,19 @@ global com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask$Valida
 rule "Max 3 lemonades"
     when
         // lemonade, item id 1
-        ItemDTO( internalNumber == "DP-1" ) 
+        ItemDTO( internalNumber == "DP-1" )
+
         // subscribed to plan with hard limit
-        Subscription( itemId == 2 ) 
-        $result : ValidatePurchaseWS( authorized == true, $quantityAvailable : quantity )
+        Subscription( itemId == 2 )
+        $result : ValidatePurchaseWS( authorized == true, $quantityAvailable : quantityAsDecimal )
+
         // current number of lemonades, no more than 3 allowed
-        $quantityAlready : Double ( eval( doubleValue + $quantityAvailable.doubleValue() > 3 ) ) 
+        $quantityAlready : Double ( eval( doubleValue + $quantityAvailable.doubleValue() > 3 ) )
                 from accumulate( Subscription( itemId == 1, $quantity : quantity )
-                                 init ( double total = 0; ),
-                                 action( total += $quantity; ),
-                                 reverse( total -= $quantity; ),
-                                 result( total ) )
+                                 init ( BigDecimal total = new BigDecimal("0"); ),
+                                 action( total = total.add($quantity); ),
+                                 reverse( total = total.subtract($quantity); ),
+                                 result( total.doubleValue() ) )
     then
         $result.setQuantity(3 - $quantityAlready);
         validatePurchase.addMessage("No more than 3 lemonades are allowed.");
@@ -33,24 +36,25 @@ end
 
 rule "Authorization check"
     when
-        $result : ValidatePurchaseWS( authorized == true, quantity <= 0.0 )
+        $result : ValidatePurchaseWS( authorized == true, quantityAsDecimal.doubleValue <= 0.0 )
     then
         $result.setAuthorized(false);
-        $result.setQuantity(0.0);
+        $result.setQuantity(BigDecimal.ZERO);
 end
 
 rule "Max 200 coffees for current order"
     when
         // coffee, item id 3
         ItemDTO( internalNumber == "DP-3" )
-        $result : ValidatePurchaseWS(authorized == true, $quantityAvailable : quantity )
+        $result : ValidatePurchaseWS(authorized == true, $quantityAvailable : quantityAsDecimal )
+
         // current number of coffees, no more than 20 allowed
         $quantityAlready : Double ( eval( doubleValue + $quantityAvailable.doubleValue() > 20 ) ) 
                 from accumulate( OrderLineDTO( itemId == 3, $quantity : quantity )
-                                 init ( double total = 0; ),
-                                 action( total += $quantity; ),
-                                 reverse( total -= $quantity; ),
-                                 result( total ) )
+                                 init ( BigDecimal total = new BigDecimal("0"); ),
+                                 action( total = total.add($quantity); ),
+                                 reverse( total = total.substract($quantity); ),
+                                 result( total.doubleValue() ) )
     then
         $result.setQuantity(20 - $quantityAlready);
         validatePurchase.addMessage("No more than 20 coffees are allowed.");

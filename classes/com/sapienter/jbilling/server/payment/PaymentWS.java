@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -39,11 +40,13 @@ public class PaymentWS implements Serializable {
     private AchDTO ach = null;
     private String method = null;
     private Integer invoiceIds[] = null;
+
     // refund specific fields
     private Integer paymentId = null; // this is the payment refunded / to refund
     private PaymentAuthorizationDTO authorization = null;
+
     //missing properties from PaymentDTO
-    private Float amount;
+    private String amount;
     private Integer isRefund;
     private Integer paymentMethodId;
     private Date paymentDate;
@@ -51,7 +54,7 @@ public class PaymentWS implements Serializable {
     private int id;
     private Integer isPreauth;
     private Integer attempt;
-    private Float balance;
+    private String balance;
     private Date createDatetime;
     private Date updateDatetime;
     private int deleted;
@@ -142,12 +145,21 @@ public class PaymentWS implements Serializable {
         this.authorization = authorization;
     }
 
-    public Float getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public BigDecimal getAmountAsDecimal() {
+        return (amount == null ? null : new BigDecimal(amount));
+    }
+
+    public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        if (amount != null)
+            this.amount = amount.toString();
     }
 
     public Integer getIsRefund() {
@@ -206,12 +218,21 @@ public class PaymentWS implements Serializable {
         this.attempt = attempt;
     }
 
-    public Float getBalance() {
+    public String getBalance() {
         return balance;
     }
 
-    public void setBalance(Float balance) {
+    public BigDecimal getBalanceAsDecimal() {
+       return (balance == null ? null : new BigDecimal(balance));
+    }
+
+    public void setBalance(String balance) {
         this.balance = balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        if (balance != null)
+            this.balance = balance.toString();
     }
 
     public Date getCreateDatetime() {

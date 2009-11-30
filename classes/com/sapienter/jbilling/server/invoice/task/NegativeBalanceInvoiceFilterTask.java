@@ -26,6 +26,8 @@ import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 
+import java.math.BigDecimal;
+
 /**
  * Only allows invoices with a negative balance to be carried over.
  */
@@ -35,7 +37,7 @@ public class NegativeBalanceInvoiceFilterTask extends PluggableTask
     public boolean isApplicable(InvoiceDTO invoice, BillingProcessDTO process) 
             throws TaskException {
 
-        if (invoice.getBalance() < 0.0) {
+        if (BigDecimal.ZERO.compareTo(invoice.getBalance()) > 0) {
             return true;
         } else {
             return false;

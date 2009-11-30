@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.client.user;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -29,13 +30,11 @@ import org.apache.struts.action.ActionErrors;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
 import com.sapienter.jbilling.client.util.PreferencesMap;
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PartnerCrudAction extends CrudActionBase<Partner> {
@@ -106,9 +105,9 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
         if (dto == null) {
             dto = new Partner();
         }
-        dto.setBalance(string2float((String) myForm.get(FIELD_BALANCE)));
-        dto.setPercentageRate(string2float((String) myForm.get(FIELD_RATE)).doubleValue());
-        dto.setReferralFee(string2float((String) myForm.get(FIELD_FEE)).doubleValue());
+        dto.setBalance(string2decimal((String) myForm.get(FIELD_BALANCE)));
+        dto.setPercentageRate(string2decimal((String) myForm.get(FIELD_RATE)));
+        dto.setReferralFee(string2decimal((String) myForm.get(FIELD_FEE)));
         if (dto.getReferralFee() != null) {
             dto.setFeeCurrency(new CurrencyDTO((Integer) myForm.get(FIELD_FEE_CURRENCY)));
         }
@@ -168,12 +167,12 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
             result = new ForwardAndMessage(FORWARD_CREATE);
         }
         
-        myForm.set(FIELD_BALANCE, float2string(partner.getBalance()));
+        myForm.set(FIELD_BALANCE, decimal2string(partner.getBalance()));
         if (partner.getPercentageRate() != null) {
-            myForm.set(FIELD_RATE, float2string(partner.getPercentageRate()));
+            myForm.set(FIELD_RATE, decimal2string(partner.getPercentageRate()));
         }
         if (partner.getReferralFee() != null) {
-            myForm.set(FIELD_FEE, float2string(partner.getReferralFee()));
+            myForm.set(FIELD_FEE, decimal2string(partner.getReferralFee()));
         }
         myForm.set(FIELD_FEE_CURRENCY, partner.getFeeCurrency().getId());
         myForm.set(FIELD_ONE_TIME, Integer.valueOf(1).equals(partner.getOneTime()));
@@ -203,8 +202,8 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
 		};
       
 		PreferencesMap prefs = mapEntityParameters(preferenceIds);
-		partner.setPercentageRate(string2float(prefs.getString(Constants.PREFERENCE_PART_DEF_RATE)).doubleValue());
-		partner.setReferralFee(string2float(prefs.getString(Constants.PREFERENCE_PART_DEF_FEE)).doubleValue());
+		partner.setPercentageRate(string2decimal(prefs.getString(Constants.PREFERENCE_PART_DEF_RATE)));
+		partner.setReferralFee(string2decimal(prefs.getString(Constants.PREFERENCE_PART_DEF_FEE)));
 		if (partner.getReferralFee() != null){
 			partner.setFeeCurrency(new CurrencyDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_FEE_CURR)));
 		}
@@ -214,7 +213,7 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
 		partner.setAutomaticProcess(prefs.getInteger(Constants.PREFERENCE_PART_DEF_AUTOMATIC));
 		partner.setRelatedClerkUserId(prefs.getInteger(Constants.PREFERENCE_PART_DEF_CLERK));
 		// some that are not preferences
-		partner.setBalance(new Float(0));
+		partner.setBalance(BigDecimal.ZERO);
 		return partner;
 	}
 

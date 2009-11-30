@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.payment;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
@@ -134,7 +135,7 @@ public class PaymentAuthorizationBL {
     }
 
     public void markAsUsed(PaymentDTOEx user) {
-        paymentAuthorization.getPayment().setBalance(0F);
+        paymentAuthorization.getPayment().setBalance(BigDecimal.ZERO);
         // this authorization got used by a real payment. Link them
         try {
             PaymentBL payment = new PaymentBL(user.getId());

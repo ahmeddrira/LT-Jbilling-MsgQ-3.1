@@ -26,6 +26,7 @@
 package com.sapienter.jbilling.client.order;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +68,7 @@ public class NewOrderItemAction extends Action {
 
         // get the item id and quantity from the form
         Integer itemID;
-        Double quantity;
+        BigDecimal quantity;
 
         String action = request.getParameter("action");
 

@@ -656,8 +656,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderDTO dbOrder = das.find(orderId);
 
             try {
-                retValue = ccBl.validatePreAuthorization(entityId, userId, cc,
-                        dbOrder.getTotal().floatValue(), dbOrder.getCurrencyId());
+                retValue = ccBl.validatePreAuthorization(entityId, userId, cc, dbOrder.getTotal(), dbOrder.getCurrencyId());
             } catch (PluggableTaskException e) {
                 throw new SessionInternalError("doing validation", WebServicesSessionSpringBean.class, e);
             }
@@ -733,9 +732,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             //line.setItem(itemDas.find(line.getItemId()));
             if (line.getUseItem().booleanValue()) {
                 if (item.getPrice() == null) {
-                    line.setPrice(item.getPercentage().floatValue());
+                    line.setPrice(item.getPercentage());
                 } else {
-                    line.setPrice(item.getPrice().floatValue());
+                    line.setPrice(item.getPrice());
                 }
                 if (line.getDescription() == null ||
                         line.getDescription().length() == 0) {
@@ -920,12 +919,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId));
                 List<OrderLineDTO> oldLines = OrderLineBL.copy(bl.getDTO().getLines());
                 // convert order lines from WS to DTO
-                processItemLine(lines, languageId, getCallerCompanyId(), 
-                        userId, currencyId);
+                processItemLine(lines, languageId, getCallerCompanyId(), userId, currencyId);
                 for (OrderLineWS line : lines) {
                     // add the line to the current order
-                    bl.addItem(line.getItemId(), line.getQuantity(), languageId, userId,
-                            getCallerCompanyId(), currencyId, records);
+                    bl.addItem(line.getItemId(), line.getQuantityAsDecimal(), languageId, userId, getCallerCompanyId(),
+                               currencyId, records);
                 }
                 diffLines = OrderLineBL.diffOrderLines(oldLines, bl.getDTO().getLines());
                 // generate NewQuantityEvents
@@ -1303,8 +1301,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         error += "OrderLineWS: if useItem == true the itemId " +
                                 "is required - ";
                     }
-                    if (line.getQuantity() == null ||
-                            line.getQuantity().doubleValue() == 0.0) {
+                    if (line.getQuantity() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
                         error += "OrderLineWS: if useItem == true the quantity " +
                                 "is required - ";
                     }
@@ -1388,7 +1385,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     private PaymentDTOEx doPayInvoice(InvoiceDTO invoice, CreditCardDTO creditCard)
             throws SessionInternalError {
 
-        if (invoice.getBalance() == null || invoice.getBalance() <= 0) {
+        if (invoice.getBalance() == null || BigDecimal.ZERO.compareTo(invoice.getBalance()) >= 0) {
             LOG.warn("Can not pay invoice: " + invoice.getId() + ", balance: " + invoice.getBalance());
             return null;
         }
@@ -1532,7 +1529,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             if (line.getDeleted() == 0) {
 
             	OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-                		line.getAmount(), line.getQuantity(), line.getPrice().floatValue(), line.getItemPrice(),
+                		line.getAmount(), line.getQuantity(), line.getPrice(),
                 		line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
                 		line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
                 		null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
@@ -1629,12 +1626,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return WebServicesCaller.getCompanyId();
     }
 
-    @Override
-    public Double isUserSubscribedTo(Integer userId, Integer itemId) {
-        Double result = Double.valueOf(0);
+    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {
         OrderDAS das = new OrderDAS();
-        result = das.findIsUserSubscribedTo(userId, itemId);
-        return result;
+        return das.findIsUserSubscribedTo(userId, itemId);
     }
 
     @Override
@@ -1783,7 +1777,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     ValidatePurchaseWS result = new ValidatePurchaseWS();
                     result.setSuccess(false);
                     result.setAuthorized(false);
-                    result.setQuantity(0.0);
+                    result.setQuantity(BigDecimal.ZERO);
                     result.setMessage(new String[] { "Error: " + 
                             e.getMessage() } );
 

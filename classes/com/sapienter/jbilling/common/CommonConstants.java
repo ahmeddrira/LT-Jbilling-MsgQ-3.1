@@ -165,7 +165,10 @@ public interface CommonConstants {
     // BigDecimal caculation constants
     public static final int BIGDECIMAL_SCALE = 10;
     public static final int BIGDECIMAL_ROUND = BigDecimal.ROUND_HALF_UP;
-    
+
+    public static final BigDecimal BIGDECIMAL_ONE = new BigDecimal("1");
+    public static final BigDecimal BIGDECIMAL_ONE_CENT = new BigDecimal("0.01");
+
     // codes for login resuls
     // ok
     public final static Integer AUTH_OK = new Integer(0);

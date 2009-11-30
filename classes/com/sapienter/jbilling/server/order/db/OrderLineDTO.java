@@ -21,6 +21,7 @@ package com.sapienter.jbilling.server.order.db;
 
 
 import java.io.Serializable;
+import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.common.Constants;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
@@ -72,19 +74,20 @@ public class OrderLineDTO implements Serializable, Comparable {
     private OrderLineTypeDTO orderLineTypeDTO;
     private ItemDTO item;
     private OrderDTO orderDTO;
-    private Float amount;
-    private Double quantity;
+    private BigDecimal amount;
+    private BigDecimal quantity;
     private BigDecimal price;
-    private Integer itemPrice;
     private Date createDatetime;
     private int deleted;
     private String description;
     private Integer versionNum;
     private Boolean editable = null;
     private List<MediationRecordLineDTO> events = new ArrayList<MediationRecordLineDTO>(0);
+
      //provisioning fields
      private ProvisioningStatusDTO provisioningStatus;
      private String provisioningRequestId;
+
      // other fields, non-persistent
      private String priceStr = null;
      private Boolean totalReadOnly = null;
@@ -101,7 +104,6 @@ public class OrderLineDTO implements Serializable, Comparable {
     	this.amount = other.getAmount();
     	this.quantity = other.getQuantity();
     	this.price = other.getPrice();
-    	this.itemPrice = other.getItemPrice();
     	this.createDatetime = other.getCreateDatetime();
     	this.deleted = other.getDeleted();
     	this.description = other.getDescription();
@@ -109,14 +111,16 @@ public class OrderLineDTO implements Serializable, Comparable {
     	this.versionNum = other.getVersionNum();
     }
 	
-    public OrderLineDTO(int id, float amount, Date createDatetime, Integer deleted) {
+    public OrderLineDTO(int id, BigDecimal amount, Date createDatetime, Integer deleted) {
         this.id = id;
         this.amount = amount;
         this.createDatetime = createDatetime;
         this.deleted = deleted;
     }
-    public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, float amount, 
-    		Double quantity, BigDecimal price, Integer itemPrice, Date createDatetime, Integer deleted, String description, ProvisioningStatusDTO provisioningStatus, String provisioningRequestId) {
+
+    public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, BigDecimal amount,
+    		BigDecimal quantity, BigDecimal price, Date createDatetime, Integer deleted,
+            String description, ProvisioningStatusDTO provisioningStatus, String provisioningRequestId) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
        this.item = item;
@@ -124,7 +128,6 @@ public class OrderLineDTO implements Serializable, Comparable {
        this.amount = amount;
        this.quantity = quantity;
        this.price = price;
-       this.itemPrice = itemPrice;
        this.createDatetime = createDatetime;
        this.deleted = deleted;
        this.description = description;
@@ -168,29 +171,46 @@ public class OrderLineDTO implements Serializable, Comparable {
     public void setPurchaseOrder(OrderDTO orderDTO) {
         this.orderDTO = orderDTO;
     }
-    
+
+    /**
+     * Returns the total amount for this line. Usually this would be
+     * the {@code price * quantity}
+     *
+     * @return amount
+     */
     @Column(name="amount", nullable=false, precision=17, scale=17)
-    public Float getAmount() {
+    public BigDecimal getAmount() {
         return this.amount;
     }
     
-    public void setAmount(Float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
     
     @Column(name="quantity", precision=17, scale=17)
-    public Double getQuantity() {
+    public BigDecimal getQuantity() {
         return this.quantity;
     }
     
-    public void setQuantity(Double quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
+
+    @Transient
+    public void setQuantity(Double quantity) {
+        setQuantity(new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
+    }
+
     @Transient
     public void setQuantity(Integer quantity) {
-    	setQuantity( new Double(quantity) );
+    	setQuantity(new BigDecimal(quantity));
     }
-    
+
+    /**
+     * Returns the price of a single unit of this item.
+     *
+     * @return unit price
+     */    
     @Column(name="price", precision=17, scale=17)
     public BigDecimal getPrice() {
         return this.price;
@@ -199,15 +219,7 @@ public class OrderLineDTO implements Serializable, Comparable {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-    
-    @Column(name="item_price")
-    public Integer getItemPrice() {
-        return this.itemPrice;
-    }
-    
-    public void setItemPrice(Integer itemPrice) {
-        this.itemPrice = itemPrice;
-    }
+
     @Column(name="create_datetime", nullable=false, length=29)
     public Date getCreateDatetime() {
         return this.createDatetime;
@@ -265,9 +277,8 @@ public class OrderLineDTO implements Serializable, Comparable {
     public Integer getItemId() {
     	return (getItem() == null) ? null : getItem().getId();
     }
+
     public void setItemId(Integer itemId) {
-    	//Item item = new Item();
-    	//item.setId(itemId);
     	ItemDAS das = new ItemDAS();
     	setItem(das.find(itemId));
     }
@@ -275,7 +286,7 @@ public class OrderLineDTO implements Serializable, Comparable {
     @Transient
 	public Boolean getEditable() {
     	if (editable == null) {
-			editable = getOrderLineType().getEditable().intValue() == 1;
+			editable = getOrderLineType().getEditable() == 1;
     	}
     	return editable;
 	}
@@ -299,6 +310,7 @@ public class OrderLineDTO implements Serializable, Comparable {
         }
 		return totalReadOnly;
 	}
+
 	public void setTotalReadOnly(Boolean totalReadOnly) {
 		this.totalReadOnly = totalReadOnly;
 	}
@@ -316,6 +328,7 @@ public class OrderLineDTO implements Serializable, Comparable {
 	public Integer getTypeId() {
 		return getOrderLineType() == null ? null : getOrderLineType().getId();
 	}
+
 	public void setTypeId(Integer typeId) {
 		OrderLineTypeDAS das = new OrderLineTypeDAS();
 		setOrderLineType(das.find(typeId));
@@ -327,7 +340,6 @@ public class OrderLineDTO implements Serializable, Comparable {
         return this.quantity.intValue();
     }
 
-	
 	/**
 	 * @return the provisioningStatus
 	 */
@@ -372,8 +384,7 @@ public class OrderLineDTO implements Serializable, Comparable {
 
     public void addExtraFields(Integer languageId) {
         if (getProvisioningStatus() != null) {
-            provisioningStatusStr = getProvisioningStatus()
-                    .getDescription(languageId);
+            provisioningStatusStr = getProvisioningStatus().getDescription(languageId);
         }
     }
 
@@ -398,9 +409,10 @@ public class OrderLineDTO implements Serializable, Comparable {
     	if (other.getItem() == null || this.getItem() == null) {
     		return -1;
     	}
-    	return new Integer(this.getItem().getId()).compareTo(new Integer(other.getItem().getId()));
+    	return new Integer(this.getItem().getId()).compareTo(other.getItem().getId());
     }
-    
+
+    @Override
     public String toString() {
         return "OrderLine:[id=" + id +
         " orderLineType=" + ((orderLineTypeDTO == null) ? "null" : orderLineTypeDTO.getId()) +
@@ -409,7 +421,6 @@ public class OrderLineDTO implements Serializable, Comparable {
         " amount=" +  amount +
         " quantity=" +  quantity +
         " price=" +  price +
-        " itemPrice=" +  itemPrice +
         " createDatetime=" +  createDatetime +
         " deleted=" + deleted  +
         " description=" + description + 
@@ -418,6 +429,5 @@ public class OrderLineDTO implements Serializable, Comparable {
         " provisionningRequestId=" + provisioningRequestId  +        
         " editable=" + editable + "]";
 
-    }
-    
+    }    
 }

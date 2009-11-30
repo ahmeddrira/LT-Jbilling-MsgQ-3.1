@@ -165,7 +165,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
     /**
      * This method soft deletes a payment
      * 
-     * @param integer
+     * @param paymentId
      * @throws SessionInternalError
      */
     public void deletePayment(Integer paymentId) throws SessionInternalError {
@@ -248,11 +248,10 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 // dto with a different cc number to retry the payment
                     
                 // get all the invoice's fields updated with this payment
-                float paid = applyPayment(dto, invoice, result.equals(
-                        Constants.RESULT_OK));
+                BigDecimal paid = applyPayment(dto, invoice, result.equals(Constants.RESULT_OK));
                 if (dto.getIsRefund() == 0) {
                     // now update the link between invoice and payment
-                    bl.createMap(invoice, new Float(paid));
+                    bl.createMap(invoice, paid);
                 }
             }
             return result;
@@ -325,11 +324,10 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             PaymentBL payment = new PaymentBL(paymentId);
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             
-            float paid = applyPayment(payment.getDTO(), invoice.getEntity(),
-                    true);
+            BigDecimal paid = applyPayment(payment.getDTO(), invoice.getEntity(), true);
             
             // link it with the invoice
-            payment.createMap(invoice.getEntity(), new Float(paid));
+            payment.createMap(invoice.getEntity(), paid);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         } 
@@ -343,102 +341,98 @@ public class PaymentSessionBean implements IPaymentSessionBean {
      * @param success
      * @throws SessionInternalError
      */
-    public float applyPayment(PaymentDTO payment, InvoiceDTO invoice,
-            boolean success)  
-            throws SQLException {
-        BigDecimal totalPaid = new BigDecimal(0);
-        if (invoice != null) {
+    public BigDecimal applyPayment(PaymentDTO payment, InvoiceDTO invoice, boolean success) throws SQLException {
+        BigDecimal totalPaid = BigDecimal.ZERO;
 
+        if (invoice != null) {
             // set the attempt of the invoice
             LOG.debug("applying payment to invoice " + invoice.getId());
             if (payment.getIsRefund() == 0) {
                 //invoice can't take nulls. Default to 1 if so.
-                invoice.setPaymentAttempts(payment.getAttempt() == null ? 
-                        new Integer(1) : payment.getAttempt());
+                invoice.setPaymentAttempts(payment.getAttempt() == null ? new Integer(1) : payment.getAttempt());
             }
+
             if (success) {
                 // update the invoice's balance if applicable
-                Float balance = invoice.getBalance();
+                BigDecimal balance = invoice.getBalance();
                 if (balance != null) {
-					boolean balanceSign = (balance.floatValue() < 0) ? 
-							false : true;
+					boolean balanceSign = (balance.floatValue() < 0) ? false : true;
+
                     BigDecimal newBalance = null;
                     if (payment.getIsRefund() == 0) {
                         newBalance = new BigDecimal(balance.toString());
-                        newBalance = newBalance.subtract(new BigDecimal( 
-                                payment.getBalance().toString()));
+                        newBalance = newBalance.subtract(new BigDecimal(payment.getBalance().toString()));
+
                         // I need the payment record to update its balance
                         if (payment.getId() == 0) {
-                            throw new SessionInternalError("The ID of the " +
-                                    "payment to has to be present in the DTO");
+                            throw new SessionInternalError("The ID of the payment to has to be present in the DTO");
                         }
                         PaymentBL paymentBL = new PaymentBL(payment.getId());
-                        BigDecimal newPaymentBalance = new BigDecimal(
-                                payment.getBalance().toString());
-                        newPaymentBalance = newPaymentBalance.subtract(
-                                new BigDecimal(balance.toString()));
-                        if (newPaymentBalance.compareTo(new BigDecimal("0")) < 0) {
-                                newPaymentBalance = new BigDecimal("0");
+                        BigDecimal paymentBalance = payment.getBalance().subtract(balance);
+
+                        // payment balance cannot be negative, must be at least zero
+                        if (BigDecimal.ZERO.compareTo(paymentBalance) > 0) {
+                            paymentBalance = BigDecimal.ZERO;
                         }
-                        totalPaid = new BigDecimal(payment.getBalance().toString());
-                        totalPaid = totalPaid.subtract(newPaymentBalance);
-                        paymentBL.getEntity().setBalance(new Float(
-                                newPaymentBalance.floatValue()));
-                        payment.setBalance(new Float(newPaymentBalance.floatValue()));
+
+                        totalPaid = payment.getBalance().subtract(paymentBalance);
+
+                        paymentBL.getEntity().setBalance(paymentBalance);
+                        payment.setBalance(paymentBalance);
+
                     } else { // refunds add to the invoice
-                        newBalance = new BigDecimal(balance.toString());
-                        newBalance = newBalance.add(new BigDecimal(
-                                payment.getAmount().floatValue()));
+                        newBalance = balance.add(payment.getAmount());
                     }
                         
 					// only level the balance if the original balance wasn't negative
-                    if (newBalance.compareTo(new BigDecimal("0.01")) < 0 && 
-                            balanceSign) {
+                    if (newBalance.compareTo(Constants.BIGDECIMAL_ONE_CENT) < 0 && balanceSign) {
                         // the payment balance was greater than the invoice's
-                        newBalance = new BigDecimal("0");
+                        newBalance = BigDecimal.ZERO;
                     }
                     
-                    invoice.setBalance(new Float(newBalance.floatValue()));
+                    invoice.setBalance(newBalance);
                     LOG.debug("Set invoice balance to: " + invoice.getBalance());
-                    
-                    // update the to_process flag if the balance is 0
-                    if (newBalance.compareTo(new BigDecimal("0")) == 0) {
+                                        
+                    if (BigDecimal.ZERO.compareTo(newBalance) == 0) {
+                        // update the to_process flag if the balance is 0
                         invoice.setToProcess(new Integer(0));
-                    } else { // a refund might make this invoice payabale again
+                    } else {
+                        // a refund might make this invoice payabale again
                         invoice.setToProcess(new Integer(1));
                     }
                 } else {
                     // with no balance, we assume the the invoice got all paid
                     invoice.setToProcess(new Integer(0));
                 }
+
                 // if the user is in the ageing process, she should be out
                 if (new Integer(invoice.getToProcess()).equals(new Integer(0))) {
                     AgeingBL ageing = new AgeingBL();
                     ageing.out(invoice.getBaseUser(), invoice.getId());
                 }
+
                 // update the partner if this customer belongs to one
                 CustomerDTO customer = invoice.getBaseUser().getCustomer();
                 if (customer != null && customer.getPartner() != null) {
                     Partner partner = customer.getPartner();
-                    BigDecimal pBalance = new BigDecimal(partner.getBalance());
-                    BigDecimal paymentAmount = new BigDecimal(payment.getAmount().toString());
+                    BigDecimal pBalance = partner.getBalance();
+                    BigDecimal paymentAmount = payment.getAmount();
+
                     if (payment.getIsRefund() == 0) {
                     	pBalance = pBalance.add(paymentAmount);
-                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalPayments()));
-                        partner.setTotalPayments(new Float(
-                                paymentAmount.floatValue()));
+                    	paymentAmount = paymentAmount.add(partner.getTotalPayments());
+                        partner.setTotalPayments(paymentAmount);
                         
                     } else {
                     	pBalance = pBalance.subtract(paymentAmount);
-                    	paymentAmount = paymentAmount.add(new BigDecimal(partner.getTotalRefunds()));
-                        partner.setTotalRefunds(new Float(
-                                paymentAmount.floatValue()));
+                    	paymentAmount = paymentAmount.add(partner.getTotalRefunds());
+                        partner.setTotalRefunds(paymentAmount);
                     }
-                    partner.setBalance(new Float(pBalance.floatValue()));
+                    partner.setBalance(pBalance);
                 } 
             }
         }
-        return totalPaid.floatValue();
+        return totalPaid;
     }
 
     /**
@@ -469,12 +463,11 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     // find the invoice
                     InvoiceBL invoiceBl = new InvoiceBL(invoiceId);
                     // set the attmpts from the invoice
-                    payment.setAttempt(new Integer(invoiceBl.getEntity().
-                            getPaymentAttempts() + 1));
+                    payment.setAttempt(new Integer(invoiceBl.getEntity().getPaymentAttempts() + 1));
                     // apply the payment to the invoice
-                    float paid = applyPayment(payment, invoiceBl.getEntity(), true);
+                    BigDecimal paid = applyPayment(payment, invoiceBl.getEntity(), true);
                     // link it with the invoice
-                    paymentBl.createMap(invoiceBl.getEntity(), new Float(paid));
+                    paymentBl.createMap(invoiceBl.getEntity(), paid);
                 } else {
                     // this payment was done without an explicit invoice
                     // We'll try to link it to invoices with balances then
@@ -543,7 +536,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
 
     @Transactional( propagation = Propagation.REQUIRES_NEW )
     public Boolean processPaypalPayment(Integer invoiceId, String entityEmail,
-            Float amount, String currency, Integer paramUserId, String userEmail) 
+            BigDecimal amount, String currency, Integer paramUserId, String userEmail) 
             throws SessionInternalError {
     	
     	if (userEmail == null && invoiceId == null && paramUserId == null) {

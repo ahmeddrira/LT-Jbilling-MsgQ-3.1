@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.order.task;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -48,12 +49,15 @@ import com.sapienter.jbilling.server.util.Constants;
 
 public class CancellationFeeRulesTask extends RulesItemManager implements IInternalEventsTask {
 
+    private static final Logger LOG = Logger.getLogger(CancellationFeeRulesTask.class);
+
     private enum EventType { NEW_ACTIVE_UNTIL_EVENT, NEW_QUANTITY_EVENT } 
 
-    private static final Class<Event> events[] = new Class[] { NewActiveUntilEvent.class,
-            NewQuantityEvent.class };
-
-    private static final Logger LOG = Logger.getLogger(CancellationFeeRulesTask.class);
+    @SuppressWarnings("unchecked")
+    private static final Class<Event> events[] = new Class[] {
+            NewActiveUntilEvent.class,
+            NewQuantityEvent.class
+    };
 
     public Class<Event>[] getSubscribedEvents() {
         return events;
@@ -84,8 +88,8 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
         } else if (event instanceof NewQuantityEvent) {
             NewQuantityEvent myEvent = (NewQuantityEvent) event;
             // don't process if new quantity has increased instead of decreased
-            if (myEvent.getNewQuantity() > myEvent.getOldQuantity()) {
-                return;
+            if (myEvent.getNewQuantity().compareTo(myEvent.getOldQuantity()) > 0) {
+                    return;
             }
 
             // Create a copy of the order that had a line quantity changed
@@ -98,10 +102,10 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
             OrderLineDTO line = new OrderLineDTO(myEvent.getOrderLine());
             line.setPurchaseOrder(order);
             order.getLines().add(line);
+
             // set quantity as the difference between the old and new quantities
-            double newQuantity = myEvent.getOldQuantity().doubleValue() - 
-                    myEvent.getNewQuantity().doubleValue();
-            line.setQuantity(new Double(newQuantity));
+            BigDecimal quantity = myEvent.getOldQuantity().subtract(myEvent.getNewQuantity());
+            line.setQuantity(quantity);
 
             eventType = EventType.NEW_QUANTITY_EVENT;
         } else {
@@ -138,15 +142,19 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
         private Date newActiveUntil = null;
         private Date oldActiveUntil = null;
 
-        public FeeOrderManager(OrderDTO order, Integer language, Integer userId, Integer entityId,
-                Integer currencyId) {
+        public FeeOrderManager(OrderDTO order, Integer language, Integer userId, Integer entityId, Integer currencyId) {
             super(order, language, userId, entityId, currencyId);
+        }
+
+        public void applyFee(Integer itemId, Double quantity, Integer daysInPeriod) {
+            BigDecimal qty = new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+            applyFee(itemId, qty, daysInPeriod);
         }
 
         // all the methods from OrderManager are actually unnecesary for this
         // helper but it is an instance or OrderManager that makes it into the working
         // memory
-        public void applyFee(Integer itemId, Double quantity, Integer daysInPeriod) {
+        public void applyFee(Integer itemId, BigDecimal quantity, Integer daysInPeriod) {
             ResourceBundle bundle;
             UserBL userBL;
             try {
@@ -156,32 +164,34 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
                 throw new SessionInternalError("Error when doing credit", RefundOnCancelTask.class, e);
             }
 
-            int periods = 0;
+            BigDecimal periods;
             // calculate the number of periods that have been cancelled
             if (oldActiveUntil == null) {
-                periods = 1;
+                periods = new BigDecimal(1);
                 LOG.info("Old active until not present. Period will be 1.");
             } else {
                 long totalMills = oldActiveUntil.getTime() - newActiveUntil.getTime();
-                BigDecimal periodMills = new BigDecimal(daysInPeriod).multiply(
-                        new BigDecimal(24)).multiply(new BigDecimal(60)).multiply(
-                        new BigDecimal(60)).multiply(new BigDecimal(1000));
-                BigDecimal calcPeriods = new BigDecimal(totalMills).divide(periodMills,
-                        Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-                periods = calcPeriods.intValue(); // we do not want to charge for fractions
-                //LOG.debug("total: " + totalMills + " result " + periods + " divisor " + periodMills);
+                BigDecimal periodMills = new BigDecimal(daysInPeriod)
+                        .multiply(new BigDecimal(24))
+                        .multiply(new BigDecimal(60))
+                        .multiply(new BigDecimal(60))
+                        .multiply(new BigDecimal(1000));
+
+                BigDecimal calcPeriods = new BigDecimal(totalMills)
+                        .divide(periodMills, Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+
+                periods = new BigDecimal(calcPeriods.intValue()); // we do not want to charge for fractions            
             }
             
-            if (periods == 0) {
-                LOG.debug("No a single compelte period cancelled: " + oldActiveUntil + " " + 
-                        newActiveUntil);
+            if (BigDecimal.ZERO.equals(periods)) {
+                LOG.debug("No a single compelte period cancelled: " + oldActiveUntil + " " + newActiveUntil);
                 return;
             }
 
             if (quantity == null) {
-                quantity = new Double(1);
+                quantity = new BigDecimal(1);
             }
-            quantity *= periods;
+            quantity = quantity.multiply(periods);
 
             // now create a new order for the fee:
             // - one time
@@ -201,6 +211,7 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
             line.setPurchaseOrder(feeOrder);
             feeOrder.getLines().add(line);
             line.setQuantity(quantity);
+            
             ItemBL itemBL = new ItemBL(itemId);
             line.setPrice(itemBL.getPrice(getOrder().getBaseUserByUserId().getId(), getOrder().getCurrencyId(), getEntityId()));
             OrderBL orderBL = new OrderBL(feeOrder);
@@ -216,6 +227,10 @@ public class CancellationFeeRulesTask extends RulesItemManager implements IInter
         // convenience method for 30 days, which is the typical period of time (month) to 
         // calculate fees
         public void applyFee(Integer itemId, Double quantity) {
+            applyFee(itemId, quantity, 30);
+        }
+
+        public void applyFee(Integer itemId, BigDecimal quantity) {
             applyFee(itemId, quantity, 30);
         }
 

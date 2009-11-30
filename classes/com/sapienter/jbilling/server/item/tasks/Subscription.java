@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.item.tasks;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
@@ -30,7 +31,7 @@ public class Subscription {
     private final Integer periodId;
     private final Date activeSince;
     private final Date activeUntil;
-    private final Double quantity;
+    private final BigDecimal quantity;
 
     public Subscription(OrderLineDTO line) {
         periodId = line.getPurchaseOrder().getOrderPeriod().getId();
@@ -56,7 +57,7 @@ public class Subscription {
         return periodId;
     }
 
-    public Double getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 }

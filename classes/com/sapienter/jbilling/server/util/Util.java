@@ -23,6 +23,7 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -83,7 +84,44 @@ public class Util {
                 bundle.getString("format.date"));
         return df.format(date);
     }
-    
+
+    public static String formatMoney(BigDecimal number, Integer userId, Integer currencyId, boolean forEmail)
+            throws SessionInternalError {
+
+        Locale locale;
+        try {
+            // find first the right format for the number
+            UserBL user = new UserBL(userId);
+            locale = user.getLocale();
+            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", locale);
+
+            NumberFormat format = NumberFormat.getNumberInstance(locale);
+            ((DecimalFormat) format).applyPattern(bundle.getString("format.float"));
+
+            // now the symbol of the currency
+            CurrencyBL currency = new CurrencyBL(currencyId);
+            String symbol = currency.getEntity().getSymbol();
+            if (symbol.length() >= 4 && symbol.charAt(0) == '&' &&
+                    symbol.charAt(1) == '#') {
+                if (!forEmail) {
+                    // this is an html symbol
+                    // remove the first two digits
+                    symbol = symbol.substring(2);
+                    // remove the last digit (;)
+                    symbol = symbol.substring(0, symbol.length() - 1);
+                    // convert to a single char
+                    Character ch = (char) Integer.valueOf(symbol).intValue();
+                    symbol = ch.toString();
+                } else {
+                    symbol = currency.getEntity().getCode();
+                }
+            }
+            return symbol + " " + format.format(number.doubleValue());
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
     public static String formatMoney(Float number, Integer userId, 
             Integer currencyId, boolean forEmail) 
             throws SessionInternalError {
@@ -156,7 +194,12 @@ public class Util {
     public static float round(float val, int places) {
         return (float) round((double) val, places);
     }
-    
+
+    public static String decimal2string(BigDecimal arg, Locale loc) {
+        if (arg  == null) return null;
+        return NumberFormat.getInstance(loc).format(arg);
+    }
+
     public static String float2string(Float arg, Locale loc) {
         if (arg == null) {
             return null;

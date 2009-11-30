@@ -25,6 +25,8 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.criterion.Restrictions;
 
+import java.math.BigDecimal;
+
 /**
  * 
  * @author abimael
@@ -32,7 +34,7 @@ import org.hibernate.criterion.Restrictions;
  */
 public class ProcessRunTotalPmDAS extends AbstractDAS<ProcessRunTotalPmDTO> {
 
-    public ProcessRunTotalPmDTO create(Float total) {
+    public ProcessRunTotalPmDTO create(BigDecimal total) {
         ProcessRunTotalPmDTO newEntity = new ProcessRunTotalPmDTO();
         newEntity.setTotal(total);
         return save(newEntity);
@@ -40,9 +42,10 @@ public class ProcessRunTotalPmDAS extends AbstractDAS<ProcessRunTotalPmDTO> {
     
      /**
      * Returns the locked row, since payment processing updates this in parallel
-     * @param run
-     * @param currencyId
-     * @return
+      *
+     * @param methodId payment method id
+     * @param total run total
+     * @return locked process run total 
      */
     public ProcessRunTotalPmDTO getByMethod(Integer methodId, ProcessRunTotalDTO total) {
         Criteria criteria = getSession().createCriteria(ProcessRunTotalPmDTO.class)

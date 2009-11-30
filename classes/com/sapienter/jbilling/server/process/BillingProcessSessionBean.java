@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.process;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -407,33 +408,31 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
     }
     
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public void emailAndPayment(Integer entityId, Integer invoiceId,
-            Integer processId, boolean processPayment) {
+    public void emailAndPayment(Integer entityId, Integer invoiceId, Integer processId, boolean processPayment) {
         try {
             InvoiceBL invoice = new InvoiceBL(invoiceId);
             Integer userId = invoice.getEntity().getBaseUser().getUserId();
  
-            LOG.debug("email and payment for user " + userId + " invoice " +
-                    invoiceId);
+            LOG.debug("email and payment for user " + userId + " invoice " + invoiceId);
+
             // last but not least, let this user know about his/her new
             // invoice.
             NotificationBL notif = new NotificationBL();
             
             try {
                 MessageDTO[] invoiceMessage = notif.getInvoiceMessages(entityId,
-                        processId, invoice.getEntity().getBaseUser()
-                                .getLanguageIdField(), invoice.getEntity());
+                                                                       processId,
+                                                                       invoice.getEntity().getBaseUser().getLanguageIdField(),
+                                                                       invoice.getEntity());
 
-                INotificationSessionBean notificationSess = 
-                        (INotificationSessionBean) Context.getBean(
-                        Context.Name.NOTIFICATION_SESSION);
+                INotificationSessionBean notificationSess = (INotificationSessionBean)
+                        Context.getBean(Context.Name.NOTIFICATION_SESSION);
 
                 for (int msg = 0; msg < invoiceMessage.length; msg++) {
                     notificationSess.notify(userId, invoiceMessage[msg]);
                 }
             } catch (NotificationNotFoundException e) {
-                LOG.warn("Invoice message not defined for entity " + entityId
-                        + " Invoice email not sent");
+                LOG.warn("Invoice message not defined for entity " + entityId + " Invoice email not sent");
             }
             
             if (processPayment) {
@@ -441,24 +440,22 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 // only process payment if it doesn't have a negative balance 
                 // that wasn't caused by a carried balance
                 InvoiceDTO dto = invoice.getDTO();
-                if (dto.getBalance() < 0 && dto.getCarriedBalance() >= 0) {
+                if (BigDecimal.ZERO.compareTo(dto.getBalance()) > 0
+                        && BigDecimal.ZERO.compareTo(dto.getCarriedBalance()) <= 0) {
+
                     PreferenceBL preferenceBL = new PreferenceBL();
                     try {
-                        preferenceBL.set(entityId, 
-                                Constants.PREFERENCE_DELAY_NEGATIVE_PAYMENTS);
-                    } catch (EmptyResultDataAccessException fe) {
-                        // use default
-                    }
+                        preferenceBL.set(entityId, Constants.PREFERENCE_DELAY_NEGATIVE_PAYMENTS);
+                    } catch (EmptyResultDataAccessException fe) { /* use default */ }
+
                     if (preferenceBL.getInt() == 1) {
                         processPayment = false;
-                        LOG.warn("Delaying invoice payment with negative " +
-                                "balance and no negative carried balance");
+                        LOG.warn("Delaying invoice payment with negative balance and no negative carried balance");
                     }
                 }
 
-                if (processPayment && dto.getBalance() != 0) {
-                    ProcessPaymentEvent event = new ProcessPaymentEvent(invoiceId,
-                            processId, null, entityId);
+                if (processPayment && BigDecimal.ZERO.compareTo(dto.getBalance()) != 0) {
+                    ProcessPaymentEvent event = new ProcessPaymentEvent(invoiceId, processId, null, entityId);
                     EventManager.process(event);
                 } else {
                     LOG.debug("Not processing a payment, balance of invoice is " + dto.getBalance());

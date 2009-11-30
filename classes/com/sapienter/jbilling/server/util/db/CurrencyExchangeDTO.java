@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.util.db;
 
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -55,7 +56,7 @@ public class CurrencyExchangeDTO  implements java.io.Serializable {
      private int id;
      private CurrencyDTO currencyDTO;
      private Integer entityId;
-     private double rate;
+     private BigDecimal rate;
      private Date createDatetime;
      private int versionNum;
 
@@ -63,12 +64,12 @@ public class CurrencyExchangeDTO  implements java.io.Serializable {
     }
 
 	
-    public CurrencyExchangeDTO(int id, double rate, Date createDatetime) {
+    public CurrencyExchangeDTO(int id, BigDecimal rate, Date createDatetime) {
         this.id = id;
         this.rate = rate;
         this.createDatetime = createDatetime;
     }
-    public CurrencyExchangeDTO(int id, CurrencyDTO currencyDTO, Integer entityId, double rate, Date createDatetime) {
+    public CurrencyExchangeDTO(int id, CurrencyDTO currencyDTO, Integer entityId, BigDecimal rate, Date createDatetime) {
        this.id = id;
        this.currencyDTO = currencyDTO;
        this.entityId = entityId;
@@ -106,11 +107,11 @@ public class CurrencyExchangeDTO  implements java.io.Serializable {
     }
     
     @Column(name="rate", nullable=false, precision=17, scale=17)
-    public double getRate() {
+    public BigDecimal getRate() {
         return this.rate;
     }
     
-    public void setRate(double rate) {
+    public void setRate(BigDecimal rate) {
         this.rate = rate;
     }
     

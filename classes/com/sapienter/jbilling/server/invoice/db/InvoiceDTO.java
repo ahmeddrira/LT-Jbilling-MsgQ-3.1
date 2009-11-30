@@ -84,8 +84,8 @@ public class InvoiceDTO implements Serializable {
     private BigDecimal total;
     private int paymentAttempts;
     private InvoiceStatusDTO invoiceStatus;
-    private Float balance;
-    private Float carriedBalance;
+    private BigDecimal balance;
+    private BigDecimal carriedBalance;
     private int inProcessPayment;
     private Integer isReview;
     private Integer deleted;
@@ -97,8 +97,7 @@ public class InvoiceDTO implements Serializable {
     private Collection<InvoiceLineDTO> invoiceLines = new HashSet<InvoiceLineDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
     private Set<OrderProcessDTO> orderProcesses = new HashSet<OrderProcessDTO>(0);
-    private Collection<PaymentInvoiceMapDTO> paymentMap = new HashSet<PaymentInvoiceMapDTO>(
-            0);
+    private Collection<PaymentInvoiceMapDTO> paymentMap = new HashSet<PaymentInvoiceMapDTO>(0);
     private int versionNum;
     
     // for transition to JPA
@@ -134,15 +133,15 @@ public class InvoiceDTO implements Serializable {
         this.setPublicNumber(invoice.getPublicNumber());        
         this.setInvoiceStatus(invoice.getInvoiceStatus());
         this.setTotal(invoice.getTotal());
-        setInvoiceLines(new ArrayList(invoice.getInvoiceLines()));
-        setInvoices(new HashSet(invoice.getInvoices()));
-        setOrderProcesses(new HashSet(invoice.getOrderProcesses()));
-        setPaymentMap(new ArrayList(invoice.getPaymentMap()));
+        setInvoiceLines(new ArrayList<InvoiceLineDTO>(invoice.getInvoiceLines()));
+        setInvoices(new HashSet<InvoiceDTO>(invoice.getInvoices()));
+        setOrderProcesses(new HashSet<OrderProcessDTO>(invoice.getOrderProcesses()));
+        setPaymentMap(new ArrayList<PaymentInvoiceMapDTO>(invoice.getPaymentMap()));
     }
 
     public InvoiceDTO(int id, CurrencyDTO currencyDTO, Date createDatetime,
             Date dueDate, BigDecimal total, int paymentAttempts, InvoiceStatusDTO invoiceStatus,
-            Float carriedBalance, int inProcessPayment, int isReview,
+            BigDecimal carriedBalance, int inProcessPayment, int isReview,
             Integer deleted, Date createTimestamp) {
         this.id = id;
         this.currencyDTO = currencyDTO;
@@ -302,20 +301,20 @@ public class InvoiceDTO implements Serializable {
     }
 
     @Column(name = "balance", precision = 17, scale = 17)
-    public Float getBalance() {
+    public BigDecimal getBalance() {
         return this.balance;
     }
 
-    public void setBalance(Float balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
     @Column(name = "carried_balance", nullable = false, precision = 17, scale = 17)
-    public Float getCarriedBalance() {
+    public BigDecimal getCarriedBalance() {
         return this.carriedBalance;
     }
 
-    public void setCarriedBalance(Float carriedBalance) {
+    public void setCarriedBalance(BigDecimal carriedBalance) {
         this.carriedBalance = carriedBalance;
     }
 

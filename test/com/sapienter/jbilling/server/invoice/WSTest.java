@@ -25,6 +25,8 @@
  */
 package com.sapienter.jbilling.server.invoice;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
@@ -56,8 +58,7 @@ public class WSTest extends TestCase {
             System.out.println("Getting invoice");
             InvoiceWS retInvoice = api.getInvoiceWS(15);
             assertNotNull("invoice not returned", retInvoice);
-            assertEquals("invoice id", retInvoice.getId(),
-                    new Integer(15));
+            assertEquals("invoice id", retInvoice.getId(), new Integer(15));
             System.out.println("Got = " + retInvoice);
 
             // latest
@@ -70,8 +71,7 @@ public class WSTest extends TestCase {
             System.out.println("Getting latest invoice");
             retInvoice = api.getLatestInvoice(2);
             assertNotNull("invoice not returned", retInvoice);
-            assertEquals("invoice's user id", retInvoice.getUserId(),
-                    new Integer(2));
+            assertEquals("invoice's user id", retInvoice.getUserId(), new Integer(2));
             System.out.println("Got = " + retInvoice);
             Integer lastInvoice = retInvoice.getId();
 
@@ -87,8 +87,7 @@ public class WSTest extends TestCase {
             assertNotNull("invoice not returned", invoices);
 
             retInvoice = api.getInvoiceWS(invoices[0]);
-            assertEquals("invoice's user id", new Integer(2),
-                    retInvoice.getUserId());
+            assertEquals("invoice's user id", new Integer(2), retInvoice.getUserId());
             System.out.println("Got = " + invoices.length + " invoices");
             for (int f = 0; f < invoices.length; f++) {
                 System.out.println(" Invoice " + (f + 1) + invoices[f]);
@@ -99,10 +98,8 @@ public class WSTest extends TestCase {
             invoices = api.getLastInvoices(2, 2);
             assertNotNull("invoice not returned", invoices);
             retInvoice = api.getInvoiceWS(invoices[0]);
-            assertEquals("invoice's user id", new Integer(2),
-                    retInvoice.getUserId());
-            assertEquals("invoice's has to be latest", lastInvoice,
-                    retInvoice.getId());
+            assertEquals("invoice's user id", new Integer(2), retInvoice.getUserId());
+            assertEquals("invoice's has to be latest", lastInvoice, retInvoice.getId());
             assertEquals("there should be only 2", 2, invoices.length);
 
             // get some by date
@@ -176,8 +173,8 @@ public class WSTest extends TestCase {
             line.setDescription("Order line");
             line.setItemId(1);
             line.setQuantity(1);
-            line.setPrice(10.0f);
-            line.setAmount(10.0f);
+            line.setPrice(new BigDecimal("10.00"));
+            line.setAmount(new BigDecimal("10.00"));
 
             order.setOrderLines(new OrderLineWS[] { line });
 
@@ -189,8 +186,8 @@ public class WSTest extends TestCase {
             Integer orderId1 = api.createOrder(order);
 
             // create 2nd order
-            line.setPrice(20.0f);
-            line.setAmount(20.0f);
+            line.setPrice(new BigDecimal("20.00"));
+            line.setAmount(new BigDecimal("20.00"));
             Integer orderId2 = api.createOrder(order);
 
             // create invoice
@@ -199,18 +196,15 @@ public class WSTest extends TestCase {
             assertEquals("Number of invoices returned", 1, invoices.length);
             InvoiceWS invoice = api.getInvoiceWS(invoices[0]);
 
-            assertNull("Invoice is not delegated.",
-                       invoice.getDelegatedInvoiceId());
-            assertTrue("Invoice does not have a carried balance.",
-                       (invoice.getCarriedBalance() == null || invoice.getCarriedBalance() == 0.0f));
+            assertNull("Invoice is not delegated.", invoice.getDelegatedInvoiceId());
+            assertEquals("Invoice does not have a carried balance.", BigDecimal.ZERO, invoice.getCarriedBalanceAsDecimal());
 
             Integer[] invoicedOrderIds = invoice.getOrders();
-            assertEquals("Number of orders invoiced", 2,
-                    invoicedOrderIds.length);
+            assertEquals("Number of orders invoiced", 2, invoicedOrderIds.length);
             Arrays.sort(invoicedOrderIds);
             assertEquals("Order 1 invoiced", orderId1, invoicedOrderIds[0]);
             assertEquals("Order 2 invoiced", orderId2, invoicedOrderIds[1]);
-            assertEquals("Total is 30.0", 30.0f, invoice.getTotal());
+            assertEquals("Total is 30.0", new BigDecimal("30.00"), invoice.getTotalAsDecimal());
 
             // clean up
             api.deleteInvoice(invoices[0]);
@@ -222,8 +216,8 @@ public class WSTest extends TestCase {
              */
 
             // one-time order
-            line.setPrice(2.0f);
-            line.setAmount(2.0f);
+            line.setPrice(new BigDecimal("2.00"));
+            line.setAmount(new BigDecimal("2.00"));
             orderId1 = api.createOrder(order);
 
             // try to create invoice, but none should be returned
@@ -236,8 +230,8 @@ public class WSTest extends TestCase {
 
             // recurring order
             order.setPeriod(2); // monthly
-            line.setPrice(3.0f);
-            line.setAmount(3.0f);
+            line.setPrice(new BigDecimal("3.00"));
+            line.setAmount(new BigDecimal("3.00"));
             orderId2 = api.createOrder(order);
 
             // create invoice
@@ -246,12 +240,11 @@ public class WSTest extends TestCase {
             assertEquals("Number of invoices returned", 1, invoices.length);
             invoice = api.getInvoiceWS(invoices[0]);
             invoicedOrderIds = invoice.getOrders();
-            assertEquals("Number of orders invoiced", 2,
-                    invoicedOrderIds.length);
+            assertEquals("Number of orders invoiced", 2, invoicedOrderIds.length);
             Arrays.sort(invoicedOrderIds);
             assertEquals("Order 1 invoiced", orderId1, invoicedOrderIds[0]);
             assertEquals("Order 2 invoiced", orderId2, invoicedOrderIds[1]);
-            assertEquals("Total is 5.0", 5.0f, invoice.getTotal());
+            assertEquals("Total is 5.0", new BigDecimal("5.00"), invoice.getTotalAsDecimal());
 
             // clean up
             api.deleteInvoice(invoices[0]);
@@ -306,8 +299,8 @@ public class WSTest extends TestCase {
         line.setDescription("Order line");
         line.setItemId(1);
         line.setQuantity(1);
-        line.setPrice(10.0f);
-        line.setAmount(10.0f);
+        line.setPrice(new BigDecimal("10.00"));
+        line.setAmount(new BigDecimal("10.00"));
 
         order.setOrderLines(new OrderLineWS[] { line });
 
@@ -325,7 +318,8 @@ public class WSTest extends TestCase {
         assertEquals("Carried invoice will not be re-processed",
                      0, overdue.getToProcess().intValue());
         assertEquals("Overdue invoice holds original balance",
-                     20.0f, overdue.getBalance().floatValue());
+                     new BigDecimal("20.00"), overdue.getBalanceAsDecimal());
+
         assertEquals("Overdue invoice delegated to the newly created invoice",
                      invoiceId, overdue.getDelegatedInvoiceId());
 
@@ -333,11 +327,11 @@ public class WSTest extends TestCase {
         InvoiceWS invoice = api.getInvoiceWS(invoiceId);
 
         assertEquals("New invoice balance is equal to the current period charges",
-                     10.0f, invoice.getBalance().floatValue());
+                     new BigDecimal("10.00"), invoice.getBalanceAsDecimal());
         assertEquals("New invoice holds the carried balance equal to the old invoice balance",
-                     overdue.getBalance(), invoice.getCarriedBalance());       
+                     overdue.getBalanceAsDecimal(), invoice.getCarriedBalanceAsDecimal());
         assertEquals("New invoice total is equal to the current charges plus the carried total",
-                     30.0f, invoice.getTotal().floatValue());
+                     new BigDecimal("30.00"), invoice.getTotalAsDecimal());
     }
 
     public void testGetUserInvoicesByDate() {
@@ -347,8 +341,7 @@ public class WSTest extends TestCase {
 
             // invoice dates: 2006-07-26
             // select the week
-            Integer[] result = api.getUserInvoicesByDate(USER_ID, "2006-07-23",
-                    "2006-07-29");
+            Integer[] result = api.getUserInvoicesByDate(USER_ID, "2006-07-23", "2006-07-29");
             // note: invoice 1 gets deleted
             assertEquals("Number of invoices returned", 3, result.length);
             assertEquals("Invoice id 4", 4, result[0].intValue());
@@ -356,24 +349,21 @@ public class WSTest extends TestCase {
             assertEquals("Invoice id 2", 2, result[2].intValue());
 
             // test since date inclusive
-            result = api.getUserInvoicesByDate(USER_ID, "2006-07-26",
-                    "2006-07-29");
+            result = api.getUserInvoicesByDate(USER_ID, "2006-07-26", "2006-07-29");
             assertEquals("Number of invoices returned", 3, result.length);
             assertEquals("Invoice id 4", 4, result[0].intValue());
             assertEquals("Invoice id 3", 3, result[1].intValue());
             assertEquals("Invoice id 2", 2, result[2].intValue());
 
             // test until date inclusive
-            result = api.getUserInvoicesByDate(USER_ID, "2006-07-23",
-                    "2006-07-26");
+            result = api.getUserInvoicesByDate(USER_ID, "2006-07-23", "2006-07-26");
             assertEquals("Number of invoices returned", 3, result.length);
             assertEquals("Invoice id 4", 4, result[0].intValue());
             assertEquals("Invoice id 3", 3, result[1].intValue());
             assertEquals("Invoice id 2", 2, result[2].intValue());
 
             // test date with no invoices
-            result = api.getUserInvoicesByDate(USER_ID, "2005-07-23",
-                    "2005-07-29");
+            result = api.getUserInvoicesByDate(USER_ID, "2005-07-23", "2005-07-29");
             // Note: CXF returns null for empty array
             if (result != null) {
                 assertEquals("Number of invoices returned", 0, result.length);
@@ -383,5 +373,15 @@ public class WSTest extends TestCase {
             e.printStackTrace();
             fail("Exception caught:" + e);
         }
+    }
+    
+    public static void assertEquals(BigDecimal expected, BigDecimal actual) {
+        assertEquals(null, expected, actual);
+    }
+
+    public static void assertEquals(String message, BigDecimal expected, BigDecimal actual) {
+        assertEquals(message,
+                     (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
+                     (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
     }
 }

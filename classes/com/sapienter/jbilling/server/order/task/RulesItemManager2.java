@@ -36,6 +36,8 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +56,7 @@ public class RulesItemManager2 extends RulesBaseTask implements IItemPurchaseMan
         return Logger.getLogger(RulesItemManager2.class);
     }
 
-    public void addItem(Integer itemID, Double quantity, Integer language,
+    public void addItem(Integer itemID, BigDecimal quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO order, List<Record> records) throws TaskException {
         // start by calling the standard plug-in

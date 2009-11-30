@@ -19,6 +19,7 @@
  */
 package com.sapienter.jbilling.server.process.db;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -55,9 +56,10 @@ public class ProcessRunTotalDTO implements java.io.Serializable {
 	private int id;
 	private ProcessRunDTO processRun;
 	private CurrencyDTO currencyDTO;
-	private Float totalInvoiced;
-	private Float totalPaid;
-	private Float totalNotPaid;
+	private BigDecimal totalInvoiced;
+	private BigDecimal totalPaid;
+	private BigDecimal totalNotPaid;
+
 	private Set<ProcessRunTotalPmDTO> totalsPaymentMethod = new HashSet<ProcessRunTotalPmDTO>(0);
 	private int versionNum;
 	
@@ -69,9 +71,8 @@ public class ProcessRunTotalDTO implements java.io.Serializable {
 		this.currencyDTO = currencyDTO;
 	}
 
-	public ProcessRunTotalDTO(int id, ProcessRunDTO processRun,
-			CurrencyDTO currencyDTO, Float totalInvoiced, Float totalPaid,
-			Float totalNotPaid) {
+	public ProcessRunTotalDTO(int id, ProcessRunDTO processRun, CurrencyDTO currencyDTO,
+                              BigDecimal totalInvoiced, BigDecimal totalPaid, BigDecimal totalNotPaid) {
 		this.id = id;
 		this.processRun = processRun;
 		this.currencyDTO = currencyDTO;
@@ -112,29 +113,29 @@ public class ProcessRunTotalDTO implements java.io.Serializable {
 	}
 
 	@Column(name = "total_invoiced", precision = 17, scale = 17)
-	public Float getTotalInvoiced() {
+	public BigDecimal getTotalInvoiced() {
 		return this.totalInvoiced;
 	}
 
-	public void setTotalInvoiced(Float totalInvoiced) {
+	public void setTotalInvoiced(BigDecimal totalInvoiced) {
 		this.totalInvoiced = totalInvoiced;
 	}
 
 	@Column(name = "total_paid", precision = 17, scale = 17)
-	public Float getTotalPaid() {
+	public BigDecimal getTotalPaid() {
 		return this.totalPaid;
 	}
 
-	public void setTotalPaid(Float totalPaid) {
+	public void setTotalPaid(BigDecimal totalPaid) {
 		this.totalPaid = totalPaid;
 	}
 
 	@Column(name = "total_not_paid", precision = 17, scale = 17)
-	public Float getTotalNotPaid() {
+	public BigDecimal getTotalNotPaid() {
 		return this.totalNotPaid;
 	}
 
-	public void setTotalNotPaid(Float totalNotPaid) {
+	public void setTotalNotPaid(BigDecimal totalNotPaid) {
 		this.totalNotPaid = totalNotPaid;
 	}
 
@@ -159,9 +160,18 @@ public class ProcessRunTotalDTO implements java.io.Serializable {
 
     @Override
     public String toString() {
-        StringBuffer ret = new StringBuffer(" ProcessRunTotalDTO: id: " + id + " currency: " + currencyDTO + " totalInvoiced: " +
-                totalInvoiced + " totalPaid: " + totalPaid + " totalNotPaid: " + totalNotPaid +
-                " totalsPaymentMethod ");
+        StringBuffer ret = new StringBuffer();
+        ret.append(" ProcessRunTotalDTO: id: ")
+                .append(id)
+                .append(" currency: ")
+                .append(currencyDTO)
+                .append(" totalInvoiced: ")
+                .append(totalInvoiced)
+                .append(" totalPaid: ")
+                .append(totalPaid)
+                .append(" totalNotPaid: ")
+                .append(totalNotPaid)
+                .append(" totalsPaymentMethod ");
 
         for (ProcessRunTotalPmDTO pm : totalsPaymentMethod) {
             ret.append(pm.toString());

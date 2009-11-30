@@ -55,48 +55,47 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
         for (OrderLineDTO line : order.getLines()) {
-        	if (line.getDeleted() == 1) continue;
+        	if (line.getDeleted() == 1)
+                continue;
+
         	ItemDTO item = new ItemDAS().find(line.getItemId()); // the line might be dettached
-            if (item != null && 
-                    item.getPercentage() == null) { 
+            if (item != null && item.getPercentage() == null) { 
+
                 BigDecimal amount;
-                
                 if (!line.getTotalReadOnly()) {
-                    amount = new BigDecimal(
-                        line.getQuantity().toString());
-                    amount = amount.multiply(new BigDecimal(
-                        line.getPrice().toString()));
-                    line.setAmount(new Float(amount.floatValue()));
+                    amount = line.getQuantity().multiply(line.getPrice());
+                    line.setAmount(line.getQuantity().multiply(line.getPrice()));
                 } else {
-                    amount = new BigDecimal(line.getAmount().toString());
+                    amount = line.getAmount();
                 }
+
                 if (line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
                     taxNonPerTotal = taxNonPerTotal.add(amount);
                 } else {
                     nonTaxNonPerTotal = nonTaxNonPerTotal.add(amount);
                 }
-                LOG.debug("adding normal line. Totals =" + taxNonPerTotal + 
-                        " - " + nonTaxNonPerTotal);
+                LOG.debug("adding normal line. Totals =" + taxNonPerTotal + " - " + nonTaxNonPerTotal);
             }
         }
         
         // step two non tax percetage items
         for (OrderLineDTO line : order.getLines()) {
-        	if (line.getDeleted() == 1) continue;
-        	ItemDTO item = new ItemDAS().find(line.getItemId());
-            if (item != null && 
-                    item.getPercentage() != null &&
-                    !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+        	if (line.getDeleted() == 1)
+                continue;
+
+            ItemDTO item = new ItemDAS().find(line.getItemId());
+            if (item != null
+                    && item.getPercentage() != null
+                    && !line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+
                 BigDecimal amount;
                 if (!line.getTotalReadOnly()) {
-                    amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), 
-                            Constants.BIGDECIMAL_ROUND);
-                    amount = amount.multiply(new BigDecimal(
-                            line.getPrice().toString()));
-                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
-                    line.setAmount(new Float(amount.floatValue()));
+                    amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), Constants.BIGDECIMAL_ROUND);
+                    amount = amount.multiply(line.getPrice());
+                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND); // round final result down to 2 decimals
+                    line.setAmount(amount);
                 } else {
-                    amount = new BigDecimal(line.getAmount().toString());
+                    amount = line.getAmount();
                 }
                 nonTaxPerTotal = nonTaxPerTotal.add(amount);
                 LOG.debug("adding no tax percentage line. Total =" + nonTaxPerTotal);
@@ -106,43 +105,41 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step three: tax percetage items
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
         for (OrderLineDTO line : order.getLines()) {
-        	if (line.getDeleted() == 1) continue;
-        	ItemDTO item = new ItemDAS().find(line.getItemId());
-            if (item != null && 
-                    item.getPercentage() != null &&
-                    line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+        	if (line.getDeleted() == 1)
+                continue;
+
+            ItemDTO item = new ItemDAS().find(line.getItemId());
+            if (item != null
+                    && item.getPercentage() != null
+                    && line.getTypeId().equals(Constants.ORDER_LINE_TYPE_TAX)) {
+
                 BigDecimal amount;
                 if (!line.getTotalReadOnly()) {
-                    amount = allNonTaxes.divide(new BigDecimal("100"), 
-                            BigDecimal.ROUND_HALF_EVEN);
-                    amount = amount.multiply(new BigDecimal(
-                            line.getPrice().toString()));
-                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND);
-                    line.setAmount(new Float(amount.floatValue()));
+                    amount = allNonTaxes.divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_EVEN);
+                    amount = amount.multiply(line.getPrice());
+                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND); // round final result down to 2 decimals
+                    line.setAmount(amount);
                 } else {
-                    amount = new BigDecimal(line.getAmount().toString());
+                    amount = line.getAmount();
                 }
+                
                 taxPerTotal = taxPerTotal.add(amount);
                 LOG.debug("adding tax percentage line. Total =" + taxPerTotal);
             }
         }
 
-        orderTotal = taxNonPerTotal.add(taxPerTotal).add(nonTaxPerTotal)
-                .add(nonTaxNonPerTotal);
-        orderTotal = orderTotal.setScale(2, Constants.BIGDECIMAL_ROUND);
+        orderTotal = taxNonPerTotal.add(taxPerTotal).add(nonTaxPerTotal).add(nonTaxNonPerTotal);
+        orderTotal = orderTotal.setScale(2, Constants.BIGDECIMAL_ROUND); // round final result down to 2 decimals
         order.setTotal(orderTotal);
     }
     
     public void validateLinesQuantity( OrderDTO order ) throws TaskException {
-    	
     	for (OrderLineDTO line: order.getLines()) {
-            if (line.getItem() != null && 
-            		(line.getQuantity() % 1) != 0.0 && 
-            		line.getItem().getHasDecimals() == 0 ) {
+            if (line.getItem() != null
+                    && line.getQuantity().remainder(Constants.BIGDECIMAL_ONE).compareTo(BigDecimal.ZERO) != 0.0
+                    && line.getItem().getHasDecimals() == 0 ) {
             	throw new TaskException(new ItemDecimalsException( "Item does not allow Decimals" ));
             }
         }
-    	
     }
-
 }

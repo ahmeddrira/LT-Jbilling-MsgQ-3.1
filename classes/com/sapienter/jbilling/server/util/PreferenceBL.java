@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.util;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
@@ -106,20 +107,20 @@ public class PreferenceBL {
     }
 
     public void createUpdateForEntity(Integer entityId, Integer preferenceId, 
-            Integer intValue, String strValue, Float fValue) {
+            Integer intValue, String strValue, BigDecimal fValue) {
         // lets see first if this exists
         try {
             set(entityId, preferenceId);
             // it does
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
-            preference.setFloatValue((fValue == null) ? null : fValue.doubleValue());
+            preference.setFloatValue((fValue == null) ? null : fValue);
         } catch (EmptyResultDataAccessException e) {
             // we need a new one
             preference = new PreferenceDTO();
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
-            preference.setFloatValue(fValue == null ? null : fValue.doubleValue());
+            preference.setFloatValue(fValue == null ? null : fValue);
             preference.setForeignId(entityId);
             preference.setJbillingTable(jbDAS.findByName(Constants.TABLE_ENTITY));
             preference.setPreferenceType(new PreferenceTypeDAS().find(preferenceId));
@@ -128,20 +129,20 @@ public class PreferenceBL {
     }
 
     public void createUpdateForUser(Integer userId, Integer typeId, 
-            Integer intValue, String strValue, Float fValue) {
+            Integer intValue, String strValue, BigDecimal fValue) {
         // lets see first if this exists
         try {
             setForUser(userId, typeId);
             // it does
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
-            preference.setFloatValue((fValue == null) ? null : fValue.doubleValue());
+            preference.setFloatValue((fValue == null) ? null : fValue);
         } catch (EmptyResultDataAccessException e) {
             // we need a new one
             preference = new PreferenceDTO();
             preference.setIntValue(intValue);
             preference.setStrValue(strValue);
-            preference.setFloatValue(fValue == null ? null : fValue.doubleValue());
+            preference.setFloatValue(fValue == null ? null : fValue);
             preference.setForeignId(userId);
             preference.setJbillingTable(jbDAS.findByName(Constants.TABLE_BASE_USER));
             preference.setPreferenceType(new PreferenceTypeDAS().find(typeId));
@@ -183,7 +184,7 @@ public class PreferenceBL {
             if (locale == null) {
                 return preference.getFloatValue().toString();
             } else {
-                return Util.float2string(preference.getFloatValue(), locale);
+                return Util.decimal2string(preference.getFloatValue(), locale);
             }
         }
         
@@ -201,7 +202,7 @@ public class PreferenceBL {
             if (locale == null) {
                 return  type.getFloatDefValue().toString();
             } else {
-                return Util.float2string(type.getFloatDefValue(), locale);
+                return Util.decimal2string(type.getFloatDefValue(), locale);
             }
         }
         

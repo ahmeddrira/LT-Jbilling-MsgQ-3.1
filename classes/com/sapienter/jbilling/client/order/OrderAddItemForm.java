@@ -20,19 +20,19 @@
 
 package com.sapienter.jbilling.client.order;
 
-import java.io.Serializable;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.ValidatorForm;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author emilc
  *
  */
 public class OrderAddItemForm extends ValidatorForm implements Serializable {
-    private Double quantity = null;
+    private BigDecimal quantity = null;
     private Integer itemID = null;
     /**
      * Returns the itemID.
@@ -46,7 +46,7 @@ public class OrderAddItemForm extends ValidatorForm implements Serializable {
      * Returns the quantity.
      * @return Double
      */
-    public Double getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
@@ -62,7 +62,7 @@ public class OrderAddItemForm extends ValidatorForm implements Serializable {
      * Sets the quantity.
      * @param quantity The quantity to set
      */
-    public void setQuantity(Double quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
     

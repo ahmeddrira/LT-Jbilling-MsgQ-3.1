@@ -73,7 +73,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         dto.setNumber((String) myForm.get(FIELD_INTERNAL_NUMBER));
         dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
         dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));                
-        dto.setPercentage(string2BigDecimal((String) myForm.get(FIELD_PERCENTAGE)));
+        dto.setPercentage(string2decimal((String) myForm.get(FIELD_PERCENTAGE)));
         dto.setHasDecimals((Boolean) myForm.get(FIELD_HAS_DECIMALS) ? 1 : 0);
 
         // because of the bad idea of using the same bean for item/type/price,

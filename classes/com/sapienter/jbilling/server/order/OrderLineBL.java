@@ -65,9 +65,11 @@ public class OrderLineBL {
             if (index >= 0) {
                 OrderLineDTO diffLine = new OrderLineDTO(lines1.get(index));
                 // will fail if amounts or quantities are null...
-                diffLine.setAmount(line.getAmount().floatValue() - diffLine.getAmount().floatValue());
-                diffLine.setQuantity(line.getQuantity() - diffLine.getQuantity());
-                if (diffLine.getAmount() != 0 || diffLine.getQuantity() != 0) {
+                diffLine.setAmount(line.getAmount().subtract(diffLine.getAmount()));
+                diffLine.setQuantity(line.getQuantity().subtract(diffLine.getQuantity()));
+
+                if (BigDecimal.ZERO.compareTo(diffLine.getAmount()) != 0
+                        || BigDecimal.ZERO.compareTo(diffLine.getQuantity()) != 0) {
                     diffLines.add(diffLine);
                 }
             } else {
@@ -111,23 +113,21 @@ public class OrderLineBL {
 
 
     public static void addItem(OrderDTO order, Integer itemId) {
-        addItem(order, itemId, 1.0);
+        addItem(order, itemId, new BigDecimal(1));
     }
 
     public static void addItem(OrderDTO order, Integer itemId, Integer quantity) {
-        addItem(order, itemId, quantity.doubleValue());
+        addItem(order, itemId, new BigDecimal(quantity));
     }
 
-    public static void addItem(OrderDTO order, Integer itemId, Double quantity) {
+    public static void addItem(OrderDTO order, Integer itemId, BigDecimal quantity) {
         UserBL user = new UserBL(order.getUserId());
-        addItem(itemId, quantity, user.getLanguage(), order.getUserId(), 
-                user.getEntity().getEntity().getId(), order.getCurrencyId(), 
-                order, null, false);
+        addItem(itemId, quantity, user.getLanguage(), order.getUserId(), user.getEntity().getEntity().getId(),
+                order.getCurrencyId(), order, null, false);
     }
 
-    public static void addItem(Integer itemID, Double quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId,
-            OrderDTO newOrder, OrderLineDTO myLine, boolean persist) {
+    public static void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
+                               Integer currencyId, OrderDTO newOrder, OrderLineDTO myLine, boolean persist) {
         // check if the item is already in the order
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
@@ -151,14 +151,10 @@ public class OrderLineBL {
             }
         } else {
             // the item is there, I just have to update the quantity
-        	BigDecimal dec = new BigDecimal( line.getQuantity().toString() );
-        	dec = dec.add( new BigDecimal( quantity.toString() ) );
-            line.setQuantity( new Double( dec.doubleValue() ));
+            line.setQuantity(line.getQuantity().add(quantity));
 
             // and also the total amount for this order line
-            dec = new BigDecimal(line.getAmount().toString());
-            dec = dec.add(new BigDecimal(myLine.getAmount().toString()));
-            line.setAmount(new Float(dec.floatValue()));
+            line.setAmount(line.getAmount().add(myLine.getAmount()));
         }
 
     }
@@ -186,7 +182,7 @@ public class OrderLineBL {
             line.setDescription(item.getDescription(language));
         }
         if (line.getQuantity() == null) {
-            line.setQuantity(1.0);
+            line.setQuantity(new BigDecimal(1));
         }
         if (line.getPrice() == null) {
             line.setPrice((item.getPercentage() == null) ? 
@@ -198,15 +194,13 @@ public class OrderLineBL {
             // normal price, multiply by quantity
             if (item.getPercentage() == null) {
                 additionAmount = line.getPrice();
-                additionAmount = additionAmount.multiply(
-                        new BigDecimal(line.getQuantity()));
+                additionAmount = additionAmount.multiply(line.getQuantity());
             } else {
                 // percentage ignores the quantity
                 additionAmount = item.getPercentage();
             }
-            line.setAmount(new Float(additionAmount.floatValue()));
+            line.setAmount(additionAmount);
         }
-        line.setItemPrice(0);
         line.setCreateDatetime(null);
         line.setDeleted(0);
         line.setTypeId(type);

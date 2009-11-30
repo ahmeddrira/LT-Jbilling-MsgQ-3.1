@@ -348,25 +348,26 @@ public abstract class CrudAction extends Action {
     		messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(messageCode));
     	}
     }
-    
+
     protected final String float2string(Float arg) {
 		return getFormHelper().float2string(arg);
 	}
+
     protected final String float2string(Double arg) {
         if (arg == null) return null;
         return getFormHelper().float2string(new Float(arg));
     }
 
+    protected final String decimal2string(BigDecimal arg) {
+        return getFormHelper().decimal2string(arg);
+    }
+    
     protected final Float string2float(String arg) {
         return getFormHelper().string2float(arg);
     }
 
-    protected final BigDecimal string2BigDecimal(String arg) {
-        Float f = string2float(arg);
-        if (f != null)
-            return new BigDecimal(f);
-        
-        return null;
+    protected final BigDecimal string2decimal(String arg) {
+        return getFormHelper().string2decimal(arg);
     }
 
     protected final Double string2double(String arg) {
@@ -425,6 +426,5 @@ public abstract class CrudAction extends Action {
         }
     }
 
-	
-    
+
 }

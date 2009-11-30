@@ -138,22 +138,17 @@ public class BillingProcessRunBL {
 
         BigDecimal tmpValue = null;
         if (ok) {
-            tmpValue = new BigDecimal(totalRow.getTotalPaid().toString());
-            tmpValue = tmpValue.add(total);
-            totalRow.setTotalPaid(new Float(tmpValue.toString()));
+            totalRow.setTotalPaid(totalRow.getTotalPaid().add(total));
+
             // the payment is good, update the method total as well
-            ProcessRunTotalPmDTO pm = findOrCreateTotalPM(
-                    methodId, totalRow);
-            tmpValue = new BigDecimal(pm.getTotal() + "");
-            tmpValue = tmpValue.add(total);
-            pm.setTotal(new Float(tmpValue.toString()));
-            PaymentMethodDAS paymentMethodHome = new PaymentMethodDAS();
+            ProcessRunTotalPmDTO pm = findOrCreateTotalPM(methodId, totalRow);
+            pm.setTotal(pm.getTotal().add(total));
+
             // link it to the payment method table
+            PaymentMethodDAS paymentMethodHome = new PaymentMethodDAS();
             pm.setPaymentMethod(paymentMethodHome.find(methodId));
         } else {
-            tmpValue = new BigDecimal(totalRow.getTotalNotPaid().toString());
-            tmpValue = tmpValue.add(total);
-            totalRow.setTotalNotPaid(new Float(tmpValue.toString()));
+            totalRow.setTotalNotPaid(totalRow.getTotalNotPaid().add(total));
         }
     }
 
@@ -170,7 +165,7 @@ public class BillingProcessRunBL {
 
 
             billingProcessRun.setInvoicesGenerated(((Long) row[0]).intValue());
-            totalRow.setTotalInvoiced(((BigDecimal) row[1]).floatValue());
+            totalRow.setTotalInvoiced(((BigDecimal) row[1]));
             LOG.debug("updating invoice run total version " + totalRow.getVersionNum());
         }
     }
@@ -179,9 +174,7 @@ public class BillingProcessRunBL {
         ProcessRunTotalDTO ret = processRunTotalDas.getByCurrency(billingProcessRun, currencyId);
         
         if (ret == null) { // not present for this currency
-            ret = processRunTotalDas.create(billingProcessRun,
-                new Float(0), new Float(0), 
-                new Float(0), currencyId);
+            ret = processRunTotalDas.create(billingProcessRun, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, currencyId);
         }
         return ret;
     }
@@ -190,7 +183,7 @@ public class BillingProcessRunBL {
         ProcessRunTotalPmDTO ret = billingProcessRunTotalPmDas.getByMethod(methodId, total);
 
         if (ret == null) { // not present for this currency
-            ret = billingProcessRunTotalPmDas.create(new Float(0));
+            ret = billingProcessRunTotalPmDas.create(BigDecimal.ZERO);
             // link it to the total row
             total.getTotalsPaymentMethod().add(ret);
             ret.setProcessRunTotal(total);

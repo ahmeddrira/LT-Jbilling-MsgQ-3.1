@@ -20,7 +20,10 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.common.Constants;
+
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Result object for validatePurchase API method.
@@ -30,13 +33,13 @@ public class ValidatePurchaseWS implements Serializable {
     private Boolean success;
     private String[] message;
     private Boolean authorized;
-    private Double quantity;
+    private String quantity;
 
     public ValidatePurchaseWS() {
         success = true;
         message = null;
         authorized = true;
-        quantity = 0.0;
+        quantity = "0.0";
     }
 
     public Boolean getSuccess() {
@@ -63,11 +66,26 @@ public class ValidatePurchaseWS implements Serializable {
         this.authorized = authorized;
     }
 
-    public Double getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Double quantity) {
+    public BigDecimal getQuantityAsDecimal() {
+        if (quantity == null) return null;
+        return new BigDecimal(quantity);
+    }
+
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        if (quantity != null)
+            this.quantity = new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).toString();
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        if (quantity != null)
+            this.quantity = quantity.toString();
     }
 }

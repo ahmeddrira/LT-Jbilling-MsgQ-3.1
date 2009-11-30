@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.payment.tasks;
 
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -155,9 +156,7 @@ public class PaymentAtlasTask extends PaymentTaskWithTimeout {
 					.getUserId()));
 		data.put("accountNumber", paymentInfo.getCreditCard().getNumber());
 		data.put("name", paymentInfo.getCreditCard().getName());
-		data
-				.put("amount", new Float(paymentInfo.getAmount() * 100f)
-						.intValue());
+        data.put("amount", paymentInfo.getAmount().multiply(new BigDecimal("100")).intValue());
 		data.put("taxAmount", 0);
 		String securityCode = paymentInfo.getCreditCard().getSecurityCode();
 		if (securityCode != null)

@@ -33,7 +33,6 @@ import org.apache.struts.validator.FieldChecks;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
@@ -137,7 +136,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         if (invoiceDto != null) {
             LOG.debug("setting payment with invoice:" + invoiceDto.getId());
             
-            myForm.set(FIELD_AMOUNT, float2string(invoiceDto.getBalance()));
+            myForm.set(FIELD_AMOUNT, invoiceDto.getBalance().toString());
             //paypal can't take i18n amounts
             session.setAttribute("jsp_paypay_amount", invoiceDto.getBalance());
             myForm.set(FIELD_CURRENCY, invoiceDto.getCurrency().getId());
@@ -145,7 +144,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             // this works for both refunds and payouts
             LOG.debug("setting form with payment:" + paymentDto.getId());
             myForm.set(FIELD_ID, paymentDto.getId());
-            myForm.set(FIELD_AMOUNT, float2string(paymentDto.getAmount()));
+            myForm.set(FIELD_AMOUNT, paymentDto.getAmount().toString());
             setFormDate(FIELD_GROUP_DATE, paymentDto.getPaymentDate());
             myForm.set(FIELD_CURRENCY, paymentDto.getCurrency().getId());
             ccDto = paymentDto.getCreditCard();
@@ -233,7 +232,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         // the id, only for payment edits
         dto.setId((Integer) myForm.get(FIELD_ID) == null ? 0 : (Integer) myForm.get(FIELD_ID));
         // set the amount
-        dto.setAmount(string2float((String) myForm.get(FIELD_AMOUNT)));
+        dto.setAmount(string2decimal((String) myForm.get(FIELD_AMOUNT)));
         // set the date
         dto.setPaymentDate(parseDate(FIELD_GROUP_DATE, "payment.date"));
         final String payMethod = (String) myForm.get(FIELD_PAY_METHOD);  

@@ -10,6 +10,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO
 import com.sapienter.jbilling.server.item.tasks.PricingResult
 import org.apache.log4j.Logger;
 import java.util.List;
+import java.math.BigDecimal;
 
 global org.apache.log4j.Logger LOG;
 
@@ -26,7 +27,7 @@ function int getDefaultCurrency(Integer userId) {
     return new UserBL(userId).getCurrencyId();
 }
 
-function OrderLineDTO newLine(Integer itemId, Double quantity) {
+function OrderLineDTO newLine(Integer itemId, BigDecimal quantity) {
     OrderLineDTO line =  new OrderLineDTO();
     line.setItemId(itemId);
     line.setQuantity(quantity);
@@ -51,7 +52,7 @@ function void addLine(MediationResult result) {
 
 
 rule 'user setter'
-when 
+when
     $result : MediationResult(userId == null)
     $field : PricingField( name == "userfield", resultId == $result.id)
     $company : CompanyDTO( ) # needed to determine a user by its user name
@@ -90,7 +91,7 @@ when
     $field : PricingField( name == "duration", resultId == $result.id)
     not ( OrderLineDTO( itemId == 1) from $result.lines )
 then
-    $result.getLines().add(newLine(1, new Double($field.getIntValue())));
+    $result.getLines().add(newLine(1, new BigDecimal($field.getStrValue())));
     update( $result );
     PricingResult request = priceRequest(1, $result);
     insert( request );

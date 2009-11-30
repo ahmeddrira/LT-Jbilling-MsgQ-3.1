@@ -123,14 +123,12 @@ public class BasicCompositionTask extends PluggableTask
                         } else {
                             type = Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT;
                         }
-                        Float periodAmount = calculatePeriodAmount(
-                                orderLine.getAmount(), period);
-                        invoiceLine = new InvoiceLineDTO(null, desc,
-                                periodAmount, orderLine.getPrice().floatValue(), 
-                                orderLine.getQuantity(), type, new Integer(0), 
-                                orderLine.getItemId(), order.getUser().getId(), null);
-                        orderContribution = orderContribution.add(
-                                new BigDecimal(periodAmount));
+                        BigDecimal periodAmount = calculatePeriodAmount(orderLine.getAmount(), period);
+                        invoiceLine = new InvoiceLineDTO(null, desc, periodAmount, orderLine.getPrice(),
+                                                         orderLine.getQuantity(), type, 0,
+                                                         orderLine.getItemId(), order.getUser().getId(), null);
+                        orderContribution = orderContribution.add(periodAmount);
+
                     } else if (orderLine.getOrderLineType().getId() ==
                             Constants.ORDER_LINE_TYPE_TAX) {
                         // tax lines have to be consolidated
@@ -143,40 +141,29 @@ public class BasicCompositionTask extends PluggableTask
                             BigDecimal periodAmount = calculatePeriodAmount(
                                     new BigDecimal(orderLine.getAmount().toString()), period);
                             tmpDec = tmpDec.add(periodAmount);
-                            invoiceLine.setAmount(new Float(tmpDec.floatValue()));
+                            invoiceLine.setAmount(tmpDec);
                             orderContribution = orderContribution.add(periodAmount);
                             continue;
                         }
                         // it is not there yet: add
-                        Float periodAmount = calculatePeriodAmount(
-                            orderLine.getAmount(), period);
-                        invoiceLine = new InvoiceLineDTO(null,
-                                orderLine.getDescription(), periodAmount,
-                                orderLine.getPrice().floatValue(),
-                                null, Constants.INVOICE_LINE_TYPE_TAX,
-                                new Integer(0), orderLine.getItemId(),
-                                order.getUser().getId(), null);
-                        orderContribution = orderContribution.add(
-                                new BigDecimal(periodAmount));
+                        BigDecimal periodAmount = calculatePeriodAmount(orderLine.getAmount(), period);
+                        invoiceLine = new InvoiceLineDTO(null, orderLine.getDescription(), periodAmount,
+                                                         orderLine.getPrice(), null, Constants.INVOICE_LINE_TYPE_TAX,
+                                                         0, orderLine.getItemId(), order.getUser().getId(), null);
+                        orderContribution = orderContribution.add(periodAmount);
+
                     } else if (orderLine.getOrderLineType().getId() ==
                             Constants.ORDER_LINE_TYPE_PENALTY) {
-                        Float periodAmount = calculatePeriodAmount(
-                                orderLine.getAmount(), period);
-                        invoiceLine = new InvoiceLineDTO(null,
-                                orderLine.getDescription(), periodAmount,  
-                                null, null,
-                                Constants.INVOICE_LINE_TYPE_PENALTY,
-                                new Integer(0), orderLine.getItemId(),
-                                order.getUser().getId(), null);
-                        orderContribution = orderContribution.add(
-                                new BigDecimal(periodAmount));
+                        BigDecimal periodAmount = calculatePeriodAmount(orderLine.getAmount(), period);
+                        invoiceLine = new InvoiceLineDTO(null, orderLine.getDescription(), periodAmount, null, null,
+                                                         Constants.INVOICE_LINE_TYPE_PENALTY, 0, orderLine.getItemId(),
+                                                         order.getUser().getId(), null);
+                        orderContribution = orderContribution.add(periodAmount);
                     }
 
                     // for the invoice to make sense when it is displayed,
                     // each line has to be rounded to the decimals shown
-                    invoiceLine.setAmount(new Float(Util.round(
-                            invoiceLine.getAmount().floatValue(),
-                            DECIMAL_DIGITS)));
+                    invoiceLine.setAmount(invoiceLine.getAmount().setScale(DECIMAL_DIGITS, Constants.BIGDECIMAL_ROUND));           
                     invoiceDTO.addResultLine(invoiceLine);
                 }
             }
@@ -196,7 +183,7 @@ public class BasicCompositionTask extends PluggableTask
             // take the taxes out, etc ...
 
             // The text of this line has to be i18n
-            // find the locale if not there yet
+            //n find the locale if not there yet
             try {
                 if (locale == null) {
                     InvoiceBL bl = new InvoiceBL(invoice.getId());

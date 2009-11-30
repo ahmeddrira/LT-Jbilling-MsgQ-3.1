@@ -43,10 +43,8 @@ import com.sapienter.jbilling.server.util.Constants;
 public class UserBalanceValidatePurchaseTask extends PluggableTask 
         implements IValidatePurchaseTask {
 
-    public ValidatePurchaseWS validate(CustomerDTO customer, 
-            List<ItemDTO> items, List<BigDecimal> amounts, 
-            ValidatePurchaseWS result, List<List<PricingField>> fields) 
-            throws TaskException {
+    public ValidatePurchaseWS validate(CustomerDTO customer, List<ItemDTO> items, List<BigDecimal> amounts, 
+                                       ValidatePurchaseWS result, List<List<PricingField>> fields) throws TaskException {
 
         if (!result.getAuthorized()) {
             return result;
@@ -59,22 +57,20 @@ public class UserBalanceValidatePurchaseTask extends PluggableTask
 
         // avoid divide by zero exception
         if (amount.doubleValue() == 0.0) {
-            result.setQuantity(Double.MAX_VALUE);
+            result.setQuantity(new BigDecimal(Integer.MAX_VALUE));
             return result;
         }
 
         // get the parent customer that pays, if it exists
-        while (customer.getParent() != null &&
-                (customer.getInvoiceChild() == null ||
-                customer.getInvoiceChild() == 0)) {
+        while (customer.getParent() != null
+                && (customer.getInvoiceChild() == null || customer.getInvoiceChild() == 0)) {
             // go up one level
             customer =  customer.getParent();
         }
 
         IUserBalanceValidation validator;
         // simple factory ...
-        if (customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC ||
-                amount.equals(BigDecimal.ZERO)) {
+        if (customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC || amount.equals(BigDecimal.ZERO)) {
             validator = new ValidatorNone();
         } else if (customer.getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
             validator = new ValidatorCreditLimit();
@@ -82,17 +78,12 @@ public class UserBalanceValidatePurchaseTask extends PluggableTask
             validator = new ValidatorPrePaid();
         }
 
-        BigDecimal quantityBigDecimal = 
-                validator.validate(customer, amount);
-        double quantity = quantityBigDecimal.setScale(4, 
-                Constants.BIGDECIMAL_ROUND).doubleValue();
-
-        if (quantity <= 0.0) {
+        BigDecimal quantity = validator.validate(customer, amount).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+        
+        if (quantity.compareTo(BigDecimal.ZERO) <= 0)
             result.setAuthorized(false);
-        }
 
         result.setQuantity(quantity);
-
         return result;
     }
 }

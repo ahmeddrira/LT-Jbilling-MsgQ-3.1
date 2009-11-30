@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.user;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -226,16 +227,20 @@ public interface IUserSessionBean {
             throws SessionInternalError;
 
     public void updatePreference(Integer userId, Integer typeId, 
-            Integer intValue, String strValue, Float floatValue);
+            Integer intValue, String strValue, BigDecimal decimalValue);
 
     /**
      * This now only working with String parameters
-     * @param entityId
-     * @param params
+     * 
+     * @param entityId entity id
+     * @param preferenceId preference Id
+     * @param paramStr String parameter value (optional)
+     * @param paramInt Integer parameter value (optional)
+     * @param paramDecimal BigDecimal parameter value (option)
      * @throws SessionInternalError
      */
     public void setEntityParameter(Integer entityId, Integer preferenceId,
-            String paramStr, Integer paramInt, Float paramFloat) 
+            String paramStr, Integer paramInt, BigDecimal paramDecimal)
             throws SessionInternalError;
 
     /**

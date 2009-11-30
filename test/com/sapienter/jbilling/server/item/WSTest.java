@@ -26,6 +26,7 @@
 package com.sapienter.jbilling.server.item;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -53,7 +54,7 @@ public class WSTest  extends TestCase {
              */
             ItemDTOEx newItem = new ItemDTOEx();
             newItem.setDescription("an item from ws");
-            newItem.setPrice(new Float(29.5));
+            newItem.setPrice(new BigDecimal("29.5"));
             
             
             Integer types[] = new Integer[1];
@@ -65,9 +66,7 @@ public class WSTest  extends TestCase {
             Integer ret = api.createItem(newItem);
             assertNotNull("The item was not created", ret);
             System.out.println("Done!");
-            
-           
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);
@@ -82,9 +81,8 @@ public class WSTest  extends TestCase {
     		
     		// Tests item pricing for user "gandalf" (id 2)
     		PricingField pf = new PricingField("newPrice", new BigDecimal("50.0"));
-    		ItemDTOEx it = api.getItem(new Integer(1), new Integer(2), 
-    				new PricingField[] { pf });
-    		assertTrue(it.getPrice().equals(new Float(50.0F)));
+    		ItemDTOEx it = api.getItem(new Integer(1), new Integer(2), new PricingField[] { pf });
+            assertEquals(new BigDecimal("50.0"), it.getPrice());
     		System.out.println("Pricing field test passed");
     		
     		// Tests access to an item of a different entity
@@ -92,11 +90,11 @@ public class WSTest  extends TestCase {
         	try {
         		// Try to get item 4 (should fail because the user is on entity 1 and 
         		// the item is on entity 2).
-        		it = api.getItem(new Integer(4), new Integer(2), 
-        				new PricingField[] { pf });
+        		it = api.getItem(new Integer(4), new Integer(2), new PricingField[] { pf });
         	} catch (Exception e) {
         		passed = true;
         	}
+
         	if (!passed) {
         		fail("Security check failed, should not access Item from another entity");
         	} else {
@@ -123,10 +121,10 @@ public class WSTest  extends TestCase {
         OrderLineWS line;
         
         line = new OrderLineWS();
-        line.setPrice(new Float(10));
+        line.setPrice(new BigDecimal("10.00"));
         line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
         line.setQuantity(new Integer(1));
-        line.setAmount(new Float(10));
+        line.setAmount(new BigDecimal("10.00"));
         line.setDescription("Fist line");
         line.setItemId(new Integer(1));
         lines[0] = line;
@@ -162,8 +160,8 @@ public class WSTest  extends TestCase {
             OrderLineWS[] l = order.getOrderLines();
             assertNotNull(l);
             assertTrue(l.length == 2);
-            assertTrue(l[0].getPrice() == 20.0F);
-            assertTrue(l[1].getPrice() == 40.0F);
+            assertEquals(new BigDecimal("20.00"), l[0].getPriceAsDecimal());
+            assertEquals(new BigDecimal("40.00"), l[1].getPriceAsDecimal());
             
             System.out.println("Testing pricing fields on order rating 2");
             // rate the same order, but using "subtract" (minus 1 to price in all items of order)
@@ -173,8 +171,8 @@ public class WSTest  extends TestCase {
             l = order.getOrderLines();
             assertNotNull(l);
             assertEquals(l.length, 2);
-            assertEquals(l[0].getPrice(), 9.0F);
-            assertEquals(l[1].getPrice(), 29.0F);
+            assertEquals(new BigDecimal("9.00"), l[0].getPriceAsDecimal());
+            assertEquals(new BigDecimal("29.00"), l[1].getPriceAsDecimal());
 
     		System.out.println("Testing double rating with both orders in one shot");
     		// rate an order, use "add" pricing field rule (adds 10 to price in all items of order)
@@ -188,14 +186,15 @@ public class WSTest  extends TestCase {
             l = orders[0].getOrderLines();
             assertNotNull(l);
             assertTrue(l.length == 2);
-            assertTrue(l[0].getPrice() == 20.0F);
-            assertTrue(l[1].getPrice() == 40.0F);
+            assertEquals(new BigDecimal("20.00"), l[0].getPriceAsDecimal());
+            assertEquals(new BigDecimal("40.00"), l[1].getPriceAsDecimal());
+
 
             l = orders[1].getOrderLines();
             assertNotNull(l);
             assertEquals(l.length, 2);
-            assertEquals(l[0].getPrice(), 9.0F);
-            assertEquals(l[1].getPrice(), 29.0F);
+            assertEquals(new BigDecimal("9.00"), l[0].getPriceAsDecimal());
+            assertEquals(new BigDecimal("29.00"), l[1].getPriceAsDecimal());
 
     		System.out.println("Done!");
         	
@@ -211,8 +210,7 @@ public class WSTest  extends TestCase {
         
             /*
              * Get all items
-             */
-             
+             */             
             System.out.println("Getting all items");
             ItemDTOEx[] items =  api.getAllItems();
             Arrays.sort(items, new Comparator<ItemDTOEx>() {
@@ -223,44 +221,35 @@ public class WSTest  extends TestCase {
             assertNotNull("The items were not retrieved", items);
             assertEquals("Wrong number of items", 13, items.length);
 
-            assertEquals("Description", "Lemonade - 1 per day monthly pass", 
-                    items[0].getDescription());
-            assertEquals("Price", new Float(10), items[0].getPrice());
-            assertEquals("Price List", new Float(10), 
-                    (getCurrencyPrice(items[0].getPrices(), 1).getPrice()));
+            assertEquals("Description", "Lemonade - 1 per day monthly pass", items[0].getDescription());
+            assertEquals("Price", new BigDecimal("10"), items[0].getPrice());
+            assertEquals("Price List", new BigDecimal("10"), (getCurrencyPrice(items[0].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(1), items[0].getId());
             assertEquals("Number", "DP-1", items[0].getNumber());
             assertEquals("Type 1", new Integer(1), items[0].getTypes()[0]);
 
-            assertEquals("Description", "Lemonade - all you can drink monthly", 
-                    items[1].getDescription());
-            assertEquals("Price", new Float(20), items[1].getPrice());
-            assertEquals("Price List", new Float(20), 
-                    (getCurrencyPrice(items[1].getPrices(), 1).getPrice()));
+            assertEquals("Description", "Lemonade - all you can drink monthly", items[1].getDescription());
+            assertEquals("Price", new BigDecimal("20"), items[1].getPrice());
+            assertEquals("Price List", new BigDecimal("20"), (getCurrencyPrice(items[1].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(2), items[1].getId());
             assertEquals("Number", "DP-2", items[1].getNumber());
             assertEquals("Type 1", new Integer(1), items[1].getTypes()[0]);
 
-            assertEquals("Description", "Coffee - one per day - Monthly", 
-                    items[2].getDescription());
-            assertEquals("Price", new Float(15), items[2].getPrice());
-            assertEquals("Price List", new Float(15), 
-                    (getCurrencyPrice(items[2].getPrices(), 1).getPrice()));
+            assertEquals("Description", "Coffee - one per day - Monthly", items[2].getDescription());
+            assertEquals("Price", new BigDecimal("15"), items[2].getPrice());
+            assertEquals("Price List", new BigDecimal("15"), (getCurrencyPrice(items[2].getPrices(), 1).getPrice()));
             assertEquals("ID", new Integer(3), items[2].getId());
             assertEquals("Number", "DP-3", items[2].getNumber());
             assertEquals("Type 1", new Integer(1), items[2].getTypes()[0]);
 
-            assertEquals("Description", "10% Elf discount.", 
-                    items[3].getDescription());
-            assertEquals("Percentage", new Float(-10.00), 
-                    items[3].getPercentage());
+            assertEquals("Description", "10% Elf discount.", items[3].getDescription());
+            assertEquals("Percentage", new BigDecimal("-10.00"), items[3].getPercentage());
             assertEquals("ID", new Integer(14), items[3].getId());
             assertEquals("Number", "J-01", items[3].getNumber());
             assertEquals("Type 12", new Integer(12), items[3].getTypes()[0]);
 
-            assertEquals("Description", "Cancel fee", 
-                    items[4].getDescription());
-            assertEquals("Price", new Float(5), items[4].getPrice());
+            assertEquals("Description", "Cancel fee", items[4].getDescription());
+            assertEquals("Price", new BigDecimal("5"), items[4].getPrice());
             assertEquals("ID", new Integer(24), items[4].getId());
             assertEquals("Number", "F-1", items[4].getNumber());
             assertEquals("Type 22", new Integer(22), items[4].getTypes()[0]);
@@ -269,11 +258,9 @@ public class WSTest  extends TestCase {
 
             // this is alwyas the last item
             int lastItem = items.length - 1;
-            assertEquals("Description", "an item from ws", 
-                    items[lastItem].getDescription());
-            assertEquals("Price", new Float(29.5), items[lastItem].getPrice());
-            assertEquals("Price List", new Float(29.5), 
-                    (getCurrencyPrice(items[lastItem].getPrices(), 1).getPrice()));
+            assertEquals("Description", "an item from ws", items[lastItem].getDescription());
+            assertEquals("Price", new BigDecimal("29.5"), items[lastItem].getPrice());
+            assertEquals("Price List", new BigDecimal("29.5"), (getCurrencyPrice(items[lastItem].getPrices(), 1).getPrice()));
             assertEquals("Type 1", new Integer(1), items[lastItem].getTypes()[0]);
 
             System.out.println("Done!");
@@ -291,26 +278,24 @@ public class WSTest  extends TestCase {
     		JbillingAPI api = JbillingAPIFactory.getAPI();
 	    	
     		System.out.println("Getting item");
-	    	ItemDTOEx item = api.getItem(new Integer(1), 
-	    			new Integer(2), new PricingField[] {} );
+	    	ItemDTOEx item = api.getItem(new Integer(1), new Integer(2), new PricingField[] {} );
 	    	String description = item.getDescription();
 	    	Integer prMan = item.getPriceManual();
 	    	String number = item.getNumber();
-	    	Float price = item.getPrice();
-	    	Float perc = item.getPercentage();
+	    	BigDecimal price = item.getPrice();
+	    	BigDecimal perc = item.getPercentage();
 	    	String promo = item.getPromoCode();
 	
 	    	System.out.println("Changing properties");
 	    	item.setDescription("Another description");
 	    	item.setPriceManual(new Integer(1));
 	    	item.setNumber("NMR-01");
-	    	item.setPrice(1.0F);
+	    	item.setPrice(new BigDecimal("1.00"));
 	    	
 	    	System.out.println("Updating item");
 	    	api.updateItem(item);
 	    
-	    	ItemDTOEx itemChanged = api.getItem(new Integer(1), 
-	    			new Integer(2), new PricingField[] {} );
+	    	ItemDTOEx itemChanged = api.getItem(new Integer(1), new Integer(2), new PricingField[] {} );
 	    	assertEquals(itemChanged.getDescription(), "Another description");
 	    	assertEquals(itemChanged.getPriceManual(), new Integer(1));
 	    	assertEquals(itemChanged.getNumber(), "NMR-01");
@@ -336,11 +321,10 @@ public class WSTest  extends TestCase {
     	try {
     		JbillingAPI api = JbillingAPIFactory.getAPI();
 
-            ItemDTOEx item = api.getItem(new Integer(240), 
-                    new Integer(2), new PricingField[] {} );
+            ItemDTOEx item = api.getItem(new Integer(240), new Integer(2), new PricingField[] {} );
 
             assertEquals("Price in USD", 1, item.getCurrencyId().intValue());
-            assertEquals("Converted price AUD->USD", 10.0F, item.getPrice());
+            assertEquals("Converted price AUD->USD", new BigDecimal("10.0"), item.getPrice());
             assertEquals("Price List size", 2, item.getPrices().size());
 
             ItemPriceDTOEx priceUSD = getCurrencyPrice(item.getPrices(), 1);
@@ -349,7 +333,7 @@ public class WSTest  extends TestCase {
 
             ItemPriceDTOEx priceAUD = getCurrencyPrice(item.getPrices(), 11);
             assertEquals("AUD currency", priceAUD.getCurrencyId().intValue(), 11);
-            assertEquals("AUD price", priceAUD.getPrice(), 15.0F);
+            assertEquals("AUD price", priceAUD.getPrice(), new BigDecimal("15.0"));
 
     	} catch (Exception e) {
     		e.printStackTrace();
@@ -389,5 +373,15 @@ public class WSTest  extends TestCase {
         assertEquals("1 item in category 2", 1, items.length);
         assertEquals(4, items[0].getId().intValue());
         assertEquals("Poison Ivy juice (cold)", items[0].getDescription());
+    }
+
+    public static void assertEquals(BigDecimal expected, BigDecimal actual) {
+        assertEquals(null, expected, actual);
+    }
+
+    public static void assertEquals(String message, BigDecimal expected, BigDecimal actual) {
+        assertEquals(message,
+                     (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
+                     (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
     }
 }

@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.order;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -73,7 +74,7 @@ public interface IOrderSessionBean {
 
     public OrderDTO getMainOrder(Integer userId) throws SessionInternalError;
 
-    public OrderDTO addItem(Integer itemID, Double quantity, OrderDTO order, 
+    public OrderDTO addItem(Integer itemID, BigDecimal quantity, OrderDTO order,
             Integer languageId, Integer userId, Integer entityId) 
             throws SessionInternalError, ItemDecimalsException;
     

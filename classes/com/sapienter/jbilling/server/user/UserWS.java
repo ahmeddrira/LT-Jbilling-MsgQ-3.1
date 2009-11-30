@@ -25,6 +25,7 @@
 package com.sapienter.jbilling.server.user;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -61,11 +62,11 @@ public class UserWS implements Serializable {
     private String[] blacklistMatches = null;
     private Boolean userIdBlacklisted = null;
     private Integer[] childIds = null;
-    private Double owingBalance = null;
+    private String owingBalance = null;
     private Integer balanceType = null;
-    private Double dynamicBalance = null;
-    private Double autoRecharge = null;
-    private Double creditLimit = null;
+    private String dynamicBalance = null;
+    private String autoRecharge = null;
+    private String creditLimit = null;
 
     public Integer getPartnerId() {
         return partnerId;
@@ -101,10 +102,8 @@ public class UserWS implements Serializable {
             partnerId = (dto.getCustomer().getPartner() == null) ? null : dto.getCustomer().getPartner().getId();
             parentId = (dto.getCustomer().getParent() == null) ? null : dto.getCustomer().getParent().getBaseUser().getId();
             mainOrderId = dto.getCustomer().getCurrentOrderId();
-            isParent = dto.getCustomer().getIsParent() == null ? false : 
-                dto.getCustomer().getIsParent().equals(new Integer(1));
-            invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : 
-                dto.getCustomer().getInvoiceChild().equals(new Integer(1));
+            isParent = dto.getCustomer().getIsParent() == null ? false : dto.getCustomer().getIsParent().equals(new Integer(1));
+            invoiceChild = dto.getCustomer().getInvoiceChild() == null ? false : dto.getCustomer().getInvoiceChild().equals(new Integer(1));
             childIds = new Integer[dto.getCustomer().getChildren().size()];
             int index = 0;
             for (CustomerDTO customer : dto.getCustomer().getChildren()) {
@@ -112,16 +111,15 @@ public class UserWS implements Serializable {
                 index++;
             }
             balanceType = dto.getCustomer().getBalanceType();
-            dynamicBalance = dto.getCustomer().getDynamicBalance() == null ? null :
-                dto.getCustomer().getDynamicBalance().doubleValue();
-            autoRecharge = dto.getCustomer().getAutoRecharge() == null ? null : dto.getCustomer().getAutoRecharge().doubleValue();
-            creditLimit = dto.getCustomer().getCreditLimit() == null ? null :
-                dto.getCustomer().getCreditLimit().doubleValue();
+
+            setDynamicBalance(dto.getCustomer().getDynamicBalance());
+            setCreditLimit(dto.getCustomer().getCreditLimit());
+            setAutoRecharge(dto.getCustomer().getAutoRecharge());
         }
-        blacklistMatches = dto.getBlacklistMatches() != null ? 
-                dto.getBlacklistMatches().toArray(new String[0]) : null;
+        blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[0]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();
-        owingBalance = dto.getBalance().doubleValue();
+
+        setOwingBalance(dto.getBalance());
     }
     
     public String toString() {
@@ -345,12 +343,22 @@ public class UserWS implements Serializable {
         this.childIds = childIds;
     }
 
-    public Double getOwingBalance() {
+    public String getOwingBalance() {
         return owingBalance;
     }
 
-    public void setOwingBalance(Double owingBalance) {
+    public BigDecimal getOwingBalanceAsDecimal() {
+        if (owingBalance == null) return null;
+        return new BigDecimal(owingBalance);
+    }
+
+    public void setOwingBalance(String owingBalance) {
         this.owingBalance = owingBalance;
+    }
+
+    public void setOwingBalance(BigDecimal owingBalance) {
+        if (owingBalance != null)
+            this.owingBalance = owingBalance.toString();
     }
 
     public Integer getBalanceType() {
@@ -361,27 +369,57 @@ public class UserWS implements Serializable {
         this.balanceType = balanceType;
     }
 
-    public Double getCreditLimit() {
+    public String getCreditLimit() {
         return creditLimit;
     }
 
-    public void setCreditLimit(Double creditLimit) {
+    public BigDecimal getCreditLimitAsDecimal() {
+        if (creditLimit == null) return null;
+        return new BigDecimal(creditLimit);
+    }
+
+    public void setCreditLimit(String creditLimit) {
         this.creditLimit = creditLimit;
     }
 
-    public Double getDynamicBalance() {
+    public void setCreditLimit(BigDecimal creditLimit) {
+        if (creditLimit != null)
+            this.creditLimit = creditLimit.toString();
+    }
+
+    public String getDynamicBalance() {
         return dynamicBalance;
     }
 
-    public void setDynamicBalance(Double dynamicBalance) {
+    public BigDecimal getDynamicBalanceAsDecimal() {
+        if (dynamicBalance == null) return null;
+        return new BigDecimal(dynamicBalance);
+    }
+    
+    public void setDynamicBalance(String dynamicBalance) {
         this.dynamicBalance = dynamicBalance;
     }
 
-    public Double getAutoRecharge() {
+    public void setDynamicBalance(BigDecimal dynamicBalance) {
+        if (dynamicBalance != null)
+            this.dynamicBalance = dynamicBalance.toString();
+    }
+
+    public String getAutoRecharge() {
         return autoRecharge;
     }
 
-    public void setAutoRecharge(Double autoRecharge) {
+    public BigDecimal getAutoRechargeAsDecimal() {
+        if (autoRecharge == null) return null;
+        return new BigDecimal(autoRecharge);
+    }
+
+    public void setAutoRecharge(String autoRecharge) {
         this.autoRecharge = autoRecharge;
+    }
+
+    public void setAutoRecharge(BigDecimal autoRecharge) {
+        if (autoRecharge != null)
+            this.autoRecharge = autoRecharge.toString();
     }
 }

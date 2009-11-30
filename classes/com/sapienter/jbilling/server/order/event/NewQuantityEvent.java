@@ -22,6 +22,8 @@ package com.sapienter.jbilling.server.order.event;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.system.event.Event;
 
+import java.math.BigDecimal;
+
 /**
  * This event is triggered when an order line's quantity is updated in an order.
  * In most cases rhe event can be used as 'order line updated' event.
@@ -32,8 +34,8 @@ import com.sapienter.jbilling.server.system.event.Event;
 public class NewQuantityEvent implements Event {
 
     private final Integer entityId;
-    private final Double oldQuantity;
-    private final Double newQuantity;
+    private final BigDecimal oldQuantity;
+    private final BigDecimal newQuantity;
     private final Integer orderId;
      // original (old) order line, unless line was newly added
     private final OrderLineDTO orderLine;
@@ -41,8 +43,8 @@ public class NewQuantityEvent implements Event {
     //    null if line deleted or added
     private final OrderLineDTO newOrderLine;
     
-    public NewQuantityEvent(Integer entityId, Double oldQuantity, 
-            Double newQuantity, Integer orderId, OrderLineDTO orderLine,
+    public NewQuantityEvent(Integer entityId, BigDecimal oldQuantity,
+            BigDecimal newQuantity, Integer orderId, OrderLineDTO orderLine,
             OrderLineDTO newOrderLine) {
         this.entityId = entityId;
         this.oldQuantity = oldQuantity;
@@ -56,11 +58,11 @@ public class NewQuantityEvent implements Event {
         return entityId;
     }
     
-    public Double getOldQuantity() {
+    public BigDecimal getOldQuantity() {
         return oldQuantity;
     }
 
-    public Double getNewQuantity() {
+    public BigDecimal getNewQuantity() {
         return newQuantity;
     }
 

@@ -184,9 +184,8 @@ public class OrderBL extends ResultList
         return order;
     }
 
-    public void addItem(Integer itemID, Double quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId, List<Record> records)
-            throws ItemDecimalsException {
+    public void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
+                        Integer currencyId, List<Record> records) throws ItemDecimalsException {
 
         try {
             PluggableTaskManager<IItemPurchaseManager> taskManager =
@@ -211,22 +210,19 @@ public class OrderBL extends ResultList
 
     }
 
-    public void addItem(Integer itemID, Double quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId)
-            throws ItemDecimalsException {
+    public void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
+                        Integer currencyId) throws ItemDecimalsException {
         addItem(itemID, quantity, language, userId, entityId, currencyId, null);
     }
 
-    public void addItem(Integer itemID, Integer quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId, List<Record> records)
-            throws ItemDecimalsException {
-        addItem(itemID, new Double(quantity), language, userId, entityId, currencyId, records);
+    public void addItem(Integer itemID, Integer quantity, Integer language, Integer userId, Integer entityId,
+                        Integer currencyId, List<Record> records) throws ItemDecimalsException {
+        addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId, records);
     }
 
-    public void addItem(Integer itemID, Integer quantity, Integer language,
-            Integer userId, Integer entityId, Integer currencyId)
-            throws ItemDecimalsException {
-        addItem(itemID, new Double(quantity), language, userId, entityId, currencyId, null);
+    public void addItem(Integer itemID, Integer quantity, Integer language, Integer userId, Integer entityId,
+                        Integer currencyId) throws ItemDecimalsException {
+        addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId, null);
     }
 
     public void deleteItem(Integer itemID) {
@@ -421,26 +417,24 @@ public class OrderBL extends ResultList
             if (oldLineId < newLineId) {
                 // order line has been deleted
                 LOG.debug("Deleted order line. Order line Id: " + oldLineId);
-                EventManager.process(new NewQuantityEvent(entityId,
-                        currentOldLine.getQuantity(), new Double(0), orderId,
-                        currentOldLine, null));
+                EventManager.process(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO,
+                                                          orderId, currentOldLine, null));
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
             } else if (oldLineId > newLineId) {
                 // order line has been added
                 LOG.debug("Added order line. Order line Id: " + newLineId);
-                EventManager.process(new NewQuantityEvent(entityId, new Double(0),
-                        currentNewLine.getQuantity(), orderId, currentNewLine, null));
+                EventManager.process(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(),
+                                                          orderId, currentNewLine, null));
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
             } else {
                 // order line exists in both, so check quantity
-                Double oldLineQuantity = currentOldLine.getQuantity();
-                Double newLineQuantity = currentNewLine.getQuantity();
+                BigDecimal oldLineQuantity = currentOldLine.getQuantity();
+                BigDecimal newLineQuantity = currentNewLine.getQuantity();
                 if (oldLineQuantity.doubleValue() != newLineQuantity.doubleValue()) {
                     LOG.debug("Order line quantity changed. Order line Id: " +
                             oldLineId);
-                    EventManager.process(new NewQuantityEvent(entityId,
-                            oldLineQuantity, newLineQuantity, orderId, currentOldLine,
-                            currentNewLine));
+                    EventManager.process(new NewQuantityEvent(entityId, oldLineQuantity, newLineQuantity, orderId,
+                                                              currentOldLine, currentNewLine));
                 }
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
@@ -449,16 +443,14 @@ public class OrderBL extends ResultList
         // check for any remaining item lines that must have been deleted or added
         while (currentOldLine != null) {
             LOG.debug("Deleted order line. Order line id: " + currentOldLine.getId());
-            EventManager.process(new NewQuantityEvent(entityId,
-                    currentOldLine.getQuantity(), new Double(0), orderId,
-                    currentOldLine, null));
+            EventManager.process(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO, orderId,
+                                                      currentOldLine, null));
             currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
         }
         while (currentNewLine != null) {
             LOG.debug("Added order line. Order line id: " + currentNewLine.getId());
-            EventManager.process(new NewQuantityEvent(entityId, new Double(0),
-                    currentNewLine.getQuantity(), orderId,
-                    currentNewLine, null));
+            EventManager.process(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(), orderId,
+                                                      currentNewLine, null));
             currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
         }
     }
@@ -1161,7 +1153,7 @@ public class OrderBL extends ResultList
             return null;
         }
         OrderLineWS retValue = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-                line.getAmount(), line.getQuantity(), line.getPrice() == null ? null : line.getPrice().floatValue(), line.getItemPrice(), line.getCreateDatetime(),
+                line.getAmount(), line.getQuantity(), line.getPrice() == null ? null : line.getPrice(), line.getCreateDatetime(),
                 line.getDeleted(), line.getOrderLineType().getId(), line.getEditable(),
                 line.getPurchaseOrder().getId(), null, line.getVersionNum(), line.getProvisioningStatusId(), line.getProvisioningRequestId());
         return retValue;
@@ -1178,7 +1170,7 @@ public class OrderBL extends ResultList
     public OrderLineDTO getOrderLine(OrderLineWS ws) {
         OrderLineDTO dto = new OrderLineDTO();
         dto.setId(ws.getId());
-        dto.setAmount(ws.getAmount());
+        dto.setAmount(ws.getAmountAsDecimal());
         dto.setCreateDatetime(ws.getCreateDatetime());
         dto.setDeleted(ws.getDeleted());
         dto.setDescription(ws.getDescription());
@@ -1189,11 +1181,10 @@ public class OrderBL extends ResultList
         //dto.setItem(itemBL.getDTO(ws.getItemDto()));
 
         dto.setItemId(ws.getItemId());
-        dto.setItemPrice(ws.getItemPrice());
         dto.setOrderLineType(new OrderLineTypeDAS().find(ws.getTypeId()));
         dto.setPrice(new BigDecimal(ws.getPrice()));
         dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
-        dto.setQuantity(ws.getQuantity());
+        dto.setQuantity(ws.getQuantityAsDecimal());
         dto.setVersionNum(ws.getVersionNum());
         dto.setProvisioningStatus(provisioningStatusDas.find(
                 ws.getProvisioningStatusId()));
@@ -1203,19 +1194,18 @@ public class OrderBL extends ResultList
 
     public void updateOrderLine(OrderLineWS dto) {
         OrderLineDTO line = getOrderLine(dto.getId());
-        if (dto.getQuantity() != null && dto.getQuantity().intValue() == 0) {
+        if (dto.getQuantity() != null && BigDecimal.ZERO.equals(dto.getQuantityAsDecimal())) {
             // deletes the order line if the quantity is 0
             orderLineDAS.delete(line);
 
         } else {
-            line.setAmount(dto.getAmount());
+            line.setAmount(dto.getAmountAsDecimal());
             line.setDeleted(dto.getDeleted());
             line.setDescription(dto.getDescription());
             ItemDAS item = new ItemDAS();
             line.setItem(item.find(dto.getItemId()));
-            line.setItemPrice(dto.getItemPrice());
             line.setPrice(new BigDecimal(dto.getPrice()));
-            line.setQuantity(dto.getQuantity());
+            line.setQuantity(dto.getQuantityAsDecimal());
             line.setProvisioningStatus(provisioningStatusDas.find(
                     dto.getProvisioningStatusId()));
             line.setProvisioningRequestId(dto.getProvisioningRequestId());
@@ -1238,11 +1228,9 @@ public class OrderBL extends ResultList
      * @param userId
      * @param eventDate
      * @param currencyId
-     * @param entityId
      * @return
      */
-    public static OrderDTO getOrCreateCurrentOrder(Integer userId, Date eventDate,
-            Integer currencyId) {
+    public static OrderDTO getOrCreateCurrentOrder(Integer userId, Date eventDate, Integer currencyId) {
         CurrentOrder co = new CurrentOrder(userId, eventDate);
 
         Integer currentOrderId = co.getCurrent();
@@ -1265,7 +1253,7 @@ public class OrderBL extends ResultList
 
     /**
      * The order has to be set and made persitent with an ID
-     * @param isNew
+     * @param executorId
      */
     public void setMainSubscription(Integer executorId) {
         // set the field
@@ -1397,6 +1385,10 @@ public class OrderBL extends ResultList
     }
 
     public static OrderDTO createAsWithLine(OrderDTO order, Integer itemId, Double quantity) {
+        return createAsWithLine(order, itemId, new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
+    }
+
+    public static OrderDTO createAsWithLine(OrderDTO order, Integer itemId, BigDecimal quantity) {
         // copy the current order
         OrderDTO newOrder = new OrderDTO(order);
         newOrder.setId(0);

@@ -34,11 +34,11 @@ public class InvoiceLineDTO
    private boolean idHasBeenSet = false;
    private java.lang.String description;
    private boolean descriptionHasBeenSet = false;
-   private java.lang.Float amount;
+   private java.math.BigDecimal amount;
    private boolean amountHasBeenSet = false;
-   private java.lang.Float price;
+   private java.math.BigDecimal price;
    private boolean priceHasBeenSet = false;
-   private java.lang.Double quantity;
+   private java.math.BigDecimal quantity;
    private boolean quantityHasBeenSet = false;
    private java.lang.Integer deleted;
    private boolean deletedHasBeenSet = false;
@@ -55,7 +55,7 @@ public class InvoiceLineDTO
    {
    }
 
-   public InvoiceLineDTO( java.lang.Integer id,java.lang.String description,java.lang.Float amount,java.lang.Float price,java.lang.Double quantity,java.lang.Integer deleted,java.lang.Integer itemId,java.lang.Integer sourceUserId,java.lang.Integer isPercentage )
+   public InvoiceLineDTO( java.lang.Integer id,java.lang.String description,java.math.BigDecimal amount,java.math.BigDecimal price,java.math.BigDecimal quantity,java.lang.Integer deleted,java.lang.Integer itemId,java.lang.Integer sourceUserId,java.lang.Integer isPercentage )
    {
 	  this.id = id;
 	  idHasBeenSet = true;
@@ -147,12 +147,12 @@ public class InvoiceLineDTO
    public boolean descriptionHasBeenSet(){
 	  return descriptionHasBeenSet;
    }
-   public java.lang.Float getAmount()
+   public java.math.BigDecimal getAmount()
    {
 	  return this.amount;
    }
 
-   public void setAmount( java.lang.Float amount )
+   public void setAmount( java.math.BigDecimal amount )
    {
 	  this.amount = amount;
 	  amountHasBeenSet = true;
@@ -162,12 +162,12 @@ public class InvoiceLineDTO
    public boolean amountHasBeenSet(){
 	  return amountHasBeenSet;
    }
-   public java.lang.Float getPrice()
+   public java.math.BigDecimal getPrice()
    {
 	  return this.price;
    }
 
-   public void setPrice( java.lang.Float price )
+   public void setPrice( java.math.BigDecimal price )
    {
 	  this.price = price;
 	  priceHasBeenSet = true;
@@ -177,12 +177,12 @@ public class InvoiceLineDTO
    public boolean priceHasBeenSet(){
 	  return priceHasBeenSet;
    }
-   public java.lang.Double getQuantity()
+   public java.math.BigDecimal getQuantity()
    {
 	  return this.quantity;
    }
 
-   public void setQuantity( java.lang.Double quantity )
+   public void setQuantity( java.math.BigDecimal quantity )
    {
 	  this.quantity = quantity;
 	  quantityHasBeenSet = true;

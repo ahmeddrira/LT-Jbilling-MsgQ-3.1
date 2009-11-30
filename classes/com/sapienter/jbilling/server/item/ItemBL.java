@@ -416,7 +416,7 @@ public class ItemBL {
 
         retValue.setEntity(new CompanyDAS().find(other.getEntityId()));
         retValue.setNumber(other.getNumber());
-        retValue.setPercentage(other.getPercentage() == null ? null : new BigDecimal(other.getPercentage()));
+        retValue.setPercentage(other.getPercentage());
         retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
@@ -424,7 +424,7 @@ public class ItemBL {
         retValue.setTypes(other.getTypes());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
-        retValue.setPrice(new BigDecimal(other.getPrice()));
+        retValue.setPrice(other.getPrice());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
         // convert prices between DTO and DTOEx (WS)
@@ -437,7 +437,7 @@ public class ItemBL {
                 itemPrice.setId(otherPrice.getId());
                 itemPrice.setCurrency(new CurrencyDAS().find(
                         otherPrice.getCurrencyId()));
-                itemPrice.setPrice(otherPrice.getPrice() == null ? null : new BigDecimal(otherPrice.getPrice()));
+                itemPrice.setPrice(otherPrice.getPrice());
                 itemPrice.setName(otherPrice.getName());
                 itemPrice.setPriceForm(otherPrice.getPriceForm());
                 prices.add(itemPrice);
@@ -458,7 +458,7 @@ public class ItemBL {
 
         retValue.setEntityId(other.getEntity().getId());
         retValue.setNumber(other.getInternalNumber());
-        retValue.setPercentage(other.getPercentage() == null ? null : other.getPercentage().floatValue());
+        retValue.setPercentage(other.getPercentage());
         retValue.setPriceManual(other.getPriceManual());
         retValue.setDeleted(other.getDeleted());
         retValue.setHasDecimals(other.getHasDecimals());
@@ -466,7 +466,7 @@ public class ItemBL {
         retValue.setTypes(other.getTypes());
         retValue.setPromoCode(other.getPromoCode());
         retValue.setCurrencyId(other.getCurrencyId());
-        retValue.setPrice(other.getPrice() == null ? null : other.getPrice().floatValue());
+        retValue.setPrice(other.getPrice());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
         retValue.setPrices(other.getPrices());
 
@@ -479,7 +479,7 @@ public class ItemBL {
                 ItemPriceDTO otherPrice = (ItemPriceDTO) otherPrices.get(i);
                 itemPrice.setId(otherPrice.getId());
                 itemPrice.setCurrencyId(otherPrice.getCurrency().getId());
-                itemPrice.setPrice(otherPrice.getPrice() == null ? null : otherPrice.getPrice().floatValue());
+                itemPrice.setPrice(otherPrice.getPrice());
                 itemPrice.setName(otherPrice.getName());
                 itemPrice.setPriceForm(otherPrice.getPriceForm());
                 prices.add(itemPrice);

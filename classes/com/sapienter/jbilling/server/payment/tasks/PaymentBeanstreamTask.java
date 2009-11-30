@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.payment.tasks;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -84,9 +85,7 @@ public class PaymentBeanstreamTask extends PaymentTaskWithTimeout implements
 				throw new TaskException(error);
 			}
 
-            if (paymentInfo.getAmount() < 0 && 
-                    paymentInfo.getIsRefund() == 0) {
-
+            if (BigDecimal.ZERO.compareTo(paymentInfo.getAmount()) > 0 && paymentInfo.getIsRefund() == 0) {
 				String error = "Credits not linked to a previous transaction " +
                         " (refund) not supported by Beanstream processing API";
 				LOG.error(error);

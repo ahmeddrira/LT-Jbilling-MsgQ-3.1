@@ -209,7 +209,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 	public boolean process(PaymentDTOEx payment) throws PluggableTaskException {
 		LOG.debug("Payment processing for " + PROCESSOR + " gateway");
         Transaction transaction = Transaction.Payment;
-        if (payment.getAmount() < 0) {
+        if (BigDecimal.ZERO.compareTo(payment.getAmount()) > 0) {
             transaction = Transaction.Credit;
             LOG.debug("Doing a credit transaction");
             // note: formatAmount() will make amount positive for sending to gateway
@@ -404,8 +404,7 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 					"Error loading Contact for user id " + payment.getUserId(),
 					e);
 		}
-		request.add(SageParams.General.TRANSACTION_AMOUNT, formatAmount(payment
-				.getAmount()));
+		request.add(SageParams.General.TRANSACTION_AMOUNT, formatAmount(payment.getAmount()));
 		request.add(SageParams.General.TRANSACTION_CODE, transaction.getCode());
 		if (isAch) {
 			AchDTO ach = payment.getAch();
@@ -435,11 +434,10 @@ public class PaymentSageTask extends PaymentTaskWithTimeout implements
 	/**
 	 * Format number to gateway format
 	 */
-	private String formatAmount(float amount) {
-        amount = Math.abs(amount); // for credits
-		return (new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN))
-				.toPlainString();
-	}
+    private String formatAmount(BigDecimal amount) {
+        amount = amount.abs().setScale(2, RoundingMode.HALF_EVEN); // gateway format, do not change!
+        return amount.toPlainString();
+    }
 
 	/**
 	 * @return Gateway url

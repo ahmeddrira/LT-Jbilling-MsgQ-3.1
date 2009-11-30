@@ -27,6 +27,7 @@ package com.sapienter.jbilling.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -390,11 +391,12 @@ public class GatewayBL {
                 }
 
                 OrderLineWS line = new OrderLineWS();
-                line.setAmount(getFloatPar(prefix + "amount"));
+
+                line.setAmount(getDecimalPar(prefix + "amount"));
                 line.setDescription(getStringPar(prefix + "description"));
                 line.setItemId(getIntPar(prefix + "item_id"));
-                line.setPrice(getFloatPar(prefix + "price"));
-                line.setQuantity(getDoublePar(prefix + "quantity"));
+                line.setPrice(getDecimalPar(prefix + "price"));
+                line.setQuantity(getDecimalPar(prefix + "quantity"));
                 line.setTypeId(getIntPar(prefix + "type_id"));
                 if (!validate("OrderLine", line)) {
                     return;
@@ -479,7 +481,7 @@ public class GatewayBL {
                     return;
                 }
                 payment.setCreditCard(cc);
-                payment.setAmount(getFloatPar("s_amount"));
+                payment.setAmount(getDecimalPar("s_amount"));
                 payment.setCurrency(new CurrencyDAS().find(getIntPar("s_currency_id")));
                 payment.setIsRefund(new Integer(0));
                 payment.setPaymentMethod(new PaymentMethodDAS().find(Util.getPaymentMethod(cc.getNumber())));
@@ -587,9 +589,9 @@ public class GatewayBL {
                     partner.setPeriodUnit(new PeriodUnitDTO(getIntPar("s_period_unit")));
                     partner.setPeriodValue(getIntPar("s_period_value"));
                     partner.setNextPayoutDate(getDatePar("s_next_payout"));
-                    partner.setBalance(new Float(0));
-                    partner.setPercentageRate(getFloatPar("s_rate").doubleValue());
-                    partner.setReferralFee(getFloatPar("s_fee").doubleValue());
+                    partner.setBalance(BigDecimal.ZERO);
+                    partner.setPercentageRate(getDecimalPar("s_rate"));
+                    partner.setReferralFee(getDecimalPar("s_fee"));
                     partner.setFeeCurrency(new CurrencyDTO(getIntPar("s_fee_currency_id")));
                     partner.setRelatedClerkUserId(getIntPar("s_clerk"));
                     if (!validate("Partner", partner)) {
@@ -676,6 +678,15 @@ public class GatewayBL {
             log.error("Exception in user", e);
         }
 
+    }
+
+    private BigDecimal getDecimalPar(String name) {
+        return getDecimalPar(name, false);
+    }
+
+    private BigDecimal getDecimalPar(String name, boolean required) {
+        String value = getStringPar(name, required);
+        return (value == null ? null : new BigDecimal(value));
     }
 
     private String getStringPar(String name) {

@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -115,11 +116,10 @@ public class ExternalCallbackServlet extends HttpServlet {
                                 (IPaymentSessionBean) Context.getBean(
                                 Context.Name.PAYMENT_SESSION);
                         Integer invoiceId = getInt(invoiceNumber);
-                        Float amount = Float.valueOf(paymentAmount);
+                        BigDecimal amount = new BigDecimal(paymentAmount);
                         Integer userId = getInt(userIdStr);
-                        Boolean result = paymentSession.processPaypalPayment(
-                                invoiceId, receiverEmail, amount, paymentCurrency,
-                                userId, userEmail);
+                        Boolean result = paymentSession.processPaypalPayment(invoiceId, receiverEmail, amount,
+                                                                             paymentCurrency, userId, userEmail);
                         
                         LOG.debug("Finished callback with result " + result);
                     } catch (Exception e) {

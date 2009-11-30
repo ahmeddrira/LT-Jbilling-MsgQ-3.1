@@ -19,6 +19,7 @@
  */
 package com.sapienter.jbilling.server.user.partner.db;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,13 +50,13 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 @Entity
 @TableGenerator(
-        name="partner_GEN",
-        table="jbilling_table",
+        name = "partner_GEN",
+        table = "jbilling_table",
         pkColumnName = "name",
         valueColumnName = "next_id",
-        pkColumnValue="partner",
-        allocationSize=10
-        )
+        pkColumnValue = "partner",
+        allocationSize = 10
+)
 @Table(name = "partner")
 public class Partner implements java.io.Serializable {
 
@@ -66,33 +67,19 @@ public class Partner implements java.io.Serializable {
     private int id;
 
     private PeriodUnitDTO periodUnitDTO;
-
     private UserDTO baseUserByUserId;
-
     private UserDTO baseUserByRelatedClerk;
-
     private CurrencyDTO currencyDTO;
-
-    private double balance;
-
-    private double totalPayments;
-
-    private double totalRefunds;
-
-    private double totalPayouts;
-
-    private Double percentageRate;
-
-    private Double referralFee;
-
+    private BigDecimal balance;
+    private BigDecimal totalPayments;
+    private BigDecimal totalRefunds;
+    private BigDecimal totalPayouts;
+    private BigDecimal percentageRate;
+    private BigDecimal referralFee;
     private int oneTime;
-
     private int periodValue;
-
     private Date nextPayoutDate;
-
-    private Double duePayout;
-
+    private BigDecimal duePayout;
     private int automaticProcess;
 
     private Set<PartnerPayout> partnerPayouts = new HashSet<PartnerPayout>(0);
@@ -106,9 +93,10 @@ public class Partner implements java.io.Serializable {
     public Partner(int id) {
         this.id = id;
     }
-    public Partner(int id, PeriodUnitDTO periodUnitDTO, double balance, double totalPayments,
-            double totalRefunds, double totalPayouts, int oneTime, int periodValue,
-            Date nextPayoutDate, int automaticProcess) {
+
+    public Partner(int id, PeriodUnitDTO periodUnitDTO, BigDecimal balance, BigDecimal totalPayments,
+                   BigDecimal totalRefunds, BigDecimal totalPayouts, int oneTime, int periodValue,
+                   Date nextPayoutDate, int automaticProcess) {
         this.id = id;
         this.periodUnitDTO = periodUnitDTO;
         this.balance = balance;
@@ -122,11 +110,11 @@ public class Partner implements java.io.Serializable {
     }
 
     public Partner(int id, PeriodUnitDTO periodUnitDTO, UserDTO baseUserByUserId,
-            UserDTO baseUserByRelatedClerk, CurrencyDTO currencyDTO, double balance,
-            double totalPayments, double totalRefunds, double totalPayouts, Double percentageRate,
-            Double referralFee, int oneTime, int periodValue, Date nextPayoutDate,
-            Double duePayout, int automaticProcess, Set<PartnerPayout> partnerPayouts,
-            Set<CustomerDTO> customers) {
+                   UserDTO baseUserByRelatedClerk, CurrencyDTO currencyDTO, BigDecimal balance,
+                   BigDecimal totalPayments, BigDecimal totalRefunds, BigDecimal totalPayouts, BigDecimal percentageRate,
+                   BigDecimal referralFee, int oneTime, int periodValue, Date nextPayoutDate,
+                   BigDecimal duePayout, int automaticProcess, Set<PartnerPayout> partnerPayouts,
+                   Set<CustomerDTO> customers) {
         this.id = id;
         this.periodUnitDTO = periodUnitDTO;
         this.baseUserByUserId = baseUserByUserId;
@@ -147,7 +135,8 @@ public class Partner implements java.io.Serializable {
         this.customers = customers;
     }
 
-    @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="partner_GEN")
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "partner_GEN")
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
@@ -198,56 +187,56 @@ public class Partner implements java.io.Serializable {
     }
 
     @Column(name = "balance", nullable = false, precision = 17, scale = 17)
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return this.balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
     @Column(name = "total_payments", nullable = false, precision = 17, scale = 17)
-    public double getTotalPayments() {
+    public BigDecimal getTotalPayments() {
         return this.totalPayments;
     }
 
-    public void setTotalPayments(double totalPayments) {
+    public void setTotalPayments(BigDecimal totalPayments) {
         this.totalPayments = totalPayments;
     }
 
     @Column(name = "total_refunds", nullable = false, precision = 17, scale = 17)
-    public double getTotalRefunds() {
+    public BigDecimal getTotalRefunds() {
         return this.totalRefunds;
     }
 
-    public void setTotalRefunds(double totalRefunds) {
+    public void setTotalRefunds(BigDecimal totalRefunds) {
         this.totalRefunds = totalRefunds;
     }
 
     @Column(name = "total_payouts", nullable = false, precision = 17, scale = 17)
-    public double getTotalPayouts() {
+    public BigDecimal getTotalPayouts() {
         return this.totalPayouts;
     }
 
-    public void setTotalPayouts(double totalPayouts) {
+    public void setTotalPayouts(BigDecimal totalPayouts) {
         this.totalPayouts = totalPayouts;
     }
 
     @Column(name = "percentage_rate", precision = 17, scale = 17)
-    public Double getPercentageRate() {
+    public BigDecimal getPercentageRate() {
         return this.percentageRate;
     }
 
-    public void setPercentageRate(Double percentageRate) {
+    public void setPercentageRate(BigDecimal percentageRate) {
         this.percentageRate = percentageRate;
     }
 
     @Column(name = "referral_fee", precision = 17, scale = 17)
-    public Double getReferralFee() {
+    public BigDecimal getReferralFee() {
         return this.referralFee;
     }
 
-    public void setReferralFee(Double referralFee) {
+    public void setReferralFee(BigDecimal referralFee) {
         this.referralFee = referralFee;
     }
 
@@ -279,11 +268,11 @@ public class Partner implements java.io.Serializable {
     }
 
     @Column(name = "due_payout", precision = 17, scale = 17)
-    public Double getDuePayout() {
+    public BigDecimal getDuePayout() {
         return this.duePayout;
     }
 
-    public void setDuePayout(Double duePayout) {
+    public void setDuePayout(BigDecimal duePayout) {
         this.duePayout = duePayout;
     }
 
@@ -314,20 +303,22 @@ public class Partner implements java.io.Serializable {
         this.customers = customers;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="partner")
-    @Fetch (FetchMode.SUBSELECT)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "partner")
+    @Fetch(FetchMode.SUBSELECT)
     public Set<PartnerRange> getRanges() {
         return this.ranges;
     }
+
     public void setRanges(Set<PartnerRange> ranges) {
         this.ranges = ranges;
     }
-    
+
     @Version
-    @Column(name="OPTLOCK")
+    @Column(name = "OPTLOCK")
     public Integer getVersionNum() {
         return versionNum;
     }
+
     public void setVersionNum(Integer versionNum) {
         this.versionNum = versionNum;
     }
@@ -339,7 +330,7 @@ public class Partner implements java.io.Serializable {
     public UserDTO getUser() {
         return getBaseUser();
     }
-    
+
     /**
      * @return
      */

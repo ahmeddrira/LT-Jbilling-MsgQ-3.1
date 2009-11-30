@@ -133,7 +133,7 @@ public class UploadInvoices {
 					invoice.setToProcess(Integer.valueOf(fields[payable].trim()));
 				}
                 if (balance >= 0) {
-                    invoice.setBalance(Float.valueOf(fields[balance].trim()));
+                    invoice.setBalance(new BigDecimal(fields[balance].trim()));
                 }
 				if (currency_id >= 0) {
 					CurrencyDTO currency = new CurrencyDAS().find(Integer.valueOf(fields[currency_id].trim()));
@@ -147,7 +147,7 @@ public class UploadInvoices {
                 readInvoiceLines(invoice, fileName);
                 
                 // final tweaks
-                invoice.setCarriedBalance(new Float(0));
+                invoice.setCarriedBalance(BigDecimal.ZERO);
                 invoice.setInProcessPayment(new Integer(0));
                 invoice.setIsReview(new Integer(0));
                 
@@ -179,9 +179,9 @@ public class UploadInvoices {
             if (invoice.getPublicNumber().equals(fields[0].trim())) {
                 InvoiceLineDTO line = new InvoiceLineDTO();
 
-                line.setAmount(Float.valueOf(fields[1].trim()));
-                line.setQuantity(Double.valueOf(fields[2].trim()));
-                line.setPrice(Float.valueOf(fields[3].trim()));
+                line.setAmount(new BigDecimal(fields[1].trim()));
+                line.setQuantity(new BigDecimal(fields[2].trim()));
+                line.setPrice(new BigDecimal(fields[3].trim()));
                 if (fields[4].trim().length() > 0) {
                 	ItemDTO item = new ItemDAS().find(Integer.valueOf(fields[4].trim()));
                     line.setItem(item);

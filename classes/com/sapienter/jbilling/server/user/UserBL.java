@@ -1350,7 +1350,7 @@ public class UserBL extends ResultList
 
             result.setSuccess(false);
             result.setAuthorized(false);
-            result.setQuantity(0.0);
+            result.setQuantity(BigDecimal.ZERO);
             result.setMessage(new String[] { "Error: " + e.getMessage() } );
         }
 

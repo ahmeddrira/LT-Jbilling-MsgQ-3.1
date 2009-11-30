@@ -74,8 +74,8 @@ public class PaymentWorldPayTask extends PaymentWorldPayBaseTask {
 
         if (payment.getPayoutId() != null) return true;
 
-		SvcType transaction = SvcType.SALE;        
-        if (payment.getAmount() < 0 || (payment.getIsRefund() != 0)) {
+		SvcType transaction = SvcType.SALE;                      
+        if (BigDecimal.ZERO.compareTo(payment.getAmount()) > 0 || (payment.getIsRefund() != 0)) {
             LOG.debug("Doing a refund using credit card transaction");
             transaction = SvcType.REFUND_CREDIT;            
         }

@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.util.db;
 
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,27 +54,26 @@ import com.sapienter.jbilling.server.util.Constants;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class CurrencyDTO extends AbstractDescription  implements java.io.Serializable {
 
+    private int id;
+    private String symbol;
+    private String code;
+    private String countryCode;
+    private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
+    private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
+    private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
+    private Set<Partner> partners = new HashSet<Partner>(0);
+    private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
+    private Set<CurrencyExchangeDTO> currencyExchanges = new HashSet<CurrencyExchangeDTO>(0);
+    private Set<CompanyDTO> entities_1 = new HashSet<CompanyDTO>(0);
+    private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
+    private Set<ItemPriceDTO> itemPrices = new HashSet<ItemPriceDTO>(0);
+    private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
 
-     private int id;
-     private String symbol;
-     private String code;
-     private String countryCode;
-     private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
-     private Set<UserDTO> baseUsers = new HashSet<UserDTO>(0);
-     private Set<OrderDTO> orderDTOs = new HashSet<OrderDTO>(0);
-     private Set<Partner> partners = new HashSet<Partner>(0);
-     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
-     private Set<CurrencyExchangeDTO> currencyExchanges = new HashSet<CurrencyExchangeDTO>(0);
-     private Set<CompanyDTO> entities_1 = new HashSet<CompanyDTO>(0);
-     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
-     private Set<ItemPriceDTO> itemPrices = new HashSet<ItemPriceDTO>(0);
-     private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
-
-     // from EX
-     private String name = null;
-     private Boolean inUse = null;
-     private String rate = null; // will be converted to float
-     private Double sysRate = null;
+    // from EX
+    private String name = null;
+    private Boolean inUse = null;
+    private String rate = null; // will be converted to float
+    private BigDecimal sysRate = null;
 
 
     public CurrencyDTO() {
@@ -81,154 +81,167 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
 
     // for stubs
     public CurrencyDTO(Integer id) {
-    	this.id = id;
+        this.id = id;
     }
-	
+
     public CurrencyDTO(int id, String symbol, String code, String countryCode) {
         this.id = id;
         this.symbol = symbol;
         this.code = code;
         this.countryCode = countryCode;
     }
-    public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<CompanyDTO> entities, Set<UserDTO> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<PaymentDTO> payments, Set<CurrencyExchangeDTO> currencyExchanges, Set<CompanyDTO> entities_1, Set<InvoiceDTO> invoices, Set<ItemPriceDTO> itemPrices, Set<ProcessRunTotalDTO> processRunTotals) {
-       this.id = id;
-       this.symbol = symbol;
-       this.code = code;
-       this.countryCode = countryCode;
-       this.entities = entities;
-       this.baseUsers = baseUsers;
-       this.orderDTOs = orderDTOs;
-       this.partners = partners;
-       this.payments = payments;
-       this.currencyExchanges = currencyExchanges;
-       this.entities_1 = entities_1;
-       this.invoices = invoices;
-       this.itemPrices = itemPrices;
-       this.processRunTotals = processRunTotals;
-    }
- 
-    @Transient
-    protected String getTable() {
-    	return Constants.TABLE_CURRENCY;
+
+    public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<CompanyDTO> entities,
+                       Set<UserDTO> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<PaymentDTO> payments,
+                       Set<CurrencyExchangeDTO> currencyExchanges, Set<CompanyDTO> entities_1, Set<InvoiceDTO> invoices,
+                       Set<ItemPriceDTO> itemPrices, Set<ProcessRunTotalDTO> processRunTotals) {
+        this.id = id;
+        this.symbol = symbol;
+        this.code = code;
+        this.countryCode = countryCode;
+        this.entities = entities;
+        this.baseUsers = baseUsers;
+        this.orderDTOs = orderDTOs;
+        this.partners = partners;
+        this.payments = payments;
+        this.currencyExchanges = currencyExchanges;
+        this.entities_1 = entities_1;
+        this.invoices = invoices;
+        this.itemPrices = itemPrices;
+        this.processRunTotals = processRunTotals;
     }
 
-    @Id 
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_CURRENCY;
+    }
+
+    @Id
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     @Column(name="symbol", nullable=false, length=10)
     public String getSymbol() {
         return this.symbol;
     }
-    
+
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
-    
+
     @Column(name="code", nullable=false, length=3)
     public String getCode() {
         return this.code;
     }
-    
+
     public void setCode(String code) {
         this.code = code;
     }
-    
+
     @Column(name="country_code", nullable=false, length=2)
     public String getCountryCode() {
         return this.countryCode;
     }
-    
+
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<CompanyDTO> getEntities() {
         return this.entities;
     }
-    
+
     public void setEntities(Set<CompanyDTO> entities) {
         this.entities = entities;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<UserDTO> getBaseUsers() {
         return this.baseUsers;
     }
-    
+
     public void setBaseUsers(Set<UserDTO> baseUsers) {
         this.baseUsers = baseUsers;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<OrderDTO> getPurchaseOrders() {
         return this.orderDTOs;
     }
-    
+
     public void setPurchaseOrders(Set<OrderDTO> orderDTOs) {
         this.orderDTOs = orderDTOs;
     }
-    
+
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="feeCurrency")
     public Set<Partner> getPartners() {
         return this.partners;
     }
-    
+
     public void setPartners(Set<Partner> partners) {
         this.partners = partners;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<PaymentDTO> getPayments() {
         return this.payments;
     }
-    
+
     public void setPayments(Set<PaymentDTO> payments) {
         this.payments = payments;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<CurrencyExchangeDTO> getCurrencyExchanges() {
         return this.currencyExchanges;
     }
-    
+
     public void setCurrencyExchanges(Set<CurrencyExchangeDTO> currencyExchanges) {
         this.currencyExchanges = currencyExchanges;
     }
-@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    @JoinTable(name="currency_entity_map", joinColumns = { 
-        @JoinColumn(name="currency_id", updatable=false) }, inverseJoinColumns = { 
-        @JoinColumn(name="entity_id", updatable=false) })
+
+    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @JoinTable(name="currency_entity_map",
+               joinColumns = { @JoinColumn(name="currency_id", updatable=false) },
+               inverseJoinColumns = { @JoinColumn(name="entity_id", updatable=false) })
     public Set<CompanyDTO> getEntities_1() {
         return this.entities_1;
     }
-    
+
     public void setEntities_1(Set<CompanyDTO> entities_1) {
         this.entities_1 = entities_1;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<InvoiceDTO> getInvoices() {
         return this.invoices;
     }
-    
+
     public void setInvoices(Set<InvoiceDTO> invoices) {
         this.invoices = invoices;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<ItemPriceDTO> getItemPrices() {
         return this.itemPrices;
     }
-    
+
     public void setItemPrices(Set<ItemPriceDTO> itemPrices) {
         this.itemPrices = itemPrices;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
     public Set<ProcessRunTotalDTO> getProcessRunTotals() {
         return this.processRunTotals;
     }
-    
+
     public void setProcessRunTotals(Set<ProcessRunTotalDTO> processRunTotals) {
         this.processRunTotals = processRunTotals;
     }
@@ -256,16 +269,21 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         return rate;
     }
 
+    @Transient
+    public BigDecimal getRateAsDecimal() {
+        return (rate == null ? null : new BigDecimal(rate));
+    }
+
     public void setRate(String rate) {
         this.rate = rate;
     }
 
     @Transient
-    public Double getSysRate() {
+    public BigDecimal getSysRate() {
         return sysRate;
     }
 
-    public void setSysRate(Double sysRate) {
+    public void setSysRate(BigDecimal sysRate) {
         this.sysRate = sysRate;
     }
 }

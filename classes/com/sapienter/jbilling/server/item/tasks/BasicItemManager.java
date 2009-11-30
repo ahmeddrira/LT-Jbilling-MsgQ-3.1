@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item.tasks;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDecimalsException;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -43,17 +44,18 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO newOrder, List<Record> records) throws TaskException {
     	
-    	addItem(itemID, new Double(quantity), language, userId, entityId, currencyId,
+    	addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId,
             newOrder, records);
     }
     
-    public void addItem(Integer itemID, Double quantity, Integer language,
+    public void addItem(Integer itemID, BigDecimal quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO newOrder, List<Record> records) throws TaskException {
 
+
+
         // Validate decimal quantity with the item
-    	if( quantity != null && (quantity % 1) > 0 ) {
-    		
+        if (quantity.remainder(Constants.BIGDECIMAL_ONE).compareTo(BigDecimal.ZERO) > 0) {        
     		try {
 	        	ItemBL bl = new ItemBL();
 	        	bl.set(itemID);
@@ -82,12 +84,12 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             // the item is there, I just have to update the quantity
         	BigDecimal dec = new BigDecimal( line.getQuantity().toString() );
         	dec = dec.add( new BigDecimal( quantity.toString() ) );
-            line.setQuantity( new Double( dec.doubleValue() ));
+            line.setQuantity(dec);
             
             // and also the total amount for this order line
             dec = new BigDecimal(line.getAmount().toString());
             dec = dec.add(new BigDecimal(myLine.getAmount().toString()));
-            line.setAmount(new Float(dec.floatValue()));
+            line.setAmount(dec);
             latestLine = line;
         }
     }
@@ -120,7 +122,7 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             line.setDescription(item.getDescription());
         }
         if (line.getQuantity() == null) {
-            line.setQuantity(1.0);
+            line.setQuantity(Constants.BIGDECIMAL_ONE);
         }
         if (line.getPrice() == null) {
             line.setPrice((item.getPercentage() == null) ? item.getPrice() :
@@ -137,9 +139,8 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
                 // percentage ignores the quantity
                 additionAmount = new BigDecimal(item.getPercentage().toString());
             }
-            line.setAmount(new Float(additionAmount.floatValue()));
+            line.setAmount(additionAmount);
         }
-        line.setItemPrice(0);
         line.setCreateDatetime(null);
         line.setDeleted(0);
         line.setTypeId(item.getOrderLineTypeId());

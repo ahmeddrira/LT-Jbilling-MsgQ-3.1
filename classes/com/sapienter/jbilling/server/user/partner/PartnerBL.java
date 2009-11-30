@@ -73,18 +73,17 @@ import javax.sql.DataSource;
 /**
  * @author Emil
  */
-public class PartnerBL extends ResultList 
-        implements PartnerSQL {
+public class PartnerBL extends ResultList implements PartnerSQL {
+    private static final Logger LOG = Logger.getLogger(PartnerBL.class);
+
     private PartnerDAS partnerDAS = null;
     private Partner partner = null;
     private PartnerRange partnerRange = null;
     private PartnerPayout payout = null;
-    private static final Logger LOG = Logger.getLogger(PartnerBL.class);
     private EventLogger eLogger = null;
 
     public PartnerBL(Integer partnerId) {
         init();
-
         set(partnerId);
     }
     
@@ -119,10 +118,10 @@ public class PartnerBL extends ResultList
     public Integer create(Partner dto) throws SessionInternalError {
         LOG.debug("creating partner");
         
-        dto.setTotalPayments(0);
-        dto.setTotalPayouts(0);
-        dto.setTotalRefunds(0);
-        dto.setDuePayout(0.0);
+        dto.setTotalPayments(BigDecimal.ZERO);
+        dto.setTotalPayouts(BigDecimal.ZERO);
+        dto.setTotalRefunds(BigDecimal.ZERO);
+        dto.setDuePayout(BigDecimal.ZERO);
         partner = partnerDAS.save(dto);
 
         setRelatedClerk(partner, dto.getRelatedClerkUserId());
@@ -133,7 +132,6 @@ public class PartnerBL extends ResultList
     }
     
     public void update(Integer executorId, Partner dto) {
-
         eLogger.audit(executorId, dto.getBaseUser().getId(), 
                 Constants.TABLE_PARTNER, partner.getId(),
                 EventLogger.MODULE_USER_MAINTENANCE, 
@@ -150,11 +148,10 @@ public class PartnerBL extends ResultList
     
     /**
      * This is called from a new transaction
-     * @param payoutDto
+     * @param partnerId
      */
     public void processPayout(Integer partnerId) 
-            throws SQLException, SessionInternalError, PluggableTaskException,
-            TaskException, NamingException {
+            throws SQLException, SessionInternalError, PluggableTaskException, TaskException, NamingException {
         boolean notPaid;
         partner = partnerDAS.find(partnerId);
         // find out the date ranges for this payout
@@ -176,9 +173,9 @@ public class PartnerBL extends ResultList
             payout = new PartnerPayout();
             payout.setStartingDate(startDate);
             payout.setEndingDate(endDate);
-            payout.setBalanceLeft(0);
-            payout.setPaymentsAmount(0);
-            payout.setRefundsAmount(0);
+            payout.setBalanceLeft(BigDecimal.ZERO);
+            payout.setPaymentsAmount(BigDecimal.ZERO);
+            payout.setRefundsAmount(BigDecimal.ZERO);
             payout.setPartner(partner);
             payout = new PartnerPayoutDAS().save(payout);
             partner.getPartnerPayouts().add(payout);
@@ -201,7 +198,7 @@ public class PartnerBL extends ResultList
                         Constants.TABLE_PARTNER);
                 notPaid = true;
             } else {
-                payment.setAmount(new Float(dto.getPayment().getAmount()));
+                payment.setAmount(dto.getPayment().getAmount());
                 payment.setCurrency(partner.getUser().getCurrency());
                 payment.setUserId(userId);
                 payment.setPaymentDate(partner.getNextPayoutDate());
@@ -210,18 +207,16 @@ public class PartnerBL extends ResultList
         } else {
             notPaid = true;
             // just notify to the clerk in charge
-            notifyPayout(entityId, partner.getBaseUserByRelatedClerk().
-                    getLanguageIdField(), dto.getPayment().
-                        getAmount(), startDate, endDate, true);
+            notifyPayout(entityId, partner.getBaseUserByRelatedClerk().getLanguageIdField(),
+                         dto.getPayment().getAmount(), startDate, endDate, true);
         }
         
         if (notPaid) {
             // let know that this partner should have been paid.
-            notifyPayout(entityId, partner.getBaseUserByRelatedClerk().
-                    getLanguageIdField(), dto.getPayment().
-                        getAmount(), startDate, endDate, true);
+            notifyPayout(entityId, partner.getBaseUserByRelatedClerk().getLanguageIdField(),
+                         dto.getPayment().getAmount(), startDate, endDate, true);
             // set the partner due payout
-            partner.setDuePayout(new Double(dto.getPayment().getAmount()));
+            partner.setDuePayout(dto.getPayment().getAmount());
         }
 
     }
@@ -242,9 +237,9 @@ public class PartnerBL extends ResultList
         payout = new PartnerPayout();
         payout.setStartingDate(start);
         payout.setEndingDate(end);
-        payout.setBalanceLeft(0);
-        payout.setPaymentsAmount(0);
-        payout.setRefundsAmount(0);
+        payout.setBalanceLeft(BigDecimal.ZERO);
+        payout.setPaymentsAmount(BigDecimal.ZERO);
+        payout.setRefundsAmount(BigDecimal.ZERO);
         payout.setPartner(partner);
         payout = new PartnerPayoutDAS().save(payout);
         partner.getPartnerPayouts().add(payout);
@@ -296,7 +291,7 @@ public class PartnerBL extends ResultList
         payment.setPayoutId(payout.getId());
         payment.setIsRefund(new Integer(1));
         payment.setAttempt(new Integer(1));
-        payment.setBalance(new Float(0));
+        payment.setBalance(BigDecimal.ZERO);
                 
         // process the payment realtime
         Integer result = Constants.RESULT_OK;
@@ -317,16 +312,16 @@ public class PartnerBL extends ResultList
         // update this partner fields if the payment went through
         if (result.equals(Constants.RESULT_OK)) {
             applyPayout(dto);
+
             // this partner just got a full payout
-            partner.setDuePayout(0.0);
+            partner.setDuePayout(BigDecimal.ZERO);
+
             // if there was something paid, notify
-            if (dto.getPayment().getAmount() > 0) {
-                LOG.debug("payout notification partner = " + partner.getId() +
-                  " with language = " + partner.getUser().getLanguageIdField());
-                notifyPayout(entityId, partner.getUser().
-                        getLanguageIdField(), dto.getPayment().
-                            getAmount(), dto.getStartingDate(), 
-                            dto.getEndingDate(), false);
+            if (BigDecimal.ZERO.compareTo(dto.getPayment().getAmount()) < 0) {                
+                LOG.debug("payout notification partner = " + partner.getId()
+                            + " with language = " + partner.getUser().getLanguageIdField());
+                notifyPayout(entityId, partner.getUser().getLanguageIdField(), dto.getPayment().getAmount(),
+                             dto.getStartingDate(), dto.getEndingDate(), false);
             }
             retValue = true;
         } else {
@@ -370,8 +365,7 @@ public class PartnerBL extends ResultList
             // the amount will have to be in the requested currency
             // convert then the payment amout
             CurrencyBL currency = new CurrencyBL();
-            BigDecimal paymentAmount = new BigDecimal(currency.convert(paymentCurrencyId, 
-                    currencyId, new BigDecimal(payment.getEntity().getAmount()), entityId).toString());
+            BigDecimal paymentAmount = currency.convert(paymentCurrencyId, currencyId, payment.getEntity().getAmount(), entityId);
             LOG.debug("payment amount = " + paymentAmount);
             BigDecimal amount = new BigDecimal(calculateCommission(paymentAmount.floatValue(), currencyId, 
                     payment.getEntity().getBaseUser(), payout != null)); 
@@ -396,19 +390,19 @@ public class PartnerBL extends ResultList
         
         if (payout != null) {
             // update the payout row
-            payout.setPaymentsAmount(new Float(paymentTotal.floatValue()));
-            payout.setRefundsAmount(new Float(refundTotal.floatValue()));
+            payout.setPaymentsAmount(paymentTotal);
+            payout.setRefundsAmount(refundTotal);
         }
         
         LOG.debug("total " + total + " currency = " + currencyId);
         PartnerPayout retValue = new PartnerPayout();
         PaymentDTO payment = new PaymentDTO();
-        payment.setAmount(total.floatValue());
+        payment.setAmount(total);
         payment.setCurrency(new CurrencyDAS().find(currencyId));
         payment.setBaseUser(partner.getBaseUser());
         retValue.setPayment(payment);
-        retValue.setRefundsAmount(new Float(refundTotal.floatValue()));
-        retValue.setPaymentsAmount(new Float(paymentTotal.floatValue()));
+        retValue.setRefundsAmount(refundTotal);
+        retValue.setPaymentsAmount(paymentTotal);
         retValue.setStartingDate(start);
         retValue.setEndingDate(end);
         
@@ -446,32 +440,28 @@ public class PartnerBL extends ResultList
      */
     public void applyPayout(PartnerPayout dto) 
             throws SessionInternalError {
+
         // the balance goes down with a payout
-    	BigDecimal newBalance = new BigDecimal(partner.getBalance());
-    	newBalance = newBalance.subtract(new BigDecimal(dto.getPayment().getAmount())); 
-        partner.setBalance(new Float(newBalance.floatValue()));
+    	BigDecimal balance = partner.getBalance().subtract(dto.getPayment().getAmount());
+        partner.setBalance(balance);
         
         // add this payout to her total
-        BigDecimal newTotal = new BigDecimal(partner.getTotalPayouts());
-        newTotal = newTotal.add(new BigDecimal(dto.getPayment().getAmount()));
-        partner.setTotalPayouts(new Float(newTotal.floatValue()));
+        BigDecimal total = partner.getTotalPayouts().add(dto.getPayment().getAmount());
+        partner.setTotalPayouts(total);
         
         // the next payout
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(partner.getNextPayoutDate());
-        cal.add(MapPeriodToCalendar.map(partner.getPeriodUnit().getId()), 
-                partner.getPeriodValue());
+        cal.add(MapPeriodToCalendar.map(partner.getPeriodUnit().getId()), partner.getPeriodValue());
         partner.setNextPayoutDate(cal.getTime());
-
     }
     
-    public void notifyPayout(Integer entityId, Integer languageId,
-            double total, Date start, Date end, boolean clerk) 
-            throws NamingException, SessionInternalError {
+    public void notifyPayout(Integer entityId, Integer languageId, BigDecimal total, Date start, Date end,
+                             boolean clerk) throws NamingException, SessionInternalError {
         // make the notification
         NotificationBL notification = new NotificationBL();
         try {
-	        MessageDTO message = notification.getPayoutMessage(entityId, 
+	        MessageDTO message = notification.getPayoutMessage(entityId,
 	                languageId, total, start, end, clerk, partner.getId());
 	 
 	        INotificationSessionBean notificationSess = 

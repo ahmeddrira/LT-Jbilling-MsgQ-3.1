@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import com.sapienter.jbilling.common.Constants;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -36,17 +37,19 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import java.math.BigDecimal;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
+
 	// used for the web services call to get the latest X
 	public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
-		Criteria criteria = getSession().createCriteria(PaymentDTO.class).add(
-				Restrictions.eq("deleted", 0)).createAlias("baseUser", "u")
-				.add(Restrictions.eq("u.id", userId)).setProjection(
-						Projections.id()).addOrder(Order.desc("id"))
+		Criteria criteria = getSession().createCriteria(PaymentDTO.class)
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUser", "u")
+				    .add(Restrictions.eq("u.id", userId))
+                .setProjection(Projections.id()).addOrder(Order.desc("id"))
 				.setMaxResults(maxResults);
 		return criteria.list();
 	}
 
-	public PaymentDTO create(Float amount, PaymentMethodDTO paymentMethod,
+	public PaymentDTO create(BigDecimal amount, PaymentMethodDTO paymentMethod,
 			Integer userId, Integer attempt, PaymentResultDTO paymentResult,
 			CurrencyDTO currency) {
 
@@ -80,7 +83,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
 		Criteria criteria = getSession().createCriteria(PaymentDTO.class);
 		criteria.add(Restrictions.eq("baseUser", user));
-		criteria.add(Restrictions.ge("balance", new Float(0.01)));
+		criteria.add(Restrictions.ge("balance", Constants.BIGDECIMAL_ONE_CENT));
 		criteria.add(Restrictions.eq("isRefund", 0));
 		criteria.add(Restrictions.eq("isPreauth", 0));
 		criteria.add(Restrictions.eq("deleted", 0));
@@ -91,17 +94,13 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
     public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         criteria.add(Restrictions.eq("deleted", 0))
-				.createAlias("baseUser", "u").add(
-						Restrictions.eq("u.id", userId));
-        criteria.add(Restrictions.ne("balance", new Float(0)));
+				.createAlias("baseUser", "u")
+                    .add(Restrictions.eq("u.id", userId));
+        criteria.add(Restrictions.ne("balance", BigDecimal.ZERO));
         criteria.setProjection(Projections.sum("balance"));
         criteria.setComment("PaymentDAS.findTotalBalanceByUser");
-        Float result = (Float) criteria.uniqueResult();
-        if (result == null) {
-            return new BigDecimal(0);
-        } else {
-            return new BigDecimal(result);
-        }
+
+        return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
     }
 
 	/**
@@ -122,7 +121,7 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
 		Criteria criteria = getSession().createCriteria(PaymentDTO.class);
 		criteria.add(Restrictions.eq("baseUser", user));
-		criteria.add(Restrictions.ge("balance", new Float(0.01)));
+		criteria.add(Restrictions.ge("balance", Constants.BIGDECIMAL_ONE_CENT));
 		criteria.add(Restrictions.eq("isRefund", 0));
 		criteria.add(Restrictions.eq("isPreauth", 1));
 		criteria.add(Restrictions.eq("deleted", 0));

@@ -45,27 +45,24 @@ public class GSTTaxTask extends PluggableTask implements OrderProcessingTask {
 
     public void doProcessing(OrderDTO order) throws TaskException {
         BigDecimal orderTotal = order.getTotal();
-        BigDecimal taxRate = new BigDecimal(parameters.get(PARAMETER_RATE).toString());
-        
+        BigDecimal taxRate = new BigDecimal(parameters.get(PARAMETER_RATE).toString());        
         BigDecimal gstTax = orderTotal.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(taxRate);
         
         OrderLineDTO taxLine = new OrderLineDTO();
-        taxLine.setAmount(new Float(gstTax.floatValue()));
+        taxLine.setAmount(gstTax);
         taxLine.setDeleted(new Integer(0));
         taxLine.setDescription((String) parameters.get(PARAMETER_DESCRIPTION));
         taxLine.setTypeId(Constants.ORDER_LINE_TYPE_TAX);
         ItemDTO item = new ItemDTO();
         item.setId(0);
         taxLine.setItem(item);
-        try {
 
-            taxLine.setEditable(
-                OrderBL.lookUpEditable(Constants.ORDER_LINE_TYPE_TAX));
+        try {
+            taxLine.setEditable(OrderBL.lookUpEditable(Constants.ORDER_LINE_TYPE_TAX));
         } catch (SessionInternalError e) {
             throw new TaskException("Error in GSTTaxTask. Bad order_line_type");
         }
         order.getLines().add(taxLine);
-
         order.setTotal(orderTotal.add(gstTax));
     }
 

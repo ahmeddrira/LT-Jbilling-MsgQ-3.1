@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.util.api;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -171,7 +172,7 @@ public interface JbillingAPI {
 
     public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) throws JbillingAPIException;
 
-    public Double isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
+    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
     
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
 

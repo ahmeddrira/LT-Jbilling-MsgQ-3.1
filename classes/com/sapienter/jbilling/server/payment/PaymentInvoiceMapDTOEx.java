@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.payment;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.payment.db.PaymentInvoiceMapDTO;
@@ -31,7 +32,7 @@ public class PaymentInvoiceMapDTOEx extends PaymentInvoiceMapDTO {
     private Integer invoiceId;
     private Integer currencyId;
 
-    public PaymentInvoiceMapDTOEx(Integer id, Float amount, Date create) {
+    public PaymentInvoiceMapDTOEx(Integer id, BigDecimal amount, Date create) {
         super(id, amount, create);
     }
     public Integer getPaymentId() {

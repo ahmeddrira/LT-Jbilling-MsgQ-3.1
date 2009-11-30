@@ -177,7 +177,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (dto.getIsRefund() == 1) {
             payment.setIsRefund(new Integer(1));
             // now all refunds have balance = 0
-            payment.setBalance(new Float(0));
+            payment.setBalance(BigDecimal.ZERO);
             if (dto.getPayment() != null) {
                 // this refund is link to a payment
                 PaymentBL linkedPayment = new PaymentBL(dto.getPayment().getId());
@@ -203,10 +203,10 @@ public class PaymentBL extends ResultList implements PaymentSQL {
 
     }
 
-    void createMap(InvoiceDTO invoice, Float amount) {
-        Float realAmount;
+    void createMap(InvoiceDTO invoice, BigDecimal amount) {
+        BigDecimal realAmount;
         if (new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_FAIL) || new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_UNAVAILABLE)) {
-            realAmount = new Float(0);
+            realAmount = BigDecimal.ZERO;
         } else {
             realAmount = amount;
         }
@@ -329,7 +329,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             if (retValue.equals(Constants.RESULT_OK) || retValue.equals(Constants.RESULT_ENTERED)) {
                 payment.setBalance(payment.getAmount());
             } else {
-                payment.setBalance(new Float(0));
+                payment.setBalance(BigDecimal.ZERO);
             }
         } catch (Exception e) {
             LOG.fatal("Problems handling payment task.", e);
@@ -425,7 +425,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     public static PaymentWS getWS(PaymentDTOEx dto) {
         PaymentWS ws = new PaymentWS();
         ws.setId(dto.getId());
-        ws.setAmount(new Float(dto.getAmount()));
+        ws.setAmount(dto.getAmount());
         ws.setAttempt(dto.getAttempt());
         ws.setBalance(dto.getBalance());
         ws.setCreateDatetime(dto.getCreateDatetime());
@@ -718,24 +718,25 @@ public class PaymentBL extends ResultList implements PaymentSQL {
      * invoices with a balance and get them paid, starting wiht the oldest.
      */
     public void automaticPaymentApplication() throws SQLException {
-        if (payment.getBalance() <= 0) {
-            return;
+        if (BigDecimal.ZERO.compareTo(payment.getBalance()) >= 0) {
+            return; // negative payment, skip
         }
 
-        Collection<InvoiceDTO> invoiceCollection = new InvoiceDAS()
-                .findWithBalanceByUser(payment.getBaseUser());
+        Collection<InvoiceDTO> invoiceCollection = new InvoiceDAS().findWithBalanceByUser(payment.getBaseUser());
+
         // sort from oldest to newest
         List<InvoiceDTO> invoices = new ArrayList<InvoiceDTO>(invoiceCollection);
         Collections.sort(invoices, new InvoiceIdComparator());
 
         for (InvoiceDTO invoice : invoices) {
             // negative balances don't need paying
-            if (invoice.getBalance() < 0) {
+            if (BigDecimal.ZERO.compareTo(invoice.getBalance()) > 0) {
                 continue;
             }
+
             applyPaymentToInvoice(invoice);
-            if (payment.getBalance() <= 0) {
-                break;
+            if (BigDecimal.ZERO.compareTo(payment.getBalance()) >= 0) {
+                break; // no payment balance remaining
             }
         }
     }
@@ -748,7 +749,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         IPaymentSessionBean psb = (IPaymentSessionBean) Context.getBean(
             Context.Name.PAYMENT_SESSION);
         // make the link between the payment and the invoice
-        Float paidAmount = new Float(psb.applyPayment(dto, invoice, true));
+        BigDecimal paidAmount = psb.applyPayment(dto, invoice, true);
         createMap(invoice, paidAmount);
 
         // notify the customer
@@ -792,18 +793,19 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             // find the map
             PaymentInvoiceMapDTO map = mapDas.find(mapId);
             // start returning the money to the payment's balance
-            BigDecimal amount = new BigDecimal(map.getAmount().toString());
+            BigDecimal amount = map.getAmount();
             payment = map.getPayment();
-            amount = amount.add(new BigDecimal(payment.getBalance().toString()));
-            payment.setBalance(new Float(amount.floatValue()));
+            amount = amount.add(payment.getBalance());
+            payment.setBalance(amount);
+
             // the balace of the invoice also increases
-            amount = new BigDecimal(map.getAmount().toString());
             InvoiceDTO invoice = map.getInvoiceEntity();
-            amount = amount.add(new BigDecimal(invoice.getBalance().toString()));
-            invoice.setBalance(new Float(amount.floatValue()));
+            amount = map.getAmount().add(invoice.getBalance());
+            invoice.setBalance(amount);
+
             // this invoice probably has to be paid now
-            if (invoice.getBalance().floatValue() >= 0.01) {
-                invoice.setToProcess(new Integer(1));
+            if (Constants.BIGDECIMAL_ONE_CENT.compareTo(invoice.getBalance()) <= 0) {
+                invoice.setToProcess(1);
             }
 
             // log that this was deleted, otherwise there will be no trace
@@ -829,8 +831,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
     public PaymentInvoiceMapDTOEx getMapDTO(Integer mapId) {
         // find the map
         PaymentInvoiceMapDTO map = mapDas.find(mapId);
-        PaymentInvoiceMapDTOEx dto = new PaymentInvoiceMapDTOEx(map.getId(),
-                map.getAmount(), map.getCreateDatetime());
+        PaymentInvoiceMapDTOEx dto = new PaymentInvoiceMapDTOEx(map.getId(), map.getAmount(), map.getCreateDatetime());
         dto.setPaymentId(map.getPayment().getId());
         dto.setInvoiceId(map.getInvoiceEntity().getId());
         dto.setCurrencyId(map.getPayment().getCurrency().getId());

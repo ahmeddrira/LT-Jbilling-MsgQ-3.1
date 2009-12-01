@@ -1,24 +1,26 @@
 /*
-jBilling - The Enterprise Open Source Billing System
-Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
-This file is part of jbilling.
-jbilling is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-jbilling is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-You should have received a copy of the GNU Affero General Public License
-along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- */
+    jBilling - The Enterprise Open Source Billing System
+    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
+
+    This file is part of jbilling.
+
+    jbilling is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    jbilling is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.sapienter.jbilling.server.mediation;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -51,11 +53,11 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.user.EntityBL;
-import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.util.ArrayList;
+import org.springframework.util.StopWatch;
 
 /**
  *
@@ -65,7 +67,11 @@ import java.util.ArrayList;
 public class MediationSessionBean implements IMediationSessionBean {
 
     private static final Logger LOG = Logger.getLogger(MediationSessionBean.class);
+
     public void trigger() {
+        StopWatch watch = new StopWatch("trigger watch");
+        watch.start();
+
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         MediationProcessDAS processDAS = new MediationProcessDAS();
         List<String> errorMessages = new ArrayList<String>();
@@ -107,26 +113,10 @@ public class MediationSessionBean implements IMediationSessionBean {
                         // so it needs to be brought to the persistant context here again
                         MediationProcess process = local.createProcessRecord(cfg);
 
-                        int lastPosition = 0;
-                        List<Record> thisGroup = new ArrayList<Record>();
-                        for (Record record : reader) {
-                            if (lastPosition >= record.getPosition()) {
-                                // end of this group
-                                // call the rules to get the records normalized
-                                // plus the user id, item id and quantity
-                                local.normalizeRecordGroup(processTask, executorId, process,
-                                        thisGroup, entityId, cfg);
-                                // start again
-                                thisGroup.clear();
-                            }
-                            LOG.debug("Now processing record " + record);
-                            thisGroup.add(record);
-                            lastPosition = record.getPosition();
-                        }
-
-                        // send the last record/s as well
-                        if (thisGroup.size() > 0) {
-                            local.normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
+                        for (List<Record> thisGroup : reader) {
+                            LOG.debug("Now processing " + thisGroup.size() + " records.");
+                            local.normalizeRecordGroup(processTask, executorId, process,
+                                    thisGroup, entityId, cfg);
                         }
 
                         // save the information about this just ran mediation process in
@@ -151,6 +141,9 @@ public class MediationSessionBean implements IMediationSessionBean {
             }
             throw new SessionInternalError(buf.toString());
         }
+
+        watch.stop();
+        LOG.debug("Mediation process done. Duration (mls):" + watch.getTotalTimeMillis());
     }
 
     /**
@@ -239,16 +232,16 @@ public class MediationSessionBean implements IMediationSessionBean {
     }
 
     public boolean isBeenProcessed(
-            MediationProcess process, List<Record> thisGroup) {
+            MediationProcess process, Record record) {
         // validate that this group has not been already processed
         MediationRecordDAS recordDas = new MediationRecordDAS();
-        String key = thisGroup.get(0).getKey();
+        String key = record.getKey();
         if (recordDas.findNow(key) != null) {
             LOG.debug("Detected duplicated of record: " + key);
             return true;
         }
         MediationRecordDTO dbRecord = new MediationRecordDTO(
-                thisGroup.get(0).getKey(), // the keys are all the same withing a group
+                record.getKey(),
                 Calendar.getInstance().getTime(), process);
         recordDas.save(dbRecord);
         return false;
@@ -259,45 +252,73 @@ public class MediationSessionBean implements IMediationSessionBean {
             MediationProcess process, List<Record> thisGroup, Integer entityId,
             MediationConfiguration cfg)
             throws TaskException {
-        // validate that this group has not been already processed
-        
-        if (isBeenProcessed(process, thisGroup)) {
+
+        StopWatch groupWatch = new StopWatch("group full watch");
+        groupWatch.start();
+        // validate that these records have not been already processed
+        List<Record> alreadyProcessed = new ArrayList<Record>(0);
+        for (Record record: thisGroup) {
+            if (isBeenProcessed(process, record)) {
+                alreadyProcessed.add(record);
+            }
+        }
+        thisGroup.removeAll(alreadyProcessed);
+        alreadyProcessed.clear();
+        if (thisGroup.size() == 0) {
+            // it could be that they all have been processed already
             return;
         }
 
         LOG.debug("Normalizing record ...");
-        MediationRecordDAS recordDAS = new MediationRecordDAS();
-        MediationRecordDTO record = recordDAS.find(thisGroup.get(0).getKey());
         ArrayList<MediationResult> results = new ArrayList<MediationResult>(0);
+
+        // call the plug-in to resolve these records
+        StopWatch rulesWatch = new StopWatch("rules watch");
+        rulesWatch.start();
         processTask.process(thisGroup, results, cfg.getName());
+        rulesWatch.stop();
+        LOG.debug("Processing " + thisGroup.size() + " took " + rulesWatch.getTotalTimeMillis() +
+                " or " + new Double(thisGroup.size()) / rulesWatch.getTotalTimeMillis() * 1000D + " per second.");
 
-        MediationProcessDAS processDAS = new MediationProcessDAS();
-        processDAS.reattach(process);
         // this process came from a different transaction (persistent context)
+        new MediationProcessDAS().reattach(process);
+
+        // go over the results
         for (MediationResult result : results) {
-            // determine the currency for this result
-            Integer currencyId = result.getCurrencyId();
-            if (currencyId == null) {
-                UserBL user = new UserBL(result.getUserId());
-                currencyId = user.getCurrencyId();
+
+            if (!result.isDone()) {
+                // this is an error, the rules failed somewhere because the
+                // 'done' flag is still false.
+                LOG.debug("Record result is not done");
+
+                // TO-DO: Identify the error and call the error handler plug-in
+
+            } else if (!result.getErrors().isEmpty()) {
+                // There are some user-detected errors
+                LOG.debug("Record result is done with errors");
+
+                // TO-DO: call the error handler plug-in
+            } else {
+                // this record was process without any errors
+                LOG.debug("Record result is done");
+
+                process.setOrdersAffected(process.getOrdersAffected() + result.getLines().size());
+
+                // relate this order with this process
+                MediationOrderMap map = new MediationOrderMap();
+                map.setMediationProcessId(process.getId());
+                map.setOrderId(result.getCurrentOrder().getId());
+                MediationMapDAS mapDas = new MediationMapDAS();
+                mapDas.save(map);
+
+                // add the record lines
+                saveEventRecordLines(result.getDiffLines(), new MediationRecordDAS().find(result.getRecordKey()), result.getEventDate(),
+                        result.getDescription());
             }
-
-            process.setOrdersAffected(process.getOrdersAffected() + 1);
-
-            // relate this order with this process
-            MediationOrderMap map = new MediationOrderMap();
-            map.setMediationProcessId(process.getId());
-            map.setOrderId(result.getCurrentOrder().getId());
-            MediationMapDAS mapDas = new MediationMapDAS();
-            mapDas.save(map);
-
-            // add the record lines
-            saveEventRecordLines(result.getDiffLines(), record, result.getEventDate(),
-                    result.getDescription());
         }
 
-        // mark the record as done
-        record.setFinished(Calendar.getInstance().getTime());
+        groupWatch.stop();
+        LOG.debug("Processing the group took " + groupWatch.getTotalTimeMillis());
     }
 
     public void saveEventRecordLines(List<OrderLineDTO> newLines,

@@ -42,12 +42,11 @@ function PricingResult priceRequest(Integer itemId, MediationResult result) {
     return pricing;
  }
 
+# updates the current order
 function void addLine(MediationResult result) {
-    List<OrderLineDTO> originalLines = OrderLineBL.copy(result.getCurrentOrder().getLines());
+    result.setOldLines(OrderLineBL.copy(result.getCurrentOrder().getLines()));
     // I need to pass the price, even if it is null
     OrderLineBL.addLine(result.getCurrentOrder(), result.getLines().get(0), result.getPersist());
-    result.setDiffLines(OrderLineBL.diffOrderLines(originalLines, result.getCurrentOrder().getLines()));
-    result.setDone(true);
 }
 
 
@@ -73,6 +72,17 @@ then
     LOG.debug("The currency was set to " + $result.getCurrencyId());
 end
 
+rule 'date setter'
+when
+    $result : MediationResult(eventDate == null)
+    $field : PricingField( name == "start", resultId == $result.id)
+then
+    modify( $result ) {
+        setEventDate( $field.getDateValue() );
+    }
+    LOG.debug("day set to " + $result.getEventDate());
+end
+
 rule 'get current order'
 when
     $result : MediationResult(currencyId != null, userId != null,
@@ -85,13 +95,14 @@ then
     LOG.debug("The current order was fetched");
 end
 
-rule 'price request'
+rule 'resolve item and request price'
 when
     $result : MediationResult( currentOrder != null )
-    $field : PricingField( name == "duration", resultId == $result.id)
+    $quantity : PricingField( name == "duration", resultId == $result.id)
     not ( OrderLineDTO( itemId == 1) from $result.lines )
 then
-    $result.getLines().add(newLine(1, new BigDecimal($field.getStrValue())));
+    $result.getLines().add(newLine(1, new BigDecimal($quantity.getStrValue())));
+    LOG.debug("Added line with item 1 for quantity " + $quantity);
     update( $result );
     PricingResult request = priceRequest(1, $result);
     insert( request );
@@ -116,25 +127,30 @@ end
 rule 'line creation'
 salience -10
 when
-    $result : MediationResult( currentOrder != null, done == false )
+    $result : MediationResult( currentOrder != null, done == false, oldLines == null )
     $phoneCalled : PricingField( name == "dst", resultId == $result.id)
 then
     addLine($result); # will add the first line to the current order
     $result.setDescription("Phone call to " + $phoneCalled);
-    retract($result); # done
+    update($result); # done
     # to allow item management rules
     insert($result.getCurrentOrder());
     LOG.debug("current order updated " + $result.getId());
 end
 
-rule 'date setter'
+# this rule will set the diff lines 
+# this should be done *after* the plan (item management) rules run.
+# Those rules can change what lines have been affected by this record.
+# If there are not plan rules, then it can be simplified (the call to 
+# diffOrderLines can be avoided)
+rule 'resolve diff lines'
 when
-    $result : MediationResult(eventDate == null)
-    $field : PricingField( name == "start", resultId == $result.id)
+    $result : MediationResult( oldLines != null, done == false )
 then
     modify( $result ) {
-        setEventDate( $field.getDateValue() );
-    }
-    LOG.debug("day set to " + $result.getEventDate());
+        setDiffLines(OrderLineBL.diffOrderLines($result.getOldLines(),
+            $result.getCurrentOrder().getLines())),
+        setDone(true)
+    };
+    LOG.debug("diff done for record " + $result.getRecordKey() + " diff is " + $result.getDiffLines());
 end
-

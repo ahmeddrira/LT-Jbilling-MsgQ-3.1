@@ -54,7 +54,11 @@ public class MediationTest extends TestCase {
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
             assertEquals("There should be two processes after running the mediation process", 2, all.size());
-            assertEquals("The process has to touch seven orders", new Integer(7), all.get(0).getOrdersAffected());
+            for (MediationProcess process: all) {
+                if (process.getConfiguration().getId() == 10) {
+                    assertEquals("The process has to touch seven orders", new Integer(7), process.getOrdersAffected());
+                }
+            }
 
             List allCfg = remoteMediation.getAllConfigurations(1);
             assertNotNull("config list can't be null", allCfg);
@@ -85,11 +89,14 @@ public class MediationTest extends TestCase {
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1015))) {
                     foundFirst = true;
-                    assertEquals("Quantity of should be the combiend of all events", new BigDecimal("2600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+                    assertEquals("Quantity of should be the combiend of all events",
+                            new BigDecimal("1300.0"), order.getOrderLines()[0].getQuantityAsDecimal());
                 }
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1115))) {
                     foundSecond = true;
+                    assertEquals("Quantity of second order should be 300 ",
+                            new BigDecimal("300.0"), order.getOrderLines()[0].getQuantityAsDecimal());
                 }
             }
 
@@ -102,7 +109,7 @@ public class MediationTest extends TestCase {
             for (OrderLineWS line : order.getOrderLines()) {
                 total = total.add(line.getAmountAsDecimal());
             }
-            assertEquals("Total of mixed price order", new BigDecimal("12800"), total);
+            assertEquals("Total of mixed price order", new BigDecimal("6400"), total);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());

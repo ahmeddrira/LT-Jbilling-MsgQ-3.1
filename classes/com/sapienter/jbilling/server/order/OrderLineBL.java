@@ -38,11 +38,6 @@ import java.util.List;
  */
 public class OrderLineBL {
 
-    public static void generateQuantityEvents() {
-        //TODO: otherwise anything related to mediation will not update the
-        // dynamic balance
-    }
-
     public static List<OrderLineDTO> diffOrderLines(List<OrderLineDTO> lines1,
             List<OrderLineDTO> lines2) {
         List<OrderLineDTO> diffLines = new ArrayList<OrderLineDTO>();
@@ -74,7 +69,7 @@ public class OrderLineBL {
                 }
             } else {
                 // new line
-                diffLines.add(line);
+                diffLines.add(new OrderLineDTO(line));
             }
         }
 

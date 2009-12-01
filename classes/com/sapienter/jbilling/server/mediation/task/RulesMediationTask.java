@@ -40,6 +40,9 @@ public class RulesMediationTask extends RulesBaseTask implements
     public void process(List<Record> records, List<MediationResult> results, String configurationName)
             throws TaskException {
  
+        // this plug-in gets called many times for the same instance
+        rulesMemoryContext.clear();
+
         int index = -1; // to track the results list
         // if results are passed, there has to be one per record
         if (results != null && results.size() > 0) {
@@ -60,6 +63,7 @@ public class RulesMediationTask extends RulesBaseTask implements
             } else {
                 result = new MediationResult(configurationName, true);
             }
+            result.setRecordKey(record.getKey());
             rulesMemoryContext.add(result);
             results.add(result); // for easy retrival later
 

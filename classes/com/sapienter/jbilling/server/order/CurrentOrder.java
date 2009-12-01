@@ -26,16 +26,22 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.MapPeriodToCalendar;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import java.util.List;
+import org.springmodules.cache.CachingModel;
+import org.springmodules.cache.FlushingModel;
+import org.springmodules.cache.provider.CacheProviderFacade;
 
 public class CurrentOrder {
     private final Date eventDate;
@@ -45,7 +51,11 @@ public class CurrentOrder {
     private OrderBL order = null;
     private final EventLogger eLogger = EventLogger.getInstance();
 
-    
+    // cache management
+    private CacheProviderFacade cache;
+    private CachingModel cacheModel;
+    private FlushingModel flushModel;
+
     protected CurrentOrder(Integer userId, Date eventDate) {
         LOG.debug("Current order constructed with user " + userId + " event date " +
                 eventDate);
@@ -56,6 +66,12 @@ public class CurrentOrder {
         this.userId = userId;
         this.eventDate = eventDate;
         user = new UserBL(userId);
+
+        cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
+        cacheModel = (CachingModel) Context.getBean(
+                Context.Name.CACHE_MODEL_RW);
+        flushModel = (FlushingModel) Context.getBean(
+                Context.Name.CACHE_FLUSH_MODEL_RW);
     }
     
     /**
@@ -64,6 +80,16 @@ public class CurrentOrder {
      * @return
      */
     public Integer getCurrent() {
+
+        // find in the cache
+        Integer retValue = (Integer) cache.getFromCache(userId.toString() + Util.truncateDate(eventDate) ,
+                cacheModel);
+
+        if (retValue != null) {
+            LOG.debug("cache hit for " + retValue);
+            return retValue;
+        }
+
         Integer subscriptionId = user.getEntity().getCustomer().getCurrentOrderId();
         Integer entityId = null;
         Integer currencyId = null;
@@ -92,15 +118,14 @@ public class CurrentOrder {
             // now that the date is set, let's see if there is a one-time order for that date
             boolean somePresent = false;
             try {
-                CachedRowSet rows = order.getOneTimersByDate(userId,
+                List<OrderDTO> rows = new OrderDAS().findOneTimersByDate(userId,
                         newOrderDate);
-                while (rows.next()) {
+                for (OrderDTO oneTime : rows) {
                     somePresent = true;
-                    int orderId = rows.getInt(1);
-                    order.set(orderId);
+                    order.set(oneTime.getId());
                     if (order.getEntity().getStatusId().equals(
                             Constants.ORDER_STATUS_FINISHED)) {
-                        LOG.debug("Found one timer " + orderId
+                        LOG.debug("Found one timer " + oneTime.getId()
                                 + " but status is finished");
                     } else {
                         orderFound = true;
@@ -108,7 +133,6 @@ public class CurrentOrder {
                         break;
                     }
                 }
-                rows.close();
             } catch (Exception e) {
                 throw new SessionInternalError(
                         "Error looking for one time orders",
@@ -132,7 +156,10 @@ public class CurrentOrder {
         } while (!orderFound);  
         
         // the result is in 'order'
-        Integer retValue = order.getEntity().getId();
+        retValue = order.getEntity().getId();
+
+        cache.putInCache(userId.toString() + Util.truncateDate(eventDate), cacheModel,
+                retValue);
         LOG.debug("Returning " + retValue);
         return retValue;
     }

@@ -38,7 +38,6 @@ public class MediationRecordDTO implements Serializable {
 
     private String key;
     private Date started;
-    private Date finished;
     private int optlock;
     private MediationProcess process;
     private Collection<MediationRecordLineDTO> lines = new ArrayList<MediationRecordLineDTO>();
@@ -51,15 +50,6 @@ public class MediationRecordDTO implements Serializable {
         this.key = key;
         this.started = started;
         this.process = process;
-    }
-
-    @Column(name = "end_datetime")
-    public Date getFinished() {
-        return finished;
-    }
-    // needed by Hibernate
-    public void setFinished(Date finished) {
-        this.finished = finished;
     }
 
     @Id

@@ -1126,7 +1126,6 @@ ALTER TABLE public.mediation_process OWNER TO jbilling;
 CREATE TABLE mediation_record (
     id_key character varying(100) NOT NULL,
     start_datetime timestamp without time zone NOT NULL,
-    end_datetime timestamp without time zone,
     mediation_process_id integer,
     optlock integer NOT NULL
 );
@@ -11206,7 +11205,7 @@ COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orde
 -- Data for Name: mediation_record; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY mediation_record (id_key, start_datetime, end_datetime, mediation_process_id, optlock) FROM stdin;
+COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock) FROM stdin;
 \.
 
 

@@ -23,6 +23,6 @@ import java.util.List;
 
 import com.sapienter.jbilling.server.mediation.Record;
 
-public interface IMediationReader extends Iterable<Record> {
+public interface IMediationReader extends Iterable<List<Record>> {
     public boolean validate(List<String> messages);
 }

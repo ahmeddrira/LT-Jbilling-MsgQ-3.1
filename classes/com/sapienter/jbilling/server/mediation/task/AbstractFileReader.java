@@ -40,8 +40,9 @@ import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Format;
 import com.sapienter.jbilling.server.mediation.FormatField;
-import com.sapienter.jbilling.server.mediation.GroupRecordComparator;
 import com.sapienter.jbilling.server.mediation.Record;
+import java.util.ArrayList;
+import org.apache.commons.digester.Digester;
 
 public abstract class AbstractFileReader extends AbstractReader {
     
@@ -52,6 +53,9 @@ public abstract class AbstractFileReader extends AbstractReader {
     private boolean removeQuote;
     private boolean autoID;
     private static final Logger LOG = Logger.getLogger(AbstractFileReader.class);
+    private String formatFileName = null;
+    protected Format format = null;
+    private int bufferSize;
 
     public AbstractFileReader() {
     }
@@ -59,6 +63,17 @@ public abstract class AbstractFileReader extends AbstractReader {
     @Override
     public boolean validate(List<String> messages) {
         boolean retValue = super.validate(messages); 
+
+        String formatFile = (String) parameters.get("format_file");
+        if (formatFile == null) {
+            messages.add("parameter format_file is required");
+            return false;
+        }
+        
+        String formatDirectory = ((String) parameters.get("format_directory") == null) 
+            ? Util.getSysProp("base_dir") + "mediation" : (String) parameters.get("format_directory");
+
+        formatFileName = formatDirectory + "/" + formatFile;
         
         // optionals
         directory = ((String) parameters.get("directory") == null) 
@@ -73,6 +88,8 @@ public abstract class AbstractFileReader extends AbstractReader {
                 ? "true" : (String) parameters.get("removeQuote"));
         autoID = Boolean.parseBoolean(((String) parameters.get("autoID") == null)
                 ? "false" : (String) parameters.get("autoID"));
+        bufferSize = Integer.parseInt(((String) parameters.get("buffer_size") == null)
+                ? "0" : (String) parameters.get("buffer_size"));
 
         if (directory == null) {
             messages.add("The plug-in parameter 'directory' is mandatory");
@@ -85,9 +102,34 @@ public abstract class AbstractFileReader extends AbstractReader {
        
         return retValue;
     }
-    
+    protected Format getFormat() throws IOException, SAXException {
+        // parse the XML ...
+        // create a field object per field element
+        if (format == null) {
+            Digester digester = new Digester();
+            digester.setValidating(true);
+            digester.addObjectCreate("format", "com.sapienter.jbilling.server.mediation.Format");
+            digester.addObjectCreate("format/field", "com.sapienter.jbilling.server.mediation.FormatField");
+            digester.addCallMethod("format/field/name","setName",0);
+            digester.addCallMethod("format/field/type","setType",0);
+            digester.addCallMethod("format/field/startPosition","setStartPosition",0);
+            digester.addCallMethod("format/field/durationFormat","setDurationFormat",0);
+            digester.addCallMethod("format/field/length","setLength",0);
+            digester.addCallMethod("format/field/isKey","isKeyTrue");
+            digester.addSetNext("format/field", "addField", "com.sapienter.jbilling.server.mediation.FormatField");
+
+            format = (Format) digester.parse(new File(formatFileName));
+
+            LOG.debug("using format: " + format);
+        }
+
+        return format;
+
+    }
+
+
     @Override
-    public Iterator<Record> iterator() {
+    public Iterator<List<Record>> iterator() {
         try {
             return new Reader();
         } catch (Exception e) {
@@ -95,17 +137,14 @@ public abstract class AbstractFileReader extends AbstractReader {
         }
     }
     
-    public class Reader implements Iterator<Record> {
+    public class Reader implements Iterator<List<Record>> {
         private final Logger LOG = Logger.getLogger(Reader.class);
         private File[] files = null;
         private int fileIndex = 0;
-        private Record previous = null;
+        private List<Record> records = null;
         private BufferedReader reader = null;
-        private String line;
-        private int groupPosition;
         private int counter;
-        private final GroupRecordComparator groupComparator;
-        private final Format format;
+        protected final Format format;
         
         protected Reader() throws FileNotFoundException, IOException, SAXException {
             files = new File(directory).listFiles(new FileFilter() {
@@ -121,26 +160,47 @@ public abstract class AbstractFileReader extends AbstractReader {
             if (!nextReader()) {
                 LOG.info("No files found to process");
                 format = null;
-                groupComparator = null;
             } else {
                 LOG.debug("Files to process = " + files.length);
                 format = getFormat();
-                groupComparator = new GroupRecordComparator(format);
                 counter = 0;
+                records = new ArrayList<Record>(getBatchSize());
             }
         }
        
         /**
-         * Get the next line of a whatever file is in the list
+         * Get the next set or records
+         * @return true if there are some, otherwise false
          */
         public boolean hasNext() {
             if (reader == null) {
                 return false;
             }
             
+            records.clear();
+            final int startedAt = counter;
+            String line = readLine();
+            while (line != null) {
+                counter++; // it read one just now
+                // convert this line to a Record
+                records.add(convertLineToRecord(line));
+                if (counter - startedAt >= getBatchSize()) {
+                    break;
+                }
+                line = readLine();
+            }
+
+            return records.size() > 0;
+        }
+
+        /**
+         * Reads the next line from the current file, or closes this file and
+         * starts with the next one.
+         * @return The line read, or null if there are not any others.
+         */
+        private String readLine() {
             try {
-                line = reader.readLine();
-                counter++;
+                String line = reader.readLine();
                 if (line == null) {
                     // we are done with this file
                     reader.close();
@@ -153,27 +213,31 @@ public abstract class AbstractFileReader extends AbstractReader {
                     }
                     // reached the last line, go to the next file
                     if (!nextReader()) {
-                        return false; // all done then
+                        return null; // all done then
                     } else {
                         // read the first line from the next file
                         line = reader.readLine();
                         counter = 1;
                     }
                 }
+                return line;
             } catch (Exception e) {
                 throw new SessionInternalError(e);
-            } 
-            return line != null;
+            }
         }
         
         /**
          * Takes the last read line and transforms it into a Record
          */
-        public Record next() {
-            if (line == null) {
+        public List<Record> next() {
+            if (records.size() == 0) {
                 throw new NoSuchElementException();
             }
 
+            return records;
+        }
+
+        private Record convertLineToRecord(String line) {
             // get the raw fields from the line
             String tokens[] = splitFields(line);
             if (tokens.length != format.getFields().size() && !autoID) {
@@ -248,14 +312,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                 }
             }
             
-            // to assign the position, we need to compare with the previous record
-            if (groupComparator.compare(record, previous) == 0) {
-                groupPosition++;
-            } else {
-                groupPosition = 1;
-            }
-            record.setPosition(groupPosition);
-            previous = record;
+            record.setPosition(counter);
             return record;
         }
         
@@ -265,7 +322,11 @@ public abstract class AbstractFileReader extends AbstractReader {
             }
             
             if (files.length > fileIndex) { // any more to process ?
-                reader = new BufferedReader(new java.io.FileReader(files[fileIndex]));
+                if (bufferSize > 0) {
+                    reader = new BufferedReader(new java.io.FileReader(files[fileIndex]), bufferSize);
+                } else {
+                    reader = new BufferedReader(new java.io.FileReader(files[fileIndex]));
+                }
                 LOG.debug("Now processing file " + files[fileIndex].getName());
                 return true;
             }

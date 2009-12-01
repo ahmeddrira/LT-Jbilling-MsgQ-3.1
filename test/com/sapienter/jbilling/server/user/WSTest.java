@@ -1066,7 +1066,7 @@ Ch2->P1
             api.createOrderAndInvoice(order);
             System.out.println("Validating new balance");
             myUser = api.getUserWS(myId);
-            assertEquals("user should have 10 balance", new BigDecimal("10"), myUser.getDynamicBalanceAsDecimal());
+            assertEquals("user should have 10.32 balance (15 out of 31 days)", new BigDecimal("10.32"), myUser.getDynamicBalanceAsDecimal());
             
             System.out.println("Removing");
             api.deleteUser(myId);

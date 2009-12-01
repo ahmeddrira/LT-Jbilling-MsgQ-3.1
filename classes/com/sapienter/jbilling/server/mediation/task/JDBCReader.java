@@ -32,7 +32,6 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.List;
 
@@ -45,8 +44,8 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.util.PreferenceBL;
+import java.util.ArrayList;
 
 /**
  * JDBCReader allows reading event records from a database for 
@@ -60,7 +59,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
  * null' are read and then timestamped. The meothd  also allows 
  * composite  primary keys.
  */
-public class JDBCReader extends PluggableTask implements IMediationReader {
+public class JDBCReader extends AbstractReader implements IMediationReader {
 
     private static final Logger LOG = Logger.getLogger(JDBCReader.class);
 
@@ -122,7 +121,7 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
         return true;
     }
 
-    public Iterator<Record> iterator() {
+    public Iterator<List<Record>> iterator() {
         try {
             return new Reader(getRecords());
         } catch (Exception e) {
@@ -418,22 +417,22 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
     /**
      * The Record iterator class.
      */ 
-    public class Reader implements Iterator<Record> {
+    public class Reader implements Iterator<List<Record>> {
         private ResultSet records;
         private PricingField.Type[] columnTypes;
         private String[] columnNames;
         private int[] keyColumnIndices;
 
         private Record currentRecord;
-        private boolean isRecordUsed; // whether record has been returned
+        private List<Record> recordList;
 
         protected Reader(ResultSet records) { 
             this.records = records;
             currentRecord = null;
-            isRecordUsed = true;
 
             try {
                 setColumnInfo();
+                recordList = new ArrayList<Record>(getBatchSize());
             } catch (SQLException sqle) {
                 throw new SessionInternalError(sqle);
             }
@@ -441,21 +440,25 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
 
         public boolean hasNext() {
             try {
-                return updateCurrent();
+                int counter = 0;
+                recordList.clear();
+
+                while (updateCurrent() && counter < getBatchSize()) {
+                    counter++;
+                    recordList.add(currentRecord);
+                }
+
+                return recordList.size() > 0;
             } catch (SQLException sqle) {
                 throw new SessionInternalError(sqle);
             }
         }
 
-        public Record next() {
-            try {
-                if (updateCurrent()) {
-                    isRecordUsed = true;
-                    return currentRecord;
-                }
+        public List<Record> next() {
+            if (recordList.size() == 0) {
                 throw new NoSuchElementException("No more records.");
-            } catch (SQLException sqle) {
-                throw new SessionInternalError(sqle);
+            } else {
+                return recordList;
             }
         }
 
@@ -465,11 +468,6 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
          * Closes the DB connection when there are none left.
          */
         private boolean updateCurrent() throws SQLException {
-            if (!isRecordUsed) {
-                // a record is available
-                return true;
-            }
-
             // try to get a new record
             if (records.next()) {
                 // previous record has been processed
@@ -508,12 +506,10 @@ public class JDBCReader extends PluggableTask implements IMediationReader {
                 // current record read
                 recordRead(currentRecord, keyColumnIndices);
 
-                // there is now a new record available
-                isRecordUsed = false;
                 return true;
             }
 
-            LOG.debug("No more reocrds.");
+            LOG.debug("No more records.");
 
             // no more records
             if (currentRecord != null) {

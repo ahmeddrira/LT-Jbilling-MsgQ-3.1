@@ -974,8 +974,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             mediation.saveEventRecordLines(new ArrayList(diffLines), record, date,
                     eventDescription);
 
-            record.setFinished(new Date());
-
             // return the updated order
             return bl.getWS(languageId);
 

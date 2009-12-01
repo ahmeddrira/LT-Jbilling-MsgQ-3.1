@@ -63,6 +63,8 @@ public class Context {
         CACHE,
         CACHE_MODEL_ITEM_PRICE,
         CACHE_FLUSH_MODEL_ITEM_PRICE,
+        CACHE_MODEL_RW,
+        CACHE_FLUSH_MODEL_RW,
         CAI,
         MMSC,
         WEB_SERVICES_CALLER_DEFAULTS,
@@ -110,6 +112,9 @@ public class Context {
         springBeans.put(Name.CACHE_MODEL_ITEM_PRICE, "cacheModelItemPrice");
         springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE, 
                 "flushModelItemPrice");
+        springBeans.put(Name.CACHE_MODEL_RW, "cacheModelPTDTO");
+        springBeans.put(Name.CACHE_FLUSH_MODEL_RW,
+                "flushModelPTDTO");
         springBeans.put(Name.CAI, "cai");
         springBeans.put(Name.MMSC, "mmsc");
         springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 

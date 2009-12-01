@@ -139,4 +139,9 @@ public class MediationProcess implements Serializable {
 		this.records = records;
 	}
 
+    public String toString() {
+        return "MediationProcess= " +
+                " orders affected = " + getOrdersAffected();
+    }
+
 }

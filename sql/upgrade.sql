@@ -66,3 +66,6 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 alter table customer add column auto_recharge double precision;
 insert into preference_type (id, int_def_value, str_def_value, float_def_value) values (49, null, null, null);
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (65, 17, 'com.sapienter.jbilling.server.user.tasks.AutoRechargeTask', 0);
+
+-- changes in mediatin module
+alter table mediation_record drop column end_datetime;

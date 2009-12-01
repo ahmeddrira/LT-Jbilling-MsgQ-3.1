@@ -166,7 +166,7 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
 		
 		Integer[] result = null;
 		
-        String hql =
+        final String hql =
                 "select distinct(i.id) " +
                 "from OrderDTO o " +
                 "inner join o.lines l " +
@@ -188,6 +188,23 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         }
         return result;
 	}
+
+    public List<OrderDTO> findOneTimersByDate(Integer userId, Date activeSince) {
+        final String hql = 
+        "select o " +
+        "  from OrderDTO o " +
+        " where o.baseUserByUserId.id = :userId " +
+        "   and o.orderPeriod.id = " + Constants.ORDER_PERIOD_ONCE +
+        "   and activeSince = :activeSince " +
+        "   and deleted = 0";
+
+        List<OrderDTO> result = (List<OrderDTO>) getSession()
+                .createQuery(hql)
+                .setInteger("userId", userId)
+                .setDate("activeSince", activeSince).list();
+
+        return result;
+    }
 
     public OrderDTO findForUpdate(Integer id) {
         OrderDTO retValue = super.findForUpdate(id);

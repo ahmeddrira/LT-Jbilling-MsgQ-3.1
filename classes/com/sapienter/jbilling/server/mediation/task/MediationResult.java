@@ -45,6 +45,9 @@ public class MediationResult extends Result {
 
     // the difference lines of the current orders, comparing the original lines
     private List<OrderLineDTO> diffLines = null;
+    // the original lines in the current order before the new lines were applied
+    private List<OrderLineDTO> oldLines = null;
+    private String recordKey = null;
     private OrderDTO currentOrder = null;
     private Integer userId = null;
     private Integer currencyId = null;
@@ -52,6 +55,8 @@ public class MediationResult extends Result {
     private Date eventDate = null;
     private String description = null;
     private boolean persist = false; // whether changes are allowed to the DB
+    // custom errors go here
+    private List<String> errors = new ArrayList<String>(0);
 
     public MediationResult(String configurationName, boolean persist) {
         this.configurationName = configurationName;
@@ -150,5 +155,28 @@ public class MediationResult extends Result {
         return persist;
     }
 
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void addError(String error) {
+        errors.add(error);
+    }
+
+    public List<OrderLineDTO> getOldLines() {
+        return oldLines;
+    }
+
+    public void setOldLines(List<OrderLineDTO> oldLines) {
+        this.oldLines = oldLines;
+    }
+
+    public String getRecordKey() {
+        return recordKey;
+    }
+
+    public void setRecordKey(String recordKey) {
+        this.recordKey = recordKey;
+    }
 }
 

@@ -1242,12 +1242,6 @@ public class OrderBL extends ResultList
         }
 
         OrderDTO order = new OrderDAS().find(currentOrderId);
-        // the order needs to be detached. All changes by the mediation process
-        // should not apply immediately
-        // yet, avoid some lazy initialization
-        // order.touch();
-        // new OrderDAS().detach(order);
-        //return new OrderDTO(order);
         return order;
     }
 
@@ -1301,18 +1295,6 @@ public class OrderBL extends ResultList
     public Integer getMainOrderId(Integer userId) {
         UserDAS das = new UserDAS();
         return das.find(userId).getCustomer().getCurrentOrderId();
-    }
-
-    public CachedRowSet getOneTimersByDate(Integer userId, Date activeSince)
-            throws SQLException, Exception {
-
-        prepareStatement(OrderSQL.getCurrent);
-        cachedResults.setInt(1, userId.intValue());
-        cachedResults.setDate(2, new java.sql.Date(activeSince.getTime()));
-
-        execute();
-        conn.close();
-        return cachedResults;
     }
 
     public void addRelationships(Integer userId, Integer periodId, Integer currencyId) {

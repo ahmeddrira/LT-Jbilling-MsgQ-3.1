@@ -34,7 +34,7 @@ end
 
 rule 'external_provisioning_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, quantity == 1, 
+    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 1, 
         provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then
@@ -48,7 +48,7 @@ end
 
 rule 'cai_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, quantity == 2, 
+    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 2, 
         provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then
@@ -60,7 +60,7 @@ end
 
 rule 'mmsc_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, quantity == 3, 
+    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 3, 
         provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
     CommandManager(eventType == "activated")
 then

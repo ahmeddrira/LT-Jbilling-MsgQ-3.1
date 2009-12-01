@@ -353,7 +353,7 @@ public class ProvisioningTest extends TestCase {
             Integer ret = api.createOrder(order);
             assertNotNull("The order was not created", ret);
 
-            pause(12000); // wait for MDBs to complete
+            pause(4000); // wait for MDBs to complete
             System.out.println("Getting back order " + ret);
 
             // check TestExternalProvisioningMDB was successful

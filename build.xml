@@ -376,7 +376,11 @@
         <javac debug="on"
                destdir="${build.test.dir}"
                srcdir="${source.test.dir}">
-            <include name="**/PricingFieldTest.java"/> <!-- source to test/unit path when available -->
+
+            <!-- change source to test/unit path when available, and remove hardcoded tests -->
+            <include name="**/PricingFieldTest.java"/>
+            <include name="**/PeriodOfTimeTest.java"/>
+
             <classpath  refid="run.classpath"/>
             <classpath  refid="test.classpath"/>
         </javac>
@@ -394,6 +398,7 @@
             <formatter type="brief" usefile="false"/>
 
             <test name="com.sapienter.jbilling.server.item.PricingFieldTest"/>
+            <test name="com.sapienter.jbilling.server.process.PeriodOfTimeTest"/>
 
             <!-- ideally we should be able to run ALL unit tests on the path, but our current
                  structure doesn't allow it as we can't differentiate between a ws test, unit test etc.

@@ -1101,15 +1101,16 @@ Ch2->P1
 
             // make it half a month to test pro-rating
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_MONTH, 15);
+            cal.add(Calendar.DAY_OF_MONTH, 14); // add 14 days, current day + 14 = 15 days total
             order.setActiveUntil(cal.getTime());
 
             System.out.println("creating recurring order and invoice");
             api.createOrderAndInvoice(order);
             System.out.println("Validating new balance");
             myUser = api.getUserWS(myId);
+
             assertEquals("user should have 10.32 balance (15 out of 31 days)", new BigDecimal("10.32"), myUser.getDynamicBalanceAsDecimal());
-            
+
             System.out.println("Removing");
             api.deleteUser(myId);
     	} catch (Exception e) {

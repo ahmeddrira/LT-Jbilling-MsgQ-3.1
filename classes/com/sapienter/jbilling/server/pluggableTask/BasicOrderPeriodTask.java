@@ -142,15 +142,15 @@ public class BasicOrderPeriodTask
 						&& (order.getActiveUntil() == null || cal.getTime()
 								.compareTo(order.getActiveUntil()) < 0)
 						&& periods.size() < maxPeriods) {
-                	Date cycleStarts = cal.getTime();
-					cal.add(MapPeriodToCalendar.map(order.getOrderPeriod()
-							.getUnitId()), order.getOrderPeriod().getValue()
-							.intValue());
-					Date cycleEnds = cal.getTime();
-					if (cal.getTime().after(firstBillableDate)
+
+                    Date cycleStarts = cal.getTime();
+                    Date cycleEnds = calculateCycleEnd(cal, order);
+
+						if (cal.getTime().after(firstBillableDate)
 							&& !cal.getTime().after(viewLimit)) {
 						// calculate the days for this cycle
 						PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
+
 						// not crete this period
 						PeriodOfTime pt = new PeriodOfTime(
 								(periods.size() == 0) ? firstBillableDate
@@ -181,10 +181,10 @@ public class BasicOrderPeriodTask
                         (order.getActiveUntil() == null ||
                          cal.getTime().compareTo(order.getActiveUntil()) < 0) &&
                          periods.size() < maxPeriods) {
-                	Date cycleStarts = cal.getTime();
-                    cal.add(MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId()),
-                            order.getOrderPeriod().getValue().intValue());
-                	Date cycleEnds = cal.getTime();
+                	                    
+                    Date cycleStarts = cal.getTime();
+                	Date cycleEnds = calculateCycleEnd(cal, order);
+
                     if (cal.getTime().after(firstBillableDate)) {
 						// calculate the days for this cycle
 						PeriodOfTime cycle = new PeriodOfTime(cycleStarts, cycleEnds, 0, 0);
@@ -242,6 +242,31 @@ public class BasicOrderPeriodTask
         LOG.debug("ebp:" + endOfPeriod);
         
         return endOfPeriod;
+    }
+
+    /**
+     * Calculates the cycle end date based on the given start (as a calendar value) and the
+     * given orders period ({@link OrderDTO#getOrderPeriod()}) value.
+     *
+     * This method is designed to be used with the {@link PeriodOfTime} class which treats
+     * a period as an inclusive start & end date, and requires extra logic to convert a
+     * 1 Month order period into the requisite 30 or 31 day length.
+     *
+     * @param start start date as Calendar
+     * @param order order containing desired order period length
+     * @return calculated end date
+     */
+    protected Date calculateCycleEnd(Calendar start, OrderDTO order) {
+        Integer field = MapPeriodToCalendar.map(order.getOrderPeriod().getUnitId());
+        start.add(field, order.getOrderPeriod().getValue());
+
+        /* Addition of a "Month" period includes an extra day (eg, Jan 1 -> Feb 1 = 32 days)
+           If adding anything longer than a day, subtract 1 day to get the expected "days in month/week/year"
+        */
+        if (field != Calendar.DAY_OF_YEAR)
+            start.add(Calendar.DAY_OF_YEAR, -1);
+                                                                
+        return start.getTime();
     }
 
     protected Date getViewLimit(Integer entityId, Date processDate) {

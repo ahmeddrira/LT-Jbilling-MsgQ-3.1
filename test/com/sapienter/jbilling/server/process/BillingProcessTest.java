@@ -21,6 +21,8 @@
 package com.sapienter.jbilling.server.process;
 
 import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -42,6 +44,7 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.RemoteContext;
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 
@@ -501,22 +504,34 @@ public class BillingProcessTest extends TestCase {
             Collection<InvoiceDTO> invoices = remoteBillingProcess.getGeneratedInvoices(PROCESS_ID);
             // we know that only one invoice should be generated
             assertEquals("Invoices generated", 998, invoices.size());
-            
+
+            // List of pro-rated orders that should be ignored - (does not follow quantity * price = total)
+            // this should contain any orders from jbilling_test.sql that has an "active_until" date, and a
+            // corresponding "next_billable_day"
+            List<Integer> proRatedOrders = Arrays.asList(4, 5, 35, 45, 113, 1055, 1065, 107500, 107600);
+
             for (InvoiceDTO invoice : invoices) {
                 BigDecimal orderTotal = BigDecimal.ZERO;
                 boolean isProRated = false;
+
                 for (OrderProcessDTO orderProcess: invoice.getOrderProcesses()) {
                     OrderDTO orderDto = remoteOrder.getOrderEx(orderProcess.getPurchaseOrder().getId(), languageId);
+
                     orderTotal = orderTotal.add(orderDto.getTotal());
-                    if (orderProcess.getPurchaseOrder().getId() >= 103 && 
-                            orderProcess.getPurchaseOrder().getId() <= 108 || 
-                            orderProcess.getPurchaseOrder().getId() == 113 ||
-                            orderProcess.getPurchaseOrder().getId() == 107600) {
+                    
+                    // ignore orders 100 through to 113, and orders in the above proRatedOrders list
+                    if (orderProcess.getPurchaseOrder().getId() >= 100 && orderProcess.getPurchaseOrder().getId() <= 113
+                            || proRatedOrders.contains(orderProcess.getPurchaseOrder().getId())) {
                     	isProRated = true;
                     }
                 }
 
                 if (!isProRated) {
+                    System.out.println("Order total: " + orderTotal);
+                    System.out.println("Invoice total: " + invoice.getTotal());
+                    System.out.println("Invoice balance: " + invoice.getBalance());
+                    System.out.println("Invoice carried balance: " + invoice.getCarriedBalance() + "\n");
+
 	                assertEquals("Orders total = Invoice " + invoice.getId() + " total",
                                  orderTotal, invoice.getTotal().subtract(invoice.getCarriedBalance()));
                 } else {
@@ -631,16 +646,16 @@ public class BillingProcessTest extends TestCase {
     
     public void testPeriodsBilled() {
         String dateRanges[][] = {
-            { "2006-10-26", "2006-11-26", "1"  }, // 100
-            { "2006-10-01", "2006-11-01", "1"  }, // 102
-            { "2006-10-16", "2006-12-01", "2"  }, // 103
+            { "2006-10-26", "2006-12-24", "2"  }, // 100                
+            { "2006-10-01", "2006-11-01", "2"  }, // 102
+            { "2006-10-16", "2006-11-29", "2"  }, // 103
             { "2006-10-15", "2006-11-30", "2"  }, // 104
             { "2006-09-05", "2006-11-25", "3"  }, // 105
-            { "2006-09-03", "2006-11-01", "2"  }, // 106
+            { "2006-09-03", "2006-10-29", "2"  }, // 106
             { "2006-09-30", "2006-10-29", "2"  }, // 107
             { "2006-08-10", "2006-10-20", "3"  }, // 108
-            { "2006-10-25", "2006-11-25", "1"  }, // 110
-            { "2006-10-15", "2006-11-15", "1"  }, // 112
+            { "2006-10-25", "2006-11-24", "1"  }, // 110
+            { "2006-10-15", "2006-11-14", "1"  }, // 112
             { "2006-10-15", "2006-11-05", "1"  }, // 113
         };
         
@@ -657,12 +672,13 @@ public class BillingProcessTest extends TestCase {
                 Integer number = Integer.valueOf(dateRanges[f][2]);
                 
                 OrderProcessDTO period = (OrderProcessDTO) order.getPeriods().toArray()[0];
-                assertTrue("(from) Order " + order.getId(),period.getPeriodStart().compareTo(from) == 0);
-                assertTrue("(to) Order " + order.getId(),period.getPeriodEnd().compareTo(to) == 0);
+
+                assertEquals("(from) Order " + order.getId(), from, period.getPeriodStart());
+                assertEquals("(to) Order " + order.getId(), to, period.getPeriodEnd());
                 assertEquals("(number) Order " + order.getId(), number, period.getPeriodsIncluded());
  
                 OrderProcessDTO process = (OrderProcessDTO) order.getOrderProcesses().toArray()[0];
-                assertEquals("(process) Order " + order.getId(),lastDto.getId(), process.getBillingProcess().getId()); 
+                assertEquals("(process) Order " + order.getId(),lastDto.getId(), process.getBillingProcess().getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -953,7 +969,9 @@ public class BillingProcessTest extends TestCase {
             int month = Integer.valueOf(str.substring(5,7)).intValue();
             int day = Integer.valueOf(str.substring(8,10)).intValue();
         
-            GregorianCalendar cal = new GregorianCalendar(year, month - 1, day);
+            Calendar cal = GregorianCalendar.getInstance();
+            cal.clear();
+            cal.set(year, month - 1, day);
         
             return cal.getTime();
         } catch (Exception e) {

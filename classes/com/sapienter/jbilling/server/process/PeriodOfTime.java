@@ -19,17 +19,18 @@
  */
 package com.sapienter.jbilling.server.process;
 
-import java.util.Date;
-
 import com.sapienter.jbilling.common.Util;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class PeriodOfTime {
+    private static final long MILLISEC_PER_DAY = 24 * 60 * 60 * 1000;
+    
 	private final Date start;
-
 	private final Date end;
-
 	private final int position;
-
 	private final int daysInCycle;
 
 	public PeriodOfTime(Date start, Date end, int dayInCycle, int position) {
@@ -55,12 +56,32 @@ public class PeriodOfTime {
 		return daysInCycle;
 	}
 
+    /**
+     * Find the number of days between the period start date to the period end date inclusively. This means
+     * that the start and end dates are counted as a days within the period. For example, January 01 to
+     * January 10th includes 10 days total.
+     *
+     * This method takes into account daylight savings time to ensure that days are counted
+     * correctly across DST boundaries.
+     *
+     * @return number of days between start and end dates
+     */
 	public int getDaysInPeriod() {
-		if (end.getTime() <= start.getTime()) return 0;
-		// convert an amount of milliseconds to days
-		return (int) ((end.getTime() - start.getTime()) / 1000 / 60 / 60 / 24);
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(end);
+        long endMillis = calendar.getTimeInMillis() + calendar.getTimeZone().getOffset(calendar.getTimeInMillis());
+
+        calendar.setTime(start);
+        long startMillis = calendar.getTimeInMillis() + calendar.getTimeZone().getOffset(calendar.getTimeInMillis());
+
+        if (endMillis <= startMillis)
+            return 0;
+
+        Long delta = (endMillis - startMillis) / MILLISEC_PER_DAY;
+        return delta.intValue() + 1; // convert delta to an inclusive number of days 
 	}
 
+    @Override
 	public String toString() {
 		return "period starts: " + start + " ends " + end + " position "
 				+ position + " days in cycle " + getDaysInCycle();

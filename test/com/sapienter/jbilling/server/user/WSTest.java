@@ -296,7 +296,7 @@ public class WSTest extends TestCase {
             Integer[] users = api.getUsersInStatus(new Integer(1));
             assertEquals(1018,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 10761, users[1017].intValue());
+            assertEquals("Last returned user ", 10762, users[1017].intValue());
 
             /*
              * Get list of not active customers
@@ -789,7 +789,7 @@ Ch2->P1
             assertNotNull("Four customers with CC", ids);
             assertEquals("Four customers with CC", 6, ids.length); // returns credit cards from both clients?
                                                                    // 5 cards from entity 1, 1 card from entity 2
-            assertEquals("Created user with CC", 10761,
+            assertEquals("Created user with CC", 10762,
                     ids[ids.length - 1].intValue());
                     
             // get the user
@@ -800,7 +800,7 @@ Ch2->P1
         }
     }
     
-    private UserWS createUser(boolean goodCC, Integer parentId, Integer currencyId) throws JbillingAPIException, IOException {
+    public static UserWS createUser(boolean goodCC, Integer parentId, Integer currencyId) throws JbillingAPIException, IOException {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             
             /*
@@ -847,6 +847,48 @@ Ch2->P1
             newUser.setUserId(api.createUser(newUser));
             
             return newUser;
+    }
+
+    public static Integer createMainSubscriptionOrder(Integer userId, 
+        Integer itemId) 
+            throws JbillingAPIException, IOException {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // create an order for this user
+        OrderWS order = new OrderWS();
+        order.setUserId(userId);
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(2); // monthly
+        order.setCurrencyId(1); // USD
+
+        // a main subscription order
+        order.setIsCurrent(1);
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2009, 1, 1);
+        order.setActiveSince(cal.getTime());
+
+        // order lines
+        OrderLineWS[] lines = new OrderLineWS[2];
+        lines[0] = new OrderLineWS();
+        lines[0].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        lines[0].setQuantity(1); 
+        lines[0].setItemId(itemId); 
+        // take the price and description from the item
+        lines[0].setUseItem(true);
+
+        lines[1] = new OrderLineWS();
+        lines[1].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        lines[1].setQuantity(3); 
+        lines[1].setItemId(1); // lemonade
+        // take the price and description from the item
+        lines[1].setUseItem(true);
+
+        // attach lines to order
+        order.setOrderLines(lines);
+
+        // create the order
+        return api.createOrder(order);
     }
     
     private OrderWS getOrder() {
@@ -1185,48 +1227,13 @@ Ch2->P1
             // create user
             UserWS user = createUser(true, null, null);
             Integer userId = user.getUserId();
-
             // update to credit limit
             user.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
             user.setCreditLimit(new BigDecimal("1000.0"));
             api.updateUser(user);
 
-            // create an order for this user
-            OrderWS order = new OrderWS();
-            order.setUserId(userId);
-            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
-            order.setPeriod(2); // monthly
-            order.setCurrencyId(1); // USD
-
-            // a main subscription order
-            order.setIsCurrent(1);
-            Calendar cal = Calendar.getInstance();
-            cal.clear();
-            cal.set(2009, 1, 1);
-            order.setActiveSince(cal.getTime());
-
-            // order lines
-            OrderLineWS[] lines = new OrderLineWS[2];
-            lines[0] = new OrderLineWS();
-            lines[0].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            lines[0].setQuantity(1); 
-            lines[0].setItemId(2); // lemonade plan
-            // take the price and description from the item
-            lines[0].setUseItem(true);
-
-            lines[1] = new OrderLineWS();
-            lines[1].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            lines[1].setQuantity(3); 
-            lines[1].setItemId(1); // lemonade
-            // take the price and description from the item
-            lines[1].setUseItem(true);
-
-            // attach lines to order
-            order.setOrderLines(lines);
-
-            // create the order
-            Integer orderId = api.createOrder(order);
-
+            // create main subscription order, lemonade plan
+            Integer orderId = createMainSubscriptionOrder(userId, 2);
 
             // try to get another lemonde
             ValidatePurchaseWS result = api.validatePurchase(userId, 1, null);
@@ -1551,42 +1558,8 @@ Ch2->P1
             user.setCreditLimit(new BigDecimal("1000.0"));
             api.updateUser(user);
 
-            // create an order for this user
-            OrderWS order = new OrderWS();
-            order.setUserId(userId);
-            order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
-            order.setPeriod(2); // monthly
-            order.setCurrencyId(1); // USD
-
-            // a main subscription order
-            order.setIsCurrent(1);
-            Calendar cal = Calendar.getInstance();
-            cal.clear();
-            cal.set(2009, 1, 1);
-            order.setActiveSince(cal.getTime());
-
-            // order lines
-            OrderLineWS[] lines = new OrderLineWS[2];
-            lines[0] = new OrderLineWS();
-            lines[0].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            lines[0].setQuantity(1);
-            lines[0].setItemId(2); // lemonade plan
-            // take the price and description from the item
-            lines[0].setUseItem(true);
-
-            lines[1] = new OrderLineWS();
-            lines[1].setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
-            lines[1].setQuantity(3);
-            lines[1].setItemId(1); // lemonade
-            // take the price and description from the item
-            lines[1].setUseItem(true);
-
-            // attach lines to order
-            order.setOrderLines(lines);
-
-            // create the order
-            Integer orderId = api.createOrder(order);
-
+            // create main subscription order, lemonade plan
+            Integer orderId = createMainSubscriptionOrder(userId, 2);
 
             // add 10 coffees to current order
             OrderLineWS newLine = new OrderLineWS();

@@ -38,9 +38,11 @@ import junit.framework.TestCase;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
@@ -1191,6 +1193,129 @@ public class WSTest  extends TestCase {
             // cleanup
             api.deleteOrder(orderId);
 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
+    public void testRateCard() {
+        try {
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            System.out.println("Testing Rate Card");
+
+            // user for tests
+            UserWS user = com.sapienter.jbilling.server.user.WSTest.createUser(
+                    true, null, null);
+            Integer userId = user.getUserId();
+            // create main subscription order
+            Integer mainOrderId = com.sapienter.jbilling.server.user.WSTest
+                    .createMainSubscriptionOrder(userId, 1);
+            // update to credit limit
+            user.setBalanceType(Constants.BALANCE_CREDIT_LIMIT);
+            user.setCreditLimit(new BigDecimal("100.0"));
+            api.updateUser(user);
+
+
+            /* updateCurrentOrder */
+            // should be priced at 0.33 (see row 548)
+            PricingField[] pf = {
+                    new PricingField("dst", "55999"), 
+                    new PricingField("duration", 1) };
+
+            OrderWS currentOrder = api.updateCurrentOrder(userId,
+                    null, pf, new Date(), "Event from WS");
+
+            assertEquals("1 order line", 1, 
+                    currentOrder.getOrderLines().length);
+            OrderLineWS line = currentOrder.getOrderLines()[0];
+            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line quantity", "1", line.getQuantity());
+            assertEquals("order line total", new BigDecimal("0.33"), 
+                    line.getAmountAsDecimal());
+
+            // check dynamic balance
+            user = api.getUserWS(userId);
+            assertEquals("dynamic balance", new BigDecimal("0.33"), 
+                    user.getDynamicBalanceAsDecimal());
+
+            // should be priced at 0.08 (see row 1753)
+            pf[0].setStrValue("55000");
+            currentOrder = api.updateCurrentOrder(userId,
+                    null, pf, new Date(), "Event from WS");
+
+            assertEquals("1 order line", 1, 
+                    currentOrder.getOrderLines().length);
+            line = currentOrder.getOrderLines()[0];
+            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line quantity", "2", line.getQuantity());
+            // 0.33 + 0.08 = 0.41
+            assertEquals("order line total", new BigDecimal("0.41"), 
+                    line.getAmountAsDecimal());
+
+            // check dynamic balance
+            user = api.getUserWS(userId);
+            assertEquals("dynamic balance", new BigDecimal("0.41"), 
+                    user.getDynamicBalanceAsDecimal());
+
+
+            /* getItem */
+            // should be priced at 0.42 (see row 1731)
+            pf[0].setStrValue("212222");
+            ItemDTOEx item = api.getItem(1, userId, pf);
+            assertEquals("price", new BigDecimal("0.42"), item.getPrice());
+
+
+            /* rateOrder */
+            OrderWS newOrder = createMockOrder(userId, 1, 
+                    new BigDecimal("10.0"));
+            OrderLineWS newLine = newOrder.getOrderLines()[0];
+            newLine.setQuantity(10);
+            newLine.setPrice((String) null);
+            newLine.setAmount((String) null);
+            newLine.setUseItem(true);
+            newOrder.setPricingFields(PricingField.setPricingFieldsValue(pf));
+
+            OrderWS order = api.rateOrder(newOrder);
+            assertEquals("1 order line", 1, 
+                    currentOrder.getOrderLines().length);
+            line = order.getOrderLines()[0];
+            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line quantity", "10", line.getQuantity());
+            // 0.42 * 10 = 4.2
+            assertEquals("order line total", new BigDecimal("4.2"), 
+                    line.getAmountAsDecimal());
+
+
+            /* validatePurchase */
+            // should be priced at 0.47 (see row 498)
+            pf[0].setStrValue("187630");
+            // current balance: 100 - 0.41 = 99.59
+            // quantity available expected: 99.59 / 0.47
+            ValidatePurchaseWS result = api.validatePurchase(userId,
+                    null, pf);
+            assertEquals("validate purchase success", Boolean.valueOf(true), 
+                    result.getSuccess());
+            assertEquals("validate purchase authorized", Boolean.valueOf(true),
+                    result.getAuthorized()); 
+            assertEquals("validate purchase quantity", new BigDecimal("211.89"),
+                    result.getQuantityAsDecimal());
+
+            // check current order wasn't updated
+            currentOrder = api.getOrder(currentOrder.getId());
+            assertEquals("1 order line", 1, 
+                    currentOrder.getOrderLines().length);
+            line = currentOrder.getOrderLines()[0];
+            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line quantity", "2", line.getQuantity());
+            assertEquals("order line total", new BigDecimal("0.41"), 
+                    line.getAmountAsDecimal());
+
+
+            // clean up
+            api.deleteUser(userId);
 
         } catch (Exception e) {
             e.printStackTrace();

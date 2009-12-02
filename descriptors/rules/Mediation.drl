@@ -90,7 +90,7 @@ when
 then
     modify( $result ) {
         setCurrentOrder( OrderBL.getOrCreateCurrentOrder($result.getUserId(),
-                $result.getEventDate(), $result.getCurrencyId()) );
+                $result.getEventDate(), $result.getCurrencyId(), $result.getPersist()) );
     }
     LOG.debug("The current order was fetched");
 end

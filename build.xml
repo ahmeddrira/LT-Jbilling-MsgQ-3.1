@@ -848,6 +848,13 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="ValidatePurchaseRules.drl" />
         </rulebase>
+        <rulebase 
+        	srcdir="${source.rules.dir}" 		
+        	tofile="${base_dir}/rules/RateCard.pkg"
+        	classpathref="drools.run.classpath"
+        	binformat="package">
+        	<include name="RateCard.xls" />
+        </rulebase>
     </target>
 
     <target name="export">

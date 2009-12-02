@@ -20,7 +20,7 @@
 
 package com.sapienter.jbilling.server.item;
 
-
+import java.util.List;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
@@ -80,10 +80,11 @@ public class ItemSessionBean implements IItemSessionBean {
     }
 
     public ItemDTO get(Integer id, Integer languageId, Integer userId,
-            Integer currencyId, Integer entityId) 
-            throws SessionInternalError {
+            Integer currencyId, Integer entityId, 
+            List<PricingField> pricingFields) throws SessionInternalError {
         try {
             ItemBL itemBL = new ItemBL(id);
+            itemBL.setPricingFields(pricingFields);
             return itemBL.getDTO(languageId, userId, entityId, currencyId);
         } catch (Exception e) {
             throw new SessionInternalError(e);

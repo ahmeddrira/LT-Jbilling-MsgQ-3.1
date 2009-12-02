@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -14299,7 +14299,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 550	421	suffix	\N	csv	\N	1
 560	450	file	\N	CancelFees.pkg	\N	1
 570	430	file	\N	ItemsRules.pkg	\N	1
-590	410	file	\N	PricingRules.pkg	\N	1
 600	1	file	\N	ItemsRules.pkg	\N	1
 610	460	enable_filter_user_id	\N	true	\N	1
 620	460	enable_filter_name	\N	true	\N	1
@@ -14327,7 +14326,8 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 8302	570	ageing_step	6	\N	\N	1
 8303	580	contactType	2	\N	\N	1
 8304	580	externalSavingPluginId	590	\N	\N	1
-580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg	\N	1
+590	410	file	\N	PricingRules.pkg RateCard.pkg	\N	2
+580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg RateCard.pkg	\N	1
 \.
 
 

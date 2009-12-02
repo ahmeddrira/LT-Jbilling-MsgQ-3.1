@@ -150,7 +150,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         // the price is actually irrelevant in this call, since it's going
         // to be overwritten by the user's input
         // in this case the currency doesn't matter, it
-        ItemDTO dto = myItemSession.get(selectedId, languageId, null, null, entityId);
+        ItemDTO dto = myItemSession.get(selectedId, languageId, null, null, entityId, null);
         // the prices have to be localized
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);

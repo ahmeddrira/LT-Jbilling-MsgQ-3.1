@@ -717,16 +717,24 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     private void processItemLine(OrderLineWS[] lines, Integer languageId,
-            Integer entityId, Integer userId, Integer currencyId)
+            Integer entityId, Integer userId, Integer currencyId, 
+            String pricingFields)
             throws SessionInternalError, PluggableTaskException, TaskException {
         for (OrderLineWS line : lines) {
             // get the related item
             IItemSessionBean itemSession = (IItemSessionBean) Context.getBean(
                     Context.Name.ITEM_SESSION);
 
+            // get pricing fields if they were set for the order
+            List<PricingField> fields = null;
+            if (pricingFields != null) {
+                fields = Arrays.asList(
+                        PricingField.getPricingFieldsValue(pricingFields));
+            }
+
             ItemDTO item = itemSession.get(line.getItemId(),
                     languageId, userId, currencyId,
-                    entityId);
+                    entityId, fields);
 
             //ItemDAS itemDas = new ItemDAS();
             //line.setItem(itemDas.find(line.getItemId()));
@@ -760,7 +768,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
             // see if the related items should provide info
             processItemLine(order.getOrderLines(), languageId, entityId, 
-                    order.getUserId(), order.getCurrencyId());
+                    order.getUserId(), order.getCurrencyId(), 
+                    order.getPricingFields());
 
             // do some transformation from WS to DTO :(
             OrderBL orderBL = new OrderBL();
@@ -916,10 +925,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             OrderBL bl = new OrderBL();
             if (lines != null) {
                 // get the current order
-                bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId));
+                bl.set(OrderBL.getOrCreateCurrentOrder(userId, date, currencyId,
+                        true));
                 List<OrderLineDTO> oldLines = OrderLineBL.copy(bl.getDTO().getLines());
                 // convert order lines from WS to DTO
-                processItemLine(lines, languageId, getCallerCompanyId(), userId, currencyId);
+                processItemLine(lines, languageId, getCallerCompanyId(), 
+                        userId, currencyId, pricing);
+
                 for (OrderLineWS line : lines) {
                     // add the line to the current order
                     bl.addItem(line.getItemId(), line.getQuantityAsDecimal(), languageId, userId, getCallerCompanyId(),
@@ -1452,7 +1464,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         // see if the related items should provide info
         try {
             processItemLine(order.getOrderLines(), languageId, entityId,
-                       order.getUserId(), order.getCurrencyId());
+                    order.getUserId(), order.getCurrencyId(), 
+                    order.getPricingFields());
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

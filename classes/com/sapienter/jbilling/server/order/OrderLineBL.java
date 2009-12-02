@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.order;
 
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderDAS;
@@ -37,6 +39,8 @@ import java.util.List;
  * @author emilc
  */
 public class OrderLineBL {
+
+    private static final Logger LOG = Logger.getLogger(OrderLineBL.class);
 
     public static List<OrderLineDTO> diffOrderLines(List<OrderLineDTO> lines1,
             List<OrderLineDTO> lines2) {
@@ -88,6 +92,11 @@ public class OrderLineBL {
     public static void addLine(OrderDTO order, OrderLineDTO line, boolean persist) {
         UserBL user = new UserBL(order.getUserId());
         OrderLineDTO oldLine = order.getLine(line.getItemId());
+        if (oldLine != null) {
+            // get a copy of the old line
+            oldLine = new OrderLineDTO(oldLine);
+        }
+
         addItem(line.getItemId(), line.getQuantity(), user.getLanguage(), order.getUserId(),
                 user.getEntity().getEntity().getId(), order.getCurrencyId(), order, line, persist);
 
@@ -101,6 +110,8 @@ public class OrderLineBL {
                 oldLines.add(oldLine);
             }
             newLines.add(newLine);
+            LOG.debug("Old line: " + oldLine);
+            LOG.debug("New line: " + newLine);
             orderBl.checkOrderLineQuantities(oldLines, newLines, 
                     user.getEntity().getEntity().getId(), order.getId());
         }

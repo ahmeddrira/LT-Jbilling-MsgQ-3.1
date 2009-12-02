@@ -1230,7 +1230,8 @@ public class OrderBL extends ResultList
      * @param currencyId
      * @return
      */
-    public static OrderDTO getOrCreateCurrentOrder(Integer userId, Date eventDate, Integer currencyId) {
+    public static OrderDTO getOrCreateCurrentOrder(Integer userId, Date eventDate,
+            Integer currencyId, boolean persist) {
         CurrentOrder co = new CurrentOrder(userId, eventDate);
 
         Integer currentOrderId = co.getCurrent();
@@ -1241,7 +1242,14 @@ public class OrderBL extends ResultList
                     "subscription order:" + currentOrderId);
         }
 
-        OrderDTO order = new OrderDAS().find(currentOrderId);
+        OrderDAS orderDas = new OrderDAS();
+        OrderDTO order = orderDas.find(currentOrderId);
+
+        if (!persist) {
+            order.touch();
+            orderDas.detach(order);
+        }
+
         return order;
     }
 

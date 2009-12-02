@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.item;
 
+import java.util.List;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
@@ -46,7 +48,8 @@ public interface IItemSessionBean {
     public boolean validateDecimals( Integer hasDecimals, Integer itemId );
 
     public ItemDTO get(Integer id, Integer languageId, Integer userId,
-            Integer currencyId, Integer entityId) throws SessionInternalError;
+            Integer currencyId, Integer entityId, List<PricingField> 
+            pricingFields) throws SessionInternalError;
 
 
     public void delete(Integer executorId, Integer id) 

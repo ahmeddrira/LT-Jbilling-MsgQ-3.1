@@ -234,22 +234,19 @@ public class MaintainAction extends Action {
 
                 LOG.debug("balance type is " + userForm.get("balance_type") +
                         " credit limit is " + userForm.get("credit_limit"));
-                if (((Integer) userForm.get("balance_type")).equals(Constants.BALANCE_CREDIT_LIMIT) &&
-                        ((String) userForm.get("credit_limit")).trim().length() == 0) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("user.edit.error.invalidCreditLimit"));
+                if (Constants.BALANCE_CREDIT_LIMIT.equals((Integer) userForm.get("balance_type"))
+                        && ((String) userForm.get("credit_limit")).trim().length() == 0) {
+                    errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("user.edit.error.invalidCreditLimit"));
                 }
 
-                if (!((Integer) userForm.get("balance_type")).equals(Constants.BALANCE_CREDIT_LIMIT) &&
+                if (!Constants.BALANCE_CREDIT_LIMIT.equals((Integer) userForm.get("balance_type")) &&
                         ((String) userForm.get("credit_limit")).trim().length() != 0) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("user.edit.error.invalidNonCreditLimit"));
+                    errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("user.edit.error.invalidNonCreditLimit"));
                 }
 
-                if (!((Integer) userForm.get("balance_type")).equals(Constants.BALANCE_PRE_PAID) &&
+                if (!Constants.BALANCE_PRE_PAID.equals((Integer) userForm.get("balance_type")) &&
                         ((String) userForm.get("auto_recharge")).trim().length() != 0) {
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("user.edit.error.invalidNonAutoRecharge"));
+                    errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("user.edit.error.invalidNonAutoRecharge"));
                 }
 
                 if (errors.isEmpty()) {              

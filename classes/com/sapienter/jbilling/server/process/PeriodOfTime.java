@@ -19,29 +19,29 @@
  */
 package com.sapienter.jbilling.server.process;
 
-import com.sapienter.jbilling.common.Util;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import org.joda.time.DateMidnight;
+import org.joda.time.Days;
 
 public class PeriodOfTime {
-    private static final long MILLISEC_PER_DAY = 24 * 60 * 60 * 1000;
     
-	private final Date start;
-	private final Date end;
+	private final DateMidnight start;
+	private final DateMidnight end;
 	private final int position;
 	private final int daysInCycle;
 
 	public PeriodOfTime(Date start, Date end, int dayInCycle, int position) {
-		this.start = Util.truncateDate(start);
-		this.end = Util.truncateDate(end);
+		this.start = new DateMidnight(start);
+		this.end = new DateMidnight(end);
 		this.position = position;
 		this.daysInCycle = dayInCycle;
 	}
 
 	public Date getEnd() {
-		return end;
+		return end.toDate();
 	}
 
 	public int getPosition() {
@@ -49,7 +49,7 @@ public class PeriodOfTime {
 	}
 
 	public Date getStart() {
-		return start;
+		return start.toDate();
 	}
 
 	public int getDaysInCycle() {
@@ -57,9 +57,9 @@ public class PeriodOfTime {
 	}
 
     /**
-     * Find the number of days between the period start date to the period end date inclusively. This means
-     * that the start and end dates are counted as a days within the period. For example, January 01 to
-     * January 10th includes 10 days total.
+     * Find the number of days between the period start date to the period end date. This means
+     * that the start date is counted as a days within the period, but not the end date. For example, January 01 to
+     * January 10th includes 9 days total.
      *
      * This method takes into account daylight savings time to ensure that days are counted
      * correctly across DST boundaries.
@@ -67,18 +67,10 @@ public class PeriodOfTime {
      * @return number of days between start and end dates
      */
 	public int getDaysInPeriod() {
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(end);
-        long endMillis = calendar.getTimeInMillis() + calendar.getTimeZone().getOffset(calendar.getTimeInMillis());
-
-        calendar.setTime(start);
-        long startMillis = calendar.getTimeInMillis() + calendar.getTimeZone().getOffset(calendar.getTimeInMillis());
-
-        if (endMillis <= startMillis)
+        if (end.isBefore(start)) { // not sure why this is necessary. 
             return 0;
-
-        Long delta = (endMillis - startMillis) / MILLISEC_PER_DAY;
-        return delta.intValue() + 1; // convert delta to an inclusive number of days 
+        }
+        return Days.daysBetween(start, end).getDays();
 	}
 
     @Override

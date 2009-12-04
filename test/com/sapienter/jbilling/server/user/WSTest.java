@@ -1101,7 +1101,7 @@ Ch2->P1
 
             // make it half a month to test pro-rating
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_MONTH, 14); // add 14 days, current day + 14 = 15 days total
+            cal.add(Calendar.DAY_OF_MONTH, 15);
             order.setActiveUntil(cal.getTime());
 
             System.out.println("creating recurring order and invoice");

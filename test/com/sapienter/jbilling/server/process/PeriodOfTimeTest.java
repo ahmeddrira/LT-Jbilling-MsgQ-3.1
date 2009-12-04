@@ -66,7 +66,7 @@ public class PeriodOfTimeTest extends TestCase {
         Date end = calendar.getTime();
 
         PeriodOfTime period = new PeriodOfTime(start, end, 0, 0);
-        assertEquals(10, period.getDaysInPeriod());
+        assertEquals(9, period.getDaysInPeriod());
     }
 
     public void testDaysInPeriod31Days() throws Exception {
@@ -79,7 +79,7 @@ public class PeriodOfTimeTest extends TestCase {
         Date end = calendar.getTime();
 
         PeriodOfTime period = new PeriodOfTime(start, end, 0, 0);
-        assertEquals(31, period.getDaysInPeriod());
+        assertEquals(30, period.getDaysInPeriod());
     }
 
     /**
@@ -97,7 +97,7 @@ public class PeriodOfTimeTest extends TestCase {
         Date end = calendar.getTime();
 
         PeriodOfTime period = new PeriodOfTime(start, end, 0, 0);
-        assertEquals(30, period.getDaysInPeriod());
+        assertEquals(29, period.getDaysInPeriod());
     }
 
     public void testDaysInPeriodMidMonthDays() {
@@ -109,9 +109,9 @@ public class PeriodOfTimeTest extends TestCase {
         calendar.set(2009, 0, 14); // End January 14
         Date end = calendar.getTime();
 
-        // January 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 = 10 days inclusive
+        // January 5, 6, 7, 8, 9, 10, 11, 12, 13, = 9 days inclusive
         PeriodOfTime period = new PeriodOfTime(start, end, 0, 0);
-        assertEquals(10, period.getDaysInPeriod());
+        assertEquals(9, period.getDaysInPeriod());
     }
 
     public void testDaysInPeriodSpanMonths() {
@@ -123,9 +123,9 @@ public class PeriodOfTimeTest extends TestCase {
         calendar.set(2009, 1, 14); // End February 14
         Date end = calendar.getTime();
 
-        // 31 days + 14 days = 45 days
+        // 31 days + 13 days = 44 days
         PeriodOfTime period = new PeriodOfTime(start, end, 0, 0);
-        assertEquals(45, period.getDaysInPeriod());
+        assertEquals(44, period.getDaysInPeriod());
     }
 
     /**
@@ -152,7 +152,7 @@ public class PeriodOfTimeTest extends TestCase {
         Date end = calendar.getTime();
 
         PeriodOfTime period = new PeriodOfTime(start, end, 0, 0);
-        assertEquals(32, period.getDaysInPeriod());
+        assertEquals(31, period.getDaysInPeriod());
     }
 
     public void testDaysInPeriodEndBeforeStart() throws Exception {

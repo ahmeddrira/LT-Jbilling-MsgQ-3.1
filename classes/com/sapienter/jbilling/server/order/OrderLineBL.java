@@ -117,19 +117,79 @@ public class OrderLineBL {
         }
     }
 
-
+    /**
+     * Adds a single item (quantity 1) to the given order for the given item id.
+     * This method will not force persistence of the added item, instead changes will
+     * be persisted when the transaction ends.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     */
     public static void addItem(OrderDTO order, Integer itemId) {
-        addItem(order, itemId, new BigDecimal(1));
+        addItem(order, itemId, false);
     }
 
+    /**
+     * Adds a single item (quantity 1) to the given order for the given item id.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     * @param persist save changes immediately if true
+     */
+    public static void addItem(OrderDTO order, Integer itemId, boolean persist) {
+        addItem(order, itemId, new BigDecimal(1), persist);
+    }
+
+    /**
+     * Adds a quantity of items to the given order for the given item id.
+     * This method will not force persistence of the added item, instead changes will
+     * be persisted when the transaction ends.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     * @param quantity quantity to add
+     */
     public static void addItem(OrderDTO order, Integer itemId, Integer quantity) {
-        addItem(order, itemId, new BigDecimal(quantity));
+        addItem(order, itemId, quantity, false);
     }
 
+    /**
+     * Adds a quantity of items to the given order for the given item id.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     * @param quantity quantity to add
+     * @param persist save changes immediately if true
+     */
+    public static void addItem(OrderDTO order, Integer itemId, Integer quantity, boolean persist) {
+        addItem(order, itemId, new BigDecimal(quantity), persist);
+    }
+
+    /**
+     * Adds a quantity of items to the given order for the given item id.
+     * This method will not force persistence of the added item, instead changes will
+     * be persisted when the transaction ends.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     * @param quantity quantity to add
+     */
     public static void addItem(OrderDTO order, Integer itemId, BigDecimal quantity) {
+        addItem(order, itemId, quantity, false);
+    }
+
+    /**
+     * Adds a quantity of items to the given order for the given item id.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     * @param quantity quantity to add
+     * @param persist save changes immediately if true
+     */
+    public static void addItem(OrderDTO order, Integer itemId, BigDecimal quantity, boolean persist) {
         UserBL user = new UserBL(order.getUserId());
         addItem(itemId, quantity, user.getLanguage(), order.getUserId(), user.getEntity().getEntity().getId(),
-                order.getCurrencyId(), order, null, false);
+                order.getCurrencyId(), order, null, persist);
     }
 
     public static void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,

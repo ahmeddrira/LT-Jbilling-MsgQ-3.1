@@ -2612,6 +2612,8 @@
     <PluggableTaskType Id="64" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask" MinParameters="3"/>
     <PluggableTaskType Id="65" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask" MinParameters="3"/>
     <PluggableTaskType Id="66" CategoryId="17" ClassName="com.sapienter.jbilling.server.user.tasks.AutoRechargeTask" MinParameters="0"/>
+    <PluggableTaskType Id="67" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentBeanstreamTask" MinParameters="3"/>
+    <PluggableTaskType Id="68" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentSageTask" MinParameters="2"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

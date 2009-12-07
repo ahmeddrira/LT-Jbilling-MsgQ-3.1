@@ -314,9 +314,7 @@ public class InvoiceDAS extends AbstractDAS<InvoiceDTO> {
         addUserCriteria(criteria, userId);
         criteria.add(Restrictions.ne("balance", BigDecimal.ZERO));
         criteria.add(Restrictions.eq("isReview", 0));
-        criteria.createAlias("invoiceStatus", "s")
-                .add(Restrictions.ne("s.id", Constants.INVOICE_STATUS_PAID)); // carried invoices still hold a balance
-        criteria.setProjection(Projections.sum("balance"));                   // only count unpaid invoices
+        criteria.setProjection(Projections.sum("balance")); 
         criteria.setComment("InvoiceDAS.findTotalBalanceByUser");
 
         return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());

@@ -79,7 +79,7 @@ public class WSTest extends TestCase {
 
             System.out.println("Getting balance of user 2");
             UserWS ret = api.getUserWS(new Integer(2));
-            assertEquals("Balance of Gandlaf starts at 1376765", "1376764.98", ret.getOwingBalance());
+            assertEquals("Balance of Gandlaf starts at 1376784.98", "1376784.98", ret.getOwingBalance());
             System.out.println("Gandalf's balance: " + ret.getOwingBalance());
 
         } catch (Exception e) {

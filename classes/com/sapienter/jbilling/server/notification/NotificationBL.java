@@ -832,7 +832,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                     taxItemIndex++;
                     // taxes are not displayed as invoice lines
                     linesRemoved.add(line); // can't do lines.remove(): ConcurrentModificationException
-                } else if (line.getIsPercentage().intValue() == 1) {
+                } else if (line.getIsPercentage() != null && line.getIsPercentage().intValue() == 1) {
                     // if the line is a percentage, remove the price
                     line.setPrice(null);
                 }

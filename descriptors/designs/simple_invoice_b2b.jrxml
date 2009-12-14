@@ -51,13 +51,13 @@
 	</parameter>
 	<parameter name="totalWithoutTax" class="java.lang.String">
 	</parameter>
-	<field name="quantity" class="java.lang.Double">
+	<field name="quantity" class="java.math.BigDecimal">
 	</field>
 	<field name="description" class="java.lang.String">
 	</field>
-	<field name="price" class="java.lang.Float">
+	<field name="price" class="java.math.BigDecimal">
 	</field>
-	<field name="amount" class="java.lang.Float">
+	<field name="amount" class="java.math.BigDecimal">
 	</field>
 	<group name="invoice_total">
 		<groupFooter>

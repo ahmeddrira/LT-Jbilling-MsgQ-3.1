@@ -37,7 +37,7 @@ import javax.persistence.Version;
 @Entity
 @TableGenerator(
         name = "list_field_entity_GEN", 
-        table = "jbilling_table", 
+        table = "jbilling_seqs", 
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "list_field_entity", 

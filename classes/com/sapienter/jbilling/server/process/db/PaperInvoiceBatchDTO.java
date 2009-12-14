@@ -43,7 +43,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(name = "paper_invoice_batch_GEN", 
-                table = "jbilling_table", 
+                table = "jbilling_seqs", 
                 pkColumnName = "name", 
                 valueColumnName = "next_id", 
                 pkColumnValue = "paper_invoice_batch", 

@@ -44,7 +44,7 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 @TableGenerator(
         name = "notification_message_section_GEN", 
-        table = "jbilling_table", 
+        table = "jbilling_seqs", 
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_section", 

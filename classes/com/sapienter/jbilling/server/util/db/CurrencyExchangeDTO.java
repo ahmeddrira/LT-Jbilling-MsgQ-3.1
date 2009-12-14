@@ -42,7 +42,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @TableGenerator(
         name="currency_exchange_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="currency_exchange",

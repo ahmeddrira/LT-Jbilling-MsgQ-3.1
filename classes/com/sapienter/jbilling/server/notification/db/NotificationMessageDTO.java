@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
 @Entity
 @TableGenerator(
         name = "notification_message_GEN", 
-        table = "jbilling_table", 
+        table = "jbilling_seqs", 
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message", 

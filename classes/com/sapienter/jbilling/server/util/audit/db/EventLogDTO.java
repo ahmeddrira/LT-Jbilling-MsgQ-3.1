@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.util.db.JbillingTable;
 @org.hibernate.annotations.Entity(mutable = false)
 @TableGenerator(
         name="event_log_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="event_log",

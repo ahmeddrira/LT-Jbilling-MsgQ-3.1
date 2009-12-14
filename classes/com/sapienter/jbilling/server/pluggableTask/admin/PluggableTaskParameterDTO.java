@@ -46,7 +46,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @TableGenerator(
         name="pluggable_task_parameter_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="pluggable_task_parameter",

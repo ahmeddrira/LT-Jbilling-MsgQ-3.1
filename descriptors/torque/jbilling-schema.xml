@@ -625,6 +625,9 @@
     <table name="jbilling_table">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="name" required="true" size="50" type="VARCHAR"/>
+    </table>
+    <table name="jbilling_seqs">
+        <column name="name" required="true" size="50" type="VARCHAR"/>
         <column default="0" name="next_id" required="true" type="INTEGER"/>
     </table>
     <table name="language">

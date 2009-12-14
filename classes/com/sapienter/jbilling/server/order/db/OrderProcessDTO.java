@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 @Entity
 @TableGenerator(
         name="order_process_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="order_process",

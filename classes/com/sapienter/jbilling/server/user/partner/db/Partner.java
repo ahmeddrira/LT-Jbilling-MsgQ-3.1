@@ -51,7 +51,7 @@ import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 @Entity
 @TableGenerator(
         name = "partner_GEN",
-        table = "jbilling_table",
+        table = "jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue = "partner",

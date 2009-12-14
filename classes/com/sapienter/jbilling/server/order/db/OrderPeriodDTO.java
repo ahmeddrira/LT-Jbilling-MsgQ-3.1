@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 @Entity
 @TableGenerator(
         name="order_period_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="order_period",

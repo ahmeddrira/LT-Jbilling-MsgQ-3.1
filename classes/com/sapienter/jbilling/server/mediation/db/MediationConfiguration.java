@@ -41,7 +41,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 @Entity
 @TableGenerator(
         name="mediation_cfg_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="mediation_cfg",

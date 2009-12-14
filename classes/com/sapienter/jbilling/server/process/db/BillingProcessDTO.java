@@ -52,7 +52,7 @@ import org.hibernate.annotations.OrderBy;
 
 @Entity
 @TableGenerator(name = "billing_process_GEN", 
-                table = "jbilling_table", 
+                table = "jbilling_seqs", 
                 pkColumnName = "name", 
                 valueColumnName = "next_id", 
                 pkColumnValue = "billing_process", 

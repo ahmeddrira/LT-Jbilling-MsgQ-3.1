@@ -48,7 +48,6 @@ public class JbillingTable  implements java.io.Serializable {
 
      private int id;
      private String name;
-     private int nextId;
      private Set<ContactMapDTO> contactMaps = new HashSet<ContactMapDTO>(0);
      private Set<PreferenceDTO> preferences = new HashSet<PreferenceDTO>(0);
      private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
@@ -60,12 +59,10 @@ public class JbillingTable  implements java.io.Serializable {
     public JbillingTable(int id, String name, int nextId) {
         this.id = id;
         this.name = name;
-        this.nextId = nextId;
     }
     public JbillingTable(int id, String name, int nextId, Set<ContactMapDTO> contactMaps, Set<PreferenceDTO> preferences, Set<EventLogDTO> eventLogs) {
        this.id = id;
        this.name = name;
-       this.nextId = nextId;
        this.contactMaps = contactMaps;
        this.preferences = preferences;
        this.eventLogs = eventLogs;
@@ -90,14 +87,6 @@ public class JbillingTable  implements java.io.Serializable {
         this.name = name;
     }
     
-    @Column(name="next_id", nullable=false)
-    public int getNextId() {
-        return this.nextId;
-    }
-    
-    public void setNextId(int nextId) {
-        this.nextId = nextId;
-    }
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="jbillingTable")
     public Set<ContactMapDTO> getContactMaps() {
         return this.contactMaps;

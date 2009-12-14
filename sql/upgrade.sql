@@ -69,3 +69,8 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 
 -- changes in mediatin module
 alter table mediation_record drop column end_datetime;
+
+-- refactoring of the sequence generator table
+create table jbilling_seqs (name VARCHAR(255), next_id integer);
+insert into jbilling_seqs select name, next_id from jbilling_table;
+alter table jbilling_table drop column next_id;

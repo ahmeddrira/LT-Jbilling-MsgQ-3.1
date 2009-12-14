@@ -49,7 +49,7 @@ import org.apache.log4j.Logger;
 @Entity
 @TableGenerator(
 		name = "credit_card_GEN",
-		table = "jbilling_table",
+		table = "jbilling_seqs",
 		pkColumnName = "name",
 		valueColumnName = "next_id",
 		pkColumnValue = "credit_card",

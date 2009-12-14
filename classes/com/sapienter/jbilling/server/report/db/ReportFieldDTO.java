@@ -36,7 +36,7 @@ import javax.persistence.Version;
 @Entity
 @TableGenerator(
         name = "report_field_GEN", 
-        table = "jbilling_table", 
+        table = "jbilling_seqs", 
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "report_field", 

@@ -266,7 +266,9 @@ public final class EntitySignup {
         throws SQLException {
         PreparedStatement stmt =
             conn.prepareStatement(
-                    "update jbilling_table set next_id = ? " + " where id = ?");
+                    "update jbilling_seqs set next_id = ? " + 
+                    "where name = (select name from jbilling_table " +
+                    "where id = ?)");
         stmt.setInt(1, totalRows);
         stmt.setInt(2, tableId);
         stmt.executeUpdate();
@@ -277,8 +279,8 @@ public final class EntitySignup {
     void initTable(Table table) 
     		throws SQLException {
     	PreparedStatement stmt = conn.prepareStatement(
-    			"select next_id, id from jbilling_table " +
-                " where name = ?");
+    		"select js.next_id, jt.id from jbilling_seqs js, jbilling_table jt " +
+                "where js.name = ? and js.name = jt.name");
         stmt.setString(1, table.name);
         ResultSet res = stmt.executeQuery();
         if (res.next()) {

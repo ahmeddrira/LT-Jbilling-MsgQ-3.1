@@ -106,7 +106,7 @@ public class RefreshBettyTable {
                         id = res2.getInt(1) + 1;
                     }
                     log.debug("Updateing " + table);
-                    exe.execute("update jbilling_table set next_id = " + id + 
+                    exe.execute("update jbilling_seqs set next_id = " + id + 
                             " where name = '" + table + "'");
                 }
             }

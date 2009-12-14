@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.util.db.AbstractDescription;
 @Entity
 @TableGenerator(
         name="item_type_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="item_type",

@@ -47,7 +47,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 @Entity
 @TableGenerator(
         name="mediation_record_line_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="mediation_record_line",

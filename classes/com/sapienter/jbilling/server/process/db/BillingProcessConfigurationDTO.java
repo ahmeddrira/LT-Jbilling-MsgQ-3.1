@@ -40,7 +40,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 @Entity
 @TableGenerator(
 		name = "billing_process_configuration_GEN", 
-		table = "jbilling_table", 
+		table = "jbilling_seqs", 
 		pkColumnName = "name", 
 		valueColumnName = "next_id", 
 		pkColumnValue = "billing_process_configuration", 

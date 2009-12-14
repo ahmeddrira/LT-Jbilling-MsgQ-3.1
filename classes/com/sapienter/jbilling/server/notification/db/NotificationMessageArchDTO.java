@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 @Entity
 @TableGenerator(
         name = "notification_message_arch_GEN", 
-        table = "jbilling_table", 
+        table = "jbilling_seqs", 
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "notification_message_arch", 

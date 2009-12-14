@@ -43,7 +43,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 @Entity
 @TableGenerator(
         name = "ach_GEN", 
-        table = "jbilling_table", 
+        table = "jbilling_seqs", 
         pkColumnName = "name", 
         valueColumnName = "next_id", 
         pkColumnValue = "ach", 

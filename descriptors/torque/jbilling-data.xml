@@ -1801,93 +1801,180 @@
     <InvoiceLineType Id="1" Description="item" OrderPosition="2"/>
     <InvoiceLineType Id="4" Description="interests" OrderPosition="3"/>
     <InvoiceLineType Id="2" Description="tax" OrderPosition="5"/>
-    <JbillingTable Id="8" Name="entity_delivery_method_map" NextId="4"/>
-    <JbillingTable Id="62" Name="user_role_map" NextId="13"/>
-    <JbillingTable Id="36" Name="entity_payment_method_map" NextId="26"/>
-    <JbillingTable Id="72" Name="report_entity_map" NextId="113"/>
-    <JbillingTable Id="68" Name="currency_entity_map" NextId="10"/>
-    <JbillingTable Id="74" Name="report_type_map" NextId="19"/>
-    <JbillingTable Id="45" Name="user_credit_card_map" NextId="5"/>
-    <JbillingTable Id="61" Name="permission_role_map" NextId="279"/>
-    <JbillingTable Id="29" Name="contact_map" NextId="6780"/>
-    <JbillingTable Id="58" Name="permission_type" NextId="9"/>
-    <JbillingTable Id="6" Name="period_unit" NextId="5"/>
-    <JbillingTable Id="7" Name="invoice_delivery_method" NextId="4"/>
-    <JbillingTable Id="9" Name="user_status" NextId="9"/>
-    <JbillingTable Id="18" Name="order_line_type" NextId="4"/>
-    <JbillingTable Id="19" Name="order_billing_type" NextId="3"/>
-    <JbillingTable Id="63" Name="menu_option" NextId="92"/>
-    <JbillingTable Id="20" Name="order_status" NextId="5"/>
-    <JbillingTable Id="23" Name="pluggable_task_type_category" NextId="10"/>
-    <JbillingTable Id="24" Name="pluggable_task_type" NextId="20"/>
-    <JbillingTable Id="30" Name="invoice_line_type" NextId="6"/>
-    <JbillingTable Id="4" Name="currency" NextId="11"/>
-    <JbillingTable Id="73" Name="report_type" NextId="10"/>
-    <JbillingTable Id="35" Name="payment_method" NextId="9"/>
-    <JbillingTable Id="41" Name="payment_result" NextId="5"/>
-    <JbillingTable Id="46" Name="event_log_module" NextId="10"/>
-    <JbillingTable Id="47" Name="event_log_message" NextId="17"/>
-    <JbillingTable Id="50" Name="preference_type" NextId="37"/>
-    <JbillingTable Id="52" Name="notification_message_type" NextId="20"/>
-    <JbillingTable Id="60" Name="role" NextId="6"/>
-    <JbillingTable Id="64" Name="country" NextId="238"/>
-    <JbillingTable Id="77" Name="list_entity" NextId="1"/>
-    <JbillingTable Id="59" Name="permission" NextId="135"/>
-    <JbillingTable Id="78" Name="list_field_entity" NextId="1"/>
-    <JbillingTable Id="67" Name="currency_exchange" NextId="25"/>
-    <JbillingTable Id="26" Name="pluggable_task_parameter" NextId="1"/>
-    <JbillingTable Id="34" Name="billing_process_configuration" NextId="1"/>
-    <JbillingTable Id="17" Name="order_period" NextId="2"/>
-    <JbillingTable Id="0" Name="report" NextId="20"/>
-    <JbillingTable Id="79" Name="partner_range" NextId="1"/>
-    <JbillingTable Id="15" Name="item_price" NextId="1"/>
-    <JbillingTable Id="11" Name="partner" NextId="1"/>
-    <JbillingTable Id="5" Name="entity" NextId="1"/>
-    <JbillingTable Id="28" Name="contact_type" NextId="2"/>
-    <JbillingTable Id="65" Name="promotion" NextId="1"/>
-    <JbillingTable Id="25" Name="pluggable_task" NextId="1"/>
-    <JbillingTable Id="75" Name="ach" NextId="1"/>
-    <JbillingTable Id="43" Name="payment_info_cheque" NextId="1"/>
-    <JbillingTable Id="70" Name="partner_payout" NextId="1"/>
-    <JbillingTable Id="38" Name="process_run_total_pm" NextId="1"/>
-    <JbillingTable Id="71" Name="report_user" NextId="1"/>
-    <JbillingTable Id="1" Name="report_field" NextId="1604"/>
-    <JbillingTable Id="66" Name="payment_authorization" NextId="1"/>
-    <JbillingTable Id="32" Name="billing_process" NextId="1"/>
-    <JbillingTable Id="33" Name="process_run" NextId="1"/>
-    <JbillingTable Id="37" Name="process_run_total" NextId="1"/>
-    <JbillingTable Id="31" Name="paper_invoice_batch" NextId="1"/>
-    <JbillingTable Id="51" Name="preference" NextId="1"/>
-    <JbillingTable Id="53" Name="notification_message" NextId="1"/>
-    <JbillingTable Id="54" Name="notification_message_section" NextId="1"/>
-    <JbillingTable Id="55" Name="notification_message_line" NextId="1"/>
-    <JbillingTable Id="69" Name="ageing_entity_step" NextId="1"/>
-    <JbillingTable Id="13" Name="item_type" NextId="1"/>
-    <JbillingTable Id="14" Name="item" NextId="1"/>
-    <JbillingTable Id="48" Name="event_log" NextId="1"/>
-    <JbillingTable Id="21" Name="purchase_order" NextId="1"/>
-    <JbillingTable Id="22" Name="order_line" NextId="1"/>
-    <JbillingTable Id="39" Name="invoice" NextId="1"/>
-    <JbillingTable Id="40" Name="invoice_line" NextId="1"/>
-    <JbillingTable Id="49" Name="order_process" NextId="1"/>
-    <JbillingTable Id="42" Name="payment" NextId="1"/>
-    <JbillingTable Id="56" Name="notification_message_arch" NextId="1"/>
-    <JbillingTable Id="57" Name="notification_message_arch_line" NextId="1"/>
-    <JbillingTable Id="10" Name="base_user" NextId="1"/>
-    <JbillingTable Id="12" Name="customer" NextId="1"/>
-    <JbillingTable Id="27" Name="contact" NextId="1"/>
-    <JbillingTable Id="76" Name="contact_field" NextId="1"/>
-    <JbillingTable Id="44" Name="credit_card" NextId="1"/>
-    <JbillingTable Id="3" Name="language" NextId="2"/>
-    <JbillingTable Id="80" Name="payment_invoice" NextId="1"/>
-    <JbillingTable Id="81" Name="subscriber_status" NextId="7"/>
-    <JbillingTable Id="82" Name="mediation_cfg" NextId="1"/>
-    <JbillingTable Id="83" Name="mediation_process" NextId="1"/>
-    <JbillingTable Id="85" Name="blacklist" NextId="1"/>
-    <JbillingTable Id="86" Name="mediation_record_line" NextId="1"/>
-    <JbillingTable Id="87" Name="generic_status" NextId="26"/>
-    <JbillingTable Id="88" Name="order_line_provisioning_status" NextId="1"/>
-    <JbillingTable Id="89" Name="balance_type" NextId="0"/>
+    <JbillingTable Id="8" Name="entity_delivery_method_map"/>
+    <JbillingTable Id="62" Name="user_role_map"/>
+    <JbillingTable Id="36" Name="entity_payment_method_map"/>
+    <JbillingTable Id="72" Name="report_entity_map"/>
+    <JbillingTable Id="68" Name="currency_entity_map"/>
+    <JbillingTable Id="74" Name="report_type_map"/>
+    <JbillingTable Id="45" Name="user_credit_card_map"/>
+    <JbillingTable Id="61" Name="permission_role_map"/>
+    <JbillingTable Id="29" Name="contact_map"/>
+    <JbillingTable Id="58" Name="permission_type"/>
+    <JbillingTable Id="6" Name="period_unit"/>
+    <JbillingTable Id="7" Name="invoice_delivery_method"/>
+    <JbillingTable Id="9" Name="user_status"/>
+    <JbillingTable Id="18" Name="order_line_type"/>
+    <JbillingTable Id="19" Name="order_billing_type"/>
+    <JbillingTable Id="63" Name="menu_option"/>
+    <JbillingTable Id="20" Name="order_status"/>
+    <JbillingTable Id="23" Name="pluggable_task_type_category"/>
+    <JbillingTable Id="24" Name="pluggable_task_type"/>
+    <JbillingTable Id="30" Name="invoice_line_type"/>
+    <JbillingTable Id="4" Name="currency"/>
+    <JbillingTable Id="73" Name="report_type"/>
+    <JbillingTable Id="35" Name="payment_method"/>
+    <JbillingTable Id="41" Name="payment_result"/>
+    <JbillingTable Id="46" Name="event_log_module"/>
+    <JbillingTable Id="47" Name="event_log_message"/>
+    <JbillingTable Id="50" Name="preference_type"/>
+    <JbillingTable Id="52" Name="notification_message_type"/>
+    <JbillingTable Id="60" Name="role"/>
+    <JbillingTable Id="64" Name="country"/>
+    <JbillingTable Id="77" Name="list_entity"/>
+    <JbillingTable Id="59" Name="permission"/>
+    <JbillingTable Id="78" Name="list_field_entity"/>
+    <JbillingTable Id="67" Name="currency_exchange"/>
+    <JbillingTable Id="26" Name="pluggable_task_parameter"/>
+    <JbillingTable Id="34" Name="billing_process_configuration"/>
+    <JbillingTable Id="17" Name="order_period"/>
+    <JbillingTable Id="0" Name="report"/>
+    <JbillingTable Id="79" Name="partner_range"/>
+    <JbillingTable Id="15" Name="item_price"/>
+    <JbillingTable Id="11" Name="partner"/>
+    <JbillingTable Id="5" Name="entity"/>
+    <JbillingTable Id="28" Name="contact_type"/>
+    <JbillingTable Id="65" Name="promotion"/>
+    <JbillingTable Id="25" Name="pluggable_task"/>
+    <JbillingTable Id="75" Name="ach"/>
+    <JbillingTable Id="43" Name="payment_info_cheque"/>
+    <JbillingTable Id="70" Name="partner_payout"/>
+    <JbillingTable Id="38" Name="process_run_total_pm"/>
+    <JbillingTable Id="71" Name="report_user"/>
+    <JbillingTable Id="1" Name="report_field"/>
+    <JbillingTable Id="66" Name="payment_authorization"/>
+    <JbillingTable Id="32" Name="billing_process"/>
+    <JbillingTable Id="33" Name="process_run"/>
+    <JbillingTable Id="37" Name="process_run_total"/>
+    <JbillingTable Id="31" Name="paper_invoice_batch"/>
+    <JbillingTable Id="51" Name="preference"/>
+    <JbillingTable Id="53" Name="notification_message"/>
+    <JbillingTable Id="54" Name="notification_message_section"/>
+    <JbillingTable Id="55" Name="notification_message_line"/>
+    <JbillingTable Id="69" Name="ageing_entity_step"/>
+    <JbillingTable Id="13" Name="item_type"/>
+    <JbillingTable Id="14" Name="item"/>
+    <JbillingTable Id="48" Name="event_log"/>
+    <JbillingTable Id="21" Name="purchase_order"/>
+    <JbillingTable Id="22" Name="order_line"/>
+    <JbillingTable Id="39" Name="invoice"/>
+    <JbillingTable Id="40" Name="invoice_line"/>
+    <JbillingTable Id="49" Name="order_process"/>
+    <JbillingTable Id="42" Name="payment"/>
+    <JbillingTable Id="56" Name="notification_message_arch"/>
+    <JbillingTable Id="57" Name="notification_message_arch_line"/>
+    <JbillingTable Id="10" Name="base_user"/>
+    <JbillingTable Id="12" Name="customer"/>
+    <JbillingTable Id="27" Name="contact"/>
+    <JbillingTable Id="76" Name="contact_field"/>
+    <JbillingTable Id="44" Name="credit_card"/>
+    <JbillingTable Id="3" Name="language"/>
+    <JbillingTable Id="80" Name="payment_invoice"/>
+    <JbillingTable Id="81" Name="subscriber_status"/>
+    <JbillingTable Id="82" Name="mediation_cfg"/>
+    <JbillingTable Id="83" Name="mediation_process"/>
+    <JbillingTable Id="85" Name="blacklist"/>
+    <JbillingTable Id="86" Name="mediation_record_line"/>
+    <JbillingTable Id="87" Name="generic_status"/>
+    <JbillingTable Id="88" Name="order_line_provisioning_status"/>
+    <JbillingTable Id="89" Name="balance_type"/>
+    <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
+    <JbillingSeqs Name="user_role_map" NextId="13"/>
+    <JbillingSeqs Name="entity_payment_method_map" NextId="26"/>
+    <JbillingSeqs Name="report_entity_map" NextId="113"/>
+    <JbillingSeqs Name="currency_entity_map" NextId="10"/>
+    <JbillingSeqs Name="report_type_map" NextId="19"/>
+    <JbillingSeqs Name="user_credit_card_map" NextId="5"/>
+    <JbillingSeqs Name="permission_role_map" NextId="279"/>
+    <JbillingSeqs Name="contact_map" NextId="6780"/>
+    <JbillingSeqs Name="permission_type" NextId="9"/>
+    <JbillingSeqs Name="period_unit" NextId="5"/>
+    <JbillingSeqs Name="invoice_delivery_method" NextId="4"/>
+    <JbillingSeqs Name="user_status" NextId="9"/>
+    <JbillingSeqs Name="order_line_type" NextId="4"/>
+    <JbillingSeqs Name="order_billing_type" NextId="3"/>
+    <JbillingSeqs Name="menu_option" NextId="92"/>
+    <JbillingSeqs Name="order_status" NextId="5"/>
+    <JbillingSeqs Name="pluggable_task_type_category" NextId="10"/>
+    <JbillingSeqs Name="pluggable_task_type" NextId="20"/>
+    <JbillingSeqs Name="invoice_line_type" NextId="6"/>
+    <JbillingSeqs Name="currency" NextId="11"/>
+    <JbillingSeqs Name="report_type" NextId="10"/>
+    <JbillingSeqs Name="payment_method" NextId="9"/>
+    <JbillingSeqs Name="payment_result" NextId="5"/>
+    <JbillingSeqs Name="event_log_module" NextId="10"/>
+    <JbillingSeqs Name="event_log_message" NextId="17"/>
+    <JbillingSeqs Name="preference_type" NextId="37"/>
+    <JbillingSeqs Name="notification_message_type" NextId="20"/>
+    <JbillingSeqs Name="role" NextId="6"/>
+    <JbillingSeqs Name="country" NextId="238"/>
+    <JbillingSeqs Name="list_entity" NextId="1"/>
+    <JbillingSeqs Name="permission" NextId="135"/>
+    <JbillingSeqs Name="list_field_entity" NextId="1"/>
+    <JbillingSeqs Name="currency_exchange" NextId="25"/>
+    <JbillingSeqs Name="pluggable_task_parameter" NextId="1"/>
+    <JbillingSeqs Name="billing_process_configuration" NextId="1"/>
+    <JbillingSeqs Name="order_period" NextId="2"/>
+    <JbillingSeqs Name="report" NextId="20"/>
+    <JbillingSeqs Name="partner_range" NextId="1"/>
+    <JbillingSeqs Name="item_price" NextId="1"/>
+    <JbillingSeqs Name="partner" NextId="1"/>
+    <JbillingSeqs Name="entity" NextId="1"/>
+    <JbillingSeqs Name="contact_type" NextId="2"/>
+    <JbillingSeqs Name="promotion" NextId="1"/>
+    <JbillingSeqs Name="pluggable_task" NextId="1"/>
+    <JbillingSeqs Name="ach" NextId="1"/>
+    <JbillingSeqs Name="payment_info_cheque" NextId="1"/>
+    <JbillingSeqs Name="partner_payout" NextId="1"/>
+    <JbillingSeqs Name="process_run_total_pm" NextId="1"/>
+    <JbillingSeqs Name="report_user" NextId="1"/>
+    <JbillingSeqs Name="report_field" NextId="1604"/>
+    <JbillingSeqs Name="payment_authorization" NextId="1"/>
+    <JbillingSeqs Name="billing_process" NextId="1"/>
+    <JbillingSeqs Name="process_run" NextId="1"/>
+    <JbillingSeqs Name="process_run_total" NextId="1"/>
+    <JbillingSeqs Name="paper_invoice_batch" NextId="1"/>
+    <JbillingSeqs Name="preference" NextId="1"/>
+    <JbillingSeqs Name="notification_message" NextId="1"/>
+    <JbillingSeqs Name="notification_message_section" NextId="1"/>
+    <JbillingSeqs Name="notification_message_line" NextId="1"/>
+    <JbillingSeqs Name="ageing_entity_step" NextId="1"/>
+    <JbillingSeqs Name="item_type" NextId="1"/>
+    <JbillingSeqs Name="item" NextId="1"/>
+    <JbillingSeqs Name="event_log" NextId="1"/>
+    <JbillingSeqs Name="purchase_order" NextId="1"/>
+    <JbillingSeqs Name="order_line" NextId="1"/>
+    <JbillingSeqs Name="invoice" NextId="1"/>
+    <JbillingSeqs Name="invoice_line" NextId="1"/>
+    <JbillingSeqs Name="order_process" NextId="1"/>
+    <JbillingSeqs Name="payment" NextId="1"/>
+    <JbillingSeqs Name="notification_message_arch" NextId="1"/>
+    <JbillingSeqs Name="notification_message_arch_line" NextId="1"/>
+    <JbillingSeqs Name="base_user" NextId="1"/>
+    <JbillingSeqs Name="customer" NextId="1"/>
+    <JbillingSeqs Name="contact" NextId="1"/>
+    <JbillingSeqs Name="contact_field" NextId="1"/>
+    <JbillingSeqs Name="credit_card" NextId="1"/>
+    <JbillingSeqs Name="language" NextId="2"/>
+    <JbillingSeqs Name="payment_invoice" NextId="1"/>
+    <JbillingSeqs Name="subscriber_status" NextId="7"/>
+    <JbillingSeqs Name="mediation_cfg" NextId="1"/>
+    <JbillingSeqs Name="mediation_process" NextId="1"/>
+    <JbillingSeqs Name="blacklist" NextId="1"/>
+    <JbillingSeqs Name="mediation_record_line" NextId="1"/>
+    <JbillingSeqs Name="generic_status" NextId="26"/>
+    <JbillingSeqs Name="order_line_provisioning_status" NextId="1"/>
+    <JbillingSeqs Name="balance_type" NextId="0"/>
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
     <List Id="1" LegacyName="customerSimple" TitleKey="list.customers.title" Optlock="1"/>

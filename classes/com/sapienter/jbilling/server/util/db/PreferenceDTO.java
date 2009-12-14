@@ -41,7 +41,7 @@ import java.math.BigDecimal;
 @Entity
 @TableGenerator(
         name="preference_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="preference",

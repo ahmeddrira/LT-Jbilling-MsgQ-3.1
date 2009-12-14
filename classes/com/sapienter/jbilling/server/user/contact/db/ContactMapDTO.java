@@ -41,7 +41,7 @@ import com.sapienter.jbilling.server.util.db.JbillingTable;
 @Entity
 @TableGenerator(
         name="contact_map_GEN",
-        table="jbilling_table",
+        table="jbilling_seqs",
         pkColumnName = "name",
         valueColumnName = "next_id",
         pkColumnValue="contact_map",

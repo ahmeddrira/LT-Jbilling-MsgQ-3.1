@@ -23,11 +23,8 @@ package com.sapienter.jbilling.server.order.task;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.BasicItemManager;
 import com.sapienter.jbilling.server.item.tasks.IItemPurchaseManager;
-import com.sapienter.jbilling.server.item.tasks.Subscription;
 import com.sapienter.jbilling.server.mediation.Record;
-import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.rule.RulesBaseTask;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -92,14 +89,6 @@ public class RulesItemManager2 extends RulesBaseTask implements IItemPurchaseMan
             rulesMemoryContext.add(contactDTO);
             for (ContactFieldDTO field : (Collection<ContactFieldDTO>) contactDTO.getFieldsTable().values()) {
                 rulesMemoryContext.add(field);
-            }
-
-            // Add the subscriptions
-            OrderBL orderBl = new OrderBL();
-            for (OrderDTO myOrder : orderBl.getActiveRecurringByUser(userId)) {
-                for (OrderLineDTO myLine : myOrder.getLines()) {
-                    rulesMemoryContext.add(new Subscription(myLine));
-                }
             }
         } catch (Exception e) {
             throw new TaskException(e);

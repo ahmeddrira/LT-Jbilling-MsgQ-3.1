@@ -74,15 +74,6 @@ public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
                     rulesMemoryContext.add(field);
                 }
             }
-
-            // Add the subscriptions
-            OrderBL order = new OrderBL();
-            for (OrderDTO myOrder : order.getActiveRecurringByUser(userId)) {
-                for (OrderLineDTO myLine : myOrder.getLines()) {
-                    rulesMemoryContext.add(new Subscription(myLine));
-                }
-            }
-
         } catch (Exception e) {
             throw new TaskException(e);
         }

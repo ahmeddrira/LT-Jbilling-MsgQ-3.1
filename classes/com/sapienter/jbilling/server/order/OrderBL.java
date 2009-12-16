@@ -1192,6 +1192,10 @@ public class OrderBL extends ResultList
         return dto;
     }
 
+    public OrderLineDTO getRecurringOrderLine(Integer userId, Integer itemId) {
+        return orderLineDAS.findRecurringByUserItem(userId, itemId);
+    }
+
     public void updateOrderLine(OrderLineWS dto) {
         OrderLineDTO line = getOrderLine(dto.getId());
         if (dto.getQuantity() != null && BigDecimal.ZERO.equals(dto.getQuantityAsDecimal())) {

@@ -1,13 +1,76 @@
 package PricingRule
+
 #imports
 import com.sapienter.jbilling.server.user.ContactDTOEx
 import com.sapienter.jbilling.server.item.PricingField
 import com.sapienter.jbilling.server.user.UserDTOEx
 import com.sapienter.jbilling.server.item.tasks.PricingResult
+import com.sapienter.jbilling.server.item.tasks.SubscriptionResult
 import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 
+#globals
 global org.apache.log4j.Logger LOG;
+
+rule "lemonade plan A subscription"
+dialect 'java'
+no-loop
+    when
+        $result : PricingResult( )
+        not( exists( SubscriptionResult( userId == $result.userId, itemId == 2700 ) ) )
+    then
+        insert( new SubscriptionResult($result, 2700) );
+end
+
+rule "lemonade plan B subscription"
+dialect 'java'
+no-loop
+    when
+        $result : PricingResult( )
+        not( exists( SubscriptionResult( userId == $result.userId, itemId == 2701 ) ) )
+    then
+        insert( new SubscriptionResult($result, 2701) );
+end
+
+rule "lemonade lovers plan subscription"
+dialect 'java'
+no-loop
+    when
+        $result : PricingResult( )
+        not( exists( SubscriptionResult( userId == $result.userId, itemId == 2702 ) ) )
+    then
+        insert( new SubscriptionResult($result, 2702) );
+end
+
+rule "lemonade plan A price"
+    when
+        $result : PricingResult( itemId == 2602, price == null ) # Lemonade
+        SubscriptionResult( itemId == 2700, userId == $result.userId, subscribed == true ) # Lemonade Plan A
+    then
+        modify( $result ) {
+            setPrice("2.50");
+        }
+end
+
+rule "lemonade plan B price"
+    when
+        $result : PricingResult( itemId == 2602, price == null ) # Lemonade
+        SubscriptionResult( itemId == 2701, userId == $result.userId, subscribed == true ) # Lemonade Plan B
+    then
+        modify( $result ) {
+            setPrice("1.50");
+        }
+end
+
+rule "lemonade lovers price"
+    when
+        $result : PricingResult( itemId == 2602, price == null ) # Lemonade
+        SubscriptionResult( itemId == 2702, userId == $result.userId, subscribed == true ) # Lemonade Lovers Plan
+    then
+        modify( $result ) {
+            setPrice("3.00");
+        }
+end
 
 rule '604 -  512'
 when

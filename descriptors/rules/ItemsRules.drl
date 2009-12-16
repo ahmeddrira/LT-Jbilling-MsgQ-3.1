@@ -1,24 +1,49 @@
-#created on: 24-Sep-2007
 package ItemsRules3
 
 #imports
 import com.sapienter.jbilling.server.item.PricingField
+import com.sapienter.jbilling.server.mediation.task.MediationResult
 import com.sapienter.jbilling.server.item.db.ItemDTO
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import java.math.BigDecimal;
+import com.sapienter.jbilling.server.item.tasks.SubscriptionResult
 import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderBL;
-import org.apache.log4j.Logger;
+import java.math.BigDecimal;
 import java.util.List;
+import org.apache.log4j.Logger;
 
+# globals
 global org.apache.log4j.Logger LOG;
 
 function List getOrderLines(Integer userId, Integer itemId) {
     return new OrderLineDAS().findByUserItem(userId, itemId);
 }
 
+
+rule "persistence control"
+salience 65000 # run first
+no-loop        # run once
+    when
+        # TODO: need a better way to control persistence; gui item management persist = false, mediation persist = true
+        # no mediation result, assume that we're not operating as part
+        # of a mediation process, but as normal GUI interaction
+        not( exists( MediationResult( ) ) )
+    then
+        insert( new MediationResult("item management", false) );
+        LOG.debug("Set persistence control to false, item rules running from GUI");
+end
+
+rule "fetch lemonade lovers plan subscription"
+dialect 'java'
+no-loop
+    when
+        $order : OrderDTO( )
+        not( exists( SubscriptionResult( userId == $order.userId, itemId == 2702 ) ) )
+    then
+        insert( new SubscriptionResult($order, 2702) ); 
+end
 
 rule "Lemon and Coffee discount"
 	when
@@ -29,8 +54,11 @@ rule "Lemon and Coffee discount"
         # otherwise an infinite loop happens (the no-loop attribute would
         # have the same effect)
         not ( OrderLineDTO( itemId == 14) from $order.lines )
+
+        # persistence
+        $result : MediationResult( )
 	then
-        OrderLineBL.addItem($order, 14); # 10% discount
+        OrderLineBL.addItem($order, 14, $result.getPersist()); # 10% discount
         update($order);
 end
 
@@ -39,9 +67,12 @@ rule "Lemonade Plan"
     when
         $order : OrderDTO( )    # any order
         $planLine : OrderLineDTO( itemId == 250) from $order.lines # Plan
+
+        # persistence
+        $result : MediationResult( )
     then
         $order.getLines().remove($planLine); # Plan is only for grouping
-        OrderLineBL.addItem($order, 1); # The monthly lemonade subscription
+        OrderLineBL.addItem($order, 1, $result.getPersist()); # The monthly lemonade subscription
         update($order);
         # now add an new order
         OrderDTO newOrder = OrderBL.createAsWithLine($order, 251, 1.0);  # The setup fee
@@ -70,9 +101,12 @@ salience 0 # run after the request rule
         $order : OrderDTO( orderPeriod.id == 1 )    # any one-time order
         $generic : OrderLineDTO( itemId == 2600) from $order.lines # Generic lemonade
 		OrderLineDTO( itemId == 1, purchaseOrder.userId == $order.userId) # plan
+
+        # persistence
+        $result : MediationResult( )
 	then
         $order.getLines().remove($generic); # remove the generic
-        OrderLineBL.addItem($order, 2601);  # add the included in plan
+        OrderLineBL.addItem($order, 2601, $result.getPersist()); # add the included in plan
         update($order);
         LOG.debug("removed the generic lemonade and added the included in plan");
 end
@@ -83,12 +117,50 @@ salience 0 # run after the request rule
         $order : OrderDTO( orderPeriod.id == 1 )    # any one-time order
         $generic : OrderLineDTO( itemId == 2600) from $order.lines # Generic lemonade
 		not OrderLineDTO( itemId == 1, purchaseOrder.userId == $order.userId) # plan
+
+        # persistence
+        $result : MediationResult( )
 	then
         $order.getLines().remove($generic); # remove the generic
-        OrderLineBL.addItem($order, 2602);  # add the normal item
+        OrderLineBL.addItem($order, 2602, $result.getPersist()); # add the normal item
         update($order);
         LOG.debug("removed the generic lemonade and added the priced item");
 end
+
+rule "lemonade lovers plan first 1000 included"
+dialect 'java'
+    when
+        $order : OrderDTO( orderPeriod.id == 1 ) # any one-time order
+        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true ) # Lemonade Lovers Plan
+
+        $lemonade : OrderLineDTO( itemId == 2602 ) from $order.lines                       # Lemonade
+        not( OrderLineDTO( itemId == 2601, quantity.intValue >= 1000 ) from $order.lines ) # Lemonade included not over 1000 units
+
+        # persistence
+        $result : MediationResult( )
+    then
+        # total already included
+        BigDecimal included = BigDecimal.ZERO;
+        for (OrderLineDTO line : $order.getLines()) {
+            if (line.getItemId() == 2601)
+                included.add(line.getQuantity());
+        }
+
+        BigDecimal maximum = new BigDecimal("1000");
+        BigDecimal total = included.add($lemonade.getQuantity());
+        if (total.compareTo(maximum) >= 0) {
+            # max out included lemonade, leave the remaining units as regular lemonade to be billed
+            OrderLineBL.addItem($order, 2601, maximum.subtract(included), $result.getPersist());
+            $lemonade.setQuantity(total.subtract(maximum));
+        } else {
+            # add entire quantity as included, remove all regular lemonade from the order
+            OrderLineBL.addItem($order, 2601, $lemonade.getQuantity(), $result.getPersist());
+            $order.getLines().remove($lemonade);
+        }
+
+        update($order);
+end
+
 
 rule 'rateOrder test1'
 	dialect "java"

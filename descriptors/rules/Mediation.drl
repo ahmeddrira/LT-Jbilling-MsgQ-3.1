@@ -45,8 +45,9 @@ function PricingResult priceRequest(Integer itemId, MediationResult result) {
 # updates the current order
 function void addLine(MediationResult result) {
     result.setOldLines(OrderLineBL.copy(result.getCurrentOrder().getLines()));
-    // I need to pass the price, even if it is null
-    OrderLineBL.addLine(result.getCurrentOrder(), result.getLines().get(0), result.getPersist());
+   
+    if (!result.getLines().isEmpty())
+        OrderLineBL.addLine(result.getCurrentOrder(), result.getLines().get(0), result.getPersist());
 }
 
 
@@ -59,7 +60,7 @@ then
     modify( $result ) {
         setUserId( getUserIdFromUsername($field.getStrValue(), $company.getId()) );
     }
-    LOG.debug("The user was set to " + $result.getUserId());
+    LOG.debug("The user " + $field.getStrValue() + " was set to " + $result.getUserId());
 end
 
 rule 'currency setter'
@@ -95,7 +96,7 @@ then
     LOG.debug("The current order was fetched");
 end
 
-rule 'resolve item and request price'
+rule 'resolve call item and request price'
 when
     $result : MediationResult( currentOrder != null )
     $quantity : PricingField( name == "duration", resultId == $result.id)
@@ -107,6 +108,17 @@ then
     PricingResult request = priceRequest(1, $result);
     insert( request );
     LOG.debug("Price request " + request);
+end
+
+rule 'resolve call destination'
+no-loop
+when
+    $result : MediationResult( currentOrder != null )
+    $phoneCalled : PricingField( name == "dst", resultId == $result.id)
+then
+    # set mediation event description to the call destination
+    $result.setDescription("Phone call to " + $phoneCalled.getStrValue());
+    update( $result );
 end
 
 # this might or might not run... depending if there are pricing with rules
@@ -128,11 +140,10 @@ rule 'line creation'
 salience -10
 when
     $result : MediationResult( currentOrder != null, done == false, oldLines == null )
-    $phoneCalled : PricingField( name == "dst", resultId == $result.id)
 then
     addLine($result); # will add the first line to the current order
-    $result.setDescription("Phone call to " + $phoneCalled);
     update($result); # done
+
     # to allow item management rules
     insert($result.getCurrentOrder());
     LOG.debug("current order updated " + $result.getId());

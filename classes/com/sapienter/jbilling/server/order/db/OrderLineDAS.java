@@ -19,12 +19,16 @@
 */
 package com.sapienter.jbilling.server.order.db;
 
+import com.sapienter.jbilling.server.util.Constants;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import java.util.List;
 
 public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
+    private static final Logger LOG = Logger.getLogger(OrderLineDAS.class);
+
     public Long findLinesWithDecimals(Integer itemId) {
 
         final String hql =
@@ -54,4 +58,23 @@ public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
         return query.list();
     }
 
+    public OrderLineDTO findRecurringByUserItem(Integer userId, Integer itemId) {
+        final String hql =
+                "select line "
+                + "  from OrderLineDTO line "
+                + "where line.deleted = 0 "
+                + "  and line.item.id = :itemId "
+                + "  and line.purchaseOrder.baseUserByUserId.id = :userId "
+                + "  and line.purchaseOrder.orderPeriod.id != :period "
+                + "  and line.purchaseOrder.orderStatus.id = :status "
+                + "  and line.purchaseOrder.deleted = 0 ";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("itemId", itemId);
+        query.setParameter("userId", userId);
+        query.setParameter("period", Constants.ORDER_PERIOD_ONCE);
+        query.setParameter("status", Constants.ORDER_STATUS_ACTIVE);
+
+        return (OrderLineDTO) query.uniqueResult();
+    }
 }

@@ -127,40 +127,38 @@ salience 0 # run after the request rule
         LOG.debug("removed the generic lemonade and added the priced item");
 end
 
-rule "lemonade lovers plan first 1000 included"
-dialect 'java'
+rule "lemonade lovers plan included"
+no-loop
     when
-        $order : OrderDTO( orderPeriod.id == 1 ) # any one-time order
-        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true ) # Lemonade Lovers Plan
+        $order : OrderDTO( orderPeriod.id == 1 )
+        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )  # Lemonade Lovers Plan
 
-        $lemonade : OrderLineDTO( itemId == 2602 ) from $order.lines                       # Lemonade
-        not( OrderLineDTO( itemId == 2601, quantity.intValue >= 1000 ) from $order.lines ) # Lemonade included not over 1000 units
+        $line : OrderLineDTO(itemId == 2602, $quantity : quantity ) from $order.lines      # Lemonade
+        not( OrderLineDTO(itemId == 2601, quantity.intValue == 1000 ) from $order.lines ); # Lemonade Included
 
         # persistence
         $result : MediationResult( )
     then
-        # total already included
-        BigDecimal included = BigDecimal.ZERO;
-        for (OrderLineDTO line : $order.getLines()) {
-            if (line.getItemId() == 2601)
-                included.add(line.getQuantity());
-        }
+        $order.getLines().remove($line); # remove regular lemonade
+        OrderLineBL.addItem($order, 2601, $quantity, $result.getPersist()); # add as included
 
-        BigDecimal maximum = new BigDecimal("1000");
-        BigDecimal total = included.add($lemonade.getQuantity());
-        if (total.compareTo(maximum) >= 0) {
-            # max out included lemonade, leave the remaining units as regular lemonade to be billed
-            OrderLineBL.addItem($order, 2601, maximum.subtract(included), $result.getPersist());
-            $lemonade.setQuantity(total.subtract(maximum));
-        } else {
-            # add entire quantity as included, remove all regular lemonade from the order
-            OrderLineBL.addItem($order, 2601, $lemonade.getQuantity(), $result.getPersist());
-            $order.getLines().remove($lemonade);
-        }
-
-        update($order);
+        update( $order );
 end
 
+rule "lemonade lovers plan first 1000 included"
+    when
+        $order : OrderDTO( orderPeriod.id == 1 )
+        $line : OrderLineDTO(itemId == 2601, quantity.intValue > 1000, $quantity : quantity ) from $order.lines
+        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )
+
+        # persistence
+        $result : MediationResult( )
+    then
+        OrderLineBL.addItem($order, 2602, $quantity.subtract(new BigDecimal(1000))); # transfer to regular lemonade
+        $line.setQuantity(new BigDecimal(1000)); # only the first 1000 is included
+
+        update( $order );
+end
 
 rule 'rateOrder test1'
 	dialect "java"

@@ -42,6 +42,8 @@ import com.sapienter.jbilling.server.mediation.Format;
 import com.sapienter.jbilling.server.mediation.FormatField;
 import com.sapienter.jbilling.server.mediation.Record;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import org.apache.commons.digester.Digester;
 
 public abstract class AbstractFileReader extends AbstractReader {
@@ -137,6 +139,9 @@ public abstract class AbstractFileReader extends AbstractReader {
         }
     }
     
+    /**
+     * This sorts the files so the oldest is processed first, and the newest last
+     */
     public class Reader implements Iterator<List<Record>> {
         private final Logger LOG = Logger.getLogger(Reader.class);
         private File[] files = null;
@@ -154,6 +159,13 @@ public abstract class AbstractFileReader extends AbstractReader {
                     } else {
                         return false;
                     }
+                }
+            });
+
+            // sort the files, so the oldest is processed first
+            Arrays.sort(files, new Comparator<File>() {
+                public int compare(File o1, File o2) {
+                    return new Long(o1.lastModified()).compareTo(o2.lastModified());
                 }
             });
             
@@ -178,13 +190,13 @@ public abstract class AbstractFileReader extends AbstractReader {
             }
             
             records.clear();
-            final int startedAt = counter;
             String line = readLine();
+            int startedAt = 0;
             while (line != null) {
                 counter++; // it read one just now
                 // convert this line to a Record
                 records.add(convertLineToRecord(line));
-                if (counter - startedAt >= getBatchSize()) {
+                if (++startedAt >= getBatchSize()) {
                     break;
                 }
                 line = readLine();
@@ -217,7 +229,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                     } else {
                         // read the first line from the next file
                         line = reader.readLine();
-                        counter = 1;
+                        counter = 0;
                     }
                 }
                 return line;

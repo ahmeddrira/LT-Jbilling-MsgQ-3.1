@@ -99,7 +99,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                 Integer executorId = entityBL.getRootUser(entityId);
                 // now process this entity
                 // go over each mediation configuration. An entity can opt out from 
-                // mediation buy simply not having any configuration present
+                // mediation by simply not having any configuration present
                 for (MediationConfiguration cfg : cfgDAS.findAllByEntity(entityId)) {
                     LOG.debug("Now using configuration " + cfg);
                     PluggableTaskBL<IMediationReader> taskManager =
@@ -255,6 +255,10 @@ public class MediationSessionBean implements IMediationSessionBean {
 
         StopWatch groupWatch = new StopWatch("group full watch");
         groupWatch.start();
+
+        // this process came from a different transaction (persistent context)
+        new MediationProcessDAS().reattach(process);
+
         // validate that these records have not been already processed
         List<Record> alreadyProcessed = new ArrayList<Record>(0);
         for (Record record: thisGroup) {
@@ -279,9 +283,6 @@ public class MediationSessionBean implements IMediationSessionBean {
         rulesWatch.stop();
         LOG.debug("Processing " + thisGroup.size() + " took " + rulesWatch.getTotalTimeMillis() +
                 " or " + new Double(thisGroup.size()) / rulesWatch.getTotalTimeMillis() * 1000D + " per second.");
-
-        // this process came from a different transaction (persistent context)
-        new MediationProcessDAS().reattach(process);
 
         // go over the results
         for (MediationResult result : results) {

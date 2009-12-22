@@ -54,7 +54,7 @@ public abstract class RulesBaseTask extends PluggableTask {
 
         // add the log object for the rules to use
         statelessSession.setGlobal("LOG", LOG);
-        statelessSession.executeWithResults(rulesMemoryContext);
+        statelessSession.execute(rulesMemoryContext);
     }
 
     protected abstract Logger getLog();

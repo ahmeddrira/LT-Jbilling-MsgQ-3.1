@@ -2983,10 +2983,22 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10743	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test1	0	1
 10744	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-10-30 00:00:00	\N	\N	carry-over-test2	0	1
 10750	1	46f94c8de14fb36680850768ff1b7f2a	0	2	1	14	1	2009-10-15 11:12:45.123	\N	\N	french-speaker	0	3
-10760	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-15 16:17:40.809	\N	\N	mediation-plan-03	0	1
-10761	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-15 16:18:05.809	\N	\N	mediation-plan-04	0	1
-10762	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-15 16:18:30.47	\N	\N	mediation-plan-05	0	1
-1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2009-12-16 10:01:08.181	admin	0	12
+10761	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-15 16:18:05.809	\N	\N	mediation-batch-test-02	0	2
+10760	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-15 16:17:40.809	\N	\N	mediation-batch-test-01	0	2
+10762	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-15 16:18:30.47	\N	\N	mediation-batch-test-03	0	2
+10770	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:25:11.942	\N	\N	mediation-batch-test-04	0	2
+10774	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:35:04.226	\N	\N	mediation-batch-test-08	0	2
+10772	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:34:24.141	\N	\N	mediation-batch-test-06	0	2
+10771	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:25:32.598	\N	\N	mediation-batch-test-05	0	2
+10773	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:34:40.942	\N	\N	mediation-batch-test-07	0	2
+10775	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:35:15.883	\N	\N	mediation-batch-test-09	0	2
+10776	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:36:45.151	\N	\N	mediation-batch-test-10	0	1
+10778	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:37:33.531	\N	\N	mediation-batch-test-12	0	2
+10777	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:37:21.134	\N	\N	mediation-batch-test-11	0	2
+10779	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:38:25.721	\N	\N	mediation-batch-test-13	0	2
+10780	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:38:54.133	\N	\N	mediation-batch-test-14	0	1
+10781	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
+1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2009-12-17 14:16:50.391	admin	0	14
 \.
 
 
@@ -4063,9 +4075,21 @@ COPY contact (id, organization_name, street_addres1, street_addres2, city, state
 112604	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2007-09-12 10:10:02.556	0	1	10744	1
 112700	\N	\N	\N	\N	\N	\N	\N	Baggins	Frodo	\N	\N	\N	\N	\N	\N	\N	\N	frodo@shire.com	2009-07-20 16:42:04.934	0	1	\N	1
 112800	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	a@a.com	2009-10-15 11:12:45.18	0	1	10750	1
-112900	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-plan-03@test.com	2009-12-15 16:17:40.847	0	1	10760	1
-112901	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-plan-04@test.com	2009-12-15 16:18:05.824	0	1	10761	1
-112902	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-plan-05@test.com	2009-12-15 16:18:30.48	0	1	10762	1
+112900	Long Distance Plan A	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-01@test.com	2009-12-15 16:17:40.847	0	1	10760	5
+112901	Long Distance Plan B	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-02@test.com	2009-12-15 16:18:05.824	0	1	10761	4
+112902	Long Distance Plan, 1000 min	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-03@test.com	2009-12-15 16:18:30.48	0	1	10762	4
+113000	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-04@test.com	2009-12-17 13:25:11.977	0	1	10770	1
+113001	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-05@test.com	2009-12-17 13:25:32.606	0	1	10771	1
+113002	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-06@test.com	2009-12-17 13:34:24.15	0	1	10772	1
+113003	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-07@test.com	2009-12-17 13:34:40.954	0	1	10773	1
+113004	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-08@test.com	2009-12-17 13:35:04.242	0	1	10774	1
+113005	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-09@test.com	2009-12-17 13:35:15.887	0	1	10775	1
+113006	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-10@test.com	2009-12-17 13:36:45.165	0	1	10776	1
+113007	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-11@test.com	2009-12-17 13:37:21.137	0	1	10777	1
+113008	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-12@test.com	2009-12-17 13:37:33.539	0	1	10778	1
+113009	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-13@test.com	2009-12-17 13:38:25.725	0	1	10779	1
+113010	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-14@test.com	2009-12-17 13:38:54.151	0	1	10780	1
+113011	\N	\N	\N	\N	\N	\N	CA	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	mediation-batch-test-15@test.com	2009-12-17 13:39:09.738	0	1	10781	1
 \.
 
 
@@ -6097,6 +6121,15 @@ COPY contact_field (id, type_id, contact_id, content, optlock) FROM stdin;
 202400	3	112700	255.255.255.7	1
 202401	2	112700	FAKE_2	0
 202402	1	112700	serial-from-ws	0
+202500	3	112900		0
+202501	2	112900		0
+202502	1	112900		0
+202503	3	112901		0
+202504	2	112901		0
+202505	1	112901		0
+202506	3	112902		0
+202507	2	112902		0
+202508	1	112902		0
 \.
 
 
@@ -7147,6 +7180,18 @@ COPY contact_map (id, contact_id, type_id, table_id, foreign_id, optlock) FROM s
 790800	112900	2	10	10760	1
 790801	112901	2	10	10761	1
 790802	112902	2	10	10762	1
+790900	113000	2	10	10770	1
+790901	113001	2	10	10771	1
+790902	113002	2	10	10772	1
+790903	113003	2	10	10773	1
+790904	113004	2	10	10774	1
+790905	113005	2	10	10775	1
+790906	113006	2	10	10776	1
+790907	113007	2	10	10777	1
+790908	113008	2	10	10778	1
+790909	113009	2	10	10779	1
+790910	113010	2	10	10780	1
+790911	113011	2	10	10781	1
 \.
 
 
@@ -9491,9 +9536,21 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
 106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0	0	\N
 989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	0
-106802	10762	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107702	2	1	0	0	0
-106801	10761	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107701	2	1	0	0	0
-106800	10760	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107700	2	1	0	0	0
+106800	10760	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107700	3	1	0	0	0
+106801	10761	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107701	3	1	0	0	0
+106802	10762	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107702	3	1	0	0	0
+106900	10770	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107800	3	1	0	0	0
+106901	10771	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107801	3	1	0	0	0
+106902	10772	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107802	3	1	0	0	0
+106903	10773	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107803	3	1	0	0	0
+106904	10774	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107804	3	1	0	0	0
+106905	10775	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107805	3	1	0	0	0
+106906	10776	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107806	2	1	0	0	0
+106907	10777	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107807	3	1	0	0	0
+106908	10778	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107808	3	1	0	0	0
+106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0	0	0
+106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0	0	0
+106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0	0	0
 \.
 
 
@@ -10141,6 +10198,40 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 463145	1	1	25	1	2009-12-15 17:09:03.631	2	11	9	\N	\N	\N	0	\N
 463146	1	1	25	430	2009-12-15 17:09:03.634	2	11	9	\N	\N	\N	0	\N
 463147	1	1	25	6010	2009-12-15 17:09:03.636	2	11	9	\N	\N	\N	0	\N
+464000	1	1	14	2700	2009-12-17 13:15:28.181	2	3	9	\N	\N	\N	0	\N
+464001	1	1	14	2701	2009-12-17 13:16:16.286	2	3	9	\N	\N	\N	0	\N
+464002	1	1	14	2700	2009-12-17 13:16:22.425	2	3	9	\N	\N	\N	0	\N
+464003	1	1	14	2702	2009-12-17 13:17:05.246	2	3	9	\N	\N	\N	0	\N
+464004	1	1	21	107700	2009-12-17 13:21:45.59	2	7	9	\N	\N	\N	0	10760
+464005	1	1	21	107701	2009-12-17 13:22:05.158	2	7	9	\N	\N	\N	0	10761
+464006	1	1	21	107702	2009-12-17 13:22:34.715	2	7	9	\N	\N	\N	0	10762
+465000	1	1	14	2800	2009-12-17 14:16:58.961	2	3	9	\N	\N	\N	0	\N
+465001	1	1	14	2801	2009-12-17 14:17:02.063	2	3	9	\N	\N	\N	0	\N
+466000	1	1	21	107800	2009-12-21 13:17:07.736	2	7	22	\N	\N	\N	0	10770
+466001	1	\N	21	107800	2009-12-21 13:17:07.946	2	7	25	\N	\N	\N	0	10770
+466002	1	1	21	107800	2009-12-21 13:17:44.639	2	7	9	\N	\N	\N	0	10770
+466003	1	1	21	107801	2009-12-21 13:18:00.773	2	7	22	\N	\N	\N	0	10771
+466004	1	\N	21	107801	2009-12-21 13:18:00.776	2	7	25	\N	\N	\N	0	10771
+466005	1	1	21	107802	2009-12-21 13:18:38.545	2	7	22	\N	\N	\N	0	10772
+466006	1	\N	21	107802	2009-12-21 13:18:38.553	2	7	25	\N	\N	\N	0	10772
+466007	1	1	21	107803	2009-12-21 13:19:01.328	2	7	22	\N	\N	\N	0	10773
+466008	1	\N	21	107803	2009-12-21 13:19:01.331	2	7	25	\N	\N	\N	0	10773
+466009	1	1	21	107804	2009-12-21 13:19:23.246	2	7	22	\N	\N	\N	0	10774
+466010	1	\N	21	107804	2009-12-21 13:19:23.254	2	7	25	\N	\N	\N	0	10774
+466011	1	1	21	107805	2009-12-21 13:19:40.836	2	7	22	\N	\N	\N	0	10775
+466012	1	\N	21	107805	2009-12-21 13:19:40.843	2	7	25	\N	\N	\N	0	10775
+466013	1	1	21	107806	2009-12-21 13:19:58.534	2	7	22	\N	\N	\N	0	10776
+466014	1	\N	21	107806	2009-12-21 13:19:58.542	2	7	25	\N	\N	\N	0	10776
+466015	1	1	21	107807	2009-12-21 13:20:26.179	2	7	22	\N	\N	\N	0	10777
+466016	1	\N	21	107807	2009-12-21 13:20:26.186	2	7	25	\N	\N	\N	0	10777
+466017	1	1	21	107808	2009-12-21 13:20:47.863	2	7	22	\N	\N	\N	0	10778
+466018	1	\N	21	107808	2009-12-21 13:20:47.871	2	7	25	\N	\N	\N	0	10778
+466019	1	1	21	107809	2009-12-21 13:21:06.133	2	7	22	\N	\N	\N	0	10779
+466020	1	\N	21	107809	2009-12-21 13:21:06.161	2	7	25	\N	\N	\N	0	10779
+466021	1	1	21	107810	2009-12-21 13:21:25.999	2	7	22	\N	\N	\N	0	10780
+466022	1	\N	21	107810	2009-12-21 13:21:26.002	2	7	25	\N	\N	\N	0	10780
+466023	1	1	21	107811	2009-12-21 13:21:44.511	2	7	22	\N	\N	\N	0	10781
+466024	1	\N	21	107811	2009-12-21 13:21:44.518	2	7	25	\N	\N	\N	0	10781
 \.
 
 
@@ -11029,9 +11120,11 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 14	2600	description	1	Lemonade - Generic
 14	2601	description	1	Lemonade - Included in plan
 14	2602	description	1	Lemonade 
-14	2700	description	1	Lemonade Plan A - 2.50 Lemonade
-14	2701	description	1	Lemonade Plan B - 1.50 Lemonade
-14	2702	description	1	Lemonade Lovers Plan - 1000 free
+14	2702	description	1	Long Distance Plan - 1000 min included
+14	2701	description	1	Long Distance Plan B - fixed rate
+14	2700	description	1	Long Distance Plan A - fixed rate
+14	2800	description	1	Long Distance Call
+14	2801	description	1	Long Distance Call - Included
 \.
 
 
@@ -11123,9 +11216,11 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 2600	DR-01	1	\N	0	0	0	2
 2601	DR--02	1	\N	0	0	0	2
 2602	DR-03	1	\N	0	0	0	2
-2700	PL-03	1	\N	0	0	0	3
-2701	PL-04	1	\N	0	0	0	3
-2702	PL-05	1	\N	0	0	0	3
+2701	LD-B	1	\N	0	0	0	4
+2700	LD-A	1	\N	0	0	0	5
+2702	LD-1000	1	\N	0	0	0	4
+2800	CALL-LD	1	\N	0	0	1	4
+2801	CALL-LD-INCLUDE	1	\N	0	0	1	4
 \.
 
 
@@ -11146,12 +11241,16 @@ COPY item_price (id, item_id, currency_id, price, optlock) FROM stdin;
 1600	2600	1	0	0
 1601	2601	1	0	0
 1602	2602	1	3.5	0
-1700	2700	11	10.979999542236328	0
-1701	2700	1	10	0
-1702	2701	11	21.979999542236328	0
-1703	2701	1	20	0
-1704	2702	11	32.979999542236328	0
 1705	2702	1	30	0
+1701	2700	1	25	1
+1703	2701	1	40	1
+1702	2701	11	44.369998931884766	1
+1700	2700	11	27.729999542236328	2
+1704	2702	11	32.979999542236328	1
+1800	2800	11	0	0
+1801	2800	1	0	0
+1802	2801	11	0	0
+1803	2801	1	0	0
 \.
 
 
@@ -11164,6 +11263,8 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM st
 2	2	Drinks	1	1
 12	1	discounts	1	1
 22	1	Fees	3	1
+2200	1	Long Distance Plans	1	0
+2201	1	Calls	1	0
 \.
 
 
@@ -11185,9 +11286,11 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 2600	1
 2601	1
 2602	1
-2700	1
-2701	1
-2702	1
+2700	2200
+2701	2200
+2702	2200
+2800	2201
+2801	2201
 \.
 
 
@@ -11204,7 +11307,6 @@ period_unit	5
 invoice_delivery_method	4
 entity_delivery_method_map	4
 user_status	9
-item_type	22
 order_period	4
 order_line_type	4
 order_billing_type	3
@@ -11268,7 +11370,6 @@ partner_range	2
 balance_type	0
 invoice	86
 invoice_status	4
-contact_field	2025
 invoice_line	87
 order_process	86
 language	3
@@ -11281,7 +11382,6 @@ period_unit	5
 invoice_delivery_method	4
 entity_delivery_method_map	4
 user_status	9
-item_type	22
 order_period	4
 order_line_type	4
 order_billing_type	3
@@ -11345,15 +11445,7 @@ partner_range	2
 balance_type	0
 invoice	86
 invoice_status	4
-contact_field	2025
 invoice_line	87
-item	28
-item_price	18
-base_user	1077
-customer	1069
-contact_map	7909
-contact	1130
-purchase_order	1078
 order_process	86
 pluggable_task	57
 pluggable_task	602
@@ -11361,18 +11453,29 @@ mediation_cfg	4
 pluggable_task_parameter	83
 language	3
 generic_status	29
-item	28
-item_price	18
-base_user	1077
-customer	1069
-contact_map	7909
-contact	1130
-purchase_order	1078
-order_line	2079
-order_line	2079
+item	29
+item_price	19
+contact_field	2026
+customer	1070
+contact_map	7910
+contact	1131
+base_user	1079
 pluggable_task_parameter	8306
-event_log	464
-event_log	464
+item_type	23
+item_type	23
+item	29
+item_price	19
+contact_field	2026
+customer	1070
+contact_map	7910
+contact	1131
+base_user	1079
+purchase_order	1079
+purchase_order	1079
+order_line	2081
+order_line	2081
+event_log	467
+event_log	467
 \.
 
 
@@ -13888,9 +13991,21 @@ COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_p
 2066	1065	3	1	15	1	15	0	2008-03-06 09:19:01.556	0	Coffee - one per day - Monthly	\N	\N	1
 207600	107500	251	3	15	1	15	0	2009-07-20 16:41:52.245	0	Lemonade plan - Setup Fee	20	d85d1780-1594-4c25-8980-39ddaf2e15ce	5
 207700	107600	2	1	20	1	20	0	2009-11-04 17:37:51.128	0	Lemonade - all you can drink monthly	20	ca3ebd8e-3f51-4f40-aead-e42a2c288f1b	2
-207800	107700	2700	1	10	1	10	\N	2009-12-15 16:38:36.74	0	Lemonade Plan A - 2.50 Lemonade	21	\N	0
-207801	107701	2701	1	20	1	20	\N	2009-12-15 16:39:04.505	0	Lemonade Plan B - 1.50 Lemonade	21	\N	0
-207802	107702	2702	1	30	1	30	\N	2009-12-15 16:39:31.16	0	Lemonade Lovers Plan - 1000 free	21	\N	0
+207900	107700	2700	1	25	1	25	\N	2009-12-17 13:21:16.192	0	Long Distance Plan A - fixed rate	21	\N	0
+207901	107701	2701	1	40	1	40	\N	2009-12-17 13:22:02.115	0	Long Distance Plan B - fixed rate	21	\N	0
+207902	107702	2702	1	30	1	30	\N	2009-12-17 13:22:31.627	0	Long Distance Plan - 1000 min included	21	\N	0
+208000	107800	2602	1	3.5	1	3.5	\N	2009-12-21 13:17:00.14	0	Lemonade 	21	\N	0
+208001	107801	2602	1	3.5	1	3.5	\N	2009-12-21 13:17:58.45	0	Lemonade 	21	\N	0
+208002	107802	2602	1	3.5	1	3.5	\N	2009-12-21 13:18:17.379	0	Lemonade 	21	\N	0
+208003	107803	2602	1	3.5	1	3.5	\N	2009-12-21 13:18:59.123	0	Lemonade 	21	\N	0
+208004	107804	2602	1	3.5	1	3.5	\N	2009-12-21 13:19:17.927	0	Lemonade 	21	\N	0
+208011	107811	2602	1	3.5	1	3.5	\N	2009-12-21 13:21:42.292	0	Lemonade 	21	\N	0
+208005	107805	2602	1	3.5	1	3.5	\N	2009-12-21 13:19:38.061	0	Lemonade 	21	\N	0
+208006	107806	2602	1	3.5	1	3.5	\N	2009-12-21 13:19:56.159	0	Lemonade 	21	\N	0
+208009	107809	2602	1	3.5	1	3.5	\N	2009-12-21 13:21:03.215	0	Lemonade 	21	\N	0
+208007	107807	2602	1	3.5	1	3.5	\N	2009-12-21 13:20:23.277	0	Lemonade 	21	\N	0
+208008	107808	2602	1	3.5	1	3.5	\N	2009-12-21 13:20:44.579	0	Lemonade 	21	\N	0
+208010	107810	2602	1	3.5	1	3.5	\N	2009-12-21 13:21:21.348	0	Lemonade 	21	\N	0
 \.
 
 
@@ -14684,6 +14799,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 44	21	FAKE_1	\N	20	\N	1
 540	421	format_file	\N	asterisk.xml	\N	1
 550	421	suffix	\N	csv	\N	1
+551	421	batch_size	\N	100	\N	1
 560	450	file	\N	CancelFees.pkg	\N	1
 570	430	file	\N	ItemsRules.pkg	\N	1
 600	1	file	\N	ItemsRules.pkg	\N	1
@@ -15984,9 +16100,21 @@ COPY purchase_order (id, user_id, period_id, billing_type_id, active_since, acti
 1065	1055	2	1	2007-11-01	\N	\N	2008-03-06 09:19:01.499	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	1	1
 107500	121	1	1	\N	\N	\N	2009-07-20 16:41:52.315	\N	1	17	1	0	0	\N	\N	3	\N	0	\N	0		0	0	1
 107600	1000	2	1	2006-10-30	2006-11-15	2006-10-15	2009-11-04 17:37:51.128	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0		0	0	0
-107702	10762	2	2	\N	\N	2009-01-01	2009-12-15 16:39:31.16	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Lemonade Lovers Plan	0	1	0
-107701	10761	2	2	\N	\N	2009-01-01	2009-12-15 16:39:04.505	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Lemonade Plan B	0	1	1
-107700	10760	2	2	\N	\N	2009-01-01	2009-12-15 16:38:36.74	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Lemonade Plan A	0	1	1
+107700	10760	2	2	\N	\N	2009-01-01	2009-12-15 16:38:36.74	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan A - fixed rate	0	1	3
+107701	10761	2	2	\N	\N	2009-01-01	2009-12-15 16:39:04.505	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan B - fixed rate	0	1	3
+107702	10762	2	2	\N	\N	2009-01-01	2009-12-15 16:39:31.16	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Long Distance Plan - 1000 minutes included	0	1	2
+107800	10770	2	2	\N	\N	2009-01-01	2009-12-21 13:17:00.141	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	1
+107801	10771	2	2	\N	\N	2009-01-01	2009-12-21 13:17:58.45	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107802	10772	2	2	\N	\N	2009-01-01	2009-12-21 13:18:17.379	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107803	10773	2	2	\N	\N	2009-01-01	2009-12-21 13:18:59.123	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107804	10774	2	2	\N	\N	2009-01-01	2009-12-21 13:19:17.927	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107805	10775	2	2	\N	\N	2009-01-01	2009-12-21 13:19:38.062	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107806	10776	2	2	\N	\N	2009-01-01	2009-12-21 13:19:56.159	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107807	10777	2	2	\N	\N	2009-01-01	2009-12-21 13:20:23.277	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107808	10778	2	2	\N	\N	2009-01-01	2009-12-21 13:20:44.579	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107809	10779	2	2	\N	\N	2009-01-01	2009-12-21 13:21:03.215	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107810	10780	2	2	\N	\N	2009-01-01	2009-12-21 13:21:21.348	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
+107811	10781	2	2	\N	\N	2009-01-01	2009-12-21 13:21:42.292	\N	1	16	1	0	0	\N	\N	3	\N	0	\N	0	Placeholder order, provides a main subscription for the mediation process.	0	1	0
 \.
 
 
@@ -19343,6 +19471,18 @@ COPY user_role_map (user_id, role_id) FROM stdin;
 10760	5
 10761	5
 10762	5
+10770	5
+10771	5
+10772	5
+10773	5
+10774	5
+10775	5
+10776	5
+10777	5
+10778	5
+10779	5
+10780	5
+10781	5
 \.
 
 

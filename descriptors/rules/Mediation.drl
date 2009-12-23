@@ -5,6 +5,7 @@ import com.sapienter.jbilling.server.mediation.task.MediationResult
 import com.sapienter.jbilling.server.user.UserBL
 import com.sapienter.jbilling.server.order.OrderLineBL
 import com.sapienter.jbilling.server.order.OrderBL
+import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO
 import com.sapienter.jbilling.server.order.db.OrderLineDTO
 import com.sapienter.jbilling.server.item.tasks.PricingResult
@@ -100,12 +101,13 @@ rule 'resolve call item and request price'
 when
     $result : MediationResult( currentOrder != null )
     $quantity : PricingField( name == "duration", resultId == $result.id)
-    not ( OrderLineDTO( itemId == 1) from $result.lines )
+    not ( OrderLineDTO( itemId == 2800 ) from $result.lines )
 then
-    $result.getLines().add(newLine(1, new BigDecimal($quantity.getStrValue())));
-    LOG.debug("Added line with item 1 for quantity " + $quantity);
+    $result.getLines().add(newLine(2800, new BigDecimal($quantity.getStrValue())));
     update( $result );
-    PricingResult request = priceRequest(1, $result);
+    LOG.debug("Added line with item 2800 for quantity " + $quantity);
+    
+    PricingResult request = priceRequest(2800, $result);
     insert( request );
     LOG.debug("Price request " + request);
 end
@@ -139,7 +141,7 @@ end
 rule 'line creation'
 salience -10
 when
-    $result : MediationResult( currentOrder != null, done == false, oldLines == null )
+    $result : MediationResult( currentOrder != null, oldLines == null )
 then
     addLine($result); # will add the first line to the current order
     update($result); # done
@@ -159,9 +161,9 @@ when
     $result : MediationResult( oldLines != null, done == false )
 then
     modify( $result ) {
-        setDiffLines(OrderLineBL.diffOrderLines($result.getOldLines(),
-            $result.getCurrentOrder().getLines())),
+        setDiffLines(OrderLineBL.diffOrderLines($result.getOldLines(), $result.getCurrentOrder().getLines())),
         setDone(true)
     };
+    retract($result.getCurrentOrder()); # remove stale object
     LOG.debug("diff done for record " + $result.getRecordKey() + " diff is " + $result.getDiffLines());
 end

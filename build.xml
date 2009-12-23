@@ -453,23 +453,23 @@
     </target>
     
     <target name="test-mediation">
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
-       todir="${build.test.dir}"/>
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+
+        <delete  dir="${base_dir}/mediation"/>
         <mkdir dir="${base_dir}/mediation"/>
-        <copy file="${source.mediation.descriptor.dir}/asterisk.xml" 
-       todir="${base_dir}/mediation"/>
-        <copy file="${source.mediation.descriptor.dir}/mediation.dtd" 
-       todir="${base_dir}/mediation"/>
-        <copy file="${source.mediation.descriptor.dir}/asterisk-sample1.csv" 
-       todir="${base_dir}/mediation"/>
-        <copy file="${source.mediation.descriptor.dir}/jbilling_cdr.script" 
-       todir="${base_dir}/mediation"/>
-        <copy file="${source.mediation.descriptor.dir}/jbilling_cdr.properties" 
-       todir="${base_dir}/mediation"/>
-        <javac debug="on" destdir="${build.test.dir}"
-        srcdir="${source.test.dir}/com/sapienter/jbilling/server/mediation">
+        <copy todir="${base_dir}/mediation">
+            <fileset dir="${source.mediation.descriptor.dir}" includes="mediation.dtd"/>
+            <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk.xml"/>
+            <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk-sample1.csv, mediation-batch-test.csv"/>
+            <fileset dir="${source.mediation.descriptor.dir}" includes="jbilling_cdr.*"/>
+        </copy>
+
+        <javac debug="on"
+               destdir="${build.test.dir}"
+               srcdir="${source.test.dir}/com/sapienter/jbilling/server/mediation">
             <classpath refid="run.classpath"/>
         </javac>
+
         <junit printsummary="off" haltonfailure="true" fork="yes">
             <jvmarg value="-Djava.security.manager" />
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />

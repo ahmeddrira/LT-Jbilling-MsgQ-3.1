@@ -35,13 +35,15 @@ no-loop        # run once
         LOG.debug("Set persistence control to false, item rules running from GUI");
 end
 
-rule "fetch lemonade lovers plan subscription"
+rule "1000 minutes included plan subscription"
 dialect 'java'
-no-loop
+salience 100 # run first
+no-loop      # run once
     when
         $order : OrderDTO( )
         not( exists( SubscriptionResult( userId == $order.userId, itemId == 2702 ) ) )
     then
+        LOG.debug("Checking subscription to item 2702 for user " + $order.getUserId());
         insert( new SubscriptionResult($order, 2702) ); 
 end
 
@@ -127,37 +129,53 @@ salience 0 # run after the request rule
         LOG.debug("removed the generic lemonade and added the priced item");
 end
 
-rule "lemonade lovers plan included"
-no-loop
+rule "long distance 1000 minutes - included"
     when
-        $order : OrderDTO( orderPeriod.id == 1 )
-        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )  # Lemonade Lovers Plan
+        $order : OrderDTO( ) 
+        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )  # Plan
 
-        $line : OrderLineDTO(itemId == 2602, $quantity : quantity ) from $order.lines      # Lemonade
-        not( OrderLineDTO(itemId == 2601, quantity.intValue == 1000 ) from $order.lines ); # Lemonade Included
+        $line : OrderLineDTO(itemId == 2800, $quantity : quantity ) from $order.lines      # Long Distance Call
+        not( OrderLineDTO(itemId == 2801, quantity.intValue >= 1000 ) from $order.lines )  # Long Distance Call Included
 
         # persistence
         $result : MediationResult( )
     then
-        $order.getLines().remove($line); # remove regular lemonade
-        OrderLineBL.addItem($order, 2601, $quantity, $result.getPersist()); # add as included
+        $order.getLines().remove($line); # remove rated call
+        OrderLineBL.addItem($order, 2801, $quantity, $result.getPersist()); # add as included
 
         update( $order );
 end
 
-rule "lemonade lovers plan first 1000 included"
+rule "long distance 1000 minutes - excess"
     when
-        $order : OrderDTO( orderPeriod.id == 1 )
-        $line : OrderLineDTO(itemId == 2601, quantity.intValue > 1000, $quantity : quantity ) from $order.lines
-        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )
+        $order : OrderDTO( )
+        $line : OrderLineDTO(itemId == 2801, quantity.intValue > 1000, $quantity : quantity ) from $order.lines
+        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true ) # Plan
 
         # persistence
         $result : MediationResult( )
     then
-        OrderLineBL.addItem($order, 2602, $quantity.subtract(new BigDecimal(1000))); # transfer to regular lemonade
+        # remove any excess "included" call items
         $line.setQuantity(new BigDecimal(1000)); # only the first 1000 is included
+        OrderLineBL.addItem($order, 2800, $quantity.subtract(new BigDecimal(1000)), $result.getPersist());        
 
         update( $order );
+end
+
+rule "log call"
+    when
+        $order : OrderDTO( )
+        $line : OrderLineDTO( itemId == 2800 ) from $order.lines
+    then
+        LOG.debug("Current call (2800) quantity: " + $line.getQuantity());
+end
+
+rule "log call included"
+    when
+        $order : OrderDTO( )
+        $line : OrderLineDTO( itemId == 2801 ) from $order.lines
+    then
+        LOG.debug("Current call included (2801) quantity: " + $line.getQuantity());
 end
 
 rule 'rateOrder test1'

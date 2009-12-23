@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 #globals
 global org.apache.log4j.Logger LOG;
 
-rule "lemonade plan A subscription"
+rule "long distance plan A subscriptions"
 dialect 'java'
 no-loop
     when
@@ -22,7 +22,7 @@ no-loop
         insert( new SubscriptionResult($result, 2700) );
 end
 
-rule "lemonade plan B subscription"
+rule "long distance plan B subscriptions"
 dialect 'java'
 no-loop
     when
@@ -32,7 +32,7 @@ no-loop
         insert( new SubscriptionResult($result, 2701) );
 end
 
-rule "lemonade lovers plan subscription"
+rule "long distance plan 1000 minutes included subscriptions"
 dialect 'java'
 no-loop
     when
@@ -42,33 +42,33 @@ no-loop
         insert( new SubscriptionResult($result, 2702) );
 end
 
-rule "lemonade plan A price"
+rule "long distance plan A price"
     when
-        $result : PricingResult( itemId == 2602, price == null ) # Lemonade
-        SubscriptionResult( itemId == 2700, userId == $result.userId, subscribed == true ) # Lemonade Plan A
+        $result : PricingResult( itemId == 2800, price == null ) # Long distance call
+        SubscriptionResult( itemId == 2700, userId == $result.userId, subscribed == true ) # Long Distance Plan A
     then
         modify( $result ) {
-            setPrice("2.50");
+            setPrice("0.20"); # Long Distance Call base price (special prices may still be set via the rating card) 
         }
 end
 
-rule "lemonade plan B price"
+rule "long distance plan B price"
     when
-        $result : PricingResult( itemId == 2602, price == null ) # Lemonade
-        SubscriptionResult( itemId == 2701, userId == $result.userId, subscribed == true ) # Lemonade Plan B
+        $result : PricingResult( itemId == 2800, price == null ) # Long distance call
+        SubscriptionResult( itemId == 2701, userId == $result.userId, subscribed == true ) # Long Distance Plan B
     then
         modify( $result ) {
-            setPrice("1.50");
+            setPrice("0.05"); # Long Distance Call base price (special prices may still be set via the rating card)
         }
 end
 
-rule "lemonade lovers price"
+rule "long distance plan 1000 minutes included price"
     when
-        $result : PricingResult( itemId == 2602, price == null ) # Lemonade
-        SubscriptionResult( itemId == 2702, userId == $result.userId, subscribed == true ) # Lemonade Lovers Plan
+        $result : PricingResult( itemId == 2602, price == null )# Long distance call
+        SubscriptionResult( itemId == 2702, userId == $result.userId, subscribed == true ) # Long Distance Plan 1000
     then
         modify( $result ) {
-            setPrice("3.00");
+            setPrice("0.30"); # Long Distance Call base price (special prices may still be set via the rating card)
         }
 end
 
@@ -76,7 +76,7 @@ rule '604 -  512'
 when
     $src : PricingField( name == "src", strValue matches "^604.*")
     $dst : PricingField( name == "dst", strValue matches "^512.*", resultId == $src.resultId)
-	$result : PricingResult( itemId == 1, price == null, pricingFieldsResultId == $src.resultId )
+	$result : PricingResult( itemId == 2800, price == null, pricingFieldsResultId == $src.resultId )
 then
    modify( $result ) {
        setPrice("7");

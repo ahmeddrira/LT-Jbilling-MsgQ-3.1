@@ -51,6 +51,7 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
@@ -59,6 +60,8 @@ import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
 import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
+import com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask;
+import com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
@@ -233,34 +236,46 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             boolean allGood = true;
 
             BillingProcessDAS bpDas = new BillingProcessDAS();
-            ScrollableResults userCursor =  bpDas.findUsersToProcess(entityId);
-            int count = 0;
-            while (userCursor.next()) {
-                Integer userId = (Integer) userCursor.get(0);
-                Integer result[] = local.processUser(billingProcessId, userId, 
-                        isReview, onlyRecurring);
-                if (result != null) {
-                    LOG.debug("User " + userId + " done invoice generation.");
-                    if (!isReview) {
-                        for (int f = 0; f < result.length; f++) {
-                            local.emailAndPayment(entityId, result[f], 
-                                    billingProcessId,  
-                                    conf.getEntity().getAutoPayment().intValue() == 1);
-                        }
-                        LOG.debug("User " + userId + " done email & payment.");
-                    }
-                    totalInvoices += result.length;
-                } else {
-                    LOG.debug("User " + userId + " NOT done");
-                    allGood = false;
-                }
-
-                // make sure the memory doesn't get flooded
-                if ( ++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
-                    bpDas.reset();
-                }
+            //Load the pluggable task for filtering the users
+            PluggableTaskManager taskManager = new PluggableTaskManager(
+                    entityId, 
+                    Constants.PLUGGABLE_TASK_BILL_PROCESS_FILTER);
+            IBillingProcessFilterTask task = (IBillingProcessFilterTask) taskManager
+                    .getNextClass();
+            // If one was not configured just use the basic task by default
+            if (task == null) {
+            	task = new BasicBillingProcessFilterTask();
             }
-            userCursor.close(); // done with the cursor, needs manual closing
+            ScrollableResults userCursor = task.findUsersToProcess(entityId); 
+        	if (userCursor!= null){
+	            int count = 0;
+	            while (userCursor.next()) {
+	                Integer userId = (Integer) userCursor.get(0);
+	                Integer result[] = local.processUser(billingProcessId, userId, 
+	                        isReview, onlyRecurring);
+	                if (result != null) {
+	                    LOG.debug("User " + userId + " done invoice generation.");
+	                    if (!isReview) {
+	                        for (int f = 0; f < result.length; f++) {
+	                            local.emailAndPayment(entityId, result[f], 
+	                                    billingProcessId,  
+	                                    conf.getEntity().getAutoPayment().intValue() == 1);
+	                        }
+	                        LOG.debug("User " + userId + " done email & payment.");
+	                    }
+	                    totalInvoices += result.length;
+	                } else {
+	                    LOG.debug("User " + userId + " NOT done");
+	                    allGood = false;
+	                }
+	
+	                // make sure the memory doesn't get flooded
+	                if ( ++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
+	                    bpDas.reset();
+	                }
+	            }
+            	userCursor.close(); // done with the cursor, needs manual closing
+        	}
             // restore the configuration in the session, the reset removed it
             conf.set(entityId);
 

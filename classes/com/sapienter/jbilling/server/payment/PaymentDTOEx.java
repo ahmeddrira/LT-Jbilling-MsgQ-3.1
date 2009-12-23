@@ -78,7 +78,9 @@ public class PaymentDTOEx extends PaymentDTO {
         if (dto.getPaymentResult() != null) {
             setPaymentResult(dto.getPaymentResult());
         }
-
+        setPaymentPeriod(dto.getPaymentPeriod());
+        setPaymentNotes(dto.getPaymentNotes());
+        
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
     }
@@ -96,7 +98,9 @@ public class PaymentDTOEx extends PaymentDTO {
         setPaymentMethod(new PaymentMethodDTO(dto.getMethodId()));
         setPaymentDate(dto.getPaymentDate());
         setUpdateDatetime(dto.getUpdateDatetime());
-        
+        setPaymentPeriod(dto.getPaymentPeriod());
+        setPaymentNotes(dto.getPaymentNotes());
+       
         setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
 		
         userId = dto.getUserId();
@@ -160,6 +164,35 @@ public class PaymentDTOEx extends PaymentDTO {
         invoiceIds = new ArrayList<Integer>();
         paymentMaps = new ArrayList();
     }
+
+    /**
+     * @param id
+     * @param amount
+     * @param createDateTime
+     * @param attempt
+     * @param deleted
+     * @param methodId
+     */
+//    public PaymentDTOEx(Integer id, BigDecimal amount, Date createDateTime,
+//            Date updateDateTime,
+//            Date paymentDate, Integer attempt, Integer deleted,
+//            Integer methodId, Integer resultId, Integer isRefund,
+//            Integer isPreauth, Integer currencyId, BigDecimal balance) {
+//        super(id, amount, balance, createDateTime, updateDateTime,
+//                paymentDate, attempt, deleted, methodId, resultId, isRefund, 
+//                isPreauth, currencyId, null, null);
+//        invoiceIds = new ArrayList<Integer>();
+//        paymentMaps = new ArrayList();
+//    }
+
+    /**
+     * @param otherValue
+     */
+//    public PaymentDTOEx(PaymentDTO otherValue) {
+//        super(otherValue);
+//        invoiceIds = new ArrayList<Integer>();
+//        paymentMaps = new ArrayList();
+//    }
 
     public boolean validate() {
         boolean retValue = true;

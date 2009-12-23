@@ -60,7 +60,9 @@ public class PaymentWS implements Serializable {
     private int deleted;
     private Integer baseUserId;
     private Integer resultId;
-
+    private String paymentNotes = null;
+    private Integer paymentPeriod;
+    
     public Integer getResultId() {
         return resultId;
     }
@@ -266,6 +268,23 @@ public class PaymentWS implements Serializable {
     public void setBaseUserId(Integer baseUserId) {
         this.baseUserId = baseUserId;
     }
+    
+    public void setPaymentNotes(String paymentNotes){
+    	this.paymentNotes = paymentNotes;
+    }
+    
+    public String getPaymentNotes(){
+    	return paymentNotes;
+    }
+    
+    public void setPaymentPeriod(Integer paymentPeriod){
+    	this.paymentPeriod = paymentPeriod;
+    }
+    
+    public Integer getPaymentPeriod(){
+    	return paymentPeriod;
+    }
+    
     /**
      * @param id
      * @param amount

@@ -74,3 +74,13 @@ alter table mediation_record drop column end_datetime;
 create table jbilling_seqs (name VARCHAR(255), next_id integer);
 insert into jbilling_seqs select name, next_id from jbilling_table;
 alter table jbilling_table drop column next_id;
+
+-- new payment fields
+alter table payment add column payment_period integer;
+alter table payment add column payment_notes VARCHAR(500);
+
+-- New pluggable task category, type and task for the billing process
+insert into pluggable_task_type_category values (20, 'BillingProcessFilterTask', 'com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask');
+insert into pluggable_task_type values (69, 20, 'com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask',0);
+insert into pluggable_task_type values (70, 20, 'com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask',0);
+

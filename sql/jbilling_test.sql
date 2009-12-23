@@ -1448,7 +1448,9 @@ CREATE TABLE payment (
     payout_id integer,
     ach_id integer,
     balance double precision,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    payment_period integer,
+    payment_notes character varying(500)
 );
 
 
@@ -13976,17 +13978,17 @@ COPY partner_range (id, partner_id, percentage_rate, referral_fee, range_from, r
 -- Data for Name: payment; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, is_preauth, payment_id, currency_id, payout_id, ach_id, balance, optlock) FROM stdin;
-1	2	1	4	20	2006-07-26 09:44:49.443	2006-12-21 11:04:58.113	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1
-2	2	1	4	7	2006-07-26 09:47:16.694	2006-12-21 11:04:51.974	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1
-3	2	1	4	10	2006-07-26 09:47:41.67	2006-12-21 11:04:44.875	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1
-4	2	1	4	20	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0	1
-5	2	1	4	10	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0	1
-6	2	1	4	95	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0	1
-1600	10746	1	4	100	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100	1
-1601	10746	1	4	50	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0	1
-1700	10747	1	4	50	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50	1
-1800	10748	1	4	25	2009-03-13 00:00:00	\N	2009-03-13	1	\N	0	0	0	\N	1	\N	\N	25	1
+COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, is_preauth, payment_id, currency_id, payout_id, ach_id, balance, optlock, payment_period, payment_notes) FROM stdin;
+1	2	1	4	20	2006-07-26 09:44:49.443	2006-12-21 11:04:58.113	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1	\N	\N
+2	2	1	4	7	2006-07-26 09:47:16.694	2006-12-21 11:04:51.974	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1	\N	\N
+3	2	1	4	10	2006-07-26 09:47:41.67	2006-12-21 11:04:44.875	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1	\N	\N
+4	2	1	4	20	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0	1	\N	\N
+5	2	1	4	10	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0	1	\N	\N
+6	2	1	4	95	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0	1	\N	\N
+1600	10746	1	4	100	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100	1	\N	\N
+1601	10746	1	4	50	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0	1	\N	\N
+1700	10747	1	4	50	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50	1	\N	\N
+1800	10748	1	4	25	2009-03-13 00:00:00	\N	2009-03-13	1	\N	0	0	0	\N	1	\N	\N	25	1	\N	\N
 \.
 
 
@@ -14784,6 +14786,8 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 63	17	com.sapienter.jbilling.server.user.tasks.AutoRechargeTask	0
 64	6	com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask	3
 65	17	com.sapienter.jbilling.server.user.tasks.AutoRechargeTask	0
+69	20	com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask	0
+70	20	com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask	0
 \.
 
 
@@ -14811,6 +14815,7 @@ COPY pluggable_task_type_category (id, description, interface_name) FROM stdin;
 17	Internal events	com.sapienter.jbilling.server.system.event.task.IInternalEventsTask
 18	External Provisioning	com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning
 19	Validate Purchase	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
+20	BillingProcessFilterTask	com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask
 \.
 
 

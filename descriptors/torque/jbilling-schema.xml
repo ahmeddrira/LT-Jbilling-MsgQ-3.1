@@ -921,6 +921,8 @@
         <column name="payout_id" type="INTEGER"/>
         <column name="ach_id" type="INTEGER"/>
         <column name="balance" type="DOUBLE"/>
+        <column name="payment_period" type="INTEGER"/>
+        <column name="payment_notes" size="500" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="payment_i_2">
             <index-column name="user_id"/>

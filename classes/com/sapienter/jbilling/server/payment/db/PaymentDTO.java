@@ -87,6 +87,8 @@ public class PaymentDTO implements Serializable {
 	private Set<PartnerPayout> partnerPayouts = new HashSet<PartnerPayout>(0);
 
 	private int versionNum;
+    private Integer paymentPeriod;
+	private String paymentNotes;
 
 	public PaymentDTO() {
 	}
@@ -205,6 +207,8 @@ public class PaymentDTO implements Serializable {
 		this.payments = dto.payments;
 		this.partnerPayouts = dto.partnerPayouts;
 		this.paymentInfoCheque = dto.paymentInfoCheque;
+		this.paymentNotes = dto.paymentNotes;
+		this.paymentPeriod = dto.paymentPeriod;
 	}
 
 	@Id
@@ -464,5 +468,23 @@ public class PaymentDTO implements Serializable {
     @Transient
     public Integer getResultId() {
         return getPaymentResult().getId();
+    }
+
+	@Column(name = "payment_notes", nullable = true)
+	public String getPaymentNotes(){
+    	return paymentNotes;
+    }
+
+    public void setPaymentNotes(String paymentNotes){
+    	this.paymentNotes = paymentNotes;
+    }
+    
+	@Column(name = "payment_period", nullable = true)
+    public Integer getPaymentPeriod(){
+    	return paymentPeriod;
+    }
+
+	public void setPaymentPeriod(Integer period){
+		this.paymentPeriod = period;
     }
 }

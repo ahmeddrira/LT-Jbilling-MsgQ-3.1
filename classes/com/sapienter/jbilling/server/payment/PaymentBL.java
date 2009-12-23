@@ -190,6 +190,16 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             payment.setIsPreauth(1);
         }
 
+// the payment period length this payment was expected to last
+        if (dto.getPaymentPeriod() != null){
+            payment.setPaymentPeriod(dto.getPaymentPeriod());
+        	
+        }
+        // the notes related to this payment
+        if (dto.getPaymentNotes() != null){
+        	payment.setPaymentNotes(dto.getPaymentNotes());
+        }
+        
         dto.setId(payment.getId());
         dto.setCurrency(payment.getCurrency());
         paymentDas.save(payment);
@@ -255,6 +265,16 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         } else if (dto.getAch() != null) {
             AchBL achBl = new AchBL(payment.getAch());
             achBl.update(executorId, dto.getAch());
+        }
+
+        // the payment period length this payment was expected to last
+        if (dto.getPaymentPeriod() != null){
+            payment.setPaymentPeriod(dto.getPaymentPeriod());
+        	
+        }
+        // the notes related to this payment
+        if (dto.getPaymentNotes() != null){
+        	payment.setPaymentNotes(dto.getPaymentNotes());
         }
     }
 
@@ -418,7 +438,17 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (payment.getPartnerPayouts().size() > 0) {
             dto.setPayoutId(((PartnerPayout) payment.getPartnerPayouts().toArray()[0]).getId());
         }
-
+        
+        // the payment period length this payment was expected to last
+        if (payment.getPaymentPeriod() != null){
+            dto.setPaymentPeriod(payment.getPaymentPeriod());
+        	
+        }
+        // the notes related to this payment
+        if (payment.getPaymentNotes() != null){
+        	dto.setPaymentNotes(payment.getPaymentNotes());
+        }
+        
         return dto;
     }
 
@@ -437,7 +467,9 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         ws.setPaymentDate(dto.getPaymentDate());
         ws.setUpdateDatetime(dto.getUpdateDatetime());
         ws.setResultId(dto.getPaymentResult().getId());
-
+        ws.setPaymentNotes(dto.getPaymentNotes());
+        ws.setPaymentPeriod(dto.getPaymentPeriod());
+        
         if (dto.getCreditCard() != null) {
             com.sapienter.jbilling.server.entity.CreditCardDTO ccDTO = new com.sapienter.jbilling.server.entity.CreditCardDTO();
             ccDTO.setDeleted(dto.getCreditCard().getDeleted());

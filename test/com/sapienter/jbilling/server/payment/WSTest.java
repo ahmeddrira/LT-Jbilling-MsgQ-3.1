@@ -65,6 +65,9 @@ public class WSTest extends TestCase {
             payment.setResultId(Constants.RESULT_ENTERED);
             payment.setCurrencyId(new Integer(1));
             payment.setUserId(new Integer(2));
+						payment.setPaymentNotes("Notes");
+						payment.setPaymentPeriod(new Integer(1));
+            
             
             PaymentInfoChequeDTO cheque = new PaymentInfoChequeDTO();
             cheque.setBank("ws bank");
@@ -87,6 +90,9 @@ public class WSTest extends TestCase {
             assertEquals("created payment result", retPayment.getResultId(), payment.getResultId());
             assertEquals("created payment cheque ", retPayment.getCheque().getNumber(), payment.getCheque().getNumber());
             assertEquals("created payment user ", retPayment.getUserId(),  payment.getUserId());
+            assertEquals("notes", retPayment.getPaymentNotes(), payment.getPaymentNotes());
+            assertEquals("period", retPayment.getPaymentPeriod(), payment.getPaymentPeriod());
+
 
             System.out.println("Validated created payment and paid invoice");
             assertNotNull("payment not related to invoice", retPayment.getInvoiceIds());

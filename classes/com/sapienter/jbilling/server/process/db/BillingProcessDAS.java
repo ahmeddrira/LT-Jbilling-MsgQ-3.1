@@ -20,20 +20,19 @@
 
 package com.sapienter.jbilling.server.process.db;
 
-import com.sapienter.jbilling.server.user.UserDTOEx;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
-
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import java.math.BigDecimal;
-import java.util.Iterator;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+
+import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
 
@@ -98,4 +97,18 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
         return query.iterate();
     }
 
+    public ScrollableResults findBillableUsersToProcess(int entityId) {
+    	String findOrdersDue =
+	    	"SELECT a.id " +
+			" FROM UserDTO a, OrderDTO o" +
+			" WHERE a.id = o.baseUserByUserId.id" + 
+			" AND trunc(o.nextBillableDay) <= :dueDate" + 
+			" AND o.deleted = 0" +
+			" AND a.company.id = :entity ";
+    	
+    	Query query = getSession().createQuery(findOrdersDue);
+    	query.setParameter("dueDate", new Date());
+    	query.setParameter("entity", entityId);
+    	return query.scroll();    
+    }    
 }

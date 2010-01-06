@@ -454,9 +454,10 @@
     
     <target name="test-mediation">
         <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
-
         <delete  dir="${base_dir}/mediation"/>
         <mkdir dir="${base_dir}/mediation"/>
+        <mkdir dir="${base_dir}/mediation/errors"/>
+        
         <copy todir="${base_dir}/mediation">
             <fileset dir="${source.mediation.descriptor.dir}" includes="mediation.dtd"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk.xml"/>
@@ -474,6 +475,8 @@
             <jvmarg value="-Djava.security.manager" />
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
+
+            <sysproperty key="mediation.errors.dir" value="${base_dir}/mediation/errors"/>
             
             <classpath refid="run.classpath"/>
             <formatter type="brief" usefile="false"/>

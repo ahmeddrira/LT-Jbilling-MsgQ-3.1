@@ -35,6 +35,8 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -977,14 +979,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             }
 
             // save the event
-            MediationRecordDTO record = new MediationRecordDTO("" + 
-                    date.getTime(), new Date(), null);
+            // assign to record DONE and BILLABLE status
+            MediationRecordStatusDTO status = new MediationRecordStatusDAS().find(Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE);
+            MediationRecordDTO record = new MediationRecordDTO(String.valueOf(date.getTime()),
+                                                               new Date(),
+                                                               null,
+                                                               status);
             record = new MediationRecordDAS().save(record);
 
-            IMediationSessionBean mediation = (IMediationSessionBean) 
-                    Context.getBean(Context.Name.MEDIATION_SESSION);
-            mediation.saveEventRecordLines(new ArrayList(diffLines), record, date,
-                    eventDescription);
+            IMediationSessionBean mediation = (IMediationSessionBean) Context.getBean(Context.Name.MEDIATION_SESSION);
+            mediation.saveEventRecordLines(new ArrayList<OrderLineDTO>(diffLines), record, date,eventDescription);
 
             // return the updated order
             return bl.getWS(languageId);
@@ -1642,7 +1646,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return das.findIsUserSubscribedTo(userId, itemId);
     }
 
-    @Override
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
     	Integer[] result = null;
         OrderDAS das = new OrderDAS();
@@ -1658,7 +1661,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return new ItemTypeBL().getAllItemTypes();
     }
 
-    @Override
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
 
 		validatePayment(payment);

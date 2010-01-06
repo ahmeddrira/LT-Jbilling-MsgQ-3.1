@@ -21,10 +21,17 @@ package com.sapienter.jbilling.server.mediation;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
+import com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import org.apache.log4j.Logger;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -57,6 +64,8 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import java.util.ArrayList;
+import java.util.Map;
+
 import org.springframework.util.StopWatch;
 
 /**
@@ -115,8 +124,7 @@ public class MediationSessionBean implements IMediationSessionBean {
 
                         for (List<Record> thisGroup : reader) {
                             LOG.debug("Now processing " + thisGroup.size() + " records.");
-                            local.normalizeRecordGroup(processTask, executorId, process,
-                                    thisGroup, entityId, cfg);
+                            local.normalizeRecordGroup(processTask, executorId, process, thisGroup, entityId, cfg);
                         }
 
                         // save the information about this just ran mediation process in
@@ -210,70 +218,86 @@ public class MediationSessionBean implements IMediationSessionBean {
         } catch (InvalidArgumentException e2) {
             throw new InvalidArgumentException(e2);
         } catch (Exception e) {
-            throw new SessionInternalError("Exception updating mediation configurations ",
-                    MediationSessionBean.class, e);
+            throw new SessionInternalError("Exception updating mediation configurations ", MediationSessionBean.class, e);
         }
-    /*
-    eLogger.audit(executorId, Constants.TABLE_MEDIATION_CFG, 
-    cfg.getId(), EventLogger.MODULE_MEDIATION,
-    EventLogger.ROW_, null, null, null);
-     */
-
     }
 
     public void delete(Integer executorId, Integer cfgId) {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
 
         cfgDAS.delete(cfgDAS.find(cfgId));
-        EventLogger.getInstance().audit(executorId, null, 
-                Constants.TABLE_MEDIATION_CFG, cfgId, 
-                EventLogger.MODULE_MEDIATION, EventLogger.ROW_DELETED, null, 
-                null, null);
+        EventLogger.getInstance().audit(executorId, null,
+                                        Constants.TABLE_MEDIATION_CFG, cfgId,
+                                        EventLogger.MODULE_MEDIATION, EventLogger.ROW_DELETED, null,
+                                        null, null);
     }
 
-    public boolean isBeenProcessed(
-            MediationProcess process, Record record) {
-        // validate that this group has not been already processed
+    /**
+     * Calculation number of records for each of the existing mediation record statuses
+     *
+     * @param entityId EntityId for searching mediationRecords
+     * @return map of mediation status as a key and long value as a number of records whit given status
+     */
+    public Map<MediationRecordStatusDTO, Long> getNumberOfRecordsByStatuses(Integer entityId) {
         MediationRecordDAS recordDas = new MediationRecordDAS();
-        String key = record.getKey();
-        if (recordDas.findNow(key) != null) {
-            LOG.debug("Detected duplicated of record: " + key);
+        MediationRecordStatusDAS recordStatusDas = new MediationRecordStatusDAS();
+        Map<MediationRecordStatusDTO, Long> resultMap = new HashMap<MediationRecordStatusDTO, Long>();
+        List<MediationRecordStatusDTO> statuses = recordStatusDas.findAll();
+
+        //propagate proxy objects for using out of the transaction
+        recordStatusDas.touch(statuses);
+        for (MediationRecordStatusDTO status : statuses) {
+            Long recordsCount = recordDas.countMediationRecordsByEntityIdAndStatus(entityId, status);
+            resultMap.put(status, recordsCount);
+        }
+        return resultMap;
+    }
+
+    public boolean hasBeenProcessed(MediationProcess process, Record record) {
+        MediationRecordDAS recordDas = new MediationRecordDAS();
+        
+        // validate that this group has not been already processed
+        if (recordDas.processed(record.getKey())) {
+            LOG.debug("Detected duplicated of record: " + record.getKey());
             return true;
         }
-        MediationRecordDTO dbRecord = new MediationRecordDTO(
-                record.getKey(),
-                Calendar.getInstance().getTime(), process);
+        LOG.debug("Detected record as a new event: " + record.getKey());
+
+        // assign to record DONE_AND_BILLABLE status as default before processing
+        // after actual processing it will be updated
+        MediationRecordStatusDTO status = new MediationRecordStatusDAS().find(Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE);
+        MediationRecordDTO dbRecord = new MediationRecordDTO(record.getKey(),
+                                                             Calendar.getInstance().getTime(),
+                                                             process,
+                                                             status);
         recordDas.save(dbRecord);
+        recordDas.flush();
+
         return false;
     }
 
-    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void normalizeRecordGroup(IMediationProcess processTask, Integer executorId,
-            MediationProcess process, List<Record> thisGroup, Integer entityId,
-            MediationConfiguration cfg)
-            throws TaskException {
+                                     MediationProcess process, List<Record> thisGroup, Integer entityId,
+                                     MediationConfiguration cfg) throws TaskException {
 
         StopWatch groupWatch = new StopWatch("group full watch");
         groupWatch.start();
+        
+        LOG.debug("Normalizing " + thisGroup.size() + " records ...");
 
         // this process came from a different transaction (persistent context)
         new MediationProcessDAS().reattach(process);
 
         // validate that these records have not been already processed
-        List<Record> alreadyProcessed = new ArrayList<Record>(0);
-        for (Record record: thisGroup) {
-            if (isBeenProcessed(process, record)) {
-                alreadyProcessed.add(record);
-            }
-        }
-        thisGroup.removeAll(alreadyProcessed);
-        alreadyProcessed.clear();
-        if (thisGroup.size() == 0) {
-            // it could be that they all have been processed already
-            return;
+        for (Iterator<Record> it = thisGroup.iterator(); it.hasNext();) {
+            if (hasBeenProcessed(process, it.next())) it.remove();
         }
 
-        LOG.debug("Normalizing record ...");
+        if (thisGroup.size() == 0) {
+            return; // it could be that they all have been processed already
+        }
+
         ArrayList<MediationResult> results = new ArrayList<MediationResult>(0);
 
         // call the plug-in to resolve these records
@@ -281,51 +305,77 @@ public class MediationSessionBean implements IMediationSessionBean {
         rulesWatch.start();
         processTask.process(thisGroup, results, cfg.getName());
         rulesWatch.stop();
-        LOG.debug("Processing " + thisGroup.size() + " took " + rulesWatch.getTotalTimeMillis() +
-                " or " + new Double(thisGroup.size()) / rulesWatch.getTotalTimeMillis() * 1000D + " per second.");
-
+        
+        LOG.debug("Processing " + thisGroup.size()
+                + " records took: " + rulesWatch.getTotalTimeMillis() + "ms,"
+                + " or " + new Double(thisGroup.size()) / rulesWatch.getTotalTimeMillis() * 1000D + " records/sec");
+        
         // go over the results
         for (MediationResult result : results) {
-
             if (!result.isDone()) {
                 // this is an error, the rules failed somewhere because the
                 // 'done' flag is still false.
                 LOG.debug("Record result is not done");
 
-                // TO-DO: Identify the error and call the error handler plug-in
+                // errors presented, status of record should be updated
+                assignStatusToMediationRecord(result.getRecordKey(),
+                                              new MediationRecordStatusDAS().find(Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED));
+
+                // call error handler for mediation errors
+                handleMediationErrors(findRecordByKey(thisGroup, result.getRecordKey()),
+                                      resolveMediationResultErrors(result),
+                                      entityId);
 
             } else if (!result.getErrors().isEmpty()) {
                 // There are some user-detected errors
                 LOG.debug("Record result is done with errors");
 
-                // TO-DO: call the error handler plug-in
+                //done, but errors assigned by rules. status of record should be updated
+                assignStatusToMediationRecord(result.getRecordKey(),
+                                              new MediationRecordStatusDAS().find(Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED));
+                // call error handler for rules errors
+                handleMediationErrors(findRecordByKey(thisGroup, result.getRecordKey()),
+                                      result.getErrors(),
+                                      entityId);
             } else {
                 // this record was process without any errors
                 LOG.debug("Record result is done");
 
-                process.setOrdersAffected(process.getOrdersAffected() + result.getLines().size());
+                if (result.getLines() == null || result.getLines().isEmpty()) {
+                    //record was processed, but order lines was not affected
+                    //now record has status DONE_AND_BILLABLE, it should be changed
+                    assignStatusToMediationRecord(result.getRecordKey(),
+                                                  new MediationRecordStatusDAS().find(Constants.MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE));
+                    //not needed to update order affected or lines in this case
 
-                // relate this order with this process
-                MediationOrderMap map = new MediationOrderMap();
-                map.setMediationProcessId(process.getId());
-                map.setOrderId(result.getCurrentOrder().getId());
-                MediationMapDAS mapDas = new MediationMapDAS();
-                mapDas.save(map);
+                } else {
+                    //record has status DONE_AND_BILLABLE, only needed to save processed lines
+                    process.setOrdersAffected(process.getOrdersAffected() + result.getLines().size());
 
-                // add the record lines
-                saveEventRecordLines(result.getDiffLines(), new MediationRecordDAS().find(result.getRecordKey()), result.getEventDate(),
-                        result.getDescription());
+                    // relate this order with this process
+                    MediationOrderMap map = new MediationOrderMap();
+                    map.setMediationProcessId(process.getId());
+                    map.setOrderId(result.getCurrentOrder().getId());
+
+                    MediationMapDAS mapDas = new MediationMapDAS();
+                    mapDas.save(map);
+
+                    // add the record lines
+                    saveEventRecordLines(result.getDiffLines(), new MediationRecordDAS().find(result.getRecordKey()),
+                                         result.getEventDate(),
+                                         result.getDescription());
+                }
             }
         }
 
         groupWatch.stop();
-        LOG.debug("Processing the group took " + groupWatch.getTotalTimeMillis());
+        LOG.debug("Processing the group took: " + groupWatch.getTotalTimeMillis() + "ms");
     }
 
-    public void saveEventRecordLines(List<OrderLineDTO> newLines,
-            MediationRecordDTO record, Date eventDate, String description) {
-        MediationRecordLineDAS mediationRecordLineDas = 
-            new MediationRecordLineDAS();
+    public void saveEventRecordLines(List<OrderLineDTO> newLines, MediationRecordDTO record, Date eventDate,
+                                     String description) {
+        
+        MediationRecordLineDAS mediationRecordLineDas = new MediationRecordLineDAS();
 
         for (OrderLineDTO line : newLines) {
             MediationRecordLineDTO recordLine = new MediationRecordLineDTO();
@@ -346,9 +396,93 @@ public class MediationSessionBean implements IMediationSessionBean {
 
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId) {
         List<MediationRecordLineDTO> events = new MediationRecordLineDAS().getByOrder(orderId);
-        for (MediationRecordLineDTO line: events) {
+        for (MediationRecordLineDTO line : events) {
             line.toString(); //as a touch
         }
         return events;
+    }
+    
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+        return new MediationRecordDAS().findByProcess(mediationProcessId);
+    }
+
+    private void assignStatusToMediationRecord(String key, MediationRecordStatusDTO status) {
+        MediationRecordDAS recordDas = new MediationRecordDAS();
+        MediationRecordDTO recordDto = recordDas.findNow(key);
+        if (recordDto != null) {
+            recordDto.setRecordStatus(status);
+            recordDas.save(recordDto);
+        } else {
+            LOG.debug("Mediation record with key=" + key + " not found");
+        }
+    }
+
+    private List<String> resolveMediationResultErrors(MediationResult result) {
+        List<String> errors = new LinkedList<String>();
+        if (result.getLines() == null || result.getLines().isEmpty()) {
+            errors.add("JB-NO_LINE");
+        }
+        if (result.getDiffLines() == null || result.getDiffLines().isEmpty()) {
+            errors.add("JB-NO_DIFF");
+        }
+        if (result.getCurrentOrder() == null) {
+            errors.add("JB-NO_ORDER");
+        }
+        if (result.getUserId() == null) {
+            errors.add("JB-NO_USER");
+        }
+        if (result.getCurrencyId() == null) {
+            errors.add("JB-NO_CURRENCY");
+        }
+        if (result.getEventDate() == null) {
+            errors.add("JB-NO_DATE");
+        }
+        errors.addAll(result.getErrors());
+        return errors;
+    }
+
+    private Record findRecordByKey(List<Record> records, String key) {
+        for (Record r : records) {
+            if (r.getKey().equals(key)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    private void handleMediationErrors(Record record,
+                                       List<String> errors,
+                                       Integer entityId) {
+        if (record == null) return;
+        StopWatch watch = new StopWatch("saving errors watch");
+        watch.start();
+        LOG.debug("Saving mediation result errors: " + errors.size());
+
+        try {
+            PluggableTaskManager<IMediationErrorHandler> tm = new PluggableTaskManager<IMediationErrorHandler>(entityId,
+                    Constants.PLUGGABLE_TASK_MEDIATION_ERROR_HANDLER);
+            IMediationErrorHandler errorHandler;
+            // iterate through all error handlers for current entityId
+            // and process errors
+            while ((errorHandler = tm.getNextClass()) != null) {
+                try {
+                    errorHandler.process(record, errors, new Date());
+                } catch (TaskException e) {
+                    // exception catched for opportunity of processing errors by other handlers
+                    // and continue mediation process for other records
+                    // TO-DO: check requirements about error handling in that case
+                    LOG.error(e);
+                }
+            }
+
+        } catch (PluggableTaskException e) {
+            LOG.error(e);
+            // it's possible plugin configuration exception
+            // TO-DO: check requirements about error handling
+            // may be rethrow exception
+        }
+
+        watch.stop();
+        LOG.debug("Saving mediation result errors done. Duration (mls):" + watch.getTotalTimeMillis());
     }
 }

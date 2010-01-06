@@ -170,20 +170,12 @@ public interface CommonConstants {
     public static final BigDecimal BIGDECIMAL_ONE_CENT = new BigDecimal("0.01");
 
     // codes for login resuls
-    // ok
     public final static Integer AUTH_OK = new Integer(0);
-    // invalid user name or password
     public final static Integer AUTH_WRONG_CREDENTIALS = new Integer(1);
-    // same as previous, but on this attempt the password has be changed
-    // to lock the account
-    public final static Integer AUTH_LOCKED = new Integer(2);
-    // the password is good, but too old. Needs to call update
-    public final static Integer AUTH_EXPIRED = new Integer(3);
-    
-    /**
-     * @author othman
-     * provisioning status constants
-     */
+    public final static Integer AUTH_LOCKED = new Integer(2);  // invalid login creds - bad attempt locked account
+    public final static Integer AUTH_EXPIRED = new Integer(3); // login creds ok - password expired and needs updating
+
+    // provisioning status constants
     public final static Integer PROVISIONING_STATUS_ACTIVE=new Integer(1);
     public final static Integer PROVISIONING_STATUS_INACTIVE=new Integer(2);
     public final static Integer PROVISIONING_STATUS_PENDING_ACTIVE=new Integer(3);
@@ -195,4 +187,10 @@ public interface CommonConstants {
     public final static Integer BALANCE_NO_DYNAMIC = new Integer(1); // the default
     public final static Integer BALANCE_PRE_PAID = new Integer(2);
     public final static Integer BALANCE_CREDIT_LIMIT = new Integer(3);
+
+    // mediation record status
+    public final static Integer MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE = new Integer(1);
+    public final static Integer MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE = new Integer(2);
+    public final static Integer MEDIATION_RECORD_STATUS_ERROR_DETECTED = new Integer(3);
+    public final static Integer MEDIATION_RECORD_STATUS_ERROR_DECLARED = new Integer(4);
 }

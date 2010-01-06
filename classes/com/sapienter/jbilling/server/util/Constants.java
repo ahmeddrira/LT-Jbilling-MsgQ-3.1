@@ -127,7 +127,8 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_GENERIC_STATUS_TYPE = "generic_status_type";
     public static final String TABLE_GENERIC_STATUS = "generic_status";
     public static final String TABLE_ORDER_LINE_PROVISIONING_STATUS = "order_line_provisioning_status";
-     
+    public static final String TABLE_MEDIATION_RECORD_STATUS = "mediation_record_status";
+                
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);
     public static final Integer ORDER_LINE_TYPE_TAX = new Integer(2);
@@ -167,7 +168,7 @@ public final class Constants implements CommonConstants {
     public static final Integer PLUGGABLE_TASK_EXTERNAL_PROVISIONING = new Integer(18);
     public static final Integer PLUGGABLE_TASK_VALIDATE_PURCHASE = new Integer(19);
     public static final Integer PLUGGABLE_TASK_BILL_PROCESS_FILTER = new Integer(20);
-
+    public static final Integer PLUGGABLE_TASK_MEDIATION_ERROR_HANDLER = new Integer(21);
     
     // pluggable task types (belongs to a category)
     public static final Integer PLUGGABLE_TASK_T_PAPER_INVOICE = new Integer(12);

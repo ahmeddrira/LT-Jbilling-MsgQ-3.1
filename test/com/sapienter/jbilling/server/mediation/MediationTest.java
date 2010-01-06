@@ -20,12 +20,20 @@
 
 package com.sapienter.jbilling.server.mediation;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.Util;
@@ -59,15 +67,43 @@ public class MediationTest extends TestCase {
     public void testTrigger() {
         try {
             remoteMediation.trigger();
+            
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
             assertEquals("There should be two processes after running the mediation process", 2, all.size());
-            for (MediationProcess process: all) {
+
+            Collection <MediationRecordDTO> processedRecords = null;
+            for (MediationProcess process : all) {
                 if (process.getConfiguration().getId() == 10) {
-                    assertEquals("The process touches an order for each event",
-                                 10129, process.getOrdersAffected().intValue());
+                    assertEquals("The process touches an order for each event", new Integer(10129), process.getOrdersAffected());
+                    processedRecords = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
                 }
             }
+
+            assertNotNull("Collection of processed records should be presented", processedRecords);
+            assertEquals("Should be processed ten records", 10131, processedRecords.size());
+
+            Integer checkedRecords = 0;
+            for (MediationRecordDTO rec : processedRecords) {
+                if (rec.getKey().equals("07")) {
+                    assertEquals("Record with key 07 should be done and billable",
+                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE);
+                    checkedRecords++;
+                } else if (rec.getKey().equals("08")) {
+                    assertEquals("Record with key 08 should be done and not billable (not answered)",
+                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE);
+                    checkedRecords++;
+                } else if (rec.getKey().equals("09")) {
+                    assertEquals("Record with key 09 should be declared as error (negative duration)",
+                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED);
+                    checkedRecords++;
+                } else if (rec.getKey().equals("10")) {
+                    assertEquals("Record with key 10 should be detected as error (undefined user)",
+                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED);
+                    checkedRecords++;
+                } 
+            }
+            assertEquals("Records with keys 07, 08, 09 and 10 should be in results of processing", 4, checkedRecords.intValue());
 
             List allCfg = remoteMediation.getAllConfigurations(1);
             assertNotNull("config list can't be null", allCfg);
@@ -126,20 +162,20 @@ public class MediationTest extends TestCase {
             fail("Exception!" + e.getMessage());
         }
     }
-    
+
     // test that the last 2 orders for gandalf have all the CDRs
     public void testOrderLineEvents() {
         try {
             
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer ids[] = api.getLastOrders(2, 2); // last two orders for user 2
-            for (Integer id: ids) {
+            for (Integer id : ids) {
                 OrderWS order = api.getOrder(id);
                 List<MediationRecordLineDTO> lines = remoteMediation.getEventsForOrder(order.getId());
 
                 BigDecimal total = BigDecimal.ZERO;
                 BigDecimal quantity = BigDecimal.ZERO;
-                for (MediationRecordLineDTO line: lines) {
+                for (MediationRecordLineDTO line : lines) {
                     total = total.add(line.getAmount());
                     quantity = quantity.add(line.getQuantity());
                 }
@@ -285,7 +321,70 @@ public class MediationTest extends TestCase {
         assertEquals("112950 minutes", new BigDecimal("112950"), order.getOrderLines()[0].getQuantityAsDecimal());
         assertEquals("$1472.25 total", new BigDecimal("1472.25"), order.getOrderLines()[0].getAmountAsDecimal());
     }
-    
+
+    /**
+     * This test case checks the content of files with saved errors on serve
+     * BUT will work only for local machine and running test from ant target
+     */
+    public void testSavingErrorsToFile() {
+        String dir = System.getProperty("mediation.errors.dir");
+        String serverFilePath = (dir != null ?  dir + File.separator  : "") + "mediation-errors.csv";
+
+        System.out.print("File server path defined as " + serverFilePath);
+        File errorsFile = new File(serverFilePath);
+
+        // TODO: test will work only for local server and for running from ant target
+        // else it is impossible to obtain file path
+        if (errorsFile.exists()) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(errorsFile));
+                String line;
+                boolean record9Found = false;
+                boolean record10Found = false;
+                while ((line = reader.readLine()) != null) {
+                    String[] columns = com.sapienter.jbilling.server.util.Util.csvSplitLine(line, ',');
+                    //last 2 columns will contain errors and processing date
+                    for (int i = 0; i < columns.length - 2; i++) {
+                        PricingField field = new PricingField(columns[i]);
+                        if (field.getName().equals("accountcode")) {
+                            if (field.getValue().equals("09")) {
+                                record9Found = true;
+                                String errors = columns[columns.length - 2];
+                                assertTrue("Custom error ERR-DURATION should be saved for record with key 09",
+                                           errors.indexOf("ERR-DURATION") != -1);
+                            } else if (field.getValue().equals("10")) {
+                                record10Found = true;
+                                String errors = columns[columns.length - 2];
+                                assertTrue("Error JB-NO_USER should be presented for record with key 10",
+                                           errors.indexOf("JB-NO_USER") != -1);
+                            } else if (field.getValue().equals("07")) {
+                                fail("Record with key 07 should not be saved");
+                            }
+                            break;
+                        }
+                    }
+                }
+                assertTrue("Record with key 09 should be presented", record9Found);
+                assertTrue("Record with key 10 should be presented", record10Found);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                fail("Exception! " + e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+                fail("Exception! " + e.getMessage());
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);
     }

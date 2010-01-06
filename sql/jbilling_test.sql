@@ -74,6 +74,7 @@ ALTER TABLE ONLY public.menu_option DROP CONSTRAINT menu_option_fk_1;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_2;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_1;
 ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_fk_1;
+ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_fk_2;
 ALTER TABLE ONLY public.mediation_process DROP CONSTRAINT mediation_process_fk_1;
 ALTER TABLE ONLY public.mediation_order_map DROP CONSTRAINT mediation_order_map_fk_2;
 ALTER TABLE ONLY public.mediation_order_map DROP CONSTRAINT mediation_order_map_fk_1;
@@ -1140,7 +1141,8 @@ CREATE TABLE mediation_record (
     id_key character varying(100) NOT NULL,
     start_datetime timestamp without time zone NOT NULL,
     mediation_process_id integer,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    status_id integer NOT NULL
 );
 
 
@@ -10332,6 +10334,10 @@ COPY generic_status (id, dtype, status_value, can_login) FROM stdin;
 26	invoice_status	1	\N
 27	invoice_status	2	\N
 28	invoice_status	3	\N
+29	mediation_record_status	1	\N
+30	mediation_record_status	2	\N
+31	mediation_record_status	3	\N
+32	mediation_record_status	4	\N
 \.
 
 
@@ -10345,6 +10351,7 @@ order_status
 subscriber_status
 user_status
 invoice_status
+mediation_record_status
 \.
 
 
@@ -11116,6 +11123,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 90	1	description	1	Paid
 90	2	description	1	Unpaid
 90	3	description	1	Unpaid, balance carried to new invoice
+91	1	description	1	Done and billable
+91	2	description	1	Done and not billable
+91	3	description	1	Error detected
+91	4	description	1	Error declared
 14	1	description	2	French Lemonade
 14	2600	description	1	Lemonade - Generic
 14	2601	description	1	Lemonade - Included in plan
@@ -11573,6 +11584,7 @@ COPY jbilling_table (id, name) FROM stdin;
 21	purchase_order
 22	order_line
 87	generic_status
+91	mediation_record_status
 \.
 
 
@@ -14754,6 +14766,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 550	1	55	1	1
 560	1	56	2	3
 570	1	15	1	1
+571	1	71	1	1
 580	2	58	1	1
 590	2	59	1	1
 410	1	60	1	1
@@ -14904,6 +14917,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 65	17	com.sapienter.jbilling.server.user.tasks.AutoRechargeTask	0
 69	20	com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask	0
 70	20	com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask	0
+71	21	com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler	0
 \.
 
 
@@ -14932,6 +14946,7 @@ COPY pluggable_task_type_category (id, description, interface_name) FROM stdin;
 18	External Provisioning	com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning
 19	Validate Purchase	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
 20	BillingProcessFilterTask	com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask
+21	Mediation Error Handler	com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler
 \.
 
 
@@ -20456,9 +20471,14 @@ CREATE INDEX ix_uq_order_process_or_in ON order_process USING btree (order_id, i
 
 CREATE INDEX ix_uq_payment_inv_map_pa_in ON payment_invoice USING btree (payment_id, invoice_id);
 
+--
+-- Name: mediation_record_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE INDEX mediation_record_i ON mediation_record USING btree (id_key, status_id);
 
 --
--- Name: partner_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+-- Name: partner_i_3; Type: INDEX; Schema: public; Owner: jbilling; Tablespace:
 --
 
 CREATE INDEX partner_i_3 ON partner USING btree (user_id);
@@ -21064,6 +21084,13 @@ ALTER TABLE ONLY mediation_process
 
 ALTER TABLE ONLY mediation_record
     ADD CONSTRAINT mediation_record_fk_1 FOREIGN KEY (mediation_process_id) REFERENCES mediation_process(id);
+
+--
+-- Name: mediation_record_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY mediation_record
+    ADD CONSTRAINT mediation_record_fk_2 FOREIGN KEY (status_id) REFERENCES generic_status(id);
 
 
 --

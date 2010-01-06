@@ -22,12 +22,14 @@ package com.sapienter.jbilling.client.mediation;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -53,9 +55,12 @@ public class ProcessListAction extends Action {
             HttpSession session = request.getSession(false);
             List <MediationProcess> list = mediationSession.getAll( (Integer)
                     session.getAttribute(Constants.SESSION_ENTITY_ID_KEY));
-            
+            Map<MediationRecordStatusDTO, Long> statusesMap = mediationSession.getNumberOfRecordsByStatuses(
+                    (Integer) session.getAttribute(Constants.SESSION_ENTITY_ID_KEY));
+
             session.setAttribute("mediation_process_list", list);
-                    
+            session.setAttribute("records_by_statuses_map", statusesMap);
+            
             return mapping.findForward("view");            
         } catch (Exception e) {
             LOG.error("Exception ", e);

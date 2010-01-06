@@ -83,3 +83,37 @@
 <logic:empty name="mediation_process_list" scope="session">
    <bean:message key="mediation.process.list.empty"/>
 </logic:empty>
+
+<p class="instr"> <bean:message key="records.by.statuses.map.instr"/> </p>
+
+<logic:notEmpty name="records_by_statuses_map" scope="session">
+<table class="list">
+	<tr class="listH">
+		<td><bean:message key="records.by.statuses.map.description"/></td>
+		<td><bean:message key="records.by.statuses.map.records_count"/></td>
+	</tr>
+  	<logic:iterate id="iter" name="records_by_statuses_map"
+		           scope="session" indexId="index">
+
+		<c:choose>
+			<c:when test="${colorFlag == 1}">
+				<tr class="listB">
+				<c:remove var="colorFlag"/>
+			</c:when>
+			<c:otherwise>
+				<tr class="listA">
+				<c:set var="colorFlag" value="1"/>
+			</c:otherwise>
+	    </c:choose>
+
+		<td class="list">
+		    <bean:write name="iter"
+                        property="key.description"/>
+		</td>
+		<td class="list">
+		    <bean:write name="iter"
+                        property="value"/>
+		</td>
+	</logic:iterate>
+</table>
+</logic:notEmpty>

@@ -22,12 +22,10 @@ package com.sapienter.jbilling.server.mediation;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.sapienter.jbilling.common.InvalidArgumentException;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import com.sapienter.jbilling.server.mediation.db.*;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -47,6 +45,8 @@ public interface IMediationSessionBean {
 
     public List<MediationProcess> getAll(Integer entityId);
 
+    public Map<MediationRecordStatusDTO, Long> getNumberOfRecordsByStatuses(Integer entityId);
+
     public List<MediationConfiguration> getAllConfigurations(Integer entityId);
 
     public void createConfiguration(MediationConfiguration cfg);
@@ -57,7 +57,7 @@ public interface IMediationSessionBean {
 
     public void delete(Integer executorId, Integer cfgId);
 
-    public boolean isBeenProcessed(MediationProcess process, Record thisGroup);
+    public boolean hasBeenProcessed(MediationProcess process, Record thisGroup);
 
     public void normalizeRecordGroup(IMediationProcess processTask, 
             Integer executorId, MediationProcess process, 
@@ -68,4 +68,6 @@ public interface IMediationSessionBean {
             MediationRecordDTO record, Date eventDate, String description);
 
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId);
+
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
 }

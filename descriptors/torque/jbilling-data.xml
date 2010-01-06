@@ -1793,6 +1793,10 @@
     <InternationalDescription TableId="89" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="None"/>
     <InternationalDescription TableId="89" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Pre-paid balance"/>
     <InternationalDescription TableId="89" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Credit limit"/>
+    <InternationalDescription TableId="91" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Done and billable"/>
+    <InternationalDescription TableId="91" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Done and not billable"/>
+    <InternationalDescription TableId="91" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Error detected"/>
+    <InternationalDescription TableId="91" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Error declared"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>
@@ -1888,6 +1892,7 @@
     <JbillingTable Id="87" Name="generic_status"/>
     <JbillingTable Id="88" Name="order_line_provisioning_status"/>
     <JbillingTable Id="89" Name="balance_type"/>
+    <JbillingTable Id="91" Name="mediation_record_status"/>
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>
     <JbillingSeqs Name="entity_payment_method_map" NextId="26"/>
@@ -1905,8 +1910,8 @@
     <JbillingSeqs Name="order_billing_type" NextId="3"/>
     <JbillingSeqs Name="menu_option" NextId="92"/>
     <JbillingSeqs Name="order_status" NextId="5"/>
-    <JbillingSeqs Name="pluggable_task_type_category" NextId="10"/>
-    <JbillingSeqs Name="pluggable_task_type" NextId="20"/>
+    <JbillingSeqs Name="pluggable_task_type_category" NextId="22"/>
+    <JbillingSeqs Name="pluggable_task_type" NextId="70"/>
     <JbillingSeqs Name="invoice_line_type" NextId="6"/>
     <JbillingSeqs Name="currency" NextId="11"/>
     <JbillingSeqs Name="report_type" NextId="10"/>
@@ -2703,6 +2708,7 @@
     <PluggableTaskType Id="68" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentSageTask" MinParameters="2"/>
     <PluggableTaskType Id="69" CategoryId="20" ClassName="com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask" MinParameters="0"/>
     <PluggableTaskType Id="70" CategoryId="20" ClassName="com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask" MinParameters="0"/>
+    <PluggableTaskType Id="71" CategoryId="21" ClassName="com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler" MinParameters="0"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
@@ -2724,7 +2730,8 @@
     <PluggableTaskTypeCategory Id="18" Description="External Provisioning" InterfaceName="com.sapienter.jbilling.server.provisioning.task.IExternalProvisioning"/>
     <PluggableTaskTypeCategory Id="19" Description="Validate Purchase" InterfaceName="com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask"/>
     <PluggableTaskTypeCategory Id="20" Description="BillingProcessFilterTask" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
-
+    <PluggableTaskTypeCategory Id="21" Description="Mediation Error Handler" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
+    
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>
@@ -3989,6 +3996,8 @@
     <GenericStatusType Id="order_status"/>
     <GenericStatusType Id="subscriber_status"/>
     <GenericStatusType Id="user_status"/>
+    <GenericStatusType Id="invoice_status"/>
+    <GenericStatusType Id="mediation_record_status"/>
     <GenericStatus Id="1" Dtype="user_status" StatusValue="1" CanLogin="1"/>
     <GenericStatus Id="2" Dtype="user_status" StatusValue="2" CanLogin="1"/>
     <GenericStatus Id="3" Dtype="user_status" StatusValue="3" CanLogin="1"/>
@@ -4014,4 +4023,11 @@
     <GenericStatus Id="23" Dtype="order_line_provisioning_status" StatusValue="4"/>
     <GenericStatus Id="24" Dtype="order_line_provisioning_status" StatusValue="5"/>
     <GenericStatus Id="25" Dtype="order_line_provisioning_status" StatusValue="6"/>
+    <GenericStatus Id="26" Dtype="invoice_status" StatusValue="1"/>
+    <GenericStatus Id="27" Dtype="invoice_status" StatusValue="2"/>
+    <GenericStatus Id="28" Dtype="invoice_status" StatusValue="3"/>
+    <GenericStatus Id="29" Dtype="mediation_record_status" StatusValue="1"/>
+    <GenericStatus Id="30" Dtype="mediation_record_status" StatusValue="2"/>
+    <GenericStatus Id="31" Dtype="mediation_record_status" StatusValue="3"/>
+    <GenericStatus Id="32" Dtype="mediation_record_status" StatusValue="4"/>
 </dataset>

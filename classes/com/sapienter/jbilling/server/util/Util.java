@@ -29,7 +29,9 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -283,5 +285,62 @@ public class Util {
 
         return fields.toArray(new String[0]);
     }
+
+    /**
+     * Joining by separator after each 'not last' value
+     *
+     * @param lst list for joining
+     * @param separator separator string
+     * @return joined string
+     */
+    public static String join(List<String> lst, String separator) {
+        if (lst == null) return "";
+        StringBuilder str = new StringBuilder();
+        Iterator<String> iter = lst.iterator();
+        while (iter.hasNext()) {
+            str.append(iter.next());
+            if (iter.hasNext()) {
+                str.append(separator);
+            }
+        }
+        return str.toString();
+    }
+
+    /**
+     * Basic CSV line concatination with characters escaping
+     *
+     * @param values values for concatination
+     * @param fieldSeparator character for fields separation
+     * @return concatinated string
+     */
+    public static String concatCsvLine(List<String> values, String fieldSeparator) {
+
+        if (values == null || values.isEmpty()) return null;
+        StringBuilder builder = new StringBuilder(escapeStringForCsvFormat(values.get(0), fieldSeparator));
+        for (int i = 1; i < values.size(); i++) {
+            //add separator for 'not last' element
+            builder.append(fieldSeparator);
+            builder.append(escapeStringForCsvFormat(values.get(i), fieldSeparator));
+        }
+        return builder.toString();
+    }
+
+    private static String escapeStringForCsvFormat(String str, String fieldSeparator) {
+        if (str == null) return "";
+        //is escaping fieldSeparators and line separators by quotes needed
+        boolean inQuotes = str.indexOf(fieldSeparator) != -1 || str.indexOf('\n') != -1;
+        StringBuilder builder = new StringBuilder();
+        if (inQuotes) builder.append('\"');
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            //escaping quote by duplicating it
+            if (ch == '\"') {
+                builder.append('\"');
+            }
+            builder.append(ch);
+        }
+        if (inQuotes) builder.append('\"');
+        return builder.toString();
+    }    
 
 }

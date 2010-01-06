@@ -67,7 +67,7 @@ alter table customer add column auto_recharge double precision;
 insert into preference_type (id, int_def_value, str_def_value, float_def_value) values (49, null, null, null);
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (65, 17, 'com.sapienter.jbilling.server.user.tasks.AutoRechargeTask', 0);
 
--- changes in mediatin module
+-- changes in mediation module
 alter table mediation_record drop column end_datetime;
 
 -- refactoring of the sequence generator table
@@ -84,3 +84,30 @@ insert into pluggable_task_type_category values (20, 'BillingProcessFilterTask',
 insert into pluggable_task_type values (69, 20, 'com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask',0);
 insert into pluggable_task_type values (70, 20, 'com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask',0);
 
+-- new mediation_record_status
+insert into generic_status_type values ('mediation_record_status');
+
+insert into generic_status (id, dtype, status_value) values (29, 'mediation_record_status', 1); -- done and billable
+insert into generic_status (id, dtype, status_value) values (30, 'mediation_record_status', 2); -- done and not billable
+insert into generic_status (id, dtype, status_value) values (31, 'mediation_record_status', 3); -- error detected
+insert into generic_status (id, dtype, status_value) values (32, 'mediation_record_status', 4); -- error declared
+
+insert into jbilling_table values (91, 'mediation_record_status');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (91, 1, 'description', 1, 'Done and billable');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (91, 2, 'description', 1, 'Done and not billable');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (91, 3, 'description', 1, 'Error detected');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (91, 4, 'description', 1, 'Error declared');
+
+create index mediation_record_i on mediation_record using btree (id_key, status_id); -- postgresql
+-- alter table mediation_record add index mediation_record_i (id_key, status_id); -- mysql
+
+-- alter mediation_record table for adding status field with previous data update
+alter table mediation_record add column status_id integer;
+update mediation_record set status_id = 29; -- mark all records as done and billable
+alter table mediation_record alter column status_id set NOT NULL;
+alter table mediation_record ADD CONSTRAINT mediation_record_FK_2 FOREIGN KEY (status_id) REFERENCES generic_status (id);
+
+-- mediation error handler plug-in
+insert into pluggable_task_type_category (id, description, interface_name) values (21, 'Mediation Error Handler', 'com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler');
+insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (71, 21, 'com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler', 0);

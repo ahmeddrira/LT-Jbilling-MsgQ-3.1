@@ -38,18 +38,19 @@ public class MediationRecordDTO implements Serializable {
 
     private String key;
     private Date started;
-    private int optlock;
     private MediationProcess process;
+    private MediationRecordStatusDTO recordStatus;
     private Collection<MediationRecordLineDTO> lines = new ArrayList<MediationRecordLineDTO>();
+    private int optlock;
 
-    // needed by Hibernate
     protected MediationRecordDTO() {
     }
 
-    public MediationRecordDTO(String key, Date started, MediationProcess process) {
+    public MediationRecordDTO(String key, Date started, MediationProcess process, MediationRecordStatusDTO recordStatus) {
         this.key = key;
         this.started = started;
         this.process = process;
+        this.recordStatus = recordStatus;
     }
 
     @Id
@@ -57,7 +58,7 @@ public class MediationRecordDTO implements Serializable {
     public String getKey() {
         return key;
     }
-    // needed by Hibernate
+
     protected void setKey(String key) {
         this.key = key;
     }
@@ -66,7 +67,7 @@ public class MediationRecordDTO implements Serializable {
     public Date getStarted() {
         return started;
     }
-    // needed by Hibernate
+    
     protected void setStarted(Date started) {
         this.started = started;
     }
@@ -80,7 +81,17 @@ public class MediationRecordDTO implements Serializable {
     public void setProcess(MediationProcess process) {
         this.process = process;
     }
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
+    public MediationRecordStatusDTO getRecordStatus() {
+        return recordStatus;
+    }
+
+    public void setRecordStatus(MediationRecordStatusDTO recordStatus) {
+        this.recordStatus = recordStatus;
+    }
+
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="record")
     public Collection<MediationRecordLineDTO> getLines() {
         return lines;

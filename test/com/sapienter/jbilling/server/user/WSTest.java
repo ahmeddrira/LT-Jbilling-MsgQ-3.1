@@ -294,9 +294,9 @@ public class WSTest extends TestCase {
              */
             System.out.println("Getting active users...");
             Integer[] users = api.getUsersInStatus(new Integer(1));
-            assertEquals(1021,users.length);
+            assertEquals(1033,users.length);
             assertEquals("First return user ", 1, users[0].intValue());
-            assertEquals("Last returned user ", 10772, users[users.length-1].intValue());
+            assertEquals("Last returned user ", 10792, users[users.length-1].intValue());
 
             /*
              * Get list of not active customers
@@ -789,7 +789,7 @@ Ch2->P1
             assertNotNull("Four customers with CC", ids);
             assertEquals("Four customers with CC", 6, ids.length); // returns credit cards from both clients?
                                                                    // 5 cards from entity 1, 1 card from entity 2
-            assertEquals("Created user with CC", 10772,
+            assertEquals("Created user with CC", 10792,
                     ids[ids.length - 1].intValue());
                     
             // get the user
@@ -983,7 +983,7 @@ Ch2->P1
             System.out.println("Validate with fields...");
             PricingField pf[] =  { new PricingField("src", "604"),
                 new PricingField("dst", "512")};
-            ValidatePurchaseWS result = api.validatePurchase(myId, 1, pf);
+            ValidatePurchaseWS result = api.validatePurchase(myId, 2800, pf);
             assertEquals("validate purchase success 1", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 1", Boolean.valueOf(false), result.getAuthorized());
 
@@ -1015,7 +1015,7 @@ Ch2->P1
 
             // validate. room = 20, price = 7
             System.out.println("Validate with fields...");
-            result = api.validatePurchase(myId, 1, pf);
+            result = api.validatePurchase(myId, 2800, pf);
             assertEquals("validate purchase success 2", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 2", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 2", new BigDecimal("2.8571"), result.getQuantityAsDecimal());
@@ -1079,11 +1079,9 @@ Ch2->P1
 
             // validate. room = 10, price = 10
             System.out.println("Validate with fields...");
-            result = api.validatePurchase(myId, 1, null);
-            assertEquals("validate purchase success 3", Boolean.valueOf(true), 
-                    result.getSuccess());
-            assertEquals("validate purchase authorized 3", 
-                    Boolean.valueOf(true), result.getAuthorized());
+            result = api.validatePurchase(myId, 1, null); // lemonade!
+            assertEquals("validate purchase success 3", Boolean.valueOf(true), result.getSuccess());
+            assertEquals("validate purchase authorized 3", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 3", Constants.BIGDECIMAL_ONE, result.getQuantityAsDecimal());
 
 
@@ -1134,7 +1132,7 @@ Ch2->P1
             System.out.println("Validate with fields...");
             PricingField pf[] =  { new PricingField("src", "604"),
                 new PricingField("dst", "512")};
-            ValidatePurchaseWS result = api.validatePurchase(myId, 1, pf);
+            ValidatePurchaseWS result = api.validatePurchase(myId, 2800, pf); // long distance calls for rate card.
             assertEquals("validate purchase success 1", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 1", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 1", new BigDecimal("142.8571"), result.getQuantityAsDecimal());
@@ -1157,7 +1155,7 @@ Ch2->P1
 
              // validate. room = 980, price = 10
             System.out.println("Validate with fields...");
-            result = api.validatePurchase(myId, 1, null);
+            result = api.validatePurchase(myId, 1, null); // lemonade!
             assertEquals("validate purchase success 2", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 2", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 2", new BigDecimal("98.0"), result.getQuantityAsDecimal());
@@ -1346,7 +1344,7 @@ Ch2->P1
             System.out.println("Validate with fields...");
             PricingField pf[] =  { new PricingField("src", "604"),
                 new PricingField("dst", "512")};
-            ValidatePurchaseWS result = api.validatePurchase(childId, 1, pf);
+            ValidatePurchaseWS result = api.validatePurchase(childId, 2800, pf); // Long Distance for rate card test
             assertEquals("validate purchase success", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity", new BigDecimal("285.7143"), result.getQuantityAsDecimal());
@@ -1392,23 +1390,24 @@ Ch2->P1
             api.updateUser(myUser);
 
             // validate with items only
-            // validate. room = 1000, price = 10 + 20 + 15 = 45
-            ValidatePurchaseWS result = api.validateMultiPurchase(myId, new Integer[] { 1, 2, 251 }, null);
+            ValidatePurchaseWS result = api.validateMultiPurchase(myId,
+                                                                  new Integer[] { 2800, 2, 251 },
+                                                                  null);
             assertEquals("validate purchase success 1", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 1", Boolean.valueOf(true), result.getAuthorized());
-            assertEquals("validate purchase quantity 1", new BigDecimal("22.2222"), result.getQuantityAsDecimal());
+            assertEquals("validate purchase quantity 1", new BigDecimal("28.57"), result.getQuantityAsDecimal());
 
             // validate with pricing fields
-            // validate. room = 1000, price = 7 * 3 = 21
             PricingField[] pf = { new PricingField("src", "604"), new PricingField("dst", "512") };
-            result = api.validateMultiPurchase(myId, new Integer[] { 1, 1, 1 }, new PricingField[][] { pf, pf, pf } );
+            result = api.validateMultiPurchase(myId,
+                                               new Integer[] { 2800, 2800, 2800 },
+                                               new PricingField[][] { pf, pf, pf } );
             assertEquals("validate purchase success 1", Boolean.valueOf(true), result.getSuccess());
             assertEquals("validate purchase authorized 1", Boolean.valueOf(true), result.getAuthorized());
             assertEquals("validate purchase quantity 1", new BigDecimal("47.6190"), result.getQuantityAsDecimal());
 
             // validate without item ids (mediation should set item)
             // duration field needed for rule to fire
-            // validate. room = 1000, price = 7 * 3 = 21
             pf = new PricingField[] {
 		    new PricingField("src", "604"),
                     new PricingField("dst", "512"),
@@ -1597,7 +1596,7 @@ Ch2->P1
                     "Event from WS");
 
             // check dynamic balance increased (credit limit type)
-            // 300 + 5 minutes * 5.0 price
+            // 300 + (5 minutes * 5.0 price)
             user = api.getUserWS(userId);
             assertEquals("dynamic balance", new BigDecimal("325.0"), user.getDynamicBalanceAsDecimal());
 

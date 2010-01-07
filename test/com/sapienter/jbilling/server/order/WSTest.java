@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -981,17 +982,19 @@ public class WSTest  extends TestCase {
                     "Event from WS");
 
             // asserts
-            assertEquals("1 order line", 1, currentOrderAfter.getOrderLines().length);
+            assertEquals("2 order line", 2, currentOrderAfter.getOrderLines().length);
 
             createdLine = currentOrderAfter.getOrderLines()[0];
             assertEquals("Order line ids", newLine.getItemId(), createdLine.getItemId());
-            assertEquals("Order line quantities", "28", createdLine.getQuantity());
+            assertEquals("Order line quantities", "23", createdLine.getQuantity());
             assertEquals("Order line price", "10", createdLine.getPrice());
+            assertEquals("Order line total", "225", createdLine.getAmount());
 
-            // Note that because of the pricing rule, the result should be 
-            // 225.0 + 5 minutes * 5.0 price.
-            assertEquals("Order line total", "250", createdLine.getAmount());
-
+            // 'newPrice' pricing field, $5 * 5 units = 25
+            createdLine = currentOrderAfter.getOrderLines()[1];
+            assertEquals("Order line quantities", "5", createdLine.getQuantity());
+            assertEquals("Order line price", "5", createdLine.getPrice());
+            assertEquals("Order line price", "25", createdLine.getAmount()); // not priced
 
             /*
              * No main subscription order tests.
@@ -1228,10 +1231,9 @@ public class WSTest  extends TestCase {
             OrderWS currentOrder = api.updateCurrentOrder(userId,
                     null, pf, new Date(), "Event from WS");
 
-            assertEquals("1 order line", 1, 
-                    currentOrder.getOrderLines().length);
+            assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             OrderLineWS line = currentOrder.getOrderLines()[0];
-            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line itemId", 2800, line.getItemId().intValue());
             assertEquals("order line quantity", "1", line.getQuantity());
             assertEquals("order line total", new BigDecimal("0.33"), 
                     line.getAmountAsDecimal());
@@ -1246,10 +1248,9 @@ public class WSTest  extends TestCase {
             currentOrder = api.updateCurrentOrder(userId,
                     null, pf, new Date(), "Event from WS");
 
-            assertEquals("1 order line", 1, 
-                    currentOrder.getOrderLines().length);
+            assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             line = currentOrder.getOrderLines()[0];
-            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line itemId", 2800, line.getItemId().intValue());
             assertEquals("order line quantity", "2", line.getQuantity());
             // 0.33 + 0.08 = 0.41
             assertEquals("order line total", new BigDecimal("0.41"), 
@@ -1264,30 +1265,36 @@ public class WSTest  extends TestCase {
             /* getItem */
             // should be priced at 0.42 (see row 1731)
             pf[0].setStrValue("212222");
-            ItemDTOEx item = api.getItem(1, userId, pf);
+            ItemDTOEx item = api.getItem(2800, userId, pf);
             assertEquals("price", new BigDecimal("0.42"), item.getPrice());
 
 
             /* rateOrder */
-            OrderWS newOrder = createMockOrder(userId, 1, 
-                    new BigDecimal("10.0"));
-            OrderLineWS newLine = newOrder.getOrderLines()[0];
+            OrderWS newOrder = createMockOrder(userId, 0, new BigDecimal("10.0"));
+
+            // createMockOrder(...) doesn't add the line items we need for this test - do it by hand            
+            OrderLineWS newLine = new OrderLineWS();
+            newLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+            newLine.setDescription("New Order Line");
+            newLine.setItemId(2800);
             newLine.setQuantity(10);
             newLine.setPrice((String) null);
             newLine.setAmount((String) null);
             newLine.setUseItem(true);
+
+            List<OrderLineWS> lines = new ArrayList<OrderLineWS>();
+            lines.add(newLine);
+
+            newOrder.setOrderLines(lines.toArray(new OrderLineWS[lines.size()]));
             newOrder.setPricingFields(PricingField.setPricingFieldsValue(pf));
 
             OrderWS order = api.rateOrder(newOrder);
-            assertEquals("1 order line", 1, 
-                    currentOrder.getOrderLines().length);
+            assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             line = order.getOrderLines()[0];
-            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line itemId", 2800, line.getItemId().intValue());
             assertEquals("order line quantity", "10", line.getQuantity());
             // 0.42 * 10 = 4.2
-            assertEquals("order line total", new BigDecimal("4.2"), 
-                    line.getAmountAsDecimal());
-
+            assertEquals("order line total", new BigDecimal("4.2"), line.getAmountAsDecimal());
 
             /* validatePurchase */
             // should be priced at 0.47 (see row 498)
@@ -1305,10 +1312,9 @@ public class WSTest  extends TestCase {
 
             // check current order wasn't updated
             currentOrder = api.getOrder(currentOrder.getId());
-            assertEquals("1 order line", 1, 
-                    currentOrder.getOrderLines().length);
+            assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             line = currentOrder.getOrderLines()[0];
-            assertEquals("order line itemId", 1, line.getItemId().intValue());
+            assertEquals("order line itemId", 2800, line.getItemId().intValue());
             assertEquals("order line quantity", "2", line.getQuantity());
             assertEquals("order line total", new BigDecimal("0.41"), 
                     line.getAmountAsDecimal());

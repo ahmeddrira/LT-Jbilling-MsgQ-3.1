@@ -92,15 +92,14 @@ then
     $result.setPrice("30");
 end
 
-
 rule 'PricingField test1'
 	dialect "java"
 when
 	$newPrice : PricingField( name == "newPrice" )
-	$result : PricingResult( itemId == 1, price == null, pricingFieldsResultId == $newPrice.resultId )
+	$result : PricingResult( itemId == 2800 || itemId == 1 , price == null, pricingFieldsResultId == $newPrice.resultId )
 then
 	modify($result) {
         setPrice(new BigDecimal($newPrice.getDoubleValue()));
     }
-    LOG.debug("Setting price of item 1 to " + $result.getPrice());
+    LOG.debug("Setting price of item " + $result.getItemId() + " to " + $result.getPrice());
 end

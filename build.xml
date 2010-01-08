@@ -19,8 +19,10 @@
         <pathelement location="${build.test.dir}"/>
         <pathelement location="${source.lib.dir}/commons-logging.jar"/>
         <pathelement location="${source.lib.dir}/log4j.jar"/>
+
         <!-- classes for webservices -->
         <pathelement location="${source.lib.dir}/spring.jar"/>
+        <pathelement location="${source.lib.dir}/hibernate3.jar"/>
         <pathelement location="${source.lib.dir}/cxf.jar"/>
         <pathelement location="${source.lib.dir}/XmlSchema.jar"/>
         <pathelement location="${source.lib.dir}/wsdl4j.jar"/>
@@ -430,8 +432,9 @@
                includes="**/WSTest*.java">
             <classpath refid="test.classpath"/>
         </javac>
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
-       todir="${build.test.dir}"/>
+
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+
         <junit printsummary="off"
                haltonfailure="true"
                fork="yes">
@@ -441,9 +444,10 @@
             
             <classpath refid="test.classpath"/>
             <formatter type="brief" usefile="false"/>
+
             <!--
-    	  <test name="com.sapienter.jbilling.server.user.WSTestQuick"/>
-	  	 -->
+    	    <test name="com.sapienter.jbilling.server.user.WSTestQuick"/>
+	  	    -->
             <test name="com.sapienter.jbilling.server.order.WSTest"/>
             <test name="com.sapienter.jbilling.server.user.WSTest"/>
             <test name="com.sapienter.jbilling.server.payment.WSTest"/>
@@ -485,12 +489,14 @@
     </target>
 
     <target name="test-provisioning">
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
-              todir="${build.test.dir}"/>			  
-        <javac debug="on" destdir="${build.test.dir}"
-              srcdir="${source.test.dir}/com/sapienter/jbilling/server/provisioning">
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+
+        <javac debug="on"
+               destdir="${build.test.dir}"
+               srcdir="${source.test.dir}/com/sapienter/jbilling/server/provisioning">
             <classpath refid="run.classpath"/>
         </javac>
+
         <junit printsummary="off" haltonfailure="true" fork="yes">
             <jvmarg value="-Djava.security.manager" />
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
@@ -502,13 +508,15 @@
     </target>
 
     <target name="test-partners">
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" 
-              todir="${build.test.dir}"/>			  
-        <javac debug="on" destdir="${build.test.dir}"
-              srcdir="${source.test.dir}/com/sapienter/jbilling/server/user"
-              includes="PartnerTest.java">
+        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+
+        <javac debug="on"
+               destdir="${build.test.dir}"
+               srcdir="${source.test.dir}/com/sapienter/jbilling/server/user"
+               includes="PartnerTest.java">
             <classpath refid="run.classpath"/>
         </javac>
+        
         <junit printsummary="off" haltonfailure="true" fork="yes">
             <classpath refid="run.classpath"/>
             <formatter type="brief" usefile="false"/>
@@ -517,12 +525,13 @@
     </target>
 
     <target name="test-process">
-        <javac debug="on" destdir="${build.test.dir}"
+        <javac debug="on"
+               destdir="${build.test.dir}"
                srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
             <classpath refid="run.classpath"/>
         </javac>
-        <junit printsummary="off"
-        haltonfailure="true">
+
+        <junit printsummary="off" haltonfailure="true" fork="yes">
             <classpath refid="run.classpath"/>
             <classpath refid="spring.classpath"/>
             <formatter type="brief" usefile="false"/>

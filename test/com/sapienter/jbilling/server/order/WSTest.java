@@ -1101,7 +1101,7 @@ public class WSTest  extends TestCase {
         // but after calling updateUser, it reutrns 4 because Gandalf is included.
         // why is not picking him up before? What is updateUser doing that then the CC shows up?
         // get gandalf's orders
-        Integer orders[] = api.getLastInvoices(GANDALF_USER_ID, 100);
+        Integer orders[] = api.getLastOrders(GANDALF_USER_ID, 100);
         // now get the user
         UserWS user = api.getUserWS(GANDALF_USER_ID);
         Integer mainOrder = user.getMainOrderId();

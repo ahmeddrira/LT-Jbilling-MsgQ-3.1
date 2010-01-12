@@ -1114,6 +1114,17 @@ public class WSTest  extends TestCase {
         // validate that the user does have the new main order
         assertEquals("User does not have the correct main order", orders[orders.length - 1],
                 api.getUserWS(GANDALF_USER_ID).getMainOrderId());
+
+        // set to null: does not work
+        /*
+        user.setMainOrderId(null);
+        api.updateUser(user);
+        // validate that the user does have the new main order
+        assertNull("User does should not have main order after setting to null",
+                api.getUserWS(GANDALF_USER_ID).getMainOrderId());
+         */
+
+
         // update the user (restore main order)
         user.setMainOrderId(mainOrder);
         api.updateUser(user);

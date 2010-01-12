@@ -1234,6 +1234,11 @@ Ch2->P1
             // create main subscription order, lemonade plan
             Integer orderId = createMainSubscriptionOrder(userId, 2);
 
+            // validate that the user does have the new main order
+            System.out.println("Validate that new order is the user's main order");
+            assertEquals("User does not have the correct main order", orderId,
+                    api.getUserWS(user.getUserId()).getMainOrderId());
+
             // try to get another lemonde
             ValidatePurchaseWS result = api.validatePurchase(userId, 1, null);
             assertEquals("validate purchase success 1", Boolean.valueOf(true), result.getSuccess());

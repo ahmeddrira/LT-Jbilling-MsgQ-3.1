@@ -239,7 +239,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         }
         
         /**
-         * Takes the last read line and transforms it into a Record
+         * Returns the records read since the last call to 'hasNext'
          */
         public List<Record> next() {
             if (records.size() == 0) {

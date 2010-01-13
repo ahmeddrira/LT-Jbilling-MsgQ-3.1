@@ -19,25 +19,12 @@
 */
 package com.sapienter.jbilling.server.mediation.db;
 
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
-import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
 public class MediationRecordDAS extends AbstractDAS<MediationRecordDTO> {
-
-    public MediationRecordDTO save(MediationRecordDTO dto) {
-        MediationRecordDTO savedDTO = super.save(dto);
-        if (dto.getProcess() != null) {
-            dto.getProcess().getRecords().add(savedDTO);
-        }
-        return savedDTO;
-    }
 
     private static final String isProcessedSQL =
             "select id_key " +

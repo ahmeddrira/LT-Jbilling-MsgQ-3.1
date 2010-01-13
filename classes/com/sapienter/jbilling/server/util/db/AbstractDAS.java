@@ -206,6 +206,15 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     }
 
     /**
+     * Places the DTO in the session without updates or version checkes.
+     * You have to make sure that the DTO has not been modified to use this
+     * @param dto
+     */
+    public void reattachUnmodified(T dto) {
+    	getSession().lock(dto, LockMode.NONE);
+    }
+
+    /**
      * Detaches the DTO from the session. Updates to the object will
      * no longer make it to the database.
      */

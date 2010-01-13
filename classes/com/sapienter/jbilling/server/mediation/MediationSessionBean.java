@@ -287,7 +287,7 @@ public class MediationSessionBean implements IMediationSessionBean {
         LOG.debug("Normalizing " + thisGroup.size() + " records ...");
 
         // this process came from a different transaction (persistent context)
-        new MediationProcessDAS().reattach(process);
+        new MediationProcessDAS().reattachUnmodified(process);
 
         // validate that these records have not been already processed
         for (Iterator<Record> it = thisGroup.iterator(); it.hasNext();) {

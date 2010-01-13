@@ -99,14 +99,14 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (91, 3, 'description', 1, 'Error detected');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (91, 4, 'description', 1, 'Error declared');
 
-create index mediation_record_i on mediation_record using btree (id_key, status_id); -- postgresql
--- alter table mediation_record add index mediation_record_i (id_key, status_id); -- mysql
-
 -- alter mediation_record table for adding status field with previous data update
 alter table mediation_record add column status_id integer;
 update mediation_record set status_id = 29; -- mark all records as done and billable
 alter table mediation_record alter column status_id set NOT NULL;
 alter table mediation_record ADD CONSTRAINT mediation_record_FK_2 FOREIGN KEY (status_id) REFERENCES generic_status (id);
+
+create index mediation_record_i on mediation_record using btree (id_key, status_id); -- postgresql
+-- alter table mediation_record add index mediation_record_i (id_key, status_id); -- mysql
 
 -- mediation error handler plug-in
 insert into pluggable_task_type_category (id, description, interface_name) values (21, 'Mediation Error Handler', 'com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler');

@@ -58,6 +58,10 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (61, 13, 'com.sapienter.jbilling.server.order.task.RulesItemManager2', 0);
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (62, 1, 'com.sapienter.jbilling.server.order.task.RulesLineTotalTask2', 0);
 
+-- new mediation process requires 3 rules packages, lengthen parameter str_value to accept multiple urls
+alter table pluggable_task_parameter alter column str_value type varchar(500); -- postgresql
+-- alter table pluggable_task_parameter alter column str_value varchar(500); -- mysql
+
 -- world pay task
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (63, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask', 3);
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (64, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayExternalTask', 3);

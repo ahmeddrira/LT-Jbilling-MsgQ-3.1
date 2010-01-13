@@ -1082,7 +1082,7 @@
         <column name="task_id" type="INTEGER"/>
         <column name="name" required="true" size="50" type="VARCHAR"/>
         <column name="int_value" type="INTEGER"/>
-        <column name="str_value" size="200" type="VARCHAR"/>
+        <column name="str_value" size="500" type="VARCHAR"/>
         <column name="float_value" type="DOUBLE"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task">

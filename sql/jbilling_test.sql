@@ -1622,7 +1622,7 @@ CREATE TABLE pluggable_task_parameter (
     task_id integer,
     name character varying(50) NOT NULL,
     int_value integer,
-    str_value character varying(200),
+    str_value character varying(500),
     float_value double precision,
     optlock integer NOT NULL
 );

@@ -75,7 +75,10 @@ public class MediationTest extends TestCase {
             Collection <MediationRecordDTO> processedRecords = null;
             for (MediationProcess process : all) {
                 if (process.getConfiguration().getId() == 10) {
-                    assertEquals("The process touches an order for each event", new Integer(10129), process.getOrdersAffected());
+                    // total orders touched should equal the number of records processed minus errors & non billable
+                    // 10131 events - 2 errors - 1 non billable = 10128
+                    assertEquals("The process touches an order for each event", new Integer(10128), process.getOrdersAffected());
+                    System.out.println("Orders affected: " + process.getOrdersAffected());
                     processedRecords = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
                 }
             }

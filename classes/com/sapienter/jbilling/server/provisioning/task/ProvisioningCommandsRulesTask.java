@@ -28,7 +28,7 @@ import java.util.List;
 import javax.jms.JMSException;
 
 import org.apache.log4j.Logger;
-import org.drools.RuleBase;
+import org.drools.KnowledgeBase;
 
 import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
@@ -75,15 +75,14 @@ public class ProvisioningCommandsRulesTask extends PluggableTask implements IInt
 		try {
 
 			// the order and the order lines have to be visible to the rules
-			RuleBase ruleBase;
-
+			KnowledgeBase knowledgeBase;
 			try {
-				ruleBase = readRule();
+				knowledgeBase = readKnowledgeBase();
 			} catch (Exception e) {
 				throw new TaskException(e);
 			}
 
-			session = ruleBase.newStatefulSession();
+			session = knowledgeBase.newStatefulKnowledgeSession();
 
 			if (event instanceof SubscriptionActiveEvent) {
 				SubscriptionActiveEvent active = (SubscriptionActiveEvent) event;

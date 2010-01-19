@@ -62,6 +62,5 @@ credit_card_password=a_long_secret_key
 password_encrypt_all=true
 # the password that the user account is set to when a user is locked out (too many login retries)
 lockout_password=totalSecret
-# if the rules base have to be cached or not. Cache for production, leave false for development
-cache_rules=true
-
+# time interval for scanning cached rules bases for updates
+rules_scanner_interval=60

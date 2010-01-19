@@ -27,8 +27,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.drools.RuleBase;
-import org.drools.StatelessSession;
+import org.drools.KnowledgeBase;
+import org.drools.runtime.StatelessKnowledgeSession;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
@@ -67,13 +67,13 @@ public class RulesValidatePurchaseTask extends PluggableTask
 
         Integer userId = customer.getBaseUser().getId();
 
-        RuleBase ruleBase;
+        KnowledgeBase knowledgeBase;
         try {
-            ruleBase = readRule();
+            knowledgeBase = readKnowledgeBase();
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        StatelessSession mySession = ruleBase.newStatelessSession();
+        StatelessKnowledgeSession mySession = knowledgeBase.newStatelessKnowledgeSession();
         List<Object> rulesMemoryContext = new ArrayList<Object>();
 
         // add any pricing fields
@@ -123,7 +123,7 @@ public class RulesValidatePurchaseTask extends PluggableTask
         mySession.setGlobal("validatePurchase", helper);
 
         // execute the rules
-        mySession.executeWithResults(rulesMemoryContext);
+        mySession.execute(rulesMemoryContext);
 
         // add any messages
         List<String> messages = helper.getMessages();

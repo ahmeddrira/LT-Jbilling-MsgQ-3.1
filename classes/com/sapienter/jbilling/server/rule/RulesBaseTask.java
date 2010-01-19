@@ -24,8 +24,8 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.drools.RuleBase;
-import org.drools.StatelessSession;
+import org.drools.KnowledgeBase;
+import org.drools.runtime.StatelessKnowledgeSession;
 
 /**
  *
@@ -35,7 +35,6 @@ public abstract class RulesBaseTask extends PluggableTask {
     
     protected Logger LOG = getLog(); // to be set by the real plug-in
 
-    private StatelessSession statelessSession = null;
     protected List<Object> rulesMemoryContext = new ArrayList<Object>();
 
     protected void executeRules() throws TaskException {
@@ -44,10 +43,11 @@ public abstract class RulesBaseTask extends PluggableTask {
         	LOG.debug("in memory context=" + o);
         }
 
-        RuleBase ruleBase;
+        KnowledgeBase knowledgeBase;
+        StatelessKnowledgeSession statelessSession;
         try {
-            ruleBase = readRule();
-            statelessSession = ruleBase.newStatelessSession();
+            knowledgeBase = readKnowledgeBase();
+            statelessSession = knowledgeBase.newStatelessKnowledgeSession();
         } catch (Exception e) {
             throw new TaskException(e);
         }

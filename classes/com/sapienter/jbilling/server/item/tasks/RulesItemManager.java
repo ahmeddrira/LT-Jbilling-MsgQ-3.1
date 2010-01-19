@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.drools.FactHandle;
-import org.drools.RuleBase;
+import org.drools.KnowledgeBase;
+import org.drools.runtime.rule.FactHandle;
 
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -62,13 +62,13 @@ public class RulesItemManager extends BasicItemManager {
     protected void processRules(OrderDTO newOrder) throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules
-        RuleBase ruleBase;
+        KnowledgeBase knowledgeBase;
         try {
-            ruleBase = readRule();
+            knowledgeBase = readKnowledgeBase();
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        session = ruleBase.newStatefulSession();
+        session = knowledgeBase.newStatefulKnowledgeSession();
         List<Object> rulesMemoryContext = new ArrayList<Object>();
         rulesMemoryContext.add(helperOrder);
 

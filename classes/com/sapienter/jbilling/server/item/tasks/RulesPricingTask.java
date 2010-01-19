@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.drools.RuleBase;
-import org.drools.StatelessSession;
+import org.drools.KnowledgeBase;
+import org.drools.runtime.StatelessKnowledgeSession;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -49,13 +49,13 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
             throws TaskException {
         // now we have the line with good defaults, the order and the item
         // These have to be visible to the rules
-        RuleBase ruleBase;
+        KnowledgeBase knowledgeBase;
         try {
-            ruleBase = readRule();
+            knowledgeBase = readKnowledgeBase();
         } catch (Exception e) {
             throw new TaskException(e);
         }
-        StatelessSession mySession = ruleBase.newStatelessSession();
+        StatelessKnowledgeSession mySession = knowledgeBase.newStatelessKnowledgeSession();
         List<Object> rulesMemoryContext = new ArrayList<Object>();
         
         PricingManager manager = new PricingManager(itemId, userId, currencyId, defaultPrice);
@@ -94,7 +94,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         for (Object o: rulesMemoryContext) {
         	LOG.debug("in memory context=" + o);
         }
-        mySession.executeWithResults(rulesMemoryContext);
+        mySession.execute(rulesMemoryContext);
 
         return manager.getPrice();
     }

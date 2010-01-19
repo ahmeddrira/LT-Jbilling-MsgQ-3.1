@@ -24,34 +24,35 @@
  */
 package com.sapienter.jbilling.server.pluggableTask;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.drools.FactHandle;
-import org.drools.RuleBase;
-import org.drools.StatefulSession;
-import org.drools.agent.RuleAgent;
-
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskParameterDTO;
+import org.apache.log4j.Logger;
+import org.drools.KnowledgeBase;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
+import org.drools.agent.KnowledgeAgent;
+import org.drools.agent.KnowledgeAgentFactory;
+import org.drools.io.ResourceChangeScannerConfiguration;
+import org.drools.io.ResourceFactory;
+import org.drools.io.impl.ByteArrayResource;
+
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public abstract class PluggableTask {
     protected HashMap<String, Object> parameters = null;
     private Integer entityId = null;
     private PluggableTaskDTO task = null;
-    protected Hashtable<Object,FactHandle> handlers = null;
-    protected StatefulSession session = null;
+    protected Hashtable<Object, FactHandle> handlers = null;
+    protected StatefulKnowledgeSession session = null;
     private static final Logger LOG = Logger.getLogger(PluggableTask.class);
-    private static HashMap<Integer, RuleBase> rulesCache = new HashMap<Integer, RuleBase>();
+
+    private static HashMap<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
+    private static AtomicBoolean isRulesChangeScanerStarted = new AtomicBoolean(false);
 
     protected Integer getEntityId() {
         return entityId;
@@ -60,25 +61,25 @@ public abstract class PluggableTask {
     protected Integer getTaskId() {
         return task.getId();
     }
-    
-    public void initializeParamters(PluggableTaskDTO task) 
+
+    public void initializeParamters(PluggableTaskDTO task)
             throws PluggableTaskException {
-        Collection <PluggableTaskParameterDTO>DBparameters = task.getParameters();
+        Collection<PluggableTaskParameterDTO> DBparameters = task.getParameters();
         parameters = new HashMap<String, Object>();
         entityId = task.getEntityId();
         this.task = task;
-        if (DBparameters.size() < 
+        if (DBparameters.size() <
                 task.getType().getMinParameters().intValue()) {
             throw new PluggableTaskException("Type [" + task.getType().getClassName() + "] requires at least " +
                     task.getType().getMinParameters() + " parameters." +
                     DBparameters.size() + " found.");
         }
-        
+
         if (DBparameters.isEmpty()) {
             return;
         }
-        
-        for(PluggableTaskParameterDTO parameter: DBparameters) {
+
+        for (PluggableTaskParameterDTO parameter : DBparameters) {
             Object value = parameter.getIntValue();
             if (value == null) {
                 value = parameter.getStrValue();
@@ -86,72 +87,51 @@ public abstract class PluggableTask {
                     value = parameter.getFloatValue();
                 }
             }
-            
+
             parameters.put(parameter.getName(), value);
         }
     }
-    
-    /**
-     * Any pluggable task can get a rule base that takes the task's 
-     * parameters as the configuration for the rule agent.
-     * TODO: Use standard cache rather than custom solution
-     * @return
-     * @throws IOException
-     * @throws Exception
-     */
-    protected RuleBase readRule() throws IOException, Exception {
-        if (rulesCache.get(task.getId()) != null) {
-            return rulesCache.get(task.getId());
+
+    protected KnowledgeBase readKnowledgeBase() {
+        if (knowledgeBasesCache.containsKey(task.getId())) {
+            return knowledgeBasesCache.get(task.getId()).getKnowledgeBase();
         }
-        Properties rulesProperties = new Properties();
-        
-        for (String key: parameters.keySet()) {
-            String value = (String) parameters.get(key);
-            if (key.equals("file")) {
-                String[] files = com.sapienter.jbilling.server.util.Util
-                        .csvSplitLine(value, ' ');
-                value = "";
-                for (String file : files) {
-                    value += "\"";
-                    if (!(new File(file)).isAbsolute()) {
-                        // prepend the default directory if file path is relative
-                        String defaultDir = Util.getSysProp("base_dir") + "rules";
-                        value += defaultDir + File.separator;
-                    }
-                    value += file + "\" ";
-                }
-            }
-            rulesProperties.setProperty(key, value);
-            LOG.debug("adding parameter " + key + " value " + value);
-        }
-        if (parameters.size() == 0) {
-            String defaultDir = Util.getSysProp("base_dir") + "rules";
-            rulesProperties.setProperty("dir", defaultDir);
-            LOG.debug("No task parameters, using directory default:" + defaultDir);
-        }
-        RuleAgent agent = RuleAgent.newRuleAgent(rulesProperties);
-        RuleBase retValue = agent.getRuleBase();
-        // update the cache, if configured that way
-        if (Util.getSysPropBooleanTrue("cache_rules")) {
-            rulesCache.put(task.getId(), retValue);
-        }
-        return retValue; 
+
+        // Creating agent with default KnowledgeAgentConfiguration for scanning files and directories
+        KnowledgeAgent kAgent = KnowledgeAgentFactory.newKnowledgeAgent("Knowledge agent for task#" + task.getId());
+
+        // Adding resources for observing by KnowledgeAgent and creating KnowledgeBase.
+        // Current version of api (5.0.1) does not implement adding resources from KnowledgeBase,
+        // that was mentioned in api documentation (may be bug in source code).
+        // So, we use other aproach for configuring KnowledgeAgent
+        // Now agent interface allowes defining resources and directories for observing
+        // only through ChangeSet from Resource (usually xml config file)
+        // We create needed configuration dynamically as string
+        // from task parameters information
+        kAgent.applyChangeSet(new ByteArrayResource(createChangeSetStringFromTaskParameters().getBytes()));
+
+        // Cache agent for further usage without recreation
+        knowledgeBasesCache.put(task.getId(), kAgent);
+        // Start scanning services for automatical updates of cached agents
+        startRulesScannerIfNeeded();
+
+        return kAgent.getKnowledgeBase();
     }
-    
+
     public static void invalidateRuleCache(Integer taskId) {
-        rulesCache.remove(taskId);
+        knowledgeBasesCache.remove(taskId);
     }
-    
-    protected void executeStatefulRules(StatefulSession session, List context) {
-        handlers = new Hashtable<Object,FactHandle>();
-        for (Object o: context) {
-        	if (o != null) {
-            	LOG.debug("inserting object " + o);
-        		handlers.put(o, session.insert(o));
-        	} else {
-        		LOG.warn("Attempted to insert a NULL object into the working memeory");
-        	}
-        	
+
+    protected void executeStatefulRules(StatefulKnowledgeSession session, List context) {
+        handlers = new Hashtable<Object, FactHandle>();
+        for (Object o : context) {
+            if (o != null) {
+                LOG.debug("inserting object " + o);
+                handlers.put(o, session.insert(o));
+            } else {
+                LOG.warn("Attempted to insert a NULL object into the working memeory");
+            }
+
         }
 
         session.fireAllRules();
@@ -163,20 +143,105 @@ public abstract class PluggableTask {
     protected void removeObject(Object o) {
         FactHandle h = handlers.get(o);
         if (h != null) {
-        	LOG.debug("removing object " + o + " hash " + o.hashCode());
+            LOG.debug("removing object " + o + " hash " + o.hashCode());
             session.retract(h);
             handlers.remove(o);
         }
     }
-    
+
     /*
     public void updateObject(Object oldO, Object newO)
             throws TaskException {
-    	removeObject(oldO);
-    	LOG.debug("inserting object " + newO + "hash " + newO.hashCode());
-    	handlers.put(newO, session.insert(newO));
+        removeObject(oldO);
+        LOG.debug("inserting object " + newO + "hash " + newO.hashCode());
+        handlers.put(newO, session.insert(newO));
 //        session.fireAllRules(); // could it lead to infinite recurring loop?
     }
     */
 
+    /**
+     * Creating ChangeSet configuration from task parameters
+     * for obserivng KnowledgeBase
+     *
+     * @return xml-configuration string
+     */
+    private String createChangeSetStringFromTaskParameters() {
+        // todo: may be some problems (messages in console) now with xml validation during parsing
+        // but it's recomended in api-documentation schemas
+        StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<change-set xmlns='http://drools.org/drools-5.0/change-set' " +
+                " xmlns:xs='http://www.w3.org/2001/XMLSchema-instance' " +
+                " xs:schemaLocation='http://drools.org/drools-5.0/change-set drools-change-set-5.0.xsd' >");
+        str.append("<add>");
+
+        String defaultDir = Util.getSysProp("base_dir") + "rules";
+        String prefix;
+        for (String key : parameters.keySet()) {
+            String value = (String) parameters.get(key);
+            if (key.equals("file")) {
+                String[] files = com.sapienter.jbilling.server.util.Util
+                        .csvSplitLine(value, ' ');
+                for (String file : files) {
+                    prefix = "";
+                    if (!(new File(file)).isAbsolute()) {
+                        // prepend the default directory if file path is relative
+                        prefix = defaultDir + File.separator;
+                    }
+                    appendResource(str, "file:" + prefix + file, "PKG");
+                }
+            } else if (key.equals("dir")) {
+                String[] dirs = com.sapienter.jbilling.server.util.Util
+                        .csvSplitLine(value, ' ');
+                for (String dir : dirs) {
+                    prefix = "";
+                    if (!new File(dir).isAbsolute()) {
+                        // prepend the default directory if directory path is relative
+                        prefix = defaultDir + File.separator;
+                    }
+                    appendResource(str, "file:" + prefix + dir, "PKG");
+                }
+            } else if (key.equals("url")) {
+                String[] urls = com.sapienter.jbilling.server.util.Util
+                        .csvSplitLine(value, ' ');
+                for (String url : urls) {
+                    appendResource(str, url, "PKG");
+                }
+            } else {
+                //for other types of resources
+                LOG.warn("Resource for parameter " + key + "->" + value + " not supported");
+            }
+            LOG.debug("adding parameter " + key + " value " + value);
+        }
+        if (parameters.isEmpty()) {
+            appendResource(str, "file:" + defaultDir, "PKG");
+            LOG.debug("No task parameters, using directory default:" + defaultDir);
+        }
+
+        str.append("</add>");
+        str.append("</change-set>");
+        return str.toString();
+    }
+
+    private void appendResource(StringBuilder builder, String source, String type) {
+        builder.append("<resource source='");
+        builder.append(source);
+        builder.append("' type='");
+        builder.append(type);
+        builder.append("' />");
+    }
+
+    private void startRulesScannerIfNeeded() {
+        if (!isRulesChangeScanerStarted.getAndSet(true)) {
+            // Set the interval on the ResourceChangeScannerService if it presented in configuration. Default value - 60s.
+            if (Util.getSysProp("rules_scanner_interval") != null) {
+                ResourceChangeScannerConfiguration sconf = ResourceFactory.getResourceChangeScannerService().newResourceChangeScannerConfiguration();
+                // set the disk scanning interval to 30s, default is 60s
+                sconf.setProperty("drools.resource.scanner.interval", Util.getSysProp("rules_scanner_interval"));
+                ResourceFactory.getResourceChangeScannerService().configure(sconf);
+            }
+            // Starting services for scanning rules updates
+            ResourceFactory.getResourceChangeNotifierService().start();
+            ResourceFactory.getResourceChangeScannerService().start();
+        }
+    }
 }

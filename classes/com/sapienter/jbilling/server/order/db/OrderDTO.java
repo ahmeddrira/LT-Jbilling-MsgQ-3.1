@@ -401,7 +401,13 @@ public class OrderDTO implements java.io.Serializable {
     }
     
     public void setNotes(String notes) {
-        this.notes = notes;
+        // make sure this is fits in the DB
+        if (notes == null || notes.length() <= 200) { 
+            this.notes = notes;
+        } else {
+            this.notes = notes.substring(0, 200);
+            LOG.warn("Trimming notes to 200 lenght: from " + notes + " to " + this.notes);
+        }
     }
     
     @Column(name="notes_in_invoice")

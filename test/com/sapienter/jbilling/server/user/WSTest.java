@@ -33,11 +33,9 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
-import com.sapienter.jbilling.server.util.api.SpringAPI;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import junit.framework.TestCase;
 
@@ -513,11 +511,12 @@ public class WSTest extends TestCase {
 
 /*
           Parent 1 10752
-           /\   |
-          /  \  +--------+
- 10753 iCh1  Ch2 10754   |
-        /\    |         Ch6
-       /  \   |
+                |
+         +----+ ---------+-------+
+         |    |          |       |
+ 10753 iCh1  Ch2 10754  Ch6     iCh7
+        /\    |                  |
+       /  \   |                 Ch8
     Ch3 iCh4 Ch5
   10755 10756 10757
 
@@ -526,6 +525,9 @@ Ch4->Ch4
 Ch1->Ch1
 Ch5->P1
 Ch2->P1
+Ch6->P1
+Ch7-> Ch7 (its own one time order)
+Ch8: no applicable orders
      */
     public void testParentChild() {
         try {
@@ -627,6 +629,48 @@ Ch2->P1
                     childIds[0].equals(child6Id) ? childIds[0] : 
                         childIds[1].equals(child6Id) ? childIds[1] : childIds[2]);
 
+            System.out.println("Creating child7 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(true));
+            newUser.setParentId(parentId);
+            newUser.setUserName("child7");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.TRUE);
+            Integer child7Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child7Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", parentId, retUser.getParentId());
+            assertEquals("created invoice child", Boolean.TRUE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(parentId);
+            childIds = retUser.getChildIds();
+            assertEquals("4 child", 4, childIds.length);
+
+            System.out.println("Creating child8 user ...");
+            // now create the child
+            newUser.setIsParent(new Boolean(true));
+            newUser.setParentId(child7Id);
+            newUser.setUserName("child8");
+            newUser.setPassword("asdfasdf1");
+            newUser.setInvoiceChild(Boolean.FALSE);
+            Integer child8Id = api.createUser(newUser);
+            //test
+            System.out.println("Getting created user ");
+            retUser = api.getUserWS(child8Id);
+            assertEquals("created username", retUser.getUserName(),
+                    newUser.getUserName());
+            assertEquals("created user parent", child7Id, retUser.getParentId());
+            assertEquals("created invoice child", Boolean.FALSE, retUser.getInvoiceChild());
+
+            // test parent has child id
+            retUser = api.getUserWS(child7Id);
+            childIds = retUser.getChildIds();
+            assertEquals("1 child", 1, childIds.length);
+
             System.out.println("Creating child3 user ...");
             // now create the child
             newUser.setIsParent(new Boolean(false));
@@ -723,6 +767,9 @@ Ch2->P1
             order = getOrder();
             order.setUserId(child6Id);
             api.createOrder(order);
+            order = getOrder();
+            order.setUserId(child7Id);
+            api.createOrder(order);
             // run the billing process for each user, validating the results
             System.out.println("Invoicing and validating...");
             // parent1
@@ -764,6 +811,13 @@ Ch2->P1
             if (invoices != null) {
                 assertEquals("there should be one invoice", 0, invoices.length);
             }
+            // child7 (for bug that would ignore an order from a parent if the
+            // child does not have any applicable)
+            invoices = api.createInvoice(child7Id, false);
+            assertNotNull("invoices cant be null", invoices);
+            assertEquals("there should be one invoice", 1, invoices.length);
+            invoice = api.getInvoiceWS(invoices[0]);
+            assertEquals("invoice should be 20$", "20", invoice.getTotal());
      
             // clean up
             api.deleteUser(parentId);
@@ -773,6 +827,8 @@ Ch2->P1
             api.deleteUser(child4Id);
             api.deleteUser(child5Id);
             api.deleteUser(child6Id);
+            api.deleteUser(child7Id);
+            api.deleteUser(child8Id);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception caught:" + e);

@@ -625,10 +625,15 @@ public class BillingProcessBL extends ResultList
             }
             if (customer != null) {
                 userId = customer.getBaseUser().getUserId();
-                includedOrders = processOrdersForUser(customer.getBaseUser(),
+                // if the child does not have any orders to invoice, this should
+                // not affect the current value of includedOrders
+                if (processOrdersForUser(customer.getBaseUser(),
                         entityId, process, isReview, onlyRecurring,
                         useProcessDateForInvoice, maximumPeriods,
-                        newInvoices);
+                        newInvoices)) {
+                    // if ANY child has orders to invoice, it is enough for includedOrders to be true
+                    includedOrders = true;
+                }
                 LOG.debug("Now processing subaccount " + userId);
 
             } else {

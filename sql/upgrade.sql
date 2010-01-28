@@ -9,7 +9,8 @@ insert into pluggable_task_type values (56, 19, 'com.sapienter.jbilling.server.u
 
 -- new event log column
 alter table event_log add column affected_user_id integer;
-alter table event_log add constraint "event_log_fk_6" foreign key (affected_user_id) references base_user(id);
+alter table event_log add constraint "event_log_fk_6" foreign key (affected_user_id) references base_user(id); -- postgresql
+-- alter table event_log add constraint event_log_fk_6 foreign key (affected_user_id) references base_user(id); -- mysql
 
 -- new invoice status for invoice carry over
 insert into generic_status_type values ('invoice_status');
@@ -24,8 +25,7 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (90, 2, 'description', 1, 'Unpaid');
 insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (90, 3, 'description', 1, 'Unpaid, balance carried to new invoice');
 
-update report set tables_list = 'base_user, invoice, currency , international_description, generic_status', where_str = 'base_user.id = invoice.user_id and invoice.currency_id = currency.id and invoice.status_id = generic_status.id and generic_status.dtype = ''invoice_status'' and international_description.foreign_id = generic_status.status_value and international_description.table_id = 90'
-where id = 2;
+update report set tables_list = 'base_user, invoice, currency , international_description, generic_status', where_str = 'base_user.id = invoice.user_id and invoice.currency_id = currency.id and invoice.status_id = generic_status.id and generic_status.dtype = ''invoice_status'' and international_description.foreign_id = generic_status.status_value and international_description.table_id = 90' where id = 2;
 update report_field set table_name = 'international_description', column_name = 'content' where report_id = 2 and column_name = 'to_process';
 -- migration
 alter table invoice add column status_id integer;
@@ -60,7 +60,7 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 
 -- new mediation process requires 3 rules packages, lengthen parameter str_value to accept multiple urls
 alter table pluggable_task_parameter alter column str_value type varchar(500); -- postgresql
--- alter table pluggable_task_parameter alter column str_value varchar(500); -- mysql
+-- alter table pluggable_task_parameter modify str_value varchar(500); -- mysql
 
 -- world pay task
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (63, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentWorldPayTask', 3);
@@ -106,7 +106,9 @@ insert into international_description (table_id, foreign_id, psudo_column, langu
 -- alter mediation_record table for adding status field with previous data update
 alter table mediation_record add column status_id integer;
 update mediation_record set status_id = 29; -- mark all records as done and billable
-alter table mediation_record alter column status_id set NOT NULL;
+alter table mediation_record alter column status_id set NOT NULL; -- postgresql
+-- alter table mediation_record modify status_id integer NOT NULL; -- mysql
+
 alter table mediation_record ADD CONSTRAINT mediation_record_FK_2 FOREIGN KEY (status_id) REFERENCES generic_status (id);
 
 create index mediation_record_i on mediation_record using btree (id_key, status_id); -- postgresql

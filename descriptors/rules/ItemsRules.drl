@@ -10,6 +10,8 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.item.tasks.SubscriptionResult
 import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderBL;
+import com.sapienter.jbilling.server.item.tasks.PricingResult
+import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -21,32 +23,6 @@ function List getOrderLines(Integer userId, Integer itemId) {
     return new OrderLineDAS().findByUserItem(userId, itemId);
 }
 
-
-rule "persistence control"
-salience 65000 # run first
-no-loop        # run once
-    when
-        # TODO: need a better way to control persistence; gui item management persist = false, mediation persist = true
-        # no mediation result, assume that we're not operating as part
-        # of a mediation process, but as normal GUI interaction
-        not( exists( MediationResult( ) ) )
-    then
-        insert( new MediationResult("item management", false) );
-        LOG.debug("Set persistence control to false, item rules running from GUI");
-end
-
-rule "1000 minutes included plan subscription"
-dialect 'java'
-salience 100 # run first
-no-loop      # run once
-    when
-        $order : OrderDTO( )
-        not( exists( SubscriptionResult( userId == $order.userId, itemId == 2702 ) ) )
-    then
-        LOG.debug("Checking subscription to item 2702 for user " + $order.getUserId());
-        insert( new SubscriptionResult($order, 2702) ); 
-end
-
 rule "Lemon and Coffee discount"
 	when
         $order : OrderDTO( )    # any order
@@ -57,10 +33,8 @@ rule "Lemon and Coffee discount"
         # have the same effect)
         not ( OrderLineDTO( itemId == 14) from $order.lines )
 
-        # persistence
-        $result : MediationResult( )
 	then
-        OrderLineBL.addItem($order, 14, $result.getPersist()); # 10% discount
+        OrderLineBL.addItem($order, 14, false); # 10% discount
         update($order);
 end
 
@@ -70,11 +44,9 @@ rule "Lemonade Plan"
         $order : OrderDTO( )    # any order
         $planLine : OrderLineDTO( itemId == 250) from $order.lines # Plan
 
-        # persistence
-        $result : MediationResult( )
     then
         $order.getLines().remove($planLine); # Plan is only for grouping
-        OrderLineBL.addItem($order, 1, $result.getPersist()); # The monthly lemonade subscription
+        OrderLineBL.addItem($order, 1, false); # The monthly lemonade subscription
         update($order);
         # now add an new order
         OrderDTO newOrder = OrderBL.createAsWithLine($order, 251, 1.0);  # The setup fee
@@ -104,11 +76,9 @@ salience 0 # run after the request rule
         $generic : OrderLineDTO( itemId == 2600) from $order.lines # Generic lemonade
 		OrderLineDTO( itemId == 1, purchaseOrder.userId == $order.userId) # plan
 
-        # persistence
-        $result : MediationResult( )
 	then
         $order.getLines().remove($generic); # remove the generic
-        OrderLineBL.addItem($order, 2601, $result.getPersist()); # add the included in plan
+        OrderLineBL.addItem($order, 2601, false); # add the included in plan
         update($order);
         LOG.debug("removed the generic lemonade and added the included in plan");
 end
@@ -120,63 +90,56 @@ salience 0 # run after the request rule
         $generic : OrderLineDTO( itemId == 2600) from $order.lines # Generic lemonade
 		not OrderLineDTO( itemId == 1, purchaseOrder.userId == $order.userId) # plan
 
-        # persistence
-        $result : MediationResult( )
 	then
         $order.getLines().remove($generic); # remove the generic
-        OrderLineBL.addItem($order, 2602, $result.getPersist()); # add the normal item
+        OrderLineBL.addItem($order, 2602, false); # add the normal item
         update($order);
         LOG.debug("removed the generic lemonade and added the priced item");
 end
 
-rule "long distance 1000 minutes - included"
-    when
-        $order : OrderDTO( ) 
-        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )  # Plan
-
-        $line : OrderLineDTO(itemId == 2800, $quantity : quantity ) from $order.lines      # Long Distance Call
-        not( OrderLineDTO(itemId == 2801, quantity.intValue >= 1000 ) from $order.lines )  # Long Distance Call Included
-
-        # persistence
-        $result : MediationResult( )
-    then
-        $order.getLines().remove($line); # remove rated call
-        OrderLineBL.addItem($order, 2801, $quantity, $result.getPersist()); # add as included
-
-        update( $order );
+rule "long distance generic - subscribed"
+when
+    $order : OrderDTO( )
+    $subsc : SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true )  # Plan
+    $line : OrderLineDTO(itemId == 2900, $quantity : quantity ) from $order.lines      # Generic Long Distance Call
+then
+    $order.getLines().remove($line); # remove generic item
+    OrderLineBL.addItem($order, 2801, $quantity, false); # add as included
+    update( $order );
+    LOG.debug("Plan: included calls: " + $order);
 end
 
-rule "long distance 1000 minutes - excess"
-    when
-        $order : OrderDTO( )
-        $line : OrderLineDTO(itemId == 2801, quantity.intValue > 1000, $quantity : quantity ) from $order.lines
-        SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == true ) # Plan
-
-        # persistence
-        $result : MediationResult( )
-    then
-        # remove any excess "included" call items
-        $line.setQuantity(new BigDecimal(1000)); # only the first 1000 is included
-        OrderLineBL.addItem($order, 2800, $quantity.subtract(new BigDecimal(1000)), $result.getPersist());        
-
-        update( $order );
+# for this to work from the GUI, have a new rule adding the MediationResult and PricingResult into the memory context.
+# This rule should be in a package that is not part of the mediation plug-in
+rule "long distance generic - not subscribed"
+when
+    $order : OrderDTO( )
+    $subsc : SubscriptionResult( userId == $order.userId, itemId == 2702, subscribed == false )  # Plan
+    $line : OrderLineDTO(itemId == 2900, $quantity : quantity ) from $order.lines      # Generic Long Distance Call
+    $result : MediationResult($subsc.userId == userId)
+    $price : PricingResult(itemId == 2800, pricingFieldsResultId == $result.id) # it's ok if price = null
+then
+    $order.getLines().remove($line); # remove generic item
+    OrderLineBL.addItem($order, 2800, $quantity.intValue(), $price.getPrice()); # add as normal
+    update( $order );
+    LOG.debug("Plan: not included calls: " + $order);
 end
 
-rule "log call"
-    when
-        $order : OrderDTO( )
-        $line : OrderLineDTO( itemId == 2800 ) from $order.lines
-    then
-        LOG.debug("Current call (2800) quantity: " + $line.getQuantity());
+# for this to work from the GUI, have a new rule adding the MediationResult and PricingResult into the memory context.
+# This rule should be in a package that is not part of the mediation plug-in
+rule "long distance include - plan limit"
+when
+    $order : OrderDTO( )
+    $line : OrderLineDTO(itemId == 2801, $quantity : quantity, quantity.intValue > 1000 ) from $order.lines      # Long Distance Call Included
+    $result : MediationResult($order.userId == userId)
+    $price : PricingResult(itemId == 2800, pricingFieldsResultId == $result.id) # it's ok if price = null
+then
+    OrderLineBL.addItem($order, 2800, $quantity.intValue() - 1000, $price.getPrice());
+    $line.setQuantity(new BigDecimal(1000)); # only the first 1000 is included
+    update( $order );
+    LOG.debug("Plan:excess included calls: " + $order);
 end
 
-rule "log call included"
-    when
-        $order : OrderDTO( )
-        $line : OrderLineDTO( itemId == 2801 ) from $order.lines
-    then
-        LOG.debug("Current call included (2801) quantity: " + $line.getQuantity());
-end
 
 rule 'rateOrder test1'
 	dialect "java"

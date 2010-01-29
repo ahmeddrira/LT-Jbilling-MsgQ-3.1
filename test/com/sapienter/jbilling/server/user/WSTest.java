@@ -45,6 +45,7 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import org.joda.time.DateMidnight;
 
 /**
  * @author Emil
@@ -1154,9 +1155,8 @@ Ch8: no applicable orders
             order.setPeriod(2);
 
             // make it half a month to test pro-rating
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_MONTH, 15);
-            order.setActiveUntil(cal.getTime());
+            order.setActiveSince(new DateMidnight(2009,1,1).toDate());
+            order.setActiveUntil(new DateMidnight(2009,1,1).plusDays(15).toDate());
 
             System.out.println("creating recurring order and invoice");
             api.createOrderAndInvoice(order);

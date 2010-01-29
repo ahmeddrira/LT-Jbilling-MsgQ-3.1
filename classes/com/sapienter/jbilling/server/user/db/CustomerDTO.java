@@ -360,6 +360,8 @@ public class CustomerDTO  implements java.io.Serializable {
                 "id=" + id +
                 ", baseUser.userId=" + baseUser.getUserId() +
                 ", baseUser.userName=" + baseUser.getUserName() +
+                ", dynamicBalance = " + this.dynamicBalance +
+                ", credit limit = " + this.creditLimit +
                 '}';
     }
 }

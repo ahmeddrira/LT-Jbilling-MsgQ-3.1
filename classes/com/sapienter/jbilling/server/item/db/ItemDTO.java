@@ -398,6 +398,10 @@ public class ItemDTO extends AbstractDescription {
     public void setPrices(List prices) {
         this.prices = prices;
     }
+
+    public String toString() {
+        return "ItemDTO: id=" + getId();
+    }
 }
 
 

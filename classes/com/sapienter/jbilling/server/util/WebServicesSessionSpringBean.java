@@ -1774,9 +1774,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     processTask.process(records, results, "WS");
 
                     // from the lines, get the items and prices
-                    for (OrderLineDTO line : result.getLines()) {
+                    for (OrderLineDTO line : result.getDiffLines()) {
                         items.add(new ItemBL(line.getItemId()).getEntity());
-                        prices.add(line.getPrice());
+                        prices.add(line.getAmount());
                     }
                 } catch (Exception e) {
                     // log stacktrace

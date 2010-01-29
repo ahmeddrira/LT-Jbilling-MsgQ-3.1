@@ -90,6 +90,7 @@ public class OrderLineBL {
 
 
     public static void addLine(OrderDTO order, OrderLineDTO line, boolean persist) {
+        if (persist) throw new IllegalArgumentException("persist is oboleted"); // TODO remove the argument
         UserBL user = new UserBL(order.getUserId());
         OrderLineDTO oldLine = order.getLine(line.getItemId());
         if (oldLine != null) {
@@ -155,6 +156,24 @@ public class OrderLineBL {
 
     /**
      * Adds a quantity of items to the given order for the given item id.
+     * Use the given price for the addition.
+     *
+     * @param order order to add item to
+     * @param itemId id of item to add
+     * @param quantity quantity to add
+     */
+    public static void addItem(OrderDTO order, Integer itemId, Integer quantity, BigDecimal price) {
+        UserBL user = new UserBL(order.getUserId());
+        OrderLineDTO line =  new OrderLineDTO();
+        line.setItemId(itemId);
+        line.setQuantity(quantity);
+        line.setPrice(price);
+        addItem(itemId, new BigDecimal(quantity), user.getLanguage(), order.getUserId(), user.getEntity().getEntity().getId(),
+                order.getCurrencyId(), order, line, false);
+    }
+
+    /**
+     * Adds a quantity of items to the given order for the given item id.
      *
      * @param order order to add item to
      * @param itemId id of item to add
@@ -194,6 +213,8 @@ public class OrderLineBL {
 
     public static void addItem(Integer itemID, BigDecimal quantity, Integer language, Integer userId, Integer entityId,
                                Integer currencyId, OrderDTO newOrder, OrderLineDTO myLine, boolean persist) {
+
+        if (persist) throw new IllegalArgumentException("persist is oboleted"); // TODO remove the argument
         // check if the item is already in the order
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 

@@ -40,6 +40,14 @@ public class MediationResult extends Result {
 
     private static final Logger LOG = Logger.getLogger(MediationResult.class);
 
+    public static final int STEP_1_START = 1000;
+    public static final int STEP_2_AFTER_USER = 2000;
+    public static final int STEP_3_CURRENT_ORDER = 3000;
+    public static final int STEP_4_RESOLVE_ITEM = 4000;
+    public static final int STEP_5_PRICING = 5000;
+    public static final int STEP_6_ITEM_MANAGEMENT = 6000;
+    public static final int STEP_7_DIFF = 7000;
+
     // the lines that where 'created' by the mediation process
     private List<OrderLineDTO> lines = null;
 
@@ -57,6 +65,9 @@ public class MediationResult extends Result {
     private boolean persist = false; // whether changes are allowed to the DB
     // custom errors go here
     private List<String> errors = new ArrayList<String>(0);
+
+    // the mediation step
+    private int step = STEP_1_START;
 
     public MediationResult(String configurationName, boolean persist) {
         this.configurationName = configurationName;
@@ -177,6 +188,15 @@ public class MediationResult extends Result {
 
     public void setRecordKey(String recordKey) {
         this.recordKey = recordKey;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        LOG.debug("Now from step " + this.step + " to step " + step + " id " + getId() + " record " + getRecordKey());
+        this.step = step;
     }
 }
 

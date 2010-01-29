@@ -22,13 +22,16 @@ package com.sapienter.jbilling.server.item.tasks;
 
 import com.sapienter.jbilling.server.rule.Result;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author emilc
  */
 public class PricingResult extends Result {
+
+    private static final Logger LOG = Logger.getLogger(PricingResult.class);
+
     private final Integer itemId;
     private final Integer userId;
     private final Integer currencyId;
@@ -58,11 +61,12 @@ public class PricingResult extends Result {
     }
 
     public void setPrice(BigDecimal price) {
+        LOG.debug("Setting price. Result fields id " + pricingFieldsResultId + " item " + itemId + " price " + price );
         this.price = price;
     }
 
     public void setPrice(String price) {
-        this.price = new BigDecimal(price);
+        setPrice(new BigDecimal(price));
     }
 
     public long getPricingFieldsResultId() {

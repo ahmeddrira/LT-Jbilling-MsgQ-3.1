@@ -91,6 +91,7 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 
@@ -1323,6 +1324,9 @@ public class UserBL extends ResultList
         if (user.getCustomer() == null) {
             return null;
         }
+
+        LOG.debug("validating purchase items:" + Arrays.toString(items.toArray()) + 
+                " amounts " +  Arrays.toString(amounts.toArray()) + " customer " + user.getCustomer());
 
         ValidatePurchaseWS result = new ValidatePurchaseWS();
 

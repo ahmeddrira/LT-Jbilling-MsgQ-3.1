@@ -219,8 +219,6 @@ public class MediationTest extends TestCase {
         assertEquals("$1462.50 total", new BigDecimal("1462.50"), order.getOrderLines()[0].getAmountAsDecimal());
     }
 
-    // todo: Fails - lines are not correctly converted to "included" items, the original call item is not removed. 
-    /*
     public void testLongDistancePlanIncludedItems() throws Exception {
         final Integer MEDIATION_TEST_3_USER = 10762;
 
@@ -231,14 +229,18 @@ public class MediationTest extends TestCase {
 
         assertEquals("2 lines added", 2, order.getOrderLines().length);
 
-        // 650 minutes of calls @ 0.30/min
-        assertEquals("650 units",  new BigDecimal("650"), order.getOrderLines()[0].getQuantityAsDecimal());
-        assertEquals("$195 total", new BigDecimal("195"), order.getOrderLines()[0].getAmountAsDecimal());
-
-        assertEquals("first 1000 units free",  new BigDecimal("1000"), order.getOrderLines()[1].getQuantityAsDecimal());
-        assertEquals("$0 for free units", BigDecimal.ZERO, order.getOrderLines()[1].getAmountAsDecimal());
+        for (OrderLineWS line: order.getOrderLines()) {
+            if (line.getItemId() == 2800) { // normal call
+               // 650 minutes of calls @ 0.30/min
+               assertEquals("650 units",  new BigDecimal("650"), line.getQuantityAsDecimal());
+               assertEquals("$266.6 total", new BigDecimal("266.5"), line.getAmountAsDecimal());
+            } else { // should be included
+               assertEquals("item has to be 2801 included in plan", 2801, line.getItemId().intValue());
+               assertEquals("first 1000 units free",  new BigDecimal("1000"), line.getQuantityAsDecimal());
+               assertEquals("$0 for free units", BigDecimal.ZERO, line.getAmountAsDecimal());
+            }
+        }
     }
-    */
 
     public void testRateCard() throws Exception {
         final Integer MEDIATION_TEST_4_USER = 10770; // mediation-batch-test-04

@@ -125,4 +125,9 @@ public class SubscriptionResult extends Result {
     public boolean isSubscribed() {
         return subscribed;
     }
+
+    public String toString() {
+        return "SubscriptionResult: userId= " + userId + " itemId= " + itemId +
+                " isSubscribed= "+ isSubscribed();
+    }
 }

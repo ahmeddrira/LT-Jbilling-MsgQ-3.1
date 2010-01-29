@@ -219,7 +219,7 @@ public class WSTest  extends TestCase {
             	}
             });
             assertNotNull("The items were not retrieved", items);
-            assertEquals("Wrong number of items", 18, items.length);
+            assertEquals("Wrong number of items", 19, items.length);
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", items[0].getDescription());
             assertEquals("Price", new BigDecimal("10"), items[0].getPrice());

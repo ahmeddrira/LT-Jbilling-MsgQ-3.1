@@ -27,6 +27,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -34,6 +39,7 @@ import java.util.List;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.Util;
@@ -389,6 +395,61 @@ public class MediationTest extends TestCase {
             }
         }
     }
+
+     public void testSavingErrorsToJDBC() {
+         Connection connection = null;
+         try {
+             connection = getConnection();
+             String query = "select count(*) as REC_COUNT from MEDIATION_ERRORS err where err.accountcode = ? and err.error_message like ?";
+             PreparedStatement statement = connection.prepareStatement(query);
+
+             statement.setString(1, "09");
+             statement.setString(2, "%ERR-DURATION%");
+             ResultSet result = statement.executeQuery();
+             result.next();
+             Long recordsCount = result.getLong("REC_COUNT");
+             assertTrue("Custom error ERR-DURATION should be saved for record with key 09", recordsCount.equals(1L));
+
+             statement.setString(1, "10");
+             statement.setString(2, "%JB-NO_USER%");
+             result = statement.executeQuery();
+             result.next();
+             recordsCount = result.getLong("REC_COUNT");
+             assertTrue("Error JB-NO_USER should be presented for record with key 10", recordsCount.equals(1L));
+
+             statement.setString(1, "07");
+             statement.setString(2, "%");
+             result = statement.executeQuery();
+             result.next();
+             recordsCount = result.getLong("REC_COUNT");
+             assertTrue("Record with key 07 should not be saved", recordsCount.equals(0L));
+         } catch (SQLException e) {
+             e.printStackTrace();
+             fail("Exception: " + e);
+         } catch (ClassNotFoundException e) {
+             e.printStackTrace();
+             fail("Exception: " + e);
+         } finally {
+             if (connection != null) {
+                 try {
+                     connection.close();
+                 } catch (SQLException e) {
+                     e.printStackTrace();
+                 }
+             }
+         }
+     }
+
+     private Connection getConnection() throws SQLException, ClassNotFoundException {
+         String driver = SaveToJDBCMediationErrorHandler.DRIVER_DEFAULT;
+         String url = "jdbc:postgresql://localhost:5432/jbilling_test";
+         String username = "jbilling";
+         String password = SaveToJDBCMediationErrorHandler.DATABASE_PASSWORD_DEFAULT;
+
+         // create connection
+         Class.forName(driver); // load driver
+         return DriverManager.getConnection(url, username, password);
+     }
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);

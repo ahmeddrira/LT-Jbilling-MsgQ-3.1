@@ -2709,6 +2709,7 @@
     <PluggableTaskType Id="69" CategoryId="20" ClassName="com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask" MinParameters="0"/>
     <PluggableTaskType Id="70" CategoryId="20" ClassName="com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask" MinParameters="0"/>
     <PluggableTaskType Id="71" CategoryId="21" ClassName="com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler" MinParameters="0"/>
+    <PluggableTaskType Id="73" CategoryId="21" ClassName="com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler" MinParameters="1"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
@@ -2731,7 +2732,7 @@
     <PluggableTaskTypeCategory Id="19" Description="Validate Purchase" InterfaceName="com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask"/>
     <PluggableTaskTypeCategory Id="20" Description="BillingProcessFilterTask" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
     <PluggableTaskTypeCategory Id="21" Description="Mediation Error Handler" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
-    
+
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>
     <PreferenceType Id="26" IntDefValue="20"/>

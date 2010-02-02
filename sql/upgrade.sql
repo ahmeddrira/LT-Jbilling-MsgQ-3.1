@@ -118,3 +118,6 @@ create index mediation_record_i on mediation_record using btree (id_key, status_
 insert into pluggable_task_type_category (id, description, interface_name) values (21, 'Mediation Error Handler', 'com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler');
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (71, 21, 'com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler', 0);
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (73, 21, 'com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler', 1);
+
+-- scheduled task's
+insert into pluggable_task_type_category(id, description, interface_name) values(22, "Scheduled Tasks", "com.sapienter.jbilling.server.process.task.ScheduledTask");

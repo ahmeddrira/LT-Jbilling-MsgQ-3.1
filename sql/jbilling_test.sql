@@ -11368,8 +11368,6 @@ order_period	4
 order_line_type	4
 order_billing_type	3
 order_status	5
-pluggable_task_type_category	20
-pluggable_task_type	66
 contact_type	4
 invoice_line_type	6
 paper_invoice_batch	1
@@ -11443,8 +11441,8 @@ order_period	4
 order_line_type	4
 order_billing_type	3
 order_status	5
-pluggable_task_type_category	10
-pluggable_task_type	20
+pluggable_task_type_category	23
+pluggable_task_type	73
 contact_type	4
 invoice_line_type	6
 paper_invoice_batch	1
@@ -11504,10 +11502,8 @@ invoice	86
 invoice_status	4
 invoice_line	87
 order_process	86
-pluggable_task	57
 pluggable_task	602
 mediation_cfg	4
-pluggable_task_parameter	83
 language	3
 generic_status	29
 contact_field	2026
@@ -11515,7 +11511,7 @@ customer	1070
 contact_map	7910
 contact	1131
 base_user	1079
-pluggable_task_parameter	8306
+pluggable_task_parameter	8307
 item_type	23
 item_type	23
 contact_field	2026
@@ -14976,6 +14972,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 70	20	com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask	0
 71	21	com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler	0
 73	21	com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler	1
+74	22	com.sapienter.jbilling.server.process.task.LoggerCronTask	1
 \.
 
 
@@ -15005,6 +15002,7 @@ COPY pluggable_task_type_category (id, description, interface_name) FROM stdin;
 19	Validate Purchase	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
 20	BillingProcessFilterTask	com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask
 21	Mediation Error Handler	com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler
+22	Scheduled Tasks	com.sapienter.jbilling.server.process.task.ScheduledTask
 \.
 
 

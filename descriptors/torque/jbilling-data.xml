@@ -2732,6 +2732,7 @@
     <PluggableTaskTypeCategory Id="19" Description="Validate Purchase" InterfaceName="com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask"/>
     <PluggableTaskTypeCategory Id="20" Description="BillingProcessFilterTask" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
     <PluggableTaskTypeCategory Id="21" Description="Mediation Error Handler" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
+    <PluggableTaskTypeCategory Id="22" Description="Scheduled Tasks" InterfaceName="com.sapienter.jbilling.server.process.task.ScheduledTask"/>
 
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>

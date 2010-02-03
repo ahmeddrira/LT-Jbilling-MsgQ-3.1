@@ -29,7 +29,7 @@ import org.quartz.Trigger;
  * Scheduled tasks must return a valid JobDetail and Trigger item for scheduling, but you may use
  * covariant return types in implementing classes to use a specific type of Trigger.
  *
- * This task is implemented in 2 separate abstract base classes to make adding new ScheduledTask
+ * This task is implemented in 2 separate abstract base classes to make adding new IScheduledTask
  * plug-ins easier. These are the {@link AbstractCronTask} and the {@link AbstractScheduledTask}
  * which provide (respectively) Quartz CronTrigger and StandardTrigger configuration. 
  *
@@ -38,7 +38,7 @@ import org.quartz.Trigger;
  * @author Brian Cowdery
  * @since 02-02-2010
  */
-public interface ScheduledTask extends Job {
+public interface IScheduledTask extends Job {
     public String getTaskName();
     public JobDetail getJobDetail() throws PluggableTaskException;
     public Trigger getTrigger() throws PluggableTaskException;

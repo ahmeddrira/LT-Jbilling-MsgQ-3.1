@@ -24,7 +24,6 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,7 +54,7 @@ import java.util.GregorianCalendar;
  * @author Brian Cowdery
  * @since 02-02-2010
  */
-public abstract class AbstractScheduledTask extends PluggableTask implements ScheduledTask {
+public abstract class AbstractScheduledTask extends PluggableTask implements IScheduledTask {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
     

@@ -15002,7 +15002,7 @@ COPY pluggable_task_type_category (id, description, interface_name) FROM stdin;
 19	Validate Purchase	com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask
 20	BillingProcessFilterTask	com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask
 21	Mediation Error Handler	com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler
-22	Scheduled Tasks	com.sapienter.jbilling.server.process.task.ScheduledTask
+22	Scheduled Tasks	com.sapienter.jbilling.server.process.task.IScheduledTask
 \.
 
 

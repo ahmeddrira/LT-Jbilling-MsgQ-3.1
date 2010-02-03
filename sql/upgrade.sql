@@ -120,4 +120,4 @@ insert into pluggable_task_type  (id, category_id, class_name, min_parameters) v
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (73, 21, 'com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler', 1);
 
 -- scheduled task's
-insert into pluggable_task_type_category(id, description, interface_name) values(22, "Scheduled Tasks", "com.sapienter.jbilling.server.process.task.ScheduledTask");
+insert into pluggable_task_type_category(id, description, interface_name) values(22, "Scheduled Tasks", "com.sapienter.jbilling.server.process.task.IScheduledTask");

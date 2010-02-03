@@ -41,7 +41,7 @@ import java.text.ParseException;
  * @author Brian Cowdery
  * @since 02-02-2010
  */
-public abstract class AbstractCronTask extends PluggableTask implements ScheduledTask {
+public abstract class AbstractCronTask extends PluggableTask implements IScheduledTask {
 
     private static final String PARAM_CRON_EXPRESSION = "cron_exp";
     private static final String DEFAULT_CRON_EXPRESSION = "0 0 12 * * ?"; // 12:00 noon every day

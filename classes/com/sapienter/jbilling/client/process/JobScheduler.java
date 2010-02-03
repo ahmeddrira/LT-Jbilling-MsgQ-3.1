@@ -27,7 +27,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 /**
  * Singleton wrapper to provide easy access to the Quartz Scheduler. Used to schedule
- * all of jBilling's batch processes and {@link com.sapienter.jbilling.server.process.task.ScheduledTask}
+ * all of jBilling's batch processes and {@link com.sapienter.jbilling.server.process.task.IScheduledTask}
  * plug-ins.
  *
  * @author Brian Cowdery

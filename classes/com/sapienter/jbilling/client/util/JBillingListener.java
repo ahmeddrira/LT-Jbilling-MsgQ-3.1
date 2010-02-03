@@ -28,7 +28,7 @@ import com.sapienter.jbilling.client.process.JobScheduler;
 import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
-import com.sapienter.jbilling.server.process.task.ScheduledTask;
+import com.sapienter.jbilling.server.process.task.IScheduledTask;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.*;
@@ -64,13 +64,13 @@ public class JBillingListener implements ServletContextListener {
 
         try {
             for (CompanyDTO entity : new CompanyDAS().findEntities()) {
-                PluggableTaskManager<ScheduledTask> taskManager =
-                        new PluggableTaskManager<ScheduledTask>
+                PluggableTaskManager<IScheduledTask> taskManager =
+                        new PluggableTaskManager<IScheduledTask>
                                 (entity.getId(), com.sapienter.jbilling.server.util.Constants.PLUGGABLE_TASK_SCHEDULED);
 
                 LOG.debug(taskManager.getAllTasks().size() + " scheduled tasks for entity " + entity.getId());
 
-                ScheduledTask task = taskManager.getNextClass();
+                IScheduledTask task = taskManager.getNextClass();
                 while (task != null) {
                     LOG.debug("scheduled task '" + task.getTaskName() + "', " + task.getClass());
                     scheduler.getScheduler().scheduleJob(task.getJobDetail(), task.getTrigger());

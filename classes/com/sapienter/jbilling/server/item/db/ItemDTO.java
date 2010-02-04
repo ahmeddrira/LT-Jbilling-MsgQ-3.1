@@ -399,6 +399,28 @@ public class ItemDTO extends AbstractDescription {
         this.prices = prices;
     }
 
+
+    /**
+     * Strips the given prefix off of item categories and returns the resulting
+     * code. This method allows categories to be used to hold identifiers and other
+     * meta-data.
+     *
+     * Example:
+     *      item = ItemDTO{ type : ["JB_123"] }
+     *      item.getCategoryCode("JB") -> "123"
+     *
+     * @param prefix prefix of the category code to retrieve
+     * @return code minus the given prefix
+     */
+    public String getCategoryCode(String prefix) {
+        for (ItemTypeDTO type : getItemTypes())
+            if (type.getDescription().startsWith(prefix))
+                return type.getDescription().replaceAll(prefix, "");
+        return null;
+    }
+
+
+    @Override
     public String toString() {
         return "ItemDTO: id=" + getId();
     }

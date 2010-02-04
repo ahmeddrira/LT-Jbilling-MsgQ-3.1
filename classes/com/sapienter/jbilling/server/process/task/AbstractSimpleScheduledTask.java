@@ -20,8 +20,13 @@
 package com.sapienter.jbilling.server.process.task;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.util.Context;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 
@@ -54,7 +59,7 @@ import java.util.GregorianCalendar;
  * @author Brian Cowdery
  * @since 02-02-2010
  */
-public abstract class AbstractScheduledTask extends PluggableTask implements IScheduledTask {
+public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
     
@@ -89,10 +94,6 @@ public abstract class AbstractScheduledTask extends PluggableTask implements ISc
         trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
         
         return trigger;
-    }
-
-    public JobDetail getJobDetail() throws PluggableTaskException {
-        return new JobDetail(getTaskName() + " job", Scheduler.DEFAULT_GROUP, this.getClass());
     }
 
     protected Date getParameter(String key, Date defaultValue) throws PluggableTaskException {

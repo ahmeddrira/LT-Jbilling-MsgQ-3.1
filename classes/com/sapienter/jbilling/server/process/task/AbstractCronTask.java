@@ -41,7 +41,7 @@ import java.text.ParseException;
  * @author Brian Cowdery
  * @since 02-02-2010
  */
-public abstract class AbstractCronTask extends PluggableTask implements IScheduledTask {
+public abstract class AbstractCronTask extends ScheduledTask {
 
     private static final String PARAM_CRON_EXPRESSION = "cron_exp";
     private static final String DEFAULT_CRON_EXPRESSION = "0 0 12 * * ?"; // 12:00 noon every day
@@ -60,11 +60,7 @@ public abstract class AbstractCronTask extends PluggableTask implements ISchedul
 
         return trigger;
     }
-
-    public JobDetail getJobDetail() throws PluggableTaskException {
-        return new JobDetail(getTaskName() + " job", Scheduler.DEFAULT_GROUP, this.getClass());
-    }
-
+    
     /**
      * Returns the configured cron expression for this pluggable task. The cron
      * expression defines how often, and when this trigger will be executed.

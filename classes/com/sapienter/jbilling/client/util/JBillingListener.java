@@ -78,9 +78,9 @@ public class JBillingListener implements ServletContextListener {
                 }
             }
         } catch (PluggableTaskException e) {
-            throw new SessionInternalError("Exception occurred retrieving scheduled pluggable tasks.", e);
+            LOG.error("Exception occurred scheduling pluggable tasks.", e);
         } catch (SchedulerException e) {
-            LOG.error("Exception occurred scheduling pluggable tasks", e);
+            LOG.error("Exception occurred scheduling pluggable tasks.", e);
         }
 
         // start the scheduler now that all the tasks have been scheduled.

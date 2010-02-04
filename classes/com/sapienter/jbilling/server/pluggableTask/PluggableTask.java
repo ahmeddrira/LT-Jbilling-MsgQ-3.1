@@ -58,6 +58,10 @@ public abstract class PluggableTask {
         return entityId;
     }
 
+    protected void setEntityId(Integer entityId) {
+        this.entityId = entityId;
+    }
+
     protected Integer getTaskId() {
         return task.getId();
     }

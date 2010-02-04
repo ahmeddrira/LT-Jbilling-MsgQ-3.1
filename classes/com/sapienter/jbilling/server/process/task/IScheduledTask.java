@@ -30,7 +30,7 @@ import org.quartz.Trigger;
  * covariant return types in implementing classes to use a specific type of Trigger.
  *
  * This task is implemented in 2 separate abstract base classes to make adding new IScheduledTask
- * plug-ins easier. These are the {@link AbstractCronTask} and the {@link AbstractScheduledTask}
+ * plug-ins easier. These are the {@link AbstractCronTask} and the {@link AbstractSimpleScheduledTask}
  * which provide (respectively) Quartz CronTrigger and StandardTrigger configuration. 
  *
  * @link http://www.quartz-scheduler.org/docs/

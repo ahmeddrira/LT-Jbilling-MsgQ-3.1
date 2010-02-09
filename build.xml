@@ -123,6 +123,7 @@
   </target>
     
     <target name="init">
+        <delete dir="${build.test-results.dir}"/>
         <mkdir dir="${source.dir}"/>
         <mkdir dir="${source.classes.dir}"/>
         <mkdir dir="${source.dir}/test"/>
@@ -135,6 +136,7 @@
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.api.dir}"/>
         <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${build.test-results.dir}"/>
         <mkdir dir="${build.view.dir}"/>
         <mkdir dir="${build.designs.dir}"/>
         <mkdir dir="${build.deploy.dir}"/>
@@ -365,183 +367,172 @@
     <!-- Builds from scratch and prepares test -->
     <target name="dclean" depends="purge,deploy-local, jar_api, prepare-test">
     </target>
-    
-    
-    <target name="prepare-test" depends="compile-rules,prepare-test-db">
-    </target>
 
+
+    <!-- =================================================================== -->
+    <!-- Testing targets                                                     -->
+    <!-- =================================================================== -->
+    
+    <target name="prepare-test" depends="compile-rules, prepare-test-db" description="Prepares the testing environment"/>
+    
     <target name="prepare-test-db">
-        <echo>Importing test data</echo>
+        <echo message="Importing test data"/>
         <exec executable="psql" failonerror="true">
             <arg line=" -U jbilling -f ${basedir}/sql/jbilling_test.sql jbilling_test"/>
         </exec>
-        <echo>Ready. Start-up Tomcat and run 'ant test'</echo>
+        <echo message="Ready. Start-up Tomcat and run 'ant test'"/>
     </target>
 
-    <target  name="test-unit">
-        <javac debug="on"
-               destdir="${build.test.dir}"
-               srcdir="${source.test.dir}">
-
-            <!-- change source to test/unit path when available, and remove hardcoded tests -->
-            <include name="**/PricingFieldTest.java"/>
-            <include name="**/PeriodOfTimeTest.java"/>
-
-            <classpath  refid="run.classpath"/>
-            <classpath  refid="test.classpath"/>
+    <target name="test-unit" description="Run all class level unit tests and generate testing reports.">
+        <javac srcdir="${source.test.dir}/unit" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+            <classpath refid="test.classpath"/>
         </javac>
 
-        <copy  file="${source.spring.descriptor.dir}/jbilling-database.xml" todir="${build.test.dir}"/>
+        <!-- run unit tests -->
+        <mkdir dir="${build.test-results.dir}/unit/xml"/>
+        <junit errorproperty="test.failed" failureproperty="test.failed">
+            <classpath refid="test.classpath"/>
 
-        <junit printsummary="off" haltonfailure="true">
-            <classpath>
-                <path refid="run.classpath"/>
-                <path refid="test.classpath"/>
-                <path refid="spring.classpath"/>
-                <pathelement path="${build.test.dir}"/>
-            </classpath>
-
-            <formatter type="brief" usefile="false"/>
-
-            <test name="com.sapienter.jbilling.server.item.PricingFieldTest"/>
-            <test name="com.sapienter.jbilling.server.process.PeriodOfTimeTest"/>
-
-            <!-- ideally we should be able to run ALL unit tests on the path, but our current
-                 structure doesn't allow it as we can't differentiate between a ws test, unit test etc.
-
-                 todo: break tests into separate paths so we can use batchtest; any additional unit tests will run automatically
-                        test/ws/... Web Service tests
-                        test/unit/... Unit tests for domain objects, don't require container or db access
-                        test/integration/... Mediation, Provisioning, Process tests
-            -->
-            <!--
-            <batchtest  fork="yes">
-                <fileset dir="${source.test.dir}">
+            <batchtest fork="yes" todir="${build.test-results.dir}/unit/xml">
+                <formatter type="brief" usefile="false"/>
+                <formatter type="xml"/>
+                <fileset dir="${source.test.dir}/unit">
                     <include name="**/*Test*.java"/>
                     <exclude name="**/*Tester*.java"/>
                     <exclude name="**/*TestCase*.java"/>
                 </fileset>
             </batchtest>
-            -->
         </junit>
+
+        <!-- generate testing reports -->
+        <mkdir dir="${build.test-results.dir}/unit/html"/>
+        <junitreport>
+            <fileset dir="${build.test-results.dir}/unit/xml" includes="TEST-*.xml"/>
+            <report format="frames" todir="${build.test-results.dir}/unit/html"/>
+        </junitreport>
+
+        <fail if="test.failed" message="Unit tests failed! See log's for details."/>
     </target>
 
-    <target name="test-ws" depends="jar_api">
-        <javac debug="on" destdir="${build.test.dir}"
-               srcdir="${source.test.dir}"
-               includes="**/WSTest*.java">
+    <target name="test-ws" depends="jar_api" description="Run all web service tests and generate testing reports.">
+        <javac srcdir="${source.test.dir}/ws" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
             <classpath refid="test.classpath"/>
         </javac>
 
         <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
 
-        <junit printsummary="off"
-               haltonfailure="true"
-               fork="yes">
+        <!-- run web service tests -->
+        <mkdir dir="${build.test-results.dir}/ws/xml"/>
+        <junit errorproperty="test.failed" failureproperty="test.failed">
             <jvmarg value="-Djava.security.manager" />
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
-            
-            <classpath refid="test.classpath"/>
-            <formatter type="brief" usefile="false"/>
 
-            <!--
-    	    <test name="com.sapienter.jbilling.server.user.WSTestQuick"/>
-	  	    -->
+            <classpath refid="test.classpath"/>
+
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>            
+
             <test name="com.sapienter.jbilling.server.order.WSTest"/>
             <test name="com.sapienter.jbilling.server.user.WSTest"/>
             <test name="com.sapienter.jbilling.server.payment.WSTest"/>
-            <test name="com.sapienter.jbilling.server.item.WSTest" />
-            <test name="com.sapienter.jbilling.server.invoice.WSTest" />
+            <test name="com.sapienter.jbilling.server.item.WSTest"/>
+            <test name="com.sapienter.jbilling.server.invoice.WSTest"/>
         </junit>
+
+        <!-- generate testing reports -->
+        <mkdir dir="${build.test-results.dir}/ws/html"/>
+        <junitreport>
+            <fileset dir="${build.test-results.dir}/ws/xml" includes="TEST-*.xml"/>
+            <report format="frames" todir="${build.test-results.dir}/ws/html"/>
+        </junitreport>
+
+        <fail if="test.failed" message="Web service tests failed! See log's for details."/>
     </target>
-    
-    <target name="test-mediation">
+
+    <target name="test-integration" description="Run all integration tests and generate testing reports.">
+        <javac srcdir="${source.test.dir}/integration" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+            <classpath refid="run.classpath"/>
+        </javac>
+
         <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+
+        <!-- for mediation tests -->
         <delete  dir="${base_dir}/mediation"/>
         <mkdir dir="${base_dir}/mediation"/>
         <mkdir dir="${base_dir}/mediation/errors"/>
-        
+
         <copy todir="${base_dir}/mediation">
             <fileset dir="${source.mediation.descriptor.dir}" includes="mediation.dtd"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk.xml"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk-sample1.csv, mediation-batch-test.csv"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="jbilling_cdr.*"/>
         </copy>
-
-        <javac debug="on"
-               destdir="${build.test.dir}"
-               srcdir="${source.test.dir}/com/sapienter/jbilling/server/mediation">
-            <classpath refid="run.classpath"/>
-        </javac>
-
-        <junit printsummary="off" haltonfailure="true" fork="yes">
+                       
+        <!-- run integration tests -->
+        <mkdir dir="${build.test-results.dir}/integration/xml"/>
+        <junit errorproperty="test.failed" failureproperty="test.failed">
             <jvmarg value="-Djava.security.manager" />
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
 
             <sysproperty key="mediation.errors.dir" value="${base_dir}/mediation/errors"/>
-            
+
             <classpath refid="run.classpath"/>
+            <classpath refid="spring.classpath"/>
+
             <formatter type="brief" usefile="false"/>
-            <test name="com.sapienter.jbilling.server.mediation.MediationTest"/>
+            <formatter type="xml"/>
+
+            <!--
+                run all integration tests as a batch, unless the 'test.class' property has been set
+                to explicitly define the test case to execute.
+             -->
+            <batchtest fork="yes" todir="${build.test-results.dir}/integration/xml" unless="test.class">
+                <fileset dir="${source.test.dir}/integration">
+                    <include name="**/*Test*.java"/>
+                    <exclude name="**/*Tester*.java"/>
+                    <exclude name="**/*TestCase*.java"/>
+                </fileset>
+            </batchtest>
+
+            <!-- explicitly run a single test case if 'test.class' was set -->
+            <test name="${test.class}" if="test.class" todir="${build.test-results.dir}/integration/xml"/>
         </junit>
+
+        <!-- generate testing reports -->
+        <mkdir dir="${build.test-results.dir}/integration/html"/>
+        <junitreport>
+            <fileset dir="${build.test-results.dir}/integration/xml" includes="TEST-*.xml"/>
+            <report format="frames" todir="${build.test-results.dir}/integration/html"/>
+        </junitreport>
+
+        <fail if="test.failed" message="Integration tests failed! See log's for details."/>
+    </target>
+
+    <target name="test-mediation">
+        <property name="test.class" value="com.sapienter.jbilling.server.mediation.MediationTest"/>
+        <antcall target="test-integration" inheritall="true"/>
     </target>
 
     <target name="test-provisioning">
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
-
-        <javac debug="on"
-               destdir="${build.test.dir}"
-               srcdir="${source.test.dir}/com/sapienter/jbilling/server/provisioning">
-            <classpath refid="run.classpath"/>
-        </javac>
-
-        <junit printsummary="off" haltonfailure="true" fork="yes">
-            <jvmarg value="-Djava.security.manager" />
-            <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
-            <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
-            <classpath refid="run.classpath"/>
-            <formatter type="brief" usefile="false"/>
-            <test name="com.sapienter.jbilling.server.provisioning.ProvisioningTest"/>
-        </junit>
+        <property name="test.class" value="com.sapienter.jbilling.server.provisioning.ProvisioningTest"/>
+        <antcall target="test-integration" inheritall="true"/>
     </target>
 
     <target name="test-partners">
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
-
-        <javac debug="on"
-               destdir="${build.test.dir}"
-               srcdir="${source.test.dir}/com/sapienter/jbilling/server/user"
-               includes="PartnerTest.java">
-            <classpath refid="run.classpath"/>
-        </javac>
-        
-        <junit printsummary="off" haltonfailure="true" fork="yes">
-            <classpath refid="run.classpath"/>
-            <formatter type="brief" usefile="false"/>
-            <test name="com.sapienter.jbilling.server.user.PartnerTest"/>
-        </junit>
+        <property name="test.class" value="com.sapienter.jbilling.server.user.PartnerTest"/>
+        <antcall target="test-integration" inheritall="true"/>
     </target>
 
     <target name="test-process">
-        <javac debug="on"
-               destdir="${build.test.dir}"
-               srcdir="${source.test.dir}/com/sapienter/jbilling/server/process">
-            <classpath refid="run.classpath"/>
-        </javac>
-
-        <junit printsummary="off" haltonfailure="true" fork="yes">
-            <classpath refid="run.classpath"/>
-            <classpath refid="spring.classpath"/>
-            <formatter type="brief" usefile="false"/>
-            <test name="com.sapienter.jbilling.server.process.BillingProcessTest"/>
-        </junit>
+        <property name="test.class" value="com.sapienter.jbilling.server.process.BillingProcessTest"/>
+        <antcall target="test-integration" inheritall="true"/>
     </target>
 
-    <target name="test" depends="prepare-test, test-unit, test-ws, test-partners, test-process, test-mediation, test-provisioning">
-    </target>
-    
+    <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
+
+
     <!--
      Warning: this task needs a lot of memory. At least 400Megs. Otherwise
      it fails with an obscure error. To fix use ANT_OPTS=-Xmx400m -Xss128k

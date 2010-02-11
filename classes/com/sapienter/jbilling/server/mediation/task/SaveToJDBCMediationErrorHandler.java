@@ -81,6 +81,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     public static final String ERRORS_COLUMN_NAME_DEFAULT = "error_message";
     public static final String RETRY_COLUMN_NAME_DEFAULT = "should_retry";
 
+    private Boolean mysql;
 
     public void process(Record record, List<String> errors, Date processingTime) throws TaskException {
         log.debug("Perform saving errors to database ");
@@ -171,8 +172,19 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
         return value != null ? (String) value : defaultValue;
     }
 
-    // TODO: escape keywords differ for different databases
+
     protected String escapedKeywordsColumnName(String columnName) {
-        return "\"" + columnName + "\"";
+        String escape =  isMySQL() ? "`" : "\""; // escape mysql column names with backtick
+        return escape + columnName + escape;
     }
+
+    /**
+     * returns true if the driver is a MySQL database driver, false if not.
+     * @return true if MySQL
+     */
+    private boolean isMySQL() {
+        if (mysql == null)
+            mysql = getParameter(PARAM_DRIVER, DRIVER_DEFAULT).contains("mysql");
+        return mysql;
+    } 
 }

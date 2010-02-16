@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.apache.log4j.Logger;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -162,8 +163,12 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getCreditCard() != null) {
+            UserDTO user = new UserBL(dto.getUserId()).getEntity();
+            dto.getCreditCard().getBaseUsers().add(user);
+
             CreditCardBL cc = new CreditCardBL();
             cc.create(dto.getCreditCard());
+
             payment.setCreditCard(cc.getEntity());
         }
 

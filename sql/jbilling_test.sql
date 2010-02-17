@@ -275,6 +275,7 @@ ALTER TABLE ONLY public.contact DROP CONSTRAINT contact_pkey;
 ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_pkey;
 ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_pkey;
 ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_pkey;
+ALTER TABLE ONLY public.cdrentries DROP CONSTRAINT cdrentries_pkey;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_pkey;
 ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_pkey;
 ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_pkey;
@@ -370,6 +371,7 @@ DROP TABLE public.contact_map;
 DROP TABLE public.contact_field_type;
 DROP TABLE public.contact_field;
 DROP TABLE public.contact;
+DROP TABLE public.cdrentries;
 DROP TABLE public.blacklist;
 DROP TABLE public.billing_process_configuration;
 DROP TABLE public.billing_process;
@@ -533,6 +535,35 @@ CREATE TABLE blacklist (
 
 
 ALTER TABLE public.blacklist OWNER TO jbilling;
+
+--
+-- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE cdrentries (
+    id integer NOT NULL,
+    accountcode character varying(20),
+    src character varying(20),
+    dst character varying(20),
+    dcontext character varying(20),
+    clid character varying(20),
+    channel character varying(20),
+    dstchannel character varying(20),
+    lastapp character varying(20),
+    lastdatat character varying(20),
+    start timestamp without time zone,
+    answer timestamp without time zone,
+    "end" timestamp without time zone,
+    duration integer,
+    billsec integer,
+    disposition character varying(20),
+    amaflags character varying(20),
+    userfield character varying(100),
+    ts timestamp without time zone
+);
+
+
+ALTER TABLE public.cdrentries OWNER TO jbilling;
 
 --
 -- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -3077,6 +3108,15 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 4	1	2008-09-26 00:00:00	4	2	\N	\N	1126	\N	1
 5	1	2008-09-26 00:00:00	5	2	\N	\N	1128	\N	1
 6	1	2008-09-26 00:00:00	6	2	\N	\N	1127	\N	1
+\.
+
+
+--
+-- Data for Name: cdrentries; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY cdrentries (id, accountcode, src, dst, dcontext, clid, channel, dstchannel, lastapp, lastdatat, start, answer, "end", duration, billsec, disposition, amaflags, userfield, ts) FROM stdin;
+1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	\N
 \.
 
 
@@ -11723,6 +11763,7 @@ COPY list_field_entity (id, list_field_id, list_entity_id, min_value, max_value,
 COPY mediation_cfg (id, entity_id, create_datetime, name, order_value, pluggable_task_id, optlock) FROM stdin;
 10	1	2007-11-26 10:41:31.55	Asterisk test	1	421	0
 20	1	2009-01-13 11:16:50.976	JDBCReader test	2	480	0
+30	1	2007-11-26 10:41:31.55	JDBCReader from jbilling_test	1	6020	1
 \.
 
 
@@ -14824,6 +14865,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 1	1	61	1	3
 430	1	62	1	1
 572	1	73	2	0
+6020	1	44	1	1
 \.
 
 
@@ -14897,6 +14939,13 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg RateCard.pkg	\N	1
 8305	572	url	\N	jdbc:postgresql://localhost:5432/jbilling_test	\N	1
 8306	572	username	\N	jbilling	\N	1
+830700	6020	table_name	\N	cdrentries	\N	1
+830701	6020	key_column_name	\N	accountcode	\N	1
+830702	6020	driver	\N	org.postgresql.Driver	\N	1
+830703	6020	url	\N	jdbc:postgresql://localhost:5432/jbilling_test	\N	1
+830704	6020	username	\N	jbilling	\N	1
+830705	6020	password	\N		\N	1
+830706	6020	timestamp_column_name	\N	ts	\N	1
 \.
 
 
@@ -19603,6 +19652,14 @@ ALTER TABLE ONLY billing_process
 
 ALTER TABLE ONLY blacklist
     ADD CONSTRAINT blacklist_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY cdrentries
+    ADD CONSTRAINT cdrentries_pkey PRIMARY KEY (id);
 
 
 --

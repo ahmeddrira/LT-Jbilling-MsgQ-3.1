@@ -452,6 +452,7 @@
 
     <target name="test-integration" description="Run all integration tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/integration" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+            <src path="${source.test.dir}/ws"/> <!-- todo: support classes from ws tests, refactor -->
             <classpath refid="run.classpath"/>
         </javac>
 

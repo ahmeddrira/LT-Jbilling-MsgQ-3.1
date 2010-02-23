@@ -53,7 +53,6 @@ public class EventLogger {
     public static final Integer SUBSCRIPTION_STATUS_NO_CHANGE = new Integer(32);
     public static final Integer ACCOUNT_LOCKED = new Integer(21);
     public static final Integer DYNAMIC_BALANCE_CHANGE = new Integer(33);
-    public static final Integer CONTACT_UPDATED = new Integer(34);
     // order maintenance
     public static final Integer ORDER_STATUS_CHANGE = new Integer(13);
     public static final Integer ORDER_LINE_UPDATED = new Integer(17);

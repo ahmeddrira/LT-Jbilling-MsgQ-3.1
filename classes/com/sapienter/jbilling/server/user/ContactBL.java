@@ -314,7 +314,13 @@ public class ContactBL {
         updateCreateFields(dto.getFieldsTable(), false);
         
         LOG.debug("created " + contact);
-        
+        eLogger.auditBySystem(entityId,
+                              contact.getUserId(),
+                              Constants.TABLE_CONTACT,
+                              contact.getId(),
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_CREATED, null, null, null);
+
         return contact.getId();
     }
     
@@ -369,7 +375,7 @@ public class ContactBL {
                               Constants.TABLE_CONTACT,
                               contact.getId(),
                               EventLogger.MODULE_USER_MAINTENANCE,
-                              EventLogger.CONTACT_UPDATED, null, null, null);
+                              EventLogger.ROW_UPDATED, null, null, null);
 
         updateCreateFields(dto.getFieldsTable(), true);
     }
@@ -432,9 +438,22 @@ public class ContactBL {
         }
         contact.getFields().clear();
 
+        // for the logger
+        Integer entityId = this.entityId;
+        Integer userId = contact.getUserId();
+        Integer contactId = contact.getId();
+
         // the contact goes last
         contactDas.delete(contact);
         contact = null;
+
+        // log event
+        eLogger.auditBySystem(entityId,
+                              userId,
+                              Constants.TABLE_CONTACT,
+                              contactId,
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_DELETED, null, null, null);
     }
     
     /**

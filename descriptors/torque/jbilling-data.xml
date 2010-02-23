@@ -313,7 +313,6 @@
     <EventLogMessage Id="31"/>
     <EventLogMessage Id="32"/>
     <EventLogMessage Id="33"/>
-    <EventLogMessage Id="34"/>
     <EventLogModule Id="1"/>
     <EventLogModule Id="2"/>
     <EventLogModule Id="3"/>

@@ -121,3 +121,6 @@ insert into pluggable_task_type  (id, category_id, class_name, min_parameters) v
 
 -- scheduled task's
 insert into pluggable_task_type_category(id, description, interface_name) values(22, 'Scheduled Tasks', 'com.sapienter.jbilling.server.process.task.IScheduledTask');
+
+-- contact updated event log
+insert into event_log_message (id) values (34);

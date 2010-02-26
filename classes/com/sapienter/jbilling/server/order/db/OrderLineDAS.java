@@ -43,6 +43,7 @@ public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
         return (Long) query.uniqueResult();
     }
 
+    @SuppressWarnings("unchecked")
     public List<OrderLineDTO> findByUserItem(Integer userId, Integer itemId) {
         final String hql =
             "select ol" +
@@ -77,4 +78,27 @@ public class OrderLineDAS extends AbstractDAS<OrderLineDTO> {
 
         return (OrderLineDTO) query.uniqueResult();
     }
+
+    @SuppressWarnings("unchecked")
+    public List<OrderLineDTO> findOnetimeByUserItem(Integer userId, Integer itemId) {
+         final String hql =
+                 "select line "
+                 + "  from OrderLineDTO line "
+                 + "where line.deleted = 0 "
+                 + "  and line.item.id = :itemId "
+                 + "  and line.purchaseOrder.baseUserByUserId.id = :userId "
+                 + "  and line.purchaseOrder.orderPeriod.id == :period "
+                 + "  and line.purchaseOrder.orderStatus.id = :status "
+                 + "  and line.purchaseOrder.deleted = 0 ";
+
+         Query query = getSession().createQuery(hql);
+         query.setParameter("itemId", itemId);
+         query.setParameter("userId", userId);
+         query.setParameter("period", Constants.ORDER_PERIOD_ONCE);
+         query.setParameter("status", Constants.ORDER_STATUS_ACTIVE);
+                 
+         return query.list();
+     }
+
+
 }

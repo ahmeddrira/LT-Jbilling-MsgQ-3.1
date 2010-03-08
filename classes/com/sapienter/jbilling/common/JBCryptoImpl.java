@@ -39,7 +39,6 @@ public final class JBCryptoImpl extends JBCrypto {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final String ALGORITHM = "PBEWithMD5AndDES";
 	private static SecretKeyFactory ourKeyFactory;
-	private static Cipher ourCipher;
 	private static final PBEParameterSpec ourPBEParameters;
     
     //private static final Logger LOG = Logger.getLogger(JBCryptoImpl.class);
@@ -94,17 +93,15 @@ public final class JBCryptoImpl extends JBCrypto {
 	}
 
 	private static Cipher getCipher() {
-		if (ourCipher == null) {
-			try {
-				ourCipher = Cipher.getInstance(ALGORITHM);
-
-			} catch (NoSuchAlgorithmException e) {
-				throw new IllegalStateException(
-						"Strange. Algorithm was supported a few seconds ago : "
-								+ ALGORITHM, e);
-			} catch (NoSuchPaddingException e) {
-				throw new IllegalStateException(e);
-			}
+        Cipher ourCipher;
+		try {
+			ourCipher = Cipher.getInstance(ALGORITHM);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException(
+				"Strange. Algorithm was supported a few seconds ago : "
+						+ ALGORITHM, e);
+		} catch (NoSuchPaddingException e) {
+			throw new IllegalStateException(e);
 		}
 		return ourCipher;
 	}

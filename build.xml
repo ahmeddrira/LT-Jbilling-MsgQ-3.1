@@ -870,6 +870,21 @@ server="upload.sourceforge.net" userid="anonymous">
         </rulebase>
     </target>
 
+    <!-- use execution from command line with parameters rulesTemplateFile and rulesDataFile -->
+    <!-- i.e. ant generate-rules -DrulesTemplateFile=rulesTemplate.vm -DrulesDataFile=rulesData.csv -->
+    <target name="generate-rules"
+            description="Rules generation from velocity template and csv data file">
+        <echo>Generating rules for input template ${rulesTemplateFile} and data file ${rulesDataFile}</echo>
+        <java classname="com.sapienter.jbilling.tools.RulesGenerator" failonerror="true">
+            <classpath>
+                <path refid="run.classpath"/>
+                <pathelement location="${build.classes.dir}"/>
+            </classpath>
+            <arg value="${source.rules.dir}/templates/${rulesTemplateFile}"/>
+            <arg value="${source.rules.dir}/${rulesDataFile}"/>
+        </java>
+    </target>
+
     <target name="export">
         <tstamp/>
         <!-- Create the zip file in the 'src' directory. -->

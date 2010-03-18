@@ -361,7 +361,9 @@ public class MediationSessionBean implements IMediationSessionBean {
                     mapDas.save(map);
 
                     // add the record lines
-                    saveEventRecordLines(result.getDiffLines(), new MediationRecordDAS().find(result.getRecordKey()),
+                    // todo: could be problematic if asynchronous mediation processes are running.
+                    // a better approach is to link MediationResult to the record by the unique ID -- future enhancement
+                    saveEventRecordLines(result.getDiffLines(), new MediationRecordDAS().findNewestByKey(result.getRecordKey()),
                                          result.getEventDate(),
                                          result.getDescription());
                 }
@@ -408,7 +410,7 @@ public class MediationSessionBean implements IMediationSessionBean {
 
     private void assignStatusToMediationRecord(String key, MediationRecordStatusDTO status) {
         MediationRecordDAS recordDas = new MediationRecordDAS();
-        MediationRecordDTO recordDto = recordDas.findNow(key);
+        MediationRecordDTO recordDto = recordDas.findNewestByKey(key);
         if (recordDto != null) {
             recordDto.setRecordStatus(status);
             recordDas.save(recordDto);

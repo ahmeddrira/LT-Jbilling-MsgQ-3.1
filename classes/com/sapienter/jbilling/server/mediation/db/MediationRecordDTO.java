@@ -24,18 +24,29 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
+@TableGenerator(
+        name = "mediation_record_GEN",
+        table = "jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue = "mediation_record", 
+        allocationSize = 100)
 @Entity
 @Table(name = "mediation_record")
 // no cache : it is hardly ever re-read 
 public class MediationRecordDTO implements Serializable {
 
+    private Integer id;
     private String key;
     private Date started;
     private MediationProcess process;
@@ -54,6 +65,16 @@ public class MediationRecordDTO implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "mediation_record_GEN")
+    @Column(name = "id", unique = true, nullable = false)
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     @Column(name = "id_key", nullable = false)
     public String getKey() {
         return key;

@@ -1215,7 +1215,8 @@ CREATE TABLE mediation_record (
     start_datetime timestamp without time zone NOT NULL,
     mediation_process_id integer,
     optlock integer NOT NULL,
-    status_id integer NOT NULL
+    status_id integer NOT NULL,
+    id integer NOT NULL
 );
 
 
@@ -1227,13 +1228,13 @@ ALTER TABLE public.mediation_record OWNER TO jbilling;
 
 CREATE TABLE mediation_record_line (
     id integer NOT NULL,
-    mediation_record_id character varying(100) NOT NULL,
     order_line_id integer NOT NULL,
     event_date timestamp without time zone NOT NULL,
     amount double precision NOT NULL,
     quantity double precision NOT NULL,
     description character varying(200),
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    mediation_record_id integer NOT NULL
 );
 
 
@@ -11452,7 +11453,6 @@ list_field_entity	15
 payment_invoice	11
 subscriber_status	7
 mediation_process	1
-mediation_record	1
 blacklist	1
 mediation_record_line	1
 order_line_provisioning_status	1
@@ -11527,7 +11527,6 @@ list_field_entity	15
 payment_invoice	11
 subscriber_status	7
 mediation_process	1
-mediation_record	1
 blacklist	1
 mediation_record_line	1
 order_line_provisioning_status	1
@@ -11569,6 +11568,7 @@ item	30
 item	30
 item_price	20
 item_price	20
+mediation_record	1
 \.
 
 
@@ -11795,7 +11795,7 @@ COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orde
 -- Data for Name: mediation_record; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, status_id) FROM stdin;
+COPY mediation_record (id, id_key, start_datetime, mediation_process_id, optlock, status_id) FROM stdin;
 \.
 
 
@@ -16998,6 +16998,7 @@ COPY report_field (id, report_id, report_user_id, position_number, table_name, c
 1003	\N	160	5	invoice	create_datetime	\N	2004-11-23	invoice.create_date	\N	0	0	date	<=	0	0	0	1	1	1
 1004	\N	160	6	invoice	billing_process_id	\N		process.external.id	\N	0	0	integer	=	1	1	1	1	1	1
 1620	20	\N	15	id2	content	\N	\N	payment.result	\N	0	1	string	\N	1	1	0	0	0	1
+1422	\N	270	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
 1005	\N	160	7	invoice	delegated_invoice_id	\N		invoice.delegated.prompt	\N	0	0	integer	=	1	1	1	1	1	1
 1500	\N	281	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
 1006	\N	160	8	invoice	due_date	\N	\N	invoice.dueDate.prompt	\N	0	0	date	=	1	1	1	1	1	1
@@ -17268,7 +17269,6 @@ COPY report_field (id, report_id, report_user_id, position_number, table_name, c
 1419	\N	270	12	payment	is_refund	\N	0	report.prompt.payment.is_refund	\N	0	0	integer	=	0	0	0	0	0	1
 1420	\N	270	12	id	content	\N	\N	payment.method	\N	1	1	string	\N	1	1	0	0	0	1
 1421	\N	270	12	base_user	entity_id	\N	301	report.prompt.base_user.entity_id	\N	0	0	integer	=	0	0	0	0	0	1
-1422	\N	270	13	id2	content	\N	\N	payment.result	\N	1	1	string	\N	1	1	0	0	0	1
 1423	\N	270	14	id	language_id	\N	1	report.prompt.id.language_id	\N	0	0	integer	=	0	0	0	0	0	1
 1424	\N	271	1	payment	id	\N	\N	report.prompt.payment.id	\N	0	1	integer	\N	0	0	0	0	0	1
 1425	\N	271	2	payment	id	\N		payment.id	\N	0	1	integer	=	1	1	1	1	1	1
@@ -19939,7 +19939,7 @@ ALTER TABLE ONLY mediation_record_line
 --
 
 ALTER TABLE ONLY mediation_record
-    ADD CONSTRAINT mediation_record_pkey PRIMARY KEY (id_key);
+    ADD CONSTRAINT mediation_record_pkey PRIMARY KEY (id);
 
 
 --
@@ -21222,7 +21222,7 @@ ALTER TABLE ONLY mediation_record
 --
 
 ALTER TABLE ONLY mediation_record_line
-    ADD CONSTRAINT mediation_record_line_fk_1 FOREIGN KEY (mediation_record_id) REFERENCES mediation_record(id_key);
+    ADD CONSTRAINT mediation_record_line_fk_1 FOREIGN KEY (mediation_record_id) REFERENCES mediation_record(id);
 
 
 --

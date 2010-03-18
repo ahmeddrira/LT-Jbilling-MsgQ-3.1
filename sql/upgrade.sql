@@ -121,3 +121,44 @@ insert into pluggable_task_type  (id, category_id, class_name, min_parameters) v
 
 -- scheduled task's
 insert into pluggable_task_type_category(id, description, interface_name) values(22, 'Scheduled Tasks', 'com.sapienter.jbilling.server.process.task.IScheduledTask');
+
+-- unique id for mediation_record
+-- postgresql
+alter table mediation_record add column id integer;
+create temp sequence mediation_rec_seq;
+update mediation_record set id = nextval('mediation_rec_seq');
+
+alter table mediation_record_line drop constraint mediation_record_line_fk_1;
+alter table mediation_record drop constraint mediation_record_pkey;
+alter table mediation_record add constraint mediation_record_pkey primary key (id);
+
+alter table mediation_record_line add column mediation_record_id_2 integer;
+update mediation_record_line set mediation_record_id_2 = r.id from mediation_record r, mediation_record_line l where r.id_key = l.mediation_record_id;
+alter table mediation_record_line drop column mediation_record_id;
+alter table mediation_record_line rename column mediation_record_id_2 to mediation_record_id;
+alter table mediation_record_line alter column mediation_record_id set NOT NULL;
+alter table mediation_record_line add constraint mediation_record_line_fk_1 foreign key (mediation_record_id) references mediation_record(id);
+ 
+-- mysql
+-- CREATE TABLE mediation_record_2 (
+--    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+--    id_key varchar(100) NOT NULL,
+--    start_datetime timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+--    mediation_process_id int,
+--    OPTLOCK int NOT NULL,
+--    status_id int NOT NULL
+-- );
+-- insert into mediation_record_2 (id_key, start_datetime, mediation_process_id, status_id, OPTLOCK) (select id_key, start_datetime, mediation_process_id, status_id, OPTLOCK from mediation_record);
+-- drop table mediation_record;
+-- rename table mediation_record_2 to mediation_record;
+-- alter table mediation_record_line modify column id integer;
+--
+-- alter table mediation_record_line add column mediation_record_id_2 integer;
+-- update mediation_record_line as l, mediation_record as r set l.mediation_record_id_2 = r.id where r.id_key = l.mediation_record_id;
+-- alter table mediation_record_line drop column mediation_record_id;
+-- alter table mediation_record_line change mediation_record_id_2 mediation_record_id integer;
+-- alter table mediation_record_line modify mediation_record_id integer NOT NULL;
+
+-- insert new mediation_record next_id value into the jbilling_seqs table.
+-- if you have no existing mediation_records, insert 0
+insert into jbilling_seqs values ('mediation_record', (select round(max(id)/100)+1 from mediation_record));

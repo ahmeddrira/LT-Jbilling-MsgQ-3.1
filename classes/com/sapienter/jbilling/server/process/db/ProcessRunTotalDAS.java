@@ -53,7 +53,7 @@ public class ProcessRunTotalDAS extends AbstractDAS<ProcessRunTotalDTO> {
 				.createAlias("processRun", "r")
 					.add(Restrictions.eq("r.id", run.getId()))
 				.createAlias("currency", "c")
-					.add(Restrictions.eq("c.id", currencyId)).setLockMode(LockMode.UPGRADE)
+					.add(Restrictions.eq("c.id", currencyId))
                 .setComment("ProcessRunTotalDAS.getByCurrency");
 
 		return (ProcessRunTotalDTO) criteria.uniqueResult();

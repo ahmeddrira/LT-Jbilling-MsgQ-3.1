@@ -110,5 +110,45 @@ public class BillingProcessDAS extends AbstractDAS<BillingProcessDTO> {
     	query.setParameter("dueDate", new Date());
     	query.setParameter("entity", entityId);
     	return query.scroll();    
-    }    
+    }
+
+    /**
+     * Search succesfull payments in Payment_Invoice map (with quantity > 0)
+     * and returns result, groupped by currency
+     *
+     * @param processId
+     * @return Iterator with currency, method and sum of amount fields of query
+     */
+    public Iterator getSuccessfulProcessCurrencyMethodAndSum(Integer processId) {
+        final String hql =
+                "select invoice.currency.id, method.id, sum(invoice.total) " +
+                "  from InvoiceDTO invoice inner join invoice.paymentMap paymentMap " +
+                " join paymentMap.payment payment join payment.paymentMethod method " +
+                " where invoice.billingProcess.id = :processId and paymentMap.amount > 0" +
+                " group by invoice.currency.id, method.id " +
+                " having sum(invoice.total) > 0";
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("processId", processId);
+        return query.iterate();
+    }
+
+    /**
+     * Selection records from Invoice table without payment records or
+     * with payments of 0 amount. Result groupped by currency
+     * @param processId
+     * @return Iterator with currency and amount value
+     */
+    public Iterator getFailedProcessCurrencyAndSum(Integer processId) {
+        final String hql =
+                "select invoice.currency.id, sum(invoice.total) " +
+                "  from InvoiceDTO invoice left join invoice.paymentMap paymentMap" +
+                " where invoice.billingProcess.id = :processId and (paymentMap is NULL or paymentMap.amount = 0) " +
+                " group by invoice.currency.id";
+
+
+        Query query = getSession().createQuery(hql);
+        query.setParameter("processId", processId);
+        return query.iterate();
+    }
 }

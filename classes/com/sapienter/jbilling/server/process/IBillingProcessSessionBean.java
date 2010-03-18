@@ -135,4 +135,12 @@ public interface IBillingProcessSessionBean {
             Integer languageId) throws SessionInternalError;
     
     public void reviewUsersStatus(Date today) throws SessionInternalError;
+
+    /**
+     * Update status of BillingProcessRun in new transaction
+     * for accessing from other thread
+     * @param billingProcessId id of billing process for searching ProcessRun
+     * @return id of updated ProcessRunDTO
+     */
+    public Integer updateProcessRunFinished(Integer billingProcessId);
 }

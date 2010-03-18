@@ -43,7 +43,7 @@ public abstract class AbstractReader extends PluggableTask implements
         try {
             // the parameter is optional and defaults to 1000 records
             batchSize = Integer.parseInt(((String) parameters.get("batch_size") == null)
-                ? "1000" : (String) parameters.get("batch_size"));
+                ? "100" : (String) parameters.get("batch_size"));
             LOG.debug("Batch size for this reader is " + getBatchSize());
         } catch (NumberFormatException e) {
             retValue = false;

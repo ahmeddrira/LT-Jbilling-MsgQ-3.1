@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.process;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -57,7 +56,6 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
 import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask;
@@ -278,11 +276,6 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         	}
             // restore the configuration in the session, the reset removed it
             conf.set(entityId);
-
-            // update the totals
-            BillingProcessRunBL runBL = new BillingProcessRunBL();
-            runBL.setProcess(billingProcessId);
-            runBL.updateTotals(billingProcessId);
             
             if (allGood) { // only if all got well processed
                 // if some of the invoices were paper invoices, a new file with all
@@ -301,13 +294,16 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                     LOG.error("Error generetaing batch file", e);
                 }
                 // now update the billing proces record 
-                
-                runBL.updateFinished();
+            }
+
+            if (allGood) {
+                Integer processRunId = local.updateProcessRunFinished(billingProcessId);
+
                 if (!isReview) {
                     // the payment processing is happening in parallel
                     // this event marks the end of it
                     EndProcessPaymentEvent event = new EndProcessPaymentEvent(
-                            runBL.getEntity().getId(), entityId);
+                            processRunId, entityId);
                     EventManager.process(event);
                     // and finally the next run date in the config
                     GregorianCalendar cal = new GregorianCalendar();
@@ -317,6 +313,13 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                     conf.getEntity().setNextRunDate(cal.getTime());
                     LOG.debug("Updated run date to " + cal.getTime());
                 }
+            } else {
+                // TODO: check, if updating totals needed
+                // TODO: in the case of errors during users processing
+                BillingProcessRunBL runBL = new BillingProcessRunBL();
+                runBL.setProcess(billingProcessId);
+                // update the totals
+                runBL.updateTotals(billingProcessId);
             }
             
 
@@ -351,7 +354,9 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
     public void endPayments(Integer runId) {
         BillingProcessRunBL run = new BillingProcessRunBL(runId);
         run.updatePaymentsFinished();
-        
+        // update the totals
+        run.updateTotals(run.getEntity().getBillingProcess().getId());
+        run.updatePaymentsStatistic(run.getEntity().getId());
     }
 
     @Transactional( propagation = Propagation.REQUIRES_NEW )
@@ -780,5 +785,19 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }     
+    }
+
+    /**
+     * Update status of BillingProcessRun in new transaction
+     * for accessing updated entity from other thread
+     * @param billingProcessId id of billing process for searching ProcessRun
+     * @return id of updated ProcessRunDTO
+     */
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    public Integer updateProcessRunFinished(Integer billingProcessId) {
+        BillingProcessRunBL runBL = new BillingProcessRunBL();
+        runBL.setProcess(billingProcessId);
+        runBL.updateFinished();
+        return runBL.getEntity().getId();
+    }
 }

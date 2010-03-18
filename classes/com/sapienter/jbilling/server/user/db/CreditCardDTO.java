@@ -327,6 +327,16 @@ public class CreditCardDTO implements Serializable {
         }
     }
 
+    /**
+     * Returns true if this credit card has been obscured (part of the number
+     * has been masked with asterisks '*') false if not, or if the number is null.
+     * @return true if masked, false if not or number is null.
+     */
+    @Transient
+    public boolean isNumberObsucred() {
+        return getRawNumber() != null && getNumber().contains("*");
+    }
+
     @Transient
     public com.sapienter.jbilling.server.entity.CreditCardDTO getOldDTO() {
         com.sapienter.jbilling.server.entity.CreditCardDTO oldCC =

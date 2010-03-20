@@ -423,7 +423,7 @@
 
         <!-- run web service tests -->
         <mkdir dir="${build.test-results.dir}/ws/xml"/>
-        <junit errorproperty="test.failed" failureproperty="test.failed">
+        <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
             <jvmarg value="-Djava.security.manager" />
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />

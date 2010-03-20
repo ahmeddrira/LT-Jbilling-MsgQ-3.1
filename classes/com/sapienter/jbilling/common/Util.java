@@ -179,39 +179,38 @@ public class Util {
      * @return payment method
      */
     static public Integer getPaymentMethod(String creditCardNumber) {
-        Integer retValue = null;
+        Integer type = null;
+
+        switch (creditCardNumber.charAt(0)) {
+        case '4':
+            type = Constants.PAYMENT_METHOD_VISA;
+            break;
+        case '5':
+            type = Constants.PAYMENT_METHOD_MASTERCARD;
+            break;
+        case '3':
+            // both diners and american express start with a 3
+            if (creditCardNumber.charAt(1) == '7') {
+                type = Constants.PAYMENT_METHOD_AMEX;
+            } else if (creditCardNumber.charAt(1) == '8') {
+                type = Constants.PAYMENT_METHOD_DINERS;
+            }
+            break;
+        case '6':
+            type = Constants.PAYMENT_METHOD_DISCOVERY;
+            break;
+        }
 
         /*
             This isn't 100% accurate as obscured credit card numbers may not always mean that a gateway key
             is present. We should be checking CreditCardDTO to ensure that gatewayKey is not null when an
             obscured credit card number is encountered.
          */
-        
-        switch (creditCardNumber.charAt(0)) {
-        case '4':
-            retValue = Constants.PAYMENT_METHOD_VISA;
-            break;
-        case '5':
-            retValue = Constants.PAYMENT_METHOD_MASTERCARD;
-            break;
-        case '3':
-            // both diners and american expers start with a 3
-            if (creditCardNumber.charAt(1) == '7') {
-                retValue = Constants.PAYMENT_METHOD_AMEX;
-            } else if (creditCardNumber.charAt(1) == '8') {
-                retValue = Constants.PAYMENT_METHOD_DINERS;
-            }
-            break;
-        case '6':
-            retValue = Constants.PAYMENT_METHOD_DISCOVERY;
-            break;
-        case '*':
-            retValue = Constants.PAYMENT_METHOD_GATEWAY_KEY;
-            break;
-        }
+        if (creditCardNumber.contains("*"))
+            type = Constants.PAYMENT_METHOD_GATEWAY_KEY;
 
-        return retValue;
-    }     
+        return type;
+    }
 
     static public String truncateString(String str, int length) {
         if (str == null) return null;

@@ -1980,6 +1980,7 @@
     <JbillingSeqs Name="generic_status" NextId="26"/>
     <JbillingSeqs Name="order_line_provisioning_status" NextId="1"/>
     <JbillingSeqs Name="balance_type" NextId="0"/>
+    <JbillingSeqs Name="mediation_record" NextId="0"/>
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
     <List Id="1" LegacyName="customerSimple" TitleKey="list.customers.title" Optlock="1"/>

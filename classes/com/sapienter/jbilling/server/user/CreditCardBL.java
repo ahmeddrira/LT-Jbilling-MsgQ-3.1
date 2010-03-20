@@ -112,16 +112,15 @@ public class CreditCardBL extends ResultList
 
         // Only save un-obscured credit cards. If a card is obscured, we assume that it is an
         // existing card stored against an external payment gateway - fetch from the db instead
-        if (!dto.useGatewayKey() || !dto.getNumber().startsWith("*")) {
-        creditCard = creditCardDas.save(dto);
+        if (!dto.useGatewayKey() || !dto.isNumberObsucred()) {
+            creditCard = creditCardDas.save(dto);
 
-        if (!creditCard.getBaseUsers().isEmpty()) {
-            UserDTO user =  creditCard.getBaseUsers().iterator().next();
-            EventManager.process(new NewCreditCardEvent(creditCard,  user.getEntity().getId()));
-        } else {
-            LOG.error("Could not determine entity id of created CreditCardDTO, failed to emit NewCreditCardEvent!");
-        }
-       
+            if (!creditCard.getBaseUsers().isEmpty()) {
+                UserDTO user =  creditCard.getBaseUsers().iterator().next();
+                EventManager.process(new NewCreditCardEvent(creditCard,  user.getEntity().getId()));
+            } else {
+                LOG.error("Could not determine entity id of created CreditCardDTO, failed to emit NewCreditCardEvent!");
+            }
         } else {
             // fetch the credit card from the database instead of creating a new record
             UserDTO user = dto.getBaseUsers().iterator().next();

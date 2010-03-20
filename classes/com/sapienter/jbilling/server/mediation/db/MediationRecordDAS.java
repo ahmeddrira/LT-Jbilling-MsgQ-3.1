@@ -22,9 +22,25 @@ package com.sapienter.jbilling.server.mediation.db;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Query;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class MediationRecordDAS extends AbstractDAS<MediationRecordDTO> {
+
+    private static final String findByKeyHQL =
+            "select mediationRecord "
+                   + " FROM MediationRecordDTO mediationRecord "
+                   + " WHERE mediationRecord.key = :key "
+                   + " order by mediationRecord.started";
+
+    @SuppressWarnings("unchecked")
+    public MediationRecordDTO findNewestByKey(String key) {
+        Query query = getSession().createQuery(findByKeyHQL);
+        query.setParameter("key", key);
+
+        List<MediationRecordDTO> results = query.list();
+        return (results.isEmpty() ? null : (MediationRecordDTO) query.list().get(0));
+    }
 
     private static final String isProcessedSQL =
             "select id_key " +

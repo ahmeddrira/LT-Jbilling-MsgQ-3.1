@@ -55,6 +55,8 @@ import com.sapienter.jbilling.server.order.event.OrderAddedOnInvoiceEvent;
 import com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.payment.PaymentBL;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceCompositionTask;
 import com.sapienter.jbilling.server.pluggableTask.InvoiceFilterTask;
 import com.sapienter.jbilling.server.pluggableTask.OrderFilterTask;
@@ -62,11 +64,7 @@ import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
-import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
-import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
+import com.sapienter.jbilling.server.process.db.*;
 import com.sapienter.jbilling.server.system.event.EventManager;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
@@ -892,18 +890,20 @@ public class BillingProcessBL extends ResultList
             runs.add(runDto);
             runsCounter++;
 
-            totalInvoices += run.getInvoicesGenerated().intValue();
+            // add statistic for InProgress run proccess in DTO
+            if (run.getPaymentFinished() == null) {
+                addRuntimeStatistic(run.getBillingProcess().getId(), language, runDto);
+            }
 
             LOG.debug("Run:" + run.getId() + " has " + run.getProcessRunTotals().size() +
                     " total records");
             // go over the totals, since there's one per currency
-            for (Iterator it2 = run.getProcessRunTotals().iterator(); it2.hasNext();) {
+            for (Iterator it2 = runDto.getTotals().iterator(); it2.hasNext();) {
                 // the total to process 
-                ProcessRunTotalDTO totalRow =
-                        (ProcessRunTotalDTO) it2.next();
+                BillingProcessRunTotalDTOEx totalDto =
+                        (BillingProcessRunTotalDTOEx) it2.next();
 
-                BillingProcessRunTotalDTOEx totalDto = getTotal(totalRow.getCurrency(), runDto.getTotals());
-                BillingProcessRunTotalDTOEx sum = getTotal(totalRow.getCurrency(), grandTotal.getTotals());
+                BillingProcessRunTotalDTOEx sum = getTotal(totalDto.getCurrency(), grandTotal.getTotals());
 
                 BigDecimal totalTmp = totalDto.getTotalInvoiced().add(sum.getTotalInvoiced());
                 sum.setTotalInvoiced(totalTmp);
@@ -941,6 +941,7 @@ public class BillingProcessBL extends ResultList
 
                 LOG.debug("Added total to run dto. PMs in total:" + sum.getPmTotals().size() + " now grandTotal totals:" + grandTotal.getTotals().size());
             }
+            totalInvoices += runDto.getInvoicesGenerated();
         }
 
         grandTotal.setInvoicesGenerated(new Integer(totalInvoices));
@@ -952,6 +953,44 @@ public class BillingProcessBL extends ResultList
         retValue.setOrdersProcessed(new Integer(billingProcess.getOrderProcesses().size()));
 
         return retValue;
+    }
+
+    private void addRuntimeStatistic(Integer billingProcessId, Integer language,  BillingProcessRunDTOEx runDto) {
+        for (Iterator iter = new BillingProcessDAS().getCountAndSum(billingProcessId); iter.hasNext();) {
+            Object[] row = (Object[]) iter.next();
+
+            BillingProcessRunTotalDTOEx totalRowDto =
+                    new BillingProcessRunTotalDTOEx();
+            totalRowDto.setProcessRun(runDto);
+            totalRowDto.setCurrency(new CurrencyDAS().find((Integer) row[2]));
+            totalRowDto.setCurrencyName(totalRowDto.getCurrency().getDescription(language));
+            totalRowDto.setId(-1);
+            totalRowDto.setTotalInvoiced((BigDecimal) row[1]);
+            totalRowDto.setTotalNotPaid(BigDecimal.ZERO);
+            totalRowDto.setTotalPaid(BigDecimal.ZERO);
+
+            // now go over the totals by payment method
+            Hashtable totals = new Hashtable();
+            for (Iterator itt = new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(billingProcessId); itt.hasNext();) {
+                Object[] payedRow = (Object[]) itt.next();
+                if (payedRow[0].equals(totalRowDto.getCurrency().getId())) {
+                    PaymentMethodDTO paymentMethod = new PaymentMethodDAS().find((Integer) payedRow[1]);
+                    BigDecimal payed = (BigDecimal) payedRow[2];
+                    totals.put(paymentMethod.getDescription(language), payed);
+                    totalRowDto.setTotalPaid(totalRowDto.getTotalPaid().add(payed));
+                }
+            }
+            totalRowDto.setPmTotals(totals);
+            for (Iterator itt = new BillingProcessDAS().getFailedProcessCurrencyAndSum(billingProcessId); itt.hasNext();) {
+                Object[] unpayedRow = (Object[]) itt.next();
+                if (unpayedRow[0].equals(totalRowDto.getCurrency().getId())) {
+                    totalRowDto.setTotalNotPaid(totalRowDto.getTotalNotPaid().add((BigDecimal) unpayedRow[1]));
+                }
+            }
+
+            runDto.setInvoicesGenerated(runDto.getInvoicesGenerated() + ((Long) row[0]).intValue());
+            runDto.getTotals().add(totalRowDto);
+        }
     }
 
     public CachedRowSet getList(Integer entityId)
@@ -1014,21 +1053,7 @@ public class BillingProcessBL extends ResultList
             InvoiceBL invoiceBL = new InvoiceBL(invoiceId);
             InvoiceDTO newInvoice = invoiceBL.getEntity();
             IPaymentSessionBean paymentSess = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
-            Integer result = paymentSess.generatePayment(newInvoice);
-            Integer currencyId = newInvoice.getCurrency().getId();
-            BillingProcessRunBL run = new BillingProcessRunBL();
-            if (processId != null) {
-                run.setProcess(processId);
-            } else {
-                run.set(runId);
-            }
-            // null means that the payment wasn't successful
-            // otherwise the result is the method id
-            if (result != null) {
-                run.updateNewPayment(currencyId, result, newInvoice.getTotal(), true);
-            } else {
-                run.updateNewPayment(currencyId, result, newInvoice.getTotal(), false);
-            }
+            paymentSess.generatePayment(newInvoice);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }

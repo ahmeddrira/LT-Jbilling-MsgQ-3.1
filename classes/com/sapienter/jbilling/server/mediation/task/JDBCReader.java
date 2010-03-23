@@ -73,8 +73,8 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     protected static final String PARAM_URL = "url";
     protected static final String PARAM_USERNAME = "username";
     protected static final String PARAM_PASSWORD = "password";
-    protected static final String PARAM_TIMESTAMP_COLUMN_NAME =
-            "timestamp_column_name";
+    protected static final String PARAM_TIMESTAMP_COLUMN_NAME = "timestamp_column_name";
+    protected static final String PARAM_LOWERCASE_COLUMN_NAME = "lc_column_names";
 
     // defaults
     protected static final String DATABASE_NAME_DEFAULT = "jbilling_cdr";
@@ -83,8 +83,9 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     protected static final String DRIVER_DEFAULT = "org.hsqldb.jdbcDriver";
     protected static final String USERNAME_DEFAULT = "SA";
     protected static final String PASSWORD_DEFAULT = "";
-    protected static final String TIMESTAMP_COLUMN_DEFAULT =
-            "jbilling_timestamp";
+    protected static final String TIMESTAMP_COLUMN_DEFAULT = "jbilling_timestamp";
+    protected static final Boolean LOWERCASE_COLUMN_NAME_DEFAULT = true; 
+
 
     protected enum MarkMethod { LAST_ID, TIMESTAMP }
 
@@ -101,6 +102,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     }
   
     public boolean validate(List<String> messages) {
+        super.validate(messages);
         try {
             connection = getConnection();
             keyColumnNames = getKeyColumnNames();
@@ -419,6 +421,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
      */ 
     public class Reader implements Iterator<List<Record>> {
         private ResultSet records;
+        private boolean isResultSetClosed = false;
         private PricingField.Type[] columnTypes;
         private String[] columnNames;
         private int[] keyColumnIndices;
@@ -443,7 +446,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                 int counter = 0;
                 recordList.clear();
 
-                while (updateCurrent() && counter < getBatchSize()) {
+                while (counter < getBatchSize() && updateCurrent()) {
                     counter++;
                     recordList.add(currentRecord);
                 }
@@ -468,6 +471,8 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
          * Closes the DB connection when there are none left.
          */
         private boolean updateCurrent() throws SQLException {
+            // if result set already closed, we cann't obtain next item
+            if (isResultSetClosed) return false;
             // try to get a new record
             if (records.next()) {
                 // previous record has been processed
@@ -518,6 +523,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             processingComplete();
             // close db connection
             connection.close();
+            isResultSetClosed = true;
 
             return false;
         }
@@ -527,6 +533,8 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
          * metadata. 
          */
         private void setColumnInfo() throws SQLException {
+            boolean lowercase = getParamter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
+
             ResultSetMetaData metaData = records.getMetaData();
             columnTypes = new PricingField.Type[metaData.getColumnCount()];
             columnNames = new String[metaData.getColumnCount()];
@@ -574,8 +582,12 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                             metaData.getColumnTypeName(i + 1));
                 }
 
-                // set column names (lower case for rules)
-                columnNames[i] = metaData.getColumnName(i + 1).toLowerCase();
+                // set column names
+                if (lowercase) {
+                    columnNames[i] = metaData.getColumnName(i + 1).toLowerCase();
+                } else {
+                    columnNames[i] = metaData.getColumnName(i + 1);
+                }
 
                 // check if primary key
                 for (String name : keyColumnNames) {
@@ -614,6 +626,18 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             // needed to comply with Iterator only
             throw new UnsupportedOperationException("remove not supported");
         }
+    }
+
+    /**
+     * Convenience method for boolean plug-in paramters.
+     *
+     * @param name parameter name
+     * @param defaultValue default value if parameter not configured
+     * @return parameter value, or default if parameter not configured
+     */
+    private boolean getParamter(String name, boolean defaultValue) {
+        String value = (String) parameters.get(name);
+        return (value == null ? defaultValue : "true".equals(value));
     }
 
     /**

@@ -43,4 +43,20 @@ public class ItemDAS extends AbstractDAS<ItemDTO> {
 
         return criteria.list();
     }
+
+    /**
+     * Returns a list of all items with item type (category) who's
+     * description matches the given prefix.
+     *
+     * @param prefix prefix to check
+     * @return list of items, empty if none found
+     */
+    @SuppressWarnings("unchecked")
+    public List<ItemDTO> findItemsByCategoryPrefix(String prefix) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .createAlias("itemTypes", "type")
+                .add(Restrictions.like("type.description", prefix + "%"));
+
+        return criteria.list();
+    }    
 }

@@ -163,8 +163,7 @@ public class BillingProcessRunBL {
             // add the total to the total invoiced
             ProcessRunTotalDTO totalRow = findOrCreateTotal((Integer) row[2]);
 
-
-            billingProcessRun.setInvoicesGenerated(((Long) row[0]).intValue());
+            billingProcessRun.setInvoicesGenerated(billingProcessRun.getInvoicesGenerated() + ((Long) row[0]).intValue());
             totalRow.setTotalInvoiced(((BigDecimal) row[1]));
             LOG.debug("updating invoice run total version " + totalRow.getVersionNum());
         }
@@ -262,5 +261,18 @@ public class BillingProcessRunBL {
                 languageId));
         
         return retValue;
+    }
+
+    public void updatePaymentsStatistic(Integer runId) {
+        BillingProcessRunBL run = new BillingProcessRunBL(runId);
+        for (Iterator it = new BillingProcessDAS().getSuccessfulProcessCurrencyMethodAndSum(run.getEntity().getBillingProcess().getId()); it.hasNext();) {
+            Object[] row = (Object[]) it.next();
+            run.updateNewPayment((Integer) row[0], (Integer) row[1], (BigDecimal) row[2], true);
+        }
+
+        for (Iterator it = new BillingProcessDAS().getFailedProcessCurrencyAndSum(run.getEntity().getBillingProcess().getId()); it.hasNext();) {
+            Object[] row = (Object[]) it.next();
+            run.updateNewPayment((Integer) row[0], null, (BigDecimal) row[1], false);
+        }
     }
 }

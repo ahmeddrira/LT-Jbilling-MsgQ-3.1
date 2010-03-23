@@ -32,14 +32,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
 import com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler;
+import com.sapienter.jbilling.server.mediation.task.JDBCReader;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.Util;
@@ -51,6 +49,8 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.RemoteContext;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
+import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 public class MediationTest extends TestCase {
 
@@ -76,7 +76,7 @@ public class MediationTest extends TestCase {
             
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
-            assertEquals("There should be two processes after running the mediation process", 2, all.size());
+            assertEquals("There should be three processes after running the mediation process", 3, all.size());
 
             Collection <MediationRecordDTO> processedRecords = null;
             for (MediationProcess process : all) {
@@ -116,7 +116,7 @@ public class MediationTest extends TestCase {
 
             List allCfg = remoteMediation.getAllConfigurations(1);
             assertNotNull("config list can't be null", allCfg);
-            assertEquals("There should be two configurations present", 2, allCfg.size());
+            assertEquals("There should be three configurations present", 3, allCfg.size());
 
             System.out.println("Validating one-time orders...");
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -144,13 +144,13 @@ public class MediationTest extends TestCase {
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1015))) {
                     foundFirst = true;
                     assertEquals("Quantity of should be the combiend of all events",
-                            new BigDecimal("1300.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+                            new BigDecimal("2600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
                 }
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1115))) {
                     foundSecond = true;
-                    assertEquals("Quantity of second order should be 300 ",
-                            new BigDecimal("300.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+                    assertEquals("Quantity of second order should be 600 ",
+                            new BigDecimal("600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
                 }
             }
 
@@ -165,7 +165,7 @@ public class MediationTest extends TestCase {
             }
 
             // note, only one of the mediated call items is rated, and the default price of the other is zero
-            assertEquals("Total of mixed price order", new BigDecimal("1400"), total);
+            assertEquals("Total of mixed price order", new BigDecimal("2800"), total);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
@@ -438,6 +438,34 @@ public class MediationTest extends TestCase {
                  }
              }
          }
+     }
+
+     public void testJDBCReader() {
+         List<MediationProcess> all = remoteMediation.getAll(1);
+         assertNotNull("process list can't be null", all);
+
+         Collection <MediationRecordDTO> processedRecordsFromJbillingTest = null;
+         Collection <MediationRecordDTO> processedRecordsFromHipersonic = null;
+         for (MediationProcess process : all) {
+             if (process.getConfiguration().getId() == 30) {
+                 // JDBCReader from jbilliing_test
+                 processedRecordsFromJbillingTest = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
+             } else if (process.getConfiguration().getId() == 20) {
+                 // JDBCReader from hipersonic jbilling_cdr DB
+                 processedRecordsFromHipersonic = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
+             }
+         }
+
+         assertEquals("Records read from jbilling_test.cdrentries ", 1, processedRecordsFromJbillingTest.size());
+         assertEquals("Records read from HSQL jbilling_cdr ", 7, processedRecordsFromHipersonic.size());
+         
+         boolean jdbcRecordsProcessed = false;
+         for (MediationRecordDTO rec : processedRecordsFromJbillingTest) {
+             if (rec.getKey().equals("20121")) {
+                 jdbcRecordsProcessed = true;
+             }
+         }
+         assertTrue("Record with key 20121 from DB should be processed", jdbcRecordsProcessed);
      }
 
      private Connection getConnection() throws SQLException, ClassNotFoundException {

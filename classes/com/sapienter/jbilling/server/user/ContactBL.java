@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.server.util.audit.EventLogger;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -60,6 +61,7 @@ public class ContactBL {
     private ContactDTO contact = null;
     private Integer entityId = null;
     private JbillingTableDAS jbDAS = null;
+    private EventLogger eLogger = null;
     
     public ContactBL(Integer contactId) 
             throws NamingException {
@@ -223,6 +225,7 @@ public class ContactBL {
         contactDas = new ContactDAS();
         contactFieldDas = new ContactFieldDAS();
         jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
+        eLogger = EventLogger.getInstance();
     }
     
     public Integer createPrimaryForUser(ContactDTOEx dto, Integer userId, Integer entityId) 
@@ -311,7 +314,13 @@ public class ContactBL {
         updateCreateFields(dto.getFieldsTable(), false);
         
         LOG.debug("created " + contact);
-        
+        eLogger.auditBySystem(entityId,
+                              contact.getUserId(),
+                              Constants.TABLE_CONTACT,
+                              contact.getId(),
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_CREATED, null, null, null);
+
         return contact.getId();
     }
     
@@ -360,7 +369,14 @@ public class ContactBL {
         
         NewContactEvent event = new NewContactEvent(contact, entityId);
         EventManager.process(event);
-        
+
+        eLogger.auditBySystem(entityId,
+                              contact.getUserId(),
+                              Constants.TABLE_CONTACT,
+                              contact.getId(),
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_UPDATED, null, null, null);
+
         updateCreateFields(dto.getFieldsTable(), true);
     }
     
@@ -422,9 +438,22 @@ public class ContactBL {
         }
         contact.getFields().clear();
 
+        // for the logger
+        Integer entityId = this.entityId;
+        Integer userId = contact.getUserId();
+        Integer contactId = contact.getId();
+
         // the contact goes last
         contactDas.delete(contact);
         contact = null;
+
+        // log event
+        eLogger.auditBySystem(entityId,
+                              userId,
+                              Constants.TABLE_CONTACT,
+                              contactId,
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_DELETED, null, null, null);
     }
     
     /**

@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import java.sql.*;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,6 +72,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     protected final static String PARAM_TABLE_NAME = "table_name";
     protected final static String PARAM_ERRORS_COLUMN_NAME = "errors_column";
     protected final static String PARAM_RETRY_COLUMN_NAME = "retry_column";
+    protected final static String PARAM_JBILLING_TIMESTAMP_COLUMN_NAME = "timestamp_column";
 
     // defaults
     public static final String DRIVER_DEFAULT = "org.postgresql.Driver";
@@ -80,7 +82,9 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     public static final String TABLE_NAME_DEFAULT = "mediation_errors";
     public static final String ERRORS_COLUMN_NAME_DEFAULT = "error_message";
     public static final String RETRY_COLUMN_NAME_DEFAULT = "should_retry";
+    public static final String JBILLING_TIMESTAMP_COLUMN_NAME_DEFAULT = "jbilling_timestamp";
 
+    private Boolean mysql;
 
     public void process(Record record, List<String> errors, Date processingTime) throws TaskException {
         log.debug("Perform saving errors to database ");
@@ -89,12 +93,28 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
         try {
             connection = getConnection();
 
+            String errorColumn = getParameter(PARAM_ERRORS_COLUMN_NAME, ERRORS_COLUMN_NAME_DEFAULT);
+            String retryColumn = getParameter(PARAM_RETRY_COLUMN_NAME, RETRY_COLUMN_NAME_DEFAULT);
+            String timestampColumn = getParameter(PARAM_JBILLING_TIMESTAMP_COLUMN_NAME, JBILLING_TIMESTAMP_COLUMN_NAME_DEFAULT); 
+
             List<String> columnNames = new LinkedList<String>();
-            for (PricingField field : record.getFields()) {
+
+            // remove extra error columns from incoming pricing fields.
+            // if we're re-reading errors from the error table, then we'll end up with duplicate columns
+            List<PricingField> fields = record.getFields();
+            for (Iterator<PricingField> it = fields.iterator(); it.hasNext();) {
+                PricingField field = it.next();
+                if (field.getName().equals(errorColumn)) it.remove();
+                if (field.getName().equals(retryColumn)) it.remove();
+                if (field.getName().equals(timestampColumn)) it.remove();
+            }
+
+            for (PricingField field : fields) {
                 columnNames.add(escapedKeywordsColumnName(field.getName()));
             }
-            columnNames.add(getParameter(PARAM_ERRORS_COLUMN_NAME, ERRORS_COLUMN_NAME_DEFAULT));
-            columnNames.add(getParameter(PARAM_RETRY_COLUMN_NAME, RETRY_COLUMN_NAME_DEFAULT));
+
+            columnNames.add(errorColumn);
+            columnNames.add(retryColumn);
 
             StringBuilder query = new StringBuilder("insert into ");
             query.append(getParameter(PARAM_TABLE_NAME, TABLE_NAME_DEFAULT));
@@ -107,7 +127,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
             PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
 
             int index = 1;
-            for (PricingField field : record.getFields()) {
+            for (PricingField field : fields) {                
                 switch (field.getType()) {
                     case STRING:
                         preparedStatement.setString(index, field.getStrValue());
@@ -119,7 +139,11 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
                         preparedStatement.setDouble(index, field.getDoubleValue());
                         break;
                     case DATE:
-                        preparedStatement.setTimestamp(index, new Timestamp(field.getDateValue().getTime()));
+                        if (field.getDateValue() != null) {
+                            preparedStatement.setTimestamp(index, new Timestamp(field.getDateValue().getTime()));
+                        } else {
+                            preparedStatement.setNull(index, Types.TIMESTAMP);
+                        }
                         break;
                 }
                 index++;
@@ -171,8 +195,19 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
         return value != null ? (String) value : defaultValue;
     }
 
-    // TODO: escape keywords differ for different databases
+
     protected String escapedKeywordsColumnName(String columnName) {
-        return "\"" + columnName + "\"";
+        String escape =  isMySQL() ? "`" : "\""; // escape mysql column names with backtick
+        return escape + columnName + escape;
     }
+
+    /**
+     * returns true if the driver is a MySQL database driver, false if not.
+     * @return true if MySQL
+     */
+    private boolean isMySQL() {
+        if (mysql == null)
+            mysql = getParameter(PARAM_DRIVER, DRIVER_DEFAULT).contains("mysql");
+        return mysql;
+    } 
 }

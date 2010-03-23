@@ -85,7 +85,8 @@ public class CurrentOrder {
         Integer retValue = (Integer) cache.getFromCache(userId.toString() + Util.truncateDate(eventDate) ,
                 cacheModel);
 
-        if (retValue != null) {
+        // a hit is only a hit if the order is still active
+        if (retValue != null && new OrderDAS().find(retValue).getStatusId() == Constants.ORDER_STATUS_ACTIVE) {
             LOG.debug("cache hit for " + retValue);
             return retValue;
         }
@@ -96,6 +97,7 @@ public class CurrentOrder {
         if (subscriptionId == null) {
             return null;
         }
+        Integer mainOrder;
         try {
             order = new OrderBL(subscriptionId);
             entityId = order.getEntity().getBaseUserByUserId().getCompany().getId();
@@ -107,8 +109,10 @@ public class CurrentOrder {
         
         int futurePeriods = 0;
         boolean orderFound = false;
+        mainOrder = order.getEntity().getId();
         do {
             LOG.debug("Calculating one timer date. Future periods " + futurePeriods);
+            order.set(mainOrder);
             final Date newOrderDate = calculateDate(futurePeriods);
             if (newOrderDate == null) {
                 // this is an error, there isn't a good date give the event date and

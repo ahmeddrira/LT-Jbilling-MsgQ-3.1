@@ -102,52 +102,52 @@ public class UserBL extends ResultList
     private EventLogger eLogger = null;
     private Integer mainRole = null;
     private UserDAS das = null;
-    
+
     public UserBL(Integer userId) {
         init();
         set(userId);
     }
-    
+
     public UserBL() {
         init();
     }
-    
+
     public UserBL(UserDTO entity) {
         user = entity;
         init();
     }
-    
+
     public UserBL(String username, Integer entityId) {
         init();
         user = das.findByUserName(username, entityId);
     }
-    
+
     public void set(Integer userId) {
         user = das.find(userId);
     }
-    
+
     public void set(String userName, Integer entityId) {
         user = das.findByUserName(userName, entityId);
     }
-    
+
     public void set(UserDTO user) {
         this.user = user;
     }
-     
+
     public void setRoot(String userName) {
         user = das.findRoot(userName);
     }
-    
+
     private void init() {
-        eLogger = EventLogger.getInstance();        
+        eLogger = EventLogger.getInstance();
         das = new UserDAS();
     }
-    
+
     /**
      * @param userId This is the user that has ordered the update
-     * @param dto This is the user that will be updated 
+     * @param dto This is the user that will be updated
      */
-    public void update(Integer executorId, UserDTOEx dto) 
+    public void update(Integer executorId, UserDTOEx dto)
             throws SessionInternalError {
         // password is the only one that might've not been set
     	String changedPassword = dto.getPassword();
@@ -155,12 +155,12 @@ public class UserBL extends ResultList
     		//encrypt it based on the user role
     		changedPassword = JBCrypto.getPasswordCrypto(getMainRole()).encrypt(changedPassword);
     	}
-    	
+
         if (changedPassword != null &&
                 !changedPassword.equals(user.getPassword())) {
-            eLogger.audit(executorId, dto.getId(), Constants.TABLE_BASE_USER, 
-                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE, 
-                    EventLogger.PASSWORD_CHANGE, null, user.getPassword(), 
+            eLogger.audit(executorId, dto.getId(), Constants.TABLE_BASE_USER,
+                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE,
+                    EventLogger.PASSWORD_CHANGE, null, user.getPassword(),
                     null);
             user.setPassword(changedPassword);
         }
@@ -170,7 +170,7 @@ public class UserBL extends ResultList
         }
         if (dto.getLanguageId() != null && !user.getLanguageIdField().equals(
         		dto.getLanguageId())) {
-                
+
         		user.setLanguage(new LanguageDAS().find(dto.getLanguageId()));
         }
         if (dto.getEntityId() != null && user.getEntity().getId() !=
@@ -181,7 +181,7 @@ public class UserBL extends ResultList
         if (dto.getStatusId() != null && user.getStatus().getId() !=
         		dto.getStatusId()) {
             AgeingBL age = new AgeingBL();
-            age.setUserStatus(executorId, user.getUserId(), dto.getStatusId(), 
+            age.setUserStatus(executorId, user.getUserId(), dto.getStatusId(),
                     Calendar.getInstance().getTime());
         }
         updateSubscriptionStatus(dto.getSubscriptionStatusId());
@@ -202,7 +202,7 @@ public class UserBL extends ResultList
             user.getCustomer().setDfFm(dto.getCustomer().getDfFm());
             if (dto.getCustomer().getPartner() != null) {
                 user.getCustomer().setPartner(
-                        dto.getCustomer().getPartner());    
+                        dto.getCustomer().getPartner());
             } else {
                 user.getCustomer().setPartner(null);
             }
@@ -218,12 +218,19 @@ public class UserBL extends ResultList
                 order.setMainSubscription(executorId);
             }
         }
-        
+
+        eLogger.audit(executorId,
+                      user.getId(),
+                      Constants.TABLE_BASE_USER,
+                      user.getId(),
+                      EventLogger.MODULE_USER_MAINTENANCE,
+                      EventLogger.ROW_UPDATED, null, null, null);
+
         updateRoles(dto.getRoles(), dto.getMainRoleId());
     }
-    
-    private void updateRoles(Set<RoleDTO> theseRoles, Integer main) 
-            throws SessionInternalError {    
+
+    private void updateRoles(Set<RoleDTO> theseRoles, Integer main)
+            throws SessionInternalError {
 
         if (theseRoles == null || theseRoles.isEmpty()) {
             if (main != null) {
@@ -235,7 +242,7 @@ public class UserBL extends ResultList
                 return; // nothing to do
             }
         }
-        
+
         user.getRoles().clear();
         for (RoleDTO aRole: theseRoles) {
             // make sure the role is in the session
@@ -244,7 +251,7 @@ public class UserBL extends ResultList
             user.getRoles().add(dbRole);
         }
     }
-    
+
     public boolean exists(String userName, Integer entityId) {
         if (userName == null) {
             LOG.error("exists is being call with a null username");
@@ -256,9 +263,9 @@ public class UserBL extends ResultList
             return true;
         }
     }
-    
+
     public Integer create(UserDTOEx dto) throws SessionInternalError {
-        
+
         Integer newId;
         LOG.debug("Creating user " + dto);
         List<Integer> roles = new ArrayList<Integer>();
@@ -273,14 +280,14 @@ public class UserBL extends ResultList
                 roles.add(role.getId());
             }
         }
-        
+
         Integer newUserRole = dto.getMainRoleId();
         JBCrypto passwordCrypter = JBCrypto.getPasswordCrypto(newUserRole);
         dto.setPassword(passwordCrypter.encrypt(dto.getPassword()));
-        
+
         // may be this is a partner
         if (dto.getPartner() != null) {
-            newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
+            newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
             		dto.getLanguageId(), roles, dto.getCurrencyId(),
 					dto.getStatusId(), dto.getSubscriptionStatusId());
             PartnerBL partner = new PartnerBL();
@@ -294,7 +301,7 @@ public class UserBL extends ResultList
                 partner = new PartnerBL(dto.getCustomer().
                         getPartner().getId());
                 // see that this partner is valid
-                if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId() || 
+                if (partner.getEntity().getUser().getEntity().getId() != dto.getEntityId() ||
                         partner.getEntity().getUser().getDeleted() == 1) {
                     partner = null;
                 }
@@ -322,21 +329,21 @@ public class UserBL extends ResultList
             user.getCustomer().setDynamicBalance(dto.getCustomer().getDynamicBalance());
             user.getCustomer().setAutoRecharge(dto.getCustomer().getAutoRecharge());
         } else { // all the rest
-            newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(), 
+            newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
 					dto.getStatusId(), dto.getSubscriptionStatusId());
         }
-        
+
         LOG.debug("created user id " + newId);
-        
+
         return newId;
-    }    
+    }
 
     private Integer create(Integer entityId, String userName, String password,
-            Integer languageId, List<Integer> roles, Integer currencyId, 
-			Integer statusId, Integer subscriberStatusId) 
+            Integer languageId, List<Integer> roles, Integer currencyId,
+			Integer statusId, Integer subscriberStatusId)
            throws SessionInternalError {
-        // Default the language and currency to that one of the entity         
+        // Default the language and currency to that one of the entity
         if (languageId == null) {
             EntityBL entity = new EntityBL(entityId);
             languageId = entity.getEntity().getLanguageId();
@@ -353,7 +360,7 @@ public class UserBL extends ResultList
         if (subscriberStatusId == null) {
             subscriberStatusId = UserDTOEx.SUBSCRIBER_NONSUBSCRIBED;
         }
-        
+
         UserDTO newUser = new UserDTO();
         newUser.setCompany(new CompanyDAS().find(entityId));
         newUser.setUserName(userName);
@@ -363,7 +370,7 @@ public class UserBL extends ResultList
         newUser.setUserStatus(new UserStatusDAS().find(statusId));
         newUser.setSubscriberStatus(new SubscriberStatusDAS().find(subscriberStatusId));
         newUser.setDeleted(new Integer(0));
-        newUser.setCreateDatetime(Calendar.getInstance().getTime());    
+        newUser.setCreateDatetime(Calendar.getInstance().getTime());
         newUser.setFailedAttempts(0);
 
     	user = das.save(newUser);
@@ -372,23 +379,30 @@ public class UserBL extends ResultList
             rolesDTO.add(new RoleDAS().find(roleId));
         }
         updateRoles(rolesDTO, null);
-        
+
+        eLogger.auditBySystem(entityId,
+                              user.getId(),
+                              Constants.TABLE_BASE_USER,
+                              user.getId(),
+                              EventLogger.MODULE_USER_MAINTENANCE,
+                              EventLogger.ROW_CREATED, null, null, null);
+
         return user.getUserId();
-    }    
-        
-    
-    public boolean validateUserNamePassword(UserDTOEx loggingUser, 
+    }
+
+
+    public boolean validateUserNamePassword(UserDTOEx loggingUser,
            UserDTOEx db) {
-        
+
         // the user status is not part of this check, as a customer that
         // can't login to the entity's service still has to be able to
         // as a customer to submit a payment or update her credit card
-        if (db.getDeleted() == 0 && 
+        if (db.getDeleted() == 0 &&
                 loggingUser.getEntityId().equals(db.getEntityId())) {
-        	
+
         	String dbPassword = db.getPassword();
         	String notCryptedLoggingPassword = loggingUser.getPassword();
-        	
+
         	//using service specific for DB-user, loging one may not have its role set
         	JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());
         	String comparableLoggingPassword = passwordCryptoService.encrypt(notCryptedLoggingPassword);
@@ -398,7 +412,7 @@ public class UserBL extends ResultList
                 return true;
         	}
         }
-        
+
         return false;
     }
 
@@ -408,11 +422,11 @@ public class UserBL extends ResultList
      * Returns the user's UserDTO if successful, otherwise null.
      */
     public UserDTO webServicesAuthenticate(String username, String password) {
-        // try to get root user for this username that has web 
+        // try to get root user for this username that has web
         // services permission
         user = das.findWebServicesRoot(username);
         if (user == null) {
-            LOG.warn("Web services authentication: Username \"" + username + 
+            LOG.warn("Web services authentication: Username \"" + username +
                     "\" is either invalid, isn't an administrator or doesn't " +
                     "have web services permission granted (120).");
             return null;
@@ -431,12 +445,12 @@ public class UserBL extends ResultList
                 "\" for username \"" + username + "\"");
         return null;
     }
-    
+
     public static UserDTO getUserEntity(Integer userId) {
         return new UserDAS().find(userId);
     }
 
-     
+
      /**
       * sent the lost password to the user
       * @param entityId
@@ -445,31 +459,31 @@ public class UserBL extends ResultList
       * @throws SessionInternalError
       * @throws NotificationNotFoundException when no message row or message row is not activated for the specified entity
       */
-     public void sendLostPassword(Integer entityId, Integer userId, 
-             Integer languageId) throws SessionInternalError, 
+     public void sendLostPassword(Integer entityId, Integer userId,
+             Integer languageId) throws SessionInternalError,
              NotificationNotFoundException {
     	 NotificationBL notif = new NotificationBL();
     	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
-         INotificationSessionBean notificationSess = 
+         INotificationSessionBean notificationSess =
                  (INotificationSessionBean) Context.getBean(
-                 Context.Name.NOTIFICATION_SESSION);    	
+                 Context.Name.NOTIFICATION_SESSION);
          notificationSess.notify(userId, message);
      }
-     
+
      public UserDTO getEntity() {
          return user;
      }
-     
-     public List<PermissionDTO> getPermissions() { 
+
+     public List<PermissionDTO> getPermissions() {
          List<PermissionDTO> ret = new ArrayList<PermissionDTO>();
 
          LOG.debug("Reading permisions for user " + user.getUserId());
-         
+
          for (RoleDTO role: user.getRoles()) {
              // now get the permissions. They come sorted from the DB
              ret.addAll(role.getPermissions());
          }
-         
+
          // now add / remove those privileges that were granted / revoked
          // to this particular user
          for(PermissionUserDTO permission : user.getPermissions()) {
@@ -488,14 +502,14 @@ public class UserBL extends ResultList
                  }
              }
          }
-         
+
          // make sure the permissions are sorted
          Collections.sort(ret, new PermissionIdComparator());
-                 
+
          return ret;
      }
-     
-    public Menu getMenu(List<PermissionDTO> permissions) 
+
+    public Menu getMenu(List<PermissionDTO> permissions)
             throws NamingException, SessionInternalError {
 
         Menu menu = new Menu();
@@ -506,7 +520,7 @@ public class UserBL extends ResultList
             if (permission.getPermissionType().getId() == Constants.PERMISSION_TYPE_MENU) {
                 // get the menu
                 MenuOption option = DTOFactory.getMenuOption(
-                        permission.getForeignId(), 
+                        permission.getForeignId(),
                         user.getLanguageIdField());
                 if (specialMenuFilter(option.getId())) {
                     menu.addOption(option);
@@ -514,12 +528,12 @@ public class UserBL extends ResultList
                 //LOG.debug("adding option " + option + " to menu");
             }
         }
-        
+
         menu.init();
-        
+
         return menu;
      }
-    
+
     /**
      * Some menu options depend on more than a permission, like payment
      * types are on the entity's accepted methods.
@@ -528,7 +542,7 @@ public class UserBL extends ResultList
      */
     private boolean specialMenuFilter(Integer menuOptionId) {
         boolean retValue = true;
-        
+
         // this constants have to be in synch with the DB
         final int OPTION_SUB_ACCOUNTS = 78;
         final int OPTION_PAYMENT_CHEQUE = 24;
@@ -537,11 +551,11 @@ public class UserBL extends ResultList
         final int OPTION_PAYMENT_PAYPAL = 90;
         final int OPTION_CUSTOMER_CONTACT_EDIT = 13;
         final int OPTION_PLUG_IN_EDIT = 93;
-        
+
         switch (menuOptionId.intValue()) {
         case OPTION_SUB_ACCOUNTS:
             // this one is only for parents
-            if (user.getCustomer() == null || 
+            if (user.getCustomer() == null ||
                     user.getCustomer().getIsParent() == null ||
                     user.getCustomer().getIsParent().intValue() == 0) {
                 retValue = false;
@@ -550,7 +564,7 @@ public class UserBL extends ResultList
         case OPTION_PAYMENT_CHEQUE:
             try {
                 PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(), 
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
                         Constants.PAYMENT_METHOD_CHEQUE);
             } catch (Exception e) {
                 LOG.error("Exception ", e);
@@ -559,7 +573,7 @@ public class UserBL extends ResultList
         case OPTION_PAYMENT_ACH:
             try {
                 PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(), 
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
                         Constants.PAYMENT_METHOD_ACH);
             } catch (Exception e) {
                 LOG.error("Exception ", e);
@@ -568,15 +582,15 @@ public class UserBL extends ResultList
         case OPTION_PAYMENT_CC:
             try {
                 PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(), 
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
                         Constants.PAYMENT_METHOD_AMEX) ||
-                        payment.isMethodAccepted(user.getEntity().getId(), 
+                        payment.isMethodAccepted(user.getEntity().getId(),
                                 Constants.PAYMENT_METHOD_VISA) ||
-                        payment.isMethodAccepted(user.getEntity().getId(), 
+                        payment.isMethodAccepted(user.getEntity().getId(),
                                 Constants.PAYMENT_METHOD_MASTERCARD) ||
-                        payment.isMethodAccepted(user.getEntity().getId(), 
+                        payment.isMethodAccepted(user.getEntity().getId(),
                                 Constants.PAYMENT_METHOD_DINERS) ||
-                        payment.isMethodAccepted(user.getEntity().getId(), 
+                        payment.isMethodAccepted(user.getEntity().getId(),
                                 Constants.PAYMENT_METHOD_DISCOVERY);
             } catch (Exception e) {
                 LOG.error("Exception ", e);
@@ -585,7 +599,7 @@ public class UserBL extends ResultList
         case OPTION_PAYMENT_PAYPAL:
             try {
                 PaymentBL payment = new PaymentBL();
-                retValue = payment.isMethodAccepted(user.getEntity().getId(), 
+                retValue = payment.isMethodAccepted(user.getEntity().getId(),
                         Constants.PAYMENT_METHOD_PAYPAL);
             } catch (Exception e) {
                 LOG.error("Exception ", e);
@@ -595,15 +609,15 @@ public class UserBL extends ResultList
             PreferenceBL preference = null;
             try {
                 preference = new PreferenceBL();
-                preference.set(user.getEntity().getId(), 
+                preference.set(user.getEntity().getId(),
                         Constants.PREFERENCE_CUSTOMER_CONTACT_EDIT);
                 retValue = (preference.getInt() == 1);
             } catch (EmptyResultDataAccessException e) {
                 // It doesn't matter, I will take the default
             } catch (Exception e) {
                 LOG.error("Exception ", e);
-            } 
-            
+            }
+
             retValue = (preference.getInt() == 1);
             break;
         case OPTION_PLUG_IN_EDIT:
@@ -612,7 +626,7 @@ public class UserBL extends ResultList
             retValue = dto.isGranted(PermissionConstants.P_TASK_MODIFY);
             break;
         }
-        
+
         return retValue;
     }
 
@@ -621,12 +635,12 @@ public class UserBL extends ResultList
         UserWS retValue = new UserWS(dto);
         // the contact is not included in the Ex
         ContactBL bl= new ContactBL();
-        
+
         bl.set(dto.getUserId());
         if (bl.getEntity() != null) { // this user has no contact ...
             retValue.setContact(new ContactWS(bl.getDTO()));
         }
-        
+
         // some entities rather not know the credit card numbers
         if (retValue.getCreditCard() != null) {
             PreferenceBL pref = new PreferenceBL();
@@ -635,7 +649,7 @@ public class UserBL extends ResultList
             } catch (EmptyResultDataAccessException e) {
                 // the default is good for me
             }
-            
+
             if (pref.getInt() == 1) {
                 String ccNumber = retValue.getCreditCard().getNumber();
                 if (ccNumber != null) {
@@ -644,10 +658,10 @@ public class UserBL extends ResultList
                 }
             }
         }
-        
+
         return retValue;
     }
-    
+
     public Integer getMainRole() {
         if (mainRole == null) {
             List roleIds = new LinkedList();
@@ -658,7 +672,7 @@ public class UserBL extends ResultList
         }
         return mainRole;
     }
-    
+
     private static Integer selectMainRole(Collection allRoleIds){
         // the main role is the smallest of them, so they have to be ordered in the
         // db in ascending order (small = important);
@@ -695,13 +709,13 @@ public class UserBL extends ResultList
 
     public Integer getCurrencyId() {
         Integer retValue;
-        
+
         if (user.getCurrencyId() == null) {
             retValue = user.getEntity().getCurrency().getId();
         } else {
             retValue = user.getCurrencyId();
         }
-        
+
         return retValue;
     }
 
@@ -714,7 +728,7 @@ public class UserBL extends ResultList
         user.setDeleted(1);
         user.setUserStatus(new UserStatusDAS().find(UserDTOEx.STATUS_DELETED));
         user.setLastStatusChange(Calendar.getInstance().getTime());
-        
+
         // credit cards
         for (CreditCardDTO cc: user.getCreditCards()) {
             cc.setDeleted(1);
@@ -734,34 +748,34 @@ public class UserBL extends ResultList
         user.getRoles().clear();
 
         if (executorId != null) {
-            eLogger.audit(executorId, user.getId(), Constants.TABLE_BASE_USER, 
-                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE, 
+            eLogger.audit(executorId, user.getId(), Constants.TABLE_BASE_USER,
+                    user.getUserId(), EventLogger.MODULE_USER_MAINTENANCE,
                     EventLogger.ROW_DELETED, null, null, null);
         }
     }
- 
+
     public UserDTO getDto() {
         return user;
-    }   
-    
+    }
+
     /**
-     * 
+     *
      * @return true if the user has a credit card, or fals if it doeas not
      */
     public boolean hasCreditCard() {
         return !user.getCreditCards().isEmpty();
     }
     /**
-     * Verifies that both user belong to the same entity. 
-     * @param rootUserName 
+     * Verifies that both user belong to the same entity.
+     * @param rootUserName
      *  This has to be a root user
      * @param callerUserId
      * @return
-     */    
-    public boolean validateUserBelongs(String rootUserName, 
-            Integer callerUserId) 
+     */
+    public boolean validateUserBelongs(String rootUserName,
+            Integer callerUserId)
             throws SessionInternalError {
-                
+
         boolean retValue;
         user = das.find(callerUserId);
         set(rootUserName, user.getEntity().getId());
@@ -775,10 +789,10 @@ public class UserBL extends ResultList
             throw new SessionInternalError("can't validate but root users");
         }
         retValue = true;
-        
+
         return retValue;
     }
-    
+
     public void updateAch(AchDTO ach, Integer executorId)
     		throws NamingException, SessionInternalError {
     	AchBL bl = new AchBL();
@@ -792,11 +806,11 @@ public class UserBL extends ResultList
                 bl.update(executorId, ach);
     	}
     }
-    
+
     public static boolean validate(UserWS userWS) {
         return validate(new UserDTOEx(userWS, null));
     }
-    
+
     /**
      * Validates the user info and the credit card if present
      * @param dto
@@ -804,7 +818,7 @@ public class UserBL extends ResultList
      */
     public static boolean validate(UserDTOEx dto) {
         boolean retValue = true;
-        
+
         if (dto == null || dto.getUserName() == null ||
                 dto.getPassword() == null || dto.getLanguageId() == null ||
                 dto.getMainRoleId() == null || dto.getStatusId() == null) {
@@ -813,11 +827,11 @@ public class UserBL extends ResultList
         } else if (dto.getCreditCard() != null) {
             retValue = CreditCardBL.validate(dto.getCreditCard());
         }
-        
+
         return retValue;
     }
-    
-    public UserWS[] convertEntitiesToWS(Collection dtos) 
+
+    public UserWS[] convertEntitiesToWS(Collection dtos)
             throws SessionInternalError {
         try {
             UserWS[] ret = new UserWS[dtos.size()];
@@ -827,13 +841,13 @@ public class UserBL extends ResultList
                 ret[index] = entity2WS();
                 index++;
             }
-            
+
             return ret;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
     }
-    
+
     public UserWS entity2WS()  {
         UserWS retValue = new UserWS();
         retValue.setCreateDatetime(user.getCreateDatetime());
@@ -862,8 +876,8 @@ public class UserBL extends ResultList
         }
         return retValue;
     }
-    
-    public CachedRowSet findActiveWithOpenInvoices() 
+
+    public CachedRowSet findActiveWithOpenInvoices()
             throws SQLException, NamingException {
         prepareStatement(UserSQL.findActiveWithOpenInvoices);
         execute();
@@ -871,8 +885,8 @@ public class UserBL extends ResultList
         return cachedResults;
     }
 
-    
-    public UserTransitionResponseWS[] getUserTransitionsById(Integer entityId, 
+
+    public UserTransitionResponseWS[] getUserTransitionsById(Integer entityId,
             Integer last, Date to)  {
 
         try {
@@ -941,7 +955,7 @@ public class UserBL extends ResultList
     public UserTransitionResponseWS[] getUserTransitionsByDate(Integer entityId,
             Date from, Date to) {
         try {
- 
+
             UserTransitionResponseWS[] result = null;
             java.sql.Date toDate = null;
             String query = UserSQL.findUserTransitions;
@@ -991,14 +1005,14 @@ public class UserBL extends ResultList
             throw new SessionInternalError("Finding transitions", UserBL.class, e);
         }
     }
-    
+
     public void updateSubscriptionStatus(Integer id) {
         if (id == null || user.getSubscriberStatus().getId() == id) {
             // no update ... it's already there
             return;
         }
         eLogger.auditBySystem(user.getEntity().getId(), user.getId(),
-                Constants.TABLE_BASE_USER, user.getUserId(), 
+                Constants.TABLE_BASE_USER, user.getUserId(),
                 EventLogger.MODULE_USER_MAINTENANCE,
                 EventLogger.SUBSCRIPTION_STATUS_CHANGE,
                 user.getSubscriberStatus().getId(), id.toString(), null);
@@ -1008,13 +1022,13 @@ public class UserBL extends ResultList
         } catch (Exception e) {
             throw new SessionInternalError("Can't update a user subscription status",
                     UserBL.class, e);
-        }     
-        
+        }
+
         // make sure this is in synch with the ageing status of the user
         try {
             PreferenceBL link = new PreferenceBL();
             try {
-                link.set(user.getEntity().getId(), 
+                link.set(user.getEntity().getId(),
                         Constants.PREFERENCE_LINK_AGEING_TO_SUBSCRIPTION);
             } catch (EmptyResultDataAccessException e) {
                 // i'll use the default
@@ -1022,27 +1036,27 @@ public class UserBL extends ResultList
             if (link.getInt() == 1) {
                 AgeingBL ageing = new AgeingBL();
                 if (id.equals(UserDTOEx.SUBSCRIBER_ACTIVE)) {
-                    ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_ACTIVE, 
+                    ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_ACTIVE,
                             Calendar.getInstance().getTime());
                 } else if (id.equals(UserDTOEx.SUBSCRIBER_EXPIRED) ||
                         id.equals(UserDTOEx.SUBSCRIBER_DISCONTINUED)) {
-                    ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_SUSPENDED, 
+                    ageing.setUserStatus(null, user.getUserId(), UserDTOEx.STATUS_SUSPENDED,
                             Calendar.getInstance().getTime());
                 }
             }
         } catch (Exception e) {
             throw new SessionInternalError("Can't update a user status",
                     UserBL.class, e);
-        } 
-        
+        }
+
         LOG.debug("Subscription status updated to " + id);
     }
-    
+
     public boolean validatePassword(String password) {
     	boolean result = true;
     	try {
     		result = AlphaNumValidator.basicValidation(password);
-    		
+
     		if (result != false) {
     			result = RepeatedPasswordValidator.basicValidation(
     					getEntity().getUserId(),
@@ -1064,7 +1078,7 @@ public class UserBL extends ResultList
     	}
     	return result;
     }
-    
+
     public boolean isPasswordExpired() {
         boolean retValue = false;
         try {
@@ -1075,8 +1089,8 @@ public class UserBL extends ResultList
                 expirationDays = pref.getInt();
             } catch (EmptyResultDataAccessException e) {
                 expirationDays = pref.getInt();
-            } 
-            
+            }
+
             // zero means that this is not enforced
             if (expirationDays == 0) {
                 return false;
@@ -1092,15 +1106,15 @@ public class UserBL extends ResultList
                 lastChange = user.getCreateDatetime();
             }
             conn.close();
-            
-            long days = (Calendar.getInstance().getTimeInMillis() - 
+
+            long days = (Calendar.getInstance().getTimeInMillis() -
                     lastChange.getTime()) / (1000 * 60 * 60 * 24);
             if (days >= expirationDays) {
                 retValue = true;
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);
-        } 
+        }
 
         return retValue;
     }
@@ -1119,14 +1133,14 @@ public class UserBL extends ResultList
             allowedRetries = pref.getInt();
         } catch (EmptyResultDataAccessException e) {
             allowedRetries = pref.getInt();
-        } 
-        
+        }
+
         // zero means not to enforce this rule
         if (allowedRetries > 0) {
             int total = user.getFailedAttempts();
             total ++;
             user.setFailedAttempts(total);
-            
+
             if (total >= allowedRetries) {
                 retValue = true;
                 // lock out the user
@@ -1135,22 +1149,22 @@ public class UserBL extends ResultList
 
                 user.setPassword(newPassword);
                 eLogger.auditBySystem(user.getEntity().getId(), user.getId(),
-                        Constants.TABLE_BASE_USER, user.getUserId(), 
-                        EventLogger.MODULE_USER_MAINTENANCE, 
-                        EventLogger.ACCOUNT_LOCKED, new Integer(total), 
+                        Constants.TABLE_BASE_USER, user.getUserId(),
+                        EventLogger.MODULE_USER_MAINTENANCE,
+                        EventLogger.ACCOUNT_LOCKED, new Integer(total),
                         null, null);
                 LOG.debug("Locked account for user " + user.getUserId());
             }
         }
-        
+
         return retValue;
     }
-    
+
     public void successLoginAttempt() {
         user.setLastLogin(Calendar.getInstance().getTime());
         user.setFailedAttempts(0);
     }
-    
+
     public boolean canInvoice() {
         // can't be deleted and has to be a customer
         if (user.getDeleted() == 1 ||
@@ -1163,25 +1177,25 @@ public class UserBL extends ResultList
                 user.getCustomer().getInvoiceChild().intValue() == 0)) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Checks if the user has been invoiced for anything at the time given
-     * as a parameter. 
+     * as a parameter.
      * @return
      */
     public boolean isCurrentlySubscribed(Date forDate) {
 
         List<Integer> results = new InvoiceDAS().findIdsByUserAndPeriodDate(user.getUserId(), forDate);
         boolean retValue = !results.isEmpty();
-        
+
         LOG.debug(" user " + user.getUserId() + " is subscribed result " + retValue);
-        
+
         return retValue;
     }
-    
+
     public CachedRowSet getByStatus(Integer entityId, Integer statusId, boolean in) {
         try {
             if (in) {
@@ -1196,9 +1210,9 @@ public class UserBL extends ResultList
             return cachedResults;
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by status", UserBL.class, e);
-        }   
+        }
     }
-    
+
     public CachedRowSet getByCustomField(Integer entityId, Integer typeId, String content) {
         try {
             prepareStatement(UserSQL.findByCustomField);
@@ -1210,24 +1224,24 @@ public class UserBL extends ResultList
             return cachedResults;
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by status", UserBL.class, e);
-        }   
+        }
     }
 
     public CachedRowSet getByCCNumber(Integer entityId, String number) {
         try {
-        	
+
             prepareStatement(UserSQL.findByCreditCard);
             cachedResults.setString(1, number);
             cachedResults.setInt(2, entityId.intValue());
             execute();
             conn.close();
-            
+
             return cachedResults;
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
-        }   
+        }
     }
-    
+
     public CreditCardDTO getCreditCard() {
     	if (user.getCreditCards().isEmpty()) {
     		return null;
@@ -1246,13 +1260,13 @@ public class UserBL extends ResultList
             execute();
             if (cachedResults.next()) {
                 retValue = cachedResults.getInt(1);
-            } 
+            }
             cachedResults.close();
             conn.close();
             return retValue;
         } catch (Exception e) {
             throw new SessionInternalError("Error getting user by cc", UserBL.class, e);
-        }   
+        }
     }
 
     /**
@@ -1269,7 +1283,7 @@ public class UserBL extends ResultList
         }
        	UserDTO user = das.find(userId);
        	return user.getCompany().getId();
-        		
+
     }
 
     /**
@@ -1283,18 +1297,18 @@ public class UserBL extends ResultList
         if (isBlacklisted) {
             if (blacklist.isEmpty()) {
                 // add a new blacklist entry
-                LOG.debug("Adding blacklist record for user id: " + 
+                LOG.debug("Adding blacklist record for user id: " +
                         user.getId());
 
                 BlacklistDTO entry = new BlacklistDTO();
                 entry.setCompany(user.getCompany());
                 entry.setCreateDate(new Date());
-                entry.setType(BlacklistDTO.TYPE_USER_ID); 
+                entry.setType(BlacklistDTO.TYPE_USER_ID);
                 entry.setSource(BlacklistDTO.SOURCE_CUSTOMER_SERVICE);
-                entry.setUser(user); 
+                entry.setUser(user);
                 entry = blacklistDAS.save(entry);
 
-                eLogger.audit(executorId, user.getId(), 
+                eLogger.audit(executorId, user.getId(),
                         Constants.TABLE_BLACKLIST, entry.getId(),
                         EventLogger.MODULE_BLACKLIST,
                         EventLogger.BLACKLIST_USER_ID_ADDED, null, null, null);
@@ -1302,15 +1316,15 @@ public class UserBL extends ResultList
         } else {
             if (!blacklist.isEmpty()) {
                 // remove any blacklist entries found
-                LOG.debug("Removing blacklist records for user id: " + 
+                LOG.debug("Removing blacklist records for user id: " +
                         user.getId());
 
                 for (BlacklistDTO entry : blacklist) {
                     blacklistDAS.delete(entry);
 
-                    eLogger.audit(executorId, user.getId(), 
+                    eLogger.audit(executorId, user.getId(),
                             Constants.TABLE_BLACKLIST, entry.getId(),
-                            EventLogger.MODULE_BLACKLIST, 
+                            EventLogger.MODULE_BLACKLIST,
                             EventLogger.BLACKLIST_USER_ID_REMOVED, null,
                             null, null);
                 }
@@ -1318,14 +1332,14 @@ public class UserBL extends ResultList
         }
     }
 
-    public ValidatePurchaseWS validatePurchase(List<ItemDTO> items, 
-            List<BigDecimal> amounts, 
+    public ValidatePurchaseWS validatePurchase(List<ItemDTO> items,
+            List<BigDecimal> amounts,
             List<List<PricingField>> pricingFields) {
         if (user.getCustomer() == null) {
             return null;
         }
 
-        LOG.debug("validating purchase items:" + Arrays.toString(items.toArray()) + 
+        LOG.debug("validating purchase items:" + Arrays.toString(items.toArray()) +
                 " amounts " +  Arrays.toString(amounts.toArray()) + " customer " + user.getCustomer());
 
         ValidatePurchaseWS result = new ValidatePurchaseWS();
@@ -1337,9 +1351,9 @@ public class UserBL extends ResultList
                     user.getCompany().getId(),
                     Constants.PLUGGABLE_TASK_VALIDATE_PURCHASE);
             IValidatePurchaseTask myTask = taskManager.getNextClass();
-                
+
             while(myTask != null) {
-                myTask.validate(user.getCustomer(), items, amounts, result, 
+                myTask.validate(user.getCustomer(), items, amounts, result,
                         pricingFields);
                 myTask = taskManager.getNextClass();
             }
@@ -1349,7 +1363,7 @@ public class UserBL extends ResultList
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             pw.close();
-            LOG.error("Validate Purchase error: " + e.getMessage() + "\n" + 
+            LOG.error("Validate Purchase error: " + e.getMessage() + "\n" +
                     sw.toString());
 
             result.setSuccess(false);

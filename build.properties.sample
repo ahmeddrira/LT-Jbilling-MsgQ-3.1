@@ -61,4 +61,5 @@ build.deploy.dir=${build.dir}/deploy
 build.classes.dir=${build.dir}/classes
 build.api.dir=${build.dir}/api
 build.test.dir=${build.dir}/test
+build.test-results.dir=${build.dir}/test-results
 build.view.dir=${build.dir}/view

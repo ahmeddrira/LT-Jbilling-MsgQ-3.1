@@ -47,6 +47,7 @@ import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import org.joda.time.DateMidnight;
 
 /**
  * @author Emil
@@ -999,6 +1000,34 @@ public class WSTest  extends TestCase {
             assertEquals("Order line price", "25", createdLine.getAmount()); // not priced
 
             /*
+             * Events that go into an order already invoiced, should update the
+             * current order for the next cycle
+             */
+
+            // fool the system making the current order finished (don't do this at home)
+            System.out.println("Making current order 'finished'");
+            currentOrderAfter.setStatusId(2); // this means finished
+            api.updateOrder(currentOrderAfter);
+            assertEquals("now current order has to be finished", 2, api.getOrder(currentOrderAfter.getId()).getStatusId().intValue());
+            // make that current order an invoice
+            /*
+            Integer invoiceId = api.createInvoice(USER_ID, false)[0];
+            System.out.println("current order generated invoice " + invoiceId);
+             */
+            // now send again that last event
+            System.out.println("Sending event again");
+            OrderWS currentOrderNext = api.updateCurrentOrder(USER_ID, null,
+                    new PricingField[] { pf, duration, dst }, new Date(),
+                    "Same event from WS");
+
+            assertNotNull("Current order for next cycle should be provided", currentOrderNext);
+            assertFalse("Current order for next cycle can't be the same as the previous one",
+                    currentOrderNext.getId().equals(currentOrderAfter.getId()));
+            assertEquals("Active since of new order should be one mothe later than previous one for the same event",
+                    new DateMidnight(currentOrderAfter.getActiveSince().getTime()).plusMonths(1),
+                    new DateMidnight(currentOrderNext.getActiveSince().getTime()));
+
+            /*
              * No main subscription order tests.
              */
 
@@ -1038,6 +1067,7 @@ public class WSTest  extends TestCase {
 
             // cleanup
             api.deleteOrder(currentOrderAfter.getId());
+            api.deleteOrder(currentOrderNext.getId());
 
         } catch (Exception e) {
             e.printStackTrace();

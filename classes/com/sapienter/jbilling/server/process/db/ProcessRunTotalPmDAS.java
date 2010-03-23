@@ -52,7 +52,7 @@ public class ProcessRunTotalPmDAS extends AbstractDAS<ProcessRunTotalPmDTO> {
 				.createAlias("processRunTotal", "r")
 					.add(Restrictions.eq("r.id", total.getId()))
 				.createAlias("paymentMethod", "c")
-					.add(Restrictions.eq("c.id", methodId)).setLockMode(LockMode.UPGRADE)
+					.add(Restrictions.eq("c.id", methodId))
                 .setComment("ProcessRunTotalPmDAS.getByMethod");
 
 		return (ProcessRunTotalPmDTO) criteria.uniqueResult();

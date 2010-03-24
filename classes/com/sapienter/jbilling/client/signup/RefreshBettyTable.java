@@ -98,16 +98,20 @@ public class RefreshBettyTable {
             while (res.next()) {
                 String table = res.getString(1);
                 if (!table.endsWith("_map") && !table.endsWith("_status")) {
-                    PreparedStatement stmt2 = conn.prepareStatement(
-                            "select max(id) from " + table);
-                    ResultSet res2 = stmt2.executeQuery();
-                    int id = 0;
-                    if (res2.next()) {
-                        id = res2.getInt(1) + 1;
+                    try {
+                        PreparedStatement stmt2 = conn.prepareStatement(
+                                   "select max(id) from " + table);
+                        ResultSet res2 = stmt2.executeQuery();
+                        int id = 0;
+                        if (res2.next()) {
+                            id = res2.getInt(1) + 1;
+                        }
+                        log.debug("Updateing " + table);
+                        exe.execute("update jbilling_seqs set next_id = " + id +
+                                " where name = '" + table + "'");
+                    } catch (Exception e1) {
+                        log.warn("Could not update table " + table + " error: " + e1.getMessage() + " Is this a virtual table?");
                     }
-                    log.debug("Updateing " + table);
-                    exe.execute("update jbilling_seqs set next_id = " + id + 
-                            " where name = '" + table + "'");
                 }
             }
             res.close();

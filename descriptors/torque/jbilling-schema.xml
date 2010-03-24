@@ -479,11 +479,11 @@
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="billing_process_id" type="INTEGER"/>
         <column name="user_id" type="INTEGER"/>
+        <column name="status_id" type="INTEGER" required="true"/>
         <column name="delegated_invoice_id" type="INTEGER"/>
         <column name="due_date" required="true" type="DATE"/>
         <column name="total" required="true" type="DOUBLE"/>
         <column default="0" name="payment_attempts" required="true" type="INTEGER"/>
-        <column default="1" name="to_process" required="true" type="SMALLINT"/>
         <column name="balance" type="DOUBLE"/>
         <column name="carried_balance" required="true" type="DOUBLE"/>
         <column default="1" name="in_process_payment" required="true" type="SMALLINT"/>
@@ -530,6 +530,9 @@
         </foreign-key>
         <foreign-key foreignTable="invoice">
             <reference foreign="id" local="delegated_invoice_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="generic_status">
+            <reference foreign="id" local="status_id"/>
         </foreign-key>
         <!--
         <foreign-key foreignTable="base_user">

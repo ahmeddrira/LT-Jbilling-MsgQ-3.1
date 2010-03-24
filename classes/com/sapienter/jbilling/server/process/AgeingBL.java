@@ -20,8 +20,6 @@
 
 /*
  * Created on Mar 26, 2004
- *
- * Copyright Sapienter Enterprise Software
  */
 package com.sapienter.jbilling.server.process;
 

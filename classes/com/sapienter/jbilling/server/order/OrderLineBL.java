@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.order;
 
+import com.sapienter.jbilling.common.CommonConstants;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.item.ItemBL;
@@ -29,6 +30,7 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -225,7 +227,7 @@ public class OrderLineBL {
             myLine.setItem(item);
             myLine.setQuantity(quantity);
         }
-        populateWithSimplePrice(language, userId, entityId, currencyId, itemID, myLine);
+        populateWithSimplePrice(language, userId, entityId, currencyId, itemID, myLine, CommonConstants.BIGDECIMAL_SCALE);
         myLine.setDefaults();
         if (line == null) { // not yet there
             newOrder.getLines().add(myLine);
@@ -252,10 +254,11 @@ public class OrderLineBL {
      * @param userId
      * @param entityId
      * @param currencyId
+     * @param precision
      * @return
      */
     public static void populateWithSimplePrice(Integer language, Integer userId,
-            Integer entityId, Integer currencyId, Integer itemId, OrderLineDTO line) {
+            Integer entityId, Integer currencyId, Integer itemId, OrderLineDTO line, Integer precision) {
 
         ItemBL itemBl = new ItemBL(itemId);
         ItemDTO item = itemBl.getEntity();
@@ -286,7 +289,7 @@ public class OrderLineBL {
                 // percentage ignores the quantity
                 additionAmount = item.getPercentage();
             }
-            line.setAmount(additionAmount);
+            line.setAmount(additionAmount.setScale(precision, CommonConstants.BIGDECIMAL_ROUND));
         }
         line.setCreateDatetime(null);
         line.setDeleted(0);

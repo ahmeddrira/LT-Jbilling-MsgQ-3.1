@@ -97,8 +97,7 @@ public class ReviewOrderAction extends Action {
                 // the price has to be formated i18n
                 for(OrderLineDTO line : newOrder.getLines()) {
                 	if (line.getDeleted() == 0) {
-        	            line.setPriceStr(FormHelper.float2string(
-            	                line.getPrice().floatValue(), session));
+        	            line.setPriceStr(FormHelper.decimal2string(line.getPrice(), session));
                     	hashlines.put(line.getItemId(), line);
                     }
                 }
@@ -123,8 +122,7 @@ public class ReviewOrderAction extends Action {
                     for(OrderLineDTO line : newOrder.getLines()) {
                         if (!line.getEditable().booleanValue()) //probalby a tax
                             continue;
-                        line.setPrice(new BigDecimal(FormHelper.string2float(
-                                line.getPriceStr(), session)));
+                        line.setPrice(FormHelper.string2decimal(line.getPriceStr(), session));
                         log.debug("line = " + line);
                         if (line.getPrice() == null) {
                             String field = Resources.getMessage(request, 

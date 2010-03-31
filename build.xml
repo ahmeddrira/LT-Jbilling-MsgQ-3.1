@@ -17,6 +17,8 @@
         <pathelement location="${junit.dir}/junit.jar"/>
         <pathelement location="${build.deploy.dir}/jbilling_api.jar"/>
         <pathelement location="${build.test.dir}"/>
+        <pathelement location="${build.test.dir}"/>
+        <pathelement location="${build.classes.dir}/com/sapienter/jbilling/tools"/>
         <pathelement location="${source.lib.dir}/commons-logging.jar"/>
         <pathelement location="${source.lib.dir}/log4j.jar"/>
 

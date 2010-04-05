@@ -343,4 +343,10 @@ public interface IWebServicesSessionBean {
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
 
     public ItemTypeWS[] getAllItemCategories();
+
+    public Integer createItemCategory(ItemTypeWS itemType)
+            throws SessionInternalError;
+
+    public void updateItemCategory(ItemTypeWS itemType)
+            throws SessionInternalError;
 }

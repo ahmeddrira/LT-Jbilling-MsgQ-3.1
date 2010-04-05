@@ -59,6 +59,7 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
@@ -1189,6 +1190,35 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         ItemDTOEx retValue = helper.getWS(helper.getDTO(languageId, userId, entityId, currencyId));
         return retValue;
+    }
+
+    public Integer createItemCategory(ItemTypeWS itemType) 
+            throws SessionInternalError {
+
+        UserBL bl = new UserBL(getCallerId());
+        Integer entityId = bl.getEntityId(bl.getEntity().getUserId());
+
+        ItemTypeDTO dto = new ItemTypeDTO();
+        dto.setDescription(itemType.getDescription());
+        dto.setOrderLineTypeId(itemType.getOrderLineTypeId());
+        dto.setEntity(new CompanyDTO(entityId));
+
+        ItemTypeBL itemTypeBL = new ItemTypeBL();
+        itemTypeBL.create(dto);
+        return itemTypeBL.getEntity().getId();
+    }
+
+    public void updateItemCategory(ItemTypeWS itemType) {
+        UserBL bl = new UserBL(getCallerId());
+        Integer executorId = bl.getEntity().getUserId();
+
+        ItemTypeBL itemTypeBL = new ItemTypeBL(itemType.getId());
+
+        ItemTypeDTO dto = new ItemTypeDTO();
+        dto.setDescription(itemType.getDescription());
+        dto.setOrderLineTypeId(itemType.getOrderLineTypeId());
+
+        itemTypeBL.update(executorId, dto);
     }
 
     private Integer zero2null(Integer var) {

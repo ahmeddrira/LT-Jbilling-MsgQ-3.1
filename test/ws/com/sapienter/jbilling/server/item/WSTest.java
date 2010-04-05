@@ -363,6 +363,84 @@ public class WSTest  extends TestCase {
         assertEquals("Drink passes", types[0].getDescription());
     }
 
+    public void testCreateItemCategory() throws Exception {
+        try {
+
+            String description = "Ice creams (WS test)";
+
+            System.out.println("Getting API...");
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            ItemTypeWS itemType = new ItemTypeWS();
+            itemType.setDescription(description);
+            itemType.setOrderLineTypeId(1);
+
+            System.out.println("Creating item category '" + description + "'...");
+            Integer itemTypeId = api.createItemCategory(itemType);
+            assertNotNull(itemTypeId);
+            System.out.println("Done.");
+
+            System.out.println("Getting all item categories...");
+            ItemTypeWS[] types = api.getAllItemCategories();
+
+            boolean addedFound = false;
+            for(int i = 0; i < types.length; ++i) {
+                if(description.equals(types[i].getDescription())) {
+                    System.out.println("Test category was found. Creation was completed successfully.");
+                    addedFound = true;
+                    break;
+                }
+            }
+            assertTrue("Ice cream not found.", addedFound);
+            System.out.println("Test completed!");
+
+        } catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught:" + e);
+    	}
+    }
+
+    public void testUpdateItemCategory() throws Exception {
+        try {
+
+            Integer categoryId;
+            String originalDescription;
+            String description = "Drink passes (WS test)";
+
+            System.out.println("Getting API...");
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            System.out.println("Getting all item categories...");
+            ItemTypeWS[] types = api.getAllItemCategories();
+
+            System.out.println("Changing description...");
+            categoryId = types[0].getId();
+            originalDescription = types[0].getDescription();
+            types[0].setDescription(description);
+            api.updateItemCategory(types[0]);
+
+            System.out.println("Getting all item categories...");
+            types = api.getAllItemCategories();
+            System.out.println("Verifying description has changed...");
+            for(int i = 0; i < types.length; ++i) {
+                if(categoryId.equals(types[i].getId())) {
+                    assertEquals(description, types[i].getDescription());
+
+                    System.out.println("Restoring description...");
+                    types[i].setDescription(originalDescription);
+                    api.updateItemCategory(types[i]);
+                    break;
+                }
+            }
+
+            System.out.println("Test completed!");
+
+        } catch (Exception e) {
+    		e.printStackTrace();
+    		fail("Exception caught:" + e);
+    	}
+    }
+
     public void testGetItemsByCategory() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();
 

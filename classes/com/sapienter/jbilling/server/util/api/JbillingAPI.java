@@ -186,4 +186,7 @@ public interface JbillingAPI {
 
     public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields) throws JbillingAPIException;
 
+    public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
+
+    void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
 }

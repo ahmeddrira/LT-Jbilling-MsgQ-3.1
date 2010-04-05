@@ -572,4 +572,20 @@ public class SpringAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+
+    public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException {
+        try {
+            return session.createItemCategory(itemType);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException {
+        try {
+            session.updateItemCategory(itemType);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 }

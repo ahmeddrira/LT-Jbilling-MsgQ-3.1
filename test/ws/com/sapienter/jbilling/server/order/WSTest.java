@@ -997,7 +997,7 @@ public class WSTest  extends TestCase {
             createdLine = currentOrderAfter.getOrderLines()[1];
             assertEquals("Order line quantities", "5", createdLine.getQuantity());
             assertEquals("Order line price", "5", createdLine.getPrice());
-            assertEquals("Order line price", "25", createdLine.getAmount()); // not priced
+            assertEquals("Order line price", new BigDecimal("25"), new BigDecimal(createdLine.getAmount())); // not priced
 
             /*
              * Events that go into an order already invoiced, should update the

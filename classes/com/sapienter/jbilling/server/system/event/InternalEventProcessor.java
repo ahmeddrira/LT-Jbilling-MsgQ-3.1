@@ -29,29 +29,49 @@ import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class InternalEventProcessor {
-
     private static final Logger LOG = Logger.getLogger(InternalEventProcessor.class);
-    
-    public void process(Event event) {
 
+    public void process(Event event) {
         try {
-            PluggableTaskManager<IInternalEventsTask> taskManager = new PluggableTaskManager<IInternalEventsTask>(
-                    event.getEntityId(), Constants.PLUGGABLE_TASK_INTERNAL_EVENT);
+            PluggableTaskManager<IInternalEventsTask> taskManager
+                    = new PluggableTaskManager<IInternalEventsTask>(event.getEntityId(),
+                                                                    Constants.PLUGGABLE_TASK_INTERNAL_EVENT);
 
             for (PluggableTaskDTO task : taskManager.getAllTasks()) {
-                IInternalEventsTask myClass = taskManager.getInstance(task.getType()
-                        .getClassName(), task.getType().getCategory().getInterfaceName(), task);
-                // check for applicable events for this plug-in
-                for (Class possibleEvent : myClass.getSubscribedEvents()) {
-                    if (possibleEvent.getSimpleName().equals(event.getClass().getSimpleName())) {
-                        LOG.debug("Processing " + event + " with " + myClass);
-                        myClass.process(event);
-                    }
+                IInternalEventsTask myClass = taskManager.getInstance(task.getType().getClassName(),
+                                                                      task.getType().getCategory().getInterfaceName(),
+                                                                      task);
+
+                if (isProcessable(myClass, event)) {
+                    LOG.debug("Processing " + event + " with " + myClass);
+                    myClass.process(event);
                 }
             }
         } catch (PluggableTaskException e) {
             throw new SessionInternalError("Exception processing internal event plug-in",
-                    InternalEventProcessor.class, e);
+                                           InternalEventProcessor.class, e);
         }
+    }
+
+    /**
+     * Returns true if the given IInternalEventsTask can process (is subscribed to)
+     * the given event.
+     *
+     * @param task task to check
+     * @param event event to process
+     * @return true if event is processable, false if not.
+     */
+    public boolean isProcessable(IInternalEventsTask task, Event event) {
+        for (Class subscribedEvent : task.getSubscribedEvents()) {
+            if (subscribedEvent.getClass().equals(CatchAllEvent.class)) {
+                // subscribed to the CatchAllEvent, process any/all incoming events
+                return true;
+            }
+            if (subscribedEvent.getClass().equals(event.getClass())) {
+                // explicitly subscribed to the event
+                return true;
+            }
+        }        
+        return false;
     }
 }

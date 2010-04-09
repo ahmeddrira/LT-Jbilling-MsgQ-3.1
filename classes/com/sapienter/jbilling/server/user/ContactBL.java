@@ -304,9 +304,6 @@ public class ContactBL {
         dto.setVersionNum(0);
         dto.setId(0);
         
-        NewContactEvent event = new NewContactEvent(contact, entityId);
-        EventManager.process(event);
-        
         contact = contactDas.save(new ContactDTO(dto)); // it won't take the Ex
         contact.setContactMap(map);
         map.setContact(contact);
@@ -314,12 +311,20 @@ public class ContactBL {
         updateCreateFields(dto.getFieldsTable(), false);
         
         LOG.debug("created " + contact);
-        eLogger.auditBySystem(entityId,
+
+        // do an event if this is a user contact (invoices, companies, have
+        // contacts too)
+        if (table.equals(Constants.TABLE_BASE_USER)) {
+            NewContactEvent event = new NewContactEvent(contact, entityId);
+            EventManager.process(event);
+
+            eLogger.auditBySystem(entityId,
                               contact.getUserId(),
                               Constants.TABLE_CONTACT,
                               contact.getId(),
                               EventLogger.MODULE_USER_MAINTENANCE,
                               EventLogger.ROW_CREATED, null, null, null);
+        }
 
         return contact.getId();
     }

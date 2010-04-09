@@ -177,8 +177,20 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
             return;
         }
 
-        LOG.debug("Updating dynamic balance to " + amount);
+        LOG.debug("Updating dynamic balance for " + amount);
+
         BigDecimal balance = (customer.getDynamicBalance() == null ? BigDecimal.ZERO : customer.getDynamicBalance());
+
+        // register the event, before the balance is changed
+        new EventLogger().auditBySystem(entityId,
+                                        customer.getBaseUser().getId(),
+                                        com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
+                                        user.getCustomer().getId(),
+                                        EventLogger.MODULE_USER_MAINTENANCE,
+                                        EventLogger.DYNAMIC_BALANCE_CHANGE,
+                                        null,
+                                        balance.toString(),
+                                        null);
 
         if (customer.getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
             customer.setDynamicBalance(balance.subtract(amount));
@@ -189,16 +201,6 @@ public class DynamicBalanceManagerTask extends PluggableTask implements IInterna
         } else {
             customer.setDynamicBalance(balance);
         }
-
-        new EventLogger().auditBySystem(entityId,
-                                        customer.getBaseUser().getId(),
-                                        com.sapienter.jbilling.server.util.Constants.TABLE_CUSTOMER,
-                                        user.getCustomer().getId(),
-                                        EventLogger.MODULE_USER_MAINTENANCE,
-                                        EventLogger.DYNAMIC_BALANCE_CHANGE,
-                                        null,
-                                        customer.getDynamicBalance().toString(),
-                                        null);
 
         if (!balance.equals(customer.getDynamicBalance())) {
             DynamicBalanceChangeEvent event = new DynamicBalanceChangeEvent(user.getEntity().getId(),

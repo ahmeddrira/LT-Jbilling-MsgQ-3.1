@@ -401,3 +401,8 @@ select p.billing_date, p.retries_to_do, r.*, finished - started
  where p.id = r.process_id
   and invoices_generated > 0
  order by p.billing_date desc, started desc;
+
+-- update an entry of  jbilling_seqs
+update jbilling_seqs
+set next_id = ( select (max(id)/10)+1 from base_user )
+where name = 'base_user';

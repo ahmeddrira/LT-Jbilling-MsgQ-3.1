@@ -116,7 +116,7 @@ public class OrderLineBL {
             LOG.debug("Old line: " + oldLine);
             LOG.debug("New line: " + newLine);
             orderBl.checkOrderLineQuantities(oldLines, newLines, 
-                    user.getEntity().getEntity().getId(), order.getId());
+                    user.getEntity().getEntity().getId(), order.getId(), true);
         }
     }
 

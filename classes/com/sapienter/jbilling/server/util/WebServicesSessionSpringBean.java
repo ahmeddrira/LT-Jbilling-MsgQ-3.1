@@ -942,7 +942,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 diffLines = OrderLineBL.diffOrderLines(oldLines, bl.getDTO().getLines());
                 // generate NewQuantityEvents
                 bl.checkOrderLineQuantities(oldLines, bl.getDTO().getLines(), 
-                        getCallerCompanyId(), bl.getDTO().getId());
+                        getCallerCompanyId(), bl.getDTO().getId(), true);
 
             } else if (records != null) {
                 // Since there are no lines, run the mediation process 

@@ -37,10 +37,15 @@ public class NewQuantityEvent implements Event {
     private final BigDecimal oldQuantity;
     private final BigDecimal newQuantity;
     private final Integer orderId;
-     // original (old) order line, unless line was newly added
+    // original (old) order line
+    //   - line deleted : old line
+    //   - line added : new line
+    //   - line changed quantity : old line
     private final OrderLineDTO orderLine;
     // the new line:
-    //    null if line deleted or added
+    //   - line deleted : null
+    //   - line added : null
+    //   - line changed quantity : new line
     private final OrderLineDTO newOrderLine;
     
     public NewQuantityEvent(Integer entityId, BigDecimal oldQuantity,
@@ -50,8 +55,9 @@ public class NewQuantityEvent implements Event {
         this.oldQuantity = oldQuantity;
         this.newQuantity = newQuantity;
         this.orderId = orderId;
-        this.orderLine = orderLine;
-        this.newOrderLine = newOrderLine;
+        // make copies, so any futher changes do not affect the event
+        this.orderLine = orderLine == null ? null : new OrderLineDTO(orderLine);
+        this.newOrderLine = newOrderLine == null ? null : new OrderLineDTO(newOrderLine);
     }
 
     public Integer getEntityId() {
@@ -83,7 +89,9 @@ public class NewQuantityEvent implements Event {
     }
     
     public String toString() {
-        return getName() + " - entity " + entityId;
+        return getName() + " - entity " + entityId + " new order line " + newOrderLine +
+                " new Quantity " + newQuantity + " old Quantity " + oldQuantity +
+                " order line " + orderLine;
     }
 
 }

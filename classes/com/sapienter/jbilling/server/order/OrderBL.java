@@ -373,11 +373,16 @@ public class OrderBL extends ResultList
 
     /**
      * Method checkOrderLineQuantities.
-     * Generates a NewQuantityEvent for each order line that has had
+     * Creates a NewQuantityEvent for each order line that has had
      * its quantity modified (including those added or deleted).
+     * @return An array with all the events that should be fiered. This
+     * prevents events being fired when the order has not be saved and it is
+     * still 'mutating'.
      */
-    public void checkOrderLineQuantities(List<OrderLineDTO> oldLines, 
-            List<OrderLineDTO> newLines, Integer entityId, Integer orderId) {
+    public List<NewQuantityEvent> checkOrderLineQuantities(List<OrderLineDTO> oldLines,
+            List<OrderLineDTO> newLines, Integer entityId, Integer orderId, boolean sendEvents) {
+
+        List<NewQuantityEvent> retValue = new ArrayList<NewQuantityEvent>();
         // NewQuantityEvent is generated when an order line and it's quantity 
         // has changed, including from >0 to 0 (deleted) and 0 to >0 (added).
         // First, copy and sort new and old order lines by order line id.
@@ -417,13 +422,13 @@ public class OrderBL extends ResultList
             if (oldLineId < newLineId) {
                 // order line has been deleted
                 LOG.debug("Deleted order line. Order line Id: " + oldLineId);
-                EventManager.process(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO,
+                retValue.add(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO,
                                                           orderId, currentOldLine, null));
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
             } else if (oldLineId > newLineId) {
                 // order line has been added
                 LOG.debug("Added order line. Order line Id: " + newLineId);
-                EventManager.process(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(),
+                retValue.add(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(),
                                                           orderId, currentNewLine, null));
                 currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
             } else {
@@ -433,7 +438,7 @@ public class OrderBL extends ResultList
                 if (oldLineQuantity.doubleValue() != newLineQuantity.doubleValue()) {
                     LOG.debug("Order line quantity changed. Order line Id: " +
                             oldLineId);
-                    EventManager.process(new NewQuantityEvent(entityId, oldLineQuantity, newLineQuantity, orderId,
+                    retValue.add(new NewQuantityEvent(entityId, oldLineQuantity, newLineQuantity, orderId,
                                                               currentOldLine, currentNewLine));
                 }
                 currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
@@ -443,16 +448,24 @@ public class OrderBL extends ResultList
         // check for any remaining item lines that must have been deleted or added
         while (currentOldLine != null) {
             LOG.debug("Deleted order line. Order line id: " + currentOldLine.getId());
-            EventManager.process(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO, orderId,
+            retValue.add(new NewQuantityEvent(entityId, currentOldLine.getQuantity(), BigDecimal.ZERO, orderId,
                                                       currentOldLine, null));
             currentOldLine = itOldLines.hasNext() ? itOldLines.next() : null;
         }
         while (currentNewLine != null) {
             LOG.debug("Added order line. Order line id: " + currentNewLine.getId());
-            EventManager.process(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(), orderId,
+            retValue.add(new NewQuantityEvent(entityId, BigDecimal.ZERO, currentNewLine.getQuantity(), orderId,
                                                       currentNewLine, null));
             currentNewLine = itNewLines.hasNext() ? itNewLines.next() : null;
         }
+
+        if (sendEvents) {
+            for (NewQuantityEvent event: retValue) {
+               EventManager.process(event);
+           }
+        }
+
+        return retValue;
     }
 
     public void update(Integer executorId, OrderDTO dto) {
@@ -507,10 +520,10 @@ public class OrderBL extends ResultList
          *  now proces the order lines
          */
 
-        // generate new quantity events as necessary
-        checkOrderLineQuantities(order.getLines(), dto.getLines(), 
+        // get new quantity events as necessary
+         List<NewQuantityEvent> events = checkOrderLineQuantities(order.getLines(), dto.getLines(),
                 order.getBaseUserByUserId().getCompany().getId(), 
-                order.getId());
+                order.getId(), false); // do not send them now, it will be done later when the order is saved
 
         OrderLineDTO oldLine = null;
         int nonDeletedLines = 0;
@@ -588,6 +601,12 @@ public class OrderBL extends ResultList
                     EventLogger.MODULE_ORDER_MAINTENANCE,
                     EventLogger.ROW_UPDATED, null,
                     null, null);
+        }
+
+        // last, once the order is saved and all done, send out the 
+        // order modified events
+        for (NewQuantityEvent event: events) {
+            EventManager.process(event);
         }
 
     }

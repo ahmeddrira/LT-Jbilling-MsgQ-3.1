@@ -56,7 +56,7 @@ public class CurrentOrder {
     private CachingModel cacheModel;
     private FlushingModel flushModel;
 
-    protected CurrentOrder(Integer userId, Date eventDate) {
+    public CurrentOrder(Integer userId, Date eventDate) {
         LOG.debug("Current order constructed with user " + userId + " event date " +
                 eventDate);
         if (userId == null || eventDate == null) {

@@ -190,7 +190,8 @@ then
     retract($result);
     retract($result.getCurrentOrder()); #doable because we can count with one record being process for a give user at a time
     if ($result.getPersist()) {
-        new OrderBL().checkOrderLineQuantities($result.getOldLines(), $result.getCurrentOrder().getLines(), $company.getId(), $result.getCurrentOrder().getId());
+        new OrderBL().checkOrderLineQuantities($result.getOldLines(), $result.getCurrentOrder().getLines(), 
+            $company.getId(), $result.getCurrentOrder().getId(), true);
     }
     LOG.debug("diff done for record " + $result.getRecordKey() + " diff is " + $result.getDiffLines() + " record " + $result.getRecordKey());
 end

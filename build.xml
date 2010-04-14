@@ -17,8 +17,6 @@
         <pathelement location="${junit.dir}/junit.jar"/>
         <pathelement location="${build.deploy.dir}/jbilling_api.jar"/>
         <pathelement location="${build.test.dir}"/>
-        <pathelement location="${build.test.dir}"/>
-        <pathelement location="${build.classes.dir}/com/sapienter/jbilling/tools"/>
         <pathelement location="${source.lib.dir}/commons-logging.jar"/>
         <pathelement location="${source.lib.dir}/log4j.jar"/>
 
@@ -387,6 +385,7 @@
 
     <target name="test-unit" description="Run all class level unit tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/unit" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+            <classpath path="${build.classes.dir}"/>
             <classpath refid="test.classpath"/>
         </javac>
 
@@ -394,6 +393,12 @@
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed">
             <classpath refid="test.classpath"/>
+            <classpath path="${build.classes.dir}"/>
+            <classpath>
+                <fileset dir="${source.lib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
 
             <batchtest fork="yes" todir="${build.test-results.dir}/unit/xml">
                 <formatter type="brief" usefile="false"/>
@@ -419,6 +424,7 @@
     <target name="test-ws" depends="jar_api" description="Run all web service tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/ws" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
             <classpath refid="test.classpath"/>
+            <classpath path="${build.classes.dir}"/>
         </javac>
 
         <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>

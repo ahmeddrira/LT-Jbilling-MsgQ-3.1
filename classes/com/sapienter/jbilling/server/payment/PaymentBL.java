@@ -163,9 +163,6 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getCreditCard() != null) {
-            UserDTO user = new UserBL(dto.getUserId()).getEntity();
-            dto.getCreditCard().getBaseUsers().add(user);
-
             CreditCardBL cc = new CreditCardBL();
             cc.create(dto.getCreditCard());
 

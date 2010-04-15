@@ -844,7 +844,7 @@ Ch8: no applicable orders
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer[] ids = api.getUsersByCreditCard("1152");
             assertNotNull("Four customers with CC", ids);
-            assertEquals("Four customers with CC", 8, ids.length); // returns credit cards from both clients?
+            assertEquals("Four customers with CC", 6, ids.length); // returns credit cards from both clients?
                                                                    // 5 cards from entity 1, 1 card from entity 2
             assertEquals("Created user with CC", 10792,
                     ids[ids.length - 1].intValue());

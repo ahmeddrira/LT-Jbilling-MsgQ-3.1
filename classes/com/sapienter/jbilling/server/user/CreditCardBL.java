@@ -114,17 +114,20 @@ public class CreditCardBL extends ResultList
         // existing card stored against an external payment gateway - fetch from the db instead
         if (!dto.useGatewayKey() || !dto.isNumberObsucred()) {
             creditCard = creditCardDas.save(dto);
+            LOG.debug("New cc saved");
 
             if (!creditCard.getBaseUsers().isEmpty()) {
                 UserDTO user =  creditCard.getBaseUsers().iterator().next();
+                LOG.debug("Credit card for a user");
                 EventManager.process(new NewCreditCardEvent(creditCard,  user.getEntity().getId()));
             } else {
-                LOG.error("Could not determine entity id of created CreditCardDTO, failed to emit NewCreditCardEvent!");
+                LOG.debug("Credit card wihtout user. NewCreditCardEvent not triggered. OK if credit card from a payment.");
             }
         } else {
             // fetch the credit card from the database instead of creating a new record
             UserDTO user = dto.getBaseUsers().iterator().next();
             creditCard = new UserBL(user.getId()).getCreditCard();
+            LOG.debug("CC not saved, using the user's instead");
         }
 
         return creditCard.getId();

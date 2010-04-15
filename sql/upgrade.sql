@@ -52,6 +52,7 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 insert into payment_method (id) values (9);
 alter table credit_card drop column security_code;
 alter table credit_card add column gateway_key varchar(100);
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values (35, 9, 'description', 1, 'Payment Gateway Key');
 
 -- new rules pricing plug-in
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (60, 14, 'com.sapienter.jbilling.server.item.tasks.RulesPricingTask2', 0);

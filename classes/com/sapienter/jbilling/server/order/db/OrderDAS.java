@@ -80,7 +80,8 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                     .add(Restrictions.eq("u.id", userId))
                 .setProjection(Projections.id())
                 .addOrder(Order.desc("id"))
-                .setMaxResults(maxResults);
+                .setMaxResults(maxResults)
+                .setComment("findIdsByUserLatestFirst " + userId + " " + maxResults);
         return criteria.list();
     }
 

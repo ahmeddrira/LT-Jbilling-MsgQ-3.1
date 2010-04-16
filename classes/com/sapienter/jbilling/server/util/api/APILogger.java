@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.util.api;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
@@ -39,6 +40,21 @@ public class APILogger implements MethodBeforeAdvice, AfterReturningAdvice {
     }
 
     public void afterReturning(Object ret, Method method, Object[] args, Object target) throws Throwable {
-        LOG.debug("Done call to " + method.getName() + " returning: " + ret);
+        StringBuffer retStr = new StringBuffer();
+        if (ret != null) {
+            if (ret.getClass().isArray()) {
+                for (int f = 0; f < Array.getLength(ret); f++) {
+                    Object val = Array.get(ret, f);
+                    retStr.append("[");
+                    retStr.append(val == null ? "null" : Array.get(ret, f).toString());
+                    retStr.append("]");
+                }
+            } else {
+                retStr.append(ret.toString());
+            }
+        } else {
+            retStr.append("null");
+        }
+        LOG.debug("Done call to " + method.getName() + " returning: " + retStr);
     }
 }

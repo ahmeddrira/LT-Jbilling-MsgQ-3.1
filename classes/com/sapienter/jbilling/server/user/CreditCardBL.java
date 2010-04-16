@@ -115,13 +115,17 @@ public class CreditCardBL extends ResultList
         if (!dto.useGatewayKey() || !dto.isNumberObsucred()) {
             creditCard = creditCardDas.save(dto);
             LOG.debug("New cc saved");
-
+            
             if (!creditCard.getBaseUsers().isEmpty()) {
+                // credit card saved for a user
                 UserDTO user =  creditCard.getBaseUsers().iterator().next();
-                LOG.debug("Credit card for a user");
                 EventManager.process(new NewCreditCardEvent(creditCard,  user.getEntity().getId()));
-            } else {
-                LOG.debug("Credit card wihtout user. NewCreditCardEvent not triggered. OK if credit card from a payment.");
+                LOG.debug("New credit card for user " + user.getId());
+            } else if (!creditCard.getPayments().isEmpty()) {
+                // credit card saved for a payment (cc not linked to a user)
+                PaymentDTO payment = creditCard.getPayments().iterator().next();
+                EventManager.process(new NewCreditCardEvent(creditCard, payment.getBaseUser().getEntity().getId()));
+                LOG.debug("New credit card for payment " + payment.getId());
             }
         } else {
             // fetch the credit card from the database instead of creating a new record

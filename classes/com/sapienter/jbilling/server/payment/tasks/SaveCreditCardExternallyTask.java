@@ -113,9 +113,13 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
             LOG.debug("Processing NewCreditCardEvent ...");
             NewCreditCardEvent ev = (NewCreditCardEvent) event;
 
-            CreditCardDTO creditCard = ev.getCreditCard();
-            String gateWayKey = externalCCStorage.storeCreditCard(null, creditCard);
-            updateCreditCard(creditCard, gateWayKey);
+            // only save credit cards associated with users
+            if (!ev.getCreditCard().getBaseUsers().isEmpty()) {
+                String gateWayKey = externalCCStorage.storeCreditCard(null, ev.getCreditCard());
+                updateCreditCard(ev.getCreditCard(), gateWayKey);
+            } else {
+                LOG.debug("Credit card is not associated with a user (card for payment) - can't save through gateway.");
+            }
 
         } else if (event instanceof NewContactEvent) {
             LOG.debug("Processing NewContactEvent ...");

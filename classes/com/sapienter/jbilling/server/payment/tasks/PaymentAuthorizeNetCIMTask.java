@@ -19,22 +19,7 @@
  */
 package com.sapienter.jbilling.server.payment.tasks;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Calendar;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
+import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
@@ -43,23 +28,95 @@ import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.ContactDTOEx;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
+import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.db.CreditCardDAS;
+import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
-public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implements PaymentTask {
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
+        implements PaymentTask, IExternalCreditCardStorage {
+
+    private static class CustomerProfileData {
+
+        private static final String GATEWAY_KEY_DELIMITER = "/";
+
+        private String customerProfileId;
+        private String customerPaymentProfileId;
+
+        private CustomerProfileData(String customerProfileId, String customerPaymentProfileId) {
+            this.customerProfileId = customerProfileId;
+            this.customerPaymentProfileId = customerPaymentProfileId;
+        }
+
+        public String getCustomerProfileId() {
+            return customerProfileId;
+        }
+
+        public void setCustomerProfileId(String customerProfileId) {
+            this.customerProfileId = customerProfileId;
+        }
+
+        public String getCustomerPaymentProfileId() {
+            return customerPaymentProfileId;
+        }
+
+        public void setCustomerPaymentProfileId(String customerPaymentProfileId) {
+            this.customerPaymentProfileId = customerPaymentProfileId;
+        }
+
+        public String toGatewayKey() {
+            return customerProfileId + GATEWAY_KEY_DELIMITER + customerPaymentProfileId;
+        }
+
+        public static CustomerProfileData buildFromGatewayKey(String gatewayKey) {
+
+            int delimiterPosition = gatewayKey.indexOf(GATEWAY_KEY_DELIMITER);
+
+            String customerProfileId = gatewayKey.substring(0, delimiterPosition);
+            String paymentProfileId = gatewayKey.substring(
+                    delimiterPosition + GATEWAY_KEY_DELIMITER.length(),
+                    gatewayKey.length());
+
+            return new CustomerProfileData(customerProfileId, paymentProfileId);
+        }
+    }
 
     // Required parameters
     private static final String PARAMETER_NAME = "login";
 
     private static final String PARAMETER_KEY = "transaction_key";
 
-    private static final String PARAMETER_CUSTOMER_PROFILE_ID = "ccf_profile_id";
-
-    private static final String PARAMETER_CUSTOMER_PAYMENT_PROFILE_ID = "ccf_payment_id";
-
     // Optional parameters
     private static final String PARAMETER_TEST_MODE = "test"; // true or false
+
+    /**
+     * Validation mode allows you to generate a test transaction at the time you create a customer
+     * profile. In Test Mode, only field validation is performed. In Live Mode, a transaction is
+     * generated and submitted to the processor with the amount of $0.00 or $0.01. If successful,
+     * the transaction is immediately voided. Visa transactions are being switched from $0.01 to
+     * $0.00 for all processors. All other credit card types use $0.01. We recommend you consult
+     * your Merchant Account Provider before switching to Zero Dollar Authorizations for Visa,
+     * because you may be subject to fees For Visa transactions using $0.00, the billTo address and
+     * billTo zip fields are required.
+     */
+    private static final String PARAMETER_VALIDATION_MODE = "validation_mode"; // none/testMode/liveMode
 
     // Authorize.Net Web Service Resources
     private static final String AUTHNET_XML_TEST_URL = "https://apitest.authorize.net/xml/v1/request.api";
@@ -70,99 +127,71 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
     private static final Logger LOG = Logger.getLogger(PaymentAuthorizeNetCIMTask.class);
 
+    private String getProcessorName() {
+        return "Authorize.Net CIM";
+    }
+
     /**
      * Process jbilling payment
      */
     public boolean process(PaymentDTOEx paymentInfo) throws PluggableTaskException {
 
-        try {
-
-            ContactBL contact = new ContactBL();
-            contact.set(paymentInfo.getUserId());
-            String XML = getCustomerProfileTransactionRequest(paymentInfo,
-                    "profileTransAuthCapture", null);
-            String HTTPResponse = sendViaXML(XML, paymentInfo);
-            PaymentAuthorizationDTO paymentDTO = parseResponse(HTTPResponse);
-
-            if (paymentDTO.getCode1().equals("1")) {
-
-                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
-                paymentInfo.setAuthorization(paymentDTO);
-                PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-                bl.create(paymentDTO, paymentInfo.getId());
-                return false;
-            } else {
-
-                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
-                paymentInfo.setAuthorization(paymentDTO);
-                PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-                bl.create(paymentDTO, paymentInfo.getId());
-                return false;
-            }
-        } catch (Exception e) {
-
-            LOG.error(e);
-            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
-            return true;
-        }
+        return doProcess(paymentInfo, "profileTransAuthCapture", null);
     }
 
     public boolean preAuth(PaymentDTOEx paymentInfo) throws PluggableTaskException {
 
-        try {
-            ContactBL contact = new ContactBL();
-            contact.set(paymentInfo.getUserId());
-            String XML = getCustomerProfileTransactionRequest(paymentInfo, "profileTransAuthOnly",
-                    null);
-            String HTTPResponse = sendViaXML(XML, paymentInfo);
-            PaymentAuthorizationDTO paymentDTO = parseResponse(HTTPResponse);
-
-            if (paymentDTO.getCode1().equals("1")) {
-
-                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
-                paymentInfo.setAuthorization(paymentDTO);
-                PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-                bl.create(paymentDTO, paymentInfo.getId());
-                return false;
-            } else {
-
-                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
-                paymentInfo.setAuthorization(paymentDTO);
-                PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-                bl.create(paymentDTO, paymentInfo.getId());
-                return false;
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
-            return true;
-        }
+        return doProcess(paymentInfo, "profileTransAuthOnly", null);
     }
 
     public boolean confirmPreAuth(PaymentAuthorizationDTO paymentAuthDTO, PaymentDTOEx paymentInfo)
             throws PluggableTaskException {
 
+        return doProcess(paymentInfo, "profileTransCaptureOnly", paymentAuthDTO.getApprovalCode());
+    }
+
+    public void failure(Integer userId, Integer retry) {
+    }
+
+    private boolean doProcess(PaymentDTOEx paymentInfo, String txType, String approvalCode)
+            throws PluggableTaskException {
         try {
+
             ContactBL contact = new ContactBL();
             contact.set(paymentInfo.getUserId());
-            String XML = getCustomerProfileTransactionRequest(paymentInfo,
-                    "profileTransCaptureOnly", paymentAuthDTO.getApprovalCode());
-            String HTTPResponse = sendViaXML(XML, paymentInfo);
-            PaymentAuthorizationDTO paymentDTO = parseResponse(HTTPResponse);
 
-            if (paymentDTO.getCode1().equals("1")) {
+            if (isCreditCardStored(paymentInfo)) {
+                LOG.debug("credit card is obscured, retrieving from database to use external store.");
+                paymentInfo.setCreditCard(new UserBL(paymentInfo.getUserId()).getCreditCard());
+            } else {
+                /*  Credit cards being used for one time payments do not need to be saved in the CIM
+                    as they do not represent the customers primary card.
+
+                    Process using the next payment processor in the chain. This should be configured
+                    as the PaymentAuthorizeNetTask to process normal credit cards through Authorize.net                 
+                 */
+                LOG.debug("One time payment credit card (not obscured!), process using the next PaymentTask.");
+                paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+                return true;
+            }
+
+            String XML = getCustomerProfileTransactionRequest(paymentInfo, txType, approvalCode);
+            String HTTPResponse = sendViaXML(XML);
+            PaymentAuthorizationDTO authorizationDTO = parsePaymentResponse(HTTPResponse);
+
+            if (authorizationDTO.getCode1().equals("1")) {
 
                 paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_OK));
-                paymentInfo.setAuthorization(paymentDTO);
+                paymentInfo.setAuthorization(authorizationDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-                bl.create(paymentDTO, paymentInfo.getId());
+                bl.create(authorizationDTO, paymentInfo.getId());
                 return false;
             } else {
 
                 paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
-                paymentInfo.setAuthorization(paymentDTO);
+                paymentInfo.setAuthorization(authorizationDTO);
                 PaymentAuthorizationBL bl = new PaymentAuthorizationBL();
-                bl.create(paymentDTO, paymentInfo.getId());
+                bl.create(authorizationDTO, paymentInfo.getId());
                 return false;
             }
         } catch (Exception e) {
@@ -171,69 +200,121 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
             paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return true;
         }
+    }
+
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+        LOG.debug("Storing credit card info within " + getProcessorName() + " gateway");
+
+        // fetch contact info if missing
+        if (contact == null && creditCard != null && !creditCard.getBaseUsers().isEmpty()) {
+            UserDTO user = creditCard.getBaseUsers().iterator().next();
+            if (user != null) {
+                ContactBL bl = new ContactBL();
+                bl.set(user.getId());
+                contact = bl.getEntity();
+            }
+        }       
+
+        // user does not have contact info
+        if (contact == null) {
+            LOG.error("Could not determine contact info for external credit card storage");
+            return null;
+        }
+
+        // new contact that has not had a credit card created yet
+        if (creditCard == null) {
+            LOG.warn("No credit card to store externally.");
+            return null;
+        }
+
+        // if the credit card has already been obscured, leave it as is.
+        if (!creditCard.useGatewayKey() || !creditCard.isNumberObsucred()) {
+            String cardRefNumber = storeCreditCardImpl(contact, creditCard).getGatewayKey();
+            LOG.debug("Obtained card reference number during external storing: " + cardRefNumber);
+            return cardRefNumber;
+        } else {
+            LOG.debug("Credit card is already externally stored or obscured, skipping external storage.");
+        }
+
+        return null;                
+    }
+
+    private CreditCardDTO storeCreditCardImpl(ContactDTO contact, CreditCardDTO creditCard) {
+        try {
+            String XML = getCreateCustomerProfileRequest(contact, creditCard);
+            String HTTPResponse = sendViaXML(XML);
+            CustomerProfileData profileData = parseProfileResponse(HTTPResponse);
+            return updateGatewayKey(creditCard, profileData);
+
+        } catch (PluggableTaskException ex) {
+            LOG.error("Could not process external storage payment", ex);
+            return null;
+        }
 
     }
 
-    public void failure(Integer userId, Integer retry) {
+    private static boolean isCreditCardStored(PaymentDTOEx payment) {
+        return payment.getCreditCard().useGatewayKey();
+    }
+
+    private CreditCardDTO updateGatewayKey(CreditCardDTO creditCard, CustomerProfileData customerProfile) {
+        // update the gateway key with the returned Authorize.Net customer profile ID and
+        // customer payment profile ID
+        creditCard.setGatewayKey(customerProfile.toGatewayKey());
+
+        // obscure new credit card numbers
+        if (!com.sapienter.jbilling.common.Constants.PAYMENT_METHOD_GATEWAY_KEY.equals(creditCard.getCcType())) {
+            creditCard.obscureNumber();
+        }
+        CreditCardDAS creditCardDAS = new CreditCardDAS();
+        return creditCardDAS.save(creditCard);
     }
 
     /**
      * Builds the XML 'CustomerProfileTransactionRequest' to send to
      * Authorize.Net
-     * 
-     * @param PaymentDTOEx
-     *            paymentInfo The PaymentDTOEx object as passed to the
-     *            PaymentTask interface method
-     * @param String
-     *            TransactionType The type of transaction to be processed.
-     * @param String
-     *            approvalCode The authorizationCode as returned from
-     *            Authorize.Net during a 'preAuth'
+     *
+     * @param paymentInfo     paymentInfo The PaymentDTOEx object as passed to the
+     *                        PaymentTask interface method
+     * @param transactionType TransactionType The type of transaction to be processed.
+     * @param approvalCode    approvalCode The authorizationCode as returned from
+     *                        Authorize.Net during a 'preAuth'
      * @return String The 'CustomerProfileTransactionRequest' XML data
      * @throws PluggableTaskException
      */
     private String getCustomerProfileTransactionRequest(PaymentDTOEx paymentInfo,
-            String transactionType, String approvalCode) throws PluggableTaskException {
+                                                        String transactionType, String approvalCode)
+            throws PluggableTaskException {
 
         StringBuffer XML = new StringBuffer();
         ContactBL contactLoader;
         contactLoader = new ContactBL();
         contactLoader.set(paymentInfo.getUserId());
 
-        ContactDTOEx contact = contactLoader.getDTO();
-        String ccfProfileIdName = ensureGetParameter(PARAMETER_CUSTOMER_PROFILE_ID);
-        String ccfPaymentIdName = ensureGetParameter(PARAMETER_CUSTOMER_PAYMENT_PROFILE_ID);
+        CustomerProfileData customerProfile = CustomerProfileData.buildFromGatewayKey(
+                paymentInfo.getCreditCard().getGatewayKey());
 
-        ContactFieldDTO customerProfileIdField = (ContactFieldDTO) contact.getFieldsTable().get(
-                ccfProfileIdName);
-        ContactFieldDTO customerPaymentProfileIdField = (ContactFieldDTO) contact.getFieldsTable()
-                .get(ccfPaymentIdName);
-
-        if (customerProfileIdField == null)
-            throw new PluggableTaskException("invalid CCF field '" + PARAMETER_CUSTOMER_PROFILE_ID
-                    + "'");
-
-        if (customerPaymentProfileIdField == null)
-            throw new PluggableTaskException("invalid CCF field '"
-                    + PARAMETER_CUSTOMER_PAYMENT_PROFILE_ID + "'");
-
-        XML.append("<createCustomerProfileTransactionRequest xmlns=\"" + AUTHNET_XML_NAMESPACE
-                + "\">");
+        XML.append("<createCustomerProfileTransactionRequest xmlns=\"" + AUTHNET_XML_NAMESPACE + "\">");
         XML.append(getMerchantAuthenticationXML());
         XML.append("<transaction>");
         XML.append("<" + transactionType + ">");
         XML.append("<amount>" + paymentInfo.getAmount() + "</amount>");
-        XML.append("<customerProfileId>" + customerProfileIdField.getContent()
+
+        XML.append("<customerProfileId>"
+                + customerProfile.getCustomerProfileId()
                 + "</customerProfileId>");
-        XML.append("<customerPaymentProfileId>" + customerPaymentProfileIdField.getContent()
+
+        XML.append("<customerPaymentProfileId>"
+                + customerProfile.getCustomerPaymentProfileId()
                 + "</customerPaymentProfileId>");
 
-        if (transactionType == "profileTransCaptureOnly")
+        if (transactionType == "profileTransCaptureOnly") {
             XML.append("<approvalCode>" + approvalCode + "</approvalCode>");
+        }
 
         XML.append("</" + transactionType + ">");
         XML.append("</transaction>");
-	XML.append("<extraOptions><![CDATA[x_delim_char=|&x_encap_char=]]></extraOptions>");
+        XML.append("<extraOptions><![CDATA[x_delim_char=|&x_encap_char=]]></extraOptions>");
         XML.append("</createCustomerProfileTransactionRequest>");
 
         return XML.toString();
@@ -241,7 +322,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
     /**
      * Returns a 'MerchantAuthentication' XML hierarchy
-     * 
+     *
      * @return The formatted 'MerchantAuthentication' XML data
      * @throws PluggableTaskException
      */
@@ -261,14 +342,67 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
     }
 
     /**
+     * Builds the XML 'createCustomerProfileRequest' to send to
+     * Authorize.Net
+     *
+     * @param contact    The ContactDTO object containing customer information.
+     * @param creditCard The CreditCardDTO object containing credit card information.
+     * @return String The 'createCustomerProfileRequest' XML data
+     * @throws PluggableTaskException
+     */
+    private String getCreateCustomerProfileRequest(ContactDTO contact, CreditCardDTO creditCard)
+            throws PluggableTaskException {
+
+        LOG.debug("Contact: " + contact);
+        LOG.debug("Credit card: + " + creditCard);
+
+        StringBuffer XML = new StringBuffer();
+        XML.append("<createCustomerProfileRequest xmlns=\"" + AUTHNET_XML_NAMESPACE + "\">");
+        XML.append(getMerchantAuthenticationXML());
+        XML.append("<profile>");
+        XML.append("<email>" + contact.getEmail() + "</email>");
+        XML.append("<paymentProfiles>");
+        if (contact != null) {
+            XML.append("<billTo>");
+            XML.append("<firstName>" + contact.getFirstName() + "</firstName>");
+            XML.append("<lastName>" + contact.getLastName() + "</lastName>");
+            XML.append("<company>" + contact.getOrganizationName() + "</company>");
+            XML.append("<address>" + contact.getAddress1() + "</address>");
+            XML.append("<city>" + contact.getCity() + "</city>");
+            XML.append("<state>" + contact.getStateProvince() + "</state>");
+            XML.append("<country>" + contact.getCountryCode() + "</country>");
+            XML.append("<phoneNumber>" + contact.getPhoneNumber() + "</phoneNumber>");
+            XML.append("<faxNumber>" + contact.getFaxNumber() + "</faxNumber>");
+            XML.append("</billTo>");
+        }
+        XML.append("<payment>");
+        XML.append("<creditCard>");
+        XML.append("<cardNumber>" + creditCard.getNumber() + "</cardNumber>");
+        XML.append("<expirationDate>"
+                + new SimpleDateFormat("yyyy-MM").format(creditCard.getCcExpiry())
+                + "</expirationDate>");
+        if (creditCard.getSecurityCode() != null) {
+            XML.append("<cardCode>" + creditCard.getSecurityCode() + "</cardCode>");
+        }
+        XML.append("</creditCard>");
+        XML.append("</payment>");
+        XML.append("</paymentProfiles>");
+        XML.append("</profile>");
+        XML.append("<validationMode>" + getOptionalParameter(PARAMETER_VALIDATION_MODE, "none") + "</validationMode>");
+        XML.append("</createCustomerProfileRequest>");
+
+        return XML.toString();
+    }
+
+
+    /**
      * Sends the request to the Authorize.Net payment processor
-     * 
-     * @param postVars
-     *            String The HTTP POST formatted as a GET string
+     *
+     * @param data String The HTTP POST formatted as a GET string
      * @return String
      * @throws PluggableTaskException
      */
-    private String sendViaXML(String data, PaymentDTOEx paymentInfo) throws PluggableTaskException {
+    private String sendViaXML(String data) throws PluggableTaskException {
 
         int ch;
         StringBuffer responseText = new StringBuffer();
@@ -278,8 +412,7 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
             // Set up the connection
             String mode = getOptionalParameter(PARAMETER_TEST_MODE, "false");
-            URL url = (Boolean.valueOf(mode)) ? new URL(AUTHNET_XML_TEST_URL) : new URL(
-                    AUTHNET_XML_PROD_URL);
+            URL url = (Boolean.valueOf(mode)) ? new URL(AUTHNET_XML_TEST_URL) : new URL(AUTHNET_XML_PROD_URL);
             URLConnection conn = url.openConnection();
             conn.setRequestProperty("CONTENT-TYPE", "application/xml");
             conn.setConnectTimeout(getTimeoutSeconds() * 1000);
@@ -294,11 +427,12 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
 
             // Get the response
             InputStream istream = conn.getInputStream();
-            while ((ch = istream.read()) != -1)
+            while ((ch = istream.read()) != -1) {
                 responseText.append((char) ch);
+            }
             istream.close();
             responseText.replace(0, 3, ""); // KLUDGE: Strips erroneous chars
-                                            // from response stream.
+            // from response stream.
 
             LOG.debug("Authorize.Net response: " + responseText);
 
@@ -314,13 +448,12 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
     /**
      * Parses the XML response and stores the values in the
      * PaymentAuthorizationDTO
-     * 
-     * @param HTTPResponse
-     *            The HTTP response XML string
+     *
+     * @param HTTPResponse The HTTP response XML string
      * @return PaymentDTO
      * @throws PluggableTaskException
      */
-    private PaymentAuthorizationDTO parseResponse(String HTTPResponse)
+    private PaymentAuthorizationDTO parsePaymentResponse(String HTTPResponse)
             throws PluggableTaskException {
 
         try {
@@ -371,6 +504,50 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout implement
             paymentDTO.setCreateDate(Calendar.getInstance().getTime());
 
             return paymentDTO;
+        } catch (Exception e) {
+
+            LOG.error(e);
+            throw new PluggableTaskException(e);
+        }
+    }
+
+    private CustomerProfileData parseProfileResponse(String HTTPResponse)
+            throws PluggableTaskException {
+
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            InputSource inStream = new InputSource();
+            inStream.setCharacterStream(new StringReader(HTTPResponse));
+            Document doc = builder.parse(inStream);
+            doc.getDocumentElement().normalize();
+            Element rootElement = doc.getDocumentElement();
+            NodeList nodeLst = rootElement.getChildNodes();
+            NodeList messagesNodeLst = nodeLst.item(0).getChildNodes();
+            NodeList resultCodeNodeLst = messagesNodeLst.item(0).getChildNodes();
+            String resultCode = resultCodeNodeLst.item(0).getNodeValue();
+            NodeList messageNodeLst = messagesNodeLst.item(1).getChildNodes();
+            NodeList codeNodeLst = messageNodeLst.item(0).getChildNodes();
+            String code = codeNodeLst.item(0).getNodeValue();
+            NodeList textNodeLst = messageNodeLst.item(1).getChildNodes();
+            String text = textNodeLst.item(0).getNodeValue();
+
+            // check for errors
+            if (!resultCode.equals("Ok")) {
+                throw new PluggableTaskException(
+                        String.format("Authorize.Net createCustomerProfile error: %s (code1: %s, code2: %s)",
+                                      text, resultCode, code));
+            }
+            /**
+             * If the response was ok the direct response node gets parsed and
+             * PaymentAuthorizationDTO gets updated with the parsed values
+             */
+            NodeList customerProfileIdNodeLst = nodeLst.item(1).getChildNodes();
+            String customerProfileId = customerProfileIdNodeLst.item(0).getNodeValue();
+            NodeList customerPaymentProfileIdListNodeLst = nodeLst.item(2).getChildNodes();
+            NodeList numericStringNodeLst = customerPaymentProfileIdListNodeLst.item(0).getChildNodes();
+            String customerPaymentProfileId = numericStringNodeLst.item(0).getNodeValue();
+
+            return new CustomerProfileData(customerProfileId, customerPaymentProfileId);
         } catch (Exception e) {
 
             LOG.error(e);

@@ -70,7 +70,8 @@ public class MediationTest extends TestCase {
         remoteMediation = (IMediationSessionBean) RemoteContext.getBean(RemoteContext.Name.MEDIATION_REMOTE_SESSION);
     }
 
-    public void testTrigger() {
+    public void test01Trigger() {
+        System.out.println("testTrigger");
         try {
             remoteMediation.trigger();
             
@@ -173,7 +174,8 @@ public class MediationTest extends TestCase {
     }
 
     // test that the last 2 orders for gandalf have all the CDRs
-    public void testOrderLineEvents() {
+    public void test02OrderLineEvents() {
+        System.out.println("testOrderLineEvents");
         try {
             
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -199,7 +201,8 @@ public class MediationTest extends TestCase {
         }
     }
 
-    public void testLongDistancePlanA() throws Exception {
+    public void test03LongDistancePlanA() throws Exception {
+        System.out.println("testLongDistancePlanA");
         final Integer MEDIATION_TEST_1_USER = 10760;
 
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -212,7 +215,8 @@ public class MediationTest extends TestCase {
         assertEquals("$79248 total", new BigDecimal("79248"), order.getOrderLines()[0].getAmountAsDecimal());
     }
 
-    public void testLongDistancePlanB() throws Exception {
+    public void test04LongDistancePlanB() throws Exception {
+        System.out.println("testLongDistancePlanB");
         final Integer MEDIATION_TEST_2_USER = 10761;
 
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -225,7 +229,8 @@ public class MediationTest extends TestCase {
         assertEquals("$1462.50 total", new BigDecimal("1462.50"), order.getOrderLines()[0].getAmountAsDecimal());
     }
 
-    public void testLongDistancePlanIncludedItems() throws Exception {
+    public void test05LongDistancePlanIncludedItems() throws Exception {
+        System.out.println("testLongDistancePlanIncludedItems");
         final Integer MEDIATION_TEST_3_USER = 10762;
 
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -248,7 +253,8 @@ public class MediationTest extends TestCase {
         }
     }
 
-    public void testRateCard() throws Exception {
+    public void test06RateCard() throws Exception {
+        System.out.println("testRateCard");
         final Integer MEDIATION_TEST_4_USER = 10770; // mediation-batch-test-04
         final Integer MEDIATION_TEST_5_USER = 10771;
         final Integer MEDIATION_TEST_6_USER = 10772;
@@ -319,7 +325,9 @@ public class MediationTest extends TestCase {
         assertEquals("$20498.25 total", new BigDecimal("20498.25"), order.getOrderLines()[0].getAmountAsDecimal());
     }
 
-    public void testDuplicateEvents() throws Exception {
+    public void test07DuplicateEvents() throws Exception {
+
+        System.out.println("testDuplicateEvents");
         final Integer MEDIATION_TEST_11_USER = 10777;
 
         JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -337,7 +345,7 @@ public class MediationTest extends TestCase {
      * This test case checks the content of files with saved errors on serve
      * BUT will work only for local machine and running test from ant target
      */
-    public void testSavingErrorsToFile() {
+    public void test08SavingErrorsToFile() {
         String dir = System.getProperty("mediation.errors.dir");
         String serverFilePath = (dir != null ?  dir + File.separator  : "") + "mediation-errors.csv";
 
@@ -396,7 +404,7 @@ public class MediationTest extends TestCase {
         }
     }
 
-     public void testSavingErrorsToJDBC() {
+     public void test09SavingErrorsToJDBC() {
          Connection connection = null;
          try {
              connection = getConnection();
@@ -440,7 +448,7 @@ public class MediationTest extends TestCase {
          }
      }
 
-     public void testJDBCReader() {
+     public void test10JDBCReader() {
          List<MediationProcess> all = remoteMediation.getAll(1);
          assertNotNull("process list can't be null", all);
 

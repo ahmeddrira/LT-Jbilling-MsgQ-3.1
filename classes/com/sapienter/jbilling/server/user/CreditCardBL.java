@@ -100,7 +100,7 @@ public class CreditCardBL extends ResultList
     }
 
     /**
-     * Creates a new persistant CreditCardDTO and emits a NewCreditCardEvent.
+     * Creates a new persistent CreditCardDTO and emits a NewCreditCardEvent.
      *
      * @param dto credit card to persist
      * @return id of persisted credit card
@@ -114,23 +114,48 @@ public class CreditCardBL extends ResultList
         // existing card stored against an external payment gateway - fetch from the db instead
         if (!dto.useGatewayKey() || !dto.isNumberObsucred()) {
             creditCard = creditCardDas.save(dto);
-            LOG.debug("New cc saved");
+            UserDTO user = getUser(creditCard);
+            EventManager.process(new NewCreditCardEvent(creditCard, (user == null ? null : user.getEntity().getId())));
+            LOG.debug("Saved new credit card " + creditCard.getId());
 
-            if (!creditCard.getBaseUsers().isEmpty()) {
-                UserDTO user =  creditCard.getBaseUsers().iterator().next();
-                LOG.debug("Credit card for a user");
-                EventManager.process(new NewCreditCardEvent(creditCard,  user.getEntity().getId()));
-            } else {
-                LOG.debug("Credit card wihtout user. NewCreditCardEvent not triggered. OK if credit card from a payment.");
-            }
         } else {
-            // fetch the credit card from the database instead of creating a new record
-            UserDTO user = dto.getBaseUsers().iterator().next();
+            UserDTO user = getUser(dto);
             creditCard = new UserBL(user.getId()).getCreditCard();
-            LOG.debug("CC not saved, using the user's instead");
+            LOG.debug("Credit card obscured, using the stored credit card " + creditCard.getId());
         }
-
         return creditCard.getId();
+    }
+
+    /**
+     * Get the associated user for this credit card.
+     *
+     * @return associated user, null if not found
+     */
+    public UserDTO getUser() {
+        return getUser(creditCard);
+    }
+
+    /**
+     * Get the associated user for the given credit card. If the credit card is
+     * a user credit card, the base user will be returned. If the credit card is being
+     * used for a one-time payment, the user of the payment will be returned.
+     *
+     * @param dto credit card
+     * @return associated user, null if not found
+     */
+    public UserDTO getUser(CreditCardDTO dto) {
+        if (dto != null) {
+            if (!dto.getBaseUsers().isEmpty()) {
+                // credit card saved for a user
+                return dto.getBaseUsers().iterator().next();
+
+            } else if (!dto.getPayments().isEmpty()) {
+                // credit card saved for a payment (cc not linked to a user)
+                PaymentDTO payment = dto.getPayments().iterator().next();
+                return payment.getBaseUser();
+            }
+        }
+        return null;
     }
 
     public void update(Integer executorId, CreditCardDTO dto, Integer userId)

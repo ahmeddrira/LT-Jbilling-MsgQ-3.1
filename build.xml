@@ -535,8 +535,8 @@
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
-    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-integration"/>
-
+    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-partners, test-process, test-mediation, test-provisioning">
+    </target>
     
     <!--
      Warning: this task needs a lot of memory. At least 400Megs. Otherwise

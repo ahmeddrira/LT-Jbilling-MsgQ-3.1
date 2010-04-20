@@ -163,6 +163,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getCreditCard() != null) {
+            dto.getCreditCard().getPayments().add(payment); // back reference to payment  
             CreditCardBL cc = new CreditCardBL();
             cc.create(dto.getCreditCard());
 
@@ -336,6 +337,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
                 }
 
                 // get the next task
+                LOG.debug("Getting next task, processorUnavailable : " + processorUnavailable);
                 task = (PaymentTask) taskManager.getNextClass();
             }
 
@@ -362,6 +364,12 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         if (retValue.equals(Constants.RESULT_OK) || retValue.equals(Constants.RESULT_FAIL)) {
             sendNotification(info, entityId);
         }
+
+        // obscure credit cards used for one-time payments
+        if (payment.getCreditCard() != null && payment.getCreditCard().getBaseUsers().isEmpty()) {
+            payment.getCreditCard().obscureNumber();
+        }
+
         return retValue;
     }
 

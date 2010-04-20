@@ -163,6 +163,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getCreditCard() != null) {
+            dto.getCreditCard().getPayments().add(payment); // back reference to payment  
             CreditCardBL cc = new CreditCardBL();
             cc.create(dto.getCreditCard());
 

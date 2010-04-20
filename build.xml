@@ -539,7 +539,7 @@
         </junit>
     </target>
 
-    <target name="test" depends="prepare-test, test-unit, test-ws, test-partners, test-process, test-mediation, test-provisioning">
+    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-partners, test-process, test-mediation, test-provisioning">
     </target>
     
     <!--

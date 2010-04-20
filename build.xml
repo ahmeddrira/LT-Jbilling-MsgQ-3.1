@@ -535,8 +535,9 @@
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
-    <target name="test" depends="prepare-test, test-unit, test-ws, test-integration"/>
+    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-integration"/>
 
+    
     <!--
      Warning: this task needs a lot of memory. At least 400Megs. Otherwise
      it fails with an obscure error. To fix use ANT_OPTS=-Xmx400m -Xss128k

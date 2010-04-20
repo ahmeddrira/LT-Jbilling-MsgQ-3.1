@@ -761,15 +761,13 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
     /**
      * @return the id of the invoice generated
      */
-    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId,
-            Integer languageId) 
+    public InvoiceDTO generateInvoice(Integer orderId, Integer invoiceId, Integer languageId)
             throws SessionInternalError {
         
         try {
-            
             BillingProcessBL process = new BillingProcessBL();
-            InvoiceDTO invoice = process.generateInvoice(orderId,
-                    invoiceId);
+            InvoiceDTO invoice = process.generateInvoice(orderId, invoiceId);
+            invoice.touch();
             
             return invoice;
         } catch (Exception e) {

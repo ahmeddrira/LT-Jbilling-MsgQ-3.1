@@ -40,6 +40,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -479,5 +480,24 @@ public class InvoiceDTO implements Serializable {
     @Transient
     public String getNumber() {
         return getPublicNumber();
+    }
+
+    /**
+     * Touch this InvoiceDTO and initialize all lazy-loaded fields.
+     */
+    public void touch() {
+        getBillingProcess();
+        getBaseUser();
+        getCurrency();
+        getInvoice();
+        getPaperInvoiceBatch();
+
+        if (getInvoiceLines() != null) getInvoiceLines().size();
+        if (getInvoices() != null) getInvoices().size();
+        if (getPaymentMap() != null) getPaymentMap().size();
+        if (getOrderProcesses() != null) {
+            for (OrderProcessDTO process : getOrderProcesses())
+                process.getPurchaseOrder().touch();
+        }
     }
 }

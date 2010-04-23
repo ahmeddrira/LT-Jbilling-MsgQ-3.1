@@ -494,8 +494,8 @@
             <formatter type="xml"/>
 
             <!--
-                The tests need to run in a specific order (partners first). Using batchtest won't do then.
-             -->
+                The tests need to run in a specific order (partners first). Don't use batchtest!
+            -->
             <test name="com.sapienter.jbilling.server.user.PartnerTest" unless="test.class" todir="${build.test-results.dir}/integration/xml"/>
             <test name="com.sapienter.jbilling.server.process.BillingProcessTest" unless="test.class" todir="${build.test-results.dir}/integration/xml"/>
             <test name="com.sapienter.jbilling.server.mediation.MediationTest" unless="test.class" todir="${build.test-results.dir}/integration/xml"/>
@@ -535,7 +535,7 @@
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
-    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-partners, test-process, test-mediation, test-provisioning">
+    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-integration">
     </target>
     
     <!--

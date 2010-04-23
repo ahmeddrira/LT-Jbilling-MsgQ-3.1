@@ -866,7 +866,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     public void deleteOrder(Integer id) throws SessionInternalError {
         // now get the order
-        OrderBL bl = new OrderBL(id);
+        OrderBL bl = new OrderBL();
+        bl.setForUpdate(id);
         bl.delete(getCallerId());
     }
 

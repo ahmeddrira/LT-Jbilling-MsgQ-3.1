@@ -254,9 +254,9 @@
     </target>
     
     <target name="findRevision">
-        <!--
+        <!-- TODO: replace with git equivalent
         <exec executable="svnversion" outputproperty="revisionNumber" failifexecutionfails="false">
-            <arg value="--no-newline"/>
+            <arg value="- -no-newline"/>
             <arg value="${basedir}"/>
         </exec>
         -->

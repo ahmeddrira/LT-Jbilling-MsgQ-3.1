@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.payment.tasks;
 
+import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
@@ -46,6 +48,11 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
     private static final String PARAM_CONTACT_TYPE = "contactType";
     private static final String PARAM_EXTERNAL_SAVING_PLUGIN_ID = "externalSavingPluginId";
+    private static final String PARAM_REMOVE_ON_FAIL = "removeOnFail";
+    private static final String PARAM_OBSCURE_ON_FAIL = "obscureOnFail";
+
+    private static final boolean DEFAULT_REMOVE_ON_FAIL = false;
+    private static final boolean DEFAULT_OBSCURE_ON_FAIL = false;
 
     private Integer contactType;
     private Integer externalSavingPluginId;
@@ -132,11 +139,10 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                 UserBL userBl = new UserBL(contact.getUserId());
                 CreditCardDTO creditCard = userBl.getCreditCard();
 
-                if (creditCard != null &&  !creditCard.getNumber().startsWith("*")) {
+                if (creditCard != null &&  !creditCard.isNumberObsucred()) {
                     // credit card has changed or was not previously obscured
                     String gateWayKey = externalCCStorage.storeCreditCard(contact, creditCard);
-                    creditCard.setGatewayKey(gateWayKey);
-                    creditCard.obscureNumber();
+                    updateCreditCard(creditCard, gateWayKey);
                 } else {
                     /*  call the external store without a credit card. It's possible the payment gateway
                         may have some vendor specific recovery facilities, or perhaps they operate on different
@@ -158,7 +164,39 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
             creditCard.setGatewayKey(gatewayKey);
             creditCard.obscureNumber();
         } else {
-            LOG.warn("gateway key returned from external store is null, credit card will not be obscured!");
+
+            // obscure credit cards on failure, useful for clients who under no circumstances want a plan-text
+            // card to be stored in the jBilling database
+            if (getParameter(PARAM_OBSCURE_ON_FAIL, DEFAULT_OBSCURE_ON_FAIL)) {
+                creditCard.obscureNumber();
+                LOG.warn("gateway key returned from external store is null, obscuring credit card with no key");
+            } else {
+                LOG.warn("gateway key returned from external store is null, credit card will not be obscured!");
+            }
+
+            // delete the credit card on failure so that it cannot be used for future payments. useful when
+            // paired with PARAM_OBSCURE_ON_FAIL as it prevents accidental payments with invalid cards.
+            if (getParameter(PARAM_REMOVE_ON_FAIL, DEFAULT_REMOVE_ON_FAIL)) {
+                CreditCardBL bl = new CreditCardBL(creditCard);
+                UserDTO user = bl.getUser();
+                bl.delete((user != null ? user.getId() : null));
+                LOG.warn("gateway key returned from external store is null, deleting card and removing from user map");
+            }
         }
+    }
+
+    /**
+     * Returns the plug-in parameter value as a boolean value if it exists, or
+     * returns the given default value if it doesn't.
+     *
+     * "true" and "True" equals Boolean.TRUE, all other values equate to false.
+     *
+     * @param key plug-in parameter name
+     * @param defaultValue default value if parameter not defined
+     * @return parameter value, or default if not defined
+     */
+    private Boolean getParameter(String key, Boolean defaultValue) {
+        Object value = parameters.get(key);
+        return value != null ? ((String) value).equalsIgnoreCase("true") : defaultValue;
     }
 }

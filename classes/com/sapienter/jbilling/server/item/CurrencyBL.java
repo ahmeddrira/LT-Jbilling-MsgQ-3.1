@@ -37,6 +37,7 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.common.Constants;
 import org.apache.log4j.Logger;
 
 import com.sapienter.jbilling.common.CommonConstants;
@@ -115,7 +116,7 @@ public class CurrencyBL {
         exchange = findExchange(entityId, currencyId);
         // make the conversion itself
         BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp = tmp.divide(exchange.getRate());
+        tmp = tmp.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
         
         return tmp;
     }

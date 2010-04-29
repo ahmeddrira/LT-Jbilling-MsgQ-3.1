@@ -46,6 +46,10 @@
         <pathelement location="${build.test.dir}"/>
         <pathelement location="${source.lib.dir}/commons-logging.jar"/>
         <pathelement location="${source.lib.dir}/log4j.jar"/>
+        
+        <fileset dir="${easymock.dir}">
+            <include name="*.jar"/>
+        </fileset>
 
         <!-- classes for webservices -->
         <pathelement location="${source.lib.dir}/spring.jar"/>
@@ -414,20 +418,17 @@
 
     <target name="test-unit" description="Run all class level unit tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/unit" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
-            <classpath path="${build.classes.dir}"/>
             <classpath refid="test.classpath"/>
+            <classpath refid="compile.classpath"/>
+            <classpath path="${build.classes.dir}"/>
         </javac>
 
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed">
             <classpath refid="test.classpath"/>
+            <classpath refid="compile.classpath"/>            
             <classpath path="${build.classes.dir}"/>
-            <classpath>
-                <fileset dir="${source.lib.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
 
             <batchtest fork="yes" todir="${build.test-results.dir}/unit/xml">
                 <formatter type="brief" usefile="false"/>

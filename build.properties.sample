@@ -36,6 +36,7 @@ digester.jar=${libs.dir}/client/commons-digester-1.8.jar
 drools-api.jar=${libs.dir}/drools/drools-api-5.0.1.jar
 junit.dir=${libs.dir}/junit
 spring.test.jar=${libs.dir}/spring/spring-test.jar
+easymock.dir=${libs.dir}/easymock
 #where is torque
 torque.home.dir=/home/user/tools/torque-gen-3.2
 

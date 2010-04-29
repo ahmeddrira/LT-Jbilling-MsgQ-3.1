@@ -25,132 +25,111 @@
  */
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.common.JNDILookup;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.user.EntityBL;
+import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
+import com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO;
+import org.apache.log4j.Logger;
+
+import javax.naming.NamingException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.naming.NamingException;
-
-import com.sapienter.jbilling.common.Constants;
-import org.apache.log4j.Logger;
-
-import com.sapienter.jbilling.common.CommonConstants;
-import com.sapienter.jbilling.common.JNDILookup;
-import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.user.EntityBL;
-import com.sapienter.jbilling.server.user.db.CompanyDAS;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.util.Util;
-import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyExchangeDAS;
-import com.sapienter.jbilling.server.util.db.CurrencyExchangeDTO;
-import java.util.ArrayList;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @author Emil
  */
 public class CurrencyBL {
     private static final Logger LOG = Logger.getLogger(CurrencyBL.class);
-    private CurrencyDAS das = null;
+
+    private CurrencyDAS currencyDas = null;
+    private CurrencyExchangeDAS exchangeDas = null;
+
     private CurrencyDTO currency = null;
-    //private Logger log = null;
-    
+
+    public CurrencyBL() {
+        init();
+    }
+
     public CurrencyBL(Integer currencyId) {
         init();
         set(currencyId);
     }
-    
-    public void set(Integer id)  {
-        currency = das.find(id);
+
+    public CurrencyBL(CurrencyDAS currencyDas, CurrencyExchangeDAS exchangeDas) {
+        this.currencyDas = currencyDas;
+        this.exchangeDas = exchangeDas;
     }
-    
-    public CurrencyBL() throws NamingException {
-        init();
-    }
-    
+
     private void init() {
-        das = new CurrencyDAS();
+        currencyDas = new CurrencyDAS();
+        exchangeDas = new CurrencyExchangeDAS();
     }
-    
+
+    public void set(Integer id)  {
+        currency = currencyDas.find(id);
+    }
+
     public CurrencyDTO getEntity() {
         return currency;
     }
 
-    public BigDecimal convert(Integer fromCurrencyId, Integer toCurrencyId,
-            BigDecimal amount, Integer entityId)
+    public BigDecimal convert(Integer fromCurrencyId, Integer toCurrencyId, BigDecimal amount, Integer entityId)
             throws SessionInternalError {
-        BigDecimal retValue = null;
-        
-        LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId +
-                " am " + amount + " en " + entityId);
+
+        LOG.debug("Converting " + fromCurrencyId + " to " + toCurrencyId + " am " + amount + " en " + entityId);
         if (fromCurrencyId.equals(toCurrencyId)) {
-            // mmm.. no conversion needed
-            return amount;
+            return amount; // mmm.. no conversion needed
         }
         
         // make the conversions
-        retValue = convertPivotToCurrency(toCurrencyId, 
-                convertToPivot(fromCurrencyId, amount, entityId), entityId);
-        
-        return retValue;         
+        return convertPivotToCurrency(toCurrencyId, convertToPivot(fromCurrencyId, amount, entityId), entityId);
     }
     
-    public BigDecimal convertToPivot(Integer currencyId, BigDecimal amount,
-            Integer entityId) 
+    public BigDecimal convertToPivot(Integer currencyId, BigDecimal amount, Integer entityId)
             throws SessionInternalError {
-        CurrencyExchangeDTO exchange = null;
-        
-        if (currencyId.intValue() == 1) {
-            // this is already in the pivot
-            return amount;
-        }
-        
-        exchange = findExchange(entityId, currencyId);
-        // make the conversion itself
-        BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp = tmp.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-        
-        return tmp;
-    }
-    
-    public BigDecimal convertPivotToCurrency(Integer currencyId, BigDecimal amount,
-            Integer entityId) 
-            throws SessionInternalError {
-        CurrencyExchangeDTO exchange = null;
-        
-        if (currencyId.intValue() == 1) {
-            // this is already in the pivot
-            return amount;
-        }
-        
-        exchange = findExchange(entityId, currencyId);
-        // make the conversion itself
-        BigDecimal tmp = new BigDecimal(amount.toString());
-        tmp = tmp.multiply(exchange.getRate());
-        
-        return tmp;
-    }
-    
-    public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId)
-            throws SessionInternalError {
-        CurrencyExchangeDTO exchange = null;
 
-        exchange = new CurrencyExchangeDAS().findExchange(entityId, currencyId);
+        if (currencyId.equals(1)) {
+            return amount; // this is already in the pivot
+        }
+
+        // make the conversion itself
+        CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
+        BigDecimal tmp = new BigDecimal(amount.toString());
+        return tmp.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+    }
+    
+    public BigDecimal convertPivotToCurrency(Integer currencyId, BigDecimal amount, Integer entityId)
+            throws SessionInternalError {
+
+        if (currencyId.equals(1)) {
+            return amount; // this is already in the pivot
+        }
+        
+        CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
+        // make the conversion itself
+        BigDecimal tmp = new BigDecimal(amount.toString());
+        return tmp.multiply(exchange.getRate());
+    }
+    
+    public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId) throws SessionInternalError {
+        CurrencyExchangeDTO exchange = exchangeDas.findExchange(entityId, currencyId);
         if (exchange == null) {
             // this entity doesn't have this exchange defined
             // 0 is the default, don't try to use null, it won't work
-            exchange = new CurrencyExchangeDAS().findExchange(new Integer(0), currencyId);
+            exchange = exchangeDas.findExchange(0, currencyId);
             if (exchange == null) {
-                throw new SessionInternalError("Currency " + currencyId
-                        + " doesn't have a defualt exchange");
+                throw new SessionInternalError("Currency " + currencyId + " doesn't have a defualt exchange");
             }
         }
 
@@ -165,13 +144,11 @@ public class CurrencyBL {
      * @throws NamingException
      * @throws SQLException
      */
-    public CurrencyDTO[] getSymbols() 
-            throws NamingException, SQLException {
+    @SuppressWarnings("unchecked")
+    public CurrencyDTO[] getSymbols() throws NamingException, SQLException {
         JNDILookup jndi = JNDILookup.getFactory();
         Connection conn = jndi.lookUpDataSource().getConnection();
-        PreparedStatement stmt = conn.prepareStatement(
-                "select id, symbol, code " +
-                "  from currency");
+        PreparedStatement stmt = conn.prepareStatement("select id, symbol, code from currency");
         ResultSet result = stmt.executeQuery();
         Vector results = new Vector();
         while (result.next()) {
@@ -192,35 +169,34 @@ public class CurrencyBL {
         
         return (CurrencyDTO []) results.toArray(retValue);
     }
-    
-    public CurrencyDTO[] getCurrencies(Integer languageId, 
-            Integer entityId) 
-            throws NamingException, SQLException {
+
+    @SuppressWarnings("unchecked")
+    public CurrencyDTO[] getCurrencies(Integer languageId, Integer entityId) throws NamingException, SQLException {
         List result = new ArrayList();
         
         CurrencyDTO[] all = getSymbols();
-        for (int f = 1; f < all.length; f++) {
-            Integer currencyId = new Integer(f);
+        for (int currencyId = 1; currencyId < all.length; currencyId++) {
             set(currencyId);
             CurrencyDTO newCurrency = new CurrencyDTO();
             newCurrency.setId(currencyId);
             newCurrency.setName(currency.getDescription(languageId));
+
             // find the system rate
-            if (f == 1) {
+            if (currencyId == 1) {
                 newCurrency.setSysRate(new BigDecimal("1.0"));
             } else {
-                newCurrency.setSysRate(new CurrencyExchangeDAS().findExchange(new Integer(0), currencyId).getRate());
+                newCurrency.setSysRate(exchangeDas.findExchange(0, currencyId).getRate());
             }
+
             // may be there's an entity rate
             EntityBL en = new EntityBL(entityId);
-            CurrencyExchangeDTO exchange = new CurrencyExchangeDAS().findExchange(entityId,
-                    currencyId);
+            CurrencyExchangeDTO exchange = exchangeDas.findExchange(entityId, currencyId);
             if (exchange != null) {
                 newCurrency.setRate(exchange.getRate().toString());
             }
+
             // let's see if this currency is in use by this entity
-            newCurrency.setInUse(new Boolean(entityHasCurrency(entityId, 
-                    currencyId)));
+            newCurrency.setInUse(entityHasCurrency(entityId, currencyId));
             result.add(newCurrency);
         }
         CurrencyDTO[] retValue = new CurrencyDTO[result.size()];
@@ -233,17 +209,15 @@ public class CurrencyBL {
 
         // start by wiping out the existing data for this entity
         entity.getEntity().getCurrencies().clear();
-        for (Iterator it = new CurrencyExchangeDAS().findByEntity(entityId).
-                iterator(); it.hasNext(); ) {
-            CurrencyExchangeDTO exchange = 
-                    (CurrencyExchangeDTO) it.next();
-            new CurrencyExchangeDAS().delete(exchange);
+        for (Iterator it = exchangeDas.findByEntity(entityId).iterator(); it.hasNext(); ) {
+            CurrencyExchangeDTO exchange = (CurrencyExchangeDTO) it.next();
+            exchangeDas.delete(exchange);
         }
-        
+
         for (int f = 0; f < currencies.length; f++) {
-            if (currencies[f].getInUse().booleanValue()) {
+            if (currencies[f].getInUse()) {
                 set(currencies[f].getId());
-                
+
                 entity.getEntity().getCurrencies().add(new CurrencyDAS().find(currency.getId()));
 
                 if (currencies[f].getRate() != null) {
@@ -252,7 +226,7 @@ public class CurrencyBL {
                     exchange.setCurrency(new CurrencyDAS().find(currencies[f].getId()));
                     exchange.setEntityId(entityId);
                     exchange.setRate(currencies[f].getRateAsDecimal());
-                    new CurrencyExchangeDAS().save(exchange);
+                    exchangeDas.save(exchange);
                 }
             }
         }
@@ -276,8 +250,7 @@ public class CurrencyBL {
      * @throws SQLException
      * @throws NamingException
      */
-    private boolean entityHasCurrency(Integer entityId, Integer currencyId) 
-            throws SQLException, NamingException {
+    private boolean entityHasCurrency(Integer entityId, Integer currencyId) throws SQLException, NamingException {
         boolean retValue = false;
         JNDILookup jndi = JNDILookup.getFactory();
         Connection conn = jndi.lookUpDataSource().getConnection();
@@ -286,12 +259,15 @@ public class CurrencyBL {
                 "  from currency_entity_map " +
                 " where currency_id = ? " +
                 "   and entity_id = ?");
-        stmt.setInt(1, currencyId.intValue());
-        stmt.setInt(2, entityId.intValue());
+
+        stmt.setInt(1, currencyId);
+        stmt.setInt(2, entityId);
         ResultSet result = stmt.executeQuery();
+
         if (result.next()) {
             retValue = true;
         }
+        
         result.close();
         stmt.close();
         conn.close();

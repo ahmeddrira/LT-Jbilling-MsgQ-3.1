@@ -3,6 +3,33 @@
     <property file="build.properties"/>
     <property file="${jbilling.conf.dir}/jbilling.properties"/>
     
+    <macrodef name = "git">
+        <attribute name = "command" />
+        <attribute name = "dir" default = "" />
+        <element name = "args" optional = "true" />
+        <sequential>
+            <echo message = "git @{command}" />
+            <exec executable = "git" dir = "@{dir}">
+                <arg value = "@{command}" />
+                <args/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name = "git-clone-pull">
+        <attribute name = "repository" />
+        <attribute name = "dest" />
+        <sequential>
+            <git command = "clone">
+                <args>
+                    <arg value = "@{repository}" />
+                    <arg value = "@{dest}" />
+                </args>
+            </git>
+            <git command = "pull" dir = "@{dest}" />
+        </sequential>
+    </macrodef>
+
     <path id="compile.classpath">
         <fileset dir="${source.lib.dir}">
             <include name="*.jar"/>
@@ -227,10 +254,12 @@
     </target>
     
     <target name="findRevision">
+        <!-- TODO: replace with git equivalent
         <exec executable="svnversion" outputproperty="revisionNumber" failifexecutionfails="false">
-            <arg value="--no-newline"/>
+            <arg value="- -no-newline"/>
             <arg value="${basedir}"/>
         </exec>
+        -->
         <tstamp/>
     </target>
     
@@ -441,11 +470,11 @@
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>            
 
-            <test name="com.sapienter.jbilling.server.order.WSTest"/>
-            <test name="com.sapienter.jbilling.server.user.WSTest"/>
-            <test name="com.sapienter.jbilling.server.payment.WSTest"/>
-            <test name="com.sapienter.jbilling.server.item.WSTest"/>
-            <test name="com.sapienter.jbilling.server.invoice.WSTest"/>
+            <test name="com.sapienter.jbilling.server.order.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.user.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.payment.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.item.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.invoice.WSTest" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
 
         <!-- generate testing reports -->
@@ -918,6 +947,10 @@ server="upload.sourceforge.net" userid="anonymous">
             <zipfileset dir="${server.dir}/lib/" includes="jsf*.jar" prefix="lib"/>
             <zipfileset dir="${server.dir}/lib/" includes="jboss-faces.jar" prefix="lib"/>
         </zip>
+    </target>
+
+    <target name="checkout" description="Update files from GIT">
+      <git command = "pull" dir = "${source.dir}"/>
     </target>
 
 </project>

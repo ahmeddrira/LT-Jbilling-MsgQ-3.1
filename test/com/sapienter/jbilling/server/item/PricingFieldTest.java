@@ -121,7 +121,17 @@ public class PricingFieldTest extends TestCase {
         assertEquals(PricingField.Type.DECIMAL, decimal.getType());
         assertEquals(new BigDecimal("20.63"), decimal.getDecimalValue());
     }
-        
+
+    public void testGetBooleanValue() {
+        PricingField bool = new PricingField("boolean field", true);
+
+        assertEquals(PricingField.Type.BOOLEAN, bool.getType());
+        assertEquals(true, bool.getBooleanValue().booleanValue());
+
+        bool.setBooleanValue(false);
+        assertEquals(false, bool.getBooleanValue().booleanValue());               
+    }
+
     public void testEncode() {
         PricingField string = new PricingField("str field", "Some String");
         assertEquals("str field:1:string:Some String", PricingField.encode(string));
@@ -134,6 +144,9 @@ public class PricingFieldTest extends TestCase {
 
         PricingField decimal = new PricingField("decimal field", new BigDecimal("20.63"));
         assertEquals("decimal field:1:float:20.63", PricingField.encode(decimal));
+
+        PricingField bool = new PricingField("boolean field", true);
+        assertEquals("boolean field:1:boolean:true", PricingField.encode(bool));
     }
 
     public void testDecode() {
@@ -151,6 +164,10 @@ public class PricingFieldTest extends TestCase {
         PricingField decimal = new PricingField("decimal field:1:float:20.63");
         assertEquals(PricingField.Type.DECIMAL, decimal.getType());
         assertEquals(new BigDecimal("20.63"), decimal.getDecimalValue());
+
+        PricingField bool = new PricingField("boolean field:1:boolean:true");
+        assertEquals(PricingField.Type.BOOLEAN, bool.getType());
+        assertEquals(true, bool.getBooleanValue().booleanValue());
     }
 }
  

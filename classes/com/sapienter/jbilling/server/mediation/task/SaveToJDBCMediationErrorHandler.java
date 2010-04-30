@@ -121,6 +121,9 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
                     case DATE:
                         preparedStatement.setTimestamp(index, new Timestamp(field.getDateValue().getTime()));
                         break;
+                    case BOOLEAN:
+                        preparedStatement.setBoolean(index, field.getBooleanValue());
+                        break;
                 }
                 index++;
             }

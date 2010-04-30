@@ -73,7 +73,7 @@ public class MediationTest extends TestCase {
     public void testTrigger() {
         try {
             remoteMediation.trigger();
-            
+
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
             assertEquals("There should be two processes after running the mediation process", 2, all.size());
@@ -110,7 +110,7 @@ public class MediationTest extends TestCase {
                     assertEquals("Record with key 10 should be detected as error (undefined user)",
                                  (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED);
                     checkedRecords++;
-                } 
+                }
             }
             assertEquals("Records with keys 07, 08, 09 and 10 should be in results of processing", 4, checkedRecords.intValue());
 
@@ -133,7 +133,7 @@ public class MediationTest extends TestCase {
 
             for (Integer orderId : api.getLastOrders(2, 100)) {
                 OrderWS order = api.getOrder(orderId);
-                //System.out.println("testing order " + order + " f1 " + foundFirst + 
+                //System.out.println("testing order " + order + " f1 " + foundFirst +
                 //        " f2 " + foundSecond);
                 if (order.getActiveSince() != null) {
                     System.out.println(" c1 " +
@@ -144,13 +144,13 @@ public class MediationTest extends TestCase {
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1015))) {
                     foundFirst = true;
                     assertEquals("Quantity of should be the combiend of all events",
-                            new BigDecimal("1300.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+                            new BigDecimal("2600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
                 }
                 if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
                         Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1115))) {
                     foundSecond = true;
-                    assertEquals("Quantity of second order should be 300 ",
-                            new BigDecimal("300.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+                    assertEquals("Quantity of second order should be 600 ",
+                            new BigDecimal("600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
                 }
             }
 
@@ -165,7 +165,7 @@ public class MediationTest extends TestCase {
             }
 
             // note, only one of the mediated call items is rated, and the default price of the other is zero
-            assertEquals("Total of mixed price order", new BigDecimal("1400"), total);
+            assertEquals("Total of mixed price order", new BigDecimal("2800"), total);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception!" + e.getMessage());
@@ -175,7 +175,7 @@ public class MediationTest extends TestCase {
     // test that the last 2 orders for gandalf have all the CDRs
     public void testOrderLineEvents() {
         try {
-            
+
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer ids[] = api.getLastOrders(2, 2); // last two orders for user 2
             for (Integer id : ids) {
@@ -188,7 +188,7 @@ public class MediationTest extends TestCase {
                     total = total.add(line.getAmount());
                     quantity = quantity.add(line.getQuantity());
                 }
-                
+
                 assertEquals("Total of order " + id, BigDecimal.ZERO, total.subtract(order.getOrderLines()[0].getAmountAsDecimal()));
                 assertEquals("Qty of order " + id, BigDecimal.ZERO, quantity.subtract(order.getOrderLines()[0].getQuantityAsDecimal()));
                 System.out.println("Order adds up: " + id);
@@ -262,7 +262,7 @@ public class MediationTest extends TestCase {
         // 150 calls to 1876999* @ 0.470/min - only 150 of the calls for this user are rated!
         Integer[] ids = api.getLastOrders(MEDIATION_TEST_4_USER, 1);
         OrderWS order = api.getOrder(ids[0]);
-        
+
         assertEquals("1 line added", 1, order.getOrderLines().length);
         assertEquals("67800 minutes", new BigDecimal("67800"), order.getOrderLines()[0].getQuantityAsDecimal());
         assertEquals("$5322.75 total", new BigDecimal("5322.75"), order.getOrderLines()[0].getAmountAsDecimal());
@@ -290,7 +290,7 @@ public class MediationTest extends TestCase {
 
         assertEquals("1 line added", 1, order.getOrderLines().length);
         assertEquals("154125 minutes", new BigDecimal("154125"), order.getOrderLines()[0].getQuantityAsDecimal());
-        assertEquals("$13125.00 total", new BigDecimal("13125"), order.getOrderLines()[0].getAmountAsDecimal());        
+        assertEquals("$13125.00 total", new BigDecimal("13125"), order.getOrderLines()[0].getAmountAsDecimal());
 
 
         // 300 calls to 52* @ 0.180/min - two batches or calls, one being processed at the beginning and the other
@@ -459,5 +459,5 @@ public class MediationTest extends TestCase {
         assertEquals(message,
                      (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
                      (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
-    }       
+    }
 }

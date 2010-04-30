@@ -20,43 +20,33 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import org.springframework.dao.EmptyResultDataAccessException;
-
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.util.PreferenceBL;
-import java.util.ArrayList;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
+
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 /**
- * JDBCReader allows reading event records from a database for 
- * mediation. By default it reads all field from a table 'cdr'. There 
- * are two methods for marking which tables have been read: 'Last id' 
- * and 'timestamp'. 'Last id' reads all records greater than the last 
- * id that was read during a previous run (stored in preference 
- * MEDIATION_JDBC_READER_LAST_ID). 'Timestamp' is used if a column 
- * 'jbilling_timestamp' exists (or the 'timestamp_column_name' 
- * parameter is set). In this method, the records with 'timestamp == 
- * null' are read and then timestamped. The meothd  also allows 
+ * JDBCReader allows reading event records from a database for
+ * mediation. By default it reads all field from a table 'cdr'. There
+ * are two methods for marking which tables have been read: 'Last id'
+ * and 'timestamp'. 'Last id' reads all records greater than the last
+ * id that was read during a previous run (stored in preference
+ * MEDIATION_JDBC_READER_LAST_ID). 'Timestamp' is used if a column
+ * 'jbilling_timestamp' exists (or the 'timestamp_column_name'
+ * parameter is set). In this method, the records with 'timestamp ==
+ * null' are read and then timestamped. The meothd  also allows
  * composite  primary keys.
  */
 public class JDBCReader extends AbstractReader implements IMediationReader {
@@ -84,12 +74,12 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     protected static final String USERNAME_DEFAULT = "SA";
     protected static final String PASSWORD_DEFAULT = "";
     protected static final String TIMESTAMP_COLUMN_DEFAULT = "jbilling_timestamp";
-    protected static final Boolean LOWERCASE_COLUMN_NAME_DEFAULT = true; 
-
+    protected static final Boolean LOWERCASE_COLUMN_NAME_DEFAULT = true;
 
     protected enum MarkMethod { LAST_ID, TIMESTAMP }
 
     protected Connection connection = null;
+    protected JdbcTemplate jdbcTemplate = null;
     protected String[] keyColumnNames = null;
     protected String timestampColName = null;
     protected MarkMethod markMethod = null;
@@ -100,11 +90,20 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     public JDBCReader() {
 
     }
-  
+
     public boolean validate(List<String> messages) {
         super.validate(messages);
         try {
-            connection = getConnection();
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setDriverClassName(getDriver());
+            dataSource.setUrl(getUrl());
+            dataSource.setUsername(getParameter(PARAM_USERNAME, USERNAME_DEFAULT));
+            dataSource.setPassword(getParameter(PARAM_PASSWORD, PASSWORD_DEFAULT));
+
+            jdbcTemplate = new JdbcTemplate(dataSource);
+            jdbcTemplate.setMaxRows(getBatchSize());
+            connection = dataSource.getConnection();
+
             keyColumnNames = getKeyColumnNames();
             timestampColName = getTimestampColumnName();
             if (timestampColName != null) {
@@ -116,35 +115,27 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             }
         } catch (SQLException sqle) {
             throw new SessionInternalError(sqle);
-        } catch (ClassNotFoundException cnfe) {
-            throw new SessionInternalError(cnfe);
         }
+
+        // get the maximum id last processed
+        PreferenceBL preferenceBL = new PreferenceBL();
+        try {
+            preferenceBL.set(getEntityId(),
+                             Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID);
+        } catch (EmptyResultDataAccessException fe) {
+            // use default
+        }
+        maxId = preferenceBL.getInt();
 
         return true;
     }
 
     public Iterator<List<Record>> iterator() {
         try {
-            return new Reader(getRecords());
+            return new Reader(jdbcTemplate);
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
-    }
-
-    /**
-     * Returns a connection to the database
-     */
-    protected Connection getConnection() throws SQLException, ClassNotFoundException{
-        String driver = getDriver();
-        String url = getUrl();
-        String username = getParameter(PARAM_USERNAME, USERNAME_DEFAULT);
-        String password = getParameter(PARAM_PASSWORD, PASSWORD_DEFAULT);
-
-        // create connection
-        Class.forName(driver); // load driver
-        Connection conn = DriverManager.getConnection(url, username, password);
-
-        return conn;
     }
 
     /**
@@ -156,7 +147,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     }
 
     /**
-     * Returns the table name, either from a plug-in parameter 
+     * Returns the table name, either from a plug-in parameter
      * or the default.
      */
     protected String getTableName() {
@@ -183,30 +174,19 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
 
         // construct a default hsqldb url for a database in the 
         // 'jbilling/resources/mediation' directory.
-        return "jdbc:hsqldb:" + Util.getSysProp("base_dir") + "mediation/" +
-                getDatabaseName() + ";shutdown=true";
-    }
-
-    /**
-     * Returns a result set of all the records to be processed. This
-     * can be overrided when, for example, a stored procedure is used
-     * to retrieve the data.
-     */
-    protected ResultSet getRecords() throws SQLException {
-        Statement stmt = connection.createStatement();
-        return stmt.executeQuery(getQueryString());
+        return "jdbc:hsqldb:" + Util.getSysProp("base_dir") + "mediation/" + getDatabaseName() + ";shutdown=true";
     }
 
     /**
      * Returns the default query string that selects all fields from
-     * the table. For the 'last id' method, it selects all records 
+     * the table. For the 'last id' method, it selects all records
      * with the primary key greater than a value stored in the
      * MEDIATION_JDBC_READER_LAST_ID preference. For the 'timestamp'
-     * method, all records are read where the timestamp column is 
+     * method, all records are read where the timestamp column is
      * null. Also allows the WHERE clause to be appended with a value
-     * from a plug-in parameter. By default, the records are ordered 
-     * by the primary key/s, but can be overrided by a plug-in 
-     * parameter. This method can be overrided to provide a specific 
+     * from a plug-in parameter. By default, the records are ordered
+     * by the primary key/s, but can be overrided by a plug-in
+     * parameter. This method can be overrided to provide a specific
      * query to be executed that returns records to be processed.
      */
     protected String getQueryString() throws SQLException {
@@ -218,15 +198,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                         "allowed when using the last id record marking method");
             }
 
-            // get the maximum id last processed
-            PreferenceBL preferenceBL = new PreferenceBL();
-            try {
-                preferenceBL.set(getEntityId(), 
-                        Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID);
-            } catch (EmptyResultDataAccessException fe) { 
-                // use default
-            }
-            query += keyColumnNames[0] + " > " + preferenceBL.getInt(); 
+            query += keyColumnNames[0] + " > " + maxId;
         } else {
             query += timestampColName + " IS NULL ";
         }
@@ -253,15 +225,15 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     }
 
     /**
-     * Returns the key columns names. This is either a single column 
-     * from a plug-in parameter, otherwise taken from the database 
+     * Returns the key columns names. This is either a single column
+     * from a plug-in parameter, otherwise taken from the database
      * metadata. Failing that, it defaults to 'id'.
-     */ 
+     */
     protected String[] getKeyColumnNames() throws SQLException {
         // try getting key column name from plug-in parameter
         String keyColumnName = (String) parameters.get(PARAM_KEY_COLUMN_NAME);
         if (keyColumnName != null) {
-            return new String[] { keyColumnName };
+            return new String[]{keyColumnName};
         }
 
         // none, so try from metadata
@@ -271,8 +243,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
         String tableName = getTableNameCorrectCase();
 
         // now get the primary key from metadata
-        ResultSet keys = connection.getMetaData().getPrimaryKeys(null, null, 
-                tableName);
+        ResultSet keys = connection.getMetaData().getPrimaryKeys(null, null, tableName);
         List<String> names = new LinkedList<String>();
         while (keys.next()) {
             names.add(keys.getString("COLUMN_NAME"));
@@ -282,15 +253,14 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             return names.toArray(new String[names.size()]);
         } else {
             // could not determine from metadata, default to 'id'
-            LOG.warn("No primary key found, default to '" + 
-                    KEY_COLUMN_NAME_DEFAULT + "'");
-            return new String[] { KEY_COLUMN_NAME_DEFAULT };
+            LOG.warn("No primary key found, default to '" + KEY_COLUMN_NAME_DEFAULT + "'");
+            return new String[]{KEY_COLUMN_NAME_DEFAULT};
         }
     }
 
     /**
-     * Returns the timestamp column name, either from a plug-in 
-     * parameter or the default (if it exists). If none are found, 
+     * Returns the timestamp column name, either from a plug-in
+     * parameter or the default (if it exists). If none are found,
      * returns null (or throws an exception if parameter was used).
      */
     protected String getTimestampColumnName() throws SQLException {
@@ -299,25 +269,22 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
         String tableName = getTableNameCorrectCase();
 
         // try getting timestamp column name from plug-in parameter
-        String timestampColumnName = (String) parameters.get(
-                PARAM_TIMESTAMP_COLUMN_NAME);
+        String timestampColumnName = (String) parameters.get(PARAM_TIMESTAMP_COLUMN_NAME);
         if (timestampColumnName != null) {
             // get the columns from metadata
-            ResultSet columns = connection.getMetaData().getColumns(null, null, 
-                    tableName, null);
+            ResultSet columns = connection.getMetaData().getColumns(null, null, tableName, null);
             while (columns.next()) {
                 String colName = columns.getString("COLUMN_NAME");
                 if (colName.equalsIgnoreCase(timestampColumnName)) {
                     return colName;
                 }
             }
-            throw new SessionInternalError("Couldn't find jbilling timestamp " +
-                    "column: " + timestampColumnName);
+            throw new SessionInternalError("Couldn't find jbilling timestamp " + "column: " + timestampColumnName);
         }
 
         // see if default column name is there
         // get the columns from metadata
-        ResultSet columns = connection.getMetaData().getColumns(null, null, 
+        ResultSet columns = connection.getMetaData().getColumns(null, null,
                 tableName, null);
         while (columns.next()) {
             String colName = columns.getString("COLUMN_NAME");
@@ -330,43 +297,26 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     }
 
     /**
-     * Gets called with the record just processed, as well as an array
-     * of the key fields. Can be overrided to provide a means of 
-     * marking records that have been processed. By default, when 
-     * using the 'last id' mark method, just saves the last id 
-     * processed.
-     */
-    protected void recordProcessed(Record record, int[] keyColumnIndices) {
-        if (markMethod == MarkMethod.LAST_ID) {
-            maxId = record.getFields().get(keyColumnIndices[0]).getIntValue();
-        } 
-    }
-
-    /**
-     * Gets called with a record just read (but before it is 
-     * processed), as well as an array of the key fields. Can be 
+     * Gets called with a record just read (but before it is
+     * processed), as well as an array of the key fields. Can be
      * overrided to provide a means of marking records that have been
      * read. By default, when using the 'timestamp' mark method, sets
-     * a timestamp for the record. 
+     * a timestamp for the record.
      */
-    protected void recordRead(Record record, int[] keyColumnIndices) 
-            throws SQLException{
+    protected void recordRead(Record record, int[] keyColumnIndices) throws SQLException {
         if (markMethod == MarkMethod.TIMESTAMP) {
             List<PricingField> fields = record.getFields();
 
             // contruct primary key SQL if not yet done
             if (primaryKeySQL == null) {
-                primaryKeySQL = fields.get(keyColumnIndices[0]).getName() + 
-                        " = ? ";
+                primaryKeySQL = fields.get(keyColumnIndices[0]).getName() + " = ? ";
                 for (int i = 1; i < keyColumnIndices.length; i++) {
                     int index = keyColumnIndices[i];
-                    primaryKeySQL += " AND " + 
-                            fields.get(keyColumnIndices[i]).getName() + " = ? ";
+                    primaryKeySQL += " AND " + fields.get(keyColumnIndices[i]).getName() + " = ? ";
                 }
             }
 
-            String sql = "UPDATE " + getTableName() + " SET " + 
-                    timestampColName + " = ? WHERE " + primaryKeySQL;
+            String sql = "UPDATE " + getTableName() + " SET " + timestampColName + " = ? WHERE " + primaryKeySQL;
             PreparedStatement ps = connection.prepareStatement(sql);
 
             ps.setTimestamp(1, new Timestamp(new Date().getTime()));
@@ -384,73 +334,67 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                         ps.setDouble(i + 2, field.getDoubleValue());
                         break;
                     case DATE:
-                        ps.setTimestamp(i + 2, new Timestamp(
-                                field.getDateValue().getTime()));
+                        ps.setTimestamp(i + 2, new Timestamp(field.getDateValue().getTime()));
+                        break;
+                    case BOOLEAN:
+                        ps.setBoolean(i + 2, field.getBooleanValue());
                         break;
                 }
             }
 
             ps.executeUpdate();
         }
+
+        if (markMethod == MarkMethod.LAST_ID) {
+            maxId = record.getFields().get(keyColumnIndices[0]).getIntValue();
+        }
     }
 
     /**
-     * Gets called after the last record is processed. Can be 
+     * Gets called after the last record is processed. Can be
      * overrided to be used for clean-up. By default, just saves the
-     * last record id processed in the MEDIATION_JDBC_READER_LAST_ID 
-     * preference when the 'last id' mark method is used.. 
+     * last record id processed in the MEDIATION_JDBC_READER_LAST_ID
+     * preference when the 'last id' mark method is used..
      */
-    protected void processingComplete() {
+    protected void batchProcessingComplete() {
         if (markMethod == MarkMethod.LAST_ID) {
+
+            // no records processed
             if (maxId == 0) {
-                // no records processed
                 return;
             }
 
             // set the maximum id last processed
-            PreferenceBL preferenceBL = new PreferenceBL();
             LOG.debug("Updating last id preference: " + maxId);
+            PreferenceBL preferenceBL = new PreferenceBL();
             preferenceBL.createUpdateForEntity(getEntityId(),
-                    Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID, maxId,
-                    null, null);
+                                               Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID,
+                                               maxId,
+                                               null,
+                                               null);
         }
     }
 
     /**
      * The Record iterator class.
-     */ 
+     */
     public class Reader implements Iterator<List<Record>> {
-        private ResultSet records;
+        private JdbcTemplate jdbcTemplate;
         private boolean isResultSetClosed = false;
         private PricingField.Type[] columnTypes;
         private String[] columnNames;
         private int[] keyColumnIndices;
-
-        private Record currentRecord;
         private List<Record> recordList;
 
-        protected Reader(ResultSet records) { 
-            this.records = records;
-            currentRecord = null;
-
-            try {
-                setColumnInfo();
-                recordList = new ArrayList<Record>(getBatchSize());
-            } catch (SQLException sqle) {
-                throw new SessionInternalError(sqle);
-            }
+        protected Reader(JdbcTemplate jdbcTemplate) {
+            this.jdbcTemplate = jdbcTemplate;
+            recordList = new ArrayList<Record>(getBatchSize());
         }
 
         public boolean hasNext() {
             try {
-                int counter = 0;
                 recordList.clear();
-
-                while (counter < getBatchSize() && updateCurrent()) {
-                    counter++;
-                    recordList.add(currentRecord);
-                }
-
+                recordList = getNextBatch();
                 return recordList.size() > 0;
             } catch (SQLException sqle) {
                 throw new SessionInternalError(sqle);
@@ -465,42 +409,44 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             }
         }
 
-        /**
-         * Returns whether a new records is available to be returned.
-         * Gets the next record from the result set when needed. 
-         * Closes the DB connection when there are none left.
-         */
-        private boolean updateCurrent() throws SQLException {
-            // if result set already closed, we cann't obtain next item
-            if (isResultSetClosed) return false;
-            // try to get a new record
-            if (records.next()) {
-                // previous record has been processed
-                if (currentRecord != null) {
-                    recordProcessed(currentRecord, keyColumnIndices);
-                }
+        private List<Record> getNextBatch() throws SQLException {
+            if (isResultSetClosed) return new ArrayList<Record>();
 
-                currentRecord = new Record();
+            // fetch records
+            SqlRowSet dbRecords = jdbcTemplate.queryForRowSet(getQueryString());
+
+            // fill metadata info in first time
+            if (columnNames == null) {
+                setColumnInfo(dbRecords);
+            }
+
+            List<Record> resultList = new ArrayList<Record>();
+            while (dbRecords.next()) {
+                Record currentRecord = new Record();
                 for (int i = 0; i < columnTypes.length; i++) {
                     switch (columnTypes[i]) {
                         case STRING:
-                            currentRecord.addField(new PricingField(columnNames[i], 
-                                    records.getString(i + 1)), isKeyIndex(i));
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getString(i + 1)), isKeyIndex(i));
                             break;
 
                         case INTEGER:
-                            currentRecord.addField(new PricingField(columnNames[i], 
-                                    records.getInt(i + 1)), isKeyIndex(i));
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getInt(i + 1)), isKeyIndex(i));
                             break;
 
                         case DECIMAL:
                             currentRecord.addField(new PricingField(columnNames[i],
-                                    records.getBigDecimal(i + 1)), isKeyIndex(i));
+                                                                    dbRecords.getBigDecimal(i + 1)), isKeyIndex(i));
                             break;
 
                         case DATE:
-                            currentRecord.addField(new PricingField(columnNames[i], 
-                                    records.getTimestamp(i + 1)), isKeyIndex(i));
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getTimestamp(i + 1)), isKeyIndex(i));
+                            break;
+                        case BOOLEAN:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getBoolean(i + 1)), isKeyIndex(i));
                             break;
                     }
                 }
@@ -511,31 +457,30 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                 // current record read
                 recordRead(currentRecord, keyColumnIndices);
 
-                return true;
+                // add created record to results
+                resultList.add(currentRecord);
             }
 
-            LOG.debug("No more records.");
+            // mark batch as read
+            batchProcessingComplete();
 
-            // no more records
-            if (currentRecord != null) {
-                recordProcessed(currentRecord, keyColumnIndices);
+            // no more records for read
+            if (resultList.isEmpty()) {
+                // close db connection
+                connection.close();
+                isResultSetClosed = true;
             }
-            processingComplete();
-            // close db connection
-            connection.close();
-            isResultSetClosed = true;
-
-            return false;
+            return resultList;
         }
 
         /**
          * Sets the column info (names, types, key) from the database
-         * metadata. 
+         * metadata.
          */
-        private void setColumnInfo() throws SQLException {
+        private void setColumnInfo(SqlRowSet records) throws SQLException {
             boolean lowercase = getParamter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
 
-            ResultSetMetaData metaData = records.getMetaData();
+            SqlRowSetMetaData metaData = records.getMetaData();
             columnTypes = new PricingField.Type[metaData.getColumnCount()];
             columnNames = new String[metaData.getColumnCount()];
             List<Integer> keyColumns = new LinkedList<Integer>();
@@ -553,8 +498,6 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                         break;
 
                     case Types.BIGINT:
-                    case Types.BIT:
-                    case Types.BOOLEAN:
                     case Types.INTEGER:
                     case Types.SMALLINT:
                     case Types.TINYINT:
@@ -575,11 +518,16 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
                         columnTypes[i] = PricingField.Type.DATE;
                         break;
 
+                    case Types.BIT:
+                    case Types.BOOLEAN:
+                        columnTypes[i] = PricingField.Type.BOOLEAN;
+                        break;                                                   
+
                     default:
-                        throw new SessionInternalError("In column '" + 
-                            metaData.getColumnName(i + 1) + 
-                            "', unsupported java.sql.Type: " + 
-                            metaData.getColumnTypeName(i + 1));
+                        throw new SessionInternalError("In column '" +
+                                metaData.getColumnName(i + 1) +
+                                "', unsupported java.sql.Type: " +
+                                metaData.getColumnTypeName(i + 1));
                 }
 
                 // set column names
@@ -598,8 +546,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             }
 
             if (keyColumns.isEmpty()) {
-                throw new SessionInternalError("No primary key column/s found " +
-                        "in result set");
+                throw new SessionInternalError("No primary key column/s found " + "in result set");
             } else {
                 keyColumnIndices = new int[keyColumns.size()];
                 int i = 0;
@@ -631,7 +578,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     /**
      * Convenience method for boolean plug-in paramters.
      *
-     * @param name parameter name
+     * @param name         parameter name
      * @param defaultValue default value if parameter not configured
      * @return parameter value, or default if parameter not configured
      */
@@ -642,7 +589,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
 
     /**
      * Convenience method for getting String plug-in parameters
-     */ 
+     */
     private String getParameter(String name, String defaultValue) {
         String value = (String) parameters.get(name);
         if (value != null) {
@@ -653,20 +600,18 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
 
     /**
      * Returns table name in correct case, determined from database
-     * metadata. (Needed for hsqldb driver,which is case-sensitive 
+     * metadata. (Needed for hsqldb driver,which is case-sensitive
      * for metadata info).
      */
     private String getTableNameCorrectCase() throws SQLException {
         String tableName = getTableName();
-        ResultSet tables = connection.getMetaData().getTables(null, null, null,
-                null);
+        ResultSet tables = connection.getMetaData().getTables(null, null, null, null);
         while (tables.next()) {
             String table = tables.getString(3);
             if (table.equalsIgnoreCase(tableName)) {
                 return table;
             }
         }
-        throw new SessionInternalError("Couldn't find table named: " + 
-                tableName);
+        throw new SessionInternalError("Couldn't find table named: " + tableName);
     }
 }

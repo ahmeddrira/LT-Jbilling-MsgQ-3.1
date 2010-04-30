@@ -145,6 +145,9 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
                             preparedStatement.setNull(index, Types.TIMESTAMP);
                         }
                         break;
+                    case BOOLEAN:
+                        preparedStatement.setBoolean(index, field.getBooleanValue());
+                        break;
                 }
                 index++;
             }

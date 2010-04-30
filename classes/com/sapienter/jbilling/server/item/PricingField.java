@@ -36,7 +36,7 @@ public class PricingField {
     private String value = null;
     private long resultId; // at the time, only used for mediation of batch
     
-    public enum Type { STRING, INTEGER, DECIMAL, DATE }
+    public enum Type { STRING, INTEGER, DECIMAL, DATE, BOOLEAN }
 
     /**
      * Constructs a new PricingField from a given encoded String.
@@ -123,6 +123,18 @@ public class PricingField {
         setDecimalValue(value);        
     }
 
+    /**
+     * Constructs a new PricingField of type {@code BOOLEAN}
+     *
+     * @param name field name
+     * @param value field value
+     */
+    public PricingField(String name, Boolean value) {
+        this.name = name;
+        this.type = Type.BOOLEAN;
+        setBooleanValue(value);
+    }
+
     public String getName() {
         return name;
     }
@@ -158,6 +170,7 @@ public class PricingField {
             case DATE    : return getDateValue(); 
             case INTEGER : return getIntValue();
             case DECIMAL : return getDecimalValue();
+            case BOOLEAN : return getBooleanValue();
             default: return null;
         }        
     }
@@ -237,6 +250,20 @@ public class PricingField {
         return getDoubleValue();
     }
 
+    public void setBooleanValue(Boolean value) {
+        if (value != null) {
+            this.value = value.toString();
+        } else {
+           this.value = null;
+        }
+    }
+
+    public Boolean getBooleanValue() {
+        if (value == null) return null;
+        return Boolean.valueOf(this.value);        
+    }
+
+
     /**
      * Returns an appropriate {@link Type} for the given string, or null if no matching type found.
      *
@@ -247,6 +274,7 @@ public class PricingField {
      *      double
      *      decimal
      *      date
+     *      boolean
      *
      * @param myType type string
      * @return matching type
@@ -260,6 +288,8 @@ public class PricingField {
             return Type.DECIMAL;
         } else if (myType.equalsIgnoreCase("date")) {
             return Type.DATE;
+        } else if (myType.equalsIgnoreCase("boolean")) {
+            return Type.BOOLEAN;
         } else {
             return null;
         }
@@ -299,6 +329,9 @@ public class PricingField {
 
             case DATE:
                 sb.append(":date:");
+                break;
+            case BOOLEAN:
+                sb.append(":boolean:");
                 break;
     	}
 

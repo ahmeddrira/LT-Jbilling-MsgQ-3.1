@@ -286,7 +286,8 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         }
     }
 
-    private Result doPaymentWithoutStoredCreditCard(PaymentDTOEx payment, PaymentAction paymentAction) throws PluggableTaskException {
+    private Result doPaymentWithoutStoredCreditCard(PaymentDTOEx payment, PaymentAction paymentAction,
+                                                    boolean updateKey) throws PluggableTaskException {
         try {
             PaypalResult result = getApi().doDirectPayment(
                     paymentAction,
@@ -295,7 +296,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
                     new Payment(formatDollarAmount(payment.getAmount()), "USD"));
 
             PaymentAuthorizationDTO paymentAuthorization = buildPaymentAuthorization(result);
-            storePaypalResult(result, payment, paymentAuthorization, true);
+            storePaypalResult(result, payment, paymentAuthorization, updateKey);
 
             return new Result(paymentAuthorization, false);
 
@@ -325,7 +326,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         }
     }
 
-    private boolean doProcess(PaymentDTOEx payment, PaymentAction paymentAction)
+    private boolean doProcess(PaymentDTOEx payment, PaymentAction paymentAction, boolean updateKey)
             throws PluggableTaskException {
         
         if(isRefund(payment)) {
@@ -337,7 +338,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
                     .shouldCallOtherProcessors();
         }
 
-        return doPaymentWithoutStoredCreditCard(payment, paymentAction)
+        return doPaymentWithoutStoredCreditCard(payment, paymentAction, updateKey)
                 .shouldCallOtherProcessors();
     }
 
@@ -362,7 +363,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         }
 
         prepareExternalPayment(payment);
-        return doProcess(payment, PaymentAction.SALE);
+        return doProcess(payment, PaymentAction.SALE, true /* updateKey */);
     }
 
     public void failure(Integer userId, Integer retry) {
@@ -372,7 +373,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
     public boolean preAuth(PaymentDTOEx payment) throws PluggableTaskException {
         LOG.debug("Pre-authorization processing for " + getProcessorName() + " gateway");
         prepareExternalPayment(payment);
-        return doProcess(payment, PaymentAction.AUTHORIZATION);
+        return doProcess(payment, PaymentAction.AUTHORIZATION, true /* updateKey */);
     }
 
     public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx payment)
@@ -441,12 +442,14 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
         PaymentDTOEx paymentEx = new PaymentDTOEx(new PaymentDAS().save(payment));
         try {
-            doProcess(paymentEx, PaymentAction.SALE);
+            doProcess(paymentEx, PaymentAction.SALE, false /* updateKey */);
             doVoid(paymentEx);
+
+            PaymentAuthorizationDTO auth = paymentEx.getAuthorization();
+            return auth.getTransactionId();
         } catch (PluggableTaskException e) {
             LOG.error("Could not process external storage payment", e);
             return null;
         }
-        return null;
     }
 }

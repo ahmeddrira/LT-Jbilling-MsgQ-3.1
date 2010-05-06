@@ -308,7 +308,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         PaymentBL payment = new PaymentBL();
         message.addParameter("method", payment.getMethodDescription(dto
                 .getPaymentMethod(), languageId));
-        message.addParameter("total", Util.formatMoney(dto.getAmount().floatValue(), dto
+        message.addParameter("total", Util.formatMoney(dto.getAmount(), dto
                 .getUserId(), dto.getCurrency().getId(), true));
 
         message.addParameter("payment", payment.getEntity());
@@ -341,7 +341,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         message.addParameter("days", days.toString());
         message.addParameter("dueDate", Util.formatDate(dueDate, userId));
         message.addParameter("number", number);
-        message.addParameter("total", Util.formatMoney(total.floatValue(), userId,
+        message.addParameter("total", Util.formatMoney(total, userId,
                 currencyId, true));
         message.addParameter("date", Util.formatDate(date, userId));
 
@@ -373,7 +373,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
         setContent(message, MessageDTO.TYPE_INVOICE_EMAIL, entityId,
                 languageId);
 
-        message.addParameter("total", Util.formatMoney(invoice.getTotal().floatValue(),
+        message.addParameter("total", Util.formatMoney(invoice.getTotal(),
                 invoice.getBaseUser().getUserId(), invoice.getCurrency().getId(), true));
         message.addParameter("id", invoice.getId() + "");
         message.addParameter("number", invoice.getPublicNumber());
@@ -436,7 +436,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
 
     public MessageDTO getOrderNotification(Integer entityId, Integer step,
             Integer languageId, Date activeSince, Date activeUntil,
-            Integer userId, Float total, Integer currencyId)
+            Integer userId, BigDecimal total, Integer currencyId)
             throws  SessionInternalError,
             NotificationNotFoundException {
         MessageDTO retValue = initializeMessage(entityId, userId);
@@ -761,17 +761,16 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             try {
                 InvoiceBL invoiceBL = new InvoiceBL(invoice.getId());
                 try {
-                    parameters.put("paid", Util.formatMoney(new Float(invoiceBL
-                            .getTotalPaid()), invoice.getUserId(), invoice
+                    parameters.put("paid", Util.formatMoney(invoiceBL
+                            .getTotalPaid(), invoice.getUserId(), invoice
                             .getCurrency().getId(), false));
                     // find the previous invoice and its payment for extra info
                     invoiceBL.setPrevious();
                     parameters.put("prevInvoiceTotal", Util.formatMoney(
-                            invoiceBL.getEntity().getTotal().floatValue(), invoice
+                            invoiceBL.getEntity().getTotal(), invoice
                                     .getUserId(), invoice.getCurrency().getId(),
                             false));
-                    parameters.put("prevInvoicePaid", Util.formatMoney(
-                            new Float(invoiceBL.getTotalPaid()), invoice
+                    parameters.put("prevInvoicePaid", Util.formatMoney(invoiceBL.getTotalPaid(), invoice
                                     .getUserId(), invoice.getCurrency().getId(),
                             false));
                 } catch (EmptyResultDataAccessException e1) {
@@ -841,13 +840,11 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // remove the last line, that is the total footer
             lines.remove(lines.size() - 1);
             // now add the tax
-            parameters.put("tax", Util.formatMoney(new Float(taxTotal
-                    .floatValue()), invoice.getUserId(), invoice
+            parameters.put("tax", Util.formatMoney(taxTotal, invoice.getUserId(), invoice
                     .getCurrency().getId(), false));
-            parameters.put("totalWithTax", Util.formatMoney(invoice.getTotal().floatValue(),
+            parameters.put("totalWithTax", Util.formatMoney(invoice.getTotal(),
                     invoice.getUserId(), invoice.getCurrency().getId(), false));
-            parameters.put("totalWithoutTax", Util.formatMoney(new Float(
-                    invoice.getTotal().floatValue() - taxTotal.floatValue()),
+            parameters.put("totalWithoutTax", Util.formatMoney(invoice.getTotal().subtract(taxTotal),
                     invoice.getUserId(), invoice.getCurrency().getId(), false));
             parameters.put("balance", Util.formatMoney(invoice.getBalance(),
                     invoice.getUserId(), invoice.getCurrency().getId(), false));

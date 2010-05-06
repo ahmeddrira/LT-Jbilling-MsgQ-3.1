@@ -154,7 +154,7 @@ public class WSTest  extends TestCase {
             // make sure that item 2 has a special price
             for (OrderLineWS item2line: retOrder.getOrderLines()) {
                 if (item2line.getItemId() == 2) {
-                    assertEquals("Special price for Item 2", "30", item2line.getPrice());
+                    assertEquals("Special price for Item 2", "30.00", item2line.getPrice());
                     break;
                 }
             }
@@ -168,7 +168,7 @@ public class WSTest  extends TestCase {
 	            retOrderLine = api.getOrderLine(lineId);
 	            if (retOrderLine.getItemId().equals(new Integer(14))) {
 	                assertEquals("created line item id", retOrderLine.getItemId(), new Integer(14));
-	                assertEquals("total of discount", "-5.5", retOrderLine.getAmount());
+	                assertEquals("total of discount", "-5.50", retOrderLine.getAmount());
 	                found = true;
 	            } else {
 	            	normalOrderLine = retOrderLine;
@@ -194,7 +194,7 @@ public class WSTest  extends TestCase {
             System.out.println("Update order line " + lineId);
             api.updateOrderLine(retOrderLine);
             retOrderLine = api.getOrderLine(retOrderLine.getId());
-            assertEquals("updated quantity", "99", retOrderLine.getQuantity());
+            assertEquals("updated quantity", "99.00", retOrderLine.getQuantity());
             //delete a line through updating with quantity = 0
             System.out.println("Delete order line");
             retOrderLine.setQuantity(new Integer(0));
@@ -237,7 +237,7 @@ public class WSTest  extends TestCase {
             assertEquals("Status id", new Integer(2), retOrder.getStatusId());
             assertEquals("Modified line description", "Modified description",
             		retOrder.getOrderLines()[1].getDescription());
-            assertEquals("Modified quantity", "2", retOrder.getOrderLines()[1].getQuantity());
+            assertEquals("Modified quantity", "2.00", retOrder.getOrderLines()[1].getQuantity());
             assertEquals("New billable date", cal.getTimeInMillis(), 
                     retOrder.getNextBillableDay().getTime());
             for (i = 0; i < retOrder.getOrderLines().length; i++) {
@@ -246,7 +246,7 @@ public class WSTest  extends TestCase {
 	            	// the is one less line for 15
 	            	// but one extra item for 30
 	            	// difference is 15 and 10% of that is 1.5  thus 5.5 + 1.5 = 7
-	                assertEquals("total of discount", "-7", retOrderLine.getAmount());
+	                assertEquals("total of discount", "-7.00", retOrderLine.getAmount());
 	                break;
 	            } 
             }
@@ -678,27 +678,27 @@ public class WSTest  extends TestCase {
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(3), orderLine.getItemId());
-            assertEquals("Quantity", "-3", orderLine.getQuantity());
-            assertEquals("Price", "15", orderLine.getPrice());
-            assertEquals("Amount", "-45", orderLine.getAmount());
+            assertEquals("Quantity", "-3.00", orderLine.getQuantity());
+            assertEquals("Price", "15.00", orderLine.getPrice());
+            assertEquals("Amount", "-45.00", orderLine.getAmount());
 
             // order 3 - cancel fee for lemonade (see the rule in CancelFees.drl)
             order = api.getOrder(list[1]);
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(24), orderLine.getItemId());
-            assertEquals("Quantity", "2", orderLine.getQuantity());
-            assertEquals("Price", "5", orderLine.getPrice());
-            assertEquals("Amount", "10", orderLine.getAmount());
+            assertEquals("Quantity", "2.00", orderLine.getQuantity());
+            assertEquals("Price", "5.00", orderLine.getPrice());
+            assertEquals("Amount", "10.00", orderLine.getAmount());
 
             // order 2 - lemonade refund
             order = api.getOrder(list[2]);
             assertEquals("No. of order lines", 1, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(1), orderLine.getItemId());
-            assertEquals("Quantity", "-2", orderLine.getQuantity());
-            assertEquals("Price", "10", orderLine.getPrice());
-            assertEquals("Amount", "-20", orderLine.getAmount());
+            assertEquals("Quantity", "-2.00", orderLine.getQuantity());
+            assertEquals("Price", "10.00", orderLine.getPrice());
+            assertEquals("Amount", "-20.00", orderLine.getAmount());
 
             // create a new order like the first one
             System.out.println("Creating order ...");
@@ -722,14 +722,14 @@ public class WSTest  extends TestCase {
             assertEquals("No. of order lines", 2, order.getOrderLines().length);
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(1), orderLine.getItemId());
-            assertEquals("Quantity", "-5", orderLine.getQuantity());
-            assertEquals("Price", "10", orderLine.getPrice());
-            assertEquals("Amount", "-50", orderLine.getAmount());
+            assertEquals("Quantity", "-5.00", orderLine.getQuantity());
+            assertEquals("Price", "10.00", orderLine.getPrice());
+            assertEquals("Amount", "-50.00", orderLine.getAmount());
             orderLine = order.getOrderLines()[1];
             assertEquals("Item Id", new Integer(3), orderLine.getItemId());
-            assertEquals("Quantity", "-5", orderLine.getQuantity());
-            assertEquals("Price", "15", orderLine.getPrice());
-            assertEquals("Amount", "-75", orderLine.getAmount());
+            assertEquals("Quantity", "-5.00", orderLine.getQuantity());
+            assertEquals("Price", "15.00", orderLine.getPrice());
+            assertEquals("Amount", "-75.00", orderLine.getAmount());
 
             // order 2 - cancel fee for lemonades (see the rule in CancelFees.drl)
             order = api.getOrder(list[1]);
@@ -737,9 +737,9 @@ public class WSTest  extends TestCase {
             orderLine = order.getOrderLines()[0];
             assertEquals("Item Id", new Integer(24), orderLine.getItemId());
             // 2 periods cancelled (2 periods * 5 fee quantity)
-            assertEquals("Quantity", "10", orderLine.getQuantity());
-            assertEquals("Price", "5", orderLine.getPrice());
-            assertEquals("Amount", "50", orderLine.getAmount());
+            assertEquals("Quantity", "10.00", orderLine.getQuantity());
+            assertEquals("Price", "5.00", orderLine.getPrice());
+            assertEquals("Amount", "50.00", orderLine.getAmount());
 
             // remove invoices
             list = api.getLastInvoices(new Integer(USER_ID), new Integer(2));
@@ -945,7 +945,7 @@ public class WSTest  extends TestCase {
             OrderLineWS createdLine = currentOrderAfter.getOrderLines()[0];
             assertEquals("Order line item ids", newLine.getItemId(),  createdLine.getItemId());
             assertEquals("Order line quantities", newLine.getQuantity(), createdLine.getQuantity());
-            assertEquals("Order line price", "10", createdLine.getPrice());
+            assertEquals("Order line price", "10.00", createdLine.getPrice());
             assertEquals("Order line total", "220.00", createdLine.getAmount());
 
 
@@ -964,12 +964,12 @@ public class WSTest  extends TestCase {
             assertEquals("1 order line", 1, currentOrderAfter.getOrderLines().length);
             createdLine = currentOrderAfter.getOrderLines()[0];
             assertEquals("Order line ids", newLine.getItemId(), createdLine.getItemId());
-            assertEquals("Order line quantities", "23", createdLine.getQuantity());
-            assertEquals("Order line price", "10", createdLine.getPrice());
+            assertEquals("Order line quantities", "23.00", createdLine.getQuantity());
+            assertEquals("Order line price", "10.00", createdLine.getPrice());
 
             // Note that because of the rule, the result should be 
             // 225.0, not 230.0.
-            assertEquals("Order line total", "225", createdLine.getAmount());
+            assertEquals("Order line total", "225.00", createdLine.getAmount());
 
 
             /*
@@ -989,14 +989,14 @@ public class WSTest  extends TestCase {
 
             createdLine = currentOrderAfter.getOrderLines()[0];
             assertEquals("Order line ids", newLine.getItemId(), createdLine.getItemId());
-            assertEquals("Order line quantities", "23", createdLine.getQuantity());
-            assertEquals("Order line price", "10", createdLine.getPrice());
-            assertEquals("Order line total", "225", createdLine.getAmount());
+            assertEquals("Order line quantities", "23.00", createdLine.getQuantity());
+            assertEquals("Order line price", "10.00", createdLine.getPrice());
+            assertEquals("Order line total", "225.00", createdLine.getAmount());
 
             // 'newPrice' pricing field, $5 * 5 units = 25
             createdLine = currentOrderAfter.getOrderLines()[1];
-            assertEquals("Order line quantities", "5", createdLine.getQuantity());
-            assertEquals("Order line price", "5", createdLine.getPrice());
+            assertEquals("Order line quantities", "5.00", createdLine.getQuantity());
+            assertEquals("Order line price", "5.00", createdLine.getPrice());
             assertEquals("Order line price", new BigDecimal("25"), new BigDecimal(createdLine.getAmount())); // not priced
 
             /*
@@ -1277,7 +1277,7 @@ public class WSTest  extends TestCase {
             assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             OrderLineWS line = currentOrder.getOrderLines()[0];
             assertEquals("order line itemId", 2800, line.getItemId().intValue());
-            assertEquals("order line quantity", "1", line.getQuantity());
+            assertEquals("order line quantity", "1.00", line.getQuantity());
             assertEquals("order line total", new BigDecimal("0.33"), 
                     line.getAmountAsDecimal());
 
@@ -1294,7 +1294,7 @@ public class WSTest  extends TestCase {
             assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             line = currentOrder.getOrderLines()[0];
             assertEquals("order line itemId", 2800, line.getItemId().intValue());
-            assertEquals("order line quantity", "2", line.getQuantity());
+            assertEquals("order line quantity", "2.00", line.getQuantity());
             // 0.33 + 0.08 = 0.41
             assertEquals("order line total", new BigDecimal("0.41"), 
                     line.getAmountAsDecimal());
@@ -1335,7 +1335,7 @@ public class WSTest  extends TestCase {
             assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             line = order.getOrderLines()[0];
             assertEquals("order line itemId", 2800, line.getItemId().intValue());
-            assertEquals("order line quantity", "10", line.getQuantity());
+            assertEquals("order line quantity", "10.00", line.getQuantity());
             // 0.42 * 10 = 4.2
             assertEquals("order line total", new BigDecimal("4.2"), line.getAmountAsDecimal());
 
@@ -1358,7 +1358,7 @@ public class WSTest  extends TestCase {
             assertEquals("1 order line", 1, currentOrder.getOrderLines().length);
             line = currentOrder.getOrderLines()[0];
             assertEquals("order line itemId", 2800, line.getItemId().intValue());
-            assertEquals("order line quantity", "2", line.getQuantity());
+            assertEquals("order line quantity", "2.00", line.getQuantity());
             assertEquals("order line total", new BigDecimal("0.41"), 
                     line.getAmountAsDecimal());
 

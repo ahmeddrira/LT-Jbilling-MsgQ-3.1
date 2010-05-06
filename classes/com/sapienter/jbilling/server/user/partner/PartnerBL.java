@@ -367,8 +367,7 @@ public class PartnerBL extends ResultList implements PartnerSQL {
             CurrencyBL currency = new CurrencyBL();
             BigDecimal paymentAmount = currency.convert(paymentCurrencyId, currencyId, payment.getEntity().getAmount(), entityId);
             LOG.debug("payment amount = " + paymentAmount);
-            BigDecimal amount = new BigDecimal(calculateCommission(paymentAmount.floatValue(), currencyId, 
-                    payment.getEntity().getBaseUser(), payout != null)); 
+            BigDecimal amount = calculateCommission(paymentAmount, currencyId, payment.getEntity().getBaseUser(), payout != null); 
             LOG.debug("commission = " + amount);
             
             // payments add, refunds take
@@ -481,12 +480,11 @@ public class PartnerBL extends ResultList implements PartnerSQL {
         }
     }
     
-    public float calculateCommission(float amount, Integer currencyId, 
+    public BigDecimal calculateCommission(BigDecimal amount, Integer currencyId,
             UserDTO user, boolean update) 
             throws SessionInternalError, NamingException, SQLException {
         LOG.debug("Calculating commision on " + amount); 
-        float result;
-        BigDecimal decAmount = new BigDecimal(amount);
+        BigDecimal result;
         if (partner.getOneTime() == 1) {
             // this partner gets paid once per customer she brings
             Integer flag = user.getCustomer().getReferralFeePaid();
@@ -497,7 +495,7 @@ public class PartnerBL extends ResultList implements PartnerSQL {
                 }
             } else {
                 // it got a fee from this guy already
-                return 0;
+                return BigDecimal.ZERO;
             }
         } 
         
@@ -517,20 +515,19 @@ public class PartnerBL extends ResultList implements PartnerSQL {
 
         LOG.debug("using rate " + rate + " fee " + fee);
         // apply the rate to get the commission value
-        if (rate != null && rate.floatValue() != 0.0F) {
-            result = decAmount.divide(new BigDecimal("100"), 
-            		CommonConstants.BIGDECIMAL_SCALE, 
-            		CommonConstants.BIGDECIMAL_ROUND).multiply(rate).floatValue();
-        } else if (fee != null && fee.floatValue() != 0.0F) {
+        if (rate != null && (rate.compareTo(BigDecimal.ZERO) != 0)) {
+            result = amount.divide(new BigDecimal("100"),
+            		CommonConstants.BIGDECIMAL_SCALE,
+            		CommonConstants.BIGDECIMAL_ROUND).multiply(rate);
+        } else if (fee != null && (fee.compareTo(BigDecimal.ZERO) != 0)) {
             CurrencyBL currency = new CurrencyBL();
             Integer partnerCurrencyId = partner.getFeeCurrency().getId();
             if (partnerCurrencyId == null) {
                 LOG.info("Partner without currency, using entity's as default");
                 partnerCurrencyId = partner.getUser().getEntity().getCurrencyId();
             }
-            result = currency.convert(partnerCurrencyId, 
-                    currencyId, new BigDecimal(fee.floatValue()),
-                    partner.getUser().getEntity().getId()).floatValue();
+            result = currency.convert(partnerCurrencyId, currencyId, fee,
+                    partner.getUser().getEntity().getId());
         } else {
             throw new SessionInternalError(
                     "Partner without commission configuration");

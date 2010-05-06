@@ -529,7 +529,7 @@ public class OrderDTO implements java.io.Serializable {
     	BigDecimal result = new BigDecimal(0);
     	for (OrderLineDTO line: lines) {
     		if (line.getDeleted() == 0 && line.getAmount() != null) {
-    			result = result.add(new BigDecimal(line.getAmount().toString()));
+    			result = result.add(line.getAmount());
     		}
     	}
     	return result;

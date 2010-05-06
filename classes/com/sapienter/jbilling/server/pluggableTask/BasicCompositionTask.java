@@ -138,8 +138,7 @@ public class BasicCompositionTask extends PluggableTask
                             // we have this tax already: add up the total
                             invoiceLine = (InvoiceLineDTO) invoiceDTO.getResultLines().get(taxLine);
                             BigDecimal tmpDec = new BigDecimal(invoiceLine.getAmount().toString());
-                            BigDecimal periodAmount = calculatePeriodAmount(
-                                    new BigDecimal(orderLine.getAmount().toString()), period);
+                            BigDecimal periodAmount = calculatePeriodAmount(orderLine.getAmount(), period);
                             tmpDec = tmpDec.add(periodAmount);
                             invoiceLine.setAmount(tmpDec);
                             orderContribution = orderContribution.add(periodAmount);
@@ -303,11 +302,6 @@ public class BasicCompositionTask extends PluggableTask
     // for this basic plug-in, there is any calculation done or pro-rating
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
         return fullPrice;
-    }
-
-    // convenience method, since all is done in Floats
-    public Float calculatePeriodAmount(Float fullPrice, PeriodOfTime period) {
-        return calculatePeriodAmount(new BigDecimal(fullPrice.toString()), period).floatValue();
     }
 
     /**

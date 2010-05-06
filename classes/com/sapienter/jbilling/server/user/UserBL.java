@@ -1340,7 +1340,7 @@ public class UserBL extends ResultList
         }
 
         LOG.debug("validating purchase items:" + Arrays.toString(items.toArray()) +
-                " amounts " +  Arrays.toString(amounts.toArray()) + " customer " + user.getCustomer());
+                " amounts " + amounts + " customer " + user.getCustomer());
 
         ValidatePurchaseWS result = new ValidatePurchaseWS();
 

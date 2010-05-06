@@ -50,13 +50,13 @@ public class UserBalanceValidatePurchaseTask extends PluggableTask
             return result;
         }
 
-        BigDecimal amount = new BigDecimal(0.0);
+        BigDecimal amount = BigDecimal.ZERO;
         for (BigDecimal a : amounts) {
             amount = amount.add(a);
         }
 
         // avoid divide by zero exception
-        if (amount.doubleValue() == 0.0) {
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
             result.setQuantity(new BigDecimal(Integer.MAX_VALUE));
             return result;
         }
@@ -70,7 +70,7 @@ public class UserBalanceValidatePurchaseTask extends PluggableTask
 
         IUserBalanceValidation validator;
         // simple factory ...
-        if (customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC || amount.equals(BigDecimal.ZERO)) {
+        if (customer.getBalanceType() == Constants.BALANCE_NO_DYNAMIC || (amount.compareTo(BigDecimal.ZERO) == 0)) {
             validator = new ValidatorNone();
         } else if (customer.getBalanceType() == Constants.BALANCE_CREDIT_LIMIT) {
             validator = new ValidatorCreditLimit();

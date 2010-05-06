@@ -44,6 +44,7 @@ import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS;
 import com.sapienter.jbilling.server.util.db.InternationalDescriptionDTO;
+import java.math.RoundingMode;
 
 
 /**
@@ -90,11 +91,10 @@ public class Util {
     public static String formatMoney(BigDecimal number, Integer userId, Integer currencyId, boolean forEmail)
             throws SessionInternalError {
 
-        Locale locale;
         try {
             // find first the right format for the number
             UserBL user = new UserBL(userId);
-            locale = user.getLocale();
+            Locale locale = user.getLocale();
             ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", locale);
 
             NumberFormat format = NumberFormat.getNumberInstance(locale);

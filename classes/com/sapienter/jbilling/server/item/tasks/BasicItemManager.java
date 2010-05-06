@@ -82,13 +82,11 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             latestLine = myLine;
         } else {
             // the item is there, I just have to update the quantity
-        	BigDecimal dec = new BigDecimal( line.getQuantity().toString() );
-        	dec = dec.add( new BigDecimal( quantity.toString() ) );
+            BigDecimal dec = line.getQuantity().add(quantity);
             line.setQuantity(dec);
             
             // and also the total amount for this order line
-            dec = new BigDecimal(line.getAmount().toString());
-            dec = dec.add(new BigDecimal(myLine.getAmount().toString()));
+            dec = line.getAmount().add(myLine.getAmount());
             line.setAmount(dec);
             latestLine = line;
         }
@@ -133,13 +131,12 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
             // normal price, multiply by quantity
             if (item.getPercentage() == null) {
                 additionAmount = line.getPrice();
-                additionAmount = additionAmount.multiply(
-                        new BigDecimal(line.getQuantity().toString()));
+                additionAmount = additionAmount.multiply(line.getQuantity());
             } else {
                 // percentage ignores the quantity
-                additionAmount = new BigDecimal(item.getPercentage().toString());
+                additionAmount = item.getPercentage();
             }
-            line.setAmount(additionAmount);
+            line.setAmount(additionAmount.setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND));
         }
         line.setCreateDatetime(null);
         line.setDeleted(0);

@@ -30,6 +30,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.util.Constants;
+import java.math.RoundingMode;
 
 /**
  * @author Emil
@@ -57,6 +59,9 @@ public class OrderLineWS implements Serializable {
     private Integer typeId = null;
     private Boolean useItem = null;
     private Integer itemId = null;
+    private BigDecimal priceAsDecimal;
+    private BigDecimal quantityAsDecimal;
+    private BigDecimal amountAsDecimal;
 
     public OrderLineWS() {
     }
@@ -117,6 +122,9 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getAmountAsDecimal() {
+        if(amountAsDecimal != null){
+            return amountAsDecimal;
+        }
         return (amount == null ? null : new BigDecimal(amount));
     }
 
@@ -124,9 +132,15 @@ public class OrderLineWS implements Serializable {
         this.amount = amount;
     }
 
+    /**
+     * <strong>Note:</strong> Subsequent call to getAmount returns value rounded to 2 decimals.
+     * Use getAmountAsDecimal if precision is important, i.e. for calculations
+     * @param amount
+     */
     public void setAmount(BigDecimal amount) {
+        this.amountAsDecimal = amount;
         if (amount != null) {
-            this.amount = amount.toString();
+            this.amount = amount.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
         }
     }
 
@@ -191,6 +205,9 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getPriceAsDecimal() {
+        if(priceAsDecimal != null){
+            return priceAsDecimal;
+        }
         return (price == null ? null : new BigDecimal(price));
     }
 
@@ -198,9 +215,15 @@ public class OrderLineWS implements Serializable {
         this.price = price;
     }
 
+    /**
+     * <strong>Note:</strong> Subsequent call to getPrice returns value rounded to 2 decimals.
+     * Use getPriceAsDecimal if precision is important, i.e. for calculations
+     * @param price
+     */
     public void setPrice(BigDecimal price) {
+        this.priceAsDecimal = price;
         if (price != null) {
-            this.price = price.toString();
+            this.price = price.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
         }
     }
 
@@ -213,6 +236,9 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getQuantityAsDecimal() {
+        if(quantityAsDecimal != null) {
+            return quantityAsDecimal;
+        }
         return (quantity == null ? null : new BigDecimal(quantity));
     }
 
@@ -224,9 +250,15 @@ public class OrderLineWS implements Serializable {
         setQuantity(new BigDecimal(quantity));
     }
 
+    /**
+     * <strong>Note:</strong> Subsequent call to getQuantity returns value rounded to 2 decimals.
+     * Use getQuantityAsDecimal if precision is important, i.e. for calculations
+     * @param quantity
+     */
     public void setQuantity(BigDecimal quantity) {
+        this.quantityAsDecimal = quantity;
         if (quantity != null) {
-            this.quantity = quantity.toString();
+            this.quantity = quantity.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
         }
     }
 

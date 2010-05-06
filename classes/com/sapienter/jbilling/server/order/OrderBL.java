@@ -435,7 +435,7 @@ public class OrderBL extends ResultList
                 // order line exists in both, so check quantity
                 BigDecimal oldLineQuantity = currentOldLine.getQuantity();
                 BigDecimal newLineQuantity = currentNewLine.getQuantity();
-                if (oldLineQuantity.doubleValue() != newLineQuantity.doubleValue()) {
+                if (oldLineQuantity.compareTo(newLineQuantity) != 0) {
                     LOG.debug("Order line quantity changed. Order line Id: " +
                             oldLineId);
                     retValue.add(new NewQuantityEvent(entityId, oldLineQuantity, newLineQuantity, orderId,
@@ -981,7 +981,7 @@ public class OrderBL extends ResultList
                             order.getActiveSince(),
                             order.getActiveUntil(),
                             user.getEntity().getUserId(),
-                            order.getTotal().floatValue(), order.getCurrencyId());
+                            order.getTotal(), order.getCurrencyId());
                     // update the order record only if the message is sent 
                     if (notificationSess.notify(user.getEntity(), message).
                             booleanValue()) {
@@ -1229,7 +1229,7 @@ public class OrderBL extends ResultList
 
     public void updateOrderLine(OrderLineWS dto) {
         OrderLineDTO line = getOrderLine(dto.getId());
-        if (dto.getQuantity() != null && BigDecimal.ZERO.equals(dto.getQuantityAsDecimal())) {
+        if (dto.getQuantity() != null && (BigDecimal.ZERO.compareTo(dto.getQuantityAsDecimal()) == 0)) {
             // deletes the order line if the quantity is 0
             orderLineDAS.delete(line);
 
@@ -1399,7 +1399,7 @@ public class OrderBL extends ResultList
         OrderLineDTO line = orderLineDAS.findForUpdate(orderLineId);
         Integer oldStatus = line.getProvisioningStatusId();
         line.setProvisioningStatus(provisioningStatusDas.find(provisioningStatus));
-        LOG.debug("order line " + orderLineId + ": updated provisioning status :" + line.getProvisioningStatusId());
+        LOG.debug("order line " + line + ": updated provisioning status :" + line.getProvisioningStatusId());
 
         // add a log for provisioning module
         eLogger.auditBySystem(order.getBaseUserByUserId().getCompany().getId(),

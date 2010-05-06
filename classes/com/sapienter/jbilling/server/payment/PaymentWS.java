@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.util.Constants;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -62,6 +63,8 @@ public class PaymentWS implements Serializable {
     private Integer resultId;
     private String paymentNotes = null;
     private Integer paymentPeriod;
+    private BigDecimal amountAsDecimal;
+    private BigDecimal balanceAsDecimal;
     
     public Integer getResultId() {
         return resultId;
@@ -152,6 +155,8 @@ public class PaymentWS implements Serializable {
     }
 
     public BigDecimal getAmountAsDecimal() {
+        if(amountAsDecimal != null)
+            return amountAsDecimal;
         return (amount == null ? null : new BigDecimal(amount));
     }
 
@@ -159,9 +164,15 @@ public class PaymentWS implements Serializable {
         this.amount = amount;
     }
 
+    /**
+     * <strong>Note:</strong> Subsequent call to getAmount returns value rounded to 2 decimals.
+     * Use getAmountAsDecimal if precision is important, i.e. for calculations
+     * @param quantity
+     */
     public void setAmount(BigDecimal amount) {
+        this.amountAsDecimal = amount;
         if (amount != null)
-            this.amount = amount.toString();
+            this.amount = amount.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
     }
 
     public Integer getIsRefund() {
@@ -225,16 +236,24 @@ public class PaymentWS implements Serializable {
     }
 
     public BigDecimal getBalanceAsDecimal() {
-       return (balance == null ? null : new BigDecimal(balance));
+        if(balanceAsDecimal != null)
+            return balanceAsDecimal;
+        return (balance == null ? null : new BigDecimal(balance));
     }
 
     public void setBalance(String balance) {
         this.balance = balance;
     }
 
+    /**
+     * <strong>Note:</strong> Subsequent call to getBalance returns value rounded to 2 decimals.
+     * Use getBalanceAsDecimal if precision is important, i.e. for calculations
+     * @param quantity
+     */
     public void setBalance(BigDecimal balance) {
+        this.balanceAsDecimal = balance;
         if (balance != null)
-            this.balance = balance.toString();
+            this.balance = balance.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
     }
 
     public Date getCreateDatetime() {

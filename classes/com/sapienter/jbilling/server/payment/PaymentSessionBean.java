@@ -211,7 +211,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             // there is any actual processing). Do not process negative
             // payments (from negative invoices), unless allowed.
             Integer result = null;
-            if (dto.getAmount().floatValue() > 0) {
+            if (dto.getAmount().compareTo(BigDecimal.ZERO) > 0) {
                 result = bl.processPayment(entityId, dto);
             } else {
                 // only process if negative payments are allowed
@@ -356,7 +356,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 // update the invoice's balance if applicable
                 BigDecimal balance = invoice.getBalance();
                 if (balance != null) {
-					boolean balanceSign = (balance.floatValue() < 0) ? false : true;
+					boolean balanceSign = (balance.compareTo(BigDecimal.ZERO) < 0) ? false : true;
 
                     BigDecimal newBalance = null;
                     if (payment.getIsRefund() == 0) {

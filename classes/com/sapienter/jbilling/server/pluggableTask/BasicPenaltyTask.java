@@ -232,13 +232,13 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
         // if the item price is a percentage of the balance
         if (item.getEntity().getPercentage() != null) {
             base = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-            base = base.multiply(new BigDecimal(item.getEntity().getPercentage().toString()));
+            base = base.multiply(item.getEntity().getPercentage());
             return base;
             
-        } else if (base.floatValue() > 0) {
-            return new BigDecimal(item.getPrice(invoice.getBaseUser().getId(),
+        } else if (base.compareTo(BigDecimal.ZERO) > 0) {
+            return item.getPrice(invoice.getBaseUser().getId(),
                                           invoice.getCurrency().getId(),
-                                          invoice.getBaseUser().getEntity().getId()).toString());
+                                          invoice.getBaseUser().getEntity().getId());
         } else {
             return BigDecimal.ZERO;
         }

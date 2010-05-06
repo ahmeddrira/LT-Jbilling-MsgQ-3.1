@@ -60,7 +60,7 @@ public class RulesValidatePurchaseTask extends PluggableTask
             return result;
         }
 
-        BigDecimal amount = new BigDecimal(0.0);
+        BigDecimal amount = BigDecimal.ZERO;
         for (BigDecimal a : amounts) {
             amount = amount.add(a);
         }
@@ -147,15 +147,15 @@ public class RulesValidatePurchaseTask extends PluggableTask
     }
 
     public static class ValidatePurchase {
-        private double amount;
+        private BigDecimal amount;
         private List<String> messages;
 
         public ValidatePurchase(BigDecimal amount) {
-            this.amount = amount.doubleValue();
+            this.amount = amount;
             messages = new LinkedList<String>();
         }
 
-        public double getAmount() {
+        public BigDecimal getAmount() {
             return amount;
         }
 

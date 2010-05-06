@@ -746,7 +746,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             throws SQLException {
         List payments = getPaymentsWithBalance(invoice.getBaseUser().getUserId());
 
-        for (int f = 0; f < payments.size() && invoice.getBalance().floatValue() > 0; f++) {
+        for (int f = 0; f < payments.size() && invoice.getBalance().compareTo(BigDecimal.ZERO) > 0; f++) {
             payment = (PaymentDTO) payments.get(f);
             if (new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_FAIL) || new Integer(payment.getPaymentResult().getId()).equals(Constants.RESULT_UNAVAILABLE)) {
                 continue;

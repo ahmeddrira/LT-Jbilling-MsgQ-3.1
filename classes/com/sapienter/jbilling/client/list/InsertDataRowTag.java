@@ -49,6 +49,7 @@ import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.list.ListDTO;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * This tag will display all the colums of a query previously done with 
@@ -114,7 +115,10 @@ public class InsertDataRowTag extends BodyTagSupport {
                 String field = null;
                 String dateFormat = null;
                 String timeStampFormat = null;
-//                log.debug("column " + f + " datatype:" + dataType); 
+//                log.debug("column " + f + " datatype:" + dataType);
+
+                Locale loc = (Locale) session.getAttribute(Globals.LOCALE_KEY);
+                NumberFormat nf = NumberFormat.getInstance(loc);
 
                 switch (dataType) {
                 case Types.DATE:
@@ -169,6 +173,26 @@ public class InsertDataRowTag extends BodyTagSupport {
                     break;
                 case Types.FLOAT:
                 case Types.DECIMAL:
+                case Types.NUMERIC:
+                    BigDecimal num;
+                    alignRight = true;
+                    if (method == ListTagBase.METHOD_JDBC) {
+                        num = results.getBigDecimal(f);
+                    } else {
+                        if (dtoLine[f-1] instanceof BigDecimal) {
+                            num = (BigDecimal) dtoLine[f-1];
+                        } else {
+                            num = new BigDecimal(((Float) dtoLine[f-1]));
+                        }
+                    }
+                    
+                    if (nf instanceof DecimalFormat) {
+                        // we always want two decimals
+                        ((DecimalFormat) nf).applyPattern(Resources.getMessage(
+                            (HttpServletRequest) pageContext.getRequest(), "format.float"));
+                    }
+                    field = nf.format(num.floatValue());
+                    break;
                 case Types.DOUBLE:
                     float dec;
                     alignRight = true;
@@ -183,10 +207,7 @@ public class InsertDataRowTag extends BodyTagSupport {
                         }
                     }
                     //log.debug("bp4-2");
-                    Locale loc = (Locale) session.getAttribute(
-                            Globals.LOCALE_KEY);
                     //log.debug("bp4-3" + loc);
-                    NumberFormat nf = NumberFormat.getInstance(loc);
                     //log.debug("bp4-4" + nf);
                     if (nf instanceof DecimalFormat) {
                         // we always want two decimals

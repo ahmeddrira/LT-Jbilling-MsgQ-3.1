@@ -162,8 +162,15 @@ public interface CommonConstants {
     public static final Integer OPERATION_TYPE_DATE = new Integer(4);
     public static final Integer OPERATION_TYPE_NUMBER = new Integer(5);
     
-    // BigDecimal caculation constants
+    /**
+     * BigDecimal caculation constants <br/>
+     * This value must be inline with underlying SQL data type
+     */
     public static final int BIGDECIMAL_SCALE = 10;
+    /**
+     * Round to 2 decimals for view. Use it with formatters and/or toString
+     */
+    public static final int BIGDECIMAL_SCALE_STR = 2;
     public static final int BIGDECIMAL_ROUND = BigDecimal.ROUND_HALF_UP;
 
     public static final BigDecimal BIGDECIMAL_ONE = new BigDecimal("1");

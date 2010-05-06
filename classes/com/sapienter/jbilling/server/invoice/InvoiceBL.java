@@ -376,7 +376,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         BigDecimal balance = new BigDecimal(invoice.getBalance().toString());
         balance = balance.add(new BigDecimal(addition.getTotal().toString()));
         invoice.setBalance(balance);
-        if (invoice.getBalance().floatValue() <= 0.001F) {
+//?        if (invoice.getBalance().floatValue() <= 0.001F) {
+        if (invoice.getBalance().compareTo(BigDecimal.ZERO) == 0) {
             invoice.setToProcess(new Integer(0));
         }
     }
@@ -385,7 +386,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         BigDecimal total = new BigDecimal(0);
         for (Iterator it = invoice.getInvoiceLines().iterator(); it.hasNext();) {
             InvoiceLineDTO line = (InvoiceLineDTO) it.next();
-            total = total.add(new BigDecimal(line.getAmount().floatValue()));
+            total = total.add(line.getAmount());
         }
         return total;
     }
@@ -401,13 +402,13 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         return cachedResults;
     }
 
-    public float getTotalPaid() {
+    public BigDecimal getTotalPaid() {
         BigDecimal retValue = new BigDecimal(0);
         for (Iterator<PaymentInvoiceMapDTO> it = invoice.getPaymentMap().iterator(); it.hasNext();) {
             PaymentInvoiceMapDTO paymentMap = it.next();
-            retValue = retValue.add(new BigDecimal(paymentMap.getAmount().toString()));
+            retValue = retValue.add(paymentMap.getAmount());
         }
-        return retValue.floatValue();
+        return retValue;
     }
 
     public CachedRowSet getList(Integer orderId) throws SQLException, Exception {

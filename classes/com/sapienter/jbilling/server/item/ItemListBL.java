@@ -121,7 +121,7 @@ public final class ItemListBL extends ResultList
             columns[1] = (item.getDescription(languageId) == null) ? "" : item.getDescription(languageId);
             if (item.getPercentage() != null) {
                 columns[2] = "%";
-                columns[3] = item.getPercentage().floatValue();
+                columns[3] = item.getPercentage();
             } else {
                 columns[3] = itemBL.getPrice(userId, entityID);
                 columns[2] = itemBL.getPriceCurrencySymbol(); 

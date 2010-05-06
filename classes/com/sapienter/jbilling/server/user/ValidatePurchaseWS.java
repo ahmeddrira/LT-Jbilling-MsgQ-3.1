@@ -34,6 +34,7 @@ public class ValidatePurchaseWS implements Serializable {
     private String[] message;
     private Boolean authorized;
     private String quantity;
+    private BigDecimal quantityAsDecimal;
 
     public ValidatePurchaseWS() {
         success = true;
@@ -71,8 +72,9 @@ public class ValidatePurchaseWS implements Serializable {
     }
 
     public BigDecimal getQuantityAsDecimal() {
-        if (quantity == null) return null;
-        return new BigDecimal(quantity);
+        if(quantityAsDecimal != null)
+            return quantityAsDecimal;
+        return (quantity == null ? null : new BigDecimal(quantity));
     }
 
     public void setQuantity(String quantity) {
@@ -80,12 +82,17 @@ public class ValidatePurchaseWS implements Serializable {
     }
 
     public void setQuantity(Double quantity) {
-        if (quantity != null)
-            this.quantity = new BigDecimal(quantity).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).toString();
+        this.setQuantity(new BigDecimal(quantity));
     }
 
+    /**
+     * <strong>Note:</strong> Subsequent call to getQuantity returns value rounded to 2 decimals.
+     * Use getQuantityAsDecimal if precision is important, i.e. for calculations
+     * @param quantity
+     */
     public void setQuantity(BigDecimal quantity) {
+        this.quantityAsDecimal = quantity;
         if (quantity != null)
-            this.quantity = quantity.toString();
+            this.quantity = quantity.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
     }
 }

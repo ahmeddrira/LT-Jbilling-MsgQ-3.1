@@ -207,10 +207,10 @@ public class RulesItemManager extends BasicItemManager {
             // now add the amount based on the itemBase
             ItemBL item = new ItemBL(itemBase);
             ItemDTO itemDto = item.getDTO(language, userId, entityId, currencyId);
-            BigDecimal percentage = new BigDecimal(updateLine.getItem().getPercentage().toString());
-            BigDecimal base = new BigDecimal(itemDto.getPrice().toString());
-            BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND).multiply(percentage).add(
-                    new BigDecimal(updateLine.getAmount().toString()));
+            BigDecimal percentage = updateLine.getItem().getPercentage();
+            BigDecimal base = itemDto.getPrice();
+            BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND)
+                    .multiply(percentage).add(updateLine.getAmount());
             updateLine.setAmount(result);
 
             return updateLine;
@@ -233,11 +233,10 @@ public class RulesItemManager extends BasicItemManager {
             }
 
             // now add the percentage amount based on the order line item amount
-            BigDecimal percentage = new BigDecimal(percentageLine.getItem().getPercentage().toString());
+            BigDecimal percentage = percentageLine.getItem().getPercentage();
             BigDecimal base = line.getPrice().multiply(line.getQuantity());
             BigDecimal result = base.divide(new BigDecimal("100"), Constants.BIGDECIMAL_SCALE,
-                    Constants.BIGDECIMAL_ROUND).multiply(percentage).add(
-                        new BigDecimal(percentageLine.getAmount().toString()));
+                    Constants.BIGDECIMAL_ROUND).multiply(percentage).add(percentageLine.getAmount());
             percentageLine.setAmount(result);
 
             return percentageLine;

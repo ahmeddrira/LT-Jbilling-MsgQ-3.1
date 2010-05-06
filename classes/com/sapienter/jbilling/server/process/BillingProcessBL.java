@@ -401,7 +401,7 @@ public class BillingProcessBL extends ResultList
                     BigDecimal carried = balance.add(holder.getCarriedBalance());
                     holder.setCarriedBalance(carried);
 
-                    if (carried.floatValue() > 0F)
+                    if (carried.compareTo(BigDecimal.ZERO) > 0)
                         invoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
                 }
 

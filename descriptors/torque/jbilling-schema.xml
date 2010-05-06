@@ -135,9 +135,9 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="process_run_id" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>
-        <column name="total_invoiced" type="DOUBLE"/>
-        <column name="total_paid" type="DOUBLE"/>
-        <column name="total_not_paid" type="DOUBLE"/>
+        <column name="total_invoiced" type="NUMERIC" size="22" scale="10"/>
+        <column name="total_paid" type="NUMERIC" size="22" scale="10"/>
+        <column name="total_not_paid" type="NUMERIC" size="22" scale="10"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="bp_run_total_run_ix">
             <index-column name="process_run_id"/>
@@ -153,7 +153,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="process_run_total_id" type="INTEGER"/>
         <column name="payment_method_id" type="INTEGER"/>
-        <column name="total" required="true" type="DOUBLE"/>
+        <column name="total" required="true" type="NUMERIC" size="22" scale="10"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="bp_pm_index_total">
             <index-column name="process_run_total_id"/>
@@ -330,7 +330,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="entity_id" type="INTEGER"/>
         <column name="currency_id" type="INTEGER"/>
-        <column name="rate" required="true" type="DOUBLE"/>
+        <column name="rate" required="true" type="NUMERIC" size="22" scale="10"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="currency">
@@ -354,9 +354,9 @@
         <column name="invoice_child" type="SMALLINT"/>
         <column name="current_order_id" type="INTEGER"/>
         <column name="balance_type" type="INTEGER" default="1" required="true"/>
-        <column name="dynamic_balance" type="DOUBLE"/>
-        <column name="credit_limit" type="DOUBLE"/>
-        <column name="auto_recharge" type="DOUBLE"/>
+        <column name="dynamic_balance" type="NUMERIC" size="22" scale="10"/>
+        <column name="credit_limit" type="NUMERIC" size="22" scale="10"/>
+        <column name="auto_recharge" type="NUMERIC" size="22" scale="10"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="customer_i_2">
             <index-column name="user_id"/>
@@ -482,10 +482,10 @@
         <column name="status_id" type="INTEGER" required="true"/>
         <column name="delegated_invoice_id" type="INTEGER"/>
         <column name="due_date" required="true" type="DATE"/>
-        <column name="total" required="true" type="DOUBLE"/>
+        <column name="total" required="true" type="NUMERIC" size="22" scale="10"/>
         <column default="0" name="payment_attempts" required="true" type="INTEGER"/>
-        <column name="balance" type="DOUBLE"/>
-        <column name="carried_balance" required="true" type="DOUBLE"/>
+        <column name="balance" type="NUMERIC" size="22" scale="10"/>
+        <column name="carried_balance" required="true" type="NUMERIC" size="22" scale="10"/>
         <column default="1" name="in_process_payment" required="true" type="SMALLINT"/>
         <column name="is_review" required="true" type="INTEGER"/>
         <column name="currency_id" required="true" type="INTEGER"/>
@@ -547,9 +547,9 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="invoice_id" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
-        <column name="amount" required="true" type="DOUBLE"/>
-        <column name="quantity" type="DOUBLE"/>
-        <column name="price" type="DOUBLE"/>
+        <column name="amount" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="quantity" type="NUMERIC" size="22" scale="10"/>
+        <column name="price" type="NUMERIC" size="22" scale="10"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column name="item_id" type="INTEGER"/>
         <column name="description" size="1000" type="VARCHAR"/>
@@ -579,7 +579,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="internal_number" size="50" type="VARCHAR"/>
         <column name="entity_id" type="INTEGER"/>
-        <column name="percentage" type="DOUBLE"/>
+        <column name="percentage" type="NUMERIC" size="22" scale="10"/>
         <column name="price_manual" required="true" type="SMALLINT"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
         <column default="0" name="has_decimals" required="true" type="SMALLINT"/>
@@ -596,7 +596,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="item_id" type="INTEGER"/>
         <column name="currency_id" type="INTEGER"/>
-        <column name="price" required="true" type="DOUBLE"/>
+        <column name="price" required="true" type="NUMERIC" size="22" scale="10"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="currency">
             <reference foreign="id" local="currency_id"/>
@@ -764,9 +764,9 @@
         <column name="order_id" type="INTEGER"/>
         <column name="item_id" type="INTEGER"/>
         <column name="type_id" type="INTEGER"/>
-        <column name="amount" required="true" type="DOUBLE"/>
-        <column name="quantity" type="DOUBLE"/>
-        <column name="price" type="DOUBLE"/>
+        <column name="amount" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="quantity" type="NUMERIC" size="22" scale="10"/>
+        <column name="price" type="NUMERIC" size="22" scale="10"/>
         <column name="item_price" type="SMALLINT"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column default="0" name="deleted" required="true" type="SMALLINT"/>
@@ -845,18 +845,18 @@
     <table name="partner">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="user_id" type="INTEGER"/>
-        <column name="balance" required="true" type="DOUBLE"/>
-        <column name="total_payments" required="true" type="DOUBLE"/>
-        <column name="total_refunds" required="true" type="DOUBLE"/>
-        <column name="total_payouts" required="true" type="DOUBLE"/>
-        <column name="percentage_rate" type="DOUBLE"/>
-        <column name="referral_fee" type="DOUBLE"/>
+        <column name="balance" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="total_payments" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="total_refunds" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="total_payouts" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="percentage_rate" type="NUMERIC" size="22" scale="10"/>
+        <column name="referral_fee" type="NUMERIC" size="22" scale="10"/>
         <column name="fee_currency_id" type="INTEGER"/>
         <column name="one_time" required="true" type="SMALLINT"/>
         <column name="period_unit_id" required="true" type="INTEGER"/>
         <column name="period_value" required="true" type="INTEGER"/>
         <column name="next_payout_date" required="true" type="DATE"/>
-        <column name="due_payout" type="DOUBLE"/>
+        <column name="due_payout" type="NUMERIC" size="22" scale="10"/>
         <column name="automatic_process" required="true" type="SMALLINT"/>
         <column name="related_clerk" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
@@ -880,9 +880,9 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="starting_date" required="true" type="DATE"/>
         <column name="ending_date" required="true" type="DATE"/>
-        <column name="payments_amount" required="true" type="DOUBLE"/>
-        <column name="refunds_amount" required="true" type="DOUBLE"/>
-        <column name="balance_left" required="true" type="DOUBLE"/>
+        <column name="payments_amount" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="refunds_amount" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="balance_left" required="true" type="NUMERIC" size="22" scale="10"/>
         <column name="payment_id" type="INTEGER"/>
         <column name="partner_id" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
@@ -896,8 +896,8 @@
     <table name="partner_range">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="partner_id" type="INTEGER"/>
-        <column name="percentage_rate" type="DOUBLE"/>
-        <column name="referral_fee" type="DOUBLE"/>
+        <column name="percentage_rate" type="NUMERIC" size="22" scale="10"/>
+        <column name="referral_fee" type="NUMERIC" size="22" scale="10"/>
         <column name="range_from" required="true" type="INTEGER"/>
         <column name="range_to" required="true" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
@@ -910,7 +910,7 @@
         <column name="user_id" type="INTEGER"/>
         <column name="attempt" type="INTEGER"/>
         <column name="result_id" type="INTEGER"/>
-        <column name="amount" required="true" type="DOUBLE"/>
+        <column name="amount" required="true" type="NUMERIC" size="22" scale="10"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="update_datetime" type="TIMESTAMP"/>
         <column name="payment_date" type="DATE"/>
@@ -923,7 +923,7 @@
         <column name="currency_id" required="true" type="INTEGER"/>
         <column name="payout_id" type="INTEGER"/>
         <column name="ach_id" type="INTEGER"/>
-        <column name="balance" type="DOUBLE"/>
+        <column name="balance" type="NUMERIC" size="22" scale="10"/>
         <column name="payment_period" type="INTEGER"/>
         <column name="payment_notes" size="500" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
@@ -1002,7 +1002,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="payment_id" type="INTEGER"/>
         <column name="invoice_id" type="INTEGER"/>
-        <column name="amount" type="DOUBLE"/>
+        <column name="amount" type="NUMERIC" size="22" scale="10"/>
         <column name="create_datetime" required="true" type="TIMESTAMP"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="ix_uq_payment_inv_map_pa_in">
@@ -1361,8 +1361,8 @@
         <column name="mediation_record_id" type="VARCHAR" size="100" required="true"/>
         <column name="order_line_id" required="true" type="INTEGER"/>
         <column name="event_date" required="true" type="TIMESTAMP"/>
-        <column name="amount" required="true" type="DOUBLE"/>
-        <column name="quantity" required="true" type="DOUBLE"/>
+        <column name="amount" required="true" type="NUMERIC" size="22" scale="10"/>
+        <column name="quantity" required="true" type="NUMERIC" size="22" scale="10"/>
         <column name="description" type="VARCHAR" required="false" size="200"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="mediation_record">

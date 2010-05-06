@@ -174,7 +174,7 @@ public class NewInvoiceDTO extends InvoiceDTO {
         BigDecimal total = new BigDecimal(0);
         while (lines.hasNext()) {
             InvoiceLineDTO line = (InvoiceLineDTO) lines.next();
-            total = total.add(new BigDecimal(line.getAmount().toString()));
+            total = total.add(line.getAmount());
         }
 
         setTotal(total);

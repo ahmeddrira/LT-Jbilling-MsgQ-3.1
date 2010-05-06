@@ -723,7 +723,7 @@ CREATE TABLE currency_exchange (
     id integer NOT NULL,
     entity_id integer,
     currency_id integer,
-    rate double precision NOT NULL,
+    rate numeric(22, 10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
     optlock integer NOT NULL
 );
@@ -753,9 +753,9 @@ CREATE TABLE customer (
     current_order_id integer,
     optlock integer NOT NULL,
     balance_type integer NOT NULL,
-    dynamic_balance double precision,
-    credit_limit double precision,
-    auto_recharge double precision
+    dynamic_balance numeric(22, 10),
+    credit_limit numeric(22, 10),
+    auto_recharge numeric(22, 10)
 );
 
 
@@ -899,11 +899,11 @@ CREATE TABLE invoice (
     user_id integer,
     delegated_invoice_id integer,
     due_date date NOT NULL,
-    total double precision NOT NULL,
+    total numeric(22, 10) NOT NULL,
     payment_attempts integer DEFAULT 0 NOT NULL,
     status_id smallint DEFAULT 1 NOT NULL,
-    balance double precision,
-    carried_balance double precision NOT NULL,
+    balance numeric(22, 10),
+    carried_balance numeric(22, 10) NOT NULL,
     in_process_payment smallint DEFAULT 1 NOT NULL,
     is_review integer NOT NULL,
     currency_id integer NOT NULL,
@@ -939,9 +939,9 @@ CREATE TABLE invoice_line (
     id integer NOT NULL,
     invoice_id integer,
     type_id integer,
-    amount double precision NOT NULL,
-    quantity double precision,
-    price double precision,
+    amount numeric(22, 10) NOT NULL,
+    quantity numeric(22, 10),
+    price numeric(22, 10),
     deleted smallint DEFAULT 0 NOT NULL,
     item_id integer,
     description character varying(1000),
@@ -974,7 +974,7 @@ CREATE TABLE item (
     id integer NOT NULL,
     internal_number character varying(50),
     entity_id integer,
-    percentage double precision,
+    percentage numeric(22, 10),
     price_manual smallint NOT NULL,
     deleted smallint DEFAULT 0 NOT NULL,
     has_decimals smallint DEFAULT 0 NOT NULL,
@@ -992,7 +992,7 @@ CREATE TABLE item_price (
     id integer NOT NULL,
     item_id integer,
     currency_id integer,
-    price double precision NOT NULL,
+    price numeric(22, 10) NOT NULL,
     optlock integer NOT NULL
 );
 
@@ -1230,8 +1230,8 @@ CREATE TABLE mediation_record_line (
     id integer NOT NULL,
     order_line_id integer NOT NULL,
     event_date timestamp without time zone NOT NULL,
-    amount double precision NOT NULL,
-    quantity double precision NOT NULL,
+    amount numeric(22, 10) NOT NULL,
+    quantity numeric(22, 10) NOT NULL,
     description character varying(200),
     optlock integer NOT NULL,
     mediation_record_id integer NOT NULL
@@ -1361,9 +1361,9 @@ CREATE TABLE order_line (
     order_id integer,
     item_id integer,
     type_id integer,
-    amount double precision NOT NULL,
-    quantity double precision,
-    price double precision,
+    amount numeric(22, 10) NOT NULL,
+    quantity numeric(22, 10),
+    price numeric(22, 10),
     item_price smallint,
     create_datetime timestamp without time zone NOT NULL,
     deleted smallint DEFAULT 0 NOT NULL,
@@ -1445,18 +1445,18 @@ ALTER TABLE public.paper_invoice_batch OWNER TO jbilling;
 CREATE TABLE partner (
     id integer NOT NULL,
     user_id integer,
-    balance double precision NOT NULL,
-    total_payments double precision NOT NULL,
-    total_refunds double precision NOT NULL,
-    total_payouts double precision NOT NULL,
-    percentage_rate double precision,
-    referral_fee double precision,
+    balance numeric(22, 10) NOT NULL,
+    total_payments numeric(22, 10) NOT NULL,
+    total_refunds numeric(22, 10) NOT NULL,
+    total_payouts numeric(22, 10) NOT NULL,
+    percentage_rate numeric(22, 10),
+    referral_fee numeric(22, 10),
     fee_currency_id integer,
     one_time smallint NOT NULL,
     period_unit_id integer NOT NULL,
     period_value integer NOT NULL,
     next_payout_date date NOT NULL,
-    due_payout double precision,
+    due_payout numeric(22, 10),
     automatic_process smallint NOT NULL,
     related_clerk integer,
     optlock integer NOT NULL
@@ -1473,9 +1473,9 @@ CREATE TABLE partner_payout (
     id integer NOT NULL,
     starting_date date NOT NULL,
     ending_date date NOT NULL,
-    payments_amount double precision NOT NULL,
-    refunds_amount double precision NOT NULL,
-    balance_left double precision NOT NULL,
+    payments_amount numeric(22, 10) NOT NULL,
+    refunds_amount numeric(22, 10) NOT NULL,
+    balance_left numeric(22, 10) NOT NULL,
     payment_id integer,
     partner_id integer,
     optlock integer NOT NULL
@@ -1491,8 +1491,8 @@ ALTER TABLE public.partner_payout OWNER TO jbilling;
 CREATE TABLE partner_range (
     id integer NOT NULL,
     partner_id integer,
-    percentage_rate double precision,
-    referral_fee double precision,
+    percentage_rate numeric(22, 10),
+    referral_fee numeric(22, 10),
     range_from integer NOT NULL,
     range_to integer NOT NULL,
     optlock integer NOT NULL
@@ -1510,7 +1510,7 @@ CREATE TABLE payment (
     user_id integer,
     attempt integer,
     result_id integer,
-    amount double precision NOT NULL,
+    amount numeric(22, 10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
     update_datetime timestamp without time zone,
     payment_date date,
@@ -1523,7 +1523,7 @@ CREATE TABLE payment (
     currency_id integer NOT NULL,
     payout_id integer,
     ach_id integer,
-    balance double precision,
+    balance numeric(22, 10),
     optlock integer NOT NULL,
     payment_period integer,
     payment_notes character varying(500)
@@ -1580,7 +1580,7 @@ CREATE TABLE payment_invoice (
     id integer NOT NULL,
     payment_id integer,
     invoice_id integer,
-    amount double precision,
+    amount numeric(22, 10),
     create_datetime timestamp without time zone NOT NULL,
     optlock integer NOT NULL
 );
@@ -1788,9 +1788,9 @@ CREATE TABLE process_run_total (
     id integer NOT NULL,
     process_run_id integer,
     currency_id integer NOT NULL,
-    total_invoiced double precision,
-    total_paid double precision,
-    total_not_paid double precision,
+    total_invoiced numeric(22, 10),
+    total_paid numeric(22, 10),
+    total_not_paid numeric(22, 10),
     optlock integer NOT NULL
 );
 
@@ -1805,7 +1805,7 @@ CREATE TABLE process_run_total_pm (
     id integer NOT NULL,
     process_run_total_id integer,
     payment_method_id integer,
-    total double precision NOT NULL,
+    total numeric(22, 10) NOT NULL,
     optlock integer NOT NULL
 );
 

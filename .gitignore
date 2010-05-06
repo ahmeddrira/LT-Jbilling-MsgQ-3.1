@@ -4,3 +4,5 @@ activemq-data/
 build.properties
 TEST*.xml
 *~
+libs/
+nbproject/

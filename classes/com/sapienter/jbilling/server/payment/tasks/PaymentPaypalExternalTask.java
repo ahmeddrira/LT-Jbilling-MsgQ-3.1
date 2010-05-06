@@ -35,6 +35,7 @@ import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.common.Util;
 import com.paypal.sdk.exceptions.PayPalException;
+import com.sapienter.jbilling.common.CommonConstants;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -430,7 +431,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         PaymentDTO payment = new PaymentDTO();
         payment.setBaseUser(user);
         payment.setCurrency(user.getCurrency());
-        payment.setAmount(new BigDecimal(0.01));
+        payment.setAmount(CommonConstants.BIGDECIMAL_ONE_CENT);
         payment.setCreditCard(creditCard);
         payment.setPaymentMethod(new PaymentMethodDAS().find(Util.getPaymentMethod(creditCard.getNumber())));
         payment.setIsRefund(0);

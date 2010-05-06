@@ -91,7 +91,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
             LOG.debug("Now processing item price " + f + " data:" + nextPrice);
             String priceStr = nextPrice.getPriceForm();
             if (priceStr != null && priceStr.trim().length() > 0) {
-                Float price = string2float(priceStr);
+                BigDecimal price = string2decimal(priceStr);
                 if (price == null) {
                     String field = Resources.getMessage(request, "item.prompt.price");
                     errors.add(ActionErrors.GLOBAL_ERROR,
@@ -100,7 +100,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
                 } else {
                     atLeastOnePriceFound = true;
                 }
-                nextPrice.setPrice(new BigDecimal(price));
+                nextPrice.setPrice(price);
             }
         }
 
@@ -155,7 +155,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);
             if (pr.getPrice() != null)
-                pr.setPriceForm(float2string(pr.getPrice().floatValue()));
+                pr.setPriceForm(decimal2string(pr.getPrice()));
         }
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());
         myForm.set(FIELD_DESCRIPTION, dto.getDescription());
@@ -166,7 +166,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         myForm.set(FIELD_LANGUAGE, languageId);
         myForm.set(FIELD_HAS_DECIMALS, dto.getHasDecimals().intValue() > 0);
         if (dto.getPercentage() != null) {
-            myForm.set(FIELD_PERCENTAGE, float2string(dto.getPercentage().floatValue()));
+            myForm.set(FIELD_PERCENTAGE, decimal2string(dto.getPercentage()));
         } else {
             // otherwise it will pickup the percentage of a 
             // previously edited item!

@@ -36,6 +36,8 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Emil
@@ -375,6 +377,73 @@ public class WSTest extends TestCase {
         }
     }
     
+    public void testFloatConversion() {
+        List<Integer> invoiceIds = new ArrayList<Integer>();
+        List<Integer> orderIds = new ArrayList<Integer>();
+        JbillingAPI api = null;
+        try {
+            final Integer USER_ID = 10730; // user has no orders
+            api = JbillingAPIFactory.getAPI();
+
+            // test BigDecimal behavior
+            assertFalse(new BigDecimal("1.1").equals(new BigDecimal("1.10")));
+            assertTrue(new BigDecimal("1.1").compareTo(new BigDecimal("1.10")) == 0);
+
+            // setup 3 orders of 1 item with id 1
+            OrderWS mockOrder = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER_ID, 1, new BigDecimal("0.33"));
+            OrderWS order1 = api.getOrder(api.createOrder(mockOrder));
+            OrderWS order2 = api.getOrder(api.createOrder(mockOrder));
+            OrderWS order3 = api.getOrder(api.createOrder(mockOrder));
+            orderIds.add(order1.getId());
+            orderIds.add(order2.getId());
+            orderIds.add(order3.getId());
+
+            invoiceIds.addAll(Arrays.asList(api.createInvoice(USER_ID, false)));
+            assertEquals(1, invoiceIds.size());
+
+            InvoiceWS invoice = api.getInvoiceWS(invoiceIds.get(0));
+            assertEquals(new BigDecimal("0.99"), invoice.getTotalAsDecimal());
+            assertEquals("0.99", invoice.getTotal());
+
+            // setup 3 orders of 1 item with id 1
+            mockOrder = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER_ID, 1, new BigDecimal("0.33"));
+            order1 = api.getOrder(api.createOrder(mockOrder));
+            order2 = api.getOrder(api.createOrder(mockOrder));
+            orderIds.add(order1.getId());
+            orderIds.add(order2.getId());
+
+            invoiceIds.addAll(Arrays.asList(api.createInvoice(USER_ID, false)));
+            assertEquals(2, invoiceIds.size());
+
+            invoice = api.getInvoiceWS(invoiceIds.get(1));
+
+            for (Integer orderId : invoice.getOrders()) {
+                OrderWS order = api.getOrder(orderId);
+                assertEquals(1, order.getOrderLines().length);
+            }
+
+            assertEquals(new BigDecimal("0.66"), invoice.getTotalAsDecimal());
+            assertEquals("0.66", invoice.getTotal());
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        } finally {
+            try {
+                for (Integer integer : invoiceIds) {
+                    api.deleteInvoice(integer);
+                }
+                System.out.println("Successfully deleted invoices: " + invoiceIds.size());
+                for (Integer integer : orderIds) {
+                    api.deleteOrder(integer);
+                }
+                System.out.println("Successfully deleted orders: " + orderIds.size());
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);
     }

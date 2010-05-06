@@ -509,8 +509,8 @@ public class PartnerBL extends ResultList implements PartnerSQL {
             fee = partnerRange.getReferralFee() == null ? null : 
                     new BigDecimal(partnerRange.getReferralFee().toString());
         } else {
-            rate = new BigDecimal(partner.getPercentageRate().toString());
-            fee = new BigDecimal(partner.getReferralFee().toString());
+            rate = partner.getPercentageRate();
+            fee = partner.getReferralFee();
         }
 
         LOG.debug("using rate " + rate + " fee " + fee);

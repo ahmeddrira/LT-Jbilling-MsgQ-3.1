@@ -360,8 +360,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
 
                     BigDecimal newBalance = null;
                     if (payment.getIsRefund() == 0) {
-                        newBalance = new BigDecimal(balance.toString());
-                        newBalance = newBalance.subtract(new BigDecimal(payment.getBalance().toString()));
+                        newBalance = balance.subtract(payment.getBalance());
 
                         // I need the payment record to update its balance
                         if (payment.getId() == 0) {

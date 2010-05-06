@@ -824,8 +824,7 @@ public class NotificationBL extends ResultList implements NotificationSQL {
                         line.getInvoiceLineType().getId() == 
                                 Constants.INVOICE_LINE_TYPE_TAX) {
                     // update the total tax variable
-                    taxTotal = taxTotal.add(new BigDecimal(line.getAmount()
-                            .toString()));
+                    taxTotal = taxTotal.add(line.getAmount());
                     // add the tax amount as an array parameter
                     parameters.put("taxItem_" + taxItemIndex, Util.decimal2string(line.getPrice(), locale));
                     taxItemIndex++;

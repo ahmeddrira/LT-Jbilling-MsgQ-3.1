@@ -105,7 +105,7 @@ public class CurrencyBL {
 
         // make the conversion itself
         CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
-        BigDecimal tmp = new BigDecimal(amount.toString());
+        BigDecimal tmp = amount;
         return tmp.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
     }
     
@@ -118,8 +118,10 @@ public class CurrencyBL {
         
         CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
         // make the conversion itself
-        BigDecimal tmp = new BigDecimal(amount.toString());
-        return tmp.multiply(exchange.getRate());
+        BigDecimal tmp = amount;
+        tmp = tmp.multiply(exchange.getRate());
+        
+        return tmp;
     }
     
     public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId) throws SessionInternalError {

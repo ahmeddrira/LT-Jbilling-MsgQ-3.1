@@ -137,9 +137,8 @@ public class BasicCompositionTask extends PluggableTask
                         if (taxLine >= 0) {
                             // we have this tax already: add up the total
                             invoiceLine = (InvoiceLineDTO) invoiceDTO.getResultLines().get(taxLine);
-                            BigDecimal tmpDec = new BigDecimal(invoiceLine.getAmount().toString());
                             BigDecimal periodAmount = calculatePeriodAmount(orderLine.getAmount(), period);
-                            tmpDec = tmpDec.add(periodAmount);
+                            BigDecimal tmpDec = invoiceLine.getAmount().add(periodAmount);
                             invoiceLine.setAmount(tmpDec);
                             orderContribution = orderContribution.add(periodAmount);
                             continue;

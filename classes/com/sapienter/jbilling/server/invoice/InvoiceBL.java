@@ -373,8 +373,8 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
         invoice.setTotal(calculateTotal()); // new total
         // adjust the balance
         addition.calculateTotal();
-        BigDecimal balance = new BigDecimal(invoice.getBalance().toString());
-        balance = balance.add(new BigDecimal(addition.getTotal().toString()));
+        BigDecimal balance = invoice.getBalance();
+        balance = balance.add(addition.getTotal());
         invoice.setBalance(balance);
 //?        if (invoice.getBalance().floatValue() <= 0.001F) {
         if (invoice.getBalance().compareTo(BigDecimal.ZERO) == 0) {
@@ -893,9 +893,7 @@ public class InvoiceBL extends ResultList implements Serializable, InvoiceSQL {
                 // there had been at least one sub-account processed
                 if (line.getTypeId() ==
                         Constants.INVOICE_LINE_TYPE_SUB_ACCOUNT) {
-                    BigDecimal decTotal = new BigDecimal(total.toString());
-                    decTotal = decTotal.add(new BigDecimal(line.getAmount().toString()));
-                    total = decTotal;
+                    total = total.add(line.getAmount());
                 } else {
                     // this is the last total to display, from now on the
                     // lines are not of subaccounts

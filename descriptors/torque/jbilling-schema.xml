@@ -1086,7 +1086,7 @@
         <column name="name" required="true" size="50" type="VARCHAR"/>
         <column name="int_value" type="INTEGER"/>
         <column name="str_value" size="500" type="VARCHAR"/>
-        <column name="float_value" type="DOUBLE"/>
+        <column name="float_value" type="NUMERIC" size="22" scale="10"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <foreign-key foreignTable="pluggable_task">
             <reference foreign="id" local="task_id"/>
@@ -1113,7 +1113,7 @@
         <column name="foreign_id" required="true" type="INTEGER"/>
         <column name="int_value" type="INTEGER"/>
         <column name="str_value" size="200" type="VARCHAR"/>
-        <column name="float_value" type="DOUBLE"/>
+        <column name="float_value" type="NUMERIC" size="22" scale="10"/>
         <foreign-key foreignTable="preference_type">
             <reference foreign="id" local="type_id"/>
         </foreign-key>
@@ -1125,7 +1125,7 @@
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="int_def_value" type="INTEGER"/>
         <column name="str_def_value" size="200" type="VARCHAR"/>
-        <column name="float_def_value" type="DOUBLE"/>
+        <column name="float_def_value" type="NUMERIC" size="22" scale="10"/>
     </table>
     <table name="promotion">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

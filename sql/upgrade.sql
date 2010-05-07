@@ -213,6 +213,9 @@ alter table process_run_total alter column total_invoiced type numeric(22, 10);
 alter table process_run_total alter column total_paid type numeric(22, 10);
 alter table process_run_total alter column total_not_paid type numeric(22, 10);
 alter table process_run_total_pm alter column total type numeric(22, 10);
+alter table pluggable_task_parameter alter column float_value type numeric(22, 10);
+alter table preference alter column float_value type numeric(22, 10);
+alter table preference_type alter column float_def_value type numeric(22, 10);
 -- mysql
 -- alter table currency_exchange modify rate numeric(22, 10);
 -- alter table customer modify dynamic_balance numeric(22, 10);
@@ -250,3 +253,6 @@ alter table process_run_total_pm alter column total type numeric(22, 10);
 -- alter table process_run_total modify total_paid numeric(22, 10);
 -- alter table process_run_total modify total_not_paid numeric(22, 10);
 -- alter table process_run_total_pm modify total numeric(22, 10);
+-- alter table pluggable_task_parameter modify float_value numeric(22, 10);
+-- alter table preference modify float_value numeric(22, 10);
+-- alter table preference_type modify float_def_value numeric(22, 10);

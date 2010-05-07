@@ -92,7 +92,6 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 if (!line.getTotalReadOnly()) {
                     amount = nonTaxNonPerTotal.divide(new BigDecimal("100"), Constants.BIGDECIMAL_ROUND);
                     amount = amount.multiply(line.getPrice());
-                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND); // round final result down to 2 decimals
                     line.setAmount(amount);
                 } else {
                     amount = line.getAmount();
@@ -117,7 +116,6 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
                 if (!line.getTotalReadOnly()) {
                     amount = allNonTaxes.divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_EVEN);
                     amount = amount.multiply(line.getPrice());
-                    amount = amount.setScale(2, Constants.BIGDECIMAL_ROUND); // round final result down to 2 decimals
                     line.setAmount(amount);
                 } else {
                     amount = line.getAmount();
@@ -129,7 +127,6 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         }
 
         orderTotal = taxNonPerTotal.add(taxPerTotal).add(nonTaxPerTotal).add(nonTaxNonPerTotal);
-        orderTotal = orderTotal.setScale(2, Constants.BIGDECIMAL_ROUND); // round final result down to 2 decimals
         order.setTotal(orderTotal);
     }
     

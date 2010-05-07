@@ -1201,7 +1201,7 @@ public class OrderBL extends ResultList
 
         dto.setItemId(ws.getItemId());
         dto.setOrderLineType(new OrderLineTypeDAS().find(ws.getTypeId()));
-        dto.setPrice(new BigDecimal(ws.getPrice()));
+        dto.setPrice(ws.getPriceAsDecimal());
         dto.setPurchaseOrder(orderDas.find(ws.getOrderId()));
         dto.setQuantity(ws.getQuantityAsDecimal());
         dto.setVersionNum(ws.getVersionNum());
@@ -1239,7 +1239,7 @@ public class OrderBL extends ResultList
             line.setDescription(dto.getDescription());
             ItemDAS item = new ItemDAS();
             line.setItem(item.find(dto.getItemId()));
-            line.setPrice(new BigDecimal(dto.getPrice()));
+            line.setPrice(dto.getPriceAsDecimal());
             line.setQuantity(dto.getQuantityAsDecimal());
             line.setProvisioningStatus(provisioningStatusDas.find(
                     dto.getProvisioningStatusId()));

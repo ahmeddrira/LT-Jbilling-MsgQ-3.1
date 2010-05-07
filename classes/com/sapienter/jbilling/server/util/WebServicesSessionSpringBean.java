@@ -1347,7 +1347,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         error += "OrderLineWS: if useItem == true the itemId " +
                                 "is required - ";
                     }
-                    if (line.getQuantity() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
+                    if (line.getQuantityAsDecimal() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
                         error += "OrderLineWS: if useItem == true the quantity " +
                                 "is required - ";
                     }

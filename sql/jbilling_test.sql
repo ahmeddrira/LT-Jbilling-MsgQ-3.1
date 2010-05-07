@@ -1697,7 +1697,7 @@ CREATE TABLE pluggable_task_parameter (
     name character varying(50) NOT NULL,
     int_value integer,
     str_value character varying(500),
-    float_value double precision,
+    float_value numeric(22, 10),
     optlock integer NOT NULL
 );
 
@@ -1742,7 +1742,7 @@ CREATE TABLE preference (
     foreign_id integer NOT NULL,
     int_value integer,
     str_value character varying(200),
-    float_value double precision
+    float_value numeric(22, 10)
 );
 
 
@@ -1756,7 +1756,7 @@ CREATE TABLE preference_type (
     id integer NOT NULL,
     int_def_value integer,
     str_def_value character varying(200),
-    float_def_value double precision
+    float_def_value numeric(22, 10)
 );
 
 

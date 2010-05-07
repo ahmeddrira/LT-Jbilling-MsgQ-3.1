@@ -161,7 +161,6 @@ public class BasicCompositionTask extends PluggableTask
 
                     // for the invoice to make sense when it is displayed,
                     // each line has to be rounded to the decimals shown
-                    invoiceLine.setAmount(invoiceLine.getAmount().setScale(DECIMAL_DIGITS, Constants.BIGDECIMAL_ROUND));           
                     invoiceDTO.addResultLine(invoiceLine);
                 }
             }

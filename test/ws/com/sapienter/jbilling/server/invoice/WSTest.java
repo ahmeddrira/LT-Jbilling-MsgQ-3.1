@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class WSTest extends TestCase {
 
-    public void xtestGet() {
+    public void testGet() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
 
@@ -130,7 +130,7 @@ public class WSTest extends TestCase {
         }
     }
 
-    public void xtestDelete() {
+    public void testDelete() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             Integer invoiceId = new Integer(1);
@@ -158,7 +158,7 @@ public class WSTest extends TestCase {
 
     }
 
-    public void xtestCreateInvoice() {
+    public void testCreateInvoice() {
         try {
             final Integer USER_ID = 10730; // user has no orders
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -259,7 +259,7 @@ public class WSTest extends TestCase {
         }
     }
 
-    public void xtestCreateInvoiceSecurity() {
+    public void testCreateInvoiceSecurity() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             try {
@@ -283,7 +283,7 @@ public class WSTest extends TestCase {
      *
      * @throws Exception
      */
-    public void xtestCreateWithCarryOver() throws Exception {
+    public void testCreateWithCarryOver() throws Exception {
         final Integer USER_ID = 10743;          // user has one past-due invoice to be carried forward
         final Integer OVERDUE_INVOICE_ID = 70;  // holds a $20 balance
 
@@ -336,7 +336,7 @@ public class WSTest extends TestCase {
                      new BigDecimal("30.00"), invoice.getTotalAsDecimal());
     }
 
-    public void xtestGetUserInvoicesByDate() {
+    public void testGetUserInvoicesByDate() {
         try {
             final Integer USER_ID = 2; // user has some invoices
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -377,7 +377,7 @@ public class WSTest extends TestCase {
         }
     }
     
-    public void testFloatConversion() {
+    public void testGetTotalAsDecimal() {
         List<Integer> invoiceIds = new ArrayList<Integer>();
         List<Integer> orderIds = new ArrayList<Integer>();
         JbillingAPI api = null;
@@ -399,7 +399,7 @@ public class WSTest extends TestCase {
             InvoiceWS invoice = api.getInvoiceWS(invoiceIds.get(0));
             assertEquals(new BigDecimal("1.728"), invoice.getTotalAsDecimal());
             System.out.println(invoice.getTotal());
-            assertEquals("1.728", invoice.getTotal());
+            assertEquals("1.73", invoice.getTotal());
 
         } catch (Exception e) {
             e.printStackTrace();

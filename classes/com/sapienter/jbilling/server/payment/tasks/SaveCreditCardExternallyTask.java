@@ -158,6 +158,16 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
         }
     }
 
+    /**
+     * Update the credit card object with the given gateway key. If the gateway key is null,
+     * handle the external storage as a failure.
+     *
+     * If PARAM_OBSCURE_ON_FAIL is true, obscure the card number even if gateway key is null.
+     * If PARAM_REMOVE_ON_FAIL is true, delete the credit card and remove from the user map if the gateway key is null.
+     *
+     * @param creditCard credit card to update
+     * @param gatewayKey gateway key from external storage, null if storage failed.
+     */
     private void updateCreditCard(CreditCardDTO creditCard, String gatewayKey) {
         if (gatewayKey != null) {
             LOG.debug("Storing gateway key: " + gatewayKey);

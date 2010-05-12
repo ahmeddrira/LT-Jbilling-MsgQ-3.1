@@ -23,5 +23,21 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 
 public interface IExternalCreditCardStorage {
-	String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard);
+
+    /**
+     * Store the given credit card using the payment gateways storage mechanism.
+     *
+     * This method should return null for storage failures, so that the
+     * {@link com.sapienter.jbilling.server.payment.tasks.SaveCreditCardExternallyTask }
+     * can perform failure handling.
+     *
+     * If an obscured and stored credit card is encountered, this method should still return a
+     * gateway key for the card and not a null value. It is up to the implementation
+     * to decide whether or not to re-store the card or to leave it as-is.
+     *
+     * @param contact ContactDTO from NewContactEvent, may be null if triggered by NewCreditCardEvent
+     * @param creditCard credit card to store, may be null if triggered by NewContactEvent without credit card.
+     * @return gateway key of stored credit card, null if storage failed
+     */
+	public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard);
 }

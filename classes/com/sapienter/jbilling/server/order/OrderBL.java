@@ -1219,6 +1219,14 @@ public class OrderBL extends ResultList
         return orderLineDAS.findOnetimeByUserItem(userId, itemId);
     }
 
+    public List<OrderLineDTO> getOnetimeOrderLines(Integer userId, Integer itemId, Integer months) {
+        return orderLineDAS.findOnetimeByUserItem(userId, itemId, months);
+    }
+    
+    public List<OrderLineDTO> getOnetimeOrderLinesByParent(Integer parentUserId, Integer itemId, Integer months) {
+        return orderLineDAS.findOnetimeByParentUserItem(parentUserId, itemId, months);
+    }
+
     public void updateOrderLine(OrderLineWS dto) {
         OrderLineDTO line = getOrderLine(dto.getId());
         if (dto.getQuantity() != null && BigDecimal.ZERO.equals(dto.getQuantityAsDecimal())) {

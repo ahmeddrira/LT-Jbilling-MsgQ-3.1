@@ -1,6 +1,10 @@
 -- this script will upgrade a database schema from the latest jbilling release
 -- to the code currently at the tip of the trunk.
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
+--
+-- MySQL does not support many of the ANSI SQL statements used in this file to upgrade the
+-- base schema. If you are using MySQL as your database, you will need to edit this file and
+-- comment out the labeled 'postgresql' statements and un-comment the 'mysql' statements.
 
 -- validatePurchase changes
 insert into pluggable_task_type_category values (19, 'Validate Purchase', 'com.sapienter.jbilling.server.user.tasks.IValidatePurchaseTask');

@@ -95,12 +95,15 @@ public class PaymentDTOEx extends PaymentDTO {
         setDeleted(dto.getDeleted());
         setIsPreauth(dto.getIsPreauth());
         setIsRefund(dto.getIsRefund());
-        setPaymentMethod(new PaymentMethodDTO(dto.getMethodId()));
         setPaymentDate(dto.getPaymentDate());
         setUpdateDatetime(dto.getUpdateDatetime());
         setPaymentPeriod(dto.getPaymentPeriod());
         setPaymentNotes(dto.getPaymentNotes());
        
+        if (dto.getMethodId() != null)
+            setPaymentMethod(new PaymentMethodDTO(dto.getMethodId()));
+
+        if (dto.getResultId() != null)
         setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
 		
         userId = dto.getUserId();

@@ -37,6 +37,7 @@ import javax.jws.WebService;
 
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -1693,30 +1694,38 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
-
 		validatePayment(payment);
-
+        Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 
+        // payment without Credit Card or ACH, fetch the users primary payment instrument for use
         if (payment.getCreditCard() == null && payment.getAch() == null) {
-            PaymentDTO populated = null;
+            LOG.debug("processPayment() called without payment method, fetching users automatic payment instrument.");
+            PaymentDTO instrument;
             try {
-                populated = PaymentBL.findPaymentInstrument(
-                    new UserBL(payment.getUserId()).getEntity().getCompany().getId(),
-                    payment.getUserId());
-            } catch (Exception e) {
-                throw new SessionInternalError(e);
+                instrument = PaymentBL.findPaymentInstrument(entityId, payment.getUserId());
+            } catch (PluggableTaskException e) {
+                throw new SessionInternalError("Exception occurred fetching payment info plug-in.", e);
+            } catch (TaskException e) {
+                throw new SessionInternalError("Exception occurred with plug-in when fetching payment instrument.", e);
             }
-            dto.setCreditCard(populated.getCreditCard());
-            dto.setAch(populated.getAch());
+
+            dto.setCreditCard(instrument.getCreditCard());
+            dto.setAch(instrument.getAch());
         }
 
-        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        // populate payment method based on the payment instrument
+        if (dto.getCreditCard() != null)
+            dto.setPaymentMethod(new PaymentMethodDTO(dto.getCreditCard().getCcType()));
 
-        Integer entityId = getCallerCompanyId();
-        Integer result = session.processAndUpdateInvoice(dto, null,
-                entityId);
+        if (dto.getAch() != null)
+            dto.setPaymentMethod(new PaymentMethodDTO(Constants.PAYMENT_METHOD_ACH));
+
+        // process payment
+        IPaymentSessionBean session = (IPaymentSessionBean) Context.getBean(Context.Name.PAYMENT_SESSION);
+        Integer result = session.processAndUpdateInvoice(dto, null, entityId);
         LOG.debug("paymentBean.processAndUpdateInvoice() Id=" + result);
+
         PaymentAuthorizationDTOEx auth = null;
         if (dto != null && dto.getAuthorization() != null) {
             LOG.debug("PaymentAuthorizationDTO Id =" + dto.getAuthorization().getId());

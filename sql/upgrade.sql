@@ -167,3 +167,7 @@ alter table mediation_record_line add constraint mediation_record_line_fk_1 fore
 -- insert new mediation_record next_id value into the jbilling_seqs table.
 -- if you have no existing mediation_records, insert 0
 insert into jbilling_seqs values ('mediation_record', (select round(max(id)/100)+1 from mediation_record));
+
+-- authorize.net CIM payment task, may already exist in some versions of jbilling
+update pluggable_task_type set min_parameters = 2 where class_name = 'com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask';
+insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (76, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask', 2);

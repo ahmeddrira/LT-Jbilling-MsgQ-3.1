@@ -134,12 +134,13 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
             ContactDTO contact = ev.getContactDto();
             int thisRecordContactType = contact.getContactMap().getContactType().getId();
+            LOG.debug("Contact type: " + thisRecordContactType + ", plug-in expects: " + getContactType());
 
             if (getContactType() == thisRecordContactType) {
                 UserBL userBl = new UserBL(contact.getUserId());
                 CreditCardDTO creditCard = userBl.getCreditCard();
 
-                if (creditCard != null &&  !creditCard.isNumberObsucred()) {
+                if (creditCard != null) {
                     // credit card has changed or was not previously obscured
                     String gateWayKey = externalCCStorage.storeCreditCard(contact, creditCard);
                     updateCreditCard(creditCard, gateWayKey);

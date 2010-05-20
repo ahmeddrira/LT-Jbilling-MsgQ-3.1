@@ -2696,7 +2696,6 @@
     <PluggableTaskType Id="55" CategoryId="19" ClassName="com.sapienter.jbilling.server.user.tasks.UserBalanceValidatePurchaseTask" MinParameters="0"/>
     <PluggableTaskType Id="56" CategoryId="19" ClassName="com.sapienter.jbilling.server.user.tasks.RulesValidatePurchaseTask" MinParameters="0"/>
     <PluggableTaskType Id="57" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentsGatewayTask" MinParameters="4"/>
-    <PluggableTaskType Id="58" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask" MinParameters="4"/>
     <PluggableTaskType Id="59" CategoryId="13" ClassName="com.sapienter.jbilling.server.order.task.RulesItemManager2" MinParameters="0"/>
     <PluggableTaskType Id="60" CategoryId="1" ClassName="com.sapienter.jbilling.server.order.task.RulesLineTotalTask2" MinParameters="0"/>
     <PluggableTaskType Id="61" CategoryId="14" ClassName="com.sapienter.jbilling.server.item.tasks.RulesPricingTask2" MinParameters="0"/>
@@ -2712,6 +2711,7 @@
     <PluggableTaskType Id="71" CategoryId="21" ClassName="com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler" MinParameters="0"/>
     <PluggableTaskType Id="73" CategoryId="21" ClassName="com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler" MinParameters="1"/>
     <PluggableTaskType Id="75" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentPaypalExternalTask" MinParameters="3"/>
+    <PluggableTaskType Id="76" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask" MinParameters="2"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

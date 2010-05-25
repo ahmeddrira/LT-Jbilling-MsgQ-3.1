@@ -35,7 +35,6 @@ import java.util.HashMap;
  * @since 04-02-2010
  */
 public abstract class ScheduledTask extends PluggableTask implements IScheduledTask {
-    private static final Logger LOG = Logger.getLogger(ScheduledTask.class);
 
     /**
      * Constructs the JobDetail for this scheduled task, and copies the plug-in parameter
@@ -68,4 +67,13 @@ public abstract class ScheduledTask extends PluggableTask implements IScheduledT
         for (Object key : map.keySet())
             parameters.put((String) key, map.get(key));
     }
+
+    /**
+     * Return this plug-ins schedule as a readable string. Can be used as part of
+     * {@link IScheduledTask#getTaskName()} to make the task name unique to the schedule
+     * allowing multiple plug-ins of the same type to be added with different schedules.
+     *
+     * @return schedule string
+     */
+    public abstract String getScheduleString();
 }

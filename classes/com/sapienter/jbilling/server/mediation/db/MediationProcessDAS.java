@@ -20,31 +20,61 @@
 
 package com.sapienter.jbilling.server.mediation.db;
 
-import java.util.List;
-
+import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Query;
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+import java.util.List;
 
 public class MediationProcessDAS extends AbstractDAS<MediationProcess> {
 
-    // QUERIES
-    private static final String findAllByEntitySQL =
-        "SELECT b " +
-        "  FROM MediationProcess b " + 
-        " WHERE b.configuration.entityId = :entity " +
-        " ORDER BY id DESC";
+    private static final String FIND_ALL_BY_ENTITY_HQL =
+        "select process " +
+            " from MediationProcess process " +
+            " where process.configuration.entityId = :entity " +
+            " order by id desc";
 
+    /**
+     * Returns all processes for the given company id.
+     *
+     * @param entityId company id of mediation process
+     * @return list of processes, empty if none found
+     */
+    @SuppressWarnings("unchecked")
     public List<MediationProcess> findAllByEntity(Integer entityId) {
-        Query query = getSession().createQuery(findAllByEntitySQL);
+        Query query = getSession().createQuery(FIND_ALL_BY_ENTITY_HQL);
         query.setParameter("entity", entityId);
-        //return query.getResultList();
         return query.list();
     }
 
+    private static final String IS_PROCESS_RUNNING_HQL =
+        "select process.id " +
+            " from MediationProcess process " +
+            " where process.configuration.entityId = :entityId " +
+            " and process.endDatetime is null";
+
+    /**
+     * Returns true if there is a current MediationProcess running, false if
+     * no running MediationProcess found.
+     *
+     * @param entityId company id of mediation process
+     * @return true if process running, false if not
+     */
+    public boolean isProcessing(Integer entityId) {
+        Query query = getSession().createQuery(IS_PROCESS_RUNNING_HQL);
+        query.setParameter("entityId", entityId);
+
+        return !query.list().isEmpty();
+    }
+
+    /**
+     * Touches all processes in the given list, initializing lazy
+     * loaded associations in each object.
+     *
+     * @param list processes to touch
+     */
     public void touch(List<MediationProcess> list) {
     	super.touch(list, "getOrdersAffected");
-    	for(MediationProcess proc: list) {
+    	for (MediationProcess proc : list) {
     		proc.getConfiguration().getCreateDatetime();
     	}
     }

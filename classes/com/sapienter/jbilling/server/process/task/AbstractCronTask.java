@@ -43,8 +43,8 @@ import java.text.ParseException;
  */
 public abstract class AbstractCronTask extends ScheduledTask {
 
-    private static final String PARAM_CRON_EXPRESSION = "cron_exp";
-    private static final String DEFAULT_CRON_EXPRESSION = "0 0 12 * * ?"; // 12:00 noon every day
+    protected static final String PARAM_CRON_EXPRESSION = "cron_exp";
+    protected static final String DEFAULT_CRON_EXPRESSION = "0 0 12 * * ?"; // 12:00 noon every day
 
     public CronTrigger getTrigger() throws PluggableTaskException {
         CronTrigger trigger = new CronTrigger(getTaskName(), Scheduler.DEFAULT_GROUP);
@@ -71,6 +71,10 @@ public abstract class AbstractCronTask extends ScheduledTask {
      */
     public String getCronExpression() {
         return getParameter(PARAM_CRON_EXPRESSION, DEFAULT_CRON_EXPRESSION);
+    }
+
+    public String getScheduleString() {
+        return getCronExpression();
     }
 
     protected String getParameter(String key, String defaultValue) {

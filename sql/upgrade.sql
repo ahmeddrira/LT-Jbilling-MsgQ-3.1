@@ -171,3 +171,6 @@ insert into jbilling_seqs values ('mediation_record', (select round(max(id)/100)
 -- authorize.net CIM payment task, may already exist in some versions of jbilling
 update pluggable_task_type set min_parameters = 2 where class_name = 'com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask';
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (76, 6, 'com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask', 2);
+
+-- mediation process scheduled task
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (77, 22, 'com.sapienter.jbilling.server.mediation.task.MediationProcessTask', 0);

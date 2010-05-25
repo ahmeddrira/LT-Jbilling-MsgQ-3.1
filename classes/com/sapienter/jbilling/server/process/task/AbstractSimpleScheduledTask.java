@@ -24,6 +24,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.util.Context;
+import org.apache.log4j.Logger;
+import org.joda.time.DateMidnight;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -55,33 +57,25 @@ import java.util.GregorianCalendar;
  *      interval        The interval in hours to wait between repetitions.
  *                      Defaults to 24 hours
  *
+ *      start_time and end_time plug-in parameters should be dates in the format "yyyyMMdd-HHmm"
  *
  * @author Brian Cowdery
  * @since 02-02-2010
  */
 public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
+    private static final Logger LOG = Logger.getLogger(AbstractSimpleScheduledTask.class);
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
-    
-    private static final String PARAM_START_TIME = "start_time";
-    private static final String PARAM_END_TIME = "end_time";
-    private static final String PARAM_REPEAT = "repeat";
-    private static final String PARAM_INTERVAL = "interval";
+    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
-    private static Date DEFAULT_START_TIME;
-    private static final Date DEFAULT_END_TIME = null;
-    private static final Integer DEFAULT_REPEAT = SimpleTrigger.REPEAT_INDEFINITELY;
-    private static final Integer DEFAULT_INTERVAL = 24;
+    protected static final String PARAM_START_TIME = "start_time";
+    protected static final String PARAM_END_TIME = "end_time";
+    protected static final String PARAM_REPEAT = "repeat";
+    protected static final String PARAM_INTERVAL = "interval";
 
-    static {
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.clear();
-
-        calendar.set(2010, 1, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-
-        DEFAULT_START_TIME = calendar.getTime();
-    }
+    protected static final Date DEFAULT_START_TIME = new DateMidnight(2010, 1, 1).toDate();
+    protected static final Date DEFAULT_END_TIME = null;
+    protected static final Integer DEFAULT_REPEAT = SimpleTrigger.REPEAT_INDEFINITELY;
+    protected static final Integer DEFAULT_INTERVAL = 24;
 
     public SimpleTrigger getTrigger() throws PluggableTaskException {
         SimpleTrigger trigger = new SimpleTrigger(getTaskName(),
@@ -92,8 +86,36 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
                                                   getParameter(PARAM_INTERVAL, DEFAULT_INTERVAL) * 3600 * 1000);
 
         trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-        
+
         return trigger;
+    }
+
+    public String getScheduleString() {
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            builder.append("start: ");
+            builder.append(getParameter(PARAM_START_TIME, DEFAULT_START_TIME));
+            builder.append(", ");
+
+            builder.append("end: ");
+            builder.append(getParameter(PARAM_END_TIME, DEFAULT_END_TIME));
+            builder.append(", ");
+
+            Integer repeat = getParameter(PARAM_REPEAT, DEFAULT_REPEAT);
+            builder.append("repeat: ");
+            builder.append((repeat == SimpleTrigger.REPEAT_INDEFINITELY ? "infinite" : repeat));
+            builder.append(", ");
+
+            builder.append("interval: ");
+            builder.append(getParameter(PARAM_INTERVAL, DEFAULT_INTERVAL));
+            builder.append(" hrs");
+
+        } catch (PluggableTaskException e) {
+            LOG.error("Exception occurred parsing plug-in parameters", e);
+        }
+
+        return builder.toString();
     }
 
     protected Date getParameter(String key, Date defaultValue) throws PluggableTaskException {
@@ -110,7 +132,7 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
         Object value = parameters.get(key);
 
         try {
-        return value != null ? Integer.parseInt((String) value) : defaultValue;
+            return value != null ? Integer.parseInt((String) value) : defaultValue;
         } catch (NumberFormatException e) {
             throw new PluggableTaskException(key + " could not be parsed as an integer!", e);
         }

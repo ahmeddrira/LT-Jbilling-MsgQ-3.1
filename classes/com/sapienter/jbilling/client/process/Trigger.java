@@ -170,8 +170,6 @@ public class Trigger implements Job {
                     Context.getBean(Context.Name.INVOICE_SESSION);
             IListSessionBean remoteList = (IListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
-            IMediationSessionBean remoteMediation = (IMediationSessionBean)
-                    Context.getBean(Context.Name.MEDIATION_SESSION);
             IProvisioningProcessSessionBean remoteProvisioningProcess = 
                     (IProvisioningProcessSessionBean) Context.getBean(
                     Context.Name.PROVISIONING_PROCESS_SESSION);
@@ -190,13 +188,6 @@ public class Trigger implements Job {
                 lastFire = Util.truncateDate(lastFire);
                 firstOfToday = lastFire.before(today);
             }
-            
-            if (Util.getSysPropBooleanTrue("process.run_mediation")) {
-                LOG.info("Starting mediation at " + Calendar.getInstance().getTime());
-                remoteMediation.trigger();
-                LOG.info("Ended mediation at " + Calendar.getInstance().getTime());
-            }
-
 
             // run the billing process
             if (Util.getSysPropBooleanTrue("process.run_billing")) {

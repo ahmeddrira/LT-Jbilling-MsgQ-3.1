@@ -2712,7 +2712,7 @@
     <PluggableTaskType Id="73" CategoryId="21" ClassName="com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler" MinParameters="1"/>
     <PluggableTaskType Id="75" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentPaypalExternalTask" MinParameters="3"/>
     <PluggableTaskType Id="76" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask" MinParameters="2"/>
-    <PluggableTaskType Id="77" CategoryId="22" ClassName="com.sapienter.jbilling.server.mediation.task.MediationProcessTask" MinParameters="0"/>
+    <PluggableTaskType Id="77" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentMethodRouterTask" MinParameters="4"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

@@ -50,6 +50,7 @@ import com.sapienter.jbilling.common.JNDILookup;
  */
 public class RefreshBettyTable {
     private Connection conn = null;
+    private Logger log = null;
     public static void main(String[] args) {
         try {
             RefreshBettyTable toCall = new RefreshBettyTable("signup.properties");
@@ -72,7 +73,7 @@ public class RefreshBettyTable {
                     propertiesFile));
             
             Class.forName(globalProperties.getProperty("driver_class"));
-            conn = DriverManager.getConnection(
+            this.conn = DriverManager.getConnection(
                     globalProperties.getProperty("connection_url"),
                     globalProperties.getProperty("connection_username"),
                     globalProperties.getProperty("connection_password"));
@@ -80,7 +81,7 @@ public class RefreshBettyTable {
             JNDILookup jndi = JNDILookup.getFactory();
             // the connection will be closed by the RowSet as soon as it
             // finished executing the command
-            conn = jndi.lookUpDataSource().getConnection();
+            this.conn = jndi.lookUpDataSource().getConnection();
         }
         
         Logger.getLogger(this.toString()).debug("Refreshing tables with " +
@@ -89,7 +90,7 @@ public class RefreshBettyTable {
     
     public void refresh() {
         try {
-            Logger log = Logger.getLogger(RefreshBettyTable.class);
+            this.log = Logger.getLogger(RefreshBettyTable.class);
             conn.setAutoCommit(false);
 
             PreparedStatement stmt = conn.prepareStatement("select name from jbilling_table");
@@ -106,22 +107,31 @@ public class RefreshBettyTable {
                         if (res2.next()) {
                             id = res2.getInt(1) + 1;
                         }
-                        log.debug("Updateing " + table);
+                        log.debug("Updating " + table);
                         exe.execute("update jbilling_seqs set next_id = " + id +
                                 " where name = '" + table + "'");
                     } catch (Exception e1) {
-                        log.warn("Could not update table " + table + " error: " + e1.getMessage() + " Is this a virtual table?");
+                        log.warn("Could not update table " + table + " error: " + e1.getMessage() +
+                                " Is this a virtual table?");
                     }
                 }
             }
             res.close();
             stmt.close();
-            conn.commit();
-            conn.close();
-            log.debug("Done");
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        finally {
+            try {
+                conn.commit();
+                conn.close();
+                log.debug("RefreshBettyTable Done and connection closed");
+            }
+            catch (SQLException e2) {
+                log.warn("RefreshBettyTable error closing connection = " + e2.getMessage());
+            }
+
         }
 
     }

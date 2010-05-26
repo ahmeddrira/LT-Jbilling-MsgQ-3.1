@@ -174,3 +174,5 @@ insert into pluggable_task_type  (id, category_id, class_name, min_parameters) v
 
 -- mediation process scheduled task
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (77, 22, 'com.sapienter.jbilling.server.mediation.task.MediationProcessTask', 0);
+alter table mediation_process alter column end_datetime type timestamp; -- postgresql
+-- alter table mediation_process modify end_datetime timestamp null default null; -- mysql

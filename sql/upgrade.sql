@@ -256,3 +256,6 @@ alter table preference_type alter column float_def_value type numeric(22, 10);
 -- alter table pluggable_task_parameter modify float_value numeric(22, 10);
 -- alter table preference modify float_value numeric(22, 10);
 -- alter table preference_type modify float_def_value numeric(22, 10);
+
+alter table mediation_process alter column end_datetime type timestamp; -- postgresql
+-- alter table mediation_process modify end_datetime timestamp null default null; -- mysql

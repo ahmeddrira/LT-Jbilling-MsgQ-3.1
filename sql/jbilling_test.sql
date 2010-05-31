@@ -3074,7 +3074,7 @@ COPY base_user (id, entity_id, password, deleted, language_id, status_id, subscr
 10779	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:38:25.721	\N	\N	mediation-batch-test-13	0	2
 10780	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:38:54.133	\N	\N	mediation-batch-test-14	0	1
 10781	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	14	1	2009-12-17 13:39:09.731	\N	\N	mediation-batch-test-15	0	1
-1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-01-29 08:37:45.084	admin	0	15
+1	1	46f94c8de14fb36680850768ff1b7f2a	0	1	1	9	1	2007-03-18 00:00:00	\N	2010-05-25 12:27:12.217	admin	0	18
 \.
 
 
@@ -11397,178 +11397,178 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 --
 
 COPY jbilling_seqs (name, next_id) FROM stdin;
-report	20
-report_field	1604
-currency	11
-entity	3
-period_unit	5
-invoice_delivery_method	4
 entity_delivery_method_map	4
 user_status	9
-order_period	4
-order_line_type	4
-order_billing_type	3
 order_status	5
-contact_type	4
-invoice_line_type	6
-paper_invoice_batch	1
-billing_process	32
-process_run	32
-billing_process_configuration	3
-payment_method	9
+pluggable_task	604
 entity_payment_method_map	26
-process_run_total	31
-process_run_total_pm	1
-payment_result	5
 user_credit_card_map	5
-event_log_module	11
-event_log_message	17
-preference_type	50
-notification_message_type	21
-notification_message	27
-notification_message_section	43
-notification_message_line	43
-notification_message_arch	17
-notification_message_arch_line	23
-permission_type	9
-permission	135
-role	6
 permission_role_map	279
 user_role_map	13
-menu_option	92
-country	238
-promotion	1
-payment_authorization	1
-currency_exchange	26
 currency_entity_map	10
-ageing_entity_step	3
-partner_payout	1
-report_user	1
 report_entity_map	113
-report_type	10
 report_type_map	19
-ach	1
-list_entity	15
-list_field_entity	15
-payment_invoice	11
 subscriber_status	7
-mediation_process	1
-blacklist	1
-mediation_record_line	1
 order_line_provisioning_status	1
-preference	49
-partner	2
-credit_card	1015
-payment	19
-payment_info_cheque	17
-partner_range	2
 balance_type	0
-invoice	86
 invoice_status	4
-invoice_line	87
-order_process	86
-language	3
-generic_status	29
-report	20
-report_field	1604
-currency	11
-entity	3
-period_unit	5
-invoice_delivery_method	4
 entity_delivery_method_map	4
 user_status	9
-order_period	4
-order_line_type	4
-order_billing_type	3
 order_status	5
-pluggable_task_type_category	23
-pluggable_task_type	73
-contact_type	4
-invoice_line_type	6
-paper_invoice_batch	1
-billing_process	32
-process_run	32
-billing_process_configuration	3
-payment_method	9
 entity_payment_method_map	26
-process_run_total	31
-process_run_total_pm	1
-payment_result	5
 user_credit_card_map	5
-event_log_module	11
-event_log_message	17
-preference_type	50
-notification_message_type	21
-notification_message	27
-notification_message_section	43
-notification_message_line	43
-notification_message_arch	17
-notification_message_arch_line	23
-permission_type	9
-permission	135
-role	6
 permission_role_map	279
 user_role_map	13
-menu_option	92
-country	238
-promotion	1
-payment_authorization	1
-currency_exchange	26
 currency_entity_map	10
-ageing_entity_step	3
-partner_payout	1
-report_user	1
 report_entity_map	113
-report_type	10
 report_type_map	19
-ach	1
-list_entity	15
-list_field_entity	15
-payment_invoice	11
 subscriber_status	7
-mediation_process	1
-blacklist	1
-mediation_record_line	1
 order_line_provisioning_status	1
-preference	49
-partner	2
-credit_card	1015
-payment	19
-payment_info_cheque	17
-partner_range	2
 balance_type	0
-invoice	86
 invoice_status	4
+order_billing_type	1
+order_billing_type	1
+menu_option	1
+menu_option	1
+pluggable_task_type_category	1
+pluggable_task_type	1
+invoice_line_type	1
+invoice_line_type	1
+currency	1
+currency	1
+report_type	1
+report_type	1
+payment_method	1
+payment_result	1
+payment_result	1
+event_log_module	1
+event_log_module	1
+event_log_message	1
+event_log_message	1
+preference_type	1
+notification_message_type	1
+role	1
+role	1
+country	3
+country	3
+list_entity	1
+permission	2
+permission	2
+list_field_entity	1
+list_field_entity	1
+currency_exchange	3
+currency_exchange	3
+pluggable_task_parameter	8308
+billing_process_configuration	1
+order_period	1
+order_period	1
+report	1
+report	1
+partner_range	2
+partner_range	2
+partner	2
+partner	2
+entity	1
+entity	1
+contact_type	1
+contact_type	1
+contact_map	7910
+contact_map	7910
+payment_info_cheque	17
+report_field	18
+report_field	18
+billing_process	2
+period_unit	1
+period_unit	1
+process_run	1
+invoice_delivery_method	1
+order_line_type	1
+process_run	1
+order_line_type	1
+preference_type	1
+list_entity	1
+billing_process	2
+process_run_total	1
+process_run_total	1
+preference	5
+preference	5
+notification_message	1
+notification_message_section	1
+notification_message_section	1
+notification_message_line	1
+notification_message_line	1
+ageing_entity_step	1
+ageing_entity_step	1
+item_type	23
+item_type	23
+invoice	86
+invoice	86
+invoice_line	87
 invoice_line	87
 order_process	86
-pluggable_task	602
+payment	19
+payment	19
+base_user	1079
+customer	1070
+customer	1070
+contact	1131
+contact_field	2026
+contact_field	2026
+credit_card	1015
+credit_card	1015
+language	1
+language	1
+payment_invoice	1
 mediation_cfg	4
-language	3
-generic_status	29
-contact_field	2026
-customer	1070
-contact_map	7910
-contact	1131
-base_user	1079
-pluggable_task_parameter	8307
-item_type	23
-item_type	23
-contact_field	2026
-customer	1070
-contact_map	7910
-contact	1131
-base_user	1079
-purchase_order	1079
-purchase_order	1079
-order_line	2081
-order_line	2081
-event_log	467
-event_log	467
-item	30
-item	30
-item_price	20
-item_price	20
+blacklist	1
+blacklist	1
+generic_status	1
+generic_status	1
+promotion	1
+promotion	1
 mediation_record	1
+event_log	469
+event_log	469
+permission_type	1
+permission_type	1
+invoice_delivery_method	1
+payment_method	1
+notification_message_type	1
+billing_process_configuration	1
+item_price	20
+item_price	20
+payment_info_cheque	17
+notification_message	1
+item	30
+item	30
+purchase_order	1079
+purchase_order	1079
+order_line	2081
+order_line	2081
+order_process	86
+base_user	1079
+contact	1131
+payment_invoice	1
+ach	1
+ach	1
+partner_payout	1
+partner_payout	1
+process_run_total_pm	1
+process_run_total_pm	1
+report_user	1
+report_user	1
+payment_authorization	1
+payment_authorization	1
+paper_invoice_batch	1
+paper_invoice_batch	1
+notification_message_arch	1
+notification_message_arch	1
+notification_message_arch_line	1
+notification_message_arch_line	1
+mediation_process	1
+mediation_process	1
+mediation_record_line	1
+mediation_record_line	1
 \.
 
 
@@ -11795,7 +11795,7 @@ COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orde
 -- Data for Name: mediation_record; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY mediation_record (id, id_key, start_datetime, mediation_process_id, optlock, status_id) FROM stdin;
+COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, status_id, id) FROM stdin;
 \.
 
 
@@ -11803,7 +11803,7 @@ COPY mediation_record (id, id_key, start_datetime, mediation_process_id, optlock
 -- Data for Name: mediation_record_line; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY mediation_record_line (id, mediation_record_id, order_line_id, event_date, amount, quantity, description, optlock) FROM stdin;
+COPY mediation_record_line (id, order_line_id, event_date, amount, quantity, description, optlock, mediation_record_id) FROM stdin;
 \.
 
 
@@ -14834,6 +14834,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 17	2	10	1	1
 18	2	12	2	1
 19	1	20	1	1
+21	1	22	2	1
 23	1	23	1	1
 31	1	26	1	1
 420	1	33	1	1
@@ -14847,7 +14848,9 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 490	1	46	1	2
 500	1	47	1	1
 510	1	48	2	1
+520	1	49	3	1
 20	1	21	4	1
+22	1	21	5	1
 530	1	50	3	1
 540	1	53	1	2
 541	1	54	1	1
@@ -14863,10 +14866,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 430	1	62	1	1
 572	1	73	2	0
 6020	1	44	1	1
-520	1	49	6	1
-21	1	22	5	2
-22	1	21	3	2
-6021	1	77	2	1
+6030	1	77	1	1
 \.
 
 
@@ -14947,9 +14947,6 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 830704	6020	username	\N	jbilling	\N	1
 830705	6020	password	\N		\N	1
 830706	6020	timestamp_column_name	\N	ts	\N	1
-8307	6021	cc_payment_task	\N	20	\N	0
-8308	6021	ach_payment_task	\N	22	\N	0
-8309	6021	processor_name	\N	PAYMENT_METHOD_ROUTER	\N	0
 \.
 
 
@@ -15028,7 +15025,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 74	22	com.sapienter.jbilling.server.process.task.LoggerCronTask	1
 75	6	com.sapienter.jbilling.server.payment.tasks.PaymentPaypalExternalTask	3
 76	6	com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask	2
-77	6	com.sapienter.jbilling.server.payment.tasks.PaymentMethodRouterTask	2
+77	22	com.sapienter.jbilling.server.mediation.task.MediationProcessTask	0
 \.
 
 

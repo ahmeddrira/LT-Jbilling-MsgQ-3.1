@@ -36,7 +36,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
  **/
 public interface IMediationSessionBean {
 
-    public void trigger();
+    public void trigger(Integer entityId);
 
     /**
      * Needs to be in its own transaction, so it gets created right away

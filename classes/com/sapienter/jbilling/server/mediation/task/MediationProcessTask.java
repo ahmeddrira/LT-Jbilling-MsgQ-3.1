@@ -43,7 +43,7 @@ public class MediationProcessTask extends AbstractSimpleScheduledTask {
 
         if (Util.getSysPropBooleanTrue(PROPERTY_RUN_MEDIATION)) {
             LOG.info("Starting mediation at " + new Date());
-            mediation.trigger();
+            mediation.trigger(getEntityId());
             LOG.info("Ended mediation at " + new Date());
         }
     }

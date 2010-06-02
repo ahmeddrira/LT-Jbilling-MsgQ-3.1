@@ -54,6 +54,8 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 
 public class MediationTest extends TestCase {
 
+    private static final Integer ENTITY_ID = 1;
+
     private IMediationSessionBean remoteMediation = null;
 
     public MediationTest() {
@@ -73,7 +75,7 @@ public class MediationTest extends TestCase {
     public void test01Trigger() {
         System.out.println("testTrigger");
         try {
-            remoteMediation.trigger();
+            remoteMediation.trigger(ENTITY_ID);
 
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);

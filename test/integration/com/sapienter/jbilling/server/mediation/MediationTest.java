@@ -77,13 +77,14 @@ public class MediationTest extends TestCase {
         try {
             remoteMediation.trigger(ENTITY_ID);
 
+            // 1 existing process (for duplicate testing), 3 new pricesses from trigger();
             List<MediationProcess> all = remoteMediation.getAll(1);
             assertNotNull("process list can't be null", all);
-            assertEquals("There should be three processes after running the mediation process", 3, all.size());
+            assertEquals("There should be four processes after running the mediation process", 4, all.size());
 
             Collection <MediationRecordDTO> processedRecords = null;
             for (MediationProcess process : all) {
-                if (process.getConfiguration().getId() == 10) {
+                if (process.getConfiguration().getId() == 10 && process.getOrdersAffected() > 0) {
                     // total orders touched should equal the number of records processed minus errors & non billable
                     // 10131 events - 2 errors - 1 non billable = 10128
                     assertEquals("The process touches an order for each event", new Integer(10128), process.getOrdersAffected());
@@ -477,6 +478,40 @@ public class MediationTest extends TestCase {
          }
          assertTrue("Record with key 20121 from DB should be processed", jdbcRecordsProcessed);
      }
+
+    public void test11ReprocessErrorRecord() throws Exception{
+        final String EXISTING_RECORD_ID = "20120";
+
+        /*
+           There is an existing record in mediation_record with an error status, this record
+           should not be counted as an existing record and should allow another record with the
+           same id_key to be re-processed on another pass.
+
+           Records that error-ed out can be re-processed by another mediation process...
+        */
+        String query = "select id, id_key, status_id from mediation_record where id_key = ? order by id desc";
+        Connection connection = getConnection();
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, EXISTING_RECORD_ID);
+        ResultSet result = statement.executeQuery();
+
+        // new record should have status 29 "Done and billable"
+        result.next();
+        Integer newId = result.getInt("id");
+        assertEquals("new record id_key is 20120", EXISTING_RECORD_ID, result.getString("id_key"));
+        assertEquals("new record status is 'done and billable'", 29, result.getInt("status_id"));
+
+        // old record should be untouched, existing status of 32 "Error declared"
+        result.next();
+        Integer oldId = result.getInt("id");
+        assertEquals("old record has id 1", 1, oldId.intValue());
+        assertEquals("old record id_key is 20120", EXISTING_RECORD_ID, result.getString("id_key"));
+        assertEquals("old record status is 'error declared'", 32, result.getInt("status_id"));
+
+        assertFalse("different record ids", newId.equals(oldId));
+
+        connection.close();
+    }
 
      private Connection getConnection() throws SQLException, ClassNotFoundException {
          String driver = SaveToJDBCMediationErrorHandler.DRIVER_DEFAULT;

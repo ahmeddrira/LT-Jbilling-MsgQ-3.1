@@ -11788,6 +11788,7 @@ COPY mediation_order_map (mediation_process_id, order_id) FROM stdin;
 --
 
 COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orders_affected, optlock) FROM stdin;
+1	10	2010-06-04 20:50:43.259058	2010-06-04 20:50:43.259058	0	0
 \.
 
 
@@ -11796,6 +11797,7 @@ COPY mediation_process (id, configuration_id, start_datetime, end_datetime, orde
 --
 
 COPY mediation_record (id_key, start_datetime, mediation_process_id, optlock, status_id, id) FROM stdin;
+20120	2010-06-04 20:50:46.73041	1	0	32	1
 \.
 
 

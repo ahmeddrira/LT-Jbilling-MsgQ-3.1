@@ -31,7 +31,7 @@ public class MediationRecordDAS extends AbstractDAS<MediationRecordDTO> {
             "select mediationRecord "
                    + " FROM MediationRecordDTO mediationRecord "
                    + " WHERE mediationRecord.key = :key "
-                   + " order by mediationRecord.started";
+                   + " order by mediationRecord.started desc";
 
     @SuppressWarnings("unchecked")
     public MediationRecordDTO findNewestByKey(String key) {
@@ -39,7 +39,7 @@ public class MediationRecordDAS extends AbstractDAS<MediationRecordDTO> {
         query.setParameter("key", key);
 
         List<MediationRecordDTO> results = query.list();
-        return (results.isEmpty() ? null : (MediationRecordDTO) query.list().get(0));
+        return (results.isEmpty() ? null : results.get(0));
     }
 
     private static final String isProcessedSQL =

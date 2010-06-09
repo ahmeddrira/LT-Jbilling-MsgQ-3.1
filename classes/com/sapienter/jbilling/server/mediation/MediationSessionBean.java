@@ -143,8 +143,8 @@ public class MediationSessionBean implements IMediationSessionBean {
                     }                          
                 } catch (TaskException e) {
                     LOG.error("Exception occurred processing mediation records.", e);
-                } catch (Exception e) {
-                    LOG.error("Unhandled exception occurred during mediation.", e);
+                } catch (Throwable t) {
+                    LOG.error("Unhandled exception occurred during mediation.", t);
                 } finally {
                     // process created in separate transaction, reattach
                     processDAS.reattach(process);

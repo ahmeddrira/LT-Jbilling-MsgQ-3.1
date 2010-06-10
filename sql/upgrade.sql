@@ -259,3 +259,8 @@ alter table preference_type alter column float_def_value type numeric(22, 10);
 
 alter table mediation_process alter column end_datetime type timestamp; -- postgresql
 -- alter table mediation_process modify end_datetime timestamp null default null; -- mysql
+
+alter table ach alter column aba_routing type character varying(40); -- postgresql
+alter table ach alter column bank_account type character varying(60); -- postgresql
+-- alter table ach modify aba_routing varchar(40); -- mysql
+-- alter table ach modify bank_account varchar(60); -- mysql

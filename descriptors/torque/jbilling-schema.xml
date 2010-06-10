@@ -5,8 +5,8 @@
     <table name="ach">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="user_id" type="INTEGER"/>
-        <column name="aba_routing" required="true" size="9" type="VARCHAR"/>
-        <column name="bank_account" required="true" size="20" type="VARCHAR"/>
+        <column name="aba_routing" required="true" size="40" type="VARCHAR"/>
+        <column name="bank_account" required="true" size="60" type="VARCHAR"/>
         <column name="account_type" required="true" type="INTEGER"/>
         <column name="bank_name" required="true" size="50" type="VARCHAR"/>
         <column name="account_name" required="true" size="100" type="VARCHAR"/>

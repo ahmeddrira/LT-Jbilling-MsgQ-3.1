@@ -27,6 +27,7 @@ import org.apache.struts.action.ActionErrors;
 
 import com.sapienter.jbilling.client.user.PaymentMethodCrudContext.AchContext;
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 
 public class AchMaintainAction extends
@@ -52,6 +53,7 @@ public class AchMaintainAction extends
 
 	@Override
 	protected AchContext doEditFormToDTO() throws RemoteException {
+		
 		AchDTO dto = new AchDTO();
 		dto.setAbaRouting((String) myForm.get(FIELD_ABA_CODE));
 		dto.setBankAccount((String) myForm.get(FIELD_ACCOUNT_NUMBER));
@@ -59,9 +61,21 @@ public class AchMaintainAction extends
 		dto.setAccountName((String) myForm.get(FIELD_ACCOUNT_NAME));
 		dto.setBankName((String) myForm.get(FIELD_BANK_NAME));
 
+		// Check that the user has not left masked data around (as the
+		// Account Name is not checked, the mask would end on the DB)
+		if (isFieldMasked(dto.getAbaRouting()) ||
+				isFieldMasked(dto.getAccountName()) ||
+				isFieldMasked(dto.getBankAccount())) {
+			ActionError isMasked = new ActionError(//
+					"ach.error.dataMasked", //
+					"ach.data" //
+			);
+			errors.add(ActionErrors.GLOBAL_ERROR, isMasked);
+		
+		}
 		// verify that this entity actually accepts this kind of
 		// payment method
-		if (!getPaymentSession().isMethodAccepted(entityId,
+		else if (!getPaymentSession().isMethodAccepted(entityId,
 				Constants.PAYMENT_METHOD_ACH)) {
 			ActionError notAccepted = new ActionError(//
 					"payment.error.notAccepted", //
@@ -78,10 +92,12 @@ public class AchMaintainAction extends
 
 	@Override
 	protected ForwardAndMessage doUpdate(AchContext dto) throws RemoteException {
+		// Check if fields are masked, because the user hasn't updated them
+		
 		Integer userId = getSessionUserId();
-		getUserSession().updateACH(userId, executorId, dto.getDto());
-		getUserSession().setAuthPaymentType(userId,
-				Constants.AUTO_PAYMENT_TYPE_ACH, dto.isAutomaticPayment());
+			getUserSession().updateACH(userId, executorId, dto.getDto());
+			getUserSession().setAuthPaymentType(userId,
+					Constants.AUTO_PAYMENT_TYPE_ACH, dto.isAutomaticPayment());
 
 		return new ForwardAndMessage(FORWARD_DONE, MESSAGE_UPDATE_OK);
 	}
@@ -96,11 +112,11 @@ public class AchMaintainAction extends
 
 		boolean use = Constants.AUTO_PAYMENT_TYPE_ACH.equals(type);
 		if (dto != null) { // it could be that the user has no ACH setup yet
-			myForm.set(FIELD_ABA_CODE, dto.getAbaRouting());
-			myForm.set(FIELD_ACCOUNT_NUMBER, dto.getBankAccount());
+			myForm.set(FIELD_ABA_CODE, maskFieldIfNeeded(dto.getAbaRouting()));
+			myForm.set(FIELD_ACCOUNT_NUMBER, maskFieldIfNeeded(dto.getBankAccount()));
 			myForm.set(FIELD_ACCOUNT_TYPE, dto.getAccountType());
 			myForm.set(FIELD_BANK_NAME, dto.getBankName());
-			myForm.set(FIELD_ACCOUNT_NAME, dto.getAccountName());
+			myForm.set(FIELD_ACCOUNT_NAME, maskNameIfNeeded(dto.getAccountName()));
 			myForm.set(FIELD_USE_ACH, use);
 		} else {
 			setupNotFound();
@@ -117,6 +133,64 @@ public class AchMaintainAction extends
 
 	private Integer getSessionUserId() {
 		return (Integer) session.getAttribute(Constants.SESSION_USER_ID);
+	}
+	
+	private UserDTOEx getUserDto() {
+		return (UserDTOEx) session.getAttribute(Constants.SESSION_USER_DTO);
+	}
+	
+	private String maskFieldIfNeeded(String field) throws RemoteException {
+		String result = field;
+		if (isMaskNeeded()) {
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < (field.length() - 4); i ++) {
+				sb.append('*');
+			}
+			sb.append(field.substring(field.length() - 4));
+			result = sb.toString();
+		}
+		return result;
+	}
+	
+	private String maskNameIfNeeded(String name) throws RemoteException {
+		String result = name;
+		if (isMaskNeeded()) {
+			boolean addSpace = false;
+			StringBuffer sb = new StringBuffer();
+			for (String word : name.split(" ")) {
+				if (!addSpace) {
+					addSpace = true;
+				} else {
+					sb.append(" ");
+				}
+				sb.append(word.charAt(0));
+				for (int i = 0; i < (word.length() - 1); i++) {
+					sb.append("*");
+				}
+			}
+			result = sb.toString();
+		}
+		return result;
+	}
+	
+	private boolean isFieldMasked(String field) throws RemoteException {
+		return isMaskNeeded() && field.contains("*");
+	}
+
+	private boolean isMaskNeeded() throws RemoteException {
+		// if the user is not allowed to see cc info
+		// or the entity does not want anybody to see cc numbers
+
+		boolean maskNeeded = getUserDto().isGranted(
+				Constants.P_USER_EDIT_VIEW_CC);
+		if (!maskNeeded) {
+			final Integer HIDE_CC_NUMBERS = com.sapienter.jbilling.server.util.Constants.PREFERENCE_HIDE_CC_NUMBERS;
+			String maskAll = getUserSession().getEntityPreference(//
+					entityId, HIDE_CC_NUMBERS);
+			maskNeeded = "1".equals(maskAll);
+		}
+
+		return maskNeeded;
 	}
 
 	// public ActionForward execute(ActionMapping mapping, ActionForm form,

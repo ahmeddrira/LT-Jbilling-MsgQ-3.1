@@ -796,6 +796,9 @@ public class UserBL extends ResultList
     public void updateAch(AchDTO ach, Integer executorId)
     		throws NamingException, SessionInternalError {
     	AchBL bl = new AchBL();
+    	if (ach.getBaseUser() == null) {
+    		ach.setBaseUser(user);
+    	}
     	// let's see if this guy already has an ach record
     	Set<AchDTO> rows = user.getAchs();
     	if (rows.size() == 0) {

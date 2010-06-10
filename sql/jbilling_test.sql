@@ -9,401 +9,14 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET escape_string_warning = off;
 
-SET search_path = public, pg_catalog;
-
-ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_2;
-ALTER TABLE ONLY public.user_role_map DROP CONSTRAINT user_role_map_fk_1;
-ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_fk_2;
-ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_fk_1;
-ALTER TABLE ONLY public.report_type_map DROP CONSTRAINT report_type_map_fk_2;
-ALTER TABLE ONLY public.report_type_map DROP CONSTRAINT report_type_map_fk_1;
-ALTER TABLE ONLY public.report_field DROP CONSTRAINT report_field_fk_1;
-ALTER TABLE ONLY public.report_entity_map DROP CONSTRAINT report_entity_map_fk_2;
-ALTER TABLE ONLY public.report_entity_map DROP CONSTRAINT report_entity_map_fk_1;
-ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_5;
-ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_4;
-ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_3;
-ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_2;
-ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_fk_1;
-ALTER TABLE ONLY public.promotion_user_map DROP CONSTRAINT promotion_user_map_fk_2;
-ALTER TABLE ONLY public.promotion_user_map DROP CONSTRAINT promotion_user_map_fk_1;
-ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_fk_1;
-ALTER TABLE ONLY public.process_run_total_pm DROP CONSTRAINT process_run_total_pm_fk_1;
-ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_fk_2;
-ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_fk_1;
-ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_fk_1;
-ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_fk_2;
-ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_fk_1;
-ALTER TABLE ONLY public.pluggable_task_type DROP CONSTRAINT pluggable_task_type_fk_1;
-ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_fk_1;
-ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_2;
-ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_1;
-ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_2;
-ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_1;
-ALTER TABLE ONLY public.permission_role_map DROP CONSTRAINT permission_role_map_fk_2;
-ALTER TABLE ONLY public.permission_role_map DROP CONSTRAINT permission_role_map_fk_1;
-ALTER TABLE ONLY public.permission DROP CONSTRAINT permission_fk_1;
-ALTER TABLE ONLY public.payment_invoice DROP CONSTRAINT payment_invoice_fk_2;
-ALTER TABLE ONLY public.payment_invoice DROP CONSTRAINT payment_invoice_fk_1;
-ALTER TABLE ONLY public.payment_info_cheque DROP CONSTRAINT payment_info_cheque_fk_1;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_6;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_5;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_4;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_3;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_2;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_fk_1;
-ALTER TABLE ONLY public.payment_authorization DROP CONSTRAINT payment_authorization_fk_1;
-ALTER TABLE ONLY public.partner_payout DROP CONSTRAINT partner_payout_fk_1;
-ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_4;
-ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_3;
-ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_2;
-ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_fk_1;
-ALTER TABLE ONLY public.order_process DROP CONSTRAINT order_process_fk_1;
-ALTER TABLE ONLY public.order_period DROP CONSTRAINT order_period_fk_2;
-ALTER TABLE ONLY public.order_period DROP CONSTRAINT order_period_fk_1;
-ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_fk_3;
-ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_fk_2;
-ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_fk_1;
-ALTER TABLE ONLY public.notification_message_section DROP CONSTRAINT notification_message_section_fk_1;
-ALTER TABLE ONLY public.notification_message_line DROP CONSTRAINT notification_message_line_fk_1;
-ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_message_fk_3;
-ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_message_fk_2;
-ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_message_fk_1;
-ALTER TABLE ONLY public.notification_message_arch_line DROP CONSTRAINT notif_mess_arch_line_fk_1;
-ALTER TABLE ONLY public.menu_option DROP CONSTRAINT menu_option_fk_1;
-ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_2;
-ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_fk_1;
-ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_fk_2;
-ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_fk_1;
-ALTER TABLE ONLY public.mediation_process DROP CONSTRAINT mediation_process_fk_1;
-ALTER TABLE ONLY public.mediation_order_map DROP CONSTRAINT mediation_order_map_fk_2;
-ALTER TABLE ONLY public.mediation_order_map DROP CONSTRAINT mediation_order_map_fk_1;
-ALTER TABLE ONLY public.mediation_cfg DROP CONSTRAINT mediation_cfg_fk_1;
-ALTER TABLE ONLY public.list_field DROP CONSTRAINT list_field_fk_1;
-ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_fk_2;
-ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_fk_1;
-ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_2;
-ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_1;
-ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_2;
-ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
-ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
-ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_fk_2;
-ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_fk_1;
-ALTER TABLE ONLY public.item DROP CONSTRAINT item_fk_1;
-ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_3;
-ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_2;
-ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_1;
-ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_4;
-ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_3;
-ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_2;
-ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_fk_1;
-ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_fk_2;
-ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_fk_1;
-ALTER TABLE ONLY public.generic_status DROP CONSTRAINT generic_status_fk_1;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_6;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_5;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_4;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_3;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_2;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_fk_1;
-ALTER TABLE ONLY public.entity_payment_method_map DROP CONSTRAINT entity_payment_method_map_fk_2;
-ALTER TABLE ONLY public.entity_payment_method_map DROP CONSTRAINT entity_payment_method_map_fk_1;
-ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_fk_2;
-ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_fk_1;
-ALTER TABLE ONLY public.entity_delivery_method_map DROP CONSTRAINT entity_delivery_method_map_fk_2;
-ALTER TABLE ONLY public.entity_delivery_method_map DROP CONSTRAINT entity_delivery_method_map_fk_1;
-ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_fk_3;
-ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_fk_2;
-ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_fk_1;
-ALTER TABLE ONLY public.currency_exchange DROP CONSTRAINT currency_exchange_fk_1;
-ALTER TABLE ONLY public.currency_entity_map DROP CONSTRAINT currency_entity_map_fk_2;
-ALTER TABLE ONLY public.currency_entity_map DROP CONSTRAINT currency_entity_map_fk_1;
-ALTER TABLE ONLY public.contact_type DROP CONSTRAINT contact_type_fk_1;
-ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_3;
-ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_2;
-ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_1;
-ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_fk_1;
-ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_fk_2;
-ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_fk_1;
-ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_2;
-ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_1;
-ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_fk_3;
-ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_fk_2;
-ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_fk_1;
-ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_fk_2;
-ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_fk_1;
-ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_fk_5;
-ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_fk_4;
-ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_fk_3;
-ALTER TABLE ONLY public.ageing_entity_step DROP CONSTRAINT ageing_entity_step_fk_2;
-ALTER TABLE ONLY public.ach DROP CONSTRAINT ach_fk_1;
-DROP INDEX public.user_role_map_i_role;
-DROP INDEX public.user_role_map_i_2;
-DROP INDEX public.user_credit_card_map_i_2;
-DROP INDEX public.transaction_id;
-DROP INDEX public.report_entity_map_i_2;
-DROP INDEX public.purchase_order_i_user;
-DROP INDEX public.purchase_order_i_notif;
-DROP INDEX public.promotion_user_map_i_2;
-DROP INDEX public.permission_user_map_i_2;
-DROP INDEX public.permission_role_map_i_2;
-DROP INDEX public.payment_i_3;
-DROP INDEX public.payment_i_2;
-DROP INDEX public.partner_range_p;
-DROP INDEX public.partner_payout_i_2;
-DROP INDEX public.partner_i_3;
-DROP INDEX public.mediation_record_i;
-DROP INDEX public.ix_uq_payment_inv_map_pa_in;
-DROP INDEX public.ix_uq_order_process_or_in;
-DROP INDEX public.ix_uq_order_process_or_bp;
-DROP INDEX public.ix_purchase_order_date;
-DROP INDEX public.ix_promotion_code;
-DROP INDEX public.ix_pa_payment;
-DROP INDEX public.ix_order_process_in;
-DROP INDEX public.ix_order_line_order_id;
-DROP INDEX public.ix_order_line_item_id;
-DROP INDEX public.ix_mrl_order_line;
-DROP INDEX public.ix_item_ent;
-DROP INDEX public.ix_invoice_user_id;
-DROP INDEX public.ix_invoice_ts;
-DROP INDEX public.ix_invoice_process;
-DROP INDEX public.ix_invoice_number;
-DROP INDEX public.ix_invoice_line_invoice_id;
-DROP INDEX public.ix_invoice_due_date;
-DROP INDEX public.ix_invoice_date;
-DROP INDEX public.ix_el_main;
-DROP INDEX public.ix_contact_phone;
-DROP INDEX public.ix_contact_orgname;
-DROP INDEX public.ix_contact_lname;
-DROP INDEX public.ix_contact_fname_lname;
-DROP INDEX public.ix_contact_fname;
-DROP INDEX public.ix_contact_field_content;
-DROP INDEX public.ix_contact_field_cid;
-DROP INDEX public.ix_contact_address;
-DROP INDEX public.ix_cf_type_entity;
-DROP INDEX public.ix_cc_number_encrypted;
-DROP INDEX public.ix_cc_number;
-DROP INDEX public.ix_blacklist_user_type;
-DROP INDEX public.ix_blacklist_entity_type;
-DROP INDEX public.ix_base_user_un;
-DROP INDEX public.international_description_i_2;
-DROP INDEX public.int_description_i_lan;
-DROP INDEX public.customer_i_2;
-DROP INDEX public.currency_entity_map_i_2;
-DROP INDEX public.create_datetime;
-DROP INDEX public.contact_map_i_3;
-DROP INDEX public.contact_map_i_1;
-DROP INDEX public.contact_i_del;
-DROP INDEX public.bp_run_total_run_ix;
-DROP INDEX public.bp_run_process_ix;
-DROP INDEX public.bp_pm_index_total;
-DROP INDEX public.ach_i_2;
-ALTER TABLE ONLY public.role DROP CONSTRAINT role_pkey;
-ALTER TABLE ONLY public.report_user DROP CONSTRAINT report_user_pkey;
-ALTER TABLE ONLY public.report_type DROP CONSTRAINT report_type_pkey;
-ALTER TABLE ONLY public.report DROP CONSTRAINT report_pkey;
-ALTER TABLE ONLY public.report_field DROP CONSTRAINT report_field_pkey;
-ALTER TABLE ONLY public.purchase_order DROP CONSTRAINT purchase_order_pkey;
-ALTER TABLE ONLY public.promotion DROP CONSTRAINT promotion_pkey;
-ALTER TABLE ONLY public.process_run_total_pm DROP CONSTRAINT process_run_total_pm_pkey;
-ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_pkey;
-ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_pkey;
-ALTER TABLE ONLY public.preference_type DROP CONSTRAINT preference_type_pkey;
-ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_pkey;
-ALTER TABLE ONLY public.pluggable_task_type DROP CONSTRAINT pluggable_task_type_pkey;
-ALTER TABLE ONLY public.pluggable_task_type_category DROP CONSTRAINT pluggable_task_type_category_pkey;
-ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_pkey;
-ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_pkey;
-ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_pkey;
-ALTER TABLE ONLY public.permission_type DROP CONSTRAINT permission_type_pkey;
-ALTER TABLE ONLY public.permission DROP CONSTRAINT permission_pkey;
-ALTER TABLE ONLY public.period_unit DROP CONSTRAINT period_unit_pkey;
-ALTER TABLE ONLY public.payment_result DROP CONSTRAINT payment_result_pkey;
-ALTER TABLE ONLY public.payment DROP CONSTRAINT payment_pkey;
-ALTER TABLE ONLY public.payment_method DROP CONSTRAINT payment_method_pkey;
-ALTER TABLE ONLY public.payment_invoice DROP CONSTRAINT payment_invoice_pkey;
-ALTER TABLE ONLY public.payment_info_cheque DROP CONSTRAINT payment_info_cheque_pkey;
-ALTER TABLE ONLY public.payment_authorization DROP CONSTRAINT payment_authorization_pkey;
-ALTER TABLE ONLY public.partner_range DROP CONSTRAINT partner_range_pkey;
-ALTER TABLE ONLY public.partner DROP CONSTRAINT partner_pkey;
-ALTER TABLE ONLY public.partner_payout DROP CONSTRAINT partner_payout_pkey;
-ALTER TABLE ONLY public.paper_invoice_batch DROP CONSTRAINT paper_invoice_batch_pkey;
-ALTER TABLE ONLY public.order_process DROP CONSTRAINT order_process_pkey;
-ALTER TABLE ONLY public.order_period DROP CONSTRAINT order_period_pkey;
-ALTER TABLE ONLY public.order_line_type DROP CONSTRAINT order_line_type_pkey;
-ALTER TABLE ONLY public.order_line DROP CONSTRAINT order_line_pkey;
-ALTER TABLE ONLY public.order_billing_type DROP CONSTRAINT order_billing_type_pkey;
-ALTER TABLE ONLY public.notification_message_type DROP CONSTRAINT notification_message_type_pkey;
-ALTER TABLE ONLY public.notification_message_section DROP CONSTRAINT notification_message_section_pkey;
-ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_message_pkey;
-ALTER TABLE ONLY public.notification_message_line DROP CONSTRAINT notification_message_line_pkey;
-ALTER TABLE ONLY public.notification_message_arch DROP CONSTRAINT notification_message_arch_pkey;
-ALTER TABLE ONLY public.notification_message_arch_line DROP CONSTRAINT notification_message_arch_line_pkey;
-ALTER TABLE ONLY public.menu_option DROP CONSTRAINT menu_option_pkey;
-ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_pkey;
-ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_pkey;
-ALTER TABLE ONLY public.mediation_process DROP CONSTRAINT mediation_process_pkey;
-ALTER TABLE ONLY public.mediation_errors DROP CONSTRAINT mediation_errors_pkey;
-ALTER TABLE ONLY public.mediation_cfg DROP CONSTRAINT mediation_cfg_pkey;
-ALTER TABLE ONLY public.list DROP CONSTRAINT list_pkey;
-ALTER TABLE ONLY public.list_field DROP CONSTRAINT list_field_pkey;
-ALTER TABLE ONLY public.list_field_entity DROP CONSTRAINT list_field_entity_pkey;
-ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_pkey;
-ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
-ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
-ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
-ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_pkey;
-ALTER TABLE ONLY public.item DROP CONSTRAINT item_pkey;
-ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_pkey;
-ALTER TABLE ONLY public.invoice_line_type DROP CONSTRAINT invoice_line_type_pkey;
-ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_pkey;
-ALTER TABLE ONLY public.invoice_delivery_method DROP CONSTRAINT invoice_delivery_method_pkey;
-ALTER TABLE ONLY public.international_description DROP CONSTRAINT international_description_pkey;
-ALTER TABLE ONLY public.generic_status_type DROP CONSTRAINT generic_status_type_pkey;
-ALTER TABLE ONLY public.generic_status DROP CONSTRAINT generic_status_pkey;
-ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_pkey;
-ALTER TABLE ONLY public.event_log_module DROP CONSTRAINT event_log_module_pkey;
-ALTER TABLE ONLY public.event_log_message DROP CONSTRAINT event_log_message_pkey;
-ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_pkey;
-ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_pkey;
-ALTER TABLE ONLY public.currency DROP CONSTRAINT currency_pkey;
-ALTER TABLE ONLY public.currency_exchange DROP CONSTRAINT currency_exchange_pkey;
-ALTER TABLE ONLY public.credit_card DROP CONSTRAINT credit_card_pkey;
-ALTER TABLE ONLY public.country DROP CONSTRAINT country_pkey;
-ALTER TABLE ONLY public.contact_type DROP CONSTRAINT contact_type_pkey;
-ALTER TABLE ONLY public.contact DROP CONSTRAINT contact_pkey;
-ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_pkey;
-ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_pkey;
-ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_pkey;
-ALTER TABLE ONLY public.cdrentries DROP CONSTRAINT cdrentries_pkey;
-ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_pkey;
-ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_pkey;
-ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_pkey;
-ALTER TABLE ONLY public.base_user DROP CONSTRAINT base_user_pkey;
-ALTER TABLE ONLY public.ageing_entity_step DROP CONSTRAINT ageing_entity_step_pkey;
-ALTER TABLE ONLY public.ach DROP CONSTRAINT ach_pkey;
-DROP TABLE public.user_role_map;
-DROP TABLE public.user_credit_card_map;
-DROP TABLE public.role;
-DROP TABLE public.report_user;
-DROP TABLE public.report_type_map;
-DROP TABLE public.report_type;
-DROP TABLE public.report_field;
-DROP TABLE public.report_entity_map;
-DROP TABLE public.report;
-DROP TABLE public.purchase_order;
-DROP TABLE public.promotion_user_map;
-DROP TABLE public.promotion;
-DROP TABLE public.process_run_total_pm;
-DROP TABLE public.process_run_total;
-DROP TABLE public.process_run;
-DROP TABLE public.preference_type;
-DROP TABLE public.preference;
-DROP TABLE public.pluggable_task_type_category;
-DROP TABLE public.pluggable_task_type;
-DROP TABLE public.pluggable_task_parameter;
-DROP TABLE public.pluggable_task;
-DROP TABLE public.permission_user;
-DROP TABLE public.permission_type;
-DROP TABLE public.permission_role_map;
-DROP TABLE public.permission;
-DROP TABLE public.period_unit;
-DROP TABLE public.payment_result;
-DROP TABLE public.payment_method;
-DROP TABLE public.payment_invoice;
-DROP TABLE public.payment_info_cheque;
-DROP TABLE public.payment_authorization;
-DROP TABLE public.payment;
-DROP TABLE public.partner_range;
-DROP TABLE public.partner_payout;
-DROP TABLE public.partner;
-DROP TABLE public.paper_invoice_batch;
-DROP TABLE public.order_process;
-DROP TABLE public.order_period;
-DROP TABLE public.order_line_type;
-DROP TABLE public.order_line;
-DROP TABLE public.order_billing_type;
-DROP TABLE public.notification_message_type;
-DROP TABLE public.notification_message_section;
-DROP TABLE public.notification_message_line;
-DROP TABLE public.notification_message_arch_line;
-DROP TABLE public.notification_message_arch;
-DROP TABLE public.notification_message;
-DROP TABLE public.menu_option;
-DROP TABLE public.mediation_record_line;
-DROP TABLE public.mediation_record;
-DROP TABLE public.mediation_process;
-DROP TABLE public.mediation_order_map;
-DROP TABLE public.mediation_errors;
-DROP TABLE public.mediation_cfg;
-DROP TABLE public.list_field_entity;
-DROP TABLE public.list_field;
-DROP TABLE public.list_entity;
-DROP TABLE public.list;
-DROP TABLE public.language;
-DROP TABLE public.jbilling_table;
-DROP TABLE public.jbilling_seqs;
-DROP TABLE public.item_type_map;
-DROP TABLE public.item_type;
-DROP TABLE public.item_price;
-DROP TABLE public.item;
-DROP TABLE public.invoice_line_type;
-DROP TABLE public.invoice_line;
-DROP TABLE public.invoice_delivery_method;
-DROP TABLE public.invoice;
-DROP TABLE public.international_description;
-DROP TABLE public.generic_status_type;
-DROP TABLE public.generic_status;
-DROP TABLE public.event_log_module;
-DROP TABLE public.event_log_message;
-DROP TABLE public.event_log;
-DROP TABLE public.entity_payment_method_map;
-DROP TABLE public.entity_delivery_method_map;
-DROP TABLE public.entity;
-DROP TABLE public.customer;
-DROP TABLE public.currency_exchange;
-DROP TABLE public.currency_entity_map;
-DROP TABLE public.currency;
-DROP TABLE public.credit_card;
-DROP TABLE public.country;
-DROP TABLE public.contact_type;
-DROP TABLE public.contact_map;
-DROP TABLE public.contact_field_type;
-DROP TABLE public.contact_field;
-DROP TABLE public.contact;
-DROP TABLE public.cdrentries;
-DROP TABLE public.blacklist;
-DROP TABLE public.billing_process_configuration;
-DROP TABLE public.billing_process;
-DROP TABLE public.base_user;
-DROP TABLE public.ageing_entity_step;
-DROP TABLE public.ach;
-DROP PROCEDURAL LANGUAGE plpgsql;
-DROP SCHEMA public;
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO postgres;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
---
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: jbilling
 --
 
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO jbilling;
 
 SET search_path = public, pg_catalog;
 
@@ -418,8 +31,8 @@ SET default_with_oids = false;
 CREATE TABLE ach (
     id integer NOT NULL,
     user_id integer,
-    aba_routing character varying(9) NOT NULL,
-    bank_account character varying(20) NOT NULL,
+    aba_routing character varying(40) NOT NULL,
+    bank_account character varying(60) NOT NULL,
     account_type integer NOT NULL,
     bank_name character varying(50) NOT NULL,
     account_name character varying(100) NOT NULL,
@@ -723,7 +336,7 @@ CREATE TABLE currency_exchange (
     id integer NOT NULL,
     entity_id integer,
     currency_id integer,
-    rate numeric(22, 10) NOT NULL,
+    rate numeric(22,10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
     optlock integer NOT NULL
 );
@@ -753,9 +366,9 @@ CREATE TABLE customer (
     current_order_id integer,
     optlock integer NOT NULL,
     balance_type integer NOT NULL,
-    dynamic_balance numeric(22, 10),
-    credit_limit numeric(22, 10),
-    auto_recharge numeric(22, 10)
+    dynamic_balance numeric(22,10),
+    credit_limit numeric(22,10),
+    auto_recharge numeric(22,10)
 );
 
 
@@ -899,11 +512,11 @@ CREATE TABLE invoice (
     user_id integer,
     delegated_invoice_id integer,
     due_date date NOT NULL,
-    total numeric(22, 10) NOT NULL,
+    total numeric(22,10) NOT NULL,
     payment_attempts integer DEFAULT 0 NOT NULL,
     status_id smallint DEFAULT 1 NOT NULL,
-    balance numeric(22, 10),
-    carried_balance numeric(22, 10) NOT NULL,
+    balance numeric(22,10),
+    carried_balance numeric(22,10) NOT NULL,
     in_process_payment smallint DEFAULT 1 NOT NULL,
     is_review integer NOT NULL,
     currency_id integer NOT NULL,
@@ -939,9 +552,9 @@ CREATE TABLE invoice_line (
     id integer NOT NULL,
     invoice_id integer,
     type_id integer,
-    amount numeric(22, 10) NOT NULL,
-    quantity numeric(22, 10),
-    price numeric(22, 10),
+    amount numeric(22,10) NOT NULL,
+    quantity numeric(22,10),
+    price numeric(22,10),
     deleted smallint DEFAULT 0 NOT NULL,
     item_id integer,
     description character varying(1000),
@@ -974,7 +587,7 @@ CREATE TABLE item (
     id integer NOT NULL,
     internal_number character varying(50),
     entity_id integer,
-    percentage numeric(22, 10),
+    percentage numeric(22,10),
     price_manual smallint NOT NULL,
     deleted smallint DEFAULT 0 NOT NULL,
     has_decimals smallint DEFAULT 0 NOT NULL,
@@ -992,7 +605,7 @@ CREATE TABLE item_price (
     id integer NOT NULL,
     item_id integer,
     currency_id integer,
-    price numeric(22, 10) NOT NULL,
+    price numeric(22,10) NOT NULL,
     optlock integer NOT NULL
 );
 
@@ -1230,8 +843,8 @@ CREATE TABLE mediation_record_line (
     id integer NOT NULL,
     order_line_id integer NOT NULL,
     event_date timestamp without time zone NOT NULL,
-    amount numeric(22, 10) NOT NULL,
-    quantity numeric(22, 10) NOT NULL,
+    amount numeric(22,10) NOT NULL,
+    quantity numeric(22,10) NOT NULL,
     description character varying(200),
     optlock integer NOT NULL,
     mediation_record_id integer NOT NULL
@@ -1361,9 +974,9 @@ CREATE TABLE order_line (
     order_id integer,
     item_id integer,
     type_id integer,
-    amount numeric(22, 10) NOT NULL,
-    quantity numeric(22, 10),
-    price numeric(22, 10),
+    amount numeric(22,10) NOT NULL,
+    quantity numeric(22,10),
+    price numeric(22,10),
     item_price smallint,
     create_datetime timestamp without time zone NOT NULL,
     deleted smallint DEFAULT 0 NOT NULL,
@@ -1445,18 +1058,18 @@ ALTER TABLE public.paper_invoice_batch OWNER TO jbilling;
 CREATE TABLE partner (
     id integer NOT NULL,
     user_id integer,
-    balance numeric(22, 10) NOT NULL,
-    total_payments numeric(22, 10) NOT NULL,
-    total_refunds numeric(22, 10) NOT NULL,
-    total_payouts numeric(22, 10) NOT NULL,
-    percentage_rate numeric(22, 10),
-    referral_fee numeric(22, 10),
+    balance numeric(22,10) NOT NULL,
+    total_payments numeric(22,10) NOT NULL,
+    total_refunds numeric(22,10) NOT NULL,
+    total_payouts numeric(22,10) NOT NULL,
+    percentage_rate numeric(22,10),
+    referral_fee numeric(22,10),
     fee_currency_id integer,
     one_time smallint NOT NULL,
     period_unit_id integer NOT NULL,
     period_value integer NOT NULL,
     next_payout_date date NOT NULL,
-    due_payout numeric(22, 10),
+    due_payout numeric(22,10),
     automatic_process smallint NOT NULL,
     related_clerk integer,
     optlock integer NOT NULL
@@ -1473,9 +1086,9 @@ CREATE TABLE partner_payout (
     id integer NOT NULL,
     starting_date date NOT NULL,
     ending_date date NOT NULL,
-    payments_amount numeric(22, 10) NOT NULL,
-    refunds_amount numeric(22, 10) NOT NULL,
-    balance_left numeric(22, 10) NOT NULL,
+    payments_amount numeric(22,10) NOT NULL,
+    refunds_amount numeric(22,10) NOT NULL,
+    balance_left numeric(22,10) NOT NULL,
     payment_id integer,
     partner_id integer,
     optlock integer NOT NULL
@@ -1491,8 +1104,8 @@ ALTER TABLE public.partner_payout OWNER TO jbilling;
 CREATE TABLE partner_range (
     id integer NOT NULL,
     partner_id integer,
-    percentage_rate numeric(22, 10),
-    referral_fee numeric(22, 10),
+    percentage_rate numeric(22,10),
+    referral_fee numeric(22,10),
     range_from integer NOT NULL,
     range_to integer NOT NULL,
     optlock integer NOT NULL
@@ -1510,7 +1123,7 @@ CREATE TABLE payment (
     user_id integer,
     attempt integer,
     result_id integer,
-    amount numeric(22, 10) NOT NULL,
+    amount numeric(22,10) NOT NULL,
     create_datetime timestamp without time zone NOT NULL,
     update_datetime timestamp without time zone,
     payment_date date,
@@ -1523,7 +1136,7 @@ CREATE TABLE payment (
     currency_id integer NOT NULL,
     payout_id integer,
     ach_id integer,
-    balance numeric(22, 10),
+    balance numeric(22,10),
     optlock integer NOT NULL,
     payment_period integer,
     payment_notes character varying(500)
@@ -1580,7 +1193,7 @@ CREATE TABLE payment_invoice (
     id integer NOT NULL,
     payment_id integer,
     invoice_id integer,
-    amount numeric(22, 10),
+    amount numeric(22,10),
     create_datetime timestamp without time zone NOT NULL,
     optlock integer NOT NULL
 );
@@ -1697,7 +1310,7 @@ CREATE TABLE pluggable_task_parameter (
     name character varying(50) NOT NULL,
     int_value integer,
     str_value character varying(500),
-    float_value numeric(22, 10),
+    float_value numeric(22,10),
     optlock integer NOT NULL
 );
 
@@ -1742,7 +1355,7 @@ CREATE TABLE preference (
     foreign_id integer NOT NULL,
     int_value integer,
     str_value character varying(200),
-    float_value numeric(22, 10)
+    float_value numeric(22,10)
 );
 
 
@@ -1756,7 +1369,7 @@ CREATE TABLE preference_type (
     id integer NOT NULL,
     int_def_value integer,
     str_def_value character varying(200),
-    float_def_value numeric(22, 10)
+    float_def_value numeric(22,10)
 );
 
 
@@ -1788,9 +1401,9 @@ CREATE TABLE process_run_total (
     id integer NOT NULL,
     process_run_id integer,
     currency_id integer NOT NULL,
-    total_invoiced numeric(22, 10),
-    total_paid numeric(22, 10),
-    total_not_paid numeric(22, 10),
+    total_invoiced numeric(22,10),
+    total_paid numeric(22,10),
+    total_not_paid numeric(22,10),
     optlock integer NOT NULL
 );
 
@@ -1805,7 +1418,7 @@ CREATE TABLE process_run_total_pm (
     id integer NOT NULL,
     process_run_total_id integer,
     payment_method_id integer,
-    total numeric(22, 10) NOT NULL,
+    total numeric(22,10) NOT NULL,
     optlock integer NOT NULL
 );
 
@@ -8587,17 +8200,17 @@ COPY currency_entity_map (currency_id, entity_id) FROM stdin;
 --
 
 COPY currency_exchange (id, entity_id, currency_id, rate, create_datetime, optlock) FROM stdin;
-1	0	2	1.325	2004-03-09 00:00:00	1
-2	0	3	0.81179999999999997	2004-03-09 00:00:00	1
-3	0	4	111.40000000000001	2004-03-09 00:00:00	1
-4	0	5	0.54790000000000005	2004-03-09 00:00:00	1
-5	0	6	1171	2004-03-09 00:00:00	1
-6	0	7	1.23	2004-07-06 00:00:00	1
-7	0	8	7.4699999999999998	2004-07-06 00:00:00	1
-10	0	9	1.6799999999999999	2004-10-12 00:00:00	1
-11	0	10	3.7999999999999998	2004-10-12 00:00:00	1
-25	0	11	1.288	2007-01-25 00:00:00	1
-250	1	11	1.5	2008-11-28 14:32:16.652	0
+1	0	2	1.3250000000	2004-03-09 00:00:00	1
+2	0	3	0.8118000000	2004-03-09 00:00:00	1
+3	0	4	111.4000000000	2004-03-09 00:00:00	1
+4	0	5	0.5479000000	2004-03-09 00:00:00	1
+5	0	6	1171.0000000000	2004-03-09 00:00:00	1
+6	0	7	1.2300000000	2004-07-06 00:00:00	1
+7	0	8	7.4700000000	2004-07-06 00:00:00	1
+10	0	9	1.6800000000	2004-10-12 00:00:00	1
+11	0	10	3.8000000000	2004-10-12 00:00:00	1
+25	0	11	1.2880000000	2007-01-25 00:00:00	1
+250	1	11	1.5000000000	2008-11-28 14:32:16.652	0
 \.
 
 
@@ -8722,8 +8335,8 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 171	182	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 172	183	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 173	184	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
-115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
-110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
+115	126	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
+110	121	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
 174	185	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 175	186	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 176	187	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
@@ -9616,26 +9229,26 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 1066	10748	12	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	\N	\N	\N
 1067	10743	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
 1068	10744	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	1	1	\N	\N	\N
-1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0	0	\N
-1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0	0	\N
-1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	\N
-106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0	0	\N
-989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0	0	0
-106800	10760	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107700	3	1	0	0	0
-106801	10761	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107701	3	1	0	0	0
-106802	10762	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107702	3	1	0	0	0
-106900	10770	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107800	3	1	0	0	0
-106901	10771	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107801	3	1	0	0	0
-106902	10772	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107802	3	1	0	0	0
-106903	10773	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107803	3	1	0	0	0
-106904	10774	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107804	3	1	0	0	0
-106905	10775	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107805	3	1	0	0	0
-106906	10776	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107806	2	1	0	0	0
-106907	10777	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107807	3	1	0	0	0
-106908	10778	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107808	3	1	0	0	0
-106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0	0	0
-106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0	0	0
-106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0	0	0
+1	2	\N	0	1	\N	1	\N	\N	\N	\N	0	0	\N	1055	2	1	0.0000000000	0.0000000000	\N
+1044	1055	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	1065	2	1	0.0000000000	0.0000000000	\N
+1029	1040	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	\N
+106700	10750	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	\N	2	1	0.0000000000	0.0000000000	\N
+989	1000	\N	\N	1	\N	1	\N	\N	\N	\N	0	0	0	\N	2	1	0.0000000000	0.0000000000	0.0000000000
+106800	10760	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107700	3	1	0.0000000000	0.0000000000	0.0000000000
+106801	10761	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107701	3	1	0.0000000000	0.0000000000	0.0000000000
+106802	10762	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107702	3	1	0.0000000000	0.0000000000	0.0000000000
+106900	10770	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107800	3	1	0.0000000000	0.0000000000	0.0000000000
+106901	10771	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107801	3	1	0.0000000000	0.0000000000	0.0000000000
+106902	10772	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107802	3	1	0.0000000000	0.0000000000	0.0000000000
+106903	10773	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107803	3	1	0.0000000000	0.0000000000	0.0000000000
+106904	10774	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107804	3	1	0.0000000000	0.0000000000	0.0000000000
+106905	10775	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107805	3	1	0.0000000000	0.0000000000	0.0000000000
+106906	10776	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107806	2	1	0.0000000000	0.0000000000	0.0000000000
+106907	10777	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107807	3	1	0.0000000000	0.0000000000	0.0000000000
+106908	10778	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107808	3	1	0.0000000000	0.0000000000	0.0000000000
+106909	10779	\N	0	1	\N	\N	3	\N	0	\N	0	0	\N	107809	3	1	0.0000000000	0.0000000000	0.0000000000
+106910	10780	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107810	2	1	0.0000000000	0.0000000000	0.0000000000
+106911	10781	\N	0	1	\N	\N	\N	\N	\N	\N	0	0	\N	107811	2	1	0.0000000000	0.0000000000	0.0000000000
 \.
 
 
@@ -11228,19 +10841,19 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 --
 
 COPY invoice (id, create_datetime, billing_process_id, user_id, delegated_invoice_id, due_date, total, payment_attempts, status_id, balance, carried_balance, in_process_payment, is_review, currency_id, deleted, paper_invoice_batch_id, customer_notes, public_number, last_reminder, overdue_step, create_timestamp, optlock) FROM stdin;
-1	2006-07-26 00:00:00	\N	2	\N	2006-08-26	20	1	26	0	0	1	0	1	0	\N	\N	1	\N	\N	2006-07-26 09:43:43.428	1
-2	2006-07-26 00:00:00	\N	2	\N	2006-08-26	15	1	26	0	0	1	0	1	0	\N	\N	2	\N	\N	2006-07-26 09:48:16.931	1
-3	2006-07-26 00:00:00	\N	2	5	2006-08-26	35	1	28	35	0	1	0	1	0	\N	\N	3	\N	\N	2006-07-26 09:49:48.723	1
-4	2006-07-26 00:00:00	\N	2	5	2006-08-26	20	1	28	20	0	1	0	1	0	\N	\N	4	\N	\N	2006-07-26 09:50:36.882	1
-5	2006-08-26 00:00:00	2	2	15	2006-09-26	75	0	28	20	55	1	0	1	0	\N	\N	5	\N	\N	2006-12-19 16:05:00.329	1
-15	2006-09-26 00:00:00	12	2	\N	2006-10-26	95	1	26	20	75	1	0	1	0	\N	\N	6	\N	\N	2006-12-19 16:10:00.587	1
-35	2007-01-16 00:00:00	\N	2	\N	2007-02-16	15	0	27	15	0	1	0	1	0	\N	\N	7	\N	\N	2007-01-16 14:39:58.115	1
-45	2007-07-12 00:00:00	2	2	\N	2017-08-12	20	0	27	20	0	1	0	1	0	\N	\N	8	\N	\N	2007-07-12 13:20:29.858	1
-55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10	0	27	10	0	1	0	1	0	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
-65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15	0	27	15	0	1	0	1	0	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
-70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20	0	27	20	0	1	0	1	0	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
-75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.989999771118164	0	27	12.989999771118164	0	1	0	1	0	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
-8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15	0	27	15	0	1	0	1	0	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
+1	2006-07-26 00:00:00	\N	2	\N	2006-08-26	20.0000000000	1	26	0.0000000000	0.0000000000	1	0	1	0	\N	\N	1	\N	\N	2006-07-26 09:43:43.428	1
+2	2006-07-26 00:00:00	\N	2	\N	2006-08-26	15.0000000000	1	26	0.0000000000	0.0000000000	1	0	1	0	\N	\N	2	\N	\N	2006-07-26 09:48:16.931	1
+3	2006-07-26 00:00:00	\N	2	5	2006-08-26	35.0000000000	1	28	35.0000000000	0.0000000000	1	0	1	0	\N	\N	3	\N	\N	2006-07-26 09:49:48.723	1
+4	2006-07-26 00:00:00	\N	2	5	2006-08-26	20.0000000000	1	28	20.0000000000	0.0000000000	1	0	1	0	\N	\N	4	\N	\N	2006-07-26 09:50:36.882	1
+5	2006-08-26 00:00:00	2	2	15	2006-09-26	75.0000000000	0	28	20.0000000000	55.0000000000	1	0	1	0	\N	\N	5	\N	\N	2006-12-19 16:05:00.329	1
+15	2006-09-26 00:00:00	12	2	\N	2006-10-26	95.0000000000	1	26	20.0000000000	75.0000000000	1	0	1	0	\N	\N	6	\N	\N	2006-12-19 16:10:00.587	1
+35	2007-01-16 00:00:00	\N	2	\N	2007-02-16	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	0	\N	\N	7	\N	\N	2007-01-16 14:39:58.115	1
+45	2007-07-12 00:00:00	2	2	\N	2017-08-12	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	0	\N	\N	8	\N	\N	2007-07-12 13:20:29.858	1
+55	2007-08-09 00:00:00	\N	53	\N	2007-09-09	10.0000000000	0	27	10.0000000000	0.0000000000	1	0	1	0	\N	\N	9	\N	\N	2007-08-09 14:42:13.196	1
+65	2007-08-09 00:00:00	\N	63	\N	2007-09-09	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	0	\N	\N	10	\N	\N	2007-08-09 14:59:04.418	1
+70	2007-07-26 00:00:00	\N	10743	\N	2007-08-26	20.0000000000	0	27	20.0000000000	0.0000000000	1	0	1	0	\N	\N	11	\N	\N	2007-07-26 18:17:19.113	1
+75	2007-08-16 00:00:00	\N	13	\N	2007-09-16	12.9899997711	0	27	12.9899997711	0.0000000000	1	0	1	0	\N	\N	1	\N	\N	2007-08-16 14:57:08.799	1
+8500	2009-07-20 00:00:00	\N	121	\N	2006-09-10	15.0000000000	0	27	15.0000000000	0.0000000000	1	0	1	0	\N	\N	1022	\N	\N	2009-07-20 16:42:04.869	1
 \.
 
 
@@ -11260,23 +10873,23 @@ COPY invoice_delivery_method (id) FROM stdin;
 --
 
 COPY invoice_line (id, invoice_id, type_id, amount, quantity, price, deleted, item_id, description, source_user_id, is_percentage, optlock) FROM stdin;
-1	1	1	20	1	20	0	2	Lemonade - all you can drink monthly	2	0	1
-2	2	1	15	1	15	0	3	Coffee - one per day - Monthly	2	0	1
-3	3	1	15	1	15	0	3	Coffee - one per day - Monthly	2	0	1
-4	3	1	20	1	20	0	2	Lemonade - all you can drink monthly	2	0	1
-5	4	1	20	1	20	0	2	Lemonade - all you can drink monthly Period from 07/26/2006 to 08/25/2006	2	0	1
-6	5	1	20	1	20	0	2	Lemonade - all you can drink monthly Period from 08/26/2006 to 09/25/2006	2	0	1
-7	5	3	33	\N	\N	0	\N	Invoice number 3 due date 08/26/2006	\N	0	1
-8	5	3	10	\N	\N	0	\N	Invoice number 4 due date 08/26/2006	\N	0	1
-16	15	1	20	1	20	0	2	Lemonade - all you can drink monthly Period from 09/26/2006 to 10/25/2006	2	0	1
-17	15	3	63	\N	\N	0	\N	Invoice number 5 due date 09/26/2006	\N	0	1
-36	35	1	15	1	15	0	3	Coffee - one per day - Monthly	2	0	1
-46	45	1	20	1	20	0	2	Lemonade - all you can drink monthly	2	0	1
-56	55	1	10	1	10	0	1	Lemonade - 1 per day monthly pass Period from 10/01/2006 to 10/31/2006	53	0	1
-66	65	1	15	1	15	0	3	Coffee - one per day - Monthly Period from 09/26/2006 to 10/25/2006	63	0	1
-67	70	1	20	1	20	0	2	Lemonade - all you can drink monthly	10743	0	1
-76	75	1	12.989999771118164	1	12.989999771118164	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
-8600	8500	4	15	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
+1	1	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly	2	0	1
+2	2	1	15.0000000000	1.0000000000	15.0000000000	0	3	Coffee - one per day - Monthly	2	0	1
+3	3	1	15.0000000000	1.0000000000	15.0000000000	0	3	Coffee - one per day - Monthly	2	0	1
+4	3	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly	2	0	1
+5	4	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly Period from 07/26/2006 to 08/25/2006	2	0	1
+6	5	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly Period from 08/26/2006 to 09/25/2006	2	0	1
+7	5	3	33.0000000000	\N	\N	0	\N	Invoice number 3 due date 08/26/2006	\N	0	1
+8	5	3	10.0000000000	\N	\N	0	\N	Invoice number 4 due date 08/26/2006	\N	0	1
+16	15	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly Period from 09/26/2006 to 10/25/2006	2	0	1
+17	15	3	63.0000000000	\N	\N	0	\N	Invoice number 5 due date 09/26/2006	\N	0	1
+36	35	1	15.0000000000	1.0000000000	15.0000000000	0	3	Coffee - one per day - Monthly	2	0	1
+46	45	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly	2	0	1
+56	55	1	10.0000000000	1.0000000000	10.0000000000	0	1	Lemonade - 1 per day monthly pass Period from 10/01/2006 to 10/31/2006	53	0	1
+66	65	1	15.0000000000	1.0000000000	15.0000000000	0	3	Coffee - one per day - Monthly Period from 09/26/2006 to 10/25/2006	63	0	1
+67	70	1	20.0000000000	1.0000000000	20.0000000000	0	2	Lemonade - all you can drink monthly	10743	0	1
+76	75	1	12.9899997711	1.0000000000	12.9899997711	0	4	Poison Ivy juice (cold) Period from 12/07/2006 to 01/06/2007	13	0	1
+8600	8500	4	15.0000000000	\N	\N	0	251	Lemonade plan - Setup Fee	121	0	1
 \.
 
 
@@ -11302,7 +10915,7 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 2	DP-2	1	\N	0	0	0	1
 3	DP-3	1	\N	0	0	0	1
 4	01	2	\N	0	0	0	1
-14	J-01	1	-10	0	0	0	1
+14	J-01	1	-10.0000000000	0	0	0	1
 24	F-1	1	\N	0	0	0	1
 240	DP-4	1	\N	0	0	0	2
 250	PL-01	1	\N	0	0	0	2
@@ -11325,29 +10938,29 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 --
 
 COPY item_price (id, item_id, currency_id, price, optlock) FROM stdin;
-1	1	1	10	1
-2	2	1	20	1
-3	3	1	15	1
-4	4	1	12.989999771118164	1
-14	24	1	5	1
-140	240	11	15	0
-150	250	1	0	0
-151	251	1	15	0
-152	270	1	10	0
-1600	2600	1	0	0
-1601	2601	1	0	0
-1602	2602	1	3.5	0
-1705	2702	1	30	0
-1701	2700	1	25	1
-1703	2701	1	40	1
-1702	2701	11	44.369998931884766	1
-1700	2700	11	27.729999542236328	2
-1704	2702	11	32.979999542236328	1
-1800	2800	11	0	0
-1801	2800	1	0	0
-1802	2801	11	0	0
-1803	2801	1	0	0
-1900	2900	1	0	0
+1	1	1	10.0000000000	1
+2	2	1	20.0000000000	1
+3	3	1	15.0000000000	1
+4	4	1	12.9899997711	1
+14	24	1	5.0000000000	1
+140	240	11	15.0000000000	0
+150	250	1	0.0000000000	0
+151	251	1	15.0000000000	0
+152	270	1	10.0000000000	0
+1600	2600	1	0.0000000000	0
+1601	2601	1	0.0000000000	0
+1602	2602	1	3.5000000000	0
+1705	2702	1	30.0000000000	0
+1701	2700	1	25.0000000000	1
+1703	2701	1	40.0000000000	1
+1702	2701	11	44.3699989319	1
+1700	2700	11	27.7299995422	2
+1704	2702	11	32.9799995422	1
+1800	2800	11	0.0000000000	0
+1801	2800	1	0.0000000000	0
+1802	2801	11	0.0000000000	0
+1803	2801	1	0.0000000000	0
+1900	2900	1	0.0000000000	0
 \.
 
 
@@ -12082,2035 +11695,2035 @@ COPY order_billing_type (id) FROM stdin;
 --
 
 COPY order_line (id, order_id, item_id, type_id, amount, quantity, price, item_price, create_datetime, deleted, description, provisioning_status, provisioning_request_id, optlock) FROM stdin;
-1	1	2	1	20	1	20	0	2006-07-26 09:43:39.873	0	Lemonade - all you can drink monthly	\N	\N	1
-2	2	3	1	15	1	15	0	2006-07-26 09:48:13.977	0	Coffee - one per day - Monthly	\N	\N	1
-3	3	3	1	15	1	15	0	2006-07-26 09:49:38.659	0	Coffee - one per day - Monthly	\N	\N	1
-4	3	2	1	20	1	20	0	2006-07-26 09:49:38.659	0	Lemonade - all you can drink monthly	\N	\N	1
-5	4	2	1	20	1	20	0	2006-07-26 09:50:34.319	0	Lemonade - all you can drink monthly	\N	\N	1
-6	5	4	1	12.989999771118164	1	12.989999771118164	0	2006-12-07 14:58:53.163	0	Poison Ivy juice (cold)	\N	\N	1
-16	15	3	1	15	1	15	0	2007-01-16 14:39:49.152	0	Coffee - one per day - Monthly	\N	\N	1
-26	25	2	1	20	1	20	0	2007-07-12 13:20:22.284	0	Lemonade - all you can drink monthly	\N	\N	1
-36	35	1	1	10	1	10	0	2007-08-09 14:41:51.222	0	Lemonade - 1 per day monthly pass	\N	\N	1
-46	45	3	1	15	1	15	0	2007-08-09 14:59:01.55	0	Coffee - one per day - Monthly	\N	\N	1
-56	55	1	1	890	89	10	\N	2007-09-12 12:09:06.976	0	First line	\N	\N	1
-57	55	2	1	1140	57	20	\N	2007-09-12 12:09:06.986	0	Second line	\N	\N	1
-58	56	1	1	310	31	10	\N	2007-09-12 12:09:07.335	0	First line	\N	\N	1
-59	56	2	1	1180	59	20	\N	2007-09-12 12:09:07.339	0	Second line	\N	\N	1
-60	57	1	1	640	64	10	\N	2007-09-12 12:09:07.876	0	First line	\N	\N	1
-61	57	2	1	680	34	20	\N	2007-09-12 12:09:07.881	0	Second line	\N	\N	1
-62	58	1	1	140	14	10	\N	2007-09-12 12:09:08.218	0	First line	\N	\N	1
-63	58	2	1	1640	82	20	\N	2007-09-12 12:09:08.221	0	Second line	\N	\N	1
-64	59	1	1	540	54	10	\N	2007-09-12 12:09:08.52	0	First line	\N	\N	1
-65	59	2	1	700	35	20	\N	2007-09-12 12:09:08.523	0	Second line	\N	\N	1
-66	60	1	1	870	87	10	\N	2007-09-12 12:09:08.915	0	First line	\N	\N	1
-67	60	2	1	1120	56	20	\N	2007-09-12 12:09:08.928	0	Second line	\N	\N	1
-68	61	1	1	970	97	10	\N	2007-09-12 12:09:09.552	0	First line	\N	\N	1
-69	61	2	1	540	27	20	\N	2007-09-12 12:09:09.603	0	Second line	\N	\N	1
-70	62	1	1	630	63	10	\N	2007-09-12 12:09:10.039	0	First line	\N	\N	1
-71	62	2	1	1580	79	20	\N	2007-09-12 12:09:10.043	0	Second line	\N	\N	1
-72	63	1	1	470	47	10	\N	2007-09-12 12:09:10.346	0	First line	\N	\N	1
-73	63	2	1	280	14	20	\N	2007-09-12 12:09:10.35	0	Second line	\N	\N	1
-74	64	1	1	210	21	10	\N	2007-09-12 12:09:10.628	0	First line	\N	\N	1
-75	64	2	1	1600	80	20	\N	2007-09-12 12:09:10.63	0	Second line	\N	\N	1
-76	65	1	1	840	84	10	\N	2007-09-12 12:09:11.128	0	First line	\N	\N	1
-77	65	2	1	1880	94	20	\N	2007-09-12 12:09:11.137	0	Second line	\N	\N	1
-78	66	1	1	600	60	10	\N	2007-09-12 12:09:11.648	0	First line	\N	\N	1
-79	66	2	1	720	36	20	\N	2007-09-12 12:09:11.659	0	Second line	\N	\N	1
-80	67	1	1	260	26	10	\N	2007-09-12 12:09:12.063	0	First line	\N	\N	1
-81	67	2	1	60	3	20	\N	2007-09-12 12:09:12.066	0	Second line	\N	\N	1
-82	68	1	1	150	15	10	\N	2007-09-12 12:09:12.395	0	First line	\N	\N	1
-83	68	2	1	200	10	20	\N	2007-09-12 12:09:12.398	0	Second line	\N	\N	1
-84	69	1	1	960	96	10	\N	2007-09-12 12:09:12.674	0	First line	\N	\N	1
-85	69	2	1	20	1	20	\N	2007-09-12 12:09:12.677	0	Second line	\N	\N	1
-86	70	1	1	670	67	10	\N	2007-09-12 12:09:13.248	0	First line	\N	\N	1
-87	70	2	1	1440	72	20	\N	2007-09-12 12:09:13.266	0	Second line	\N	\N	1
-88	71	1	1	600	60	10	\N	2007-09-12 12:09:13.786	0	First line	\N	\N	1
-89	71	2	1	1220	61	20	\N	2007-09-12 12:09:13.795	0	Second line	\N	\N	1
-90	72	1	1	570	57	10	\N	2007-09-12 12:09:14.103	0	First line	\N	\N	1
-91	72	2	1	1760	88	20	\N	2007-09-12 12:09:14.106	0	Second line	\N	\N	1
-92	73	1	1	400	40	10	\N	2007-09-12 12:09:14.363	0	First line	\N	\N	1
-93	73	2	1	620	31	20	\N	2007-09-12 12:09:14.366	0	Second line	\N	\N	1
-94	74	1	1	80	8	10	\N	2007-09-12 12:09:14.63	0	First line	\N	\N	1
-95	74	2	1	480	24	20	\N	2007-09-12 12:09:14.632	0	Second line	\N	\N	1
-96	75	1	1	920	92	10	\N	2007-09-12 12:09:14.897	0	First line	\N	\N	1
-97	75	2	1	760	38	20	\N	2007-09-12 12:09:14.901	0	Second line	\N	\N	1
-98	76	1	1	80	8	10	\N	2007-09-12 12:09:15.418	0	First line	\N	\N	1
-99	76	2	1	500	25	20	\N	2007-09-12 12:09:15.425	0	Second line	\N	\N	1
-100	77	1	1	910	91	10	\N	2007-09-12 12:09:16	0	First line	\N	\N	1
-101	77	2	1	1260	63	20	\N	2007-09-12 12:09:16.083	0	Second line	\N	\N	1
-102	78	1	1	40	4	10	\N	2007-09-12 12:09:16.513	0	First line	\N	\N	1
-103	78	2	1	1060	53	20	\N	2007-09-12 12:09:16.516	0	Second line	\N	\N	1
-104	79	1	1	500	50	10	\N	2007-09-12 12:09:16.781	0	First line	\N	\N	1
-105	79	2	1	1520	76	20	\N	2007-09-12 12:09:16.784	0	Second line	\N	\N	1
-106	80	1	1	650	65	10	\N	2007-09-12 12:09:17.039	0	First line	\N	\N	1
-107	80	2	1	1300	65	20	\N	2007-09-12 12:09:17.042	0	Second line	\N	\N	1
-108	81	1	1	560	56	10	\N	2007-09-12 12:09:17.398	0	First line	\N	\N	1
-109	81	2	1	1440	72	20	\N	2007-09-12 12:09:17.41	0	Second line	\N	\N	1
-110	82	1	1	290	29	10	\N	2007-09-12 12:09:17.951	0	First line	\N	\N	1
-111	82	2	1	1380	69	20	\N	2007-09-12 12:09:17.963	0	Second line	\N	\N	1
-112	83	1	1	550	55	10	\N	2007-09-12 12:09:18.443	0	First line	\N	\N	1
-113	83	2	1	800	40	20	\N	2007-09-12 12:09:18.445	0	Second line	\N	\N	1
-114	84	1	1	220	22	10	\N	2007-09-12 12:09:18.706	0	First line	\N	\N	1
-115	84	2	1	180	9	20	\N	2007-09-12 12:09:18.709	0	Second line	\N	\N	1
-116	85	1	1	450	45	10	\N	2007-09-12 12:09:18.964	0	First line	\N	\N	1
-117	85	2	1	1820	91	20	\N	2007-09-12 12:09:18.967	0	Second line	\N	\N	1
-118	86	1	1	640	64	10	\N	2007-09-12 12:09:19.209	0	First line	\N	\N	1
-119	86	2	1	1420	71	20	\N	2007-09-12 12:09:19.212	0	Second line	\N	\N	1
-120	87	1	1	900	90	10	\N	2007-09-12 12:09:19.562	0	First line	\N	\N	1
-121	87	2	1	860	43	20	\N	2007-09-12 12:09:19.574	0	Second line	\N	\N	1
-122	88	1	1	660	66	10	\N	2007-09-12 12:09:20.095	0	First line	\N	\N	1
-123	88	2	1	680	34	20	\N	2007-09-12 12:09:20.102	0	Second line	\N	\N	1
-124	89	1	1	440	44	10	\N	2007-09-12 12:09:20.575	0	First line	\N	\N	1
-125	89	2	1	1300	65	20	\N	2007-09-12 12:09:20.581	0	Second line	\N	\N	1
-126	90	1	1	720	72	10	\N	2007-09-12 12:09:21.02	0	First line	\N	\N	1
-127	90	2	1	1780	89	20	\N	2007-09-12 12:09:21.023	0	Second line	\N	\N	1
-128	91	1	1	800	80	10	\N	2007-09-12 12:09:21.259	0	First line	\N	\N	1
-129	91	2	1	1140	57	20	\N	2007-09-12 12:09:21.262	0	Second line	\N	\N	1
-130	92	1	1	180	18	10	\N	2007-09-12 12:09:21.522	0	First line	\N	\N	1
-131	92	2	1	780	39	20	\N	2007-09-12 12:09:21.525	0	Second line	\N	\N	1
-132	93	1	1	780	78	10	\N	2007-09-12 12:09:21.785	0	First line	\N	\N	1
-133	93	2	1	1360	68	20	\N	2007-09-12 12:09:21.788	0	Second line	\N	\N	1
-134	94	1	1	920	92	10	\N	2007-09-12 12:09:22.173	0	First line	\N	\N	1
-135	94	2	1	580	29	20	\N	2007-09-12 12:09:22.181	0	Second line	\N	\N	1
-136	95	1	1	820	82	10	\N	2007-09-12 12:09:22.663	0	First line	\N	\N	1
-137	95	2	1	220	11	20	\N	2007-09-12 12:09:22.675	0	Second line	\N	\N	1
-138	96	1	1	360	36	10	\N	2007-09-12 12:09:23.171	0	First line	\N	\N	1
-139	96	2	1	1400	70	20	\N	2007-09-12 12:09:23.193	0	Second line	\N	\N	1
-140	97	1	1	600	60	10	\N	2007-09-12 12:09:23.564	0	First line	\N	\N	1
-141	97	2	1	1400	70	20	\N	2007-09-12 12:09:23.566	0	Second line	\N	\N	1
-142	98	1	1	780	78	10	\N	2007-09-12 12:09:23.825	0	First line	\N	\N	1
-143	98	2	1	1460	73	20	\N	2007-09-12 12:09:23.827	0	Second line	\N	\N	1
-144	99	1	1	440	44	10	\N	2007-09-12 12:09:24.069	0	First line	\N	\N	1
-145	99	2	1	1320	66	20	\N	2007-09-12 12:09:24.071	0	Second line	\N	\N	1
-146	100	1	1	960	96	10	\N	2007-09-12 12:09:24.323	0	First line	\N	\N	1
-147	100	2	1	1200	60	20	\N	2007-09-12 12:09:24.326	0	Second line	\N	\N	1
-148	101	1	1	720	72	10	\N	2007-09-12 12:09:24.722	0	First line	\N	\N	1
-149	101	2	1	1220	61	20	\N	2007-09-12 12:09:24.731	0	Second line	\N	\N	1
-150	102	1	1	410	41	10	\N	2007-09-12 12:09:25.2	0	First line	\N	\N	1
-151	102	2	1	1640	82	20	\N	2007-09-12 12:09:25.21	0	Second line	\N	\N	1
-152	103	1	1	140	14	10	\N	2007-09-12 12:09:25.702	0	First line	\N	\N	1
-153	103	2	1	700	35	20	\N	2007-09-12 12:09:25.707	0	Second line	\N	\N	1
-154	104	1	1	200	20	10	\N	2007-09-12 12:09:26.07	0	First line	\N	\N	1
-155	104	2	1	280	14	20	\N	2007-09-12 12:09:26.072	0	Second line	\N	\N	1
-156	105	1	1	880	88	10	\N	2007-09-12 12:09:26.335	0	First line	\N	\N	1
-157	105	2	1	880	44	20	\N	2007-09-12 12:09:26.338	0	Second line	\N	\N	1
-158	106	1	1	400	40	10	\N	2007-09-12 12:09:26.591	0	First line	\N	\N	1
-159	106	2	1	540	27	20	\N	2007-09-12 12:09:26.594	0	Second line	\N	\N	1
-160	107	1	1	110	11	10	\N	2007-09-12 12:09:26.841	0	First line	\N	\N	1
-161	107	2	1	800	40	20	\N	2007-09-12 12:09:26.843	0	Second line	\N	\N	1
-162	108	1	1	930	93	10	\N	2007-09-12 12:09:27.266	0	First line	\N	\N	1
-163	108	2	1	980	49	20	\N	2007-09-12 12:09:27.271	0	Second line	\N	\N	1
-164	109	1	1	890	89	10	\N	2007-09-12 12:09:27.736	0	First line	\N	\N	1
-165	109	2	1	940	47	20	\N	2007-09-12 12:09:27.747	0	Second line	\N	\N	1
-166	110	1	1	180	18	10	\N	2007-09-12 12:09:28.286	0	First line	\N	\N	1
-167	110	2	1	1820	91	20	\N	2007-09-12 12:09:28.292	0	Second line	\N	\N	1
-168	111	1	1	740	74	10	\N	2007-09-12 12:09:28.584	0	First line	\N	\N	1
-169	111	2	1	2000	100	20	\N	2007-09-12 12:09:28.586	0	Second line	\N	\N	1
-170	112	1	1	680	68	10	\N	2007-09-12 12:09:28.829	0	First line	\N	\N	1
-171	112	2	1	880	44	20	\N	2007-09-12 12:09:28.832	0	Second line	\N	\N	1
-172	113	1	1	960	96	10	\N	2007-09-12 12:09:29.079	0	First line	\N	\N	1
-173	113	2	1	320	16	20	\N	2007-09-12 12:09:29.081	0	Second line	\N	\N	1
-174	114	1	1	940	94	10	\N	2007-09-12 12:09:29.331	0	First line	\N	\N	1
-175	114	2	1	780	39	20	\N	2007-09-12 12:09:29.333	0	Second line	\N	\N	1
-176	115	1	1	150	15	10	\N	2007-09-12 12:09:29.86	0	First line	\N	\N	1
-177	115	2	1	1840	92	20	\N	2007-09-12 12:09:29.866	0	Second line	\N	\N	1
-178	116	1	1	60	6	10	\N	2007-09-12 12:09:30.358	0	First line	\N	\N	1
-179	116	2	1	560	28	20	\N	2007-09-12 12:09:30.366	0	Second line	\N	\N	1
-180	117	1	1	320	32	10	\N	2007-09-12 12:09:30.833	0	First line	\N	\N	1
-181	117	2	1	1320	66	20	\N	2007-09-12 12:09:30.838	0	Second line	\N	\N	1
-182	118	1	1	950	95	10	\N	2007-09-12 12:09:31.121	0	First line	\N	\N	1
-183	118	2	1	280	14	20	\N	2007-09-12 12:09:31.124	0	Second line	\N	\N	1
-184	119	1	1	810	81	10	\N	2007-09-12 12:09:31.369	0	First line	\N	\N	1
-185	119	2	1	840	42	20	\N	2007-09-12 12:09:31.371	0	Second line	\N	\N	1
-186	120	1	1	210	21	10	\N	2007-09-12 12:09:31.614	0	First line	\N	\N	1
-187	120	2	1	200	10	20	\N	2007-09-12 12:09:31.616	0	Second line	\N	\N	1
-188	121	1	1	50	5	10	\N	2007-09-12 12:09:31.875	0	First line	\N	\N	1
-189	121	2	1	1540	77	20	\N	2007-09-12 12:09:31.878	0	Second line	\N	\N	1
-190	122	1	1	330	33	10	\N	2007-09-12 12:09:32.331	0	First line	\N	\N	1
-191	122	2	1	1240	62	20	\N	2007-09-12 12:09:32.334	0	Second line	\N	\N	1
-192	123	1	1	190	19	10	\N	2007-09-12 12:09:32.838	0	First line	\N	\N	1
-193	123	2	1	180	9	20	\N	2007-09-12 12:09:32.845	0	Second line	\N	\N	1
-194	124	1	1	920	92	10	\N	2007-09-12 12:09:33.349	0	First line	\N	\N	1
-195	124	2	1	1600	80	20	\N	2007-09-12 12:09:33.353	0	Second line	\N	\N	1
-196	125	1	1	960	96	10	\N	2007-09-12 12:09:33.611	0	First line	\N	\N	1
-197	125	2	1	1920	96	20	\N	2007-09-12 12:09:33.614	0	Second line	\N	\N	1
-198	126	1	1	530	53	10	\N	2007-09-12 12:09:33.86	0	First line	\N	\N	1
-199	126	2	1	400	20	20	\N	2007-09-12 12:09:33.862	0	Second line	\N	\N	1
-200	127	1	1	200	20	10	\N	2007-09-12 12:09:34.109	0	First line	\N	\N	1
-201	127	2	1	1960	98	20	\N	2007-09-12 12:09:34.112	0	Second line	\N	\N	1
-202	128	1	1	20	2	10	\N	2007-09-12 12:09:34.353	0	First line	\N	\N	1
-203	128	2	1	1220	61	20	\N	2007-09-12 12:09:34.355	0	Second line	\N	\N	1
-204	129	1	1	320	32	10	\N	2007-09-12 12:09:34.816	0	First line	\N	\N	1
-205	129	2	1	1700	85	20	\N	2007-09-12 12:09:34.824	0	Second line	\N	\N	1
-206	130	1	1	600	60	10	\N	2007-09-12 12:09:35.278	0	First line	\N	\N	1
-207	130	2	1	60	3	20	\N	2007-09-12 12:09:35.291	0	Second line	\N	\N	1
-208	131	1	1	670	67	10	\N	2007-09-12 12:09:35.754	0	First line	\N	\N	1
-209	131	2	1	1780	89	20	\N	2007-09-12 12:09:35.758	0	Second line	\N	\N	1
-210	132	1	1	20	2	10	\N	2007-09-12 12:09:36.152	0	First line	\N	\N	1
-211	132	2	1	220	11	20	\N	2007-09-12 12:09:36.155	0	Second line	\N	\N	1
-212	133	1	1	580	58	10	\N	2007-09-12 12:09:36.385	0	First line	\N	\N	1
-213	133	2	1	300	15	20	\N	2007-09-12 12:09:36.388	0	Second line	\N	\N	1
-214	134	1	1	80	8	10	\N	2007-09-12 12:09:36.639	0	First line	\N	\N	1
-215	134	2	1	1220	61	20	\N	2007-09-12 12:09:36.641	0	Second line	\N	\N	1
-216	135	1	1	250	25	10	\N	2007-09-12 12:09:36.88	0	First line	\N	\N	1
-217	135	2	1	40	2	20	\N	2007-09-12 12:09:36.882	0	Second line	\N	\N	1
-218	136	1	1	30	3	10	\N	2007-09-12 12:09:37.21	0	First line	\N	\N	1
-219	136	2	1	1900	95	20	\N	2007-09-12 12:09:37.219	0	Second line	\N	\N	1
-220	137	1	1	340	34	10	\N	2007-09-12 12:09:37.685	0	First line	\N	\N	1
-221	137	2	1	620	31	20	\N	2007-09-12 12:09:37.693	0	Second line	\N	\N	1
-222	138	1	1	30	3	10	\N	2007-09-12 12:09:38.111	0	First line	\N	\N	1
-223	138	2	1	1980	99	20	\N	2007-09-12 12:09:38.115	0	Second line	\N	\N	1
-224	139	1	1	350	35	10	\N	2007-09-12 12:09:38.555	0	First line	\N	\N	1
-225	139	2	1	1720	86	20	\N	2007-09-12 12:09:38.561	0	Second line	\N	\N	1
-226	140	1	1	30	3	10	\N	2007-09-12 12:09:38.945	0	First line	\N	\N	1
-227	140	2	1	800	40	20	\N	2007-09-12 12:09:38.947	0	Second line	\N	\N	1
-228	141	1	1	690	69	10	\N	2007-09-12 12:09:39.18	0	First line	\N	\N	1
-229	141	2	1	1440	72	20	\N	2007-09-12 12:09:39.182	0	Second line	\N	\N	1
-230	142	1	1	280	28	10	\N	2007-09-12 12:09:39.442	0	First line	\N	\N	1
-231	142	2	1	900	45	20	\N	2007-09-12 12:09:39.444	0	Second line	\N	\N	1
-232	143	1	1	620	62	10	\N	2007-09-12 12:09:39.677	0	First line	\N	\N	1
-233	143	2	1	800	40	20	\N	2007-09-12 12:09:39.68	0	Second line	\N	\N	1
-234	144	1	1	1000	100	10	\N	2007-09-12 12:09:39.965	0	First line	\N	\N	1
-235	144	2	1	1540	77	20	\N	2007-09-12 12:09:39.976	0	Second line	\N	\N	1
-236	145	1	1	670	67	10	\N	2007-09-12 12:09:40.501	0	First line	\N	\N	1
-237	145	2	1	740	37	20	\N	2007-09-12 12:09:40.511	0	Second line	\N	\N	1
-238	146	1	1	790	79	10	\N	2007-09-12 12:09:40.992	0	First line	\N	\N	1
-239	146	2	1	320	16	20	\N	2007-09-12 12:09:40.997	0	Second line	\N	\N	1
-240	147	1	1	880	88	10	\N	2007-09-12 12:09:41.461	0	First line	\N	\N	1
-241	147	2	1	680	34	20	\N	2007-09-12 12:09:41.471	0	Second line	\N	\N	1
-242	148	1	1	10	1	10	\N	2007-09-12 12:09:41.741	0	First line	\N	\N	1
-243	148	2	1	1760	88	20	\N	2007-09-12 12:09:41.744	0	Second line	\N	\N	1
-244	149	1	1	430	43	10	\N	2007-09-12 12:09:41.996	0	First line	\N	\N	1
-245	149	2	1	1560	78	20	\N	2007-09-12 12:09:41.999	0	Second line	\N	\N	1
-246	150	1	1	620	62	10	\N	2007-09-12 12:09:42.253	0	First line	\N	\N	1
-247	150	2	1	400	20	20	\N	2007-09-12 12:09:42.255	0	Second line	\N	\N	1
-248	151	1	1	370	37	10	\N	2007-09-12 12:09:42.488	0	First line	\N	\N	1
-249	151	2	1	1880	94	20	\N	2007-09-12 12:09:42.491	0	Second line	\N	\N	1
-250	152	1	1	20	2	10	\N	2007-09-12 12:09:42.961	0	First line	\N	\N	1
-251	152	2	1	1760	88	20	\N	2007-09-12 12:09:42.971	0	Second line	\N	\N	1
-252	153	1	1	140	14	10	\N	2007-09-12 12:09:43.472	0	First line	\N	\N	1
-253	153	2	1	520	26	20	\N	2007-09-12 12:09:43.482	0	Second line	\N	\N	1
-254	154	1	1	230	23	10	\N	2007-09-12 12:09:43.953	0	First line	\N	\N	1
-255	154	2	1	720	36	20	\N	2007-09-12 12:09:43.955	0	Second line	\N	\N	1
-256	155	1	1	890	89	10	\N	2007-09-12 12:09:44.2	0	First line	\N	\N	1
-257	155	2	1	340	17	20	\N	2007-09-12 12:09:44.202	0	Second line	\N	\N	1
-258	156	1	1	960	96	10	\N	2007-09-12 12:09:44.44	0	First line	\N	\N	1
-259	156	2	1	940	47	20	\N	2007-09-12 12:09:44.442	0	Second line	\N	\N	1
-260	157	1	1	570	57	10	\N	2007-09-12 12:09:44.684	0	First line	\N	\N	1
-261	157	2	1	180	9	20	\N	2007-09-12 12:09:44.686	0	Second line	\N	\N	1
-262	158	1	1	740	74	10	\N	2007-09-12 12:09:44.942	0	First line	\N	\N	1
-263	158	2	1	1340	67	20	\N	2007-09-12 12:09:44.944	0	Second line	\N	\N	1
-264	159	1	1	780	78	10	\N	2007-09-12 12:09:45.409	0	First line	\N	\N	1
-265	159	2	1	1360	68	20	\N	2007-09-12 12:09:45.417	0	Second line	\N	\N	1
-266	160	1	1	50	5	10	\N	2007-09-12 12:09:45.895	0	First line	\N	\N	1
-267	160	2	1	1000	50	20	\N	2007-09-12 12:09:45.904	0	Second line	\N	\N	1
-268	161	1	1	260	26	10	\N	2007-09-12 12:09:46.414	0	First line	\N	\N	1
-269	161	2	1	600	30	20	\N	2007-09-12 12:09:46.42	0	Second line	\N	\N	1
-270	162	1	1	190	19	10	\N	2007-09-12 12:09:46.716	0	First line	\N	\N	1
-271	162	2	1	1400	70	20	\N	2007-09-12 12:09:46.719	0	Second line	\N	\N	1
-272	163	1	1	970	97	10	\N	2007-09-12 12:09:46.961	0	First line	\N	\N	1
-273	163	2	1	860	43	20	\N	2007-09-12 12:09:46.964	0	Second line	\N	\N	1
-274	164	1	1	80	8	10	\N	2007-09-12 12:09:47.209	0	First line	\N	\N	1
-275	164	2	1	1900	95	20	\N	2007-09-12 12:09:47.211	0	Second line	\N	\N	1
-276	165	1	1	680	68	10	\N	2007-09-12 12:09:47.457	0	First line	\N	\N	1
-277	165	2	1	1860	93	20	\N	2007-09-12 12:09:47.46	0	Second line	\N	\N	1
-278	166	1	1	490	49	10	\N	2007-09-12 12:09:47.922	0	First line	\N	\N	1
-279	166	2	1	1700	85	20	\N	2007-09-12 12:09:47.925	0	Second line	\N	\N	1
-280	167	1	1	850	85	10	\N	2007-09-12 12:09:48.389	0	First line	\N	\N	1
-281	167	2	1	160	8	20	\N	2007-09-12 12:09:48.396	0	Second line	\N	\N	1
-282	168	1	1	250	25	10	\N	2007-09-12 12:09:48.9	0	First line	\N	\N	1
-283	168	2	1	1860	93	20	\N	2007-09-12 12:09:48.917	0	Second line	\N	\N	1
-284	169	1	1	560	56	10	\N	2007-09-12 12:09:49.28	0	First line	\N	\N	1
-285	169	2	1	1780	89	20	\N	2007-09-12 12:09:49.282	0	Second line	\N	\N	1
-286	170	1	1	940	94	10	\N	2007-09-12 12:09:49.536	0	First line	\N	\N	1
-287	170	2	1	1100	55	20	\N	2007-09-12 12:09:49.539	0	Second line	\N	\N	1
-288	171	1	1	540	54	10	\N	2007-09-12 12:09:49.779	0	First line	\N	\N	1
-289	171	2	1	200	10	20	\N	2007-09-12 12:09:49.782	0	Second line	\N	\N	1
-290	172	1	1	990	99	10	\N	2007-09-12 12:09:50.024	0	First line	\N	\N	1
-291	172	2	1	1300	65	20	\N	2007-09-12 12:09:50.027	0	Second line	\N	\N	1
-292	173	1	1	630	63	10	\N	2007-09-12 12:09:50.359	0	First line	\N	\N	1
-293	173	2	1	1400	70	20	\N	2007-09-12 12:09:50.366	0	Second line	\N	\N	1
-294	174	1	1	910	91	10	\N	2007-09-12 12:09:50.852	0	First line	\N	\N	1
-295	174	2	1	860	43	20	\N	2007-09-12 12:09:50.866	0	Second line	\N	\N	1
-296	175	1	1	960	96	10	\N	2007-09-12 12:09:51.364	0	First line	\N	\N	1
-297	175	2	1	980	49	20	\N	2007-09-12 12:09:51.382	0	Second line	\N	\N	1
-298	176	1	1	920	92	10	\N	2007-09-12 12:09:51.819	0	First line	\N	\N	1
-299	176	2	1	1300	65	20	\N	2007-09-12 12:09:51.821	0	Second line	\N	\N	1
-300	177	1	1	480	48	10	\N	2007-09-12 12:09:52.053	0	First line	\N	\N	1
-301	177	2	1	1200	60	20	\N	2007-09-12 12:09:52.056	0	Second line	\N	\N	1
-302	178	1	1	100	10	10	\N	2007-09-12 12:09:52.305	0	First line	\N	\N	1
-303	178	2	1	1480	74	20	\N	2007-09-12 12:09:52.308	0	Second line	\N	\N	1
-304	179	1	1	710	71	10	\N	2007-09-12 12:09:52.549	0	First line	\N	\N	1
-305	179	2	1	1820	91	20	\N	2007-09-12 12:09:52.551	0	Second line	\N	\N	1
-306	180	1	1	120	12	10	\N	2007-09-12 12:09:52.845	0	First line	\N	\N	1
-307	180	2	1	480	24	20	\N	2007-09-12 12:09:52.851	0	Second line	\N	\N	1
-308	181	1	1	460	46	10	\N	2007-09-12 12:09:53.327	0	First line	\N	\N	1
-309	181	2	1	1660	83	20	\N	2007-09-12 12:09:53.338	0	Second line	\N	\N	1
-310	182	1	1	840	84	10	\N	2007-09-12 12:09:53.786	0	First line	\N	\N	1
-311	182	2	1	1280	64	20	\N	2007-09-12 12:09:53.791	0	Second line	\N	\N	1
-312	183	1	1	250	25	10	\N	2007-09-12 12:09:54.258	0	First line	\N	\N	1
-313	183	2	1	820	41	20	\N	2007-09-12 12:09:54.271	0	Second line	\N	\N	1
-314	184	1	1	340	34	10	\N	2007-09-12 12:09:54.549	0	First line	\N	\N	1
-315	184	2	1	480	24	20	\N	2007-09-12 12:09:54.551	0	Second line	\N	\N	1
-316	185	1	1	440	44	10	\N	2007-09-12 12:09:54.792	0	First line	\N	\N	1
-317	185	2	1	980	49	20	\N	2007-09-12 12:09:54.794	0	Second line	\N	\N	1
-318	186	1	1	120	12	10	\N	2007-09-12 12:09:55.046	0	First line	\N	\N	1
-319	186	2	1	1620	81	20	\N	2007-09-12 12:09:55.048	0	Second line	\N	\N	1
-320	187	1	1	630	63	10	\N	2007-09-12 12:09:55.274	0	First line	\N	\N	1
-321	187	2	1	1820	91	20	\N	2007-09-12 12:09:55.277	0	Second line	\N	\N	1
-322	188	1	1	190	19	10	\N	2007-09-12 12:09:55.716	0	First line	\N	\N	1
-323	188	2	1	440	22	20	\N	2007-09-12 12:09:55.72	0	Second line	\N	\N	1
-324	189	1	1	630	63	10	\N	2007-09-12 12:09:56.194	0	First line	\N	\N	1
-325	189	2	1	360	18	20	\N	2007-09-12 12:09:56.202	0	Second line	\N	\N	1
-326	190	1	1	690	69	10	\N	2007-09-12 12:09:56.664	0	First line	\N	\N	1
-327	190	2	1	620	31	20	\N	2007-09-12 12:09:56.674	0	Second line	\N	\N	1
-328	191	1	1	450	45	10	\N	2007-09-12 12:09:57.09	0	First line	\N	\N	1
-329	191	2	1	1120	56	20	\N	2007-09-12 12:09:57.092	0	Second line	\N	\N	1
-330	192	1	1	380	38	10	\N	2007-09-12 12:09:57.343	0	First line	\N	\N	1
-331	192	2	1	360	18	20	\N	2007-09-12 12:09:57.346	0	Second line	\N	\N	1
-332	193	1	1	130	13	10	\N	2007-09-12 12:09:57.583	0	First line	\N	\N	1
-333	193	2	1	1160	58	20	\N	2007-09-12 12:09:57.585	0	Second line	\N	\N	1
-334	194	1	1	360	36	10	\N	2007-09-12 12:09:57.85	0	First line	\N	\N	1
-335	194	2	1	560	28	20	\N	2007-09-12 12:09:57.852	0	Second line	\N	\N	1
-336	195	1	1	720	72	10	\N	2007-09-12 12:09:58.133	0	First line	\N	\N	1
-337	195	2	1	400	20	20	\N	2007-09-12 12:09:58.136	0	Second line	\N	\N	1
-338	196	1	1	90	9	10	\N	2007-09-12 12:09:58.596	0	First line	\N	\N	1
-339	196	2	1	140	7	20	\N	2007-09-12 12:09:58.604	0	Second line	\N	\N	1
-340	197	1	1	80	8	10	\N	2007-09-12 12:09:59.118	0	First line	\N	\N	1
-341	197	2	1	620	31	20	\N	2007-09-12 12:09:59.126	0	Second line	\N	\N	1
-342	198	1	1	620	62	10	\N	2007-09-12 12:09:59.583	0	First line	\N	\N	1
-343	198	2	1	700	35	20	\N	2007-09-12 12:09:59.586	0	Second line	\N	\N	1
-344	199	1	1	500	50	10	\N	2007-09-12 12:09:59.829	0	First line	\N	\N	1
-345	199	2	1	1380	69	20	\N	2007-09-12 12:09:59.831	0	Second line	\N	\N	1
-346	200	1	1	790	79	10	\N	2007-09-12 12:10:00.09	0	First line	\N	\N	1
-347	200	2	1	1820	91	20	\N	2007-09-12 12:10:00.092	0	Second line	\N	\N	1
-348	201	1	1	820	82	10	\N	2007-09-12 12:10:00.334	0	First line	\N	\N	1
-349	201	2	1	1820	91	20	\N	2007-09-12 12:10:00.337	0	Second line	\N	\N	1
-350	202	1	1	710	71	10	\N	2007-09-12 12:10:00.679	0	First line	\N	\N	1
-351	202	2	1	700	35	20	\N	2007-09-12 12:10:00.682	0	Second line	\N	\N	1
-352	203	1	1	850	85	10	\N	2007-09-12 12:10:01.117	0	First line	\N	\N	1
-353	203	2	1	1320	66	20	\N	2007-09-12 12:10:01.122	0	Second line	\N	\N	1
-354	204	1	1	590	59	10	\N	2007-09-12 12:10:01.609	0	First line	\N	\N	1
-355	204	2	1	1820	91	20	\N	2007-09-12 12:10:01.621	0	Second line	\N	\N	1
-356	205	1	1	680	68	10	\N	2007-09-12 12:10:02.152	0	First line	\N	\N	1
-357	205	2	1	1740	87	20	\N	2007-09-12 12:10:02.162	0	Second line	\N	\N	1
-358	206	1	1	380	38	10	\N	2007-09-12 12:10:02.422	0	First line	\N	\N	1
-359	206	2	1	420	21	20	\N	2007-09-12 12:10:02.424	0	Second line	\N	\N	1
-360	207	1	1	650	65	10	\N	2007-09-12 12:10:02.666	0	First line	\N	\N	1
-361	207	2	1	380	19	20	\N	2007-09-12 12:10:02.669	0	Second line	\N	\N	1
-362	208	1	1	180	18	10	\N	2007-09-12 12:10:02.913	0	First line	\N	\N	1
-363	208	2	1	100	5	20	\N	2007-09-12 12:10:02.915	0	Second line	\N	\N	1
-364	209	1	1	710	71	10	\N	2007-09-12 12:10:03.16	0	First line	\N	\N	1
-365	209	2	1	980	49	20	\N	2007-09-12 12:10:03.162	0	Second line	\N	\N	1
-366	210	1	1	330	33	10	\N	2007-09-12 12:10:03.615	0	First line	\N	\N	1
-367	210	2	1	960	48	20	\N	2007-09-12 12:10:03.626	0	Second line	\N	\N	1
-368	211	1	1	560	56	10	\N	2007-09-12 12:10:04.103	0	First line	\N	\N	1
-369	211	2	1	860	43	20	\N	2007-09-12 12:10:04.107	0	Second line	\N	\N	1
-370	212	1	1	170	17	10	\N	2007-09-12 12:10:04.581	0	First line	\N	\N	1
-371	212	2	1	620	31	20	\N	2007-09-12 12:10:04.585	0	Second line	\N	\N	1
-372	213	1	1	660	66	10	\N	2007-09-12 12:10:04.872	0	First line	\N	\N	1
-373	213	2	1	720	36	20	\N	2007-09-12 12:10:04.874	0	Second line	\N	\N	1
-374	214	1	1	900	90	10	\N	2007-09-12 12:10:05.121	0	First line	\N	\N	1
-375	214	2	1	1420	71	20	\N	2007-09-12 12:10:05.123	0	Second line	\N	\N	1
-376	215	1	1	530	53	10	\N	2007-09-12 12:10:05.366	0	First line	\N	\N	1
-377	215	2	1	840	42	20	\N	2007-09-12 12:10:05.369	0	Second line	\N	\N	1
-378	216	1	1	330	33	10	\N	2007-09-12 12:10:05.614	0	First line	\N	\N	1
-379	216	2	1	1340	67	20	\N	2007-09-12 12:10:05.616	0	Second line	\N	\N	1
-380	217	1	1	960	96	10	\N	2007-09-12 12:10:06.026	0	First line	\N	\N	1
-381	217	2	1	700	35	20	\N	2007-09-12 12:10:06.03	0	Second line	\N	\N	1
-382	218	1	1	580	58	10	\N	2007-09-12 12:10:06.513	0	First line	\N	\N	1
-383	218	2	1	960	48	20	\N	2007-09-12 12:10:06.519	0	Second line	\N	\N	1
-384	219	1	1	650	65	10	\N	2007-09-12 12:10:06.973	0	First line	\N	\N	1
-385	219	2	1	960	48	20	\N	2007-09-12 12:10:06.983	0	Second line	\N	\N	1
-386	220	1	1	210	21	10	\N	2007-09-12 12:10:07.403	0	First line	\N	\N	1
-387	220	2	1	1640	82	20	\N	2007-09-12 12:10:07.405	0	Second line	\N	\N	1
-388	221	1	1	10	1	10	\N	2007-09-12 12:10:07.643	0	First line	\N	\N	1
-389	221	2	1	780	39	20	\N	2007-09-12 12:10:07.645	0	Second line	\N	\N	1
-390	222	1	1	480	48	10	\N	2007-09-12 12:10:07.894	0	First line	\N	\N	1
-391	222	2	1	80	4	20	\N	2007-09-12 12:10:07.896	0	Second line	\N	\N	1
-392	223	1	1	990	99	10	\N	2007-09-12 12:10:08.135	0	First line	\N	\N	1
-393	223	2	1	780	39	20	\N	2007-09-12 12:10:08.137	0	Second line	\N	\N	1
-394	224	1	1	660	66	10	\N	2007-09-12 12:10:08.388	0	First line	\N	\N	1
-395	224	2	1	280	14	20	\N	2007-09-12 12:10:08.392	0	Second line	\N	\N	1
-396	225	1	1	690	69	10	\N	2007-09-12 12:10:08.864	0	First line	\N	\N	1
-397	225	2	1	1700	85	20	\N	2007-09-12 12:10:08.872	0	Second line	\N	\N	1
-398	226	1	1	430	43	10	\N	2007-09-12 12:10:09.35	0	First line	\N	\N	1
-399	226	2	1	1460	73	20	\N	2007-09-12 12:10:09.368	0	Second line	\N	\N	1
-400	227	1	1	880	88	10	\N	2007-09-12 12:10:09.88	0	First line	\N	\N	1
-401	227	2	1	1840	92	20	\N	2007-09-12 12:10:09.888	0	Second line	\N	\N	1
-402	228	1	1	120	12	10	\N	2007-09-12 12:10:10.17	0	First line	\N	\N	1
-403	228	2	1	1240	62	20	\N	2007-09-12 12:10:10.172	0	Second line	\N	\N	1
-404	229	1	1	560	56	10	\N	2007-09-12 12:10:10.412	0	First line	\N	\N	1
-405	229	2	1	580	29	20	\N	2007-09-12 12:10:10.414	0	Second line	\N	\N	1
-406	230	1	1	470	47	10	\N	2007-09-12 12:10:10.665	0	First line	\N	\N	1
-407	230	2	1	1480	74	20	\N	2007-09-12 12:10:10.667	0	Second line	\N	\N	1
-408	231	1	1	1000	100	10	\N	2007-09-12 12:10:10.905	0	First line	\N	\N	1
-409	231	2	1	20	1	20	\N	2007-09-12 12:10:10.908	0	Second line	\N	\N	1
-410	232	1	1	760	76	10	\N	2007-09-12 12:10:11.353	0	First line	\N	\N	1
-411	232	2	1	920	46	20	\N	2007-09-12 12:10:11.358	0	Second line	\N	\N	1
-412	233	1	1	200	20	10	\N	2007-09-12 12:10:11.862	0	First line	\N	\N	1
-413	233	2	1	700	35	20	\N	2007-09-12 12:10:11.865	0	Second line	\N	\N	1
-414	234	1	1	640	64	10	\N	2007-09-12 12:10:12.345	0	First line	\N	\N	1
-415	234	2	1	860	43	20	\N	2007-09-12 12:10:12.351	0	Second line	\N	\N	1
-416	235	1	1	400	40	10	\N	2007-09-12 12:10:12.65	0	First line	\N	\N	1
-417	235	2	1	880	44	20	\N	2007-09-12 12:10:12.653	0	Second line	\N	\N	1
-418	236	1	1	130	13	10	\N	2007-09-12 12:10:12.899	0	First line	\N	\N	1
-419	236	2	1	1100	55	20	\N	2007-09-12 12:10:12.901	0	Second line	\N	\N	1
-420	237	1	1	60	6	10	\N	2007-09-12 12:10:13.14	0	First line	\N	\N	1
-421	237	2	1	960	48	20	\N	2007-09-12 12:10:13.143	0	Second line	\N	\N	1
-422	238	1	1	620	62	10	\N	2007-09-12 12:10:13.396	0	First line	\N	\N	1
-423	238	2	1	1400	70	20	\N	2007-09-12 12:10:13.398	0	Second line	\N	\N	1
-424	239	1	1	670	67	10	\N	2007-09-12 12:10:13.834	0	First line	\N	\N	1
-425	239	2	1	760	38	20	\N	2007-09-12 12:10:13.844	0	Second line	\N	\N	1
-426	240	1	1	520	52	10	\N	2007-09-12 12:10:14.343	0	First line	\N	\N	1
-427	240	2	1	340	17	20	\N	2007-09-12 12:10:14.35	0	Second line	\N	\N	1
-428	241	1	1	380	38	10	\N	2007-09-12 12:10:14.83	0	First line	\N	\N	1
-429	241	2	1	420	21	20	\N	2007-09-12 12:10:14.835	0	Second line	\N	\N	1
-430	242	1	1	680	68	10	\N	2007-09-12 12:10:15.225	0	First line	\N	\N	1
-431	242	2	1	1340	67	20	\N	2007-09-12 12:10:15.227	0	Second line	\N	\N	1
-432	243	1	1	70	7	10	\N	2007-09-12 12:10:15.465	0	First line	\N	\N	1
-433	243	2	1	1580	79	20	\N	2007-09-12 12:10:15.468	0	Second line	\N	\N	1
-434	244	1	1	150	15	10	\N	2007-09-12 12:10:15.718	0	First line	\N	\N	1
-435	244	2	1	440	22	20	\N	2007-09-12 12:10:15.72	0	Second line	\N	\N	1
-436	245	1	1	720	72	10	\N	2007-09-12 12:10:15.965	0	First line	\N	\N	1
-437	245	2	1	1740	87	20	\N	2007-09-12 12:10:15.968	0	Second line	\N	\N	1
-438	246	1	1	120	12	10	\N	2007-09-12 12:10:16.593	0	First line	\N	\N	1
-439	246	2	1	80	4	20	\N	2007-09-12 12:10:16.643	0	Second line	\N	\N	1
-440	247	1	1	720	72	10	\N	2007-09-12 12:10:17.2	0	First line	\N	\N	1
-441	247	2	1	240	12	20	\N	2007-09-12 12:10:17.208	0	Second line	\N	\N	1
-442	248	1	1	800	80	10	\N	2007-09-12 12:10:17.618	0	First line	\N	\N	1
-443	248	2	1	1960	98	20	\N	2007-09-12 12:10:17.62	0	Second line	\N	\N	1
-444	249	1	1	890	89	10	\N	2007-09-12 12:10:17.862	0	First line	\N	\N	1
-445	249	2	1	1260	63	20	\N	2007-09-12 12:10:17.864	0	Second line	\N	\N	1
-446	250	1	1	410	41	10	\N	2007-09-12 12:10:18.103	0	First line	\N	\N	1
-447	250	2	1	1500	75	20	\N	2007-09-12 12:10:18.106	0	Second line	\N	\N	1
-448	251	1	1	410	41	10	\N	2007-09-12 12:10:18.348	0	First line	\N	\N	1
-449	251	2	1	400	20	20	\N	2007-09-12 12:10:18.351	0	Second line	\N	\N	1
-450	252	1	1	300	30	10	\N	2007-09-12 12:10:18.649	0	First line	\N	\N	1
-451	252	2	1	1720	86	20	\N	2007-09-12 12:10:18.652	0	Second line	\N	\N	1
-452	253	1	1	670	67	10	\N	2007-09-12 12:10:19.144	0	First line	\N	\N	1
-453	253	2	1	320	16	20	\N	2007-09-12 12:10:19.151	0	Second line	\N	\N	1
-454	254	1	1	640	64	10	\N	2007-09-12 12:10:19.663	0	First line	\N	\N	1
-455	254	2	1	1540	77	20	\N	2007-09-12 12:10:19.672	0	Second line	\N	\N	1
-456	255	1	1	30	3	10	\N	2007-09-12 12:10:20.135	0	First line	\N	\N	1
-457	255	2	1	40	2	20	\N	2007-09-12 12:10:20.143	0	Second line	\N	\N	1
-458	256	1	1	30	3	10	\N	2007-09-12 12:10:20.416	0	First line	\N	\N	1
-459	256	2	1	660	33	20	\N	2007-09-12 12:10:20.419	0	Second line	\N	\N	1
-460	257	1	1	660	66	10	\N	2007-09-12 12:10:20.658	0	First line	\N	\N	1
-461	257	2	1	720	36	20	\N	2007-09-12 12:10:20.66	0	Second line	\N	\N	1
-462	258	1	1	640	64	10	\N	2007-09-12 12:10:20.9	0	First line	\N	\N	1
-463	258	2	1	1540	77	20	\N	2007-09-12 12:10:20.902	0	Second line	\N	\N	1
-464	259	1	1	620	62	10	\N	2007-09-12 12:10:21.142	0	First line	\N	\N	1
-465	259	2	1	1480	74	20	\N	2007-09-12 12:10:21.144	0	Second line	\N	\N	1
-466	260	1	1	170	17	10	\N	2007-09-12 12:10:21.586	0	First line	\N	\N	1
-467	260	2	1	580	29	20	\N	2007-09-12 12:10:21.591	0	Second line	\N	\N	1
-468	261	1	1	200	20	10	\N	2007-09-12 12:10:22.085	0	First line	\N	\N	1
-469	261	2	1	1720	86	20	\N	2007-09-12 12:10:22.088	0	Second line	\N	\N	1
-470	262	1	1	390	39	10	\N	2007-09-12 12:10:22.579	0	First line	\N	\N	1
-471	262	2	1	940	47	20	\N	2007-09-12 12:10:22.587	0	Second line	\N	\N	1
-472	263	1	1	190	19	10	\N	2007-09-12 12:10:22.946	0	First line	\N	\N	1
-473	263	2	1	340	17	20	\N	2007-09-12 12:10:22.949	0	Second line	\N	\N	1
-474	264	1	1	70	7	10	\N	2007-09-12 12:10:23.2	0	First line	\N	\N	1
-475	264	2	1	120	6	20	\N	2007-09-12 12:10:23.202	0	Second line	\N	\N	1
-476	265	1	1	460	46	10	\N	2007-09-12 12:10:23.439	0	First line	\N	\N	1
-477	265	2	1	240	12	20	\N	2007-09-12 12:10:23.441	0	Second line	\N	\N	1
-478	266	1	1	140	14	10	\N	2007-09-12 12:10:23.688	0	First line	\N	\N	1
-479	266	2	1	1880	94	20	\N	2007-09-12 12:10:23.691	0	Second line	\N	\N	1
-480	267	1	1	510	51	10	\N	2007-09-12 12:10:24.002	0	First line	\N	\N	1
-481	267	2	1	1100	55	20	\N	2007-09-12 12:10:24.005	0	Second line	\N	\N	1
-482	268	1	1	560	56	10	\N	2007-09-12 12:10:24.466	0	First line	\N	\N	1
-483	268	2	1	60	3	20	\N	2007-09-12 12:10:24.475	0	Second line	\N	\N	1
-484	269	1	1	840	84	10	\N	2007-09-12 12:10:24.97	0	First line	\N	\N	1
-485	269	2	1	1400	70	20	\N	2007-09-12 12:10:24.973	0	Second line	\N	\N	1
-486	270	1	1	580	58	10	\N	2007-09-12 12:10:25.449	0	First line	\N	\N	1
-487	270	2	1	1280	64	20	\N	2007-09-12 12:10:25.459	0	Second line	\N	\N	1
-488	271	1	1	690	69	10	\N	2007-09-12 12:10:25.718	0	First line	\N	\N	1
-489	271	2	1	1940	97	20	\N	2007-09-12 12:10:25.72	0	Second line	\N	\N	1
-490	272	1	1	940	94	10	\N	2007-09-12 12:10:25.966	0	First line	\N	\N	1
-491	272	2	1	1300	65	20	\N	2007-09-12 12:10:25.969	0	Second line	\N	\N	1
-492	273	1	1	510	51	10	\N	2007-09-12 12:10:26.208	0	First line	\N	\N	1
-493	273	2	1	1720	86	20	\N	2007-09-12 12:10:26.21	0	Second line	\N	\N	1
-494	274	1	1	220	22	10	\N	2007-09-12 12:10:26.454	0	First line	\N	\N	1
-495	274	2	1	1720	86	20	\N	2007-09-12 12:10:26.456	0	Second line	\N	\N	1
-496	275	1	1	510	51	10	\N	2007-09-12 12:10:26.923	0	First line	\N	\N	1
-497	275	2	1	1960	98	20	\N	2007-09-12 12:10:26.929	0	Second line	\N	\N	1
-498	276	1	1	480	48	10	\N	2007-09-12 12:10:27.408	0	First line	\N	\N	1
-499	276	2	1	640	32	20	\N	2007-09-12 12:10:27.411	0	Second line	\N	\N	1
-500	277	1	1	420	42	10	\N	2007-09-12 12:10:27.894	0	First line	\N	\N	1
-501	277	2	1	880	44	20	\N	2007-09-12 12:10:27.897	0	Second line	\N	\N	1
-502	278	1	1	30	3	10	\N	2007-09-12 12:10:28.179	0	First line	\N	\N	1
-503	278	2	1	1380	69	20	\N	2007-09-12 12:10:28.181	0	Second line	\N	\N	1
-504	279	1	1	220	22	10	\N	2007-09-12 12:10:28.42	0	First line	\N	\N	1
-505	279	2	1	240	12	20	\N	2007-09-12 12:10:28.422	0	Second line	\N	\N	1
-506	280	1	1	150	15	10	\N	2007-09-12 12:10:28.683	0	First line	\N	\N	1
-507	280	2	1	780	39	20	\N	2007-09-12 12:10:28.685	0	Second line	\N	\N	1
-508	281	1	1	720	72	10	\N	2007-09-12 12:10:28.931	0	First line	\N	\N	1
-509	281	2	1	1480	74	20	\N	2007-09-12 12:10:28.933	0	Second line	\N	\N	1
-510	282	1	1	880	88	10	\N	2007-09-12 12:10:29.362	0	First line	\N	\N	1
-511	282	2	1	1820	91	20	\N	2007-09-12 12:10:29.367	0	Second line	\N	\N	1
-512	283	1	1	30	3	10	\N	2007-09-12 12:10:29.849	0	First line	\N	\N	1
-513	283	2	1	1060	53	20	\N	2007-09-12 12:10:29.855	0	Second line	\N	\N	1
-514	284	1	1	20	2	10	\N	2007-09-12 12:10:30.36	0	First line	\N	\N	1
-515	284	2	1	1700	85	20	\N	2007-09-12 12:10:30.366	0	Second line	\N	\N	1
-516	285	1	1	150	15	10	\N	2007-09-12 12:10:30.773	0	First line	\N	\N	1
-517	285	2	1	820	41	20	\N	2007-09-12 12:10:30.775	0	Second line	\N	\N	1
-518	286	1	1	280	28	10	\N	2007-09-12 12:10:31.014	0	First line	\N	\N	1
-519	286	2	1	1460	73	20	\N	2007-09-12 12:10:31.017	0	Second line	\N	\N	1
-520	287	1	1	750	75	10	\N	2007-09-12 12:10:31.254	0	First line	\N	\N	1
-521	287	2	1	620	31	20	\N	2007-09-12 12:10:31.256	0	Second line	\N	\N	1
-522	288	1	1	330	33	10	\N	2007-09-12 12:10:31.495	0	First line	\N	\N	1
-523	288	2	1	1380	69	20	\N	2007-09-12 12:10:31.498	0	Second line	\N	\N	1
-524	289	1	1	530	53	10	\N	2007-09-12 12:10:31.833	0	First line	\N	\N	1
-525	289	2	1	880	44	20	\N	2007-09-12 12:10:31.836	0	Second line	\N	\N	1
-526	290	1	1	20	2	10	\N	2007-09-12 12:10:33.042	0	First line	\N	\N	1
-527	290	2	1	200	10	20	\N	2007-09-12 12:10:33.045	0	Second line	\N	\N	1
-528	291	1	1	640	64	10	\N	2007-09-12 12:10:33.29	0	First line	\N	\N	1
-529	291	2	1	240	12	20	\N	2007-09-12 12:10:33.293	0	Second line	\N	\N	1
-530	292	1	1	240	24	10	\N	2007-09-12 12:10:33.534	0	First line	\N	\N	1
-531	292	2	1	1860	93	20	\N	2007-09-12 12:10:33.536	0	Second line	\N	\N	1
-532	293	1	1	40	4	10	\N	2007-09-12 12:10:33.983	0	First line	\N	\N	1
-533	293	2	1	660	33	20	\N	2007-09-12 12:10:33.994	0	Second line	\N	\N	1
-534	294	1	1	740	74	10	\N	2007-09-12 12:10:34.463	0	First line	\N	\N	1
-535	294	2	1	1880	94	20	\N	2007-09-12 12:10:34.467	0	Second line	\N	\N	1
-536	295	1	1	600	60	10	\N	2007-09-12 12:10:34.903	0	First line	\N	\N	1
-537	295	2	1	420	21	20	\N	2007-09-12 12:10:34.905	0	Second line	\N	\N	1
-538	296	1	1	660	66	10	\N	2007-09-12 12:10:35.146	0	First line	\N	\N	1
-539	296	2	1	200	10	20	\N	2007-09-12 12:10:35.149	0	Second line	\N	\N	1
-540	297	1	1	1000	100	10	\N	2007-09-12 12:10:35.401	0	First line	\N	\N	1
-541	297	2	1	1860	93	20	\N	2007-09-12 12:10:35.403	0	Second line	\N	\N	1
-542	298	1	1	130	13	10	\N	2007-09-12 12:10:35.638	0	First line	\N	\N	1
-543	298	2	1	540	27	20	\N	2007-09-12 12:10:35.64	0	Second line	\N	\N	1
-544	299	1	1	40	4	10	\N	2007-09-12 12:10:35.953	0	First line	\N	\N	1
-545	299	2	1	840	42	20	\N	2007-09-12 12:10:35.956	0	Second line	\N	\N	1
-546	300	1	1	620	62	10	\N	2007-09-12 12:10:36.441	0	First line	\N	\N	1
-547	300	2	1	1960	98	20	\N	2007-09-12 12:10:36.445	0	Second line	\N	\N	1
-548	301	1	1	820	82	10	\N	2007-09-12 12:10:36.913	0	First line	\N	\N	1
-549	301	2	1	180	9	20	\N	2007-09-12 12:10:36.916	0	Second line	\N	\N	1
-550	302	1	1	270	27	10	\N	2007-09-12 12:10:37.368	0	First line	\N	\N	1
-551	302	2	1	200	10	20	\N	2007-09-12 12:10:37.375	0	Second line	\N	\N	1
-552	303	1	1	280	28	10	\N	2007-09-12 12:10:37.642	0	First line	\N	\N	1
-553	303	2	1	1820	91	20	\N	2007-09-12 12:10:37.644	0	Second line	\N	\N	1
-554	304	1	1	850	85	10	\N	2007-09-12 12:10:37.897	0	First line	\N	\N	1
-555	304	2	1	280	14	20	\N	2007-09-12 12:10:37.9	0	Second line	\N	\N	1
-556	305	1	1	360	36	10	\N	2007-09-12 12:10:38.14	0	First line	\N	\N	1
-557	305	2	1	580	29	20	\N	2007-09-12 12:10:38.143	0	Second line	\N	\N	1
-558	306	1	1	670	67	10	\N	2007-09-12 12:10:38.39	0	First line	\N	\N	1
-559	306	2	1	440	22	20	\N	2007-09-12 12:10:38.392	0	Second line	\N	\N	1
-560	307	1	1	650	65	10	\N	2007-09-12 12:10:38.82	0	First line	\N	\N	1
-561	307	2	1	500	25	20	\N	2007-09-12 12:10:38.826	0	Second line	\N	\N	1
-562	308	1	1	480	48	10	\N	2007-09-12 12:10:39.242	0	First line	\N	\N	1
-563	308	2	1	800	40	20	\N	2007-09-12 12:10:39.253	0	Second line	\N	\N	1
-564	309	1	1	820	82	10	\N	2007-09-12 12:10:39.722	0	First line	\N	\N	1
-565	309	2	1	1780	89	20	\N	2007-09-12 12:10:39.727	0	Second line	\N	\N	1
-566	310	1	1	580	58	10	\N	2007-09-12 12:10:40.144	0	First line	\N	\N	1
-567	310	2	1	560	28	20	\N	2007-09-12 12:10:40.146	0	Second line	\N	\N	1
-568	311	1	1	120	12	10	\N	2007-09-12 12:10:40.398	0	First line	\N	\N	1
-569	311	2	1	120	6	20	\N	2007-09-12 12:10:40.4	0	Second line	\N	\N	1
-570	312	1	1	220	22	10	\N	2007-09-12 12:10:40.638	0	First line	\N	\N	1
-571	312	2	1	20	1	20	\N	2007-09-12 12:10:40.64	0	Second line	\N	\N	1
-572	313	1	1	470	47	10	\N	2007-09-12 12:10:40.881	0	First line	\N	\N	1
-573	313	2	1	1400	70	20	\N	2007-09-12 12:10:40.883	0	Second line	\N	\N	1
-574	314	1	1	820	82	10	\N	2007-09-12 12:10:41.191	0	First line	\N	\N	1
-575	314	2	1	1040	52	20	\N	2007-09-12 12:10:41.197	0	Second line	\N	\N	1
-576	315	1	1	170	17	10	\N	2007-09-12 12:10:41.654	0	First line	\N	\N	1
-577	315	2	1	820	41	20	\N	2007-09-12 12:10:41.664	0	Second line	\N	\N	1
-578	316	1	1	290	29	10	\N	2007-09-12 12:10:42.158	0	First line	\N	\N	1
-579	316	2	1	1060	53	20	\N	2007-09-12 12:10:42.168	0	Second line	\N	\N	1
-580	317	1	1	740	74	10	\N	2007-09-12 12:10:42.654	0	First line	\N	\N	1
-581	317	2	1	1900	95	20	\N	2007-09-12 12:10:42.66	0	Second line	\N	\N	1
-582	318	1	1	510	51	10	\N	2007-09-12 12:10:42.936	0	First line	\N	\N	1
-583	318	2	1	500	25	20	\N	2007-09-12 12:10:42.939	0	Second line	\N	\N	1
-584	319	1	1	580	58	10	\N	2007-09-12 12:10:43.178	0	First line	\N	\N	1
-585	319	2	1	1420	71	20	\N	2007-09-12 12:10:43.18	0	Second line	\N	\N	1
-586	320	1	1	560	56	10	\N	2007-09-12 12:10:43.415	0	First line	\N	\N	1
-587	320	2	1	1080	54	20	\N	2007-09-12 12:10:43.418	0	Second line	\N	\N	1
-588	321	1	1	320	32	10	\N	2007-09-12 12:10:43.667	0	First line	\N	\N	1
-589	321	2	1	1980	99	20	\N	2007-09-12 12:10:43.669	0	Second line	\N	\N	1
-590	322	1	1	680	68	10	\N	2007-09-12 12:10:44.084	0	First line	\N	\N	1
-591	322	2	1	800	40	20	\N	2007-09-12 12:10:44.091	0	Second line	\N	\N	1
-592	323	1	1	380	38	10	\N	2007-09-12 12:10:44.54	0	First line	\N	\N	1
-593	323	2	1	1180	59	20	\N	2007-09-12 12:10:44.549	0	Second line	\N	\N	1
-594	324	1	1	980	98	10	\N	2007-09-12 12:10:44.975	0	First line	\N	\N	1
-595	324	2	1	1600	80	20	\N	2007-09-12 12:10:44.978	0	Second line	\N	\N	1
-596	325	1	1	890	89	10	\N	2007-09-12 12:10:45.443	0	First line	\N	\N	1
-597	325	2	1	1440	72	20	\N	2007-09-12 12:10:45.447	0	Second line	\N	\N	1
-598	326	1	1	290	29	10	\N	2007-09-12 12:10:45.734	0	First line	\N	\N	1
-599	326	2	1	240	12	20	\N	2007-09-12 12:10:45.736	0	Second line	\N	\N	1
-600	327	1	1	110	11	10	\N	2007-09-12 12:10:45.981	0	First line	\N	\N	1
-601	327	2	1	1720	86	20	\N	2007-09-12 12:10:45.984	0	Second line	\N	\N	1
-602	328	1	1	240	24	10	\N	2007-09-12 12:10:46.222	0	First line	\N	\N	1
-603	328	2	1	1160	58	20	\N	2007-09-12 12:10:46.224	0	Second line	\N	\N	1
-604	329	1	1	170	17	10	\N	2007-09-12 12:10:46.461	0	First line	\N	\N	1
-605	329	2	1	780	39	20	\N	2007-09-12 12:10:46.464	0	Second line	\N	\N	1
-606	330	1	1	230	23	10	\N	2007-09-12 12:10:46.908	0	First line	\N	\N	1
-607	330	2	1	380	19	20	\N	2007-09-12 12:10:46.915	0	Second line	\N	\N	1
-608	331	1	1	70	7	10	\N	2007-09-12 12:10:47.386	0	First line	\N	\N	1
-609	331	2	1	300	15	20	\N	2007-09-12 12:10:47.394	0	Second line	\N	\N	1
-610	332	1	1	920	92	10	\N	2007-09-12 12:10:47.891	0	First line	\N	\N	1
-611	332	2	1	380	19	20	\N	2007-09-12 12:10:47.902	0	Second line	\N	\N	1
-612	333	1	1	510	51	10	\N	2007-09-12 12:10:48.192	0	First line	\N	\N	1
-613	333	2	1	960	48	20	\N	2007-09-12 12:10:48.194	0	Second line	\N	\N	1
-614	334	1	1	870	87	10	\N	2007-09-12 12:10:48.431	0	First line	\N	\N	1
-615	334	2	1	1680	84	20	\N	2007-09-12 12:10:48.433	0	Second line	\N	\N	1
-616	335	1	1	550	55	10	\N	2007-09-12 12:10:48.685	0	First line	\N	\N	1
-617	335	2	1	1380	69	20	\N	2007-09-12 12:10:48.687	0	Second line	\N	\N	1
-618	336	1	1	50	5	10	\N	2007-09-12 12:10:48.934	0	First line	\N	\N	1
-619	336	2	1	1780	89	20	\N	2007-09-12 12:10:48.936	0	Second line	\N	\N	1
-620	337	1	1	340	34	10	\N	2007-09-12 12:10:49.378	0	First line	\N	\N	1
-621	337	2	1	1680	84	20	\N	2007-09-12 12:10:49.382	0	Second line	\N	\N	1
-622	338	1	1	450	45	10	\N	2007-09-12 12:10:49.84	0	First line	\N	\N	1
-623	338	2	1	1820	91	20	\N	2007-09-12 12:10:49.848	0	Second line	\N	\N	1
-624	339	1	1	560	56	10	\N	2007-09-12 12:10:50.338	0	First line	\N	\N	1
-625	339	2	1	1100	55	20	\N	2007-09-12 12:10:50.354	0	Second line	\N	\N	1
-626	340	1	1	550	55	10	\N	2007-09-12 12:10:50.77	0	First line	\N	\N	1
-627	340	2	1	940	47	20	\N	2007-09-12 12:10:50.772	0	Second line	\N	\N	1
-628	341	1	1	1000	100	10	\N	2007-09-12 12:10:51.018	0	First line	\N	\N	1
-629	341	2	1	1340	67	20	\N	2007-09-12 12:10:51.02	0	Second line	\N	\N	1
-630	342	1	1	50	5	10	\N	2007-09-12 12:10:51.269	0	First line	\N	\N	1
-631	342	2	1	1200	60	20	\N	2007-09-12 12:10:51.272	0	Second line	\N	\N	1
-632	343	1	1	440	44	10	\N	2007-09-12 12:10:51.507	0	First line	\N	\N	1
-633	343	2	1	280	14	20	\N	2007-09-12 12:10:51.509	0	Second line	\N	\N	1
-634	344	1	1	140	14	10	\N	2007-09-12 12:10:51.868	0	First line	\N	\N	1
-635	344	2	1	2000	100	20	\N	2007-09-12 12:10:51.876	0	Second line	\N	\N	1
-636	345	1	1	70	7	10	\N	2007-09-12 12:10:52.367	0	First line	\N	\N	1
-637	345	2	1	800	40	20	\N	2007-09-12 12:10:52.392	0	Second line	\N	\N	1
-638	346	1	1	630	63	10	\N	2007-09-12 12:10:52.888	0	First line	\N	\N	1
-639	346	2	1	1800	90	20	\N	2007-09-12 12:10:52.891	0	Second line	\N	\N	1
-640	347	1	1	110	11	10	\N	2007-09-12 12:10:53.295	0	First line	\N	\N	1
-641	347	2	1	660	33	20	\N	2007-09-12 12:10:53.297	0	Second line	\N	\N	1
-642	348	1	1	770	77	10	\N	2007-09-12 12:10:53.531	0	First line	\N	\N	1
-643	348	2	1	1320	66	20	\N	2007-09-12 12:10:53.533	0	Second line	\N	\N	1
-644	349	1	1	790	79	10	\N	2007-09-12 12:10:53.788	0	First line	\N	\N	1
-645	349	2	1	1440	72	20	\N	2007-09-12 12:10:53.79	0	Second line	\N	\N	1
-646	350	1	1	870	87	10	\N	2007-09-12 12:10:54.028	0	First line	\N	\N	1
-647	350	2	1	1500	75	20	\N	2007-09-12 12:10:54.03	0	Second line	\N	\N	1
-648	351	1	1	200	20	10	\N	2007-09-12 12:10:54.336	0	First line	\N	\N	1
-649	351	2	1	1260	63	20	\N	2007-09-12 12:10:54.344	0	Second line	\N	\N	1
-650	352	1	1	560	56	10	\N	2007-09-12 12:10:54.859	0	First line	\N	\N	1
-651	352	2	1	1880	94	20	\N	2007-09-12 12:10:54.868	0	Second line	\N	\N	1
-652	353	1	1	110	11	10	\N	2007-09-12 12:10:55.346	0	First line	\N	\N	1
-653	353	2	1	740	37	20	\N	2007-09-12 12:10:55.359	0	Second line	\N	\N	1
-654	354	1	1	540	54	10	\N	2007-09-12 12:10:55.751	0	First line	\N	\N	1
-655	354	2	1	600	30	20	\N	2007-09-12 12:10:55.753	0	Second line	\N	\N	1
-656	355	1	1	670	67	10	\N	2007-09-12 12:10:55.996	0	First line	\N	\N	1
-657	355	2	1	1020	51	20	\N	2007-09-12 12:10:55.999	0	Second line	\N	\N	1
-658	356	1	1	420	42	10	\N	2007-09-12 12:10:56.238	0	First line	\N	\N	1
-659	356	2	1	540	27	20	\N	2007-09-12 12:10:56.24	0	Second line	\N	\N	1
-660	357	1	1	850	85	10	\N	2007-09-12 12:10:56.473	0	First line	\N	\N	1
-661	357	2	1	1000	50	20	\N	2007-09-12 12:10:56.475	0	Second line	\N	\N	1
-662	358	1	1	720	72	10	\N	2007-09-12 12:10:56.788	0	First line	\N	\N	1
-663	358	2	1	1800	90	20	\N	2007-09-12 12:10:56.791	0	Second line	\N	\N	1
-664	359	1	1	660	66	10	\N	2007-09-12 12:10:57.273	0	First line	\N	\N	1
-665	359	2	1	460	23	20	\N	2007-09-12 12:10:57.293	0	Second line	\N	\N	1
-666	360	1	1	760	76	10	\N	2007-09-12 12:10:57.806	0	First line	\N	\N	1
-667	360	2	1	1840	92	20	\N	2007-09-12 12:10:57.812	0	Second line	\N	\N	1
-668	361	1	1	870	87	10	\N	2007-09-12 12:10:58.249	0	First line	\N	\N	1
-669	361	2	1	1080	54	20	\N	2007-09-12 12:10:58.252	0	Second line	\N	\N	1
-670	362	1	1	680	68	10	\N	2007-09-12 12:10:58.482	0	First line	\N	\N	1
-671	362	2	1	1940	97	20	\N	2007-09-12 12:10:58.485	0	Second line	\N	\N	1
-672	363	1	1	260	26	10	\N	2007-09-12 12:10:58.731	0	First line	\N	\N	1
-673	363	2	1	1660	83	20	\N	2007-09-12 12:10:58.734	0	Second line	\N	\N	1
-674	364	1	1	200	20	10	\N	2007-09-12 12:10:58.965	0	First line	\N	\N	1
-675	364	2	1	1660	83	20	\N	2007-09-12 12:10:58.968	0	Second line	\N	\N	1
-676	365	1	1	410	41	10	\N	2007-09-12 12:10:59.211	0	First line	\N	\N	1
-677	365	2	1	600	30	20	\N	2007-09-12 12:10:59.213	0	Second line	\N	\N	1
-678	366	1	1	590	59	10	\N	2007-09-12 12:10:59.69	0	First line	\N	\N	1
-679	366	2	1	480	24	20	\N	2007-09-12 12:10:59.694	0	Second line	\N	\N	1
-680	367	1	1	900	90	10	\N	2007-09-12 12:11:00.166	0	First line	\N	\N	1
-681	367	2	1	1580	79	20	\N	2007-09-12 12:11:00.176	0	Second line	\N	\N	1
-682	368	1	1	640	64	10	\N	2007-09-12 12:11:00.644	0	First line	\N	\N	1
-683	368	2	1	1380	69	20	\N	2007-09-12 12:11:00.655	0	Second line	\N	\N	1
-684	369	1	1	290	29	10	\N	2007-09-12 12:11:01.052	0	First line	\N	\N	1
-685	369	2	1	1580	79	20	\N	2007-09-12 12:11:01.055	0	Second line	\N	\N	1
-686	370	1	1	860	86	10	\N	2007-09-12 12:11:01.297	0	First line	\N	\N	1
-687	370	2	1	1140	57	20	\N	2007-09-12 12:11:01.299	0	Second line	\N	\N	1
-688	371	1	1	880	88	10	\N	2007-09-12 12:11:01.541	0	First line	\N	\N	1
-689	371	2	1	1280	64	20	\N	2007-09-12 12:11:01.543	0	Second line	\N	\N	1
-690	372	1	1	650	65	10	\N	2007-09-12 12:11:01.804	0	First line	\N	\N	1
-691	372	2	1	300	15	20	\N	2007-09-12 12:11:01.807	0	Second line	\N	\N	1
-692	373	1	1	220	22	10	\N	2007-09-12 12:11:02.125	0	First line	\N	\N	1
-693	373	2	1	60	3	20	\N	2007-09-12 12:11:02.13	0	Second line	\N	\N	1
-694	374	1	1	660	66	10	\N	2007-09-12 12:11:02.63	0	First line	\N	\N	1
-695	374	2	1	180	9	20	\N	2007-09-12 12:11:02.639	0	Second line	\N	\N	1
-696	375	1	1	20	2	10	\N	2007-09-12 12:11:03.133	0	First line	\N	\N	1
-697	375	2	1	1140	57	20	\N	2007-09-12 12:11:03.141	0	Second line	\N	\N	1
-698	376	1	1	560	56	10	\N	2007-09-12 12:11:03.561	0	First line	\N	\N	1
-699	376	2	1	1820	91	20	\N	2007-09-12 12:11:03.564	0	Second line	\N	\N	1
-700	377	1	1	610	61	10	\N	2007-09-12 12:11:03.832	0	First line	\N	\N	1
-701	377	2	1	640	32	20	\N	2007-09-12 12:11:03.834	0	Second line	\N	\N	1
-702	378	1	1	550	55	10	\N	2007-09-12 12:11:04.073	0	First line	\N	\N	1
-703	378	2	1	1960	98	20	\N	2007-09-12 12:11:04.075	0	Second line	\N	\N	1
-704	379	1	1	810	81	10	\N	2007-09-12 12:11:04.323	0	First line	\N	\N	1
-705	379	2	1	1180	59	20	\N	2007-09-12 12:11:04.325	0	Second line	\N	\N	1
-706	380	1	1	530	53	10	\N	2007-09-12 12:11:04.584	0	First line	\N	\N	1
-707	380	2	1	720	36	20	\N	2007-09-12 12:11:04.586	0	Second line	\N	\N	1
-708	381	1	1	800	80	10	\N	2007-09-12 12:11:05.082	0	First line	\N	\N	1
-709	381	2	1	1340	67	20	\N	2007-09-12 12:11:05.088	0	Second line	\N	\N	1
-710	382	1	1	100	10	10	\N	2007-09-12 12:11:05.568	0	First line	\N	\N	1
-711	382	2	1	80	4	20	\N	2007-09-12 12:11:05.582	0	Second line	\N	\N	1
-712	383	1	1	500	50	10	\N	2007-09-12 12:11:06.041	0	First line	\N	\N	1
-713	383	2	1	160	8	20	\N	2007-09-12 12:11:06.043	0	Second line	\N	\N	1
-714	384	1	1	670	67	10	\N	2007-09-12 12:11:06.282	0	First line	\N	\N	1
-715	384	2	1	1180	59	20	\N	2007-09-12 12:11:06.285	0	Second line	\N	\N	1
-716	385	1	1	100	10	10	\N	2007-09-12 12:11:06.538	0	First line	\N	\N	1
-717	385	2	1	940	47	20	\N	2007-09-12 12:11:06.54	0	Second line	\N	\N	1
-718	386	1	1	980	98	10	\N	2007-09-12 12:11:06.776	0	First line	\N	\N	1
-719	386	2	1	200	10	20	\N	2007-09-12 12:11:06.779	0	Second line	\N	\N	1
-720	387	1	1	190	19	10	\N	2007-09-12 12:11:07.058	0	First line	\N	\N	1
-721	387	2	1	1900	95	20	\N	2007-09-12 12:11:07.065	0	Second line	\N	\N	1
-722	388	1	1	240	24	10	\N	2007-09-12 12:11:07.552	0	First line	\N	\N	1
-723	388	2	1	660	33	20	\N	2007-09-12 12:11:07.556	0	Second line	\N	\N	1
-724	389	1	1	310	31	10	\N	2007-09-12 12:11:08.044	0	First line	\N	\N	1
-725	389	2	1	660	33	20	\N	2007-09-12 12:11:08.048	0	Second line	\N	\N	1
-726	390	1	1	800	80	10	\N	2007-09-12 12:11:08.528	0	First line	\N	\N	1
-727	390	2	1	1620	81	20	\N	2007-09-12 12:11:08.534	0	Second line	\N	\N	1
-728	391	1	1	290	29	10	\N	2007-09-12 12:11:08.805	0	First line	\N	\N	1
-729	391	2	1	1360	68	20	\N	2007-09-12 12:11:08.808	0	Second line	\N	\N	1
-730	392	1	1	870	87	10	\N	2007-09-12 12:11:09.048	0	First line	\N	\N	1
-731	392	2	1	860	43	20	\N	2007-09-12 12:11:09.051	0	Second line	\N	\N	1
-732	393	1	1	690	69	10	\N	2007-09-12 12:11:09.287	0	First line	\N	\N	1
-733	393	2	1	1320	66	20	\N	2007-09-12 12:11:09.29	0	Second line	\N	\N	1
-734	394	1	1	650	65	10	\N	2007-09-12 12:11:09.529	0	First line	\N	\N	1
-735	394	2	1	100	5	20	\N	2007-09-12 12:11:09.532	0	Second line	\N	\N	1
-736	395	1	1	80	8	10	\N	2007-09-12 12:11:09.992	0	First line	\N	\N	1
-737	395	2	1	220	11	20	\N	2007-09-12 12:11:10.002	0	Second line	\N	\N	1
-738	396	1	1	630	63	10	\N	2007-09-12 12:11:10.462	0	First line	\N	\N	1
-739	396	2	1	1440	72	20	\N	2007-09-12 12:11:10.478	0	Second line	\N	\N	1
-740	397	1	1	720	72	10	\N	2007-09-12 12:11:10.998	0	First line	\N	\N	1
-741	397	2	1	1060	53	20	\N	2007-09-12 12:11:11.003	0	Second line	\N	\N	1
-742	398	1	1	820	82	10	\N	2007-09-12 12:11:11.295	0	First line	\N	\N	1
-743	398	2	1	1980	99	20	\N	2007-09-12 12:11:11.297	0	Second line	\N	\N	1
-744	399	1	1	250	25	10	\N	2007-09-12 12:11:11.541	0	First line	\N	\N	1
-745	399	2	1	1700	85	20	\N	2007-09-12 12:11:11.543	0	Second line	\N	\N	1
-746	400	1	1	340	34	10	\N	2007-09-12 12:11:11.784	0	First line	\N	\N	1
-747	400	2	1	1060	53	20	\N	2007-09-12 12:11:11.786	0	Second line	\N	\N	1
-748	401	1	1	720	72	10	\N	2007-09-12 12:11:12.031	0	First line	\N	\N	1
-749	401	2	1	80	4	20	\N	2007-09-12 12:11:12.033	0	Second line	\N	\N	1
-750	402	1	1	80	8	10	\N	2007-09-12 12:11:12.451	0	First line	\N	\N	1
-751	402	2	1	540	27	20	\N	2007-09-12 12:11:12.463	0	Second line	\N	\N	1
-752	403	1	1	620	62	10	\N	2007-09-12 12:11:12.924	0	First line	\N	\N	1
-753	403	2	1	580	29	20	\N	2007-09-12 12:11:12.933	0	Second line	\N	\N	1
-754	404	1	1	750	75	10	\N	2007-09-12 12:11:13.398	0	First line	\N	\N	1
-755	404	2	1	1700	85	20	\N	2007-09-12 12:11:13.404	0	Second line	\N	\N	1
-756	405	1	1	340	34	10	\N	2007-09-12 12:11:13.829	0	First line	\N	\N	1
-757	405	2	1	340	17	20	\N	2007-09-12 12:11:13.832	0	Second line	\N	\N	1
-758	406	1	1	350	35	10	\N	2007-09-12 12:11:14.079	0	First line	\N	\N	1
-759	406	2	1	420	21	20	\N	2007-09-12 12:11:14.081	0	Second line	\N	\N	1
-760	407	1	1	210	21	10	\N	2007-09-12 12:11:14.32	0	First line	\N	\N	1
-761	407	2	1	1380	69	20	\N	2007-09-12 12:11:14.323	0	Second line	\N	\N	1
-762	408	1	1	520	52	10	\N	2007-09-12 12:11:14.565	0	First line	\N	\N	1
-763	408	2	1	300	15	20	\N	2007-09-12 12:11:14.568	0	Second line	\N	\N	1
-764	409	1	1	570	57	10	\N	2007-09-12 12:11:14.869	0	First line	\N	\N	1
-765	409	2	1	1540	77	20	\N	2007-09-12 12:11:14.873	0	Second line	\N	\N	1
-766	410	1	1	520	52	10	\N	2007-09-12 12:11:15.298	0	First line	\N	\N	1
-767	410	2	1	440	22	20	\N	2007-09-12 12:11:15.301	0	Second line	\N	\N	1
-768	411	1	1	260	26	10	\N	2007-09-12 12:11:15.719	0	First line	\N	\N	1
-769	411	2	1	140	7	20	\N	2007-09-12 12:11:15.723	0	Second line	\N	\N	1
-770	412	1	1	190	19	10	\N	2007-09-12 12:11:16.311	0	First line	\N	\N	1
-771	412	2	1	740	37	20	\N	2007-09-12 12:11:16.352	0	Second line	\N	\N	1
-772	413	1	1	930	93	10	\N	2007-09-12 12:11:16.731	0	First line	\N	\N	1
-773	413	2	1	1380	69	20	\N	2007-09-12 12:11:16.733	0	Second line	\N	\N	1
-774	414	1	1	760	76	10	\N	2007-09-12 12:11:16.971	0	First line	\N	\N	1
-775	414	2	1	1700	85	20	\N	2007-09-12 12:11:16.973	0	Second line	\N	\N	1
-776	415	1	1	40	4	10	\N	2007-09-12 12:11:17.228	0	First line	\N	\N	1
-777	415	2	1	440	22	20	\N	2007-09-12 12:11:17.231	0	Second line	\N	\N	1
-778	416	1	1	830	83	10	\N	2007-09-12 12:11:17.469	0	First line	\N	\N	1
-779	416	2	1	240	12	20	\N	2007-09-12 12:11:17.471	0	Second line	\N	\N	1
-780	417	1	1	570	57	10	\N	2007-09-12 12:11:17.923	0	First line	\N	\N	1
-781	417	2	1	1960	98	20	\N	2007-09-12 12:11:17.932	0	Second line	\N	\N	1
-782	418	1	1	670	67	10	\N	2007-09-12 12:11:18.411	0	First line	\N	\N	1
-783	418	2	1	1400	70	20	\N	2007-09-12 12:11:18.435	0	Second line	\N	\N	1
-784	419	1	1	660	66	10	\N	2007-09-12 12:11:18.884	0	First line	\N	\N	1
-785	419	2	1	1080	54	20	\N	2007-09-12 12:11:18.888	0	Second line	\N	\N	1
-786	420	1	1	550	55	10	\N	2007-09-12 12:11:19.283	0	First line	\N	\N	1
-787	420	2	1	920	46	20	\N	2007-09-12 12:11:19.285	0	Second line	\N	\N	1
-788	421	1	1	350	35	10	\N	2007-09-12 12:11:19.526	0	First line	\N	\N	1
-789	421	2	1	1400	70	20	\N	2007-09-12 12:11:19.529	0	Second line	\N	\N	1
-790	422	1	1	970	97	10	\N	2007-09-12 12:11:19.778	0	First line	\N	\N	1
-791	422	2	1	1340	67	20	\N	2007-09-12 12:11:19.78	0	Second line	\N	\N	1
-792	423	1	1	820	82	10	\N	2007-09-12 12:11:20.028	0	First line	\N	\N	1
-793	423	2	1	1660	83	20	\N	2007-09-12 12:11:20.03	0	Second line	\N	\N	1
-794	424	1	1	590	59	10	\N	2007-09-12 12:11:20.321	0	First line	\N	\N	1
-795	424	2	1	900	45	20	\N	2007-09-12 12:11:20.329	0	Second line	\N	\N	1
-796	425	1	1	990	99	10	\N	2007-09-12 12:11:20.832	0	First line	\N	\N	1
-797	425	2	1	220	11	20	\N	2007-09-12 12:11:20.842	0	Second line	\N	\N	1
-798	426	1	1	590	59	10	\N	2007-09-12 12:11:21.315	0	First line	\N	\N	1
-799	426	2	1	200	10	20	\N	2007-09-12 12:11:21.32	0	Second line	\N	\N	1
-800	427	1	1	30	3	10	\N	2007-09-12 12:11:21.773	0	First line	\N	\N	1
-801	427	2	1	600	30	20	\N	2007-09-12 12:11:21.784	0	Second line	\N	\N	1
-802	428	1	1	650	65	10	\N	2007-09-12 12:11:22.056	0	First line	\N	\N	1
-803	428	2	1	800	40	20	\N	2007-09-12 12:11:22.058	0	Second line	\N	\N	1
-804	429	1	1	380	38	10	\N	2007-09-12 12:11:22.301	0	First line	\N	\N	1
-805	429	2	1	1080	54	20	\N	2007-09-12 12:11:22.304	0	Second line	\N	\N	1
-806	430	1	1	250	25	10	\N	2007-09-12 12:11:22.55	0	First line	\N	\N	1
-807	430	2	1	1880	94	20	\N	2007-09-12 12:11:22.552	0	Second line	\N	\N	1
-808	431	1	1	700	70	10	\N	2007-09-12 12:11:22.799	0	First line	\N	\N	1
-809	431	2	1	1480	74	20	\N	2007-09-12 12:11:22.801	0	Second line	\N	\N	1
-810	432	1	1	250	25	10	\N	2007-09-12 12:11:23.271	0	First line	\N	\N	1
-811	432	2	1	340	17	20	\N	2007-09-12 12:11:23.278	0	Second line	\N	\N	1
-812	433	1	1	630	63	10	\N	2007-09-12 12:11:23.746	0	First line	\N	\N	1
-813	433	2	1	700	35	20	\N	2007-09-12 12:11:23.75	0	Second line	\N	\N	1
-814	434	1	1	980	98	10	\N	2007-09-12 12:11:24.192	0	First line	\N	\N	1
-815	434	2	1	420	21	20	\N	2007-09-12 12:11:24.209	0	Second line	\N	\N	1
-816	435	1	1	410	41	10	\N	2007-09-12 12:11:24.61	0	First line	\N	\N	1
-817	435	2	1	320	16	20	\N	2007-09-12 12:11:24.612	0	Second line	\N	\N	1
-818	436	1	1	800	80	10	\N	2007-09-12 12:11:24.858	0	First line	\N	\N	1
-819	436	2	1	1460	73	20	\N	2007-09-12 12:11:24.86	0	Second line	\N	\N	1
-820	437	1	1	980	98	10	\N	2007-09-12 12:11:25.114	0	First line	\N	\N	1
-821	437	2	1	1000	50	20	\N	2007-09-12 12:11:25.116	0	Second line	\N	\N	1
-822	438	1	1	380	38	10	\N	2007-09-12 12:11:25.354	0	First line	\N	\N	1
-823	438	2	1	740	37	20	\N	2007-09-12 12:11:25.356	0	Second line	\N	\N	1
-824	439	1	1	750	75	10	\N	2007-09-12 12:11:25.669	0	First line	\N	\N	1
-825	439	2	1	100	5	20	\N	2007-09-12 12:11:25.675	0	Second line	\N	\N	1
-826	440	1	1	890	89	10	\N	2007-09-12 12:11:26.146	0	First line	\N	\N	1
-827	440	2	1	1120	56	20	\N	2007-09-12 12:11:26.154	0	Second line	\N	\N	1
-828	441	1	1	440	44	10	\N	2007-09-12 12:11:26.601	0	First line	\N	\N	1
-829	441	2	1	280	14	20	\N	2007-09-12 12:11:26.604	0	Second line	\N	\N	1
-830	442	1	1	860	86	10	\N	2007-09-12 12:11:27.088	0	First line	\N	\N	1
-831	442	2	1	1760	88	20	\N	2007-09-12 12:11:27.091	0	Second line	\N	\N	1
-832	443	1	1	720	72	10	\N	2007-09-12 12:11:27.359	0	First line	\N	\N	1
-833	443	2	1	1120	56	20	\N	2007-09-12 12:11:27.362	0	Second line	\N	\N	1
-834	444	1	1	940	94	10	\N	2007-09-12 12:11:27.601	0	First line	\N	\N	1
-835	444	2	1	160	8	20	\N	2007-09-12 12:11:27.603	0	Second line	\N	\N	1
-836	445	1	1	790	79	10	\N	2007-09-12 12:11:27.851	0	First line	\N	\N	1
-837	445	2	1	1680	84	20	\N	2007-09-12 12:11:27.854	0	Second line	\N	\N	1
-838	446	1	1	930	93	10	\N	2007-09-12 12:11:28.101	0	First line	\N	\N	1
-839	446	2	1	100	5	20	\N	2007-09-12 12:11:28.103	0	Second line	\N	\N	1
-840	447	1	1	510	51	10	\N	2007-09-12 12:11:28.51	0	First line	\N	\N	1
-841	447	2	1	1100	55	20	\N	2007-09-12 12:11:28.515	0	Second line	\N	\N	1
-842	448	1	1	990	99	10	\N	2007-09-12 12:11:29.01	0	First line	\N	\N	1
-843	448	2	1	500	25	20	\N	2007-09-12 12:11:29.022	0	Second line	\N	\N	1
-844	449	1	1	850	85	10	\N	2007-09-12 12:11:29.48	0	First line	\N	\N	1
-845	449	2	1	280	14	20	\N	2007-09-12 12:11:29.492	0	Second line	\N	\N	1
-846	450	1	1	300	30	10	\N	2007-09-12 12:11:29.889	0	First line	\N	\N	1
-847	450	2	1	100	5	20	\N	2007-09-12 12:11:29.891	0	Second line	\N	\N	1
-848	451	1	1	260	26	10	\N	2007-09-12 12:11:30.128	0	First line	\N	\N	1
-849	451	2	1	460	23	20	\N	2007-09-12 12:11:30.13	0	Second line	\N	\N	1
-850	452	1	1	30	3	10	\N	2007-09-12 12:11:30.366	0	First line	\N	\N	1
-851	452	2	1	1180	59	20	\N	2007-09-12 12:11:30.369	0	Second line	\N	\N	1
-852	453	1	1	760	76	10	\N	2007-09-12 12:11:30.628	0	First line	\N	\N	1
-853	453	2	1	1200	60	20	\N	2007-09-12 12:11:30.63	0	Second line	\N	\N	1
-854	454	1	1	400	40	10	\N	2007-09-12 12:11:30.91	0	First line	\N	\N	1
-855	454	2	1	1640	82	20	\N	2007-09-12 12:11:30.914	0	Second line	\N	\N	1
-856	455	1	1	530	53	10	\N	2007-09-12 12:11:31.429	0	First line	\N	\N	1
-857	455	2	1	760	38	20	\N	2007-09-12 12:11:31.435	0	Second line	\N	\N	1
-858	456	1	1	740	74	10	\N	2007-09-12 12:11:31.902	0	First line	\N	\N	1
-859	456	2	1	900	45	20	\N	2007-09-12 12:11:31.91	0	Second line	\N	\N	1
-860	457	1	1	490	49	10	\N	2007-09-12 12:11:32.401	0	First line	\N	\N	1
-861	457	2	1	780	39	20	\N	2007-09-12 12:11:32.408	0	Second line	\N	\N	1
-862	458	1	1	90	9	10	\N	2007-09-12 12:11:32.664	0	First line	\N	\N	1
-863	458	2	1	860	43	20	\N	2007-09-12 12:11:32.666	0	Second line	\N	\N	1
-864	459	1	1	70	7	10	\N	2007-09-12 12:11:32.916	0	First line	\N	\N	1
-865	459	2	1	1440	72	20	\N	2007-09-12 12:11:32.919	0	Second line	\N	\N	1
-866	460	1	1	160	16	10	\N	2007-09-12 12:11:33.171	0	First line	\N	\N	1
-867	460	2	1	1700	85	20	\N	2007-09-12 12:11:33.173	0	Second line	\N	\N	1
-868	461	1	1	930	93	10	\N	2007-09-12 12:11:33.41	0	First line	\N	\N	1
-869	461	2	1	940	47	20	\N	2007-09-12 12:11:33.412	0	Second line	\N	\N	1
-870	462	1	1	710	71	10	\N	2007-09-12 12:11:33.851	0	First line	\N	\N	1
-871	462	2	1	800	40	20	\N	2007-09-12 12:11:33.859	0	Second line	\N	\N	1
-872	463	1	1	580	58	10	\N	2007-09-12 12:11:34.329	0	First line	\N	\N	1
-873	463	2	1	920	46	20	\N	2007-09-12 12:11:34.335	0	Second line	\N	\N	1
-874	464	1	1	350	35	10	\N	2007-09-12 12:11:35.003	0	First line	\N	\N	1
-875	464	2	1	280	14	20	\N	2007-09-12 12:11:35.007	0	Second line	\N	\N	1
-876	465	1	1	370	37	10	\N	2007-09-12 12:11:35.272	0	First line	\N	\N	1
-877	465	2	1	1820	91	20	\N	2007-09-12 12:11:35.275	0	Second line	\N	\N	1
-878	466	1	1	340	34	10	\N	2007-09-12 12:11:35.515	0	First line	\N	\N	1
-879	466	2	1	1080	54	20	\N	2007-09-12 12:11:35.518	0	Second line	\N	\N	1
-880	467	1	1	20	2	10	\N	2007-09-12 12:11:35.781	0	First line	\N	\N	1
-881	467	2	1	1540	77	20	\N	2007-09-12 12:11:35.783	0	Second line	\N	\N	1
-882	468	1	1	220	22	10	\N	2007-09-12 12:11:36.062	0	First line	\N	\N	1
-883	468	2	1	680	34	20	\N	2007-09-12 12:11:36.068	0	Second line	\N	\N	1
-884	469	1	1	590	59	10	\N	2007-09-12 12:11:36.562	0	First line	\N	\N	1
-885	469	2	1	620	31	20	\N	2007-09-12 12:11:36.567	0	Second line	\N	\N	1
-886	470	1	1	800	80	10	\N	2007-09-12 12:11:37.095	0	First line	\N	\N	1
-887	470	2	1	1780	89	20	\N	2007-09-12 12:11:37.098	0	Second line	\N	\N	1
-888	471	1	1	990	99	10	\N	2007-09-12 12:11:37.56	0	First line	\N	\N	1
-889	471	2	1	1780	89	20	\N	2007-09-12 12:11:37.568	0	Second line	\N	\N	1
-890	472	1	1	220	22	10	\N	2007-09-12 12:11:37.832	0	First line	\N	\N	1
-891	472	2	1	80	4	20	\N	2007-09-12 12:11:37.841	0	Second line	\N	\N	1
-892	473	1	1	1000	100	10	\N	2007-09-12 12:11:38.082	0	First line	\N	\N	1
-893	473	2	1	1240	62	20	\N	2007-09-12 12:11:38.084	0	Second line	\N	\N	1
-894	474	1	1	650	65	10	\N	2007-09-12 12:11:38.328	0	First line	\N	\N	1
-895	474	2	1	740	37	20	\N	2007-09-12 12:11:38.33	0	Second line	\N	\N	1
-896	475	1	1	320	32	10	\N	2007-09-12 12:11:38.58	0	First line	\N	\N	1
-897	475	2	1	1440	72	20	\N	2007-09-12 12:11:38.582	0	Second line	\N	\N	1
-898	476	1	1	210	21	10	\N	2007-09-12 12:11:39.005	0	First line	\N	\N	1
-899	476	2	1	1100	55	20	\N	2007-09-12 12:11:39.012	0	Second line	\N	\N	1
-900	477	1	1	850	85	10	\N	2007-09-12 12:11:39.446	0	First line	\N	\N	1
-901	477	2	1	1660	83	20	\N	2007-09-12 12:11:39.455	0	Second line	\N	\N	1
-902	478	1	1	370	37	10	\N	2007-09-12 12:11:39.919	0	First line	\N	\N	1
-903	478	2	1	480	24	20	\N	2007-09-12 12:11:39.926	0	Second line	\N	\N	1
-904	479	1	1	90	9	10	\N	2007-09-12 12:11:40.346	0	First line	\N	\N	1
-905	479	2	1	1500	75	20	\N	2007-09-12 12:11:40.349	0	Second line	\N	\N	1
-906	480	1	1	80	8	10	\N	2007-09-12 12:11:40.592	0	First line	\N	\N	1
-907	480	2	1	640	32	20	\N	2007-09-12 12:11:40.594	0	Second line	\N	\N	1
-908	481	1	1	110	11	10	\N	2007-09-12 12:11:40.833	0	First line	\N	\N	1
-909	481	2	1	1520	76	20	\N	2007-09-12 12:11:40.835	0	Second line	\N	\N	1
-910	482	1	1	580	58	10	\N	2007-09-12 12:11:41.079	0	First line	\N	\N	1
-911	482	2	1	1100	55	20	\N	2007-09-12 12:11:41.081	0	Second line	\N	\N	1
-912	483	1	1	720	72	10	\N	2007-09-12 12:11:41.365	0	First line	\N	\N	1
-913	483	2	1	1020	51	20	\N	2007-09-12 12:11:41.372	0	Second line	\N	\N	1
-914	484	1	1	380	38	10	\N	2007-09-12 12:11:41.842	0	First line	\N	\N	1
-915	484	2	1	1020	51	20	\N	2007-09-12 12:11:41.845	0	Second line	\N	\N	1
-916	485	1	1	540	54	10	\N	2007-09-12 12:11:42.299	0	First line	\N	\N	1
-917	485	2	1	500	25	20	\N	2007-09-12 12:11:42.301	0	Second line	\N	\N	1
-918	486	1	1	580	58	10	\N	2007-09-12 12:11:42.775	0	First line	\N	\N	1
-919	486	2	1	500	25	20	\N	2007-09-12 12:11:42.784	0	Second line	\N	\N	1
-920	487	1	1	60	6	10	\N	2007-09-12 12:11:43.17	0	First line	\N	\N	1
-921	487	2	1	720	36	20	\N	2007-09-12 12:11:43.172	0	Second line	\N	\N	1
-922	488	1	1	270	27	10	\N	2007-09-12 12:11:43.416	0	First line	\N	\N	1
-923	488	2	1	1440	72	20	\N	2007-09-12 12:11:43.419	0	Second line	\N	\N	1
-924	489	1	1	410	41	10	\N	2007-09-12 12:11:43.672	0	First line	\N	\N	1
-925	489	2	1	120	6	20	\N	2007-09-12 12:11:43.674	0	Second line	\N	\N	1
-926	490	1	1	400	40	10	\N	2007-09-12 12:11:43.923	0	First line	\N	\N	1
-927	490	2	1	300	15	20	\N	2007-09-12 12:11:43.925	0	Second line	\N	\N	1
-928	491	1	1	70	7	10	\N	2007-09-12 12:11:44.233	0	First line	\N	\N	1
-929	491	2	1	760	38	20	\N	2007-09-12 12:11:44.244	0	Second line	\N	\N	1
-930	492	1	1	740	74	10	\N	2007-09-12 12:11:44.737	0	First line	\N	\N	1
-931	492	2	1	520	26	20	\N	2007-09-12 12:11:44.743	0	Second line	\N	\N	1
-932	493	1	1	790	79	10	\N	2007-09-12 12:11:45.198	0	First line	\N	\N	1
-933	493	2	1	180	9	20	\N	2007-09-12 12:11:45.202	0	Second line	\N	\N	1
-934	494	1	1	920	92	10	\N	2007-09-12 12:11:45.637	0	First line	\N	\N	1
-935	494	2	1	820	41	20	\N	2007-09-12 12:11:45.641	0	Second line	\N	\N	1
-936	495	1	1	550	55	10	\N	2007-09-12 12:11:45.9	0	First line	\N	\N	1
-937	495	2	1	1300	65	20	\N	2007-09-12 12:11:45.902	0	Second line	\N	\N	1
-938	496	1	1	460	46	10	\N	2007-09-12 12:11:46.154	0	First line	\N	\N	1
-939	496	2	1	720	36	20	\N	2007-09-12 12:11:46.156	0	Second line	\N	\N	1
-940	497	1	1	140	14	10	\N	2007-09-12 12:11:46.411	0	First line	\N	\N	1
-941	497	2	1	1060	53	20	\N	2007-09-12 12:11:46.413	0	Second line	\N	\N	1
-942	498	1	1	820	82	10	\N	2007-09-12 12:11:46.672	0	First line	\N	\N	1
-943	498	2	1	780	39	20	\N	2007-09-12 12:11:46.681	0	Second line	\N	\N	1
-944	499	1	1	150	15	10	\N	2007-09-12 12:11:47.117	0	First line	\N	\N	1
-945	499	2	1	220	11	20	\N	2007-09-12 12:11:47.126	0	Second line	\N	\N	1
-946	500	1	1	540	54	10	\N	2007-09-12 12:11:47.591	0	First line	\N	\N	1
-947	500	2	1	1800	90	20	\N	2007-09-12 12:11:47.603	0	Second line	\N	\N	1
-948	501	1	1	500	50	10	\N	2007-09-12 12:11:48.068	0	First line	\N	\N	1
-949	501	2	1	160	8	20	\N	2007-09-12 12:11:48.075	0	Second line	\N	\N	1
-950	502	1	1	820	82	10	\N	2007-09-12 12:11:48.462	0	First line	\N	\N	1
-951	502	2	1	480	24	20	\N	2007-09-12 12:11:48.464	0	Second line	\N	\N	1
-952	503	1	1	560	56	10	\N	2007-09-12 12:11:48.71	0	First line	\N	\N	1
-953	503	2	1	1680	84	20	\N	2007-09-12 12:11:48.712	0	Second line	\N	\N	1
-954	504	1	1	790	79	10	\N	2007-09-12 12:11:48.965	0	First line	\N	\N	1
-955	504	2	1	580	29	20	\N	2007-09-12 12:11:48.967	0	Second line	\N	\N	1
-956	505	1	1	120	12	10	\N	2007-09-12 12:11:49.205	0	First line	\N	\N	1
-957	505	2	1	1520	76	20	\N	2007-09-12 12:11:49.215	0	Second line	\N	\N	1
-958	506	1	1	450	45	10	\N	2007-09-12 12:11:49.523	0	First line	\N	\N	1
-959	506	2	1	360	18	20	\N	2007-09-12 12:11:49.53	0	Second line	\N	\N	1
-960	507	1	1	880	88	10	\N	2007-09-12 12:11:50.024	0	First line	\N	\N	1
-961	507	2	1	1860	93	20	\N	2007-09-12 12:11:50.029	0	Second line	\N	\N	1
-962	508	1	1	620	62	10	\N	2007-09-12 12:11:50.489	0	First line	\N	\N	1
-963	508	2	1	1880	94	20	\N	2007-09-12 12:11:50.496	0	Second line	\N	\N	1
-964	509	1	1	140	14	10	\N	2007-09-12 12:11:50.96	0	First line	\N	\N	1
-965	509	2	1	300	15	20	\N	2007-09-12 12:11:50.962	0	Second line	\N	\N	1
-966	510	1	1	270	27	10	\N	2007-09-12 12:11:51.216	0	First line	\N	\N	1
-967	510	2	1	1540	77	20	\N	2007-09-12 12:11:51.219	0	Second line	\N	\N	1
-968	511	1	1	20	2	10	\N	2007-09-12 12:11:51.47	0	First line	\N	\N	1
-969	511	2	1	340	17	20	\N	2007-09-12 12:11:51.473	0	Second line	\N	\N	1
-970	512	1	1	350	35	10	\N	2007-09-12 12:11:51.707	0	First line	\N	\N	1
-971	512	2	1	1620	81	20	\N	2007-09-12 12:11:51.709	0	Second line	\N	\N	1
-972	513	1	1	830	83	10	\N	2007-09-12 12:11:52	0	First line	\N	\N	1
-973	513	2	1	340	17	20	\N	2007-09-12 12:11:52.022	0	Second line	\N	\N	1
-974	514	1	1	850	85	10	\N	2007-09-12 12:11:52.485	0	First line	\N	\N	1
-975	514	2	1	200	10	20	\N	2007-09-12 12:11:52.491	0	Second line	\N	\N	1
-976	515	1	1	640	64	10	\N	2007-09-12 12:11:52.97	0	First line	\N	\N	1
-977	515	2	1	1860	93	20	\N	2007-09-12 12:11:52.976	0	Second line	\N	\N	1
-978	516	1	1	380	38	10	\N	2007-09-12 12:11:53.459	0	First line	\N	\N	1
-979	516	2	1	1680	84	20	\N	2007-09-12 12:11:53.463	0	Second line	\N	\N	1
-980	517	1	1	110	11	10	\N	2007-09-12 12:11:53.748	0	First line	\N	\N	1
-981	517	2	1	580	29	20	\N	2007-09-12 12:11:53.75	0	Second line	\N	\N	1
-982	518	1	1	510	51	10	\N	2007-09-12 12:11:54.006	0	First line	\N	\N	1
-983	518	2	1	1860	93	20	\N	2007-09-12 12:11:54.008	0	Second line	\N	\N	1
-984	519	1	1	680	68	10	\N	2007-09-12 12:11:54.249	0	First line	\N	\N	1
-985	519	2	1	1380	69	20	\N	2007-09-12 12:11:54.251	0	Second line	\N	\N	1
-986	520	1	1	690	69	10	\N	2007-09-12 12:11:54.485	0	First line	\N	\N	1
-987	520	2	1	1900	95	20	\N	2007-09-12 12:11:54.487	0	Second line	\N	\N	1
-988	521	1	1	600	60	10	\N	2007-09-12 12:11:54.96	0	First line	\N	\N	1
-989	521	2	1	1080	54	20	\N	2007-09-12 12:11:54.965	0	Second line	\N	\N	1
-990	522	1	1	120	12	10	\N	2007-09-12 12:11:55.44	0	First line	\N	\N	1
-991	522	2	1	1140	57	20	\N	2007-09-12 12:11:55.443	0	Second line	\N	\N	1
-992	523	1	1	760	76	10	\N	2007-09-12 12:11:55.942	0	First line	\N	\N	1
-993	523	2	1	1360	68	20	\N	2007-09-12 12:11:55.945	0	Second line	\N	\N	1
-994	524	1	1	870	87	10	\N	2007-09-12 12:11:56.214	0	First line	\N	\N	1
-995	524	2	1	960	48	20	\N	2007-09-12 12:11:56.216	0	Second line	\N	\N	1
-996	525	1	1	660	66	10	\N	2007-09-12 12:11:56.469	0	First line	\N	\N	1
-997	525	2	1	740	37	20	\N	2007-09-12 12:11:56.472	0	Second line	\N	\N	1
-998	526	1	1	320	32	10	\N	2007-09-12 12:11:56.724	0	First line	\N	\N	1
-999	526	2	1	1280	64	20	\N	2007-09-12 12:11:56.726	0	Second line	\N	\N	1
-1000	527	1	1	800	80	10	\N	2007-09-12 12:11:56.965	0	First line	\N	\N	1
-1001	527	2	1	820	41	20	\N	2007-09-12 12:11:56.967	0	Second line	\N	\N	1
-1002	528	1	1	280	28	10	\N	2007-09-12 12:11:57.387	0	First line	\N	\N	1
-1003	528	2	1	1540	77	20	\N	2007-09-12 12:11:57.396	0	Second line	\N	\N	1
-1004	529	1	1	710	71	10	\N	2007-09-12 12:11:57.851	0	First line	\N	\N	1
-1005	529	2	1	620	31	20	\N	2007-09-12 12:11:57.854	0	Second line	\N	\N	1
-1006	530	1	1	450	45	10	\N	2007-09-12 12:11:58.32	0	First line	\N	\N	1
-1007	530	2	1	1620	81	20	\N	2007-09-12 12:11:58.328	0	Second line	\N	\N	1
-1008	531	1	1	840	84	10	\N	2007-09-12 12:11:58.768	0	First line	\N	\N	1
-1009	531	2	1	1500	75	20	\N	2007-09-12 12:11:58.77	0	Second line	\N	\N	1
-1010	532	1	1	200	20	10	\N	2007-09-12 12:11:59.019	0	First line	\N	\N	1
-1011	532	2	1	520	26	20	\N	2007-09-12 12:11:59.021	0	Second line	\N	\N	1
-1012	533	1	1	480	48	10	\N	2007-09-12 12:11:59.267	0	First line	\N	\N	1
-1013	533	2	1	600	30	20	\N	2007-09-12 12:11:59.269	0	Second line	\N	\N	1
-1014	534	1	1	600	60	10	\N	2007-09-12 12:11:59.504	0	First line	\N	\N	1
-1015	534	2	1	1440	72	20	\N	2007-09-12 12:11:59.506	0	Second line	\N	\N	1
-1016	535	1	1	140	14	10	\N	2007-09-12 12:11:59.814	0	First line	\N	\N	1
-1017	535	2	1	1500	75	20	\N	2007-09-12 12:11:59.816	0	Second line	\N	\N	1
-1018	536	1	1	910	91	10	\N	2007-09-12 12:12:00.251	0	First line	\N	\N	1
-1019	536	2	1	1900	95	20	\N	2007-09-12 12:12:00.255	0	Second line	\N	\N	1
-1020	537	1	1	720	72	10	\N	2007-09-12 12:12:00.725	0	First line	\N	\N	1
-1021	537	2	1	1980	99	20	\N	2007-09-12 12:12:00.732	0	Second line	\N	\N	1
-1022	538	1	1	620	62	10	\N	2007-09-12 12:12:01.221	0	First line	\N	\N	1
-1023	538	2	1	1520	76	20	\N	2007-09-12 12:12:01.228	0	Second line	\N	\N	1
-1024	539	1	1	690	69	10	\N	2007-09-12 12:12:02.091	0	First line	\N	\N	1
-1025	539	2	1	1420	71	20	\N	2007-09-12 12:12:02.094	0	Second line	\N	\N	1
-1026	540	1	1	580	58	10	\N	2007-09-12 12:12:02.336	0	First line	\N	\N	1
-1027	540	2	1	100	5	20	\N	2007-09-12 12:12:02.343	0	Second line	\N	\N	1
-1028	541	1	1	170	17	10	\N	2007-09-12 12:12:02.811	0	First line	\N	\N	1
-1029	541	2	1	440	22	20	\N	2007-09-12 12:12:02.815	0	Second line	\N	\N	1
-1030	542	1	1	120	12	10	\N	2007-09-12 12:12:03.191	0	First line	\N	\N	1
-1031	542	2	1	720	36	20	\N	2007-09-12 12:12:03.194	0	Second line	\N	\N	1
-1032	543	1	1	710	71	10	\N	2007-09-12 12:12:03.429	0	First line	\N	\N	1
-1033	543	2	1	980	49	20	\N	2007-09-12 12:12:03.431	0	Second line	\N	\N	1
-1034	544	1	1	130	13	10	\N	2007-09-12 12:12:03.672	0	First line	\N	\N	1
-1035	544	2	1	1380	69	20	\N	2007-09-12 12:12:03.674	0	Second line	\N	\N	1
-1036	545	1	1	690	69	10	\N	2007-09-12 12:12:03.926	0	First line	\N	\N	1
-1037	545	2	1	20	1	20	\N	2007-09-12 12:12:03.929	0	Second line	\N	\N	1
-1038	546	1	1	960	96	10	\N	2007-09-12 12:12:04.197	0	First line	\N	\N	1
-1039	546	2	1	800	40	20	\N	2007-09-12 12:12:04.204	0	Second line	\N	\N	1
-1040	547	1	1	750	75	10	\N	2007-09-12 12:12:04.606	0	First line	\N	\N	1
-1041	547	2	1	120	6	20	\N	2007-09-12 12:12:04.609	0	Second line	\N	\N	1
-1042	548	1	1	360	36	10	\N	2007-09-12 12:12:05.024	0	First line	\N	\N	1
-1043	548	2	1	1900	95	20	\N	2007-09-12 12:12:05.03	0	Second line	\N	\N	1
-1044	549	1	1	770	77	10	\N	2007-09-12 12:12:05.448	0	First line	\N	\N	1
-1045	549	2	1	40	2	20	\N	2007-09-12 12:12:05.453	0	Second line	\N	\N	1
-1046	550	1	1	350	35	10	\N	2007-09-12 12:12:05.914	0	First line	\N	\N	1
-1047	550	2	1	760	38	20	\N	2007-09-12 12:12:05.92	0	Second line	\N	\N	1
-1048	551	1	1	440	44	10	\N	2007-09-12 12:12:06.21	0	First line	\N	\N	1
-1049	551	2	1	1700	85	20	\N	2007-09-12 12:12:06.212	0	Second line	\N	\N	1
-1050	552	1	1	120	12	10	\N	2007-09-12 12:12:06.462	0	First line	\N	\N	1
-1051	552	2	1	1660	83	20	\N	2007-09-12 12:12:06.464	0	Second line	\N	\N	1
-1052	553	1	1	890	89	10	\N	2007-09-12 12:12:06.709	0	First line	\N	\N	1
-1053	553	2	1	1760	88	20	\N	2007-09-12 12:12:06.711	0	Second line	\N	\N	1
-1054	554	1	1	990	99	10	\N	2007-09-12 12:12:06.95	0	First line	\N	\N	1
-1055	554	2	1	400	20	20	\N	2007-09-12 12:12:06.952	0	Second line	\N	\N	1
-1056	555	1	1	760	76	10	\N	2007-09-12 12:12:07.328	0	First line	\N	\N	1
-1057	555	2	1	920	46	20	\N	2007-09-12 12:12:07.335	0	Second line	\N	\N	1
-1058	556	1	1	270	27	10	\N	2007-09-12 12:12:07.823	0	First line	\N	\N	1
-1059	556	2	1	1880	94	20	\N	2007-09-12 12:12:07.826	0	Second line	\N	\N	1
-1060	557	1	1	580	58	10	\N	2007-09-12 12:12:08.29	0	First line	\N	\N	1
-1061	557	2	1	820	41	20	\N	2007-09-12 12:12:08.296	0	Second line	\N	\N	1
-1062	558	1	1	610	61	10	\N	2007-09-12 12:12:08.771	0	First line	\N	\N	1
-1063	558	2	1	960	48	20	\N	2007-09-12 12:12:08.78	0	Second line	\N	\N	1
-1064	559	1	1	380	38	10	\N	2007-09-12 12:12:09.043	0	First line	\N	\N	1
-1065	559	2	1	1120	56	20	\N	2007-09-12 12:12:09.045	0	Second line	\N	\N	1
-1066	560	1	1	230	23	10	\N	2007-09-12 12:12:09.291	0	First line	\N	\N	1
-1067	560	2	1	380	19	20	\N	2007-09-12 12:12:09.293	0	Second line	\N	\N	1
-1068	561	1	1	30	3	10	\N	2007-09-12 12:12:09.535	0	First line	\N	\N	1
-1069	561	2	1	1640	82	20	\N	2007-09-12 12:12:09.538	0	Second line	\N	\N	1
-1070	562	1	1	290	29	10	\N	2007-09-12 12:12:09.783	0	First line	\N	\N	1
-1071	562	2	1	260	13	20	\N	2007-09-12 12:12:09.785	0	Second line	\N	\N	1
-1072	563	1	1	860	86	10	\N	2007-09-12 12:12:10.248	0	First line	\N	\N	1
-1073	563	2	1	1860	93	20	\N	2007-09-12 12:12:10.254	0	Second line	\N	\N	1
-1074	564	1	1	190	19	10	\N	2007-09-12 12:12:10.729	0	First line	\N	\N	1
-1075	564	2	1	500	25	20	\N	2007-09-12 12:12:10.733	0	Second line	\N	\N	1
-1076	565	1	1	460	46	10	\N	2007-09-12 12:12:11.218	0	First line	\N	\N	1
-1077	565	2	1	1820	91	20	\N	2007-09-12 12:12:11.228	0	Second line	\N	\N	1
-1078	566	1	1	820	82	10	\N	2007-09-12 12:12:11.527	0	First line	\N	\N	1
-1079	566	2	1	900	45	20	\N	2007-09-12 12:12:11.53	0	Second line	\N	\N	1
-1080	567	1	1	790	79	10	\N	2007-09-12 12:12:11.776	0	First line	\N	\N	1
-1081	567	2	1	920	46	20	\N	2007-09-12 12:12:11.778	0	Second line	\N	\N	1
-1082	568	1	1	630	63	10	\N	2007-09-12 12:12:12.013	0	First line	\N	\N	1
-1083	568	2	1	960	48	20	\N	2007-09-12 12:12:12.023	0	Second line	\N	\N	1
-1084	569	1	1	570	57	10	\N	2007-09-12 12:12:12.259	0	First line	\N	\N	1
-1085	569	2	1	1940	97	20	\N	2007-09-12 12:12:12.262	0	Second line	\N	\N	1
-1086	570	1	1	480	48	10	\N	2007-09-12 12:12:12.691	0	First line	\N	\N	1
-1087	570	2	1	480	24	20	\N	2007-09-12 12:12:12.694	0	Second line	\N	\N	1
-1088	571	1	1	190	19	10	\N	2007-09-12 12:12:13.14	0	First line	\N	\N	1
-1089	571	2	1	880	44	20	\N	2007-09-12 12:12:13.148	0	Second line	\N	\N	1
-1090	572	1	1	680	68	10	\N	2007-09-12 12:12:13.563	0	First line	\N	\N	1
-1091	572	2	1	1480	74	20	\N	2007-09-12 12:12:13.567	0	Second line	\N	\N	1
-1092	573	1	1	240	24	10	\N	2007-09-12 12:12:14.006	0	First line	\N	\N	1
-1093	573	2	1	820	41	20	\N	2007-09-12 12:12:14.009	0	Second line	\N	\N	1
-1094	574	1	1	200	20	10	\N	2007-09-12 12:12:14.25	0	First line	\N	\N	1
-1095	574	2	1	1680	84	20	\N	2007-09-12 12:12:14.252	0	Second line	\N	\N	1
-1096	575	1	1	650	65	10	\N	2007-09-12 12:12:14.492	0	First line	\N	\N	1
-1097	575	2	1	760	38	20	\N	2007-09-12 12:12:14.494	0	Second line	\N	\N	1
-1098	576	1	1	650	65	10	\N	2007-09-12 12:12:14.736	0	First line	\N	\N	1
-1099	576	2	1	1960	98	20	\N	2007-09-12 12:12:14.739	0	Second line	\N	\N	1
-1100	577	1	1	870	87	10	\N	2007-09-12 12:12:14.993	0	First line	\N	\N	1
-1101	577	2	1	700	35	20	\N	2007-09-12 12:12:15	0	Second line	\N	\N	1
-1102	578	1	1	260	26	10	\N	2007-09-12 12:12:15.446	0	First line	\N	\N	1
-1103	578	2	1	1340	67	20	\N	2007-09-12 12:12:15.467	0	Second line	\N	\N	1
-1104	579	1	1	550	55	10	\N	2007-09-12 12:12:15.915	0	First line	\N	\N	1
-1105	579	2	1	1500	75	20	\N	2007-09-12 12:12:15.921	0	Second line	\N	\N	1
-1106	580	1	1	50	5	10	\N	2007-09-12 12:12:16.682	0	First line	\N	\N	1
-1107	580	2	1	220	11	20	\N	2007-09-12 12:12:16.684	0	Second line	\N	\N	1
-1108	581	1	1	200	20	10	\N	2007-09-12 12:12:16.933	0	First line	\N	\N	1
-1109	581	2	1	1860	93	20	\N	2007-09-12 12:12:16.935	0	Second line	\N	\N	1
-1110	582	1	1	850	85	10	\N	2007-09-12 12:12:17.172	0	First line	\N	\N	1
-1111	582	2	1	1120	56	20	\N	2007-09-12 12:12:17.175	0	Second line	\N	\N	1
-1112	583	1	1	20	2	10	\N	2007-09-12 12:12:17.412	0	First line	\N	\N	1
-1113	583	2	1	980	49	20	\N	2007-09-12 12:12:17.414	0	Second line	\N	\N	1
-1114	584	1	1	1000	100	10	\N	2007-09-12 12:12:17.72	0	First line	\N	\N	1
-1115	584	2	1	1100	55	20	\N	2007-09-12 12:12:17.734	0	Second line	\N	\N	1
-1116	585	1	1	220	22	10	\N	2007-09-12 12:12:18.259	0	First line	\N	\N	1
-1117	585	2	1	1400	70	20	\N	2007-09-12 12:12:18.284	0	Second line	\N	\N	1
-1118	586	1	1	470	47	10	\N	2007-09-12 12:12:18.757	0	First line	\N	\N	1
-1119	586	2	1	300	15	20	\N	2007-09-12 12:12:18.762	0	Second line	\N	\N	1
-1120	587	1	1	80	8	10	\N	2007-09-12 12:12:19.192	0	First line	\N	\N	1
-1121	587	2	1	1280	64	20	\N	2007-09-12 12:12:19.194	0	Second line	\N	\N	1
-1122	588	1	1	320	32	10	\N	2007-09-12 12:12:19.432	0	First line	\N	\N	1
-1123	588	2	1	1500	75	20	\N	2007-09-12 12:12:19.435	0	Second line	\N	\N	1
-1124	589	1	1	830	83	10	\N	2007-09-12 12:12:19.671	0	First line	\N	\N	1
-1125	589	2	1	2000	100	20	\N	2007-09-12 12:12:19.673	0	Second line	\N	\N	1
-1126	590	1	1	420	42	10	\N	2007-09-12 12:12:19.915	0	First line	\N	\N	1
-1127	590	2	1	200	10	20	\N	2007-09-12 12:12:19.918	0	Second line	\N	\N	1
-1128	591	1	1	170	17	10	\N	2007-09-12 12:12:20.215	0	First line	\N	\N	1
-1129	591	2	1	40	2	20	\N	2007-09-12 12:12:20.218	0	Second line	\N	\N	1
-1130	592	1	1	30	3	10	\N	2007-09-12 12:12:20.704	0	First line	\N	\N	1
-1131	592	2	1	720	36	20	\N	2007-09-12 12:12:20.714	0	Second line	\N	\N	1
-1132	593	1	1	900	90	10	\N	2007-09-12 12:12:21.173	0	First line	\N	\N	1
-1133	593	2	1	640	32	20	\N	2007-09-12 12:12:21.178	0	Second line	\N	\N	1
-1134	594	1	1	730	73	10	\N	2007-09-12 12:12:21.595	0	First line	\N	\N	1
-1135	594	2	1	1900	95	20	\N	2007-09-12 12:12:21.603	0	Second line	\N	\N	1
-1136	595	1	1	660	66	10	\N	2007-09-12 12:12:21.952	0	First line	\N	\N	1
-1137	595	2	1	1540	77	20	\N	2007-09-12 12:12:21.954	0	Second line	\N	\N	1
-1138	596	1	1	800	80	10	\N	2007-09-12 12:12:22.196	0	First line	\N	\N	1
-1139	596	2	1	420	21	20	\N	2007-09-12 12:12:22.198	0	Second line	\N	\N	1
-1140	597	1	1	610	61	10	\N	2007-09-12 12:12:22.439	0	First line	\N	\N	1
-1141	597	2	1	740	37	20	\N	2007-09-12 12:12:22.441	0	Second line	\N	\N	1
-1142	598	1	1	460	46	10	\N	2007-09-12 12:12:22.676	0	First line	\N	\N	1
-1143	598	2	1	1100	55	20	\N	2007-09-12 12:12:22.679	0	Second line	\N	\N	1
-1144	599	1	1	820	82	10	\N	2007-09-12 12:12:23.048	0	First line	\N	\N	1
-1145	599	2	1	1700	85	20	\N	2007-09-12 12:12:23.051	0	Second line	\N	\N	1
-1146	600	1	1	650	65	10	\N	2007-09-12 12:12:23.548	0	First line	\N	\N	1
-1147	600	2	1	40	2	20	\N	2007-09-12 12:12:23.558	0	Second line	\N	\N	1
-1148	601	1	1	400	40	10	\N	2007-09-12 12:12:24.041	0	First line	\N	\N	1
-1149	601	2	1	1320	66	20	\N	2007-09-12 12:12:24.05	0	Second line	\N	\N	1
-1150	602	1	1	580	58	10	\N	2007-09-12 12:12:24.453	0	First line	\N	\N	1
-1151	602	2	1	1900	95	20	\N	2007-09-12 12:12:24.455	0	Second line	\N	\N	1
-1152	603	1	1	400	40	10	\N	2007-09-12 12:12:24.709	0	First line	\N	\N	1
-1153	603	2	1	80	4	20	\N	2007-09-12 12:12:24.712	0	Second line	\N	\N	1
-1154	604	1	1	980	98	10	\N	2007-09-12 12:12:24.961	0	First line	\N	\N	1
-1155	604	2	1	1660	83	20	\N	2007-09-12 12:12:24.963	0	Second line	\N	\N	1
-1156	605	1	1	60	6	10	\N	2007-09-12 12:12:25.2	0	First line	\N	\N	1
-1157	605	2	1	1880	94	20	\N	2007-09-12 12:12:25.202	0	Second line	\N	\N	1
-1158	606	1	1	240	24	10	\N	2007-09-12 12:12:25.485	0	First line	\N	\N	1
-1159	606	2	1	1940	97	20	\N	2007-09-12 12:12:25.492	0	Second line	\N	\N	1
-1160	607	1	1	570	57	10	\N	2007-09-12 12:12:25.988	0	First line	\N	\N	1
-1161	607	2	1	880	44	20	\N	2007-09-12 12:12:25.997	0	Second line	\N	\N	1
-1162	608	1	1	150	15	10	\N	2007-09-12 12:12:26.444	0	First line	\N	\N	1
-1163	608	2	1	500	25	20	\N	2007-09-12 12:12:26.455	0	Second line	\N	\N	1
-1164	609	1	1	70	7	10	\N	2007-09-12 12:12:26.943	0	First line	\N	\N	1
-1165	609	2	1	780	39	20	\N	2007-09-12 12:12:26.948	0	Second line	\N	\N	1
-1166	610	1	1	70	7	10	\N	2007-09-12 12:12:27.223	0	First line	\N	\N	1
-1167	610	2	1	580	29	20	\N	2007-09-12 12:12:27.225	0	Second line	\N	\N	1
-1168	611	1	1	320	32	10	\N	2007-09-12 12:12:27.469	0	First line	\N	\N	1
-1169	611	2	1	1000	50	20	\N	2007-09-12 12:12:27.471	0	Second line	\N	\N	1
-1170	612	1	1	900	90	10	\N	2007-09-12 12:12:27.713	0	First line	\N	\N	1
-1171	612	2	1	720	36	20	\N	2007-09-12 12:12:27.715	0	Second line	\N	\N	1
-1172	613	1	1	820	82	10	\N	2007-09-12 12:12:27.948	0	First line	\N	\N	1
-1173	613	2	1	1620	81	20	\N	2007-09-12 12:12:27.951	0	Second line	\N	\N	1
-1174	614	1	1	700	70	10	\N	2007-09-12 12:12:28.375	0	First line	\N	\N	1
-1175	614	2	1	60	3	20	\N	2007-09-12 12:12:28.381	0	Second line	\N	\N	1
-1176	615	1	1	770	77	10	\N	2007-09-12 12:12:28.841	0	First line	\N	\N	1
-1177	615	2	1	840	42	20	\N	2007-09-12 12:12:28.848	0	Second line	\N	\N	1
-1178	616	1	1	480	48	10	\N	2007-09-12 12:12:29.315	0	First line	\N	\N	1
-1179	616	2	1	1700	85	20	\N	2007-09-12 12:12:29.322	0	Second line	\N	\N	1
-1180	617	1	1	170	17	10	\N	2007-09-12 12:12:29.769	0	First line	\N	\N	1
-1181	617	2	1	760	38	20	\N	2007-09-12 12:12:29.774	0	Second line	\N	\N	1
-1182	618	1	1	940	94	10	\N	2007-09-12 12:12:30.04	0	First line	\N	\N	1
-1183	618	2	1	1020	51	20	\N	2007-09-12 12:12:30.042	0	Second line	\N	\N	1
-1184	619	1	1	560	56	10	\N	2007-09-12 12:12:30.28	0	First line	\N	\N	1
-1185	619	2	1	360	18	20	\N	2007-09-12 12:12:30.282	0	Second line	\N	\N	1
-1186	620	1	1	300	30	10	\N	2007-09-12 12:12:30.526	0	First line	\N	\N	1
-1187	620	2	1	960	48	20	\N	2007-09-12 12:12:30.529	0	Second line	\N	\N	1
-1188	621	1	1	270	27	10	\N	2007-09-12 12:12:30.769	0	First line	\N	\N	1
-1189	621	2	1	760	38	20	\N	2007-09-12 12:12:30.772	0	Second line	\N	\N	1
-1190	622	1	1	680	68	10	\N	2007-09-12 12:12:31.225	0	First line	\N	\N	1
-1191	622	2	1	660	33	20	\N	2007-09-12 12:12:31.232	0	Second line	\N	\N	1
-1192	623	1	1	970	97	10	\N	2007-09-12 12:12:31.679	0	First line	\N	\N	1
-1193	623	2	1	1320	66	20	\N	2007-09-12 12:12:31.688	0	Second line	\N	\N	1
-1194	624	1	1	580	58	10	\N	2007-09-12 12:12:32.187	0	First line	\N	\N	1
-1195	624	2	1	1740	87	20	\N	2007-09-12 12:12:32.193	0	Second line	\N	\N	1
-1196	625	1	1	330	33	10	\N	2007-09-12 12:12:32.487	0	First line	\N	\N	1
-1197	625	2	1	1540	77	20	\N	2007-09-12 12:12:32.49	0	Second line	\N	\N	1
-1198	626	1	1	700	70	10	\N	2007-09-12 12:12:32.724	0	First line	\N	\N	1
-1199	626	2	1	1040	52	20	\N	2007-09-12 12:12:32.727	0	Second line	\N	\N	1
-1200	627	1	1	750	75	10	\N	2007-09-12 12:12:32.96	0	First line	\N	\N	1
-1201	627	2	1	1020	51	20	\N	2007-09-12 12:12:32.962	0	Second line	\N	\N	1
-1202	628	1	1	340	34	10	\N	2007-09-12 12:12:33.203	0	First line	\N	\N	1
-1203	628	2	1	580	29	20	\N	2007-09-12 12:12:33.205	0	Second line	\N	\N	1
-1204	629	1	1	930	93	10	\N	2007-09-12 12:12:33.636	0	First line	\N	\N	1
-1205	629	2	1	880	44	20	\N	2007-09-12 12:12:33.646	0	Second line	\N	\N	1
-1206	630	1	1	960	96	10	\N	2007-09-12 12:12:34.132	0	First line	\N	\N	1
-1207	630	2	1	1000	50	20	\N	2007-09-12 12:12:34.139	0	Second line	\N	\N	1
-1208	631	1	1	130	13	10	\N	2007-09-12 12:12:34.586	0	First line	\N	\N	1
-1209	631	2	1	1480	74	20	\N	2007-09-12 12:12:34.59	0	Second line	\N	\N	1
-1210	632	1	1	160	16	10	\N	2007-09-12 12:12:35.002	0	First line	\N	\N	1
-1211	632	2	1	1620	81	20	\N	2007-09-12 12:12:35.004	0	Second line	\N	\N	1
-1212	633	1	1	410	41	10	\N	2007-09-12 12:12:35.242	0	First line	\N	\N	1
-1213	633	2	1	120	6	20	\N	2007-09-12 12:12:35.244	0	Second line	\N	\N	1
-1214	634	1	1	220	22	10	\N	2007-09-12 12:12:35.481	0	First line	\N	\N	1
-1215	634	2	1	700	35	20	\N	2007-09-12 12:12:35.484	0	Second line	\N	\N	1
-1216	635	1	1	210	21	10	\N	2007-09-12 12:12:35.725	0	First line	\N	\N	1
-1217	635	2	1	1160	58	20	\N	2007-09-12 12:12:35.728	0	Second line	\N	\N	1
-1218	636	1	1	320	32	10	\N	2007-09-12 12:12:36.034	0	First line	\N	\N	1
-1219	636	2	1	1560	78	20	\N	2007-09-12 12:12:36.041	0	Second line	\N	\N	1
-1220	637	1	1	150	15	10	\N	2007-09-12 12:12:36.497	0	First line	\N	\N	1
-1221	637	2	1	1340	67	20	\N	2007-09-12 12:12:36.502	0	Second line	\N	\N	1
-1222	638	1	1	150	15	10	\N	2007-09-12 12:12:37.004	0	First line	\N	\N	1
-1223	638	2	1	260	13	20	\N	2007-09-12 12:12:37.01	0	Second line	\N	\N	1
-1224	639	1	1	740	74	10	\N	2007-09-12 12:12:37.501	0	First line	\N	\N	1
-1225	639	2	1	1800	90	20	\N	2007-09-12 12:12:37.504	0	Second line	\N	\N	1
-1226	640	1	1	320	32	10	\N	2007-09-12 12:12:37.776	0	First line	\N	\N	1
-1227	640	2	1	1100	55	20	\N	2007-09-12 12:12:37.779	0	Second line	\N	\N	1
-1228	641	1	1	570	57	10	\N	2007-09-12 12:12:38.021	0	First line	\N	\N	1
-1229	641	2	1	420	21	20	\N	2007-09-12 12:12:38.023	0	Second line	\N	\N	1
-1230	642	1	1	160	16	10	\N	2007-09-12 12:12:38.257	0	First line	\N	\N	1
-1231	642	2	1	1460	73	20	\N	2007-09-12 12:12:38.26	0	Second line	\N	\N	1
-1232	643	1	1	670	67	10	\N	2007-09-12 12:12:38.501	0	First line	\N	\N	1
-1233	643	2	1	520	26	20	\N	2007-09-12 12:12:38.503	0	Second line	\N	\N	1
-1234	644	1	1	880	88	10	\N	2007-09-12 12:12:38.972	0	First line	\N	\N	1
-1235	644	2	1	1740	87	20	\N	2007-09-12 12:12:38.976	0	Second line	\N	\N	1
-1236	645	1	1	160	16	10	\N	2007-09-12 12:12:39.432	0	First line	\N	\N	1
-1237	645	2	1	1620	81	20	\N	2007-09-12 12:12:39.443	0	Second line	\N	\N	1
-1238	646	1	1	960	96	10	\N	2007-09-12 12:12:39.946	0	First line	\N	\N	1
-1239	646	2	1	420	21	20	\N	2007-09-12 12:12:39.95	0	Second line	\N	\N	1
-1240	647	1	1	160	16	10	\N	2007-09-12 12:12:40.333	0	First line	\N	\N	1
-1241	647	2	1	840	42	20	\N	2007-09-12 12:12:40.336	0	Second line	\N	\N	1
-1242	648	1	1	300	30	10	\N	2007-09-12 12:12:40.58	0	First line	\N	\N	1
-1243	648	2	1	100	5	20	\N	2007-09-12 12:12:40.583	0	Second line	\N	\N	1
-1244	649	1	1	450	45	10	\N	2007-09-12 12:12:40.822	0	First line	\N	\N	1
-1245	649	2	1	1540	77	20	\N	2007-09-12 12:12:40.824	0	Second line	\N	\N	1
-1246	650	1	1	980	98	10	\N	2007-09-12 12:12:41.074	0	First line	\N	\N	1
-1247	650	2	1	1560	78	20	\N	2007-09-12 12:12:41.076	0	Second line	\N	\N	1
-1248	651	1	1	200	20	10	\N	2007-09-12 12:12:41.409	0	First line	\N	\N	1
-1249	651	2	1	840	42	20	\N	2007-09-12 12:12:41.419	0	Second line	\N	\N	1
-1250	652	1	1	880	88	10	\N	2007-09-12 12:12:41.884	0	First line	\N	\N	1
-1251	652	2	1	140	7	20	\N	2007-09-12 12:12:41.894	0	Second line	\N	\N	1
-1252	653	1	1	980	98	10	\N	2007-09-12 12:12:42.344	0	First line	\N	\N	1
-1253	653	2	1	1140	57	20	\N	2007-09-12 12:12:42.351	0	Second line	\N	\N	1
-1254	654	1	1	660	66	10	\N	2007-09-12 12:12:42.806	0	First line	\N	\N	1
-1255	654	2	1	2000	100	20	\N	2007-09-12 12:12:42.818	0	Second line	\N	\N	1
-1256	655	1	1	450	45	10	\N	2007-09-12 12:12:43.053	0	First line	\N	\N	1
-1257	655	2	1	360	18	20	\N	2007-09-12 12:12:43.055	0	Second line	\N	\N	1
-1258	656	1	1	970	97	10	\N	2007-09-12 12:12:43.289	0	First line	\N	\N	1
-1259	656	2	1	1280	64	20	\N	2007-09-12 12:12:43.291	0	Second line	\N	\N	1
-1260	657	1	1	80	8	10	\N	2007-09-12 12:12:43.536	0	First line	\N	\N	1
-1261	657	2	1	140	7	20	\N	2007-09-12 12:12:43.539	0	Second line	\N	\N	1
-1262	658	1	1	340	34	10	\N	2007-09-12 12:12:43.785	0	First line	\N	\N	1
-1263	658	2	1	240	12	20	\N	2007-09-12 12:12:43.787	0	Second line	\N	\N	1
-1264	659	1	1	80	8	10	\N	2007-09-12 12:12:44.241	0	First line	\N	\N	1
-1265	659	2	1	1640	82	20	\N	2007-09-12 12:12:44.246	0	Second line	\N	\N	1
-1266	660	1	1	700	70	10	\N	2007-09-12 12:12:44.768	0	First line	\N	\N	1
-1267	660	2	1	1540	77	20	\N	2007-09-12 12:12:44.776	0	Second line	\N	\N	1
-1268	661	1	1	540	54	10	\N	2007-09-12 12:12:45.236	0	First line	\N	\N	1
-1269	661	2	1	1440	72	20	\N	2007-09-12 12:12:45.247	0	Second line	\N	\N	1
-1270	662	1	1	470	47	10	\N	2007-09-12 12:12:45.601	0	First line	\N	\N	1
-1271	662	2	1	200	10	20	\N	2007-09-12 12:12:45.603	0	Second line	\N	\N	1
-1272	663	1	1	500	50	10	\N	2007-09-12 12:12:45.835	0	First line	\N	\N	1
-1273	663	2	1	1420	71	20	\N	2007-09-12 12:12:45.838	0	Second line	\N	\N	1
-1274	664	1	1	20	2	10	\N	2007-09-12 12:12:46.072	0	First line	\N	\N	1
-1275	664	2	1	280	14	20	\N	2007-09-12 12:12:46.075	0	Second line	\N	\N	1
-1276	665	1	1	140	14	10	\N	2007-09-12 12:12:46.324	0	First line	\N	\N	1
-1277	665	2	1	1520	76	20	\N	2007-09-12 12:12:46.326	0	Second line	\N	\N	1
-1278	666	1	1	290	29	10	\N	2007-09-12 12:12:46.643	0	First line	\N	\N	1
-1279	666	2	1	120	6	20	\N	2007-09-12 12:12:46.647	0	Second line	\N	\N	1
-1280	667	1	1	410	41	10	\N	2007-09-12 12:12:47.11	0	First line	\N	\N	1
-1281	667	2	1	1420	71	20	\N	2007-09-12 12:12:47.12	0	Second line	\N	\N	1
-1282	668	1	1	800	80	10	\N	2007-09-12 12:12:47.575	0	First line	\N	\N	1
-1283	668	2	1	1840	92	20	\N	2007-09-12 12:12:47.58	0	Second line	\N	\N	1
-1284	669	1	1	500	50	10	\N	2007-09-12 12:12:48.036	0	First line	\N	\N	1
-1285	669	2	1	1380	69	20	\N	2007-09-12 12:12:48.044	0	Second line	\N	\N	1
-1286	670	1	1	460	46	10	\N	2007-09-12 12:12:48.333	0	First line	\N	\N	1
-1287	670	2	1	1660	83	20	\N	2007-09-12 12:12:48.335	0	Second line	\N	\N	1
-1288	671	1	1	490	49	10	\N	2007-09-12 12:12:48.582	0	First line	\N	\N	1
-1289	671	2	1	820	41	20	\N	2007-09-12 12:12:48.594	0	Second line	\N	\N	1
-1290	672	1	1	700	70	10	\N	2007-09-12 12:12:48.835	0	First line	\N	\N	1
-1291	672	2	1	1960	98	20	\N	2007-09-12 12:12:48.838	0	Second line	\N	\N	1
-1292	673	1	1	550	55	10	\N	2007-09-12 12:12:49.07	0	First line	\N	\N	1
-1293	673	2	1	120	6	20	\N	2007-09-12 12:12:49.073	0	Second line	\N	\N	1
-1294	674	1	1	340	34	10	\N	2007-09-12 12:12:49.502	0	First line	\N	\N	1
-1295	674	2	1	820	41	20	\N	2007-09-12 12:12:49.511	0	Second line	\N	\N	1
-1296	675	1	1	940	94	10	\N	2007-09-12 12:12:49.976	0	First line	\N	\N	1
-1297	675	2	1	1680	84	20	\N	2007-09-12 12:12:49.989	0	Second line	\N	\N	1
-1298	676	1	1	800	80	10	\N	2007-09-12 12:12:50.468	0	First line	\N	\N	1
-1299	676	2	1	1560	78	20	\N	2007-09-12 12:12:50.477	0	Second line	\N	\N	1
-1300	677	1	1	840	84	10	\N	2007-09-12 12:12:50.913	0	First line	\N	\N	1
-1301	677	2	1	1980	99	20	\N	2007-09-12 12:12:50.915	0	Second line	\N	\N	1
-1302	678	1	1	820	82	10	\N	2007-09-12 12:12:51.156	0	First line	\N	\N	1
-1303	678	2	1	1640	82	20	\N	2007-09-12 12:12:51.159	0	Second line	\N	\N	1
-1304	679	1	1	830	83	10	\N	2007-09-12 12:12:51.402	0	First line	\N	\N	1
-1305	679	2	1	1300	65	20	\N	2007-09-12 12:12:51.404	0	Second line	\N	\N	1
-1306	680	1	1	670	67	10	\N	2007-09-12 12:12:51.643	0	First line	\N	\N	1
-1307	680	2	1	840	42	20	\N	2007-09-12 12:12:51.645	0	Second line	\N	\N	1
-1308	681	1	1	410	41	10	\N	2007-09-12 12:12:51.968	0	First line	\N	\N	1
-1309	681	2	1	420	21	20	\N	2007-09-12 12:12:51.972	0	Second line	\N	\N	1
-1310	682	1	1	420	42	10	\N	2007-09-12 12:12:52.414	0	First line	\N	\N	1
-1311	682	2	1	720	36	20	\N	2007-09-12 12:12:52.424	0	Second line	\N	\N	1
-1312	683	1	1	580	58	10	\N	2007-09-12 12:12:52.913	0	First line	\N	\N	1
-1313	683	2	1	660	33	20	\N	2007-09-12 12:12:52.916	0	Second line	\N	\N	1
-1314	684	1	1	560	56	10	\N	2007-09-12 12:12:53.364	0	First line	\N	\N	1
-1315	684	2	1	1780	89	20	\N	2007-09-12 12:12:53.366	0	Second line	\N	\N	1
-1316	685	1	1	700	70	10	\N	2007-09-12 12:12:53.617	0	First line	\N	\N	1
-1317	685	2	1	1880	94	20	\N	2007-09-12 12:12:53.619	0	Second line	\N	\N	1
-1318	686	1	1	580	58	10	\N	2007-09-12 12:12:53.861	0	First line	\N	\N	1
-1319	686	2	1	420	21	20	\N	2007-09-12 12:12:53.864	0	Second line	\N	\N	1
-1320	687	1	1	680	68	10	\N	2007-09-12 12:12:54.103	0	First line	\N	\N	1
-1321	687	2	1	1260	63	20	\N	2007-09-12 12:12:54.105	0	Second line	\N	\N	1
-1322	688	1	1	200	20	10	\N	2007-09-12 12:12:54.342	0	First line	\N	\N	1
-1323	688	2	1	560	28	20	\N	2007-09-12 12:12:54.35	0	Second line	\N	\N	1
-1324	689	1	1	670	67	10	\N	2007-09-12 12:12:54.8	0	First line	\N	\N	1
-1325	689	2	1	380	19	20	\N	2007-09-12 12:12:54.818	0	Second line	\N	\N	1
-1326	690	1	1	800	80	10	\N	2007-09-12 12:12:55.279	0	First line	\N	\N	1
-1327	690	2	1	320	16	20	\N	2007-09-12 12:12:55.289	0	Second line	\N	\N	1
-1328	691	1	1	590	59	10	\N	2007-09-12 12:12:55.75	0	First line	\N	\N	1
-1329	691	2	1	500	25	20	\N	2007-09-12 12:12:55.761	0	Second line	\N	\N	1
-1330	692	1	1	320	32	10	\N	2007-09-12 12:12:56.172	0	First line	\N	\N	1
-1331	692	2	1	1120	56	20	\N	2007-09-12 12:12:56.174	0	Second line	\N	\N	1
-1332	693	1	1	60	6	10	\N	2007-09-12 12:12:56.413	0	First line	\N	\N	1
-1333	693	2	1	1800	90	20	\N	2007-09-12 12:12:56.415	0	Second line	\N	\N	1
-1334	694	1	1	20	2	10	\N	2007-09-12 12:12:56.663	0	First line	\N	\N	1
-1335	694	2	1	560	28	20	\N	2007-09-12 12:12:56.665	0	Second line	\N	\N	1
-1336	695	1	1	270	27	10	\N	2007-09-12 12:12:56.909	0	First line	\N	\N	1
-1337	695	2	1	1680	84	20	\N	2007-09-12 12:12:56.912	0	Second line	\N	\N	1
-1338	696	1	1	160	16	10	\N	2007-09-12 12:12:57.195	0	First line	\N	\N	1
-1339	696	2	1	1520	76	20	\N	2007-09-12 12:12:57.199	0	Second line	\N	\N	1
-1340	697	1	1	560	56	10	\N	2007-09-12 12:12:57.652	0	First line	\N	\N	1
-1341	697	2	1	1060	53	20	\N	2007-09-12 12:12:57.658	0	Second line	\N	\N	1
-1342	698	1	1	240	24	10	\N	2007-09-12 12:12:58.151	0	First line	\N	\N	1
-1343	698	2	1	1260	63	20	\N	2007-09-12 12:12:58.155	0	Second line	\N	\N	1
-1344	699	1	1	220	22	10	\N	2007-09-12 12:12:58.648	0	First line	\N	\N	1
-1345	699	2	1	920	46	20	\N	2007-09-12 12:12:58.655	0	Second line	\N	\N	1
-1346	700	1	1	210	21	10	\N	2007-09-12 12:12:58.927	0	First line	\N	\N	1
-1347	700	2	1	740	37	20	\N	2007-09-12 12:12:58.93	0	Second line	\N	\N	1
-1348	701	1	1	720	72	10	\N	2007-09-12 12:12:59.177	0	First line	\N	\N	1
-1349	701	2	1	1940	97	20	\N	2007-09-12 12:12:59.179	0	Second line	\N	\N	1
-1350	702	1	1	160	16	10	\N	2007-09-12 12:12:59.429	0	First line	\N	\N	1
-1351	702	2	1	380	19	20	\N	2007-09-12 12:12:59.431	0	Second line	\N	\N	1
-1352	703	1	1	320	32	10	\N	2007-09-12 12:12:59.681	0	First line	\N	\N	1
-1353	703	2	1	620	31	20	\N	2007-09-12 12:12:59.684	0	Second line	\N	\N	1
-1354	704	1	1	470	47	10	\N	2007-09-12 12:13:00.115	0	First line	\N	\N	1
-1355	704	2	1	1520	76	20	\N	2007-09-12 12:13:00.122	0	Second line	\N	\N	1
-1356	705	1	1	680	68	10	\N	2007-09-12 12:13:00.593	0	First line	\N	\N	1
-1357	705	2	1	160	8	20	\N	2007-09-12 12:13:00.6	0	Second line	\N	\N	1
-1358	706	1	1	470	47	10	\N	2007-09-12 12:13:01.085	0	First line	\N	\N	1
-1359	706	2	1	1980	99	20	\N	2007-09-12 12:13:01.093	0	Second line	\N	\N	1
-1360	707	1	1	800	80	10	\N	2007-09-12 12:13:01.49	0	First line	\N	\N	1
-1361	707	2	1	1520	76	20	\N	2007-09-12 12:13:01.492	0	Second line	\N	\N	1
-1362	708	1	1	140	14	10	\N	2007-09-12 12:13:01.729	0	First line	\N	\N	1
-1363	708	2	1	1260	63	20	\N	2007-09-12 12:13:01.731	0	Second line	\N	\N	1
-1364	709	1	1	350	35	10	\N	2007-09-12 12:13:01.977	0	First line	\N	\N	1
-1365	709	2	1	1660	83	20	\N	2007-09-12 12:13:01.98	0	Second line	\N	\N	1
-1366	710	1	1	290	29	10	\N	2007-09-12 12:13:02.224	0	First line	\N	\N	1
-1367	710	2	1	740	37	20	\N	2007-09-12 12:13:02.226	0	Second line	\N	\N	1
-1368	711	1	1	260	26	10	\N	2007-09-12 12:13:02.512	0	First line	\N	\N	1
-1369	711	2	1	1860	93	20	\N	2007-09-12 12:13:02.521	0	Second line	\N	\N	1
-1370	712	1	1	920	92	10	\N	2007-09-12 12:13:02.955	0	First line	\N	\N	1
-1371	712	2	1	1220	61	20	\N	2007-09-12 12:13:02.967	0	Second line	\N	\N	1
-1372	713	1	1	590	59	10	\N	2007-09-12 12:13:03.444	0	First line	\N	\N	1
-1373	713	2	1	1700	85	20	\N	2007-09-12 12:13:03.455	0	Second line	\N	\N	1
-1374	714	1	1	710	71	10	\N	2007-09-12 12:13:03.948	0	First line	\N	\N	1
-1375	714	2	1	320	16	20	\N	2007-09-12 12:13:03.954	0	Second line	\N	\N	1
-1376	715	1	1	290	29	10	\N	2007-09-12 12:13:04.231	0	First line	\N	\N	1
-1377	715	2	1	1360	68	20	\N	2007-09-12 12:13:04.233	0	Second line	\N	\N	1
-1378	716	1	1	600	60	10	\N	2007-09-12 12:13:04.475	0	First line	\N	\N	1
-1379	716	2	1	200	10	20	\N	2007-09-12 12:13:04.477	0	Second line	\N	\N	1
-1380	717	1	1	580	58	10	\N	2007-09-12 12:13:04.73	0	First line	\N	\N	1
-1381	717	2	1	1160	58	20	\N	2007-09-12 12:13:04.732	0	Second line	\N	\N	1
-1382	718	1	1	980	98	10	\N	2007-09-12 12:13:04.972	0	First line	\N	\N	1
-1383	718	2	1	500	25	20	\N	2007-09-12 12:13:04.974	0	Second line	\N	\N	1
-1384	719	1	1	950	95	10	\N	2007-09-12 12:13:05.43	0	First line	\N	\N	1
-1385	719	2	1	1760	88	20	\N	2007-09-12 12:13:05.438	0	Second line	\N	\N	1
-1386	720	1	1	810	81	10	\N	2007-09-12 12:13:05.905	0	First line	\N	\N	1
-1387	720	2	1	620	31	20	\N	2007-09-12 12:13:05.913	0	Second line	\N	\N	1
-1388	721	1	1	940	94	10	\N	2007-09-12 12:13:06.409	0	First line	\N	\N	1
-1389	721	2	1	1520	76	20	\N	2007-09-12 12:13:06.419	0	Second line	\N	\N	1
-1390	722	1	1	90	9	10	\N	2007-09-12 12:13:06.709	0	First line	\N	\N	1
-1391	722	2	1	600	30	20	\N	2007-09-12 12:13:06.721	0	Second line	\N	\N	1
-1392	723	1	1	320	32	10	\N	2007-09-12 12:13:06.952	0	First line	\N	\N	1
-1393	723	2	1	820	41	20	\N	2007-09-12 12:13:06.955	0	Second line	\N	\N	1
-1394	724	1	1	300	30	10	\N	2007-09-12 12:13:07.209	0	First line	\N	\N	1
-1395	724	2	1	1480	74	20	\N	2007-09-12 12:13:07.211	0	Second line	\N	\N	1
-1396	725	1	1	120	12	10	\N	2007-09-12 12:13:07.445	0	First line	\N	\N	1
-1397	725	2	1	1740	87	20	\N	2007-09-12 12:13:07.447	0	Second line	\N	\N	1
-1398	726	1	1	810	81	10	\N	2007-09-12 12:13:07.869	0	First line	\N	\N	1
-1399	726	2	1	500	25	20	\N	2007-09-12 12:13:07.875	0	Second line	\N	\N	1
-1400	727	1	1	190	19	10	\N	2007-09-12 12:13:08.32	0	First line	\N	\N	1
-1401	727	2	1	100	5	20	\N	2007-09-12 12:13:08.333	0	Second line	\N	\N	1
-1402	728	1	1	560	56	10	\N	2007-09-12 12:13:08.823	0	First line	\N	\N	1
-1403	728	2	1	1940	97	20	\N	2007-09-12 12:13:08.826	0	Second line	\N	\N	1
-1404	729	1	1	800	80	10	\N	2007-09-12 12:13:09.236	0	First line	\N	\N	1
-1405	729	2	1	1580	79	20	\N	2007-09-12 12:13:09.239	0	Second line	\N	\N	1
-1406	730	1	1	910	91	10	\N	2007-09-12 12:13:09.489	0	First line	\N	\N	1
-1407	730	2	1	1220	61	20	\N	2007-09-12 12:13:09.492	0	Second line	\N	\N	1
-1408	731	1	1	720	72	10	\N	2007-09-12 12:13:09.731	0	First line	\N	\N	1
-1409	731	2	1	620	31	20	\N	2007-09-12 12:13:09.734	0	Second line	\N	\N	1
-1410	732	1	1	810	81	10	\N	2007-09-12 12:13:09.979	0	First line	\N	\N	1
-1411	732	2	1	100	5	20	\N	2007-09-12 12:13:09.981	0	Second line	\N	\N	1
-1412	733	1	1	210	21	10	\N	2007-09-12 12:13:10.255	0	First line	\N	\N	1
-1413	733	2	1	1240	62	20	\N	2007-09-12 12:13:10.262	0	Second line	\N	\N	1
-1414	734	1	1	930	93	10	\N	2007-09-12 12:13:10.738	0	First line	\N	\N	1
-1415	734	2	1	840	42	20	\N	2007-09-12 12:13:10.747	0	Second line	\N	\N	1
-1416	735	1	1	640	64	10	\N	2007-09-12 12:13:11.181	0	First line	\N	\N	1
-1417	735	2	1	1500	75	20	\N	2007-09-12 12:13:11.188	0	Second line	\N	\N	1
-1418	736	1	1	130	13	10	\N	2007-09-12 12:13:11.72	0	First line	\N	\N	1
-1419	736	2	1	780	39	20	\N	2007-09-12 12:13:11.725	0	Second line	\N	\N	1
-1420	737	1	1	810	81	10	\N	2007-09-12 12:13:12.004	0	First line	\N	\N	1
-1421	737	2	1	1120	56	20	\N	2007-09-12 12:13:12.007	0	Second line	\N	\N	1
-1422	738	1	1	200	20	10	\N	2007-09-12 12:13:12.256	0	First line	\N	\N	1
-1423	738	2	1	40	2	20	\N	2007-09-12 12:13:12.259	0	Second line	\N	\N	1
-1424	739	1	1	750	75	10	\N	2007-09-12 12:13:12.502	0	First line	\N	\N	1
-1425	739	2	1	640	32	20	\N	2007-09-12 12:13:12.513	0	Second line	\N	\N	1
-1426	740	1	1	530	53	10	\N	2007-09-12 12:13:12.771	0	First line	\N	\N	1
-1427	740	2	1	980	49	20	\N	2007-09-12 12:13:12.773	0	Second line	\N	\N	1
-1428	741	1	1	90	9	10	\N	2007-09-12 12:13:13.223	0	First line	\N	\N	1
-1429	741	2	1	1780	89	20	\N	2007-09-12 12:13:13.228	0	Second line	\N	\N	1
-1430	742	1	1	950	95	10	\N	2007-09-12 12:13:13.705	0	First line	\N	\N	1
-1431	742	2	1	260	13	20	\N	2007-09-12 12:13:13.714	0	Second line	\N	\N	1
-1432	743	1	1	40	4	10	\N	2007-09-12 12:13:14.213	0	First line	\N	\N	1
-1433	743	2	1	1000	50	20	\N	2007-09-12 12:13:14.216	0	Second line	\N	\N	1
-1434	744	1	1	110	11	10	\N	2007-09-12 12:13:14.495	0	First line	\N	\N	1
-1435	744	2	1	1720	86	20	\N	2007-09-12 12:13:14.497	0	Second line	\N	\N	1
-1436	745	1	1	920	92	10	\N	2007-09-12 12:13:14.741	0	First line	\N	\N	1
-1437	745	2	1	1520	76	20	\N	2007-09-12 12:13:14.743	0	Second line	\N	\N	1
-1438	746	1	1	370	37	10	\N	2007-09-12 12:13:14.999	0	First line	\N	\N	1
-1439	746	2	1	1520	76	20	\N	2007-09-12 12:13:15.002	0	Second line	\N	\N	1
-1440	747	1	1	840	84	10	\N	2007-09-12 12:13:15.231	0	First line	\N	\N	1
-1441	747	2	1	180	9	20	\N	2007-09-12 12:13:15.234	0	Second line	\N	\N	1
-1442	748	1	1	580	58	10	\N	2007-09-12 12:13:15.656	0	First line	\N	\N	1
-1443	748	2	1	100	5	20	\N	2007-09-12 12:13:15.66	0	Second line	\N	\N	1
-1444	749	1	1	530	53	10	\N	2007-09-12 12:13:16.338	0	First line	\N	\N	1
-1445	749	2	1	680	34	20	\N	2007-09-12 12:13:16.376	0	Second line	\N	\N	1
-1446	750	1	1	920	92	10	\N	2007-09-12 12:13:16.954	0	First line	\N	\N	1
-1447	750	2	1	500	25	20	\N	2007-09-12 12:13:16.956	0	Second line	\N	\N	1
-1448	751	1	1	10	1	10	\N	2007-09-12 12:13:17.199	0	First line	\N	\N	1
-1449	751	2	1	1040	52	20	\N	2007-09-12 12:13:17.202	0	Second line	\N	\N	1
-1450	752	1	1	400	40	10	\N	2007-09-12 12:13:17.439	0	First line	\N	\N	1
-1451	752	2	1	820	41	20	\N	2007-09-12 12:13:17.441	0	Second line	\N	\N	1
-1452	753	1	1	870	87	10	\N	2007-09-12 12:13:17.681	0	First line	\N	\N	1
-1453	753	2	1	1620	81	20	\N	2007-09-12 12:13:17.683	0	Second line	\N	\N	1
-1454	754	1	1	820	82	10	\N	2007-09-12 12:13:17.974	0	First line	\N	\N	1
-1455	754	2	1	780	39	20	\N	2007-09-12 12:13:17.978	0	Second line	\N	\N	1
-1456	755	1	1	70	7	10	\N	2007-09-12 12:13:18.46	0	First line	\N	\N	1
-1457	755	2	1	1800	90	20	\N	2007-09-12 12:13:18.472	0	Second line	\N	\N	1
-1458	756	1	1	740	74	10	\N	2007-09-12 12:13:18.935	0	First line	\N	\N	1
-1459	756	2	1	780	39	20	\N	2007-09-12 12:13:18.948	0	Second line	\N	\N	1
-1460	757	1	1	340	34	10	\N	2007-09-12 12:13:19.412	0	First line	\N	\N	1
-1461	757	2	1	160	8	20	\N	2007-09-12 12:13:19.421	0	Second line	\N	\N	1
-1462	758	1	1	220	22	10	\N	2007-09-12 12:13:19.706	0	First line	\N	\N	1
-1463	758	2	1	1320	66	20	\N	2007-09-12 12:13:19.709	0	Second line	\N	\N	1
-1464	759	1	1	960	96	10	\N	2007-09-12 12:13:19.941	0	First line	\N	\N	1
-1465	759	2	1	1640	82	20	\N	2007-09-12 12:13:19.944	0	Second line	\N	\N	1
-1466	760	1	1	740	74	10	\N	2007-09-12 12:13:20.192	0	First line	\N	\N	1
-1467	760	2	1	1280	64	20	\N	2007-09-12 12:13:20.194	0	Second line	\N	\N	1
-1468	761	1	1	120	12	10	\N	2007-09-12 12:13:20.431	0	First line	\N	\N	1
-1469	761	2	1	920	46	20	\N	2007-09-12 12:13:20.433	0	Second line	\N	\N	1
-1470	762	1	1	680	68	10	\N	2007-09-12 12:13:20.856	0	First line	\N	\N	1
-1471	762	2	1	1640	82	20	\N	2007-09-12 12:13:20.864	0	Second line	\N	\N	1
-1472	763	1	1	890	89	10	\N	2007-09-12 12:13:21.339	0	First line	\N	\N	1
-1473	763	2	1	440	22	20	\N	2007-09-12 12:13:21.343	0	Second line	\N	\N	1
-1474	764	1	1	40	4	10	\N	2007-09-12 12:13:21.818	0	First line	\N	\N	1
-1475	764	2	1	380	19	20	\N	2007-09-12 12:13:21.825	0	Second line	\N	\N	1
-1476	765	1	1	600	60	10	\N	2007-09-12 12:13:22.243	0	First line	\N	\N	1
-1477	765	2	1	1240	62	20	\N	2007-09-12 12:13:22.245	0	Second line	\N	\N	1
-1478	766	1	1	380	38	10	\N	2007-09-12 12:13:22.486	0	First line	\N	\N	1
-1479	766	2	1	1280	64	20	\N	2007-09-12 12:13:22.489	0	Second line	\N	\N	1
-1480	767	1	1	950	95	10	\N	2007-09-12 12:13:22.736	0	First line	\N	\N	1
-1481	767	2	1	360	18	20	\N	2007-09-12 12:13:22.739	0	Second line	\N	\N	1
-1482	768	1	1	930	93	10	\N	2007-09-12 12:13:23.001	0	First line	\N	\N	1
-1483	768	2	1	1420	71	20	\N	2007-09-12 12:13:23.003	0	Second line	\N	\N	1
-1484	769	1	1	200	20	10	\N	2007-09-12 12:13:23.285	0	First line	\N	\N	1
-1485	769	2	1	480	24	20	\N	2007-09-12 12:13:23.289	0	Second line	\N	\N	1
-1486	770	1	1	620	62	10	\N	2007-09-12 12:13:23.71	0	First line	\N	\N	1
-1487	770	2	1	1300	65	20	\N	2007-09-12 12:13:23.717	0	Second line	\N	\N	1
-1488	771	1	1	410	41	10	\N	2007-09-12 12:13:24.182	0	First line	\N	\N	1
-1489	771	2	1	1180	59	20	\N	2007-09-12 12:13:24.189	0	Second line	\N	\N	1
-1490	772	1	1	830	83	10	\N	2007-09-12 12:13:24.648	0	First line	\N	\N	1
-1491	772	2	1	1980	99	20	\N	2007-09-12 12:13:24.652	0	Second line	\N	\N	1
-1492	773	1	1	740	74	10	\N	2007-09-12 12:13:25.036	0	First line	\N	\N	1
-1493	773	2	1	840	42	20	\N	2007-09-12 12:13:25.038	0	Second line	\N	\N	1
-1494	774	1	1	530	53	10	\N	2007-09-12 12:13:25.289	0	First line	\N	\N	1
-1495	774	2	1	440	22	20	\N	2007-09-12 12:13:25.291	0	Second line	\N	\N	1
-1496	775	1	1	800	80	10	\N	2007-09-12 12:13:25.537	0	First line	\N	\N	1
-1497	775	2	1	560	28	20	\N	2007-09-12 12:13:25.539	0	Second line	\N	\N	1
-1498	776	1	1	70	7	10	\N	2007-09-12 12:13:25.793	0	First line	\N	\N	1
-1499	776	2	1	280	14	20	\N	2007-09-12 12:13:25.795	0	Second line	\N	\N	1
-1500	777	1	1	570	57	10	\N	2007-09-12 12:13:26.105	0	First line	\N	\N	1
-1501	777	2	1	80	4	20	\N	2007-09-12 12:13:26.117	0	Second line	\N	\N	1
-1502	778	1	1	430	43	10	\N	2007-09-12 12:13:26.621	0	First line	\N	\N	1
-1503	778	2	1	1720	86	20	\N	2007-09-12 12:13:26.626	0	Second line	\N	\N	1
-1504	779	1	1	530	53	10	\N	2007-09-12 12:13:27.116	0	First line	\N	\N	1
-1505	779	2	1	1960	98	20	\N	2007-09-12 12:13:27.123	0	Second line	\N	\N	1
-1506	780	1	1	360	36	10	\N	2007-09-12 12:13:27.543	0	First line	\N	\N	1
-1507	780	2	1	640	32	20	\N	2007-09-12 12:13:27.545	0	Second line	\N	\N	1
-1508	781	1	1	950	95	10	\N	2007-09-12 12:13:27.792	0	First line	\N	\N	1
-1509	781	2	1	980	49	20	\N	2007-09-12 12:13:27.794	0	Second line	\N	\N	1
-1510	782	1	1	570	57	10	\N	2007-09-12 12:13:28.049	0	First line	\N	\N	1
-1511	782	2	1	220	11	20	\N	2007-09-12 12:13:28.051	0	Second line	\N	\N	1
-1512	783	1	1	210	21	10	\N	2007-09-12 12:13:28.286	0	First line	\N	\N	1
-1513	783	2	1	1120	56	20	\N	2007-09-12 12:13:28.289	0	Second line	\N	\N	1
-1514	784	1	1	60	6	10	\N	2007-09-12 12:13:28.592	0	First line	\N	\N	1
-1515	784	2	1	1220	61	20	\N	2007-09-12 12:13:28.599	0	Second line	\N	\N	1
-1516	785	1	1	80	8	10	\N	2007-09-12 12:13:29.06	0	First line	\N	\N	1
-1517	785	2	1	1280	64	20	\N	2007-09-12 12:13:29.066	0	Second line	\N	\N	1
-1518	786	1	1	390	39	10	\N	2007-09-12 12:13:29.538	0	First line	\N	\N	1
-1519	786	2	1	1680	84	20	\N	2007-09-12 12:13:29.548	0	Second line	\N	\N	1
-1520	787	1	1	640	64	10	\N	2007-09-12 12:13:29.972	0	First line	\N	\N	1
-1521	787	2	1	660	33	20	\N	2007-09-12 12:13:29.976	0	Second line	\N	\N	1
-1522	788	1	1	300	30	10	\N	2007-09-12 12:13:30.355	0	First line	\N	\N	1
-1523	788	2	1	620	31	20	\N	2007-09-12 12:13:30.358	0	Second line	\N	\N	1
-1524	789	1	1	730	73	10	\N	2007-09-12 12:13:30.592	0	First line	\N	\N	1
-1525	789	2	1	500	25	20	\N	2007-09-12 12:13:30.595	0	Second line	\N	\N	1
-1526	790	1	1	400	40	10	\N	2007-09-12 12:13:30.847	0	First line	\N	\N	1
-1527	790	2	1	260	13	20	\N	2007-09-12 12:13:30.856	0	Second line	\N	\N	1
-1528	791	1	1	920	92	10	\N	2007-09-12 12:13:31.103	0	First line	\N	\N	1
-1529	791	2	1	180	9	20	\N	2007-09-12 12:13:31.105	0	Second line	\N	\N	1
-1530	792	1	1	130	13	10	\N	2007-09-12 12:13:31.4	0	First line	\N	\N	1
-1531	792	2	1	640	32	20	\N	2007-09-12 12:13:31.412	0	Second line	\N	\N	1
-1532	793	1	1	290	29	10	\N	2007-09-12 12:13:31.908	0	First line	\N	\N	1
-1533	793	2	1	1460	73	20	\N	2007-09-12 12:13:31.913	0	Second line	\N	\N	1
-1534	794	1	1	380	38	10	\N	2007-09-12 12:13:32.343	0	First line	\N	\N	1
-1535	794	2	1	780	39	20	\N	2007-09-12 12:13:32.349	0	Second line	\N	\N	1
-1536	795	1	1	40	4	10	\N	2007-09-12 12:13:32.796	0	First line	\N	\N	1
-1537	795	2	1	1060	53	20	\N	2007-09-12 12:13:32.804	0	Second line	\N	\N	1
-1538	796	1	1	980	98	10	\N	2007-09-12 12:13:33.188	0	First line	\N	\N	1
-1539	796	2	1	1980	99	20	\N	2007-09-12 12:13:33.19	0	Second line	\N	\N	1
-1540	797	1	1	630	63	10	\N	2007-09-12 12:13:33.423	0	First line	\N	\N	1
-1541	797	2	1	40	2	20	\N	2007-09-12 12:13:33.425	0	Second line	\N	\N	1
-1542	798	1	1	50	5	10	\N	2007-09-12 12:13:33.666	0	First line	\N	\N	1
-1543	798	2	1	420	21	20	\N	2007-09-12 12:13:33.669	0	Second line	\N	\N	1
-1544	799	1	1	410	41	10	\N	2007-09-12 12:13:33.9	0	First line	\N	\N	1
-1545	799	2	1	1080	54	20	\N	2007-09-12 12:13:33.903	0	Second line	\N	\N	1
-1546	800	1	1	210	21	10	\N	2007-09-12 12:13:34.2	0	First line	\N	\N	1
-1547	800	2	1	1200	60	20	\N	2007-09-12 12:13:34.213	0	Second line	\N	\N	1
-1548	801	1	1	250	25	10	\N	2007-09-12 12:13:34.856	0	First line	\N	\N	1
-1549	801	2	1	240	12	20	\N	2007-09-12 12:13:34.863	0	Second line	\N	\N	1
-1550	802	1	1	350	35	10	\N	2007-09-12 12:13:35.364	0	First line	\N	\N	1
-1551	802	2	1	1680	84	20	\N	2007-09-12 12:13:35.37	0	Second line	\N	\N	1
-1552	803	1	1	150	15	10	\N	2007-09-12 12:13:35.801	0	First line	\N	\N	1
-1553	803	2	1	1020	51	20	\N	2007-09-12 12:13:35.808	0	Second line	\N	\N	1
-1554	804	1	1	930	93	10	\N	2007-09-12 12:13:36.078	0	First line	\N	\N	1
-1555	804	2	1	840	42	20	\N	2007-09-12 12:13:36.08	0	Second line	\N	\N	1
-1556	805	1	1	700	70	10	\N	2007-09-12 12:13:36.315	0	First line	\N	\N	1
-1557	805	2	1	1060	53	20	\N	2007-09-12 12:13:36.317	0	Second line	\N	\N	1
-1558	806	1	1	10	1	10	\N	2007-09-12 12:13:36.56	0	First line	\N	\N	1
-1559	806	2	1	1600	80	20	\N	2007-09-12 12:13:36.563	0	Second line	\N	\N	1
-1560	807	1	1	10	1	10	\N	2007-09-12 12:13:36.792	0	First line	\N	\N	1
-1561	807	2	1	880	44	20	\N	2007-09-12 12:13:36.803	0	Second line	\N	\N	1
-1562	808	1	1	270	27	10	\N	2007-09-12 12:13:37.225	0	First line	\N	\N	1
-1563	808	2	1	1440	72	20	\N	2007-09-12 12:13:37.232	0	Second line	\N	\N	1
-1564	809	1	1	270	27	10	\N	2007-09-12 12:13:37.68	0	First line	\N	\N	1
-1565	809	2	1	1980	99	20	\N	2007-09-12 12:13:37.688	0	Second line	\N	\N	1
-1566	810	1	1	220	22	10	\N	2007-09-12 12:13:38.131	0	First line	\N	\N	1
-1567	810	2	1	1080	54	20	\N	2007-09-12 12:13:38.139	0	Second line	\N	\N	1
-1568	811	1	1	150	15	10	\N	2007-09-12 12:13:38.614	0	First line	\N	\N	1
-1569	811	2	1	80	4	20	\N	2007-09-12 12:13:38.625	0	Second line	\N	\N	1
-1570	812	1	1	30	3	10	\N	2007-09-12 12:13:38.88	0	First line	\N	\N	1
-1571	812	2	1	40	2	20	\N	2007-09-12 12:13:38.883	0	Second line	\N	\N	1
-1572	813	1	1	210	21	10	\N	2007-09-12 12:13:39.116	0	First line	\N	\N	1
-1573	813	2	1	700	35	20	\N	2007-09-12 12:13:39.119	0	Second line	\N	\N	1
-1574	814	1	1	160	16	10	\N	2007-09-12 12:13:39.359	0	First line	\N	\N	1
-1575	814	2	1	2000	100	20	\N	2007-09-12 12:13:39.361	0	Second line	\N	\N	1
-1576	815	1	1	990	99	10	\N	2007-09-12 12:13:39.595	0	First line	\N	\N	1
-1577	815	2	1	80	4	20	\N	2007-09-12 12:13:39.598	0	Second line	\N	\N	1
-1578	816	1	1	700	70	10	\N	2007-09-12 12:13:40.055	0	First line	\N	\N	1
-1579	816	2	1	1560	78	20	\N	2007-09-12 12:13:40.061	0	Second line	\N	\N	1
-1580	817	1	1	290	29	10	\N	2007-09-12 12:13:40.52	0	First line	\N	\N	1
-1581	817	2	1	1000	50	20	\N	2007-09-12 12:13:40.53	0	Second line	\N	\N	1
-1582	818	1	1	810	81	10	\N	2007-09-12 12:13:41.058	0	First line	\N	\N	1
-1583	818	2	1	580	29	20	\N	2007-09-12 12:13:41.061	0	Second line	\N	\N	1
-1584	819	1	1	240	24	10	\N	2007-09-12 12:13:41.346	0	First line	\N	\N	1
-1585	819	2	1	1860	93	20	\N	2007-09-12 12:13:41.349	0	Second line	\N	\N	1
-1586	820	1	1	30	3	10	\N	2007-09-12 12:13:41.596	0	First line	\N	\N	1
-1587	820	2	1	1100	55	20	\N	2007-09-12 12:13:41.598	0	Second line	\N	\N	1
-1588	821	1	1	290	29	10	\N	2007-09-12 12:13:41.841	0	First line	\N	\N	1
-1589	821	2	1	1920	96	20	\N	2007-09-12 12:13:41.843	0	Second line	\N	\N	1
-1590	822	1	1	980	98	10	\N	2007-09-12 12:13:42.087	0	First line	\N	\N	1
-1591	822	2	1	240	12	20	\N	2007-09-12 12:13:42.089	0	Second line	\N	\N	1
-1592	823	1	1	310	31	10	\N	2007-09-12 12:13:42.524	0	First line	\N	\N	1
-1593	823	2	1	240	12	20	\N	2007-09-12 12:13:42.534	0	Second line	\N	\N	1
-1594	824	1	1	50	5	10	\N	2007-09-12 12:13:43.023	0	First line	\N	\N	1
-1595	824	2	1	1280	64	20	\N	2007-09-12 12:13:43.039	0	Second line	\N	\N	1
-1596	825	1	1	260	26	10	\N	2007-09-12 12:13:43.49	0	First line	\N	\N	1
-1597	825	2	1	1140	57	20	\N	2007-09-12 12:13:43.495	0	Second line	\N	\N	1
-1598	826	1	1	260	26	10	\N	2007-09-12 12:13:43.919	0	First line	\N	\N	1
-1599	826	2	1	1600	80	20	\N	2007-09-12 12:13:43.921	0	Second line	\N	\N	1
-1600	827	1	1	920	92	10	\N	2007-09-12 12:13:44.159	0	First line	\N	\N	1
-1601	827	2	1	1680	84	20	\N	2007-09-12 12:13:44.161	0	Second line	\N	\N	1
-1602	828	1	1	800	80	10	\N	2007-09-12 12:13:44.411	0	First line	\N	\N	1
-1603	828	2	1	1460	73	20	\N	2007-09-12 12:13:44.414	0	Second line	\N	\N	1
-1604	829	1	1	640	64	10	\N	2007-09-12 12:13:44.656	0	First line	\N	\N	1
-1605	829	2	1	220	11	20	\N	2007-09-12 12:13:44.659	0	Second line	\N	\N	1
-1606	830	1	1	330	33	10	\N	2007-09-12 12:13:44.979	0	First line	\N	\N	1
-1607	830	2	1	1260	63	20	\N	2007-09-12 12:13:44.99	0	Second line	\N	\N	1
-1608	831	1	1	870	87	10	\N	2007-09-12 12:13:45.432	0	First line	\N	\N	1
-1609	831	2	1	1500	75	20	\N	2007-09-12 12:13:45.441	0	Second line	\N	\N	1
-1610	832	1	1	500	50	10	\N	2007-09-12 12:13:45.916	0	First line	\N	\N	1
-1611	832	2	1	580	29	20	\N	2007-09-12 12:13:45.924	0	Second line	\N	\N	1
-1612	833	1	1	180	18	10	\N	2007-09-12 12:13:46.395	0	First line	\N	\N	1
-1613	833	2	1	1660	83	20	\N	2007-09-12 12:13:46.403	0	Second line	\N	\N	1
-1614	834	1	1	800	80	10	\N	2007-09-12 12:13:46.67	0	First line	\N	\N	1
-1615	834	2	1	800	40	20	\N	2007-09-12 12:13:46.672	0	Second line	\N	\N	1
-1616	835	1	1	150	15	10	\N	2007-09-12 12:13:46.919	0	First line	\N	\N	1
-1617	835	2	1	1920	96	20	\N	2007-09-12 12:13:46.921	0	Second line	\N	\N	1
-1618	836	1	1	110	11	10	\N	2007-09-12 12:13:47.166	0	First line	\N	\N	1
-1619	836	2	1	520	26	20	\N	2007-09-12 12:13:47.169	0	Second line	\N	\N	1
-1620	837	1	1	90	9	10	\N	2007-09-12 12:13:47.405	0	First line	\N	\N	1
-1621	837	2	1	1880	94	20	\N	2007-09-12 12:13:47.407	0	Second line	\N	\N	1
-1622	838	1	1	240	24	10	\N	2007-09-12 12:13:47.845	0	First line	\N	\N	1
-1623	838	2	1	80	4	20	\N	2007-09-12 12:13:47.851	0	Second line	\N	\N	1
-1624	839	1	1	730	73	10	\N	2007-09-12 12:13:48.288	0	First line	\N	\N	1
-1625	839	2	1	1860	93	20	\N	2007-09-12 12:13:48.295	0	Second line	\N	\N	1
-1626	840	1	1	280	28	10	\N	2007-09-12 12:13:48.782	0	First line	\N	\N	1
-1627	840	2	1	600	30	20	\N	2007-09-12 12:13:48.785	0	Second line	\N	\N	1
-1628	841	1	1	630	63	10	\N	2007-09-12 12:13:49.205	0	First line	\N	\N	1
-1629	841	2	1	300	15	20	\N	2007-09-12 12:13:49.213	0	Second line	\N	\N	1
-1630	842	1	1	240	24	10	\N	2007-09-12 12:13:49.463	0	First line	\N	\N	1
-1631	842	2	1	260	13	20	\N	2007-09-12 12:13:49.465	0	Second line	\N	\N	1
-1632	843	1	1	680	68	10	\N	2007-09-12 12:13:49.7	0	First line	\N	\N	1
-1633	843	2	1	1680	84	20	\N	2007-09-12 12:13:49.702	0	Second line	\N	\N	1
-1634	844	1	1	560	56	10	\N	2007-09-12 12:13:49.946	0	First line	\N	\N	1
-1635	844	2	1	1640	82	20	\N	2007-09-12 12:13:49.948	0	Second line	\N	\N	1
-1636	845	1	1	290	29	10	\N	2007-09-12 12:13:50.245	0	First line	\N	\N	1
-1637	845	2	1	800	40	20	\N	2007-09-12 12:13:50.25	0	Second line	\N	\N	1
-1638	846	1	1	30	3	10	\N	2007-09-12 12:13:50.755	0	First line	\N	\N	1
-1639	846	2	1	1660	83	20	\N	2007-09-12 12:13:50.76	0	Second line	\N	\N	1
-1640	847	1	1	20	2	10	\N	2007-09-12 12:13:51.226	0	First line	\N	\N	1
-1641	847	2	1	1980	99	20	\N	2007-09-12 12:13:51.237	0	Second line	\N	\N	1
-1642	848	1	1	110	11	10	\N	2007-09-12 12:13:51.724	0	First line	\N	\N	1
-1643	848	2	1	1780	89	20	\N	2007-09-12 12:13:51.726	0	Second line	\N	\N	1
-1644	849	1	1	90	9	10	\N	2007-09-12 12:13:51.976	0	First line	\N	\N	1
-1645	849	2	1	520	26	20	\N	2007-09-12 12:13:51.979	0	Second line	\N	\N	1
-1646	850	1	1	590	59	10	\N	2007-09-12 12:13:52.215	0	First line	\N	\N	1
-1647	850	2	1	1400	70	20	\N	2007-09-12 12:13:52.218	0	Second line	\N	\N	1
-1648	851	1	1	310	31	10	\N	2007-09-12 12:13:52.452	0	First line	\N	\N	1
-1649	851	2	1	560	28	20	\N	2007-09-12 12:13:52.455	0	Second line	\N	\N	1
-1650	852	1	1	390	39	10	\N	2007-09-12 12:13:52.698	0	First line	\N	\N	1
-1651	852	2	1	1720	86	20	\N	2007-09-12 12:13:52.7	0	Second line	\N	\N	1
-1652	853	1	1	950	95	10	\N	2007-09-12 12:13:53.146	0	First line	\N	\N	1
-1653	853	2	1	320	16	20	\N	2007-09-12 12:13:53.161	0	Second line	\N	\N	1
-1654	854	1	1	100	10	10	\N	2007-09-12 12:13:53.613	0	First line	\N	\N	1
-1655	854	2	1	420	21	20	\N	2007-09-12 12:13:53.617	0	Second line	\N	\N	1
-1656	855	1	1	250	25	10	\N	2007-09-12 12:13:54.133	0	First line	\N	\N	1
-1657	855	2	1	440	22	20	\N	2007-09-12 12:13:54.138	0	Second line	\N	\N	1
-1658	856	1	1	540	54	10	\N	2007-09-12 12:13:54.486	0	First line	\N	\N	1
-1659	856	2	1	1200	60	20	\N	2007-09-12 12:13:54.489	0	Second line	\N	\N	1
-1660	857	1	1	480	48	10	\N	2007-09-12 12:13:54.731	0	First line	\N	\N	1
-1661	857	2	1	720	36	20	\N	2007-09-12 12:13:54.733	0	Second line	\N	\N	1
-1662	858	1	1	80	8	10	\N	2007-09-12 12:13:54.982	0	First line	\N	\N	1
-1663	858	2	1	1460	73	20	\N	2007-09-12 12:13:54.994	0	Second line	\N	\N	1
-1664	859	1	1	800	80	10	\N	2007-09-12 12:13:55.228	0	First line	\N	\N	1
-1665	859	2	1	1000	50	20	\N	2007-09-12 12:13:55.23	0	Second line	\N	\N	1
-1666	860	1	1	440	44	10	\N	2007-09-12 12:13:55.673	0	First line	\N	\N	1
-1667	860	2	1	100	5	20	\N	2007-09-12 12:13:55.676	0	Second line	\N	\N	1
-1668	861	1	1	130	13	10	\N	2007-09-12 12:13:56.128	0	First line	\N	\N	1
-1669	861	2	1	640	32	20	\N	2007-09-12 12:13:56.134	0	Second line	\N	\N	1
-1670	862	1	1	130	13	10	\N	2007-09-12 12:13:56.619	0	First line	\N	\N	1
-1671	862	2	1	1660	83	20	\N	2007-09-12 12:13:56.624	0	Second line	\N	\N	1
-1672	863	1	1	560	56	10	\N	2007-09-12 12:13:57.013	0	First line	\N	\N	1
-1673	863	2	1	1820	91	20	\N	2007-09-12 12:13:57.015	0	Second line	\N	\N	1
-1674	864	1	1	830	83	10	\N	2007-09-12 12:13:57.257	0	First line	\N	\N	1
-1675	864	2	1	140	7	20	\N	2007-09-12 12:13:57.259	0	Second line	\N	\N	1
-1676	865	1	1	840	84	10	\N	2007-09-12 12:13:57.498	0	First line	\N	\N	1
-1677	865	2	1	700	35	20	\N	2007-09-12 12:13:57.5	0	Second line	\N	\N	1
-1678	866	1	1	700	70	10	\N	2007-09-12 12:13:57.745	0	First line	\N	\N	1
-1679	866	2	1	1480	74	20	\N	2007-09-12 12:13:57.747	0	Second line	\N	\N	1
-1680	867	1	1	540	54	10	\N	2007-09-12 12:13:58.036	0	First line	\N	\N	1
-1681	867	2	1	1160	58	20	\N	2007-09-12 12:13:58.044	0	Second line	\N	\N	1
-1682	868	1	1	470	47	10	\N	2007-09-12 12:13:58.561	0	First line	\N	\N	1
-1683	868	2	1	1360	68	20	\N	2007-09-12 12:13:58.564	0	Second line	\N	\N	1
-1684	869	1	1	320	32	10	\N	2007-09-12 12:13:59.03	0	First line	\N	\N	1
-1685	869	2	1	80	4	20	\N	2007-09-12 12:13:59.033	0	Second line	\N	\N	1
-1686	870	1	1	550	55	10	\N	2007-09-12 12:13:59.475	0	First line	\N	\N	1
-1687	870	2	1	1320	66	20	\N	2007-09-12 12:13:59.478	0	Second line	\N	\N	1
-1688	871	1	1	370	37	10	\N	2007-09-12 12:13:59.723	0	First line	\N	\N	1
-1689	871	2	1	1840	92	20	\N	2007-09-12 12:13:59.725	0	Second line	\N	\N	1
-1690	872	1	1	340	34	10	\N	2007-09-12 12:13:59.977	0	First line	\N	\N	1
-1691	872	2	1	1960	98	20	\N	2007-09-12 12:13:59.979	0	Second line	\N	\N	1
-1692	873	1	1	640	64	10	\N	2007-09-12 12:14:00.231	0	First line	\N	\N	1
-1693	873	2	1	1180	59	20	\N	2007-09-12 12:14:00.233	0	Second line	\N	\N	1
-1694	874	1	1	120	12	10	\N	2007-09-12 12:14:00.546	0	First line	\N	\N	1
-1695	874	2	1	580	29	20	\N	2007-09-12 12:14:00.562	0	Second line	\N	\N	1
-1696	875	1	1	30	3	10	\N	2007-09-12 12:14:01.08	0	First line	\N	\N	1
-1697	875	2	1	1860	93	20	\N	2007-09-12 12:14:01.083	0	Second line	\N	\N	1
-1698	876	1	1	650	65	10	\N	2007-09-12 12:14:01.582	0	First line	\N	\N	1
-1699	876	2	1	1360	68	20	\N	2007-09-12 12:14:01.593	0	Second line	\N	\N	1
-1700	877	1	1	900	90	10	\N	2007-09-12 12:14:02.014	0	First line	\N	\N	1
-1701	877	2	1	200	10	20	\N	2007-09-12 12:14:02.016	0	Second line	\N	\N	1
-1702	878	1	1	750	75	10	\N	2007-09-12 12:14:02.265	0	First line	\N	\N	1
-1703	878	2	1	180	9	20	\N	2007-09-12 12:14:02.267	0	Second line	\N	\N	1
-1704	879	1	1	800	80	10	\N	2007-09-12 12:14:02.51	0	First line	\N	\N	1
-1705	879	2	1	1220	61	20	\N	2007-09-12 12:14:02.512	0	Second line	\N	\N	1
-1706	880	1	1	990	99	10	\N	2007-09-12 12:14:02.76	0	First line	\N	\N	1
-1707	880	2	1	1820	91	20	\N	2007-09-12 12:14:02.763	0	Second line	\N	\N	1
-1708	881	1	1	880	88	10	\N	2007-09-12 12:14:03.062	0	First line	\N	\N	1
-1709	881	2	1	800	40	20	\N	2007-09-12 12:14:03.075	0	Second line	\N	\N	1
-1710	882	1	1	90	9	10	\N	2007-09-12 12:14:03.575	0	First line	\N	\N	1
-1711	882	2	1	880	44	20	\N	2007-09-12 12:14:03.579	0	Second line	\N	\N	1
-1712	883	1	1	880	88	10	\N	2007-09-12 12:14:04.082	0	First line	\N	\N	1
-1713	883	2	1	260	13	20	\N	2007-09-12 12:14:04.091	0	Second line	\N	\N	1
-1714	884	1	1	180	18	10	\N	2007-09-12 12:14:04.502	0	First line	\N	\N	1
-1715	884	2	1	1440	72	20	\N	2007-09-12 12:14:04.505	0	Second line	\N	\N	1
-1716	885	1	1	630	63	10	\N	2007-09-12 12:14:04.753	0	First line	\N	\N	1
-1717	885	2	1	640	32	20	\N	2007-09-12 12:14:04.755	0	Second line	\N	\N	1
-1718	886	1	1	390	39	10	\N	2007-09-12 12:14:05.01	0	First line	\N	\N	1
-1719	886	2	1	1960	98	20	\N	2007-09-12 12:14:05.013	0	Second line	\N	\N	1
-1720	887	1	1	930	93	10	\N	2007-09-12 12:14:05.249	0	First line	\N	\N	1
-1721	887	2	1	1100	55	20	\N	2007-09-12 12:14:05.252	0	Second line	\N	\N	1
-1722	888	1	1	220	22	10	\N	2007-09-12 12:14:05.571	0	First line	\N	\N	1
-1723	888	2	1	440	22	20	\N	2007-09-12 12:14:05.575	0	Second line	\N	\N	1
-1724	889	1	1	70	7	10	\N	2007-09-12 12:14:06.022	0	First line	\N	\N	1
-1725	889	2	1	1560	78	20	\N	2007-09-12 12:14:06.025	0	Second line	\N	\N	1
-1726	890	1	1	390	39	10	\N	2007-09-12 12:14:06.469	0	First line	\N	\N	1
-1727	890	2	1	1260	63	20	\N	2007-09-12 12:14:06.473	0	Second line	\N	\N	1
-1728	891	1	1	320	32	10	\N	2007-09-12 12:14:06.966	0	First line	\N	\N	1
-1729	891	2	1	1920	96	20	\N	2007-09-12 12:14:06.976	0	Second line	\N	\N	1
-1730	892	1	1	970	97	10	\N	2007-09-12 12:14:07.276	0	First line	\N	\N	1
-1731	892	2	1	420	21	20	\N	2007-09-12 12:14:07.278	0	Second line	\N	\N	1
-1732	893	1	1	480	48	10	\N	2007-09-12 12:14:07.52	0	First line	\N	\N	1
-1733	893	2	1	1060	53	20	\N	2007-09-12 12:14:07.522	0	Second line	\N	\N	1
-1734	894	1	1	980	98	10	\N	2007-09-12 12:14:07.769	0	First line	\N	\N	1
-1735	894	2	1	1340	67	20	\N	2007-09-12 12:14:07.771	0	Second line	\N	\N	1
-1736	895	1	1	280	28	10	\N	2007-09-12 12:14:08.009	0	First line	\N	\N	1
-1737	895	2	1	1560	78	20	\N	2007-09-12 12:14:08.012	0	Second line	\N	\N	1
-1738	896	1	1	490	49	10	\N	2007-09-12 12:14:08.441	0	First line	\N	\N	1
-1739	896	2	1	480	24	20	\N	2007-09-12 12:14:08.449	0	Second line	\N	\N	1
-1740	897	1	1	350	35	10	\N	2007-09-12 12:14:08.868	0	First line	\N	\N	1
-1741	897	2	1	260	13	20	\N	2007-09-12 12:14:08.872	0	Second line	\N	\N	1
-1742	898	1	1	810	81	10	\N	2007-09-12 12:14:09.34	0	First line	\N	\N	1
-1743	898	2	1	840	42	20	\N	2007-09-12 12:14:09.345	0	Second line	\N	\N	1
-1744	899	1	1	10	1	10	\N	2007-09-12 12:14:09.765	0	First line	\N	\N	1
-1745	899	2	1	240	12	20	\N	2007-09-12 12:14:09.769	0	Second line	\N	\N	1
-1746	900	1	1	680	68	10	\N	2007-09-12 12:14:10.118	0	First line	\N	\N	1
-1747	900	2	1	1320	66	20	\N	2007-09-12 12:14:10.121	0	Second line	\N	\N	1
-1748	901	1	1	810	81	10	\N	2007-09-12 12:14:10.363	0	First line	\N	\N	1
-1749	901	2	1	720	36	20	\N	2007-09-12 12:14:10.365	0	Second line	\N	\N	1
-1750	902	1	1	180	18	10	\N	2007-09-12 12:14:10.603	0	First line	\N	\N	1
-1751	902	2	1	760	38	20	\N	2007-09-12 12:14:10.606	0	Second line	\N	\N	1
-1752	903	1	1	40	4	10	\N	2007-09-12 12:14:10.841	0	First line	\N	\N	1
-1753	903	2	1	400	20	20	\N	2007-09-12 12:14:10.843	0	Second line	\N	\N	1
-1754	904	1	1	10	1	10	\N	2007-09-12 12:14:11.16	0	First line	\N	\N	1
-1755	904	2	1	740	37	20	\N	2007-09-12 12:14:11.167	0	Second line	\N	\N	1
-1756	905	1	1	440	44	10	\N	2007-09-12 12:14:11.66	0	First line	\N	\N	1
-1757	905	2	1	680	34	20	\N	2007-09-12 12:14:11.668	0	Second line	\N	\N	1
-1758	906	1	1	110	11	10	\N	2007-09-12 12:14:12.162	0	First line	\N	\N	1
-1759	906	2	1	20	1	20	\N	2007-09-12 12:14:12.176	0	Second line	\N	\N	1
-1760	907	1	1	340	34	10	\N	2007-09-12 12:14:12.619	0	First line	\N	\N	1
-1761	907	2	1	1440	72	20	\N	2007-09-12 12:14:12.628	0	Second line	\N	\N	1
-1762	908	1	1	530	53	10	\N	2007-09-12 12:14:12.902	0	First line	\N	\N	1
-1763	908	2	1	300	15	20	\N	2007-09-12 12:14:12.912	0	Second line	\N	\N	1
-1764	909	1	1	80	8	10	\N	2007-09-12 12:14:13.149	0	First line	\N	\N	1
-1765	909	2	1	1480	74	20	\N	2007-09-12 12:14:13.151	0	Second line	\N	\N	1
-1766	910	1	1	90	9	10	\N	2007-09-12 12:14:13.398	0	First line	\N	\N	1
-1767	910	2	1	280	14	20	\N	2007-09-12 12:14:13.4	0	Second line	\N	\N	1
-1768	911	1	1	80	8	10	\N	2007-09-12 12:14:13.645	0	First line	\N	\N	1
-1769	911	2	1	1140	57	20	\N	2007-09-12 12:14:13.647	0	Second line	\N	\N	1
-1770	912	1	1	890	89	10	\N	2007-09-12 12:14:14.081	0	First line	\N	\N	1
-1771	912	2	1	1160	58	20	\N	2007-09-12 12:14:14.089	0	Second line	\N	\N	1
-1772	913	1	1	530	53	10	\N	2007-09-12 12:14:14.577	0	First line	\N	\N	1
-1773	913	2	1	940	47	20	\N	2007-09-12 12:14:14.584	0	Second line	\N	\N	1
-1774	914	1	1	690	69	10	\N	2007-09-12 12:14:15.063	0	First line	\N	\N	1
-1775	914	2	1	940	47	20	\N	2007-09-12 12:14:15.069	0	Second line	\N	\N	1
-1776	915	1	1	430	43	10	\N	2007-09-12 12:14:15.365	0	First line	\N	\N	1
-1777	915	2	1	500	25	20	\N	2007-09-12 12:14:15.367	0	Second line	\N	\N	1
-1778	916	1	1	730	73	10	\N	2007-09-12 12:14:15.612	0	First line	\N	\N	1
-1779	916	2	1	400	20	20	\N	2007-09-12 12:14:15.615	0	Second line	\N	\N	1
-1780	917	1	1	90	9	10	\N	2007-09-12 12:14:15.857	0	First line	\N	\N	1
-1781	917	2	1	840	42	20	\N	2007-09-12 12:14:15.86	0	Second line	\N	\N	1
-1782	918	1	1	760	76	10	\N	2007-09-12 12:14:16.119	0	First line	\N	\N	1
-1783	918	2	1	920	46	20	\N	2007-09-12 12:14:16.122	0	Second line	\N	\N	1
-1784	919	1	1	840	84	10	\N	2007-09-12 12:14:16.881	0	First line	\N	\N	1
-1785	919	2	1	1900	95	20	\N	2007-09-12 12:14:16.886	0	Second line	\N	\N	1
-1786	920	1	1	730	73	10	\N	2007-09-12 12:14:17.384	0	First line	\N	\N	1
-1787	920	2	1	1240	62	20	\N	2007-09-12 12:14:17.391	0	Second line	\N	\N	1
-1788	921	1	1	680	68	10	\N	2007-09-12 12:14:17.762	0	First line	\N	\N	1
-1789	921	2	1	1800	90	20	\N	2007-09-12 12:14:17.764	0	Second line	\N	\N	1
-1790	922	1	1	130	13	10	\N	2007-09-12 12:14:18.003	0	First line	\N	\N	1
-1791	922	2	1	1380	69	20	\N	2007-09-12 12:14:18.005	0	Second line	\N	\N	1
-1792	923	1	1	970	97	10	\N	2007-09-12 12:14:18.252	0	First line	\N	\N	1
-1793	923	2	1	1960	98	20	\N	2007-09-12 12:14:18.255	0	Second line	\N	\N	1
-1794	924	1	1	400	40	10	\N	2007-09-12 12:14:18.502	0	First line	\N	\N	1
-1795	924	2	1	1540	77	20	\N	2007-09-12 12:14:18.505	0	Second line	\N	\N	1
-1796	925	1	1	790	79	10	\N	2007-09-12 12:14:18.902	0	First line	\N	\N	1
-1797	925	2	1	260	13	20	\N	2007-09-12 12:14:18.91	0	Second line	\N	\N	1
-1798	926	1	1	510	51	10	\N	2007-09-12 12:14:19.353	0	First line	\N	\N	1
-1799	926	2	1	1360	68	20	\N	2007-09-12 12:14:19.361	0	Second line	\N	\N	1
-1800	927	1	1	60	6	10	\N	2007-09-12 12:14:19.858	0	First line	\N	\N	1
-1801	927	2	1	1140	57	20	\N	2007-09-12 12:14:19.864	0	Second line	\N	\N	1
-1802	928	1	1	330	33	10	\N	2007-09-12 12:14:20.278	0	First line	\N	\N	1
-1803	928	2	1	440	22	20	\N	2007-09-12 12:14:20.28	0	Second line	\N	\N	1
-1804	929	1	1	80	8	10	\N	2007-09-12 12:14:20.511	0	First line	\N	\N	1
-1805	929	2	1	2000	100	20	\N	2007-09-12 12:14:20.513	0	Second line	\N	\N	1
-1806	930	1	1	390	39	10	\N	2007-09-12 12:14:20.758	0	First line	\N	\N	1
-1807	930	2	1	740	37	20	\N	2007-09-12 12:14:20.761	0	Second line	\N	\N	1
-1808	931	1	1	620	62	10	\N	2007-09-12 12:14:21.011	0	First line	\N	\N	1
-1809	931	2	1	1560	78	20	\N	2007-09-12 12:14:21.013	0	Second line	\N	\N	1
-1810	932	1	1	380	38	10	\N	2007-09-12 12:14:21.245	0	First line	\N	\N	1
-1811	932	2	1	1000	50	20	\N	2007-09-12 12:14:21.247	0	Second line	\N	\N	1
-1812	933	1	1	840	84	10	\N	2007-09-12 12:14:21.685	0	First line	\N	\N	1
-1813	933	2	1	320	16	20	\N	2007-09-12 12:14:21.699	0	Second line	\N	\N	1
-1814	934	1	1	440	44	10	\N	2007-09-12 12:14:22.186	0	First line	\N	\N	1
-1815	934	2	1	620	31	20	\N	2007-09-12 12:14:22.198	0	Second line	\N	\N	1
-1816	935	1	1	330	33	10	\N	2007-09-12 12:14:22.689	0	First line	\N	\N	1
-1817	935	2	1	240	12	20	\N	2007-09-12 12:14:22.697	0	Second line	\N	\N	1
-1818	936	1	1	860	86	10	\N	2007-09-12 12:14:23.099	0	First line	\N	\N	1
-1819	936	2	1	1220	61	20	\N	2007-09-12 12:14:23.101	0	Second line	\N	\N	1
-1820	937	1	1	960	96	10	\N	2007-09-12 12:14:23.34	0	First line	\N	\N	1
-1821	937	2	1	680	34	20	\N	2007-09-12 12:14:23.343	0	Second line	\N	\N	1
-1822	938	1	1	740	74	10	\N	2007-09-12 12:14:23.586	0	First line	\N	\N	1
-1823	938	2	1	940	47	20	\N	2007-09-12 12:14:23.589	0	Second line	\N	\N	1
-1824	939	1	1	530	53	10	\N	2007-09-12 12:14:23.821	0	First line	\N	\N	1
-1825	939	2	1	140	7	20	\N	2007-09-12 12:14:23.824	0	Second line	\N	\N	1
-1826	940	1	1	940	94	10	\N	2007-09-12 12:14:24.112	0	First line	\N	\N	1
-1827	940	2	1	920	46	20	\N	2007-09-12 12:14:24.118	0	Second line	\N	\N	1
-1828	941	1	1	820	82	10	\N	2007-09-12 12:14:24.619	0	First line	\N	\N	1
-1829	941	2	1	1040	52	20	\N	2007-09-12 12:14:24.631	0	Second line	\N	\N	1
-1830	942	1	1	50	5	10	\N	2007-09-12 12:14:25.102	0	First line	\N	\N	1
-1831	942	2	1	1300	65	20	\N	2007-09-12 12:14:25.105	0	Second line	\N	\N	1
-1832	943	1	1	710	71	10	\N	2007-09-12 12:14:25.528	0	First line	\N	\N	1
-1833	943	2	1	1580	79	20	\N	2007-09-12 12:14:25.534	0	Second line	\N	\N	1
-1834	944	1	1	320	32	10	\N	2007-09-12 12:14:25.804	0	First line	\N	\N	1
-1835	944	2	1	920	46	20	\N	2007-09-12 12:14:25.806	0	Second line	\N	\N	1
-1836	945	1	1	660	66	10	\N	2007-09-12 12:14:26.057	0	First line	\N	\N	1
-1837	945	2	1	1920	96	20	\N	2007-09-12 12:14:26.059	0	Second line	\N	\N	1
-1838	946	1	1	380	38	10	\N	2007-09-12 12:14:26.302	0	First line	\N	\N	1
-1839	946	2	1	480	24	20	\N	2007-09-12 12:14:26.304	0	Second line	\N	\N	1
-1840	947	1	1	740	74	10	\N	2007-09-12 12:14:26.547	0	First line	\N	\N	1
-1841	947	2	1	1380	69	20	\N	2007-09-12 12:14:26.55	0	Second line	\N	\N	1
-1842	948	1	1	280	28	10	\N	2007-09-12 12:14:26.972	0	First line	\N	\N	1
-1843	948	2	1	780	39	20	\N	2007-09-12 12:14:26.977	0	Second line	\N	\N	1
-1844	949	1	1	630	63	10	\N	2007-09-12 12:14:27.471	0	First line	\N	\N	1
-1845	949	2	1	1500	75	20	\N	2007-09-12 12:14:27.479	0	Second line	\N	\N	1
-1846	950	1	1	490	49	10	\N	2007-09-12 12:14:27.975	0	First line	\N	\N	1
-1847	950	2	1	980	49	20	\N	2007-09-12 12:14:27.983	0	Second line	\N	\N	1
-1848	951	1	1	300	30	10	\N	2007-09-12 12:14:28.393	0	First line	\N	\N	1
-1849	951	2	1	680	34	20	\N	2007-09-12 12:14:28.396	0	Second line	\N	\N	1
-1850	952	1	1	520	52	10	\N	2007-09-12 12:14:28.633	0	First line	\N	\N	1
-1851	952	2	1	140	7	20	\N	2007-09-12 12:14:28.635	0	Second line	\N	\N	1
-1852	953	1	1	580	58	10	\N	2007-09-12 12:14:28.882	0	First line	\N	\N	1
-1853	953	2	1	980	49	20	\N	2007-09-12 12:14:28.884	0	Second line	\N	\N	1
-1854	954	1	1	420	42	10	\N	2007-09-12 12:14:29.118	0	First line	\N	\N	1
-1855	954	2	1	1680	84	20	\N	2007-09-12 12:14:29.12	0	Second line	\N	\N	1
-1856	955	1	1	460	46	10	\N	2007-09-12 12:14:29.418	0	First line	\N	\N	1
-1857	955	2	1	1080	54	20	\N	2007-09-12 12:14:29.426	0	Second line	\N	\N	1
-1858	956	1	1	340	34	10	\N	2007-09-12 12:14:29.933	0	First line	\N	\N	1
-1859	956	2	1	1340	67	20	\N	2007-09-12 12:14:29.94	0	Second line	\N	\N	1
-1860	957	1	1	850	85	10	\N	2007-09-12 12:14:30.413	0	First line	\N	\N	1
-1861	957	2	1	1220	61	20	\N	2007-09-12 12:14:30.418	0	Second line	\N	\N	1
-1862	958	1	1	40	4	10	\N	2007-09-12 12:14:30.916	0	First line	\N	\N	1
-1863	958	2	1	760	38	20	\N	2007-09-12 12:14:30.935	0	Second line	\N	\N	1
-1864	959	1	1	50	5	10	\N	2007-09-12 12:14:31.173	0	First line	\N	\N	1
-1865	959	2	1	1520	76	20	\N	2007-09-12 12:14:31.175	0	Second line	\N	\N	1
-1866	960	1	1	590	59	10	\N	2007-09-12 12:14:31.414	0	First line	\N	\N	1
-1867	960	2	1	1380	69	20	\N	2007-09-12 12:14:31.416	0	Second line	\N	\N	1
-1868	961	1	1	120	12	10	\N	2007-09-12 12:14:31.666	0	First line	\N	\N	1
-1869	961	2	1	1260	63	20	\N	2007-09-12 12:14:31.669	0	Second line	\N	\N	1
-1870	962	1	1	190	19	10	\N	2007-09-12 12:14:31.911	0	First line	\N	\N	1
-1871	962	2	1	1800	90	20	\N	2007-09-12 12:14:31.913	0	Second line	\N	\N	1
-1872	963	1	1	240	24	10	\N	2007-09-12 12:14:32.361	0	First line	\N	\N	1
-1873	963	2	1	1760	88	20	\N	2007-09-12 12:14:32.368	0	Second line	\N	\N	1
-1874	964	1	1	780	78	10	\N	2007-09-12 12:14:32.837	0	First line	\N	\N	1
-1875	964	2	1	1520	76	20	\N	2007-09-12 12:14:32.85	0	Second line	\N	\N	1
-1876	965	1	1	590	59	10	\N	2007-09-12 12:14:33.303	0	First line	\N	\N	1
-1877	965	2	1	1180	59	20	\N	2007-09-12 12:14:33.31	0	Second line	\N	\N	1
-1878	966	1	1	850	85	10	\N	2007-09-12 12:14:33.706	0	First line	\N	\N	1
-1879	966	2	1	100	5	20	\N	2007-09-12 12:14:33.709	0	Second line	\N	\N	1
-1880	967	1	1	270	27	10	\N	2007-09-12 12:14:33.957	0	First line	\N	\N	1
-1881	967	2	1	80	4	20	\N	2007-09-12 12:14:33.96	0	Second line	\N	\N	1
-1882	968	1	1	870	87	10	\N	2007-09-12 12:14:34.198	0	First line	\N	\N	1
-1883	968	2	1	960	48	20	\N	2007-09-12 12:14:34.2	0	Second line	\N	\N	1
-1884	969	1	1	920	92	10	\N	2007-09-12 12:14:34.438	0	First line	\N	\N	1
-1885	969	2	1	260	13	20	\N	2007-09-12 12:14:34.44	0	Second line	\N	\N	1
-1886	970	1	1	660	66	10	\N	2007-09-12 12:14:34.743	0	First line	\N	\N	1
-1887	970	2	1	180	9	20	\N	2007-09-12 12:14:34.746	0	Second line	\N	\N	1
-1888	971	1	1	430	43	10	\N	2007-09-12 12:14:35.182	0	First line	\N	\N	1
-1889	971	2	1	120	6	20	\N	2007-09-12 12:14:35.191	0	Second line	\N	\N	1
-1890	972	1	1	1000	100	10	\N	2007-09-12 12:14:35.676	0	First line	\N	\N	1
-1891	972	2	1	460	23	20	\N	2007-09-12 12:14:35.685	0	Second line	\N	\N	1
-1892	973	1	1	270	27	10	\N	2007-09-12 12:14:36.156	0	First line	\N	\N	1
-1893	973	2	1	1560	78	20	\N	2007-09-12 12:14:36.169	0	Second line	\N	\N	1
-1894	974	1	1	970	97	10	\N	2007-09-12 12:14:36.439	0	First line	\N	\N	1
-1895	974	2	1	300	15	20	\N	2007-09-12 12:14:36.441	0	Second line	\N	\N	1
-1896	975	1	1	430	43	10	\N	2007-09-12 12:14:36.687	0	First line	\N	\N	1
-1897	975	2	1	1400	70	20	\N	2007-09-12 12:14:36.696	0	Second line	\N	\N	1
-1898	976	1	1	910	91	10	\N	2007-09-12 12:14:36.941	0	First line	\N	\N	1
-1899	976	2	1	400	20	20	\N	2007-09-12 12:14:36.943	0	Second line	\N	\N	1
-1900	977	1	1	730	73	10	\N	2007-09-12 12:14:37.195	0	First line	\N	\N	1
-1901	977	2	1	880	44	20	\N	2007-09-12 12:14:37.198	0	Second line	\N	\N	1
-1902	978	1	1	590	59	10	\N	2007-09-12 12:14:37.647	0	First line	\N	\N	1
-1903	978	2	1	340	17	20	\N	2007-09-12 12:14:37.656	0	Second line	\N	\N	1
-1904	979	1	1	570	57	10	\N	2007-09-12 12:14:38.098	0	First line	\N	\N	1
-1905	979	2	1	280	14	20	\N	2007-09-12 12:14:38.105	0	Second line	\N	\N	1
-1906	980	1	1	950	95	10	\N	2007-09-12 12:14:38.551	0	First line	\N	\N	1
-1907	980	2	1	1320	66	20	\N	2007-09-12 12:14:38.568	0	Second line	\N	\N	1
-1908	981	1	1	750	75	10	\N	2007-09-12 12:14:38.96	0	First line	\N	\N	1
-1909	981	2	1	1600	80	20	\N	2007-09-12 12:14:38.962	0	Second line	\N	\N	1
-1910	982	1	1	270	27	10	\N	2007-09-12 12:14:39.201	0	First line	\N	\N	1
-1911	982	2	1	740	37	20	\N	2007-09-12 12:14:39.203	0	Second line	\N	\N	1
-1912	983	1	1	340	34	10	\N	2007-09-12 12:14:39.441	0	First line	\N	\N	1
-1913	983	2	1	1300	65	20	\N	2007-09-12 12:14:39.443	0	Second line	\N	\N	1
-1914	984	1	1	960	96	10	\N	2007-09-12 12:14:39.706	0	First line	\N	\N	1
-1915	984	2	1	440	22	20	\N	2007-09-12 12:14:39.708	0	Second line	\N	\N	1
-1916	985	1	1	390	39	10	\N	2007-09-12 12:14:40.001	0	First line	\N	\N	1
-1917	985	2	1	40	2	20	\N	2007-09-12 12:14:40.004	0	Second line	\N	\N	1
-1918	986	1	1	260	26	10	\N	2007-09-12 12:14:40.474	0	First line	\N	\N	1
-1919	986	2	1	1280	64	20	\N	2007-09-12 12:14:40.481	0	Second line	\N	\N	1
-1920	987	1	1	860	86	10	\N	2007-09-12 12:14:40.964	0	First line	\N	\N	1
-1921	987	2	1	1060	53	20	\N	2007-09-12 12:14:40.968	0	Second line	\N	\N	1
-1922	988	1	1	90	9	10	\N	2007-09-12 12:14:41.421	0	First line	\N	\N	1
-1923	988	2	1	860	43	20	\N	2007-09-12 12:14:41.432	0	Second line	\N	\N	1
-1924	989	1	1	220	22	10	\N	2007-09-12 12:14:41.718	0	First line	\N	\N	1
-1925	989	2	1	1280	64	20	\N	2007-09-12 12:14:41.72	0	Second line	\N	\N	1
-1926	990	1	1	280	28	10	\N	2007-09-12 12:14:41.976	0	First line	\N	\N	1
-1927	990	2	1	1960	98	20	\N	2007-09-12 12:14:41.979	0	Second line	\N	\N	1
-1928	991	1	1	860	86	10	\N	2007-09-12 12:14:42.24	0	First line	\N	\N	1
-1929	991	2	1	1680	84	20	\N	2007-09-12 12:14:42.242	0	Second line	\N	\N	1
-1930	992	1	1	790	79	10	\N	2007-09-12 12:14:42.481	0	First line	\N	\N	1
-1931	992	2	1	1440	72	20	\N	2007-09-12 12:14:42.492	0	Second line	\N	\N	1
-1932	993	1	1	470	47	10	\N	2007-09-12 12:14:42.927	0	First line	\N	\N	1
-1933	993	2	1	1360	68	20	\N	2007-09-12 12:14:42.93	0	Second line	\N	\N	1
-1934	994	1	1	60	6	10	\N	2007-09-12 12:14:43.403	0	First line	\N	\N	1
-1935	994	2	1	720	36	20	\N	2007-09-12 12:14:43.406	0	Second line	\N	\N	1
-1936	995	1	1	60	6	10	\N	2007-09-12 12:14:43.865	0	First line	\N	\N	1
-1937	995	2	1	1860	93	20	\N	2007-09-12 12:14:43.873	0	Second line	\N	\N	1
-1938	996	1	1	850	85	10	\N	2007-09-12 12:14:44.28	0	First line	\N	\N	1
-1939	996	2	1	1920	96	20	\N	2007-09-12 12:14:44.283	0	Second line	\N	\N	1
-1940	997	1	1	20	2	10	\N	2007-09-12 12:14:44.526	0	First line	\N	\N	1
-1941	997	2	1	660	33	20	\N	2007-09-12 12:14:44.529	0	Second line	\N	\N	1
-1942	998	1	1	530	53	10	\N	2007-09-12 12:14:44.784	0	First line	\N	\N	1
-1943	998	2	1	1360	68	20	\N	2007-09-12 12:14:44.786	0	Second line	\N	\N	1
-1944	999	1	1	340	34	10	\N	2007-09-12 12:14:45.042	0	First line	\N	\N	1
-1945	999	2	1	1800	90	20	\N	2007-09-12 12:14:45.045	0	Second line	\N	\N	1
-1946	1000	1	1	160	16	10	\N	2007-09-12 12:14:45.359	0	First line	\N	\N	1
-1947	1000	2	1	1720	86	20	\N	2007-09-12 12:14:45.365	0	Second line	\N	\N	1
-1948	1001	1	1	270	27	10	\N	2007-09-12 12:14:45.87	0	First line	\N	\N	1
-1949	1001	2	1	1820	91	20	\N	2007-09-12 12:14:45.879	0	Second line	\N	\N	1
-1950	1002	1	1	120	12	10	\N	2007-09-12 12:14:46.329	0	First line	\N	\N	1
-1951	1002	2	1	520	26	20	\N	2007-09-12 12:14:46.333	0	Second line	\N	\N	1
-1952	1003	1	1	50	5	10	\N	2007-09-12 12:14:46.75	0	First line	\N	\N	1
-1953	1003	2	1	1540	77	20	\N	2007-09-12 12:14:46.753	0	Second line	\N	\N	1
-1954	1004	1	1	50	5	10	\N	2007-09-12 12:14:46.989	0	First line	\N	\N	1
-1955	1004	2	1	660	33	20	\N	2007-09-12 12:14:46.991	0	Second line	\N	\N	1
-1956	1005	1	1	220	22	10	\N	2007-09-12 12:14:47.238	0	First line	\N	\N	1
-1957	1005	2	1	480	24	20	\N	2007-09-12 12:14:47.24	0	Second line	\N	\N	1
-1958	1006	1	1	540	54	10	\N	2007-09-12 12:14:47.493	0	First line	\N	\N	1
-1959	1006	2	1	1060	53	20	\N	2007-09-12 12:14:47.495	0	Second line	\N	\N	1
-1960	1007	1	1	360	36	10	\N	2007-09-12 12:14:47.79	0	First line	\N	\N	1
-1961	1007	2	1	1060	53	20	\N	2007-09-12 12:14:47.799	0	Second line	\N	\N	1
-1962	1008	1	1	320	32	10	\N	2007-09-12 12:14:48.258	0	First line	\N	\N	1
-1963	1008	2	1	640	32	20	\N	2007-09-12 12:14:48.267	0	Second line	\N	\N	1
-1964	1009	1	1	330	33	10	\N	2007-09-12 12:14:48.773	0	First line	\N	\N	1
-1965	1009	2	1	120	6	20	\N	2007-09-12 12:14:48.791	0	Second line	\N	\N	1
-1966	1010	1	1	840	84	10	\N	2007-09-12 12:14:49.289	0	First line	\N	\N	1
-1967	1010	2	1	320	16	20	\N	2007-09-12 12:14:49.291	0	Second line	\N	\N	1
-1968	1011	1	1	20	2	10	\N	2007-09-12 12:14:49.535	0	First line	\N	\N	1
-1969	1011	2	1	1520	76	20	\N	2007-09-12 12:14:49.537	0	Second line	\N	\N	1
-1970	1012	1	1	190	19	10	\N	2007-09-12 12:14:49.789	0	First line	\N	\N	1
-1971	1012	2	1	1600	80	20	\N	2007-09-12 12:14:49.791	0	Second line	\N	\N	1
-1972	1013	1	1	520	52	10	\N	2007-09-12 12:14:50.029	0	First line	\N	\N	1
-1973	1013	2	1	1740	87	20	\N	2007-09-12 12:14:50.031	0	Second line	\N	\N	1
-1974	1014	1	1	520	52	10	\N	2007-09-12 12:14:50.303	0	First line	\N	\N	1
-1975	1014	2	1	1420	71	20	\N	2007-09-12 12:14:50.307	0	Second line	\N	\N	1
-1976	1015	1	1	360	36	10	\N	2007-09-12 12:14:50.77	0	First line	\N	\N	1
-1977	1015	2	1	1340	67	20	\N	2007-09-12 12:14:50.774	0	Second line	\N	\N	1
-1978	1016	1	1	510	51	10	\N	2007-09-12 12:14:51.244	0	First line	\N	\N	1
-1979	1016	2	1	1360	68	20	\N	2007-09-12 12:14:51.251	0	Second line	\N	\N	1
-1980	1017	1	1	760	76	10	\N	2007-09-12 12:14:51.73	0	First line	\N	\N	1
-1981	1017	2	1	740	37	20	\N	2007-09-12 12:14:51.736	0	Second line	\N	\N	1
-1982	1018	1	1	260	26	10	\N	2007-09-12 12:14:52.127	0	First line	\N	\N	1
-1983	1018	2	1	820	41	20	\N	2007-09-12 12:14:52.129	0	Second line	\N	\N	1
-1984	1019	1	1	10	1	10	\N	2007-09-12 12:14:52.373	0	First line	\N	\N	1
-1985	1019	2	1	1460	73	20	\N	2007-09-12 12:14:52.375	0	Second line	\N	\N	1
-1986	1020	1	1	60	6	10	\N	2007-09-12 12:14:52.617	0	First line	\N	\N	1
-1987	1020	2	1	80	4	20	\N	2007-09-12 12:14:52.619	0	Second line	\N	\N	1
-1988	1021	1	1	250	25	10	\N	2007-09-12 12:14:52.862	0	First line	\N	\N	1
-1989	1021	2	1	1760	88	20	\N	2007-09-12 12:14:52.864	0	Second line	\N	\N	1
-1990	1022	1	1	160	16	10	\N	2007-09-12 12:14:53.194	0	First line	\N	\N	1
-1991	1022	2	1	2000	100	20	\N	2007-09-12 12:14:53.198	0	Second line	\N	\N	1
-1992	1023	1	1	150	15	10	\N	2007-09-12 12:14:53.673	0	First line	\N	\N	1
-1993	1023	2	1	1160	58	20	\N	2007-09-12 12:14:53.687	0	Second line	\N	\N	1
-1994	1024	1	1	960	96	10	\N	2007-09-12 12:14:54.136	0	First line	\N	\N	1
-1995	1024	2	1	920	46	20	\N	2007-09-12 12:14:54.145	0	Second line	\N	\N	1
-1996	1025	1	1	220	22	10	\N	2007-09-12 12:14:54.573	0	First line	\N	\N	1
-1997	1025	2	1	900	45	20	\N	2007-09-12 12:14:54.593	0	Second line	\N	\N	1
-1998	1026	1	1	120	12	10	\N	2007-09-12 12:14:54.886	0	First line	\N	\N	1
-1999	1026	2	1	600	30	20	\N	2007-09-12 12:14:54.898	0	Second line	\N	\N	1
-2000	1027	1	1	50	5	10	\N	2007-09-12 12:14:55.139	0	First line	\N	\N	1
-2001	1027	2	1	1980	99	20	\N	2007-09-12 12:14:55.141	0	Second line	\N	\N	1
-2002	1028	1	1	390	39	10	\N	2007-09-12 12:14:55.382	0	First line	\N	\N	1
-2003	1028	2	1	1020	51	20	\N	2007-09-12 12:14:55.384	0	Second line	\N	\N	1
-2004	1029	1	1	90	9	10	\N	2007-09-12 12:14:55.635	0	First line	\N	\N	1
-2005	1029	2	1	640	32	20	\N	2007-09-12 12:14:55.638	0	Second line	\N	\N	1
-2006	1030	1	1	220	22	10	\N	2007-09-12 12:14:56.071	0	First line	\N	\N	1
-2007	1030	2	1	600	30	20	\N	2007-09-12 12:14:56.082	0	Second line	\N	\N	1
-2008	1031	1	1	640	64	10	\N	2007-09-12 12:14:56.555	0	First line	\N	\N	1
-2009	1031	2	1	1860	93	20	\N	2007-09-12 12:14:56.559	0	Second line	\N	\N	1
-2010	1032	1	1	620	62	10	\N	2007-09-12 12:14:57.045	0	First line	\N	\N	1
-2011	1032	2	1	1480	74	20	\N	2007-09-12 12:14:57.055	0	Second line	\N	\N	1
-2012	1033	1	1	980	98	10	\N	2007-09-12 12:14:57.333	0	First line	\N	\N	1
-2013	1033	2	1	640	32	20	\N	2007-09-12 12:14:57.335	0	Second line	\N	\N	1
-2014	1034	1	1	210	21	10	\N	2007-09-12 12:14:57.583	0	First line	\N	\N	1
-2015	1034	2	1	60	3	20	\N	2007-09-12 12:14:57.585	0	Second line	\N	\N	1
-2016	1035	1	1	20	2	10	\N	2007-09-12 12:14:57.831	0	First line	\N	\N	1
-2017	1035	2	1	1840	92	20	\N	2007-09-12 12:14:57.833	0	Second line	\N	\N	1
-2018	1036	1	1	720	72	10	\N	2007-09-12 12:14:58.094	0	First line	\N	\N	1
-2019	1036	2	1	620	31	20	\N	2007-09-12 12:14:58.096	0	Second line	\N	\N	1
-2020	1037	1	1	910	91	10	\N	2007-09-12 12:14:58.468	0	First line	\N	\N	1
-2021	1037	2	1	1400	70	20	\N	2007-09-12 12:14:58.474	0	Second line	\N	\N	1
-2022	1038	1	1	250	25	10	\N	2007-09-12 12:14:58.939	0	First line	\N	\N	1
-2023	1038	2	1	140	7	20	\N	2007-09-12 12:14:58.951	0	Second line	\N	\N	1
-2024	1039	1	1	300	30	10	\N	2007-09-12 12:14:59.431	0	First line	\N	\N	1
-2025	1039	2	1	80	4	20	\N	2007-09-12 12:14:59.441	0	Second line	\N	\N	1
-2026	1040	1	1	530	53	10	\N	2007-09-12 12:14:59.884	0	First line	\N	\N	1
-2027	1040	2	1	300	15	20	\N	2007-09-12 12:14:59.89	0	Second line	\N	\N	1
-2028	1041	1	1	760	76	10	\N	2007-09-12 12:15:00.165	0	First line	\N	\N	1
-2029	1041	2	1	680	34	20	\N	2007-09-12 12:15:00.168	0	Second line	\N	\N	1
-2030	1042	1	1	980	98	10	\N	2007-09-12 12:15:00.405	0	First line	\N	\N	1
-2031	1042	2	1	60	3	20	\N	2007-09-12 12:15:00.407	0	Second line	\N	\N	1
-2032	1043	1	1	460	46	10	\N	2007-09-12 12:15:00.66	0	First line	\N	\N	1
-2033	1043	2	1	1540	77	20	\N	2007-09-12 12:15:00.663	0	Second line	\N	\N	1
-2034	1044	1	1	140	14	10	\N	2007-09-12 12:15:00.91	0	First line	\N	\N	1
-2035	1044	2	1	60	3	20	\N	2007-09-12 12:15:00.912	0	Second line	\N	\N	1
-2036	1045	1	1	910	91	10	\N	2007-09-12 12:15:01.359	0	First line	\N	\N	1
-2037	1045	2	1	1880	94	20	\N	2007-09-12 12:15:01.368	0	Second line	\N	\N	1
-2038	1046	1	1	560	56	10	\N	2007-09-12 12:15:01.816	0	First line	\N	\N	1
-2039	1046	2	1	760	38	20	\N	2007-09-12 12:15:01.82	0	Second line	\N	\N	1
-2040	1047	1	1	760	76	10	\N	2007-09-12 12:15:02.334	0	First line	\N	\N	1
-2041	1047	2	1	420	21	20	\N	2007-09-12 12:15:02.338	0	Second line	\N	\N	1
-2042	1048	1	1	350	35	10	\N	2007-09-12 12:15:02.74	0	First line	\N	\N	1
-2043	1048	2	1	1660	83	20	\N	2007-09-12 12:15:02.743	0	Second line	\N	\N	1
-2044	1049	1	1	250	25	10	\N	2007-09-12 12:15:02.988	0	First line	\N	\N	1
-2045	1049	2	1	1160	58	20	\N	2007-09-12 12:15:02.991	0	Second line	\N	\N	1
-2046	1050	1	1	120	12	10	\N	2007-09-12 12:15:03.234	0	First line	\N	\N	1
-2047	1050	2	1	1140	57	20	\N	2007-09-12 12:15:03.236	0	Second line	\N	\N	1
-2048	1051	1	1	260	26	10	\N	2007-09-12 12:15:03.48	0	First line	\N	\N	1
-2049	1051	2	1	200	10	20	\N	2007-09-12 12:15:03.482	0	Second line	\N	\N	1
-2050	1052	1	1	290	29	10	\N	2007-09-12 12:15:03.814	0	First line	\N	\N	1
-2051	1052	2	1	860	43	20	\N	2007-09-12 12:15:03.818	0	Second line	\N	\N	1
-2052	1053	1	1	30	3	10	\N	2007-09-12 12:15:04.337	0	First line	\N	\N	1
-2053	1053	2	1	480	24	20	\N	2007-09-12 12:15:04.345	0	Second line	\N	\N	1
-2054	1054	1	1	820	82	10	\N	2007-09-12 12:15:04.798	0	First line	\N	\N	1
-2055	1054	2	1	1540	77	20	\N	2007-09-12 12:15:04.804	0	Second line	\N	\N	1
-2056	1055	3	1	15	1	15	0	2007-12-28 14:47:08.524	0	Coffee - one per day - Monthly	\N	\N	1
-2066	1065	3	1	15	1	15	0	2008-03-06 09:19:01.556	0	Coffee - one per day - Monthly	\N	\N	1
-207600	107500	251	3	15	1	15	0	2009-07-20 16:41:52.245	0	Lemonade plan - Setup Fee	20	d85d1780-1594-4c25-8980-39ddaf2e15ce	5
-207700	107600	2	1	20	1	20	0	2009-11-04 17:37:51.128	0	Lemonade - all you can drink monthly	20	ca3ebd8e-3f51-4f40-aead-e42a2c288f1b	2
-207900	107700	2700	1	25	1	25	\N	2009-12-17 13:21:16.192	0	Long Distance Plan A - fixed rate	21	\N	0
-207901	107701	2701	1	40	1	40	\N	2009-12-17 13:22:02.115	0	Long Distance Plan B - fixed rate	21	\N	0
-207902	107702	2702	1	30	1	30	\N	2009-12-17 13:22:31.627	0	Long Distance Plan - 1000 min included	21	\N	0
-208000	107800	2602	1	3.5	1	3.5	\N	2009-12-21 13:17:00.14	0	Lemonade 	21	\N	0
-208001	107801	2602	1	3.5	1	3.5	\N	2009-12-21 13:17:58.45	0	Lemonade 	21	\N	0
-208002	107802	2602	1	3.5	1	3.5	\N	2009-12-21 13:18:17.379	0	Lemonade 	21	\N	0
-208003	107803	2602	1	3.5	1	3.5	\N	2009-12-21 13:18:59.123	0	Lemonade 	21	\N	0
-208004	107804	2602	1	3.5	1	3.5	\N	2009-12-21 13:19:17.927	0	Lemonade 	21	\N	0
-208011	107811	2602	1	3.5	1	3.5	\N	2009-12-21 13:21:42.292	0	Lemonade 	21	\N	0
-208005	107805	2602	1	3.5	1	3.5	\N	2009-12-21 13:19:38.061	0	Lemonade 	21	\N	0
-208006	107806	2602	1	3.5	1	3.5	\N	2009-12-21 13:19:56.159	0	Lemonade 	21	\N	0
-208009	107809	2602	1	3.5	1	3.5	\N	2009-12-21 13:21:03.215	0	Lemonade 	21	\N	0
-208007	107807	2602	1	3.5	1	3.5	\N	2009-12-21 13:20:23.277	0	Lemonade 	21	\N	0
-208008	107808	2602	1	3.5	1	3.5	\N	2009-12-21 13:20:44.579	0	Lemonade 	21	\N	0
-208010	107810	2602	1	3.5	1	3.5	\N	2009-12-21 13:21:21.348	0	Lemonade 	21	\N	0
+1	1	2	1	20.0000000000	1.0000000000	20.0000000000	0	2006-07-26 09:43:39.873	0	Lemonade - all you can drink monthly	\N	\N	1
+2	2	3	1	15.0000000000	1.0000000000	15.0000000000	0	2006-07-26 09:48:13.977	0	Coffee - one per day - Monthly	\N	\N	1
+3	3	3	1	15.0000000000	1.0000000000	15.0000000000	0	2006-07-26 09:49:38.659	0	Coffee - one per day - Monthly	\N	\N	1
+4	3	2	1	20.0000000000	1.0000000000	20.0000000000	0	2006-07-26 09:49:38.659	0	Lemonade - all you can drink monthly	\N	\N	1
+5	4	2	1	20.0000000000	1.0000000000	20.0000000000	0	2006-07-26 09:50:34.319	0	Lemonade - all you can drink monthly	\N	\N	1
+6	5	4	1	12.9899997711	1.0000000000	12.9899997711	0	2006-12-07 14:58:53.163	0	Poison Ivy juice (cold)	\N	\N	1
+16	15	3	1	15.0000000000	1.0000000000	15.0000000000	0	2007-01-16 14:39:49.152	0	Coffee - one per day - Monthly	\N	\N	1
+26	25	2	1	20.0000000000	1.0000000000	20.0000000000	0	2007-07-12 13:20:22.284	0	Lemonade - all you can drink monthly	\N	\N	1
+36	35	1	1	10.0000000000	1.0000000000	10.0000000000	0	2007-08-09 14:41:51.222	0	Lemonade - 1 per day monthly pass	\N	\N	1
+46	45	3	1	15.0000000000	1.0000000000	15.0000000000	0	2007-08-09 14:59:01.55	0	Coffee - one per day - Monthly	\N	\N	1
+56	55	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:09:06.976	0	First line	\N	\N	1
+57	55	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:09:06.986	0	Second line	\N	\N	1
+58	56	1	1	310.0000000000	31.0000000000	10.0000000000	\N	2007-09-12 12:09:07.335	0	First line	\N	\N	1
+59	56	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:09:07.339	0	Second line	\N	\N	1
+60	57	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:09:07.876	0	First line	\N	\N	1
+61	57	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:09:07.881	0	Second line	\N	\N	1
+62	58	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:09:08.218	0	First line	\N	\N	1
+63	58	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:09:08.221	0	Second line	\N	\N	1
+64	59	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:09:08.52	0	First line	\N	\N	1
+65	59	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:09:08.523	0	Second line	\N	\N	1
+66	60	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:09:08.915	0	First line	\N	\N	1
+67	60	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:09:08.928	0	Second line	\N	\N	1
+68	61	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:09:09.552	0	First line	\N	\N	1
+69	61	2	1	540.0000000000	27.0000000000	20.0000000000	\N	2007-09-12 12:09:09.603	0	Second line	\N	\N	1
+70	62	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:09:10.039	0	First line	\N	\N	1
+71	62	2	1	1580.0000000000	79.0000000000	20.0000000000	\N	2007-09-12 12:09:10.043	0	Second line	\N	\N	1
+72	63	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:09:10.346	0	First line	\N	\N	1
+73	63	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:09:10.35	0	Second line	\N	\N	1
+74	64	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:09:10.628	0	First line	\N	\N	1
+75	64	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:09:10.63	0	Second line	\N	\N	1
+76	65	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:09:11.128	0	First line	\N	\N	1
+77	65	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:09:11.137	0	Second line	\N	\N	1
+78	66	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:09:11.648	0	First line	\N	\N	1
+79	66	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:09:11.659	0	Second line	\N	\N	1
+80	67	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:09:12.063	0	First line	\N	\N	1
+81	67	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:09:12.066	0	Second line	\N	\N	1
+82	68	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:09:12.395	0	First line	\N	\N	1
+83	68	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:09:12.398	0	Second line	\N	\N	1
+84	69	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:12.674	0	First line	\N	\N	1
+85	69	2	1	20.0000000000	1.0000000000	20.0000000000	\N	2007-09-12 12:09:12.677	0	Second line	\N	\N	1
+86	70	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:09:13.248	0	First line	\N	\N	1
+87	70	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:09:13.266	0	Second line	\N	\N	1
+88	71	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:09:13.786	0	First line	\N	\N	1
+89	71	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:09:13.795	0	Second line	\N	\N	1
+90	72	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:09:14.103	0	First line	\N	\N	1
+91	72	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:09:14.106	0	Second line	\N	\N	1
+92	73	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:09:14.363	0	First line	\N	\N	1
+93	73	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:09:14.366	0	Second line	\N	\N	1
+94	74	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:09:14.63	0	First line	\N	\N	1
+95	74	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:09:14.632	0	Second line	\N	\N	1
+96	75	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:09:14.897	0	First line	\N	\N	1
+97	75	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:09:14.901	0	Second line	\N	\N	1
+98	76	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:09:15.418	0	First line	\N	\N	1
+99	76	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:09:15.425	0	Second line	\N	\N	1
+100	77	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:09:16	0	First line	\N	\N	1
+101	77	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:09:16.083	0	Second line	\N	\N	1
+102	78	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:09:16.513	0	First line	\N	\N	1
+103	78	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:09:16.516	0	Second line	\N	\N	1
+104	79	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:09:16.781	0	First line	\N	\N	1
+105	79	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:09:16.784	0	Second line	\N	\N	1
+106	80	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:09:17.039	0	First line	\N	\N	1
+107	80	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:09:17.042	0	Second line	\N	\N	1
+108	81	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:09:17.398	0	First line	\N	\N	1
+109	81	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:09:17.41	0	Second line	\N	\N	1
+110	82	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:09:17.951	0	First line	\N	\N	1
+111	82	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:09:17.963	0	Second line	\N	\N	1
+112	83	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:09:18.443	0	First line	\N	\N	1
+113	83	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:09:18.445	0	Second line	\N	\N	1
+114	84	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:09:18.706	0	First line	\N	\N	1
+115	84	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:09:18.709	0	Second line	\N	\N	1
+116	85	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:09:18.964	0	First line	\N	\N	1
+117	85	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:09:18.967	0	Second line	\N	\N	1
+118	86	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:09:19.209	0	First line	\N	\N	1
+119	86	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:09:19.212	0	Second line	\N	\N	1
+120	87	1	1	900.0000000000	90.0000000000	10.0000000000	\N	2007-09-12 12:09:19.562	0	First line	\N	\N	1
+121	87	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:09:19.574	0	Second line	\N	\N	1
+122	88	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:09:20.095	0	First line	\N	\N	1
+123	88	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:09:20.102	0	Second line	\N	\N	1
+124	89	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:09:20.575	0	First line	\N	\N	1
+125	89	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:09:20.581	0	Second line	\N	\N	1
+126	90	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:09:21.02	0	First line	\N	\N	1
+127	90	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:09:21.023	0	Second line	\N	\N	1
+128	91	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:09:21.259	0	First line	\N	\N	1
+129	91	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:09:21.262	0	Second line	\N	\N	1
+130	92	1	1	180.0000000000	18.0000000000	10.0000000000	\N	2007-09-12 12:09:21.522	0	First line	\N	\N	1
+131	92	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:09:21.525	0	Second line	\N	\N	1
+132	93	1	1	780.0000000000	78.0000000000	10.0000000000	\N	2007-09-12 12:09:21.785	0	First line	\N	\N	1
+133	93	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:09:21.788	0	Second line	\N	\N	1
+134	94	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:09:22.173	0	First line	\N	\N	1
+135	94	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:09:22.181	0	Second line	\N	\N	1
+136	95	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:09:22.663	0	First line	\N	\N	1
+137	95	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:09:22.675	0	Second line	\N	\N	1
+138	96	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:09:23.171	0	First line	\N	\N	1
+139	96	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:09:23.193	0	Second line	\N	\N	1
+140	97	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:09:23.564	0	First line	\N	\N	1
+141	97	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:09:23.566	0	Second line	\N	\N	1
+142	98	1	1	780.0000000000	78.0000000000	10.0000000000	\N	2007-09-12 12:09:23.825	0	First line	\N	\N	1
+143	98	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:09:23.827	0	Second line	\N	\N	1
+144	99	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:09:24.069	0	First line	\N	\N	1
+145	99	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:09:24.071	0	Second line	\N	\N	1
+146	100	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:24.323	0	First line	\N	\N	1
+147	100	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:09:24.326	0	Second line	\N	\N	1
+148	101	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:09:24.722	0	First line	\N	\N	1
+149	101	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:09:24.731	0	Second line	\N	\N	1
+150	102	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:09:25.2	0	First line	\N	\N	1
+151	102	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:09:25.21	0	Second line	\N	\N	1
+152	103	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:09:25.702	0	First line	\N	\N	1
+153	103	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:09:25.707	0	Second line	\N	\N	1
+154	104	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:09:26.07	0	First line	\N	\N	1
+155	104	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:09:26.072	0	Second line	\N	\N	1
+156	105	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:09:26.335	0	First line	\N	\N	1
+157	105	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:09:26.338	0	Second line	\N	\N	1
+158	106	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:09:26.591	0	First line	\N	\N	1
+159	106	2	1	540.0000000000	27.0000000000	20.0000000000	\N	2007-09-12 12:09:26.594	0	Second line	\N	\N	1
+160	107	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:09:26.841	0	First line	\N	\N	1
+161	107	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:09:26.843	0	Second line	\N	\N	1
+162	108	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:09:27.266	0	First line	\N	\N	1
+163	108	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:09:27.271	0	Second line	\N	\N	1
+164	109	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:09:27.736	0	First line	\N	\N	1
+165	109	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:09:27.747	0	Second line	\N	\N	1
+166	110	1	1	180.0000000000	18.0000000000	10.0000000000	\N	2007-09-12 12:09:28.286	0	First line	\N	\N	1
+167	110	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:09:28.292	0	Second line	\N	\N	1
+168	111	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:09:28.584	0	First line	\N	\N	1
+169	111	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:09:28.586	0	Second line	\N	\N	1
+170	112	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:09:28.829	0	First line	\N	\N	1
+171	112	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:09:28.832	0	Second line	\N	\N	1
+172	113	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:29.079	0	First line	\N	\N	1
+173	113	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:09:29.081	0	Second line	\N	\N	1
+174	114	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:09:29.331	0	First line	\N	\N	1
+175	114	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:09:29.333	0	Second line	\N	\N	1
+176	115	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:09:29.86	0	First line	\N	\N	1
+177	115	2	1	1840.0000000000	92.0000000000	20.0000000000	\N	2007-09-12 12:09:29.866	0	Second line	\N	\N	1
+178	116	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:09:30.358	0	First line	\N	\N	1
+179	116	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:09:30.366	0	Second line	\N	\N	1
+180	117	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:09:30.833	0	First line	\N	\N	1
+181	117	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:09:30.838	0	Second line	\N	\N	1
+182	118	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:09:31.121	0	First line	\N	\N	1
+183	118	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:09:31.124	0	Second line	\N	\N	1
+184	119	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:09:31.369	0	First line	\N	\N	1
+185	119	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:09:31.371	0	Second line	\N	\N	1
+186	120	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:09:31.614	0	First line	\N	\N	1
+187	120	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:09:31.616	0	Second line	\N	\N	1
+188	121	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:09:31.875	0	First line	\N	\N	1
+189	121	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:09:31.878	0	Second line	\N	\N	1
+190	122	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:09:32.331	0	First line	\N	\N	1
+191	122	2	1	1240.0000000000	62.0000000000	20.0000000000	\N	2007-09-12 12:09:32.334	0	Second line	\N	\N	1
+192	123	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:09:32.838	0	First line	\N	\N	1
+193	123	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:09:32.845	0	Second line	\N	\N	1
+194	124	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:09:33.349	0	First line	\N	\N	1
+195	124	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:09:33.353	0	Second line	\N	\N	1
+196	125	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:33.611	0	First line	\N	\N	1
+197	125	2	1	1920.0000000000	96.0000000000	20.0000000000	\N	2007-09-12 12:09:33.614	0	Second line	\N	\N	1
+198	126	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:09:33.86	0	First line	\N	\N	1
+199	126	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:09:33.862	0	Second line	\N	\N	1
+200	127	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:09:34.109	0	First line	\N	\N	1
+201	127	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:09:34.112	0	Second line	\N	\N	1
+202	128	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:09:34.353	0	First line	\N	\N	1
+203	128	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:09:34.355	0	Second line	\N	\N	1
+204	129	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:09:34.816	0	First line	\N	\N	1
+205	129	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:09:34.824	0	Second line	\N	\N	1
+206	130	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:09:35.278	0	First line	\N	\N	1
+207	130	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:09:35.291	0	Second line	\N	\N	1
+208	131	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:09:35.754	0	First line	\N	\N	1
+209	131	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:09:35.758	0	Second line	\N	\N	1
+210	132	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:09:36.152	0	First line	\N	\N	1
+211	132	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:09:36.155	0	Second line	\N	\N	1
+212	133	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:09:36.385	0	First line	\N	\N	1
+213	133	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:09:36.388	0	Second line	\N	\N	1
+214	134	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:09:36.639	0	First line	\N	\N	1
+215	134	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:09:36.641	0	Second line	\N	\N	1
+216	135	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:09:36.88	0	First line	\N	\N	1
+217	135	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:09:36.882	0	Second line	\N	\N	1
+218	136	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:09:37.21	0	First line	\N	\N	1
+219	136	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:09:37.219	0	Second line	\N	\N	1
+220	137	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:09:37.685	0	First line	\N	\N	1
+221	137	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:09:37.693	0	Second line	\N	\N	1
+222	138	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:09:38.111	0	First line	\N	\N	1
+223	138	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:09:38.115	0	Second line	\N	\N	1
+224	139	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:09:38.555	0	First line	\N	\N	1
+225	139	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:09:38.561	0	Second line	\N	\N	1
+226	140	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:09:38.945	0	First line	\N	\N	1
+227	140	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:09:38.947	0	Second line	\N	\N	1
+228	141	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:09:39.18	0	First line	\N	\N	1
+229	141	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:09:39.182	0	Second line	\N	\N	1
+230	142	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:09:39.442	0	First line	\N	\N	1
+231	142	2	1	900.0000000000	45.0000000000	20.0000000000	\N	2007-09-12 12:09:39.444	0	Second line	\N	\N	1
+232	143	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:09:39.677	0	First line	\N	\N	1
+233	143	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:09:39.68	0	Second line	\N	\N	1
+234	144	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:09:39.965	0	First line	\N	\N	1
+235	144	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:09:39.976	0	Second line	\N	\N	1
+236	145	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:09:40.501	0	First line	\N	\N	1
+237	145	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:09:40.511	0	Second line	\N	\N	1
+238	146	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:09:40.992	0	First line	\N	\N	1
+239	146	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:09:40.997	0	Second line	\N	\N	1
+240	147	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:09:41.461	0	First line	\N	\N	1
+241	147	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:09:41.471	0	Second line	\N	\N	1
+242	148	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:09:41.741	0	First line	\N	\N	1
+243	148	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:09:41.744	0	Second line	\N	\N	1
+244	149	1	1	430.0000000000	43.0000000000	10.0000000000	\N	2007-09-12 12:09:41.996	0	First line	\N	\N	1
+245	149	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:09:41.999	0	Second line	\N	\N	1
+246	150	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:09:42.253	0	First line	\N	\N	1
+247	150	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:09:42.255	0	Second line	\N	\N	1
+248	151	1	1	370.0000000000	37.0000000000	10.0000000000	\N	2007-09-12 12:09:42.488	0	First line	\N	\N	1
+249	151	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:09:42.491	0	Second line	\N	\N	1
+250	152	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:09:42.961	0	First line	\N	\N	1
+251	152	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:09:42.971	0	Second line	\N	\N	1
+252	153	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:09:43.472	0	First line	\N	\N	1
+253	153	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:09:43.482	0	Second line	\N	\N	1
+254	154	1	1	230.0000000000	23.0000000000	10.0000000000	\N	2007-09-12 12:09:43.953	0	First line	\N	\N	1
+255	154	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:09:43.955	0	Second line	\N	\N	1
+256	155	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:09:44.2	0	First line	\N	\N	1
+257	155	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:09:44.202	0	Second line	\N	\N	1
+258	156	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:44.44	0	First line	\N	\N	1
+259	156	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:09:44.442	0	Second line	\N	\N	1
+260	157	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:09:44.684	0	First line	\N	\N	1
+261	157	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:09:44.686	0	Second line	\N	\N	1
+262	158	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:09:44.942	0	First line	\N	\N	1
+263	158	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:09:44.944	0	Second line	\N	\N	1
+264	159	1	1	780.0000000000	78.0000000000	10.0000000000	\N	2007-09-12 12:09:45.409	0	First line	\N	\N	1
+265	159	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:09:45.417	0	Second line	\N	\N	1
+266	160	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:09:45.895	0	First line	\N	\N	1
+267	160	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:09:45.904	0	Second line	\N	\N	1
+268	161	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:09:46.414	0	First line	\N	\N	1
+269	161	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:09:46.42	0	Second line	\N	\N	1
+270	162	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:09:46.716	0	First line	\N	\N	1
+271	162	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:09:46.719	0	Second line	\N	\N	1
+272	163	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:09:46.961	0	First line	\N	\N	1
+273	163	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:09:46.964	0	Second line	\N	\N	1
+274	164	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:09:47.209	0	First line	\N	\N	1
+275	164	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:09:47.211	0	Second line	\N	\N	1
+276	165	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:09:47.457	0	First line	\N	\N	1
+277	165	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:09:47.46	0	Second line	\N	\N	1
+278	166	1	1	490.0000000000	49.0000000000	10.0000000000	\N	2007-09-12 12:09:47.922	0	First line	\N	\N	1
+279	166	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:09:47.925	0	Second line	\N	\N	1
+280	167	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:09:48.389	0	First line	\N	\N	1
+281	167	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:09:48.396	0	Second line	\N	\N	1
+282	168	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:09:48.9	0	First line	\N	\N	1
+283	168	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:09:48.917	0	Second line	\N	\N	1
+284	169	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:09:49.28	0	First line	\N	\N	1
+285	169	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:09:49.282	0	Second line	\N	\N	1
+286	170	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:09:49.536	0	First line	\N	\N	1
+287	170	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:09:49.539	0	Second line	\N	\N	1
+288	171	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:09:49.779	0	First line	\N	\N	1
+289	171	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:09:49.782	0	Second line	\N	\N	1
+290	172	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:09:50.024	0	First line	\N	\N	1
+291	172	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:09:50.027	0	Second line	\N	\N	1
+292	173	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:09:50.359	0	First line	\N	\N	1
+293	173	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:09:50.366	0	Second line	\N	\N	1
+294	174	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:09:50.852	0	First line	\N	\N	1
+295	174	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:09:50.866	0	Second line	\N	\N	1
+296	175	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:09:51.364	0	First line	\N	\N	1
+297	175	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:09:51.382	0	Second line	\N	\N	1
+298	176	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:09:51.819	0	First line	\N	\N	1
+299	176	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:09:51.821	0	Second line	\N	\N	1
+300	177	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:09:52.053	0	First line	\N	\N	1
+301	177	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:09:52.056	0	Second line	\N	\N	1
+302	178	1	1	100.0000000000	10.0000000000	10.0000000000	\N	2007-09-12 12:09:52.305	0	First line	\N	\N	1
+303	178	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:09:52.308	0	Second line	\N	\N	1
+304	179	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:09:52.549	0	First line	\N	\N	1
+305	179	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:09:52.551	0	Second line	\N	\N	1
+306	180	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:09:52.845	0	First line	\N	\N	1
+307	180	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:09:52.851	0	Second line	\N	\N	1
+308	181	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:09:53.327	0	First line	\N	\N	1
+309	181	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:09:53.338	0	Second line	\N	\N	1
+310	182	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:09:53.786	0	First line	\N	\N	1
+311	182	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:09:53.791	0	Second line	\N	\N	1
+312	183	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:09:54.258	0	First line	\N	\N	1
+313	183	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:09:54.271	0	Second line	\N	\N	1
+314	184	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:09:54.549	0	First line	\N	\N	1
+315	184	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:09:54.551	0	Second line	\N	\N	1
+316	185	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:09:54.792	0	First line	\N	\N	1
+317	185	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:09:54.794	0	Second line	\N	\N	1
+318	186	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:09:55.046	0	First line	\N	\N	1
+319	186	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:09:55.048	0	Second line	\N	\N	1
+320	187	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:09:55.274	0	First line	\N	\N	1
+321	187	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:09:55.277	0	Second line	\N	\N	1
+322	188	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:09:55.716	0	First line	\N	\N	1
+323	188	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:09:55.72	0	Second line	\N	\N	1
+324	189	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:09:56.194	0	First line	\N	\N	1
+325	189	2	1	360.0000000000	18.0000000000	20.0000000000	\N	2007-09-12 12:09:56.202	0	Second line	\N	\N	1
+326	190	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:09:56.664	0	First line	\N	\N	1
+327	190	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:09:56.674	0	Second line	\N	\N	1
+328	191	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:09:57.09	0	First line	\N	\N	1
+329	191	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:09:57.092	0	Second line	\N	\N	1
+330	192	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:09:57.343	0	First line	\N	\N	1
+331	192	2	1	360.0000000000	18.0000000000	20.0000000000	\N	2007-09-12 12:09:57.346	0	Second line	\N	\N	1
+332	193	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:09:57.583	0	First line	\N	\N	1
+333	193	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:09:57.585	0	Second line	\N	\N	1
+334	194	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:09:57.85	0	First line	\N	\N	1
+335	194	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:09:57.852	0	Second line	\N	\N	1
+336	195	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:09:58.133	0	First line	\N	\N	1
+337	195	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:09:58.136	0	Second line	\N	\N	1
+338	196	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:09:58.596	0	First line	\N	\N	1
+339	196	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:09:58.604	0	Second line	\N	\N	1
+340	197	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:09:59.118	0	First line	\N	\N	1
+341	197	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:09:59.126	0	Second line	\N	\N	1
+342	198	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:09:59.583	0	First line	\N	\N	1
+343	198	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:09:59.586	0	Second line	\N	\N	1
+344	199	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:09:59.829	0	First line	\N	\N	1
+345	199	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:09:59.831	0	Second line	\N	\N	1
+346	200	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:10:00.09	0	First line	\N	\N	1
+347	200	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:00.092	0	Second line	\N	\N	1
+348	201	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:10:00.334	0	First line	\N	\N	1
+349	201	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:00.337	0	Second line	\N	\N	1
+350	202	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:10:00.679	0	First line	\N	\N	1
+351	202	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:10:00.682	0	Second line	\N	\N	1
+352	203	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:10:01.117	0	First line	\N	\N	1
+353	203	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:10:01.122	0	Second line	\N	\N	1
+354	204	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:10:01.609	0	First line	\N	\N	1
+355	204	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:01.621	0	Second line	\N	\N	1
+356	205	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:10:02.152	0	First line	\N	\N	1
+357	205	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:10:02.162	0	Second line	\N	\N	1
+358	206	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:10:02.422	0	First line	\N	\N	1
+359	206	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:10:02.424	0	Second line	\N	\N	1
+360	207	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:10:02.666	0	First line	\N	\N	1
+361	207	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:10:02.669	0	Second line	\N	\N	1
+362	208	1	1	180.0000000000	18.0000000000	10.0000000000	\N	2007-09-12 12:10:02.913	0	First line	\N	\N	1
+363	208	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:10:02.915	0	Second line	\N	\N	1
+364	209	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:10:03.16	0	First line	\N	\N	1
+365	209	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:10:03.162	0	Second line	\N	\N	1
+366	210	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:10:03.615	0	First line	\N	\N	1
+367	210	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:10:03.626	0	Second line	\N	\N	1
+368	211	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:10:04.103	0	First line	\N	\N	1
+369	211	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:10:04.107	0	Second line	\N	\N	1
+370	212	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:10:04.581	0	First line	\N	\N	1
+371	212	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:10:04.585	0	Second line	\N	\N	1
+372	213	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:10:04.872	0	First line	\N	\N	1
+373	213	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:10:04.874	0	Second line	\N	\N	1
+374	214	1	1	900.0000000000	90.0000000000	10.0000000000	\N	2007-09-12 12:10:05.121	0	First line	\N	\N	1
+375	214	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:10:05.123	0	Second line	\N	\N	1
+376	215	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:10:05.366	0	First line	\N	\N	1
+377	215	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:10:05.369	0	Second line	\N	\N	1
+378	216	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:10:05.614	0	First line	\N	\N	1
+379	216	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:10:05.616	0	Second line	\N	\N	1
+380	217	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:10:06.026	0	First line	\N	\N	1
+381	217	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:10:06.03	0	Second line	\N	\N	1
+382	218	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:10:06.513	0	First line	\N	\N	1
+383	218	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:10:06.519	0	Second line	\N	\N	1
+384	219	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:10:06.973	0	First line	\N	\N	1
+385	219	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:10:06.983	0	Second line	\N	\N	1
+386	220	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:10:07.403	0	First line	\N	\N	1
+387	220	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:10:07.405	0	Second line	\N	\N	1
+388	221	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:10:07.643	0	First line	\N	\N	1
+389	221	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:10:07.645	0	Second line	\N	\N	1
+390	222	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:10:07.894	0	First line	\N	\N	1
+391	222	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:10:07.896	0	Second line	\N	\N	1
+392	223	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:10:08.135	0	First line	\N	\N	1
+393	223	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:10:08.137	0	Second line	\N	\N	1
+394	224	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:10:08.388	0	First line	\N	\N	1
+395	224	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:10:08.392	0	Second line	\N	\N	1
+396	225	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:10:08.864	0	First line	\N	\N	1
+397	225	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:10:08.872	0	Second line	\N	\N	1
+398	226	1	1	430.0000000000	43.0000000000	10.0000000000	\N	2007-09-12 12:10:09.35	0	First line	\N	\N	1
+399	226	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:10:09.368	0	Second line	\N	\N	1
+400	227	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:10:09.88	0	First line	\N	\N	1
+401	227	2	1	1840.0000000000	92.0000000000	20.0000000000	\N	2007-09-12 12:10:09.888	0	Second line	\N	\N	1
+402	228	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:10:10.17	0	First line	\N	\N	1
+403	228	2	1	1240.0000000000	62.0000000000	20.0000000000	\N	2007-09-12 12:10:10.172	0	Second line	\N	\N	1
+404	229	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:10:10.412	0	First line	\N	\N	1
+405	229	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:10:10.414	0	Second line	\N	\N	1
+406	230	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:10:10.665	0	First line	\N	\N	1
+407	230	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:10:10.667	0	Second line	\N	\N	1
+408	231	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:10:10.905	0	First line	\N	\N	1
+409	231	2	1	20.0000000000	1.0000000000	20.0000000000	\N	2007-09-12 12:10:10.908	0	Second line	\N	\N	1
+410	232	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:10:11.353	0	First line	\N	\N	1
+411	232	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:10:11.358	0	Second line	\N	\N	1
+412	233	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:10:11.862	0	First line	\N	\N	1
+413	233	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:10:11.865	0	Second line	\N	\N	1
+414	234	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:10:12.345	0	First line	\N	\N	1
+415	234	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:10:12.351	0	Second line	\N	\N	1
+416	235	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:10:12.65	0	First line	\N	\N	1
+417	235	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:10:12.653	0	Second line	\N	\N	1
+418	236	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:10:12.899	0	First line	\N	\N	1
+419	236	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:10:12.901	0	Second line	\N	\N	1
+420	237	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:10:13.14	0	First line	\N	\N	1
+421	237	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:10:13.143	0	Second line	\N	\N	1
+422	238	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:10:13.396	0	First line	\N	\N	1
+423	238	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:10:13.398	0	Second line	\N	\N	1
+424	239	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:10:13.834	0	First line	\N	\N	1
+425	239	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:10:13.844	0	Second line	\N	\N	1
+426	240	1	1	520.0000000000	52.0000000000	10.0000000000	\N	2007-09-12 12:10:14.343	0	First line	\N	\N	1
+427	240	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:10:14.35	0	Second line	\N	\N	1
+428	241	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:10:14.83	0	First line	\N	\N	1
+429	241	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:10:14.835	0	Second line	\N	\N	1
+430	242	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:10:15.225	0	First line	\N	\N	1
+431	242	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:10:15.227	0	Second line	\N	\N	1
+432	243	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:10:15.465	0	First line	\N	\N	1
+433	243	2	1	1580.0000000000	79.0000000000	20.0000000000	\N	2007-09-12 12:10:15.468	0	Second line	\N	\N	1
+434	244	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:10:15.718	0	First line	\N	\N	1
+435	244	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:10:15.72	0	Second line	\N	\N	1
+436	245	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:10:15.965	0	First line	\N	\N	1
+437	245	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:10:15.968	0	Second line	\N	\N	1
+438	246	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:10:16.593	0	First line	\N	\N	1
+439	246	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:10:16.643	0	Second line	\N	\N	1
+440	247	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:10:17.2	0	First line	\N	\N	1
+441	247	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:17.208	0	Second line	\N	\N	1
+442	248	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:10:17.618	0	First line	\N	\N	1
+443	248	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:10:17.62	0	Second line	\N	\N	1
+444	249	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:10:17.862	0	First line	\N	\N	1
+445	249	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:10:17.864	0	Second line	\N	\N	1
+446	250	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:10:18.103	0	First line	\N	\N	1
+447	250	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:10:18.106	0	Second line	\N	\N	1
+448	251	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:10:18.348	0	First line	\N	\N	1
+449	251	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:10:18.351	0	Second line	\N	\N	1
+450	252	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:10:18.649	0	First line	\N	\N	1
+451	252	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:10:18.652	0	Second line	\N	\N	1
+452	253	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:10:19.144	0	First line	\N	\N	1
+453	253	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:10:19.151	0	Second line	\N	\N	1
+454	254	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:10:19.663	0	First line	\N	\N	1
+455	254	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:10:19.672	0	Second line	\N	\N	1
+456	255	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:10:20.135	0	First line	\N	\N	1
+457	255	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:10:20.143	0	Second line	\N	\N	1
+458	256	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:10:20.416	0	First line	\N	\N	1
+459	256	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:10:20.419	0	Second line	\N	\N	1
+460	257	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:10:20.658	0	First line	\N	\N	1
+461	257	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:10:20.66	0	Second line	\N	\N	1
+462	258	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:10:20.9	0	First line	\N	\N	1
+463	258	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:10:20.902	0	Second line	\N	\N	1
+464	259	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:10:21.142	0	First line	\N	\N	1
+465	259	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:10:21.144	0	Second line	\N	\N	1
+466	260	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:10:21.586	0	First line	\N	\N	1
+467	260	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:10:21.591	0	Second line	\N	\N	1
+468	261	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:10:22.085	0	First line	\N	\N	1
+469	261	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:10:22.088	0	Second line	\N	\N	1
+470	262	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:10:22.579	0	First line	\N	\N	1
+471	262	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:10:22.587	0	Second line	\N	\N	1
+472	263	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:10:22.946	0	First line	\N	\N	1
+473	263	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:10:22.949	0	Second line	\N	\N	1
+474	264	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:10:23.2	0	First line	\N	\N	1
+475	264	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:10:23.202	0	Second line	\N	\N	1
+476	265	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:10:23.439	0	First line	\N	\N	1
+477	265	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:23.441	0	Second line	\N	\N	1
+478	266	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:10:23.688	0	First line	\N	\N	1
+479	266	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:10:23.691	0	Second line	\N	\N	1
+480	267	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:10:24.002	0	First line	\N	\N	1
+481	267	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:10:24.005	0	Second line	\N	\N	1
+482	268	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:10:24.466	0	First line	\N	\N	1
+483	268	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:10:24.475	0	Second line	\N	\N	1
+484	269	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:10:24.97	0	First line	\N	\N	1
+485	269	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:10:24.973	0	Second line	\N	\N	1
+486	270	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:10:25.449	0	First line	\N	\N	1
+487	270	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:10:25.459	0	Second line	\N	\N	1
+488	271	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:10:25.718	0	First line	\N	\N	1
+489	271	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:10:25.72	0	Second line	\N	\N	1
+490	272	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:10:25.966	0	First line	\N	\N	1
+491	272	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:10:25.969	0	Second line	\N	\N	1
+492	273	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:10:26.208	0	First line	\N	\N	1
+493	273	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:10:26.21	0	Second line	\N	\N	1
+494	274	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:10:26.454	0	First line	\N	\N	1
+495	274	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:10:26.456	0	Second line	\N	\N	1
+496	275	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:10:26.923	0	First line	\N	\N	1
+497	275	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:10:26.929	0	Second line	\N	\N	1
+498	276	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:10:27.408	0	First line	\N	\N	1
+499	276	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:10:27.411	0	Second line	\N	\N	1
+500	277	1	1	420.0000000000	42.0000000000	10.0000000000	\N	2007-09-12 12:10:27.894	0	First line	\N	\N	1
+501	277	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:10:27.897	0	Second line	\N	\N	1
+502	278	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:10:28.179	0	First line	\N	\N	1
+503	278	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:10:28.181	0	Second line	\N	\N	1
+504	279	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:10:28.42	0	First line	\N	\N	1
+505	279	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:28.422	0	Second line	\N	\N	1
+506	280	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:10:28.683	0	First line	\N	\N	1
+507	280	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:10:28.685	0	Second line	\N	\N	1
+508	281	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:10:28.931	0	First line	\N	\N	1
+509	281	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:10:28.933	0	Second line	\N	\N	1
+510	282	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:10:29.362	0	First line	\N	\N	1
+511	282	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:29.367	0	Second line	\N	\N	1
+512	283	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:10:29.849	0	First line	\N	\N	1
+513	283	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:10:29.855	0	Second line	\N	\N	1
+514	284	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:10:30.36	0	First line	\N	\N	1
+515	284	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:10:30.366	0	Second line	\N	\N	1
+516	285	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:10:30.773	0	First line	\N	\N	1
+517	285	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:10:30.775	0	Second line	\N	\N	1
+518	286	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:10:31.014	0	First line	\N	\N	1
+519	286	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:10:31.017	0	Second line	\N	\N	1
+520	287	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:10:31.254	0	First line	\N	\N	1
+521	287	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:10:31.256	0	Second line	\N	\N	1
+522	288	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:10:31.495	0	First line	\N	\N	1
+523	288	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:10:31.498	0	Second line	\N	\N	1
+524	289	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:10:31.833	0	First line	\N	\N	1
+525	289	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:10:31.836	0	Second line	\N	\N	1
+526	290	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:10:33.042	0	First line	\N	\N	1
+527	290	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:10:33.045	0	Second line	\N	\N	1
+528	291	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:10:33.29	0	First line	\N	\N	1
+529	291	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:33.293	0	Second line	\N	\N	1
+530	292	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:10:33.534	0	First line	\N	\N	1
+531	292	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:10:33.536	0	Second line	\N	\N	1
+532	293	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:10:33.983	0	First line	\N	\N	1
+533	293	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:10:33.994	0	Second line	\N	\N	1
+534	294	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:10:34.463	0	First line	\N	\N	1
+535	294	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:10:34.467	0	Second line	\N	\N	1
+536	295	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:10:34.903	0	First line	\N	\N	1
+537	295	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:10:34.905	0	Second line	\N	\N	1
+538	296	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:10:35.146	0	First line	\N	\N	1
+539	296	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:10:35.149	0	Second line	\N	\N	1
+540	297	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:10:35.401	0	First line	\N	\N	1
+541	297	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:10:35.403	0	Second line	\N	\N	1
+542	298	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:10:35.638	0	First line	\N	\N	1
+543	298	2	1	540.0000000000	27.0000000000	20.0000000000	\N	2007-09-12 12:10:35.64	0	Second line	\N	\N	1
+544	299	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:10:35.953	0	First line	\N	\N	1
+545	299	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:10:35.956	0	Second line	\N	\N	1
+546	300	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:10:36.441	0	First line	\N	\N	1
+547	300	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:10:36.445	0	Second line	\N	\N	1
+548	301	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:10:36.913	0	First line	\N	\N	1
+549	301	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:10:36.916	0	Second line	\N	\N	1
+550	302	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:10:37.368	0	First line	\N	\N	1
+551	302	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:10:37.375	0	Second line	\N	\N	1
+552	303	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:10:37.642	0	First line	\N	\N	1
+553	303	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:37.644	0	Second line	\N	\N	1
+554	304	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:10:37.897	0	First line	\N	\N	1
+555	304	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:10:37.9	0	Second line	\N	\N	1
+556	305	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:10:38.14	0	First line	\N	\N	1
+557	305	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:10:38.143	0	Second line	\N	\N	1
+558	306	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:10:38.39	0	First line	\N	\N	1
+559	306	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:10:38.392	0	Second line	\N	\N	1
+560	307	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:10:38.82	0	First line	\N	\N	1
+561	307	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:10:38.826	0	Second line	\N	\N	1
+562	308	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:10:39.242	0	First line	\N	\N	1
+563	308	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:10:39.253	0	Second line	\N	\N	1
+564	309	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:10:39.722	0	First line	\N	\N	1
+565	309	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:10:39.727	0	Second line	\N	\N	1
+566	310	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:10:40.144	0	First line	\N	\N	1
+567	310	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:10:40.146	0	Second line	\N	\N	1
+568	311	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:10:40.398	0	First line	\N	\N	1
+569	311	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:10:40.4	0	Second line	\N	\N	1
+570	312	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:10:40.638	0	First line	\N	\N	1
+571	312	2	1	20.0000000000	1.0000000000	20.0000000000	\N	2007-09-12 12:10:40.64	0	Second line	\N	\N	1
+572	313	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:10:40.881	0	First line	\N	\N	1
+573	313	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:10:40.883	0	Second line	\N	\N	1
+574	314	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:10:41.191	0	First line	\N	\N	1
+575	314	2	1	1040.0000000000	52.0000000000	20.0000000000	\N	2007-09-12 12:10:41.197	0	Second line	\N	\N	1
+576	315	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:10:41.654	0	First line	\N	\N	1
+577	315	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:10:41.664	0	Second line	\N	\N	1
+578	316	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:10:42.158	0	First line	\N	\N	1
+579	316	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:10:42.168	0	Second line	\N	\N	1
+580	317	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:10:42.654	0	First line	\N	\N	1
+581	317	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:10:42.66	0	Second line	\N	\N	1
+582	318	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:10:42.936	0	First line	\N	\N	1
+583	318	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:10:42.939	0	Second line	\N	\N	1
+584	319	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:10:43.178	0	First line	\N	\N	1
+585	319	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:10:43.18	0	Second line	\N	\N	1
+586	320	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:10:43.415	0	First line	\N	\N	1
+587	320	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:10:43.418	0	Second line	\N	\N	1
+588	321	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:10:43.667	0	First line	\N	\N	1
+589	321	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:10:43.669	0	Second line	\N	\N	1
+590	322	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:10:44.084	0	First line	\N	\N	1
+591	322	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:10:44.091	0	Second line	\N	\N	1
+592	323	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:10:44.54	0	First line	\N	\N	1
+593	323	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:10:44.549	0	Second line	\N	\N	1
+594	324	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:10:44.975	0	First line	\N	\N	1
+595	324	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:10:44.978	0	Second line	\N	\N	1
+596	325	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:10:45.443	0	First line	\N	\N	1
+597	325	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:10:45.447	0	Second line	\N	\N	1
+598	326	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:10:45.734	0	First line	\N	\N	1
+599	326	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:10:45.736	0	Second line	\N	\N	1
+600	327	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:10:45.981	0	First line	\N	\N	1
+601	327	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:10:45.984	0	Second line	\N	\N	1
+602	328	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:10:46.222	0	First line	\N	\N	1
+603	328	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:10:46.224	0	Second line	\N	\N	1
+604	329	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:10:46.461	0	First line	\N	\N	1
+605	329	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:10:46.464	0	Second line	\N	\N	1
+606	330	1	1	230.0000000000	23.0000000000	10.0000000000	\N	2007-09-12 12:10:46.908	0	First line	\N	\N	1
+607	330	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:10:46.915	0	Second line	\N	\N	1
+608	331	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:10:47.386	0	First line	\N	\N	1
+609	331	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:10:47.394	0	Second line	\N	\N	1
+610	332	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:10:47.891	0	First line	\N	\N	1
+611	332	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:10:47.902	0	Second line	\N	\N	1
+612	333	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:10:48.192	0	First line	\N	\N	1
+613	333	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:10:48.194	0	Second line	\N	\N	1
+614	334	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:10:48.431	0	First line	\N	\N	1
+615	334	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:10:48.433	0	Second line	\N	\N	1
+616	335	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:10:48.685	0	First line	\N	\N	1
+617	335	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:10:48.687	0	Second line	\N	\N	1
+618	336	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:10:48.934	0	First line	\N	\N	1
+619	336	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:10:48.936	0	Second line	\N	\N	1
+620	337	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:10:49.378	0	First line	\N	\N	1
+621	337	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:10:49.382	0	Second line	\N	\N	1
+622	338	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:10:49.84	0	First line	\N	\N	1
+623	338	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:10:49.848	0	Second line	\N	\N	1
+624	339	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:10:50.338	0	First line	\N	\N	1
+625	339	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:10:50.354	0	Second line	\N	\N	1
+626	340	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:10:50.77	0	First line	\N	\N	1
+627	340	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:10:50.772	0	Second line	\N	\N	1
+628	341	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:10:51.018	0	First line	\N	\N	1
+629	341	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:10:51.02	0	Second line	\N	\N	1
+630	342	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:10:51.269	0	First line	\N	\N	1
+631	342	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:10:51.272	0	Second line	\N	\N	1
+632	343	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:10:51.507	0	First line	\N	\N	1
+633	343	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:10:51.509	0	Second line	\N	\N	1
+634	344	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:10:51.868	0	First line	\N	\N	1
+635	344	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:10:51.876	0	Second line	\N	\N	1
+636	345	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:10:52.367	0	First line	\N	\N	1
+637	345	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:10:52.392	0	Second line	\N	\N	1
+638	346	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:10:52.888	0	First line	\N	\N	1
+639	346	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:10:52.891	0	Second line	\N	\N	1
+640	347	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:10:53.295	0	First line	\N	\N	1
+641	347	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:10:53.297	0	Second line	\N	\N	1
+642	348	1	1	770.0000000000	77.0000000000	10.0000000000	\N	2007-09-12 12:10:53.531	0	First line	\N	\N	1
+643	348	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:10:53.533	0	Second line	\N	\N	1
+644	349	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:10:53.788	0	First line	\N	\N	1
+645	349	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:10:53.79	0	Second line	\N	\N	1
+646	350	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:10:54.028	0	First line	\N	\N	1
+647	350	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:10:54.03	0	Second line	\N	\N	1
+648	351	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:10:54.336	0	First line	\N	\N	1
+649	351	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:10:54.344	0	Second line	\N	\N	1
+650	352	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:10:54.859	0	First line	\N	\N	1
+651	352	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:10:54.868	0	Second line	\N	\N	1
+652	353	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:10:55.346	0	First line	\N	\N	1
+653	353	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:10:55.359	0	Second line	\N	\N	1
+654	354	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:10:55.751	0	First line	\N	\N	1
+655	354	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:10:55.753	0	Second line	\N	\N	1
+656	355	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:10:55.996	0	First line	\N	\N	1
+657	355	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:10:55.999	0	Second line	\N	\N	1
+658	356	1	1	420.0000000000	42.0000000000	10.0000000000	\N	2007-09-12 12:10:56.238	0	First line	\N	\N	1
+659	356	2	1	540.0000000000	27.0000000000	20.0000000000	\N	2007-09-12 12:10:56.24	0	Second line	\N	\N	1
+660	357	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:10:56.473	0	First line	\N	\N	1
+661	357	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:10:56.475	0	Second line	\N	\N	1
+662	358	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:10:56.788	0	First line	\N	\N	1
+663	358	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:10:56.791	0	Second line	\N	\N	1
+664	359	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:10:57.273	0	First line	\N	\N	1
+665	359	2	1	460.0000000000	23.0000000000	20.0000000000	\N	2007-09-12 12:10:57.293	0	Second line	\N	\N	1
+666	360	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:10:57.806	0	First line	\N	\N	1
+667	360	2	1	1840.0000000000	92.0000000000	20.0000000000	\N	2007-09-12 12:10:57.812	0	Second line	\N	\N	1
+668	361	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:10:58.249	0	First line	\N	\N	1
+669	361	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:10:58.252	0	Second line	\N	\N	1
+670	362	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:10:58.482	0	First line	\N	\N	1
+671	362	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:10:58.485	0	Second line	\N	\N	1
+672	363	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:10:58.731	0	First line	\N	\N	1
+673	363	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:10:58.734	0	Second line	\N	\N	1
+674	364	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:10:58.965	0	First line	\N	\N	1
+675	364	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:10:58.968	0	Second line	\N	\N	1
+676	365	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:10:59.211	0	First line	\N	\N	1
+677	365	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:10:59.213	0	Second line	\N	\N	1
+678	366	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:10:59.69	0	First line	\N	\N	1
+679	366	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:10:59.694	0	Second line	\N	\N	1
+680	367	1	1	900.0000000000	90.0000000000	10.0000000000	\N	2007-09-12 12:11:00.166	0	First line	\N	\N	1
+681	367	2	1	1580.0000000000	79.0000000000	20.0000000000	\N	2007-09-12 12:11:00.176	0	Second line	\N	\N	1
+682	368	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:11:00.644	0	First line	\N	\N	1
+683	368	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:11:00.655	0	Second line	\N	\N	1
+684	369	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:11:01.052	0	First line	\N	\N	1
+685	369	2	1	1580.0000000000	79.0000000000	20.0000000000	\N	2007-09-12 12:11:01.055	0	Second line	\N	\N	1
+686	370	1	1	860.0000000000	86.0000000000	10.0000000000	\N	2007-09-12 12:11:01.297	0	First line	\N	\N	1
+687	370	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:11:01.299	0	Second line	\N	\N	1
+688	371	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:11:01.541	0	First line	\N	\N	1
+689	371	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:11:01.543	0	Second line	\N	\N	1
+690	372	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:11:01.804	0	First line	\N	\N	1
+691	372	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:11:01.807	0	Second line	\N	\N	1
+692	373	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:11:02.125	0	First line	\N	\N	1
+693	373	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:11:02.13	0	Second line	\N	\N	1
+694	374	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:11:02.63	0	First line	\N	\N	1
+695	374	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:11:02.639	0	Second line	\N	\N	1
+696	375	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:11:03.133	0	First line	\N	\N	1
+697	375	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:11:03.141	0	Second line	\N	\N	1
+698	376	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:11:03.561	0	First line	\N	\N	1
+699	376	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:11:03.564	0	Second line	\N	\N	1
+700	377	1	1	610.0000000000	61.0000000000	10.0000000000	\N	2007-09-12 12:11:03.832	0	First line	\N	\N	1
+701	377	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:11:03.834	0	Second line	\N	\N	1
+702	378	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:11:04.073	0	First line	\N	\N	1
+703	378	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:11:04.075	0	Second line	\N	\N	1
+704	379	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:11:04.323	0	First line	\N	\N	1
+705	379	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:11:04.325	0	Second line	\N	\N	1
+706	380	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:11:04.584	0	First line	\N	\N	1
+707	380	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:11:04.586	0	Second line	\N	\N	1
+708	381	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:11:05.082	0	First line	\N	\N	1
+709	381	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:11:05.088	0	Second line	\N	\N	1
+710	382	1	1	100.0000000000	10.0000000000	10.0000000000	\N	2007-09-12 12:11:05.568	0	First line	\N	\N	1
+711	382	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:11:05.582	0	Second line	\N	\N	1
+712	383	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:11:06.041	0	First line	\N	\N	1
+713	383	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:11:06.043	0	Second line	\N	\N	1
+714	384	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:11:06.282	0	First line	\N	\N	1
+715	384	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:11:06.285	0	Second line	\N	\N	1
+716	385	1	1	100.0000000000	10.0000000000	10.0000000000	\N	2007-09-12 12:11:06.538	0	First line	\N	\N	1
+717	385	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:11:06.54	0	Second line	\N	\N	1
+718	386	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:11:06.776	0	First line	\N	\N	1
+719	386	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:11:06.779	0	Second line	\N	\N	1
+720	387	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:11:07.058	0	First line	\N	\N	1
+721	387	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:11:07.065	0	Second line	\N	\N	1
+722	388	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:11:07.552	0	First line	\N	\N	1
+723	388	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:11:07.556	0	Second line	\N	\N	1
+724	389	1	1	310.0000000000	31.0000000000	10.0000000000	\N	2007-09-12 12:11:08.044	0	First line	\N	\N	1
+725	389	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:11:08.048	0	Second line	\N	\N	1
+726	390	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:11:08.528	0	First line	\N	\N	1
+727	390	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:11:08.534	0	Second line	\N	\N	1
+728	391	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:11:08.805	0	First line	\N	\N	1
+729	391	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:11:08.808	0	Second line	\N	\N	1
+730	392	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:11:09.048	0	First line	\N	\N	1
+731	392	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:11:09.051	0	Second line	\N	\N	1
+732	393	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:11:09.287	0	First line	\N	\N	1
+733	393	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:11:09.29	0	Second line	\N	\N	1
+734	394	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:11:09.529	0	First line	\N	\N	1
+735	394	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:11:09.532	0	Second line	\N	\N	1
+736	395	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:11:09.992	0	First line	\N	\N	1
+737	395	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:11:10.002	0	Second line	\N	\N	1
+738	396	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:11:10.462	0	First line	\N	\N	1
+739	396	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:11:10.478	0	Second line	\N	\N	1
+740	397	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:11:10.998	0	First line	\N	\N	1
+741	397	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:11:11.003	0	Second line	\N	\N	1
+742	398	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:11:11.295	0	First line	\N	\N	1
+743	398	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:11:11.297	0	Second line	\N	\N	1
+744	399	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:11:11.541	0	First line	\N	\N	1
+745	399	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:11:11.543	0	Second line	\N	\N	1
+746	400	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:11:11.784	0	First line	\N	\N	1
+747	400	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:11:11.786	0	Second line	\N	\N	1
+748	401	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:11:12.031	0	First line	\N	\N	1
+749	401	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:11:12.033	0	Second line	\N	\N	1
+750	402	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:11:12.451	0	First line	\N	\N	1
+751	402	2	1	540.0000000000	27.0000000000	20.0000000000	\N	2007-09-12 12:11:12.463	0	Second line	\N	\N	1
+752	403	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:11:12.924	0	First line	\N	\N	1
+753	403	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:11:12.933	0	Second line	\N	\N	1
+754	404	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:11:13.398	0	First line	\N	\N	1
+755	404	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:11:13.404	0	Second line	\N	\N	1
+756	405	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:11:13.829	0	First line	\N	\N	1
+757	405	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:11:13.832	0	Second line	\N	\N	1
+758	406	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:11:14.079	0	First line	\N	\N	1
+759	406	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:11:14.081	0	Second line	\N	\N	1
+760	407	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:11:14.32	0	First line	\N	\N	1
+761	407	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:11:14.323	0	Second line	\N	\N	1
+762	408	1	1	520.0000000000	52.0000000000	10.0000000000	\N	2007-09-12 12:11:14.565	0	First line	\N	\N	1
+763	408	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:11:14.568	0	Second line	\N	\N	1
+764	409	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:11:14.869	0	First line	\N	\N	1
+765	409	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:11:14.873	0	Second line	\N	\N	1
+766	410	1	1	520.0000000000	52.0000000000	10.0000000000	\N	2007-09-12 12:11:15.298	0	First line	\N	\N	1
+767	410	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:11:15.301	0	Second line	\N	\N	1
+768	411	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:11:15.719	0	First line	\N	\N	1
+769	411	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:11:15.723	0	Second line	\N	\N	1
+770	412	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:11:16.311	0	First line	\N	\N	1
+771	412	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:11:16.352	0	Second line	\N	\N	1
+772	413	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:11:16.731	0	First line	\N	\N	1
+773	413	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:11:16.733	0	Second line	\N	\N	1
+774	414	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:11:16.971	0	First line	\N	\N	1
+775	414	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:11:16.973	0	Second line	\N	\N	1
+776	415	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:11:17.228	0	First line	\N	\N	1
+777	415	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:11:17.231	0	Second line	\N	\N	1
+778	416	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:11:17.469	0	First line	\N	\N	1
+779	416	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:11:17.471	0	Second line	\N	\N	1
+780	417	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:11:17.923	0	First line	\N	\N	1
+781	417	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:11:17.932	0	Second line	\N	\N	1
+782	418	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:11:18.411	0	First line	\N	\N	1
+783	418	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:11:18.435	0	Second line	\N	\N	1
+784	419	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:11:18.884	0	First line	\N	\N	1
+785	419	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:11:18.888	0	Second line	\N	\N	1
+786	420	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:11:19.283	0	First line	\N	\N	1
+787	420	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:11:19.285	0	Second line	\N	\N	1
+788	421	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:11:19.526	0	First line	\N	\N	1
+789	421	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:11:19.529	0	Second line	\N	\N	1
+790	422	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:11:19.778	0	First line	\N	\N	1
+791	422	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:11:19.78	0	Second line	\N	\N	1
+792	423	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:11:20.028	0	First line	\N	\N	1
+793	423	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:11:20.03	0	Second line	\N	\N	1
+794	424	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:11:20.321	0	First line	\N	\N	1
+795	424	2	1	900.0000000000	45.0000000000	20.0000000000	\N	2007-09-12 12:11:20.329	0	Second line	\N	\N	1
+796	425	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:11:20.832	0	First line	\N	\N	1
+797	425	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:11:20.842	0	Second line	\N	\N	1
+798	426	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:11:21.315	0	First line	\N	\N	1
+799	426	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:11:21.32	0	Second line	\N	\N	1
+800	427	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:11:21.773	0	First line	\N	\N	1
+801	427	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:11:21.784	0	Second line	\N	\N	1
+802	428	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:11:22.056	0	First line	\N	\N	1
+803	428	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:11:22.058	0	Second line	\N	\N	1
+804	429	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:11:22.301	0	First line	\N	\N	1
+805	429	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:11:22.304	0	Second line	\N	\N	1
+806	430	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:11:22.55	0	First line	\N	\N	1
+807	430	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:11:22.552	0	Second line	\N	\N	1
+808	431	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:11:22.799	0	First line	\N	\N	1
+809	431	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:11:22.801	0	Second line	\N	\N	1
+810	432	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:11:23.271	0	First line	\N	\N	1
+811	432	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:11:23.278	0	Second line	\N	\N	1
+812	433	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:11:23.746	0	First line	\N	\N	1
+813	433	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:11:23.75	0	Second line	\N	\N	1
+814	434	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:11:24.192	0	First line	\N	\N	1
+815	434	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:11:24.209	0	Second line	\N	\N	1
+816	435	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:11:24.61	0	First line	\N	\N	1
+817	435	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:11:24.612	0	Second line	\N	\N	1
+818	436	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:11:24.858	0	First line	\N	\N	1
+819	436	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:11:24.86	0	Second line	\N	\N	1
+820	437	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:11:25.114	0	First line	\N	\N	1
+821	437	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:11:25.116	0	Second line	\N	\N	1
+822	438	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:11:25.354	0	First line	\N	\N	1
+823	438	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:11:25.356	0	Second line	\N	\N	1
+824	439	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:11:25.669	0	First line	\N	\N	1
+825	439	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:11:25.675	0	Second line	\N	\N	1
+826	440	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:11:26.146	0	First line	\N	\N	1
+827	440	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:11:26.154	0	Second line	\N	\N	1
+828	441	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:11:26.601	0	First line	\N	\N	1
+829	441	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:11:26.604	0	Second line	\N	\N	1
+830	442	1	1	860.0000000000	86.0000000000	10.0000000000	\N	2007-09-12 12:11:27.088	0	First line	\N	\N	1
+831	442	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:11:27.091	0	Second line	\N	\N	1
+832	443	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:11:27.359	0	First line	\N	\N	1
+833	443	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:11:27.362	0	Second line	\N	\N	1
+834	444	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:11:27.601	0	First line	\N	\N	1
+835	444	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:11:27.603	0	Second line	\N	\N	1
+836	445	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:11:27.851	0	First line	\N	\N	1
+837	445	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:11:27.854	0	Second line	\N	\N	1
+838	446	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:11:28.101	0	First line	\N	\N	1
+839	446	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:11:28.103	0	Second line	\N	\N	1
+840	447	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:11:28.51	0	First line	\N	\N	1
+841	447	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:11:28.515	0	Second line	\N	\N	1
+842	448	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:11:29.01	0	First line	\N	\N	1
+843	448	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:11:29.022	0	Second line	\N	\N	1
+844	449	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:11:29.48	0	First line	\N	\N	1
+845	449	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:11:29.492	0	Second line	\N	\N	1
+846	450	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:11:29.889	0	First line	\N	\N	1
+847	450	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:11:29.891	0	Second line	\N	\N	1
+848	451	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:11:30.128	0	First line	\N	\N	1
+849	451	2	1	460.0000000000	23.0000000000	20.0000000000	\N	2007-09-12 12:11:30.13	0	Second line	\N	\N	1
+850	452	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:11:30.366	0	First line	\N	\N	1
+851	452	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:11:30.369	0	Second line	\N	\N	1
+852	453	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:11:30.628	0	First line	\N	\N	1
+853	453	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:11:30.63	0	Second line	\N	\N	1
+854	454	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:11:30.91	0	First line	\N	\N	1
+855	454	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:11:30.914	0	Second line	\N	\N	1
+856	455	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:11:31.429	0	First line	\N	\N	1
+857	455	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:11:31.435	0	Second line	\N	\N	1
+858	456	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:11:31.902	0	First line	\N	\N	1
+859	456	2	1	900.0000000000	45.0000000000	20.0000000000	\N	2007-09-12 12:11:31.91	0	Second line	\N	\N	1
+860	457	1	1	490.0000000000	49.0000000000	10.0000000000	\N	2007-09-12 12:11:32.401	0	First line	\N	\N	1
+861	457	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:11:32.408	0	Second line	\N	\N	1
+862	458	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:11:32.664	0	First line	\N	\N	1
+863	458	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:11:32.666	0	Second line	\N	\N	1
+864	459	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:11:32.916	0	First line	\N	\N	1
+865	459	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:11:32.919	0	Second line	\N	\N	1
+866	460	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:11:33.171	0	First line	\N	\N	1
+867	460	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:11:33.173	0	Second line	\N	\N	1
+868	461	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:11:33.41	0	First line	\N	\N	1
+869	461	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:11:33.412	0	Second line	\N	\N	1
+870	462	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:11:33.851	0	First line	\N	\N	1
+871	462	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:11:33.859	0	Second line	\N	\N	1
+872	463	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:11:34.329	0	First line	\N	\N	1
+873	463	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:11:34.335	0	Second line	\N	\N	1
+874	464	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:11:35.003	0	First line	\N	\N	1
+875	464	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:11:35.007	0	Second line	\N	\N	1
+876	465	1	1	370.0000000000	37.0000000000	10.0000000000	\N	2007-09-12 12:11:35.272	0	First line	\N	\N	1
+877	465	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:11:35.275	0	Second line	\N	\N	1
+878	466	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:11:35.515	0	First line	\N	\N	1
+879	466	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:11:35.518	0	Second line	\N	\N	1
+880	467	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:11:35.781	0	First line	\N	\N	1
+881	467	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:11:35.783	0	Second line	\N	\N	1
+882	468	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:11:36.062	0	First line	\N	\N	1
+883	468	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:11:36.068	0	Second line	\N	\N	1
+884	469	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:11:36.562	0	First line	\N	\N	1
+885	469	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:11:36.567	0	Second line	\N	\N	1
+886	470	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:11:37.095	0	First line	\N	\N	1
+887	470	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:11:37.098	0	Second line	\N	\N	1
+888	471	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:11:37.56	0	First line	\N	\N	1
+889	471	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:11:37.568	0	Second line	\N	\N	1
+890	472	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:11:37.832	0	First line	\N	\N	1
+891	472	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:11:37.841	0	Second line	\N	\N	1
+892	473	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:11:38.082	0	First line	\N	\N	1
+893	473	2	1	1240.0000000000	62.0000000000	20.0000000000	\N	2007-09-12 12:11:38.084	0	Second line	\N	\N	1
+894	474	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:11:38.328	0	First line	\N	\N	1
+895	474	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:11:38.33	0	Second line	\N	\N	1
+896	475	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:11:38.58	0	First line	\N	\N	1
+897	475	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:11:38.582	0	Second line	\N	\N	1
+898	476	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:11:39.005	0	First line	\N	\N	1
+899	476	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:11:39.012	0	Second line	\N	\N	1
+900	477	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:11:39.446	0	First line	\N	\N	1
+901	477	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:11:39.455	0	Second line	\N	\N	1
+902	478	1	1	370.0000000000	37.0000000000	10.0000000000	\N	2007-09-12 12:11:39.919	0	First line	\N	\N	1
+903	478	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:11:39.926	0	Second line	\N	\N	1
+904	479	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:11:40.346	0	First line	\N	\N	1
+905	479	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:11:40.349	0	Second line	\N	\N	1
+906	480	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:11:40.592	0	First line	\N	\N	1
+907	480	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:11:40.594	0	Second line	\N	\N	1
+908	481	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:11:40.833	0	First line	\N	\N	1
+909	481	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:11:40.835	0	Second line	\N	\N	1
+910	482	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:11:41.079	0	First line	\N	\N	1
+911	482	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:11:41.081	0	Second line	\N	\N	1
+912	483	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:11:41.365	0	First line	\N	\N	1
+913	483	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:11:41.372	0	Second line	\N	\N	1
+914	484	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:11:41.842	0	First line	\N	\N	1
+915	484	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:11:41.845	0	Second line	\N	\N	1
+916	485	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:11:42.299	0	First line	\N	\N	1
+917	485	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:11:42.301	0	Second line	\N	\N	1
+918	486	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:11:42.775	0	First line	\N	\N	1
+919	486	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:11:42.784	0	Second line	\N	\N	1
+920	487	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:11:43.17	0	First line	\N	\N	1
+921	487	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:11:43.172	0	Second line	\N	\N	1
+922	488	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:11:43.416	0	First line	\N	\N	1
+923	488	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:11:43.419	0	Second line	\N	\N	1
+924	489	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:11:43.672	0	First line	\N	\N	1
+925	489	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:11:43.674	0	Second line	\N	\N	1
+926	490	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:11:43.923	0	First line	\N	\N	1
+927	490	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:11:43.925	0	Second line	\N	\N	1
+928	491	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:11:44.233	0	First line	\N	\N	1
+929	491	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:11:44.244	0	Second line	\N	\N	1
+930	492	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:11:44.737	0	First line	\N	\N	1
+931	492	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:11:44.743	0	Second line	\N	\N	1
+932	493	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:11:45.198	0	First line	\N	\N	1
+933	493	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:11:45.202	0	Second line	\N	\N	1
+934	494	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:11:45.637	0	First line	\N	\N	1
+935	494	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:11:45.641	0	Second line	\N	\N	1
+936	495	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:11:45.9	0	First line	\N	\N	1
+937	495	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:11:45.902	0	Second line	\N	\N	1
+938	496	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:11:46.154	0	First line	\N	\N	1
+939	496	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:11:46.156	0	Second line	\N	\N	1
+940	497	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:11:46.411	0	First line	\N	\N	1
+941	497	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:11:46.413	0	Second line	\N	\N	1
+942	498	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:11:46.672	0	First line	\N	\N	1
+943	498	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:11:46.681	0	Second line	\N	\N	1
+944	499	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:11:47.117	0	First line	\N	\N	1
+945	499	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:11:47.126	0	Second line	\N	\N	1
+946	500	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:11:47.591	0	First line	\N	\N	1
+947	500	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:11:47.603	0	Second line	\N	\N	1
+948	501	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:11:48.068	0	First line	\N	\N	1
+949	501	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:11:48.075	0	Second line	\N	\N	1
+950	502	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:11:48.462	0	First line	\N	\N	1
+951	502	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:11:48.464	0	Second line	\N	\N	1
+952	503	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:11:48.71	0	First line	\N	\N	1
+953	503	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:11:48.712	0	Second line	\N	\N	1
+954	504	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:11:48.965	0	First line	\N	\N	1
+955	504	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:11:48.967	0	Second line	\N	\N	1
+956	505	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:11:49.205	0	First line	\N	\N	1
+957	505	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:11:49.215	0	Second line	\N	\N	1
+958	506	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:11:49.523	0	First line	\N	\N	1
+959	506	2	1	360.0000000000	18.0000000000	20.0000000000	\N	2007-09-12 12:11:49.53	0	Second line	\N	\N	1
+960	507	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:11:50.024	0	First line	\N	\N	1
+961	507	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:11:50.029	0	Second line	\N	\N	1
+962	508	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:11:50.489	0	First line	\N	\N	1
+963	508	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:11:50.496	0	Second line	\N	\N	1
+964	509	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:11:50.96	0	First line	\N	\N	1
+965	509	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:11:50.962	0	Second line	\N	\N	1
+966	510	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:11:51.216	0	First line	\N	\N	1
+967	510	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:11:51.219	0	Second line	\N	\N	1
+968	511	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:11:51.47	0	First line	\N	\N	1
+969	511	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:11:51.473	0	Second line	\N	\N	1
+970	512	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:11:51.707	0	First line	\N	\N	1
+971	512	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:11:51.709	0	Second line	\N	\N	1
+972	513	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:11:52	0	First line	\N	\N	1
+973	513	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:11:52.022	0	Second line	\N	\N	1
+974	514	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:11:52.485	0	First line	\N	\N	1
+975	514	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:11:52.491	0	Second line	\N	\N	1
+976	515	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:11:52.97	0	First line	\N	\N	1
+977	515	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:11:52.976	0	Second line	\N	\N	1
+978	516	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:11:53.459	0	First line	\N	\N	1
+979	516	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:11:53.463	0	Second line	\N	\N	1
+980	517	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:11:53.748	0	First line	\N	\N	1
+981	517	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:11:53.75	0	Second line	\N	\N	1
+982	518	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:11:54.006	0	First line	\N	\N	1
+983	518	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:11:54.008	0	Second line	\N	\N	1
+984	519	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:11:54.249	0	First line	\N	\N	1
+985	519	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:11:54.251	0	Second line	\N	\N	1
+986	520	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:11:54.485	0	First line	\N	\N	1
+987	520	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:11:54.487	0	Second line	\N	\N	1
+988	521	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:11:54.96	0	First line	\N	\N	1
+989	521	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:11:54.965	0	Second line	\N	\N	1
+990	522	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:11:55.44	0	First line	\N	\N	1
+991	522	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:11:55.443	0	Second line	\N	\N	1
+992	523	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:11:55.942	0	First line	\N	\N	1
+993	523	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:11:55.945	0	Second line	\N	\N	1
+994	524	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:11:56.214	0	First line	\N	\N	1
+995	524	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:11:56.216	0	Second line	\N	\N	1
+996	525	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:11:56.469	0	First line	\N	\N	1
+997	525	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:11:56.472	0	Second line	\N	\N	1
+998	526	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:11:56.724	0	First line	\N	\N	1
+999	526	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:11:56.726	0	Second line	\N	\N	1
+1000	527	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:11:56.965	0	First line	\N	\N	1
+1001	527	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:11:56.967	0	Second line	\N	\N	1
+1002	528	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:11:57.387	0	First line	\N	\N	1
+1003	528	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:11:57.396	0	Second line	\N	\N	1
+1004	529	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:11:57.851	0	First line	\N	\N	1
+1005	529	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:11:57.854	0	Second line	\N	\N	1
+1006	530	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:11:58.32	0	First line	\N	\N	1
+1007	530	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:11:58.328	0	Second line	\N	\N	1
+1008	531	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:11:58.768	0	First line	\N	\N	1
+1009	531	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:11:58.77	0	Second line	\N	\N	1
+1010	532	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:11:59.019	0	First line	\N	\N	1
+1011	532	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:11:59.021	0	Second line	\N	\N	1
+1012	533	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:11:59.267	0	First line	\N	\N	1
+1013	533	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:11:59.269	0	Second line	\N	\N	1
+1014	534	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:11:59.504	0	First line	\N	\N	1
+1015	534	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:11:59.506	0	Second line	\N	\N	1
+1016	535	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:11:59.814	0	First line	\N	\N	1
+1017	535	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:11:59.816	0	Second line	\N	\N	1
+1018	536	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:12:00.251	0	First line	\N	\N	1
+1019	536	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:12:00.255	0	Second line	\N	\N	1
+1020	537	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:12:00.725	0	First line	\N	\N	1
+1021	537	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:12:00.732	0	Second line	\N	\N	1
+1022	538	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:12:01.221	0	First line	\N	\N	1
+1023	538	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:12:01.228	0	Second line	\N	\N	1
+1024	539	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:12:02.091	0	First line	\N	\N	1
+1025	539	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:12:02.094	0	Second line	\N	\N	1
+1026	540	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:12:02.336	0	First line	\N	\N	1
+1027	540	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:12:02.343	0	Second line	\N	\N	1
+1028	541	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:12:02.811	0	First line	\N	\N	1
+1029	541	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:12:02.815	0	Second line	\N	\N	1
+1030	542	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:12:03.191	0	First line	\N	\N	1
+1031	542	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:12:03.194	0	Second line	\N	\N	1
+1032	543	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:12:03.429	0	First line	\N	\N	1
+1033	543	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:12:03.431	0	Second line	\N	\N	1
+1034	544	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:12:03.672	0	First line	\N	\N	1
+1035	544	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:12:03.674	0	Second line	\N	\N	1
+1036	545	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:12:03.926	0	First line	\N	\N	1
+1037	545	2	1	20.0000000000	1.0000000000	20.0000000000	\N	2007-09-12 12:12:03.929	0	Second line	\N	\N	1
+1038	546	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:12:04.197	0	First line	\N	\N	1
+1039	546	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:12:04.204	0	Second line	\N	\N	1
+1040	547	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:12:04.606	0	First line	\N	\N	1
+1041	547	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:12:04.609	0	Second line	\N	\N	1
+1042	548	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:12:05.024	0	First line	\N	\N	1
+1043	548	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:12:05.03	0	Second line	\N	\N	1
+1044	549	1	1	770.0000000000	77.0000000000	10.0000000000	\N	2007-09-12 12:12:05.448	0	First line	\N	\N	1
+1045	549	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:12:05.453	0	Second line	\N	\N	1
+1046	550	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:12:05.914	0	First line	\N	\N	1
+1047	550	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:12:05.92	0	Second line	\N	\N	1
+1048	551	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:12:06.21	0	First line	\N	\N	1
+1049	551	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:12:06.212	0	Second line	\N	\N	1
+1050	552	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:12:06.462	0	First line	\N	\N	1
+1051	552	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:12:06.464	0	Second line	\N	\N	1
+1052	553	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:12:06.709	0	First line	\N	\N	1
+1053	553	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:12:06.711	0	Second line	\N	\N	1
+1054	554	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:12:06.95	0	First line	\N	\N	1
+1055	554	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:12:06.952	0	Second line	\N	\N	1
+1056	555	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:12:07.328	0	First line	\N	\N	1
+1057	555	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:12:07.335	0	Second line	\N	\N	1
+1058	556	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:12:07.823	0	First line	\N	\N	1
+1059	556	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:12:07.826	0	Second line	\N	\N	1
+1060	557	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:12:08.29	0	First line	\N	\N	1
+1061	557	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:12:08.296	0	Second line	\N	\N	1
+1062	558	1	1	610.0000000000	61.0000000000	10.0000000000	\N	2007-09-12 12:12:08.771	0	First line	\N	\N	1
+1063	558	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:12:08.78	0	Second line	\N	\N	1
+1064	559	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:12:09.043	0	First line	\N	\N	1
+1065	559	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:12:09.045	0	Second line	\N	\N	1
+1066	560	1	1	230.0000000000	23.0000000000	10.0000000000	\N	2007-09-12 12:12:09.291	0	First line	\N	\N	1
+1067	560	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:12:09.293	0	Second line	\N	\N	1
+1068	561	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:12:09.535	0	First line	\N	\N	1
+1069	561	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:12:09.538	0	Second line	\N	\N	1
+1070	562	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:12:09.783	0	First line	\N	\N	1
+1071	562	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:12:09.785	0	Second line	\N	\N	1
+1072	563	1	1	860.0000000000	86.0000000000	10.0000000000	\N	2007-09-12 12:12:10.248	0	First line	\N	\N	1
+1073	563	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:12:10.254	0	Second line	\N	\N	1
+1074	564	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:12:10.729	0	First line	\N	\N	1
+1075	564	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:12:10.733	0	Second line	\N	\N	1
+1076	565	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:12:11.218	0	First line	\N	\N	1
+1077	565	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:12:11.228	0	Second line	\N	\N	1
+1078	566	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:12:11.527	0	First line	\N	\N	1
+1079	566	2	1	900.0000000000	45.0000000000	20.0000000000	\N	2007-09-12 12:12:11.53	0	Second line	\N	\N	1
+1080	567	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:12:11.776	0	First line	\N	\N	1
+1081	567	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:12:11.778	0	Second line	\N	\N	1
+1082	568	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:12:12.013	0	First line	\N	\N	1
+1083	568	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:12:12.023	0	Second line	\N	\N	1
+1084	569	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:12:12.259	0	First line	\N	\N	1
+1085	569	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:12:12.262	0	Second line	\N	\N	1
+1086	570	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:12:12.691	0	First line	\N	\N	1
+1087	570	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:12:12.694	0	Second line	\N	\N	1
+1088	571	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:12:13.14	0	First line	\N	\N	1
+1089	571	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:12:13.148	0	Second line	\N	\N	1
+1090	572	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:12:13.563	0	First line	\N	\N	1
+1091	572	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:12:13.567	0	Second line	\N	\N	1
+1092	573	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:12:14.006	0	First line	\N	\N	1
+1093	573	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:12:14.009	0	Second line	\N	\N	1
+1094	574	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:12:14.25	0	First line	\N	\N	1
+1095	574	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:12:14.252	0	Second line	\N	\N	1
+1096	575	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:12:14.492	0	First line	\N	\N	1
+1097	575	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:12:14.494	0	Second line	\N	\N	1
+1098	576	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:12:14.736	0	First line	\N	\N	1
+1099	576	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:12:14.739	0	Second line	\N	\N	1
+1100	577	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:12:14.993	0	First line	\N	\N	1
+1101	577	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:12:15	0	Second line	\N	\N	1
+1102	578	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:12:15.446	0	First line	\N	\N	1
+1103	578	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:12:15.467	0	Second line	\N	\N	1
+1104	579	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:12:15.915	0	First line	\N	\N	1
+1105	579	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:12:15.921	0	Second line	\N	\N	1
+1106	580	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:12:16.682	0	First line	\N	\N	1
+1107	580	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:12:16.684	0	Second line	\N	\N	1
+1108	581	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:12:16.933	0	First line	\N	\N	1
+1109	581	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:12:16.935	0	Second line	\N	\N	1
+1110	582	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:12:17.172	0	First line	\N	\N	1
+1111	582	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:12:17.175	0	Second line	\N	\N	1
+1112	583	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:12:17.412	0	First line	\N	\N	1
+1113	583	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:12:17.414	0	Second line	\N	\N	1
+1114	584	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:12:17.72	0	First line	\N	\N	1
+1115	584	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:12:17.734	0	Second line	\N	\N	1
+1116	585	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:12:18.259	0	First line	\N	\N	1
+1117	585	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:12:18.284	0	Second line	\N	\N	1
+1118	586	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:12:18.757	0	First line	\N	\N	1
+1119	586	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:12:18.762	0	Second line	\N	\N	1
+1120	587	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:12:19.192	0	First line	\N	\N	1
+1121	587	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:12:19.194	0	Second line	\N	\N	1
+1122	588	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:12:19.432	0	First line	\N	\N	1
+1123	588	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:12:19.435	0	Second line	\N	\N	1
+1124	589	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:12:19.671	0	First line	\N	\N	1
+1125	589	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:12:19.673	0	Second line	\N	\N	1
+1126	590	1	1	420.0000000000	42.0000000000	10.0000000000	\N	2007-09-12 12:12:19.915	0	First line	\N	\N	1
+1127	590	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:12:19.918	0	Second line	\N	\N	1
+1128	591	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:12:20.215	0	First line	\N	\N	1
+1129	591	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:12:20.218	0	Second line	\N	\N	1
+1130	592	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:12:20.704	0	First line	\N	\N	1
+1131	592	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:12:20.714	0	Second line	\N	\N	1
+1132	593	1	1	900.0000000000	90.0000000000	10.0000000000	\N	2007-09-12 12:12:21.173	0	First line	\N	\N	1
+1133	593	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:12:21.178	0	Second line	\N	\N	1
+1134	594	1	1	730.0000000000	73.0000000000	10.0000000000	\N	2007-09-12 12:12:21.595	0	First line	\N	\N	1
+1135	594	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:12:21.603	0	Second line	\N	\N	1
+1136	595	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:12:21.952	0	First line	\N	\N	1
+1137	595	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:12:21.954	0	Second line	\N	\N	1
+1138	596	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:12:22.196	0	First line	\N	\N	1
+1139	596	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:12:22.198	0	Second line	\N	\N	1
+1140	597	1	1	610.0000000000	61.0000000000	10.0000000000	\N	2007-09-12 12:12:22.439	0	First line	\N	\N	1
+1141	597	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:12:22.441	0	Second line	\N	\N	1
+1142	598	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:12:22.676	0	First line	\N	\N	1
+1143	598	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:12:22.679	0	Second line	\N	\N	1
+1144	599	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:12:23.048	0	First line	\N	\N	1
+1145	599	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:12:23.051	0	Second line	\N	\N	1
+1146	600	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:12:23.548	0	First line	\N	\N	1
+1147	600	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:12:23.558	0	Second line	\N	\N	1
+1148	601	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:12:24.041	0	First line	\N	\N	1
+1149	601	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:12:24.05	0	Second line	\N	\N	1
+1150	602	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:12:24.453	0	First line	\N	\N	1
+1151	602	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:12:24.455	0	Second line	\N	\N	1
+1152	603	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:12:24.709	0	First line	\N	\N	1
+1153	603	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:12:24.712	0	Second line	\N	\N	1
+1154	604	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:12:24.961	0	First line	\N	\N	1
+1155	604	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:12:24.963	0	Second line	\N	\N	1
+1156	605	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:12:25.2	0	First line	\N	\N	1
+1157	605	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:12:25.202	0	Second line	\N	\N	1
+1158	606	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:12:25.485	0	First line	\N	\N	1
+1159	606	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:12:25.492	0	Second line	\N	\N	1
+1160	607	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:12:25.988	0	First line	\N	\N	1
+1161	607	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:12:25.997	0	Second line	\N	\N	1
+1162	608	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:12:26.444	0	First line	\N	\N	1
+1163	608	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:12:26.455	0	Second line	\N	\N	1
+1164	609	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:12:26.943	0	First line	\N	\N	1
+1165	609	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:12:26.948	0	Second line	\N	\N	1
+1166	610	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:12:27.223	0	First line	\N	\N	1
+1167	610	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:12:27.225	0	Second line	\N	\N	1
+1168	611	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:12:27.469	0	First line	\N	\N	1
+1169	611	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:12:27.471	0	Second line	\N	\N	1
+1170	612	1	1	900.0000000000	90.0000000000	10.0000000000	\N	2007-09-12 12:12:27.713	0	First line	\N	\N	1
+1171	612	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:12:27.715	0	Second line	\N	\N	1
+1172	613	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:12:27.948	0	First line	\N	\N	1
+1173	613	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:12:27.951	0	Second line	\N	\N	1
+1174	614	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:12:28.375	0	First line	\N	\N	1
+1175	614	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:12:28.381	0	Second line	\N	\N	1
+1176	615	1	1	770.0000000000	77.0000000000	10.0000000000	\N	2007-09-12 12:12:28.841	0	First line	\N	\N	1
+1177	615	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:12:28.848	0	Second line	\N	\N	1
+1178	616	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:12:29.315	0	First line	\N	\N	1
+1179	616	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:12:29.322	0	Second line	\N	\N	1
+1180	617	1	1	170.0000000000	17.0000000000	10.0000000000	\N	2007-09-12 12:12:29.769	0	First line	\N	\N	1
+1181	617	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:12:29.774	0	Second line	\N	\N	1
+1182	618	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:12:30.04	0	First line	\N	\N	1
+1183	618	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:12:30.042	0	Second line	\N	\N	1
+1184	619	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:12:30.28	0	First line	\N	\N	1
+1185	619	2	1	360.0000000000	18.0000000000	20.0000000000	\N	2007-09-12 12:12:30.282	0	Second line	\N	\N	1
+1186	620	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:12:30.526	0	First line	\N	\N	1
+1187	620	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:12:30.529	0	Second line	\N	\N	1
+1188	621	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:12:30.769	0	First line	\N	\N	1
+1189	621	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:12:30.772	0	Second line	\N	\N	1
+1190	622	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:12:31.225	0	First line	\N	\N	1
+1191	622	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:12:31.232	0	Second line	\N	\N	1
+1192	623	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:12:31.679	0	First line	\N	\N	1
+1193	623	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:12:31.688	0	Second line	\N	\N	1
+1194	624	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:12:32.187	0	First line	\N	\N	1
+1195	624	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:12:32.193	0	Second line	\N	\N	1
+1196	625	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:12:32.487	0	First line	\N	\N	1
+1197	625	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:12:32.49	0	Second line	\N	\N	1
+1198	626	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:12:32.724	0	First line	\N	\N	1
+1199	626	2	1	1040.0000000000	52.0000000000	20.0000000000	\N	2007-09-12 12:12:32.727	0	Second line	\N	\N	1
+1200	627	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:12:32.96	0	First line	\N	\N	1
+1201	627	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:12:32.962	0	Second line	\N	\N	1
+1202	628	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:12:33.203	0	First line	\N	\N	1
+1203	628	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:12:33.205	0	Second line	\N	\N	1
+1204	629	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:12:33.636	0	First line	\N	\N	1
+1205	629	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:12:33.646	0	Second line	\N	\N	1
+1206	630	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:12:34.132	0	First line	\N	\N	1
+1207	630	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:12:34.139	0	Second line	\N	\N	1
+1208	631	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:12:34.586	0	First line	\N	\N	1
+1209	631	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:12:34.59	0	Second line	\N	\N	1
+1210	632	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:12:35.002	0	First line	\N	\N	1
+1211	632	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:12:35.004	0	Second line	\N	\N	1
+1212	633	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:12:35.242	0	First line	\N	\N	1
+1213	633	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:12:35.244	0	Second line	\N	\N	1
+1214	634	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:12:35.481	0	First line	\N	\N	1
+1215	634	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:12:35.484	0	Second line	\N	\N	1
+1216	635	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:12:35.725	0	First line	\N	\N	1
+1217	635	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:12:35.728	0	Second line	\N	\N	1
+1218	636	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:12:36.034	0	First line	\N	\N	1
+1219	636	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:12:36.041	0	Second line	\N	\N	1
+1220	637	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:12:36.497	0	First line	\N	\N	1
+1221	637	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:12:36.502	0	Second line	\N	\N	1
+1222	638	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:12:37.004	0	First line	\N	\N	1
+1223	638	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:12:37.01	0	Second line	\N	\N	1
+1224	639	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:12:37.501	0	First line	\N	\N	1
+1225	639	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:12:37.504	0	Second line	\N	\N	1
+1226	640	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:12:37.776	0	First line	\N	\N	1
+1227	640	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:12:37.779	0	Second line	\N	\N	1
+1228	641	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:12:38.021	0	First line	\N	\N	1
+1229	641	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:12:38.023	0	Second line	\N	\N	1
+1230	642	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:12:38.257	0	First line	\N	\N	1
+1231	642	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:12:38.26	0	Second line	\N	\N	1
+1232	643	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:12:38.501	0	First line	\N	\N	1
+1233	643	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:12:38.503	0	Second line	\N	\N	1
+1234	644	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:12:38.972	0	First line	\N	\N	1
+1235	644	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:12:38.976	0	Second line	\N	\N	1
+1236	645	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:12:39.432	0	First line	\N	\N	1
+1237	645	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:12:39.443	0	Second line	\N	\N	1
+1238	646	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:12:39.946	0	First line	\N	\N	1
+1239	646	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:12:39.95	0	Second line	\N	\N	1
+1240	647	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:12:40.333	0	First line	\N	\N	1
+1241	647	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:12:40.336	0	Second line	\N	\N	1
+1242	648	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:12:40.58	0	First line	\N	\N	1
+1243	648	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:12:40.583	0	Second line	\N	\N	1
+1244	649	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:12:40.822	0	First line	\N	\N	1
+1245	649	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:12:40.824	0	Second line	\N	\N	1
+1246	650	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:12:41.074	0	First line	\N	\N	1
+1247	650	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:12:41.076	0	Second line	\N	\N	1
+1248	651	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:12:41.409	0	First line	\N	\N	1
+1249	651	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:12:41.419	0	Second line	\N	\N	1
+1250	652	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:12:41.884	0	First line	\N	\N	1
+1251	652	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:12:41.894	0	Second line	\N	\N	1
+1252	653	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:12:42.344	0	First line	\N	\N	1
+1253	653	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:12:42.351	0	Second line	\N	\N	1
+1254	654	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:12:42.806	0	First line	\N	\N	1
+1255	654	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:12:42.818	0	Second line	\N	\N	1
+1256	655	1	1	450.0000000000	45.0000000000	10.0000000000	\N	2007-09-12 12:12:43.053	0	First line	\N	\N	1
+1257	655	2	1	360.0000000000	18.0000000000	20.0000000000	\N	2007-09-12 12:12:43.055	0	Second line	\N	\N	1
+1258	656	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:12:43.289	0	First line	\N	\N	1
+1259	656	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:12:43.291	0	Second line	\N	\N	1
+1260	657	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:12:43.536	0	First line	\N	\N	1
+1261	657	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:12:43.539	0	Second line	\N	\N	1
+1262	658	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:12:43.785	0	First line	\N	\N	1
+1263	658	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:12:43.787	0	Second line	\N	\N	1
+1264	659	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:12:44.241	0	First line	\N	\N	1
+1265	659	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:12:44.246	0	Second line	\N	\N	1
+1266	660	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:12:44.768	0	First line	\N	\N	1
+1267	660	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:12:44.776	0	Second line	\N	\N	1
+1268	661	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:12:45.236	0	First line	\N	\N	1
+1269	661	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:12:45.247	0	Second line	\N	\N	1
+1270	662	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:12:45.601	0	First line	\N	\N	1
+1271	662	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:12:45.603	0	Second line	\N	\N	1
+1272	663	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:12:45.835	0	First line	\N	\N	1
+1273	663	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:12:45.838	0	Second line	\N	\N	1
+1274	664	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:12:46.072	0	First line	\N	\N	1
+1275	664	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:12:46.075	0	Second line	\N	\N	1
+1276	665	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:12:46.324	0	First line	\N	\N	1
+1277	665	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:12:46.326	0	Second line	\N	\N	1
+1278	666	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:12:46.643	0	First line	\N	\N	1
+1279	666	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:12:46.647	0	Second line	\N	\N	1
+1280	667	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:12:47.11	0	First line	\N	\N	1
+1281	667	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:12:47.12	0	Second line	\N	\N	1
+1282	668	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:12:47.575	0	First line	\N	\N	1
+1283	668	2	1	1840.0000000000	92.0000000000	20.0000000000	\N	2007-09-12 12:12:47.58	0	Second line	\N	\N	1
+1284	669	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:12:48.036	0	First line	\N	\N	1
+1285	669	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:12:48.044	0	Second line	\N	\N	1
+1286	670	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:12:48.333	0	First line	\N	\N	1
+1287	670	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:12:48.335	0	Second line	\N	\N	1
+1288	671	1	1	490.0000000000	49.0000000000	10.0000000000	\N	2007-09-12 12:12:48.582	0	First line	\N	\N	1
+1289	671	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:12:48.594	0	Second line	\N	\N	1
+1290	672	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:12:48.835	0	First line	\N	\N	1
+1291	672	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:12:48.838	0	Second line	\N	\N	1
+1292	673	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:12:49.07	0	First line	\N	\N	1
+1293	673	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:12:49.073	0	Second line	\N	\N	1
+1294	674	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:12:49.502	0	First line	\N	\N	1
+1295	674	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:12:49.511	0	Second line	\N	\N	1
+1296	675	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:12:49.976	0	First line	\N	\N	1
+1297	675	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:12:49.989	0	Second line	\N	\N	1
+1298	676	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:12:50.468	0	First line	\N	\N	1
+1299	676	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:12:50.477	0	Second line	\N	\N	1
+1300	677	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:12:50.913	0	First line	\N	\N	1
+1301	677	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:12:50.915	0	Second line	\N	\N	1
+1302	678	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:12:51.156	0	First line	\N	\N	1
+1303	678	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:12:51.159	0	Second line	\N	\N	1
+1304	679	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:12:51.402	0	First line	\N	\N	1
+1305	679	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:12:51.404	0	Second line	\N	\N	1
+1306	680	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:12:51.643	0	First line	\N	\N	1
+1307	680	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:12:51.645	0	Second line	\N	\N	1
+1308	681	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:12:51.968	0	First line	\N	\N	1
+1309	681	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:12:51.972	0	Second line	\N	\N	1
+1310	682	1	1	420.0000000000	42.0000000000	10.0000000000	\N	2007-09-12 12:12:52.414	0	First line	\N	\N	1
+1311	682	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:12:52.424	0	Second line	\N	\N	1
+1312	683	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:12:52.913	0	First line	\N	\N	1
+1313	683	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:12:52.916	0	Second line	\N	\N	1
+1314	684	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:12:53.364	0	First line	\N	\N	1
+1315	684	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:12:53.366	0	Second line	\N	\N	1
+1316	685	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:12:53.617	0	First line	\N	\N	1
+1317	685	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:12:53.619	0	Second line	\N	\N	1
+1318	686	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:12:53.861	0	First line	\N	\N	1
+1319	686	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:12:53.864	0	Second line	\N	\N	1
+1320	687	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:12:54.103	0	First line	\N	\N	1
+1321	687	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:12:54.105	0	Second line	\N	\N	1
+1322	688	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:12:54.342	0	First line	\N	\N	1
+1323	688	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:12:54.35	0	Second line	\N	\N	1
+1324	689	1	1	670.0000000000	67.0000000000	10.0000000000	\N	2007-09-12 12:12:54.8	0	First line	\N	\N	1
+1325	689	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:12:54.818	0	Second line	\N	\N	1
+1326	690	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:12:55.279	0	First line	\N	\N	1
+1327	690	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:12:55.289	0	Second line	\N	\N	1
+1328	691	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:12:55.75	0	First line	\N	\N	1
+1329	691	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:12:55.761	0	Second line	\N	\N	1
+1330	692	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:12:56.172	0	First line	\N	\N	1
+1331	692	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:12:56.174	0	Second line	\N	\N	1
+1332	693	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:12:56.413	0	First line	\N	\N	1
+1333	693	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:12:56.415	0	Second line	\N	\N	1
+1334	694	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:12:56.663	0	First line	\N	\N	1
+1335	694	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:12:56.665	0	Second line	\N	\N	1
+1336	695	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:12:56.909	0	First line	\N	\N	1
+1337	695	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:12:56.912	0	Second line	\N	\N	1
+1338	696	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:12:57.195	0	First line	\N	\N	1
+1339	696	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:12:57.199	0	Second line	\N	\N	1
+1340	697	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:12:57.652	0	First line	\N	\N	1
+1341	697	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:12:57.658	0	Second line	\N	\N	1
+1342	698	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:12:58.151	0	First line	\N	\N	1
+1343	698	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:12:58.155	0	Second line	\N	\N	1
+1344	699	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:12:58.648	0	First line	\N	\N	1
+1345	699	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:12:58.655	0	Second line	\N	\N	1
+1346	700	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:12:58.927	0	First line	\N	\N	1
+1347	700	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:12:58.93	0	Second line	\N	\N	1
+1348	701	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:12:59.177	0	First line	\N	\N	1
+1349	701	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:12:59.179	0	Second line	\N	\N	1
+1350	702	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:12:59.429	0	First line	\N	\N	1
+1351	702	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:12:59.431	0	Second line	\N	\N	1
+1352	703	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:12:59.681	0	First line	\N	\N	1
+1353	703	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:12:59.684	0	Second line	\N	\N	1
+1354	704	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:13:00.115	0	First line	\N	\N	1
+1355	704	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:13:00.122	0	Second line	\N	\N	1
+1356	705	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:13:00.593	0	First line	\N	\N	1
+1357	705	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:13:00.6	0	Second line	\N	\N	1
+1358	706	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:13:01.085	0	First line	\N	\N	1
+1359	706	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:13:01.093	0	Second line	\N	\N	1
+1360	707	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:01.49	0	First line	\N	\N	1
+1361	707	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:13:01.492	0	Second line	\N	\N	1
+1362	708	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:13:01.729	0	First line	\N	\N	1
+1363	708	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:13:01.731	0	Second line	\N	\N	1
+1364	709	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:13:01.977	0	First line	\N	\N	1
+1365	709	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:13:01.98	0	Second line	\N	\N	1
+1366	710	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:02.224	0	First line	\N	\N	1
+1367	710	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:13:02.226	0	Second line	\N	\N	1
+1368	711	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:13:02.512	0	First line	\N	\N	1
+1369	711	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:13:02.521	0	Second line	\N	\N	1
+1370	712	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:13:02.955	0	First line	\N	\N	1
+1371	712	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:13:02.967	0	Second line	\N	\N	1
+1372	713	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:13:03.444	0	First line	\N	\N	1
+1373	713	2	1	1700.0000000000	85.0000000000	20.0000000000	\N	2007-09-12 12:13:03.455	0	Second line	\N	\N	1
+1374	714	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:13:03.948	0	First line	\N	\N	1
+1375	714	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:13:03.954	0	Second line	\N	\N	1
+1376	715	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:04.231	0	First line	\N	\N	1
+1377	715	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:13:04.233	0	Second line	\N	\N	1
+1378	716	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:13:04.475	0	First line	\N	\N	1
+1379	716	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:13:04.477	0	Second line	\N	\N	1
+1380	717	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:13:04.73	0	First line	\N	\N	1
+1381	717	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:13:04.732	0	Second line	\N	\N	1
+1382	718	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:13:04.972	0	First line	\N	\N	1
+1383	718	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:13:04.974	0	Second line	\N	\N	1
+1384	719	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:13:05.43	0	First line	\N	\N	1
+1385	719	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:13:05.438	0	Second line	\N	\N	1
+1386	720	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:13:05.905	0	First line	\N	\N	1
+1387	720	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:13:05.913	0	Second line	\N	\N	1
+1388	721	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:13:06.409	0	First line	\N	\N	1
+1389	721	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:13:06.419	0	Second line	\N	\N	1
+1390	722	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:13:06.709	0	First line	\N	\N	1
+1391	722	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:13:06.721	0	Second line	\N	\N	1
+1392	723	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:13:06.952	0	First line	\N	\N	1
+1393	723	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:13:06.955	0	Second line	\N	\N	1
+1394	724	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:13:07.209	0	First line	\N	\N	1
+1395	724	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:13:07.211	0	Second line	\N	\N	1
+1396	725	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:13:07.445	0	First line	\N	\N	1
+1397	725	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:13:07.447	0	Second line	\N	\N	1
+1398	726	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:13:07.869	0	First line	\N	\N	1
+1399	726	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:13:07.875	0	Second line	\N	\N	1
+1400	727	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:13:08.32	0	First line	\N	\N	1
+1401	727	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:13:08.333	0	Second line	\N	\N	1
+1402	728	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:13:08.823	0	First line	\N	\N	1
+1403	728	2	1	1940.0000000000	97.0000000000	20.0000000000	\N	2007-09-12 12:13:08.826	0	Second line	\N	\N	1
+1404	729	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:09.236	0	First line	\N	\N	1
+1405	729	2	1	1580.0000000000	79.0000000000	20.0000000000	\N	2007-09-12 12:13:09.239	0	Second line	\N	\N	1
+1406	730	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:13:09.489	0	First line	\N	\N	1
+1407	730	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:13:09.492	0	Second line	\N	\N	1
+1408	731	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:13:09.731	0	First line	\N	\N	1
+1409	731	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:13:09.734	0	Second line	\N	\N	1
+1410	732	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:13:09.979	0	First line	\N	\N	1
+1411	732	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:13:09.981	0	Second line	\N	\N	1
+1412	733	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:13:10.255	0	First line	\N	\N	1
+1413	733	2	1	1240.0000000000	62.0000000000	20.0000000000	\N	2007-09-12 12:13:10.262	0	Second line	\N	\N	1
+1414	734	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:13:10.738	0	First line	\N	\N	1
+1415	734	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:13:10.747	0	Second line	\N	\N	1
+1416	735	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:13:11.181	0	First line	\N	\N	1
+1417	735	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:13:11.188	0	Second line	\N	\N	1
+1418	736	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:13:11.72	0	First line	\N	\N	1
+1419	736	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:13:11.725	0	Second line	\N	\N	1
+1420	737	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:13:12.004	0	First line	\N	\N	1
+1421	737	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:13:12.007	0	Second line	\N	\N	1
+1422	738	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:13:12.256	0	First line	\N	\N	1
+1423	738	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:13:12.259	0	Second line	\N	\N	1
+1424	739	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:13:12.502	0	First line	\N	\N	1
+1425	739	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:13:12.513	0	Second line	\N	\N	1
+1426	740	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:13:12.771	0	First line	\N	\N	1
+1427	740	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:13:12.773	0	Second line	\N	\N	1
+1428	741	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:13:13.223	0	First line	\N	\N	1
+1429	741	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:13:13.228	0	Second line	\N	\N	1
+1430	742	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:13:13.705	0	First line	\N	\N	1
+1431	742	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:13:13.714	0	Second line	\N	\N	1
+1432	743	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:13:14.213	0	First line	\N	\N	1
+1433	743	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:13:14.216	0	Second line	\N	\N	1
+1434	744	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:13:14.495	0	First line	\N	\N	1
+1435	744	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:13:14.497	0	Second line	\N	\N	1
+1436	745	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:13:14.741	0	First line	\N	\N	1
+1437	745	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:13:14.743	0	Second line	\N	\N	1
+1438	746	1	1	370.0000000000	37.0000000000	10.0000000000	\N	2007-09-12 12:13:14.999	0	First line	\N	\N	1
+1439	746	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:13:15.002	0	Second line	\N	\N	1
+1440	747	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:13:15.231	0	First line	\N	\N	1
+1441	747	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:13:15.234	0	Second line	\N	\N	1
+1442	748	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:13:15.656	0	First line	\N	\N	1
+1443	748	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:13:15.66	0	Second line	\N	\N	1
+1444	749	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:13:16.338	0	First line	\N	\N	1
+1445	749	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:13:16.376	0	Second line	\N	\N	1
+1446	750	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:13:16.954	0	First line	\N	\N	1
+1447	750	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:13:16.956	0	Second line	\N	\N	1
+1448	751	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:13:17.199	0	First line	\N	\N	1
+1449	751	2	1	1040.0000000000	52.0000000000	20.0000000000	\N	2007-09-12 12:13:17.202	0	Second line	\N	\N	1
+1450	752	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:13:17.439	0	First line	\N	\N	1
+1451	752	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:13:17.441	0	Second line	\N	\N	1
+1452	753	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:13:17.681	0	First line	\N	\N	1
+1453	753	2	1	1620.0000000000	81.0000000000	20.0000000000	\N	2007-09-12 12:13:17.683	0	Second line	\N	\N	1
+1454	754	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:13:17.974	0	First line	\N	\N	1
+1455	754	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:13:17.978	0	Second line	\N	\N	1
+1456	755	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:13:18.46	0	First line	\N	\N	1
+1457	755	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:13:18.472	0	Second line	\N	\N	1
+1458	756	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:13:18.935	0	First line	\N	\N	1
+1459	756	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:13:18.948	0	Second line	\N	\N	1
+1460	757	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:13:19.412	0	First line	\N	\N	1
+1461	757	2	1	160.0000000000	8.0000000000	20.0000000000	\N	2007-09-12 12:13:19.421	0	Second line	\N	\N	1
+1462	758	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:13:19.706	0	First line	\N	\N	1
+1463	758	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:13:19.709	0	Second line	\N	\N	1
+1464	759	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:13:19.941	0	First line	\N	\N	1
+1465	759	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:13:19.944	0	Second line	\N	\N	1
+1466	760	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:13:20.192	0	First line	\N	\N	1
+1467	760	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:13:20.194	0	Second line	\N	\N	1
+1468	761	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:13:20.431	0	First line	\N	\N	1
+1469	761	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:13:20.433	0	Second line	\N	\N	1
+1470	762	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:13:20.856	0	First line	\N	\N	1
+1471	762	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:13:20.864	0	Second line	\N	\N	1
+1472	763	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:13:21.339	0	First line	\N	\N	1
+1473	763	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:13:21.343	0	Second line	\N	\N	1
+1474	764	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:13:21.818	0	First line	\N	\N	1
+1475	764	2	1	380.0000000000	19.0000000000	20.0000000000	\N	2007-09-12 12:13:21.825	0	Second line	\N	\N	1
+1476	765	1	1	600.0000000000	60.0000000000	10.0000000000	\N	2007-09-12 12:13:22.243	0	First line	\N	\N	1
+1477	765	2	1	1240.0000000000	62.0000000000	20.0000000000	\N	2007-09-12 12:13:22.245	0	Second line	\N	\N	1
+1478	766	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:13:22.486	0	First line	\N	\N	1
+1479	766	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:13:22.489	0	Second line	\N	\N	1
+1480	767	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:13:22.736	0	First line	\N	\N	1
+1481	767	2	1	360.0000000000	18.0000000000	20.0000000000	\N	2007-09-12 12:13:22.739	0	Second line	\N	\N	1
+1482	768	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:13:23.001	0	First line	\N	\N	1
+1483	768	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:13:23.003	0	Second line	\N	\N	1
+1484	769	1	1	200.0000000000	20.0000000000	10.0000000000	\N	2007-09-12 12:13:23.285	0	First line	\N	\N	1
+1485	769	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:13:23.289	0	Second line	\N	\N	1
+1486	770	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:13:23.71	0	First line	\N	\N	1
+1487	770	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:13:23.717	0	Second line	\N	\N	1
+1488	771	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:13:24.182	0	First line	\N	\N	1
+1489	771	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:13:24.189	0	Second line	\N	\N	1
+1490	772	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:13:24.648	0	First line	\N	\N	1
+1491	772	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:13:24.652	0	Second line	\N	\N	1
+1492	773	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:13:25.036	0	First line	\N	\N	1
+1493	773	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:13:25.038	0	Second line	\N	\N	1
+1494	774	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:13:25.289	0	First line	\N	\N	1
+1495	774	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:13:25.291	0	Second line	\N	\N	1
+1496	775	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:25.537	0	First line	\N	\N	1
+1497	775	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:13:25.539	0	Second line	\N	\N	1
+1498	776	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:13:25.793	0	First line	\N	\N	1
+1499	776	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:13:25.795	0	Second line	\N	\N	1
+1500	777	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:13:26.105	0	First line	\N	\N	1
+1501	777	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:13:26.117	0	Second line	\N	\N	1
+1502	778	1	1	430.0000000000	43.0000000000	10.0000000000	\N	2007-09-12 12:13:26.621	0	First line	\N	\N	1
+1503	778	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:13:26.626	0	Second line	\N	\N	1
+1504	779	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:13:27.116	0	First line	\N	\N	1
+1505	779	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:13:27.123	0	Second line	\N	\N	1
+1506	780	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:13:27.543	0	First line	\N	\N	1
+1507	780	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:13:27.545	0	Second line	\N	\N	1
+1508	781	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:13:27.792	0	First line	\N	\N	1
+1509	781	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:13:27.794	0	Second line	\N	\N	1
+1510	782	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:13:28.049	0	First line	\N	\N	1
+1511	782	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:13:28.051	0	Second line	\N	\N	1
+1512	783	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:13:28.286	0	First line	\N	\N	1
+1513	783	2	1	1120.0000000000	56.0000000000	20.0000000000	\N	2007-09-12 12:13:28.289	0	Second line	\N	\N	1
+1514	784	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:13:28.592	0	First line	\N	\N	1
+1515	784	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:13:28.599	0	Second line	\N	\N	1
+1516	785	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:13:29.06	0	First line	\N	\N	1
+1517	785	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:13:29.066	0	Second line	\N	\N	1
+1518	786	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:13:29.538	0	First line	\N	\N	1
+1519	786	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:13:29.548	0	Second line	\N	\N	1
+1520	787	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:13:29.972	0	First line	\N	\N	1
+1521	787	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:13:29.976	0	Second line	\N	\N	1
+1522	788	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:13:30.355	0	First line	\N	\N	1
+1523	788	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:13:30.358	0	Second line	\N	\N	1
+1524	789	1	1	730.0000000000	73.0000000000	10.0000000000	\N	2007-09-12 12:13:30.592	0	First line	\N	\N	1
+1525	789	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:13:30.595	0	Second line	\N	\N	1
+1526	790	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:13:30.847	0	First line	\N	\N	1
+1527	790	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:13:30.856	0	Second line	\N	\N	1
+1528	791	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:13:31.103	0	First line	\N	\N	1
+1529	791	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:13:31.105	0	Second line	\N	\N	1
+1530	792	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:13:31.4	0	First line	\N	\N	1
+1531	792	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:13:31.412	0	Second line	\N	\N	1
+1532	793	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:31.908	0	First line	\N	\N	1
+1533	793	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:13:31.913	0	Second line	\N	\N	1
+1534	794	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:13:32.343	0	First line	\N	\N	1
+1535	794	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:13:32.349	0	Second line	\N	\N	1
+1536	795	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:13:32.796	0	First line	\N	\N	1
+1537	795	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:13:32.804	0	Second line	\N	\N	1
+1538	796	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:13:33.188	0	First line	\N	\N	1
+1539	796	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:13:33.19	0	Second line	\N	\N	1
+1540	797	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:13:33.423	0	First line	\N	\N	1
+1541	797	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:13:33.425	0	Second line	\N	\N	1
+1542	798	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:13:33.666	0	First line	\N	\N	1
+1543	798	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:13:33.669	0	Second line	\N	\N	1
+1544	799	1	1	410.0000000000	41.0000000000	10.0000000000	\N	2007-09-12 12:13:33.9	0	First line	\N	\N	1
+1545	799	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:13:33.903	0	Second line	\N	\N	1
+1546	800	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:13:34.2	0	First line	\N	\N	1
+1547	800	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:13:34.213	0	Second line	\N	\N	1
+1548	801	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:13:34.856	0	First line	\N	\N	1
+1549	801	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:13:34.863	0	Second line	\N	\N	1
+1550	802	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:13:35.364	0	First line	\N	\N	1
+1551	802	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:13:35.37	0	Second line	\N	\N	1
+1552	803	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:13:35.801	0	First line	\N	\N	1
+1553	803	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:13:35.808	0	Second line	\N	\N	1
+1554	804	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:13:36.078	0	First line	\N	\N	1
+1555	804	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:13:36.08	0	Second line	\N	\N	1
+1556	805	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:13:36.315	0	First line	\N	\N	1
+1557	805	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:13:36.317	0	Second line	\N	\N	1
+1558	806	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:13:36.56	0	First line	\N	\N	1
+1559	806	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:13:36.563	0	Second line	\N	\N	1
+1560	807	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:13:36.792	0	First line	\N	\N	1
+1561	807	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:13:36.803	0	Second line	\N	\N	1
+1562	808	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:13:37.225	0	First line	\N	\N	1
+1563	808	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:13:37.232	0	Second line	\N	\N	1
+1564	809	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:13:37.68	0	First line	\N	\N	1
+1565	809	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:13:37.688	0	Second line	\N	\N	1
+1566	810	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:13:38.131	0	First line	\N	\N	1
+1567	810	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:13:38.139	0	Second line	\N	\N	1
+1568	811	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:13:38.614	0	First line	\N	\N	1
+1569	811	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:13:38.625	0	Second line	\N	\N	1
+1570	812	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:13:38.88	0	First line	\N	\N	1
+1571	812	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:13:38.883	0	Second line	\N	\N	1
+1572	813	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:13:39.116	0	First line	\N	\N	1
+1573	813	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:13:39.119	0	Second line	\N	\N	1
+1574	814	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:13:39.359	0	First line	\N	\N	1
+1575	814	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:13:39.361	0	Second line	\N	\N	1
+1576	815	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:13:39.595	0	First line	\N	\N	1
+1577	815	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:13:39.598	0	Second line	\N	\N	1
+1578	816	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:13:40.055	0	First line	\N	\N	1
+1579	816	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:13:40.061	0	Second line	\N	\N	1
+1580	817	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:40.52	0	First line	\N	\N	1
+1581	817	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:13:40.53	0	Second line	\N	\N	1
+1582	818	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:13:41.058	0	First line	\N	\N	1
+1583	818	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:13:41.061	0	Second line	\N	\N	1
+1584	819	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:13:41.346	0	First line	\N	\N	1
+1585	819	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:13:41.349	0	Second line	\N	\N	1
+1586	820	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:13:41.596	0	First line	\N	\N	1
+1587	820	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:13:41.598	0	Second line	\N	\N	1
+1588	821	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:41.841	0	First line	\N	\N	1
+1589	821	2	1	1920.0000000000	96.0000000000	20.0000000000	\N	2007-09-12 12:13:41.843	0	Second line	\N	\N	1
+1590	822	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:13:42.087	0	First line	\N	\N	1
+1591	822	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:13:42.089	0	Second line	\N	\N	1
+1592	823	1	1	310.0000000000	31.0000000000	10.0000000000	\N	2007-09-12 12:13:42.524	0	First line	\N	\N	1
+1593	823	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:13:42.534	0	Second line	\N	\N	1
+1594	824	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:13:43.023	0	First line	\N	\N	1
+1595	824	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:13:43.039	0	Second line	\N	\N	1
+1596	825	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:13:43.49	0	First line	\N	\N	1
+1597	825	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:13:43.495	0	Second line	\N	\N	1
+1598	826	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:13:43.919	0	First line	\N	\N	1
+1599	826	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:13:43.921	0	Second line	\N	\N	1
+1600	827	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:13:44.159	0	First line	\N	\N	1
+1601	827	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:13:44.161	0	Second line	\N	\N	1
+1602	828	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:44.411	0	First line	\N	\N	1
+1603	828	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:13:44.414	0	Second line	\N	\N	1
+1604	829	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:13:44.656	0	First line	\N	\N	1
+1605	829	2	1	220.0000000000	11.0000000000	20.0000000000	\N	2007-09-12 12:13:44.659	0	Second line	\N	\N	1
+1606	830	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:13:44.979	0	First line	\N	\N	1
+1607	830	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:13:44.99	0	Second line	\N	\N	1
+1608	831	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:13:45.432	0	First line	\N	\N	1
+1609	831	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:13:45.441	0	Second line	\N	\N	1
+1610	832	1	1	500.0000000000	50.0000000000	10.0000000000	\N	2007-09-12 12:13:45.916	0	First line	\N	\N	1
+1611	832	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:13:45.924	0	Second line	\N	\N	1
+1612	833	1	1	180.0000000000	18.0000000000	10.0000000000	\N	2007-09-12 12:13:46.395	0	First line	\N	\N	1
+1613	833	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:13:46.403	0	Second line	\N	\N	1
+1614	834	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:46.67	0	First line	\N	\N	1
+1615	834	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:13:46.672	0	Second line	\N	\N	1
+1616	835	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:13:46.919	0	First line	\N	\N	1
+1617	835	2	1	1920.0000000000	96.0000000000	20.0000000000	\N	2007-09-12 12:13:46.921	0	Second line	\N	\N	1
+1618	836	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:13:47.166	0	First line	\N	\N	1
+1619	836	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:13:47.169	0	Second line	\N	\N	1
+1620	837	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:13:47.405	0	First line	\N	\N	1
+1621	837	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:13:47.407	0	Second line	\N	\N	1
+1622	838	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:13:47.845	0	First line	\N	\N	1
+1623	838	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:13:47.851	0	Second line	\N	\N	1
+1624	839	1	1	730.0000000000	73.0000000000	10.0000000000	\N	2007-09-12 12:13:48.288	0	First line	\N	\N	1
+1625	839	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:13:48.295	0	Second line	\N	\N	1
+1626	840	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:13:48.782	0	First line	\N	\N	1
+1627	840	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:13:48.785	0	Second line	\N	\N	1
+1628	841	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:13:49.205	0	First line	\N	\N	1
+1629	841	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:13:49.213	0	Second line	\N	\N	1
+1630	842	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:13:49.463	0	First line	\N	\N	1
+1631	842	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:13:49.465	0	Second line	\N	\N	1
+1632	843	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:13:49.7	0	First line	\N	\N	1
+1633	843	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:13:49.702	0	Second line	\N	\N	1
+1634	844	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:13:49.946	0	First line	\N	\N	1
+1635	844	2	1	1640.0000000000	82.0000000000	20.0000000000	\N	2007-09-12 12:13:49.948	0	Second line	\N	\N	1
+1636	845	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:13:50.245	0	First line	\N	\N	1
+1637	845	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:13:50.25	0	Second line	\N	\N	1
+1638	846	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:13:50.755	0	First line	\N	\N	1
+1639	846	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:13:50.76	0	Second line	\N	\N	1
+1640	847	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:13:51.226	0	First line	\N	\N	1
+1641	847	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:13:51.237	0	Second line	\N	\N	1
+1642	848	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:13:51.724	0	First line	\N	\N	1
+1643	848	2	1	1780.0000000000	89.0000000000	20.0000000000	\N	2007-09-12 12:13:51.726	0	Second line	\N	\N	1
+1644	849	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:13:51.976	0	First line	\N	\N	1
+1645	849	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:13:51.979	0	Second line	\N	\N	1
+1646	850	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:13:52.215	0	First line	\N	\N	1
+1647	850	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:13:52.218	0	Second line	\N	\N	1
+1648	851	1	1	310.0000000000	31.0000000000	10.0000000000	\N	2007-09-12 12:13:52.452	0	First line	\N	\N	1
+1649	851	2	1	560.0000000000	28.0000000000	20.0000000000	\N	2007-09-12 12:13:52.455	0	Second line	\N	\N	1
+1650	852	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:13:52.698	0	First line	\N	\N	1
+1651	852	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:13:52.7	0	Second line	\N	\N	1
+1652	853	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:13:53.146	0	First line	\N	\N	1
+1653	853	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:13:53.161	0	Second line	\N	\N	1
+1654	854	1	1	100.0000000000	10.0000000000	10.0000000000	\N	2007-09-12 12:13:53.613	0	First line	\N	\N	1
+1655	854	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:13:53.617	0	Second line	\N	\N	1
+1656	855	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:13:54.133	0	First line	\N	\N	1
+1657	855	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:13:54.138	0	Second line	\N	\N	1
+1658	856	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:13:54.486	0	First line	\N	\N	1
+1659	856	2	1	1200.0000000000	60.0000000000	20.0000000000	\N	2007-09-12 12:13:54.489	0	Second line	\N	\N	1
+1660	857	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:13:54.731	0	First line	\N	\N	1
+1661	857	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:13:54.733	0	Second line	\N	\N	1
+1662	858	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:13:54.982	0	First line	\N	\N	1
+1663	858	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:13:54.994	0	Second line	\N	\N	1
+1664	859	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:13:55.228	0	First line	\N	\N	1
+1665	859	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:13:55.23	0	Second line	\N	\N	1
+1666	860	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:13:55.673	0	First line	\N	\N	1
+1667	860	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:13:55.676	0	Second line	\N	\N	1
+1668	861	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:13:56.128	0	First line	\N	\N	1
+1669	861	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:13:56.134	0	Second line	\N	\N	1
+1670	862	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:13:56.619	0	First line	\N	\N	1
+1671	862	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:13:56.624	0	Second line	\N	\N	1
+1672	863	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:13:57.013	0	First line	\N	\N	1
+1673	863	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:13:57.015	0	Second line	\N	\N	1
+1674	864	1	1	830.0000000000	83.0000000000	10.0000000000	\N	2007-09-12 12:13:57.257	0	First line	\N	\N	1
+1675	864	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:13:57.259	0	Second line	\N	\N	1
+1676	865	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:13:57.498	0	First line	\N	\N	1
+1677	865	2	1	700.0000000000	35.0000000000	20.0000000000	\N	2007-09-12 12:13:57.5	0	Second line	\N	\N	1
+1678	866	1	1	700.0000000000	70.0000000000	10.0000000000	\N	2007-09-12 12:13:57.745	0	First line	\N	\N	1
+1679	866	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:13:57.747	0	Second line	\N	\N	1
+1680	867	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:13:58.036	0	First line	\N	\N	1
+1681	867	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:13:58.044	0	Second line	\N	\N	1
+1682	868	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:13:58.561	0	First line	\N	\N	1
+1683	868	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:13:58.564	0	Second line	\N	\N	1
+1684	869	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:13:59.03	0	First line	\N	\N	1
+1685	869	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:13:59.033	0	Second line	\N	\N	1
+1686	870	1	1	550.0000000000	55.0000000000	10.0000000000	\N	2007-09-12 12:13:59.475	0	First line	\N	\N	1
+1687	870	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:13:59.478	0	Second line	\N	\N	1
+1688	871	1	1	370.0000000000	37.0000000000	10.0000000000	\N	2007-09-12 12:13:59.723	0	First line	\N	\N	1
+1689	871	2	1	1840.0000000000	92.0000000000	20.0000000000	\N	2007-09-12 12:13:59.725	0	Second line	\N	\N	1
+1690	872	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:13:59.977	0	First line	\N	\N	1
+1691	872	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:13:59.979	0	Second line	\N	\N	1
+1692	873	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:14:00.231	0	First line	\N	\N	1
+1693	873	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:14:00.233	0	Second line	\N	\N	1
+1694	874	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:14:00.546	0	First line	\N	\N	1
+1695	874	2	1	580.0000000000	29.0000000000	20.0000000000	\N	2007-09-12 12:14:00.562	0	Second line	\N	\N	1
+1696	875	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:14:01.08	0	First line	\N	\N	1
+1697	875	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:14:01.083	0	Second line	\N	\N	1
+1698	876	1	1	650.0000000000	65.0000000000	10.0000000000	\N	2007-09-12 12:14:01.582	0	First line	\N	\N	1
+1699	876	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:14:01.593	0	Second line	\N	\N	1
+1700	877	1	1	900.0000000000	90.0000000000	10.0000000000	\N	2007-09-12 12:14:02.014	0	First line	\N	\N	1
+1701	877	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:14:02.016	0	Second line	\N	\N	1
+1702	878	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:14:02.265	0	First line	\N	\N	1
+1703	878	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:14:02.267	0	Second line	\N	\N	1
+1704	879	1	1	800.0000000000	80.0000000000	10.0000000000	\N	2007-09-12 12:14:02.51	0	First line	\N	\N	1
+1705	879	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:14:02.512	0	Second line	\N	\N	1
+1706	880	1	1	990.0000000000	99.0000000000	10.0000000000	\N	2007-09-12 12:14:02.76	0	First line	\N	\N	1
+1707	880	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:14:02.763	0	Second line	\N	\N	1
+1708	881	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:14:03.062	0	First line	\N	\N	1
+1709	881	2	1	800.0000000000	40.0000000000	20.0000000000	\N	2007-09-12 12:14:03.075	0	Second line	\N	\N	1
+1710	882	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:14:03.575	0	First line	\N	\N	1
+1711	882	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:14:03.579	0	Second line	\N	\N	1
+1712	883	1	1	880.0000000000	88.0000000000	10.0000000000	\N	2007-09-12 12:14:04.082	0	First line	\N	\N	1
+1713	883	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:14:04.091	0	Second line	\N	\N	1
+1714	884	1	1	180.0000000000	18.0000000000	10.0000000000	\N	2007-09-12 12:14:04.502	0	First line	\N	\N	1
+1715	884	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:14:04.505	0	Second line	\N	\N	1
+1716	885	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:14:04.753	0	First line	\N	\N	1
+1717	885	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:14:04.755	0	Second line	\N	\N	1
+1718	886	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:14:05.01	0	First line	\N	\N	1
+1719	886	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:14:05.013	0	Second line	\N	\N	1
+1720	887	1	1	930.0000000000	93.0000000000	10.0000000000	\N	2007-09-12 12:14:05.249	0	First line	\N	\N	1
+1721	887	2	1	1100.0000000000	55.0000000000	20.0000000000	\N	2007-09-12 12:14:05.252	0	Second line	\N	\N	1
+1722	888	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:14:05.571	0	First line	\N	\N	1
+1723	888	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:14:05.575	0	Second line	\N	\N	1
+1724	889	1	1	70.0000000000	7.0000000000	10.0000000000	\N	2007-09-12 12:14:06.022	0	First line	\N	\N	1
+1725	889	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:14:06.025	0	Second line	\N	\N	1
+1726	890	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:14:06.469	0	First line	\N	\N	1
+1727	890	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:14:06.473	0	Second line	\N	\N	1
+1728	891	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:14:06.966	0	First line	\N	\N	1
+1729	891	2	1	1920.0000000000	96.0000000000	20.0000000000	\N	2007-09-12 12:14:06.976	0	Second line	\N	\N	1
+1730	892	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:14:07.276	0	First line	\N	\N	1
+1731	892	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:14:07.278	0	Second line	\N	\N	1
+1732	893	1	1	480.0000000000	48.0000000000	10.0000000000	\N	2007-09-12 12:14:07.52	0	First line	\N	\N	1
+1733	893	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:14:07.522	0	Second line	\N	\N	1
+1734	894	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:14:07.769	0	First line	\N	\N	1
+1735	894	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:14:07.771	0	Second line	\N	\N	1
+1736	895	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:14:08.009	0	First line	\N	\N	1
+1737	895	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:14:08.012	0	Second line	\N	\N	1
+1738	896	1	1	490.0000000000	49.0000000000	10.0000000000	\N	2007-09-12 12:14:08.441	0	First line	\N	\N	1
+1739	896	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:14:08.449	0	Second line	\N	\N	1
+1740	897	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:14:08.868	0	First line	\N	\N	1
+1741	897	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:14:08.872	0	Second line	\N	\N	1
+1742	898	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:14:09.34	0	First line	\N	\N	1
+1743	898	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:14:09.345	0	Second line	\N	\N	1
+1744	899	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:14:09.765	0	First line	\N	\N	1
+1745	899	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:14:09.769	0	Second line	\N	\N	1
+1746	900	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:14:10.118	0	First line	\N	\N	1
+1747	900	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:14:10.121	0	Second line	\N	\N	1
+1748	901	1	1	810.0000000000	81.0000000000	10.0000000000	\N	2007-09-12 12:14:10.363	0	First line	\N	\N	1
+1749	901	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:14:10.365	0	Second line	\N	\N	1
+1750	902	1	1	180.0000000000	18.0000000000	10.0000000000	\N	2007-09-12 12:14:10.603	0	First line	\N	\N	1
+1751	902	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:14:10.606	0	Second line	\N	\N	1
+1752	903	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:14:10.841	0	First line	\N	\N	1
+1753	903	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:14:10.843	0	Second line	\N	\N	1
+1754	904	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:14:11.16	0	First line	\N	\N	1
+1755	904	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:14:11.167	0	Second line	\N	\N	1
+1756	905	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:14:11.66	0	First line	\N	\N	1
+1757	905	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:14:11.668	0	Second line	\N	\N	1
+1758	906	1	1	110.0000000000	11.0000000000	10.0000000000	\N	2007-09-12 12:14:12.162	0	First line	\N	\N	1
+1759	906	2	1	20.0000000000	1.0000000000	20.0000000000	\N	2007-09-12 12:14:12.176	0	Second line	\N	\N	1
+1760	907	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:14:12.619	0	First line	\N	\N	1
+1761	907	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:14:12.628	0	Second line	\N	\N	1
+1762	908	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:14:12.902	0	First line	\N	\N	1
+1763	908	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:14:12.912	0	Second line	\N	\N	1
+1764	909	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:14:13.149	0	First line	\N	\N	1
+1765	909	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:14:13.151	0	Second line	\N	\N	1
+1766	910	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:14:13.398	0	First line	\N	\N	1
+1767	910	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:14:13.4	0	Second line	\N	\N	1
+1768	911	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:14:13.645	0	First line	\N	\N	1
+1769	911	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:14:13.647	0	Second line	\N	\N	1
+1770	912	1	1	890.0000000000	89.0000000000	10.0000000000	\N	2007-09-12 12:14:14.081	0	First line	\N	\N	1
+1771	912	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:14:14.089	0	Second line	\N	\N	1
+1772	913	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:14:14.577	0	First line	\N	\N	1
+1773	913	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:14:14.584	0	Second line	\N	\N	1
+1774	914	1	1	690.0000000000	69.0000000000	10.0000000000	\N	2007-09-12 12:14:15.063	0	First line	\N	\N	1
+1775	914	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:14:15.069	0	Second line	\N	\N	1
+1776	915	1	1	430.0000000000	43.0000000000	10.0000000000	\N	2007-09-12 12:14:15.365	0	First line	\N	\N	1
+1777	915	2	1	500.0000000000	25.0000000000	20.0000000000	\N	2007-09-12 12:14:15.367	0	Second line	\N	\N	1
+1778	916	1	1	730.0000000000	73.0000000000	10.0000000000	\N	2007-09-12 12:14:15.612	0	First line	\N	\N	1
+1779	916	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:14:15.615	0	Second line	\N	\N	1
+1780	917	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:14:15.857	0	First line	\N	\N	1
+1781	917	2	1	840.0000000000	42.0000000000	20.0000000000	\N	2007-09-12 12:14:15.86	0	Second line	\N	\N	1
+1782	918	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:14:16.119	0	First line	\N	\N	1
+1783	918	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:14:16.122	0	Second line	\N	\N	1
+1784	919	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:14:16.881	0	First line	\N	\N	1
+1785	919	2	1	1900.0000000000	95.0000000000	20.0000000000	\N	2007-09-12 12:14:16.886	0	Second line	\N	\N	1
+1786	920	1	1	730.0000000000	73.0000000000	10.0000000000	\N	2007-09-12 12:14:17.384	0	First line	\N	\N	1
+1787	920	2	1	1240.0000000000	62.0000000000	20.0000000000	\N	2007-09-12 12:14:17.391	0	Second line	\N	\N	1
+1788	921	1	1	680.0000000000	68.0000000000	10.0000000000	\N	2007-09-12 12:14:17.762	0	First line	\N	\N	1
+1789	921	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:14:17.764	0	Second line	\N	\N	1
+1790	922	1	1	130.0000000000	13.0000000000	10.0000000000	\N	2007-09-12 12:14:18.003	0	First line	\N	\N	1
+1791	922	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:14:18.005	0	Second line	\N	\N	1
+1792	923	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:14:18.252	0	First line	\N	\N	1
+1793	923	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:14:18.255	0	Second line	\N	\N	1
+1794	924	1	1	400.0000000000	40.0000000000	10.0000000000	\N	2007-09-12 12:14:18.502	0	First line	\N	\N	1
+1795	924	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:14:18.505	0	Second line	\N	\N	1
+1796	925	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:14:18.902	0	First line	\N	\N	1
+1797	925	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:14:18.91	0	Second line	\N	\N	1
+1798	926	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:14:19.353	0	First line	\N	\N	1
+1799	926	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:14:19.361	0	Second line	\N	\N	1
+1800	927	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:14:19.858	0	First line	\N	\N	1
+1801	927	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:14:19.864	0	Second line	\N	\N	1
+1802	928	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:14:20.278	0	First line	\N	\N	1
+1803	928	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:14:20.28	0	Second line	\N	\N	1
+1804	929	1	1	80.0000000000	8.0000000000	10.0000000000	\N	2007-09-12 12:14:20.511	0	First line	\N	\N	1
+1805	929	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:14:20.513	0	Second line	\N	\N	1
+1806	930	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:14:20.758	0	First line	\N	\N	1
+1807	930	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:14:20.761	0	Second line	\N	\N	1
+1808	931	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:14:21.011	0	First line	\N	\N	1
+1809	931	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:14:21.013	0	Second line	\N	\N	1
+1810	932	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:14:21.245	0	First line	\N	\N	1
+1811	932	2	1	1000.0000000000	50.0000000000	20.0000000000	\N	2007-09-12 12:14:21.247	0	Second line	\N	\N	1
+1812	933	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:14:21.685	0	First line	\N	\N	1
+1813	933	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:14:21.699	0	Second line	\N	\N	1
+1814	934	1	1	440.0000000000	44.0000000000	10.0000000000	\N	2007-09-12 12:14:22.186	0	First line	\N	\N	1
+1815	934	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:14:22.198	0	Second line	\N	\N	1
+1816	935	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:14:22.689	0	First line	\N	\N	1
+1817	935	2	1	240.0000000000	12.0000000000	20.0000000000	\N	2007-09-12 12:14:22.697	0	Second line	\N	\N	1
+1818	936	1	1	860.0000000000	86.0000000000	10.0000000000	\N	2007-09-12 12:14:23.099	0	First line	\N	\N	1
+1819	936	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:14:23.101	0	Second line	\N	\N	1
+1820	937	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:14:23.34	0	First line	\N	\N	1
+1821	937	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:14:23.343	0	Second line	\N	\N	1
+1822	938	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:14:23.586	0	First line	\N	\N	1
+1823	938	2	1	940.0000000000	47.0000000000	20.0000000000	\N	2007-09-12 12:14:23.589	0	Second line	\N	\N	1
+1824	939	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:14:23.821	0	First line	\N	\N	1
+1825	939	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:14:23.824	0	Second line	\N	\N	1
+1826	940	1	1	940.0000000000	94.0000000000	10.0000000000	\N	2007-09-12 12:14:24.112	0	First line	\N	\N	1
+1827	940	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:14:24.118	0	Second line	\N	\N	1
+1828	941	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:14:24.619	0	First line	\N	\N	1
+1829	941	2	1	1040.0000000000	52.0000000000	20.0000000000	\N	2007-09-12 12:14:24.631	0	Second line	\N	\N	1
+1830	942	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:14:25.102	0	First line	\N	\N	1
+1831	942	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:14:25.105	0	Second line	\N	\N	1
+1832	943	1	1	710.0000000000	71.0000000000	10.0000000000	\N	2007-09-12 12:14:25.528	0	First line	\N	\N	1
+1833	943	2	1	1580.0000000000	79.0000000000	20.0000000000	\N	2007-09-12 12:14:25.534	0	Second line	\N	\N	1
+1834	944	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:14:25.804	0	First line	\N	\N	1
+1835	944	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:14:25.806	0	Second line	\N	\N	1
+1836	945	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:14:26.057	0	First line	\N	\N	1
+1837	945	2	1	1920.0000000000	96.0000000000	20.0000000000	\N	2007-09-12 12:14:26.059	0	Second line	\N	\N	1
+1838	946	1	1	380.0000000000	38.0000000000	10.0000000000	\N	2007-09-12 12:14:26.302	0	First line	\N	\N	1
+1839	946	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:14:26.304	0	Second line	\N	\N	1
+1840	947	1	1	740.0000000000	74.0000000000	10.0000000000	\N	2007-09-12 12:14:26.547	0	First line	\N	\N	1
+1841	947	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:14:26.55	0	Second line	\N	\N	1
+1842	948	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:14:26.972	0	First line	\N	\N	1
+1843	948	2	1	780.0000000000	39.0000000000	20.0000000000	\N	2007-09-12 12:14:26.977	0	Second line	\N	\N	1
+1844	949	1	1	630.0000000000	63.0000000000	10.0000000000	\N	2007-09-12 12:14:27.471	0	First line	\N	\N	1
+1845	949	2	1	1500.0000000000	75.0000000000	20.0000000000	\N	2007-09-12 12:14:27.479	0	Second line	\N	\N	1
+1846	950	1	1	490.0000000000	49.0000000000	10.0000000000	\N	2007-09-12 12:14:27.975	0	First line	\N	\N	1
+1847	950	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:14:27.983	0	Second line	\N	\N	1
+1848	951	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:14:28.393	0	First line	\N	\N	1
+1849	951	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:14:28.396	0	Second line	\N	\N	1
+1850	952	1	1	520.0000000000	52.0000000000	10.0000000000	\N	2007-09-12 12:14:28.633	0	First line	\N	\N	1
+1851	952	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:14:28.635	0	Second line	\N	\N	1
+1852	953	1	1	580.0000000000	58.0000000000	10.0000000000	\N	2007-09-12 12:14:28.882	0	First line	\N	\N	1
+1853	953	2	1	980.0000000000	49.0000000000	20.0000000000	\N	2007-09-12 12:14:28.884	0	Second line	\N	\N	1
+1854	954	1	1	420.0000000000	42.0000000000	10.0000000000	\N	2007-09-12 12:14:29.118	0	First line	\N	\N	1
+1855	954	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:14:29.12	0	Second line	\N	\N	1
+1856	955	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:14:29.418	0	First line	\N	\N	1
+1857	955	2	1	1080.0000000000	54.0000000000	20.0000000000	\N	2007-09-12 12:14:29.426	0	Second line	\N	\N	1
+1858	956	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:14:29.933	0	First line	\N	\N	1
+1859	956	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:14:29.94	0	Second line	\N	\N	1
+1860	957	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:14:30.413	0	First line	\N	\N	1
+1861	957	2	1	1220.0000000000	61.0000000000	20.0000000000	\N	2007-09-12 12:14:30.418	0	Second line	\N	\N	1
+1862	958	1	1	40.0000000000	4.0000000000	10.0000000000	\N	2007-09-12 12:14:30.916	0	First line	\N	\N	1
+1863	958	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:14:30.935	0	Second line	\N	\N	1
+1864	959	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:14:31.173	0	First line	\N	\N	1
+1865	959	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:14:31.175	0	Second line	\N	\N	1
+1866	960	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:14:31.414	0	First line	\N	\N	1
+1867	960	2	1	1380.0000000000	69.0000000000	20.0000000000	\N	2007-09-12 12:14:31.416	0	Second line	\N	\N	1
+1868	961	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:14:31.666	0	First line	\N	\N	1
+1869	961	2	1	1260.0000000000	63.0000000000	20.0000000000	\N	2007-09-12 12:14:31.669	0	Second line	\N	\N	1
+1870	962	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:14:31.911	0	First line	\N	\N	1
+1871	962	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:14:31.913	0	Second line	\N	\N	1
+1872	963	1	1	240.0000000000	24.0000000000	10.0000000000	\N	2007-09-12 12:14:32.361	0	First line	\N	\N	1
+1873	963	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:14:32.368	0	Second line	\N	\N	1
+1874	964	1	1	780.0000000000	78.0000000000	10.0000000000	\N	2007-09-12 12:14:32.837	0	First line	\N	\N	1
+1875	964	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:14:32.85	0	Second line	\N	\N	1
+1876	965	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:14:33.303	0	First line	\N	\N	1
+1877	965	2	1	1180.0000000000	59.0000000000	20.0000000000	\N	2007-09-12 12:14:33.31	0	Second line	\N	\N	1
+1878	966	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:14:33.706	0	First line	\N	\N	1
+1879	966	2	1	100.0000000000	5.0000000000	20.0000000000	\N	2007-09-12 12:14:33.709	0	Second line	\N	\N	1
+1880	967	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:14:33.957	0	First line	\N	\N	1
+1881	967	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:14:33.96	0	Second line	\N	\N	1
+1882	968	1	1	870.0000000000	87.0000000000	10.0000000000	\N	2007-09-12 12:14:34.198	0	First line	\N	\N	1
+1883	968	2	1	960.0000000000	48.0000000000	20.0000000000	\N	2007-09-12 12:14:34.2	0	Second line	\N	\N	1
+1884	969	1	1	920.0000000000	92.0000000000	10.0000000000	\N	2007-09-12 12:14:34.438	0	First line	\N	\N	1
+1885	969	2	1	260.0000000000	13.0000000000	20.0000000000	\N	2007-09-12 12:14:34.44	0	Second line	\N	\N	1
+1886	970	1	1	660.0000000000	66.0000000000	10.0000000000	\N	2007-09-12 12:14:34.743	0	First line	\N	\N	1
+1887	970	2	1	180.0000000000	9.0000000000	20.0000000000	\N	2007-09-12 12:14:34.746	0	Second line	\N	\N	1
+1888	971	1	1	430.0000000000	43.0000000000	10.0000000000	\N	2007-09-12 12:14:35.182	0	First line	\N	\N	1
+1889	971	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:14:35.191	0	Second line	\N	\N	1
+1890	972	1	1	1000.0000000000	100.0000000000	10.0000000000	\N	2007-09-12 12:14:35.676	0	First line	\N	\N	1
+1891	972	2	1	460.0000000000	23.0000000000	20.0000000000	\N	2007-09-12 12:14:35.685	0	Second line	\N	\N	1
+1892	973	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:14:36.156	0	First line	\N	\N	1
+1893	973	2	1	1560.0000000000	78.0000000000	20.0000000000	\N	2007-09-12 12:14:36.169	0	Second line	\N	\N	1
+1894	974	1	1	970.0000000000	97.0000000000	10.0000000000	\N	2007-09-12 12:14:36.439	0	First line	\N	\N	1
+1895	974	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:14:36.441	0	Second line	\N	\N	1
+1896	975	1	1	430.0000000000	43.0000000000	10.0000000000	\N	2007-09-12 12:14:36.687	0	First line	\N	\N	1
+1897	975	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:14:36.696	0	Second line	\N	\N	1
+1898	976	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:14:36.941	0	First line	\N	\N	1
+1899	976	2	1	400.0000000000	20.0000000000	20.0000000000	\N	2007-09-12 12:14:36.943	0	Second line	\N	\N	1
+1900	977	1	1	730.0000000000	73.0000000000	10.0000000000	\N	2007-09-12 12:14:37.195	0	First line	\N	\N	1
+1901	977	2	1	880.0000000000	44.0000000000	20.0000000000	\N	2007-09-12 12:14:37.198	0	Second line	\N	\N	1
+1902	978	1	1	590.0000000000	59.0000000000	10.0000000000	\N	2007-09-12 12:14:37.647	0	First line	\N	\N	1
+1903	978	2	1	340.0000000000	17.0000000000	20.0000000000	\N	2007-09-12 12:14:37.656	0	Second line	\N	\N	1
+1904	979	1	1	570.0000000000	57.0000000000	10.0000000000	\N	2007-09-12 12:14:38.098	0	First line	\N	\N	1
+1905	979	2	1	280.0000000000	14.0000000000	20.0000000000	\N	2007-09-12 12:14:38.105	0	Second line	\N	\N	1
+1906	980	1	1	950.0000000000	95.0000000000	10.0000000000	\N	2007-09-12 12:14:38.551	0	First line	\N	\N	1
+1907	980	2	1	1320.0000000000	66.0000000000	20.0000000000	\N	2007-09-12 12:14:38.568	0	Second line	\N	\N	1
+1908	981	1	1	750.0000000000	75.0000000000	10.0000000000	\N	2007-09-12 12:14:38.96	0	First line	\N	\N	1
+1909	981	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:14:38.962	0	Second line	\N	\N	1
+1910	982	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:14:39.201	0	First line	\N	\N	1
+1911	982	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:14:39.203	0	Second line	\N	\N	1
+1912	983	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:14:39.441	0	First line	\N	\N	1
+1913	983	2	1	1300.0000000000	65.0000000000	20.0000000000	\N	2007-09-12 12:14:39.443	0	Second line	\N	\N	1
+1914	984	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:14:39.706	0	First line	\N	\N	1
+1915	984	2	1	440.0000000000	22.0000000000	20.0000000000	\N	2007-09-12 12:14:39.708	0	Second line	\N	\N	1
+1916	985	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:14:40.001	0	First line	\N	\N	1
+1917	985	2	1	40.0000000000	2.0000000000	20.0000000000	\N	2007-09-12 12:14:40.004	0	Second line	\N	\N	1
+1918	986	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:14:40.474	0	First line	\N	\N	1
+1919	986	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:14:40.481	0	Second line	\N	\N	1
+1920	987	1	1	860.0000000000	86.0000000000	10.0000000000	\N	2007-09-12 12:14:40.964	0	First line	\N	\N	1
+1921	987	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:14:40.968	0	Second line	\N	\N	1
+1922	988	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:14:41.421	0	First line	\N	\N	1
+1923	988	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:14:41.432	0	Second line	\N	\N	1
+1924	989	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:14:41.718	0	First line	\N	\N	1
+1925	989	2	1	1280.0000000000	64.0000000000	20.0000000000	\N	2007-09-12 12:14:41.72	0	Second line	\N	\N	1
+1926	990	1	1	280.0000000000	28.0000000000	10.0000000000	\N	2007-09-12 12:14:41.976	0	First line	\N	\N	1
+1927	990	2	1	1960.0000000000	98.0000000000	20.0000000000	\N	2007-09-12 12:14:41.979	0	Second line	\N	\N	1
+1928	991	1	1	860.0000000000	86.0000000000	10.0000000000	\N	2007-09-12 12:14:42.24	0	First line	\N	\N	1
+1929	991	2	1	1680.0000000000	84.0000000000	20.0000000000	\N	2007-09-12 12:14:42.242	0	Second line	\N	\N	1
+1930	992	1	1	790.0000000000	79.0000000000	10.0000000000	\N	2007-09-12 12:14:42.481	0	First line	\N	\N	1
+1931	992	2	1	1440.0000000000	72.0000000000	20.0000000000	\N	2007-09-12 12:14:42.492	0	Second line	\N	\N	1
+1932	993	1	1	470.0000000000	47.0000000000	10.0000000000	\N	2007-09-12 12:14:42.927	0	First line	\N	\N	1
+1933	993	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:14:42.93	0	Second line	\N	\N	1
+1934	994	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:14:43.403	0	First line	\N	\N	1
+1935	994	2	1	720.0000000000	36.0000000000	20.0000000000	\N	2007-09-12 12:14:43.406	0	Second line	\N	\N	1
+1936	995	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:14:43.865	0	First line	\N	\N	1
+1937	995	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:14:43.873	0	Second line	\N	\N	1
+1938	996	1	1	850.0000000000	85.0000000000	10.0000000000	\N	2007-09-12 12:14:44.28	0	First line	\N	\N	1
+1939	996	2	1	1920.0000000000	96.0000000000	20.0000000000	\N	2007-09-12 12:14:44.283	0	Second line	\N	\N	1
+1940	997	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:14:44.526	0	First line	\N	\N	1
+1941	997	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:14:44.529	0	Second line	\N	\N	1
+1942	998	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:14:44.784	0	First line	\N	\N	1
+1943	998	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:14:44.786	0	Second line	\N	\N	1
+1944	999	1	1	340.0000000000	34.0000000000	10.0000000000	\N	2007-09-12 12:14:45.042	0	First line	\N	\N	1
+1945	999	2	1	1800.0000000000	90.0000000000	20.0000000000	\N	2007-09-12 12:14:45.045	0	Second line	\N	\N	1
+1946	1000	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:14:45.359	0	First line	\N	\N	1
+1947	1000	2	1	1720.0000000000	86.0000000000	20.0000000000	\N	2007-09-12 12:14:45.365	0	Second line	\N	\N	1
+1948	1001	1	1	270.0000000000	27.0000000000	10.0000000000	\N	2007-09-12 12:14:45.87	0	First line	\N	\N	1
+1949	1001	2	1	1820.0000000000	91.0000000000	20.0000000000	\N	2007-09-12 12:14:45.879	0	Second line	\N	\N	1
+1950	1002	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:14:46.329	0	First line	\N	\N	1
+1951	1002	2	1	520.0000000000	26.0000000000	20.0000000000	\N	2007-09-12 12:14:46.333	0	Second line	\N	\N	1
+1952	1003	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:14:46.75	0	First line	\N	\N	1
+1953	1003	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:14:46.753	0	Second line	\N	\N	1
+1954	1004	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:14:46.989	0	First line	\N	\N	1
+1955	1004	2	1	660.0000000000	33.0000000000	20.0000000000	\N	2007-09-12 12:14:46.991	0	Second line	\N	\N	1
+1956	1005	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:14:47.238	0	First line	\N	\N	1
+1957	1005	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:14:47.24	0	Second line	\N	\N	1
+1958	1006	1	1	540.0000000000	54.0000000000	10.0000000000	\N	2007-09-12 12:14:47.493	0	First line	\N	\N	1
+1959	1006	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:14:47.495	0	Second line	\N	\N	1
+1960	1007	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:14:47.79	0	First line	\N	\N	1
+1961	1007	2	1	1060.0000000000	53.0000000000	20.0000000000	\N	2007-09-12 12:14:47.799	0	Second line	\N	\N	1
+1962	1008	1	1	320.0000000000	32.0000000000	10.0000000000	\N	2007-09-12 12:14:48.258	0	First line	\N	\N	1
+1963	1008	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:14:48.267	0	Second line	\N	\N	1
+1964	1009	1	1	330.0000000000	33.0000000000	10.0000000000	\N	2007-09-12 12:14:48.773	0	First line	\N	\N	1
+1965	1009	2	1	120.0000000000	6.0000000000	20.0000000000	\N	2007-09-12 12:14:48.791	0	Second line	\N	\N	1
+1966	1010	1	1	840.0000000000	84.0000000000	10.0000000000	\N	2007-09-12 12:14:49.289	0	First line	\N	\N	1
+1967	1010	2	1	320.0000000000	16.0000000000	20.0000000000	\N	2007-09-12 12:14:49.291	0	Second line	\N	\N	1
+1968	1011	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:14:49.535	0	First line	\N	\N	1
+1969	1011	2	1	1520.0000000000	76.0000000000	20.0000000000	\N	2007-09-12 12:14:49.537	0	Second line	\N	\N	1
+1970	1012	1	1	190.0000000000	19.0000000000	10.0000000000	\N	2007-09-12 12:14:49.789	0	First line	\N	\N	1
+1971	1012	2	1	1600.0000000000	80.0000000000	20.0000000000	\N	2007-09-12 12:14:49.791	0	Second line	\N	\N	1
+1972	1013	1	1	520.0000000000	52.0000000000	10.0000000000	\N	2007-09-12 12:14:50.029	0	First line	\N	\N	1
+1973	1013	2	1	1740.0000000000	87.0000000000	20.0000000000	\N	2007-09-12 12:14:50.031	0	Second line	\N	\N	1
+1974	1014	1	1	520.0000000000	52.0000000000	10.0000000000	\N	2007-09-12 12:14:50.303	0	First line	\N	\N	1
+1975	1014	2	1	1420.0000000000	71.0000000000	20.0000000000	\N	2007-09-12 12:14:50.307	0	Second line	\N	\N	1
+1976	1015	1	1	360.0000000000	36.0000000000	10.0000000000	\N	2007-09-12 12:14:50.77	0	First line	\N	\N	1
+1977	1015	2	1	1340.0000000000	67.0000000000	20.0000000000	\N	2007-09-12 12:14:50.774	0	Second line	\N	\N	1
+1978	1016	1	1	510.0000000000	51.0000000000	10.0000000000	\N	2007-09-12 12:14:51.244	0	First line	\N	\N	1
+1979	1016	2	1	1360.0000000000	68.0000000000	20.0000000000	\N	2007-09-12 12:14:51.251	0	Second line	\N	\N	1
+1980	1017	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:14:51.73	0	First line	\N	\N	1
+1981	1017	2	1	740.0000000000	37.0000000000	20.0000000000	\N	2007-09-12 12:14:51.736	0	Second line	\N	\N	1
+1982	1018	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:14:52.127	0	First line	\N	\N	1
+1983	1018	2	1	820.0000000000	41.0000000000	20.0000000000	\N	2007-09-12 12:14:52.129	0	Second line	\N	\N	1
+1984	1019	1	1	10.0000000000	1.0000000000	10.0000000000	\N	2007-09-12 12:14:52.373	0	First line	\N	\N	1
+1985	1019	2	1	1460.0000000000	73.0000000000	20.0000000000	\N	2007-09-12 12:14:52.375	0	Second line	\N	\N	1
+1986	1020	1	1	60.0000000000	6.0000000000	10.0000000000	\N	2007-09-12 12:14:52.617	0	First line	\N	\N	1
+1987	1020	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:14:52.619	0	Second line	\N	\N	1
+1988	1021	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:14:52.862	0	First line	\N	\N	1
+1989	1021	2	1	1760.0000000000	88.0000000000	20.0000000000	\N	2007-09-12 12:14:52.864	0	Second line	\N	\N	1
+1990	1022	1	1	160.0000000000	16.0000000000	10.0000000000	\N	2007-09-12 12:14:53.194	0	First line	\N	\N	1
+1991	1022	2	1	2000.0000000000	100.0000000000	20.0000000000	\N	2007-09-12 12:14:53.198	0	Second line	\N	\N	1
+1992	1023	1	1	150.0000000000	15.0000000000	10.0000000000	\N	2007-09-12 12:14:53.673	0	First line	\N	\N	1
+1993	1023	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:14:53.687	0	Second line	\N	\N	1
+1994	1024	1	1	960.0000000000	96.0000000000	10.0000000000	\N	2007-09-12 12:14:54.136	0	First line	\N	\N	1
+1995	1024	2	1	920.0000000000	46.0000000000	20.0000000000	\N	2007-09-12 12:14:54.145	0	Second line	\N	\N	1
+1996	1025	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:14:54.573	0	First line	\N	\N	1
+1997	1025	2	1	900.0000000000	45.0000000000	20.0000000000	\N	2007-09-12 12:14:54.593	0	Second line	\N	\N	1
+1998	1026	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:14:54.886	0	First line	\N	\N	1
+1999	1026	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:14:54.898	0	Second line	\N	\N	1
+2000	1027	1	1	50.0000000000	5.0000000000	10.0000000000	\N	2007-09-12 12:14:55.139	0	First line	\N	\N	1
+2001	1027	2	1	1980.0000000000	99.0000000000	20.0000000000	\N	2007-09-12 12:14:55.141	0	Second line	\N	\N	1
+2002	1028	1	1	390.0000000000	39.0000000000	10.0000000000	\N	2007-09-12 12:14:55.382	0	First line	\N	\N	1
+2003	1028	2	1	1020.0000000000	51.0000000000	20.0000000000	\N	2007-09-12 12:14:55.384	0	Second line	\N	\N	1
+2004	1029	1	1	90.0000000000	9.0000000000	10.0000000000	\N	2007-09-12 12:14:55.635	0	First line	\N	\N	1
+2005	1029	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:14:55.638	0	Second line	\N	\N	1
+2006	1030	1	1	220.0000000000	22.0000000000	10.0000000000	\N	2007-09-12 12:14:56.071	0	First line	\N	\N	1
+2007	1030	2	1	600.0000000000	30.0000000000	20.0000000000	\N	2007-09-12 12:14:56.082	0	Second line	\N	\N	1
+2008	1031	1	1	640.0000000000	64.0000000000	10.0000000000	\N	2007-09-12 12:14:56.555	0	First line	\N	\N	1
+2009	1031	2	1	1860.0000000000	93.0000000000	20.0000000000	\N	2007-09-12 12:14:56.559	0	Second line	\N	\N	1
+2010	1032	1	1	620.0000000000	62.0000000000	10.0000000000	\N	2007-09-12 12:14:57.045	0	First line	\N	\N	1
+2011	1032	2	1	1480.0000000000	74.0000000000	20.0000000000	\N	2007-09-12 12:14:57.055	0	Second line	\N	\N	1
+2012	1033	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:14:57.333	0	First line	\N	\N	1
+2013	1033	2	1	640.0000000000	32.0000000000	20.0000000000	\N	2007-09-12 12:14:57.335	0	Second line	\N	\N	1
+2014	1034	1	1	210.0000000000	21.0000000000	10.0000000000	\N	2007-09-12 12:14:57.583	0	First line	\N	\N	1
+2015	1034	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:14:57.585	0	Second line	\N	\N	1
+2016	1035	1	1	20.0000000000	2.0000000000	10.0000000000	\N	2007-09-12 12:14:57.831	0	First line	\N	\N	1
+2017	1035	2	1	1840.0000000000	92.0000000000	20.0000000000	\N	2007-09-12 12:14:57.833	0	Second line	\N	\N	1
+2018	1036	1	1	720.0000000000	72.0000000000	10.0000000000	\N	2007-09-12 12:14:58.094	0	First line	\N	\N	1
+2019	1036	2	1	620.0000000000	31.0000000000	20.0000000000	\N	2007-09-12 12:14:58.096	0	Second line	\N	\N	1
+2020	1037	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:14:58.468	0	First line	\N	\N	1
+2021	1037	2	1	1400.0000000000	70.0000000000	20.0000000000	\N	2007-09-12 12:14:58.474	0	Second line	\N	\N	1
+2022	1038	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:14:58.939	0	First line	\N	\N	1
+2023	1038	2	1	140.0000000000	7.0000000000	20.0000000000	\N	2007-09-12 12:14:58.951	0	Second line	\N	\N	1
+2024	1039	1	1	300.0000000000	30.0000000000	10.0000000000	\N	2007-09-12 12:14:59.431	0	First line	\N	\N	1
+2025	1039	2	1	80.0000000000	4.0000000000	20.0000000000	\N	2007-09-12 12:14:59.441	0	Second line	\N	\N	1
+2026	1040	1	1	530.0000000000	53.0000000000	10.0000000000	\N	2007-09-12 12:14:59.884	0	First line	\N	\N	1
+2027	1040	2	1	300.0000000000	15.0000000000	20.0000000000	\N	2007-09-12 12:14:59.89	0	Second line	\N	\N	1
+2028	1041	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:15:00.165	0	First line	\N	\N	1
+2029	1041	2	1	680.0000000000	34.0000000000	20.0000000000	\N	2007-09-12 12:15:00.168	0	Second line	\N	\N	1
+2030	1042	1	1	980.0000000000	98.0000000000	10.0000000000	\N	2007-09-12 12:15:00.405	0	First line	\N	\N	1
+2031	1042	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:15:00.407	0	Second line	\N	\N	1
+2032	1043	1	1	460.0000000000	46.0000000000	10.0000000000	\N	2007-09-12 12:15:00.66	0	First line	\N	\N	1
+2033	1043	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:15:00.663	0	Second line	\N	\N	1
+2034	1044	1	1	140.0000000000	14.0000000000	10.0000000000	\N	2007-09-12 12:15:00.91	0	First line	\N	\N	1
+2035	1044	2	1	60.0000000000	3.0000000000	20.0000000000	\N	2007-09-12 12:15:00.912	0	Second line	\N	\N	1
+2036	1045	1	1	910.0000000000	91.0000000000	10.0000000000	\N	2007-09-12 12:15:01.359	0	First line	\N	\N	1
+2037	1045	2	1	1880.0000000000	94.0000000000	20.0000000000	\N	2007-09-12 12:15:01.368	0	Second line	\N	\N	1
+2038	1046	1	1	560.0000000000	56.0000000000	10.0000000000	\N	2007-09-12 12:15:01.816	0	First line	\N	\N	1
+2039	1046	2	1	760.0000000000	38.0000000000	20.0000000000	\N	2007-09-12 12:15:01.82	0	Second line	\N	\N	1
+2040	1047	1	1	760.0000000000	76.0000000000	10.0000000000	\N	2007-09-12 12:15:02.334	0	First line	\N	\N	1
+2041	1047	2	1	420.0000000000	21.0000000000	20.0000000000	\N	2007-09-12 12:15:02.338	0	Second line	\N	\N	1
+2042	1048	1	1	350.0000000000	35.0000000000	10.0000000000	\N	2007-09-12 12:15:02.74	0	First line	\N	\N	1
+2043	1048	2	1	1660.0000000000	83.0000000000	20.0000000000	\N	2007-09-12 12:15:02.743	0	Second line	\N	\N	1
+2044	1049	1	1	250.0000000000	25.0000000000	10.0000000000	\N	2007-09-12 12:15:02.988	0	First line	\N	\N	1
+2045	1049	2	1	1160.0000000000	58.0000000000	20.0000000000	\N	2007-09-12 12:15:02.991	0	Second line	\N	\N	1
+2046	1050	1	1	120.0000000000	12.0000000000	10.0000000000	\N	2007-09-12 12:15:03.234	0	First line	\N	\N	1
+2047	1050	2	1	1140.0000000000	57.0000000000	20.0000000000	\N	2007-09-12 12:15:03.236	0	Second line	\N	\N	1
+2048	1051	1	1	260.0000000000	26.0000000000	10.0000000000	\N	2007-09-12 12:15:03.48	0	First line	\N	\N	1
+2049	1051	2	1	200.0000000000	10.0000000000	20.0000000000	\N	2007-09-12 12:15:03.482	0	Second line	\N	\N	1
+2050	1052	1	1	290.0000000000	29.0000000000	10.0000000000	\N	2007-09-12 12:15:03.814	0	First line	\N	\N	1
+2051	1052	2	1	860.0000000000	43.0000000000	20.0000000000	\N	2007-09-12 12:15:03.818	0	Second line	\N	\N	1
+2052	1053	1	1	30.0000000000	3.0000000000	10.0000000000	\N	2007-09-12 12:15:04.337	0	First line	\N	\N	1
+2053	1053	2	1	480.0000000000	24.0000000000	20.0000000000	\N	2007-09-12 12:15:04.345	0	Second line	\N	\N	1
+2054	1054	1	1	820.0000000000	82.0000000000	10.0000000000	\N	2007-09-12 12:15:04.798	0	First line	\N	\N	1
+2055	1054	2	1	1540.0000000000	77.0000000000	20.0000000000	\N	2007-09-12 12:15:04.804	0	Second line	\N	\N	1
+2056	1055	3	1	15.0000000000	1.0000000000	15.0000000000	0	2007-12-28 14:47:08.524	0	Coffee - one per day - Monthly	\N	\N	1
+2066	1065	3	1	15.0000000000	1.0000000000	15.0000000000	0	2008-03-06 09:19:01.556	0	Coffee - one per day - Monthly	\N	\N	1
+207600	107500	251	3	15.0000000000	1.0000000000	15.0000000000	0	2009-07-20 16:41:52.245	0	Lemonade plan - Setup Fee	20	d85d1780-1594-4c25-8980-39ddaf2e15ce	5
+207700	107600	2	1	20.0000000000	1.0000000000	20.0000000000	0	2009-11-04 17:37:51.128	0	Lemonade - all you can drink monthly	20	ca3ebd8e-3f51-4f40-aead-e42a2c288f1b	2
+207900	107700	2700	1	25.0000000000	1.0000000000	25.0000000000	\N	2009-12-17 13:21:16.192	0	Long Distance Plan A - fixed rate	21	\N	0
+207901	107701	2701	1	40.0000000000	1.0000000000	40.0000000000	\N	2009-12-17 13:22:02.115	0	Long Distance Plan B - fixed rate	21	\N	0
+207902	107702	2702	1	30.0000000000	1.0000000000	30.0000000000	\N	2009-12-17 13:22:31.627	0	Long Distance Plan - 1000 min included	21	\N	0
+208000	107800	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:17:00.14	0	Lemonade 	21	\N	0
+208001	107801	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:17:58.45	0	Lemonade 	21	\N	0
+208002	107802	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:18:17.379	0	Lemonade 	21	\N	0
+208003	107803	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:18:59.123	0	Lemonade 	21	\N	0
+208004	107804	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:19:17.927	0	Lemonade 	21	\N	0
+208011	107811	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:21:42.292	0	Lemonade 	21	\N	0
+208005	107805	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:19:38.061	0	Lemonade 	21	\N	0
+208006	107806	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:19:56.159	0	Lemonade 	21	\N	0
+208009	107809	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:21:03.215	0	Lemonade 	21	\N	0
+208007	107807	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:20:23.277	0	Lemonade 	21	\N	0
+208008	107808	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:20:44.579	0	Lemonade 	21	\N	0
+208010	107810	2602	1	3.5000000000	1.0000000000	3.5000000000	\N	2009-12-21 13:21:21.348	0	Lemonade 	21	\N	0
 \.
 
 
@@ -14170,9 +13783,9 @@ COPY paper_invoice_batch (id, total_invoices, delivery_date, is_self_managed, op
 --
 
 COPY partner (id, user_id, balance, total_payments, total_refunds, total_payouts, percentage_rate, referral_fee, fee_currency_id, one_time, period_unit_id, period_value, next_payout_date, due_payout, automatic_process, related_clerk, optlock) FROM stdin;
-10	10740	0	0	0	0	10	0	1	0	1	1	2009-04-01	0	1	1	1
-12	10742	0	0	0	0	10	0	1	0	3	10	2009-03-15	0	1	1	1
-11	10741	0	0	0	0	0	1	1	1	1	1	2009-03-01	0	0	1	2
+10	10740	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	1	1	2009-04-01	0.0000000000	1	1	1
+12	10742	0.0000000000	0.0000000000	0.0000000000	0.0000000000	10.0000000000	0.0000000000	1	0	3	10	2009-03-15	0.0000000000	1	1	1
+11	10741	0.0000000000	0.0000000000	0.0000000000	0.0000000000	0.0000000000	1.0000000000	1	1	1	1	2009-03-01	0.0000000000	0	1	2
 \.
 
 
@@ -14189,8 +13802,8 @@ COPY partner_payout (id, starting_date, ending_date, payments_amount, refunds_am
 --
 
 COPY partner_range (id, partner_id, percentage_rate, referral_fee, range_from, range_to, optlock) FROM stdin;
-10	11	\N	2.2999999523162842	1	10	0
-11	11	\N	4.6999998092651367	11	20	0
+10	11	\N	2.2999999523	1	10	0
+11	11	\N	4.6999998093	11	20	0
 \.
 
 
@@ -14199,16 +13812,16 @@ COPY partner_range (id, partner_id, percentage_rate, referral_fee, range_from, r
 --
 
 COPY payment (id, user_id, attempt, result_id, amount, create_datetime, update_datetime, payment_date, method_id, credit_card_id, deleted, is_refund, is_preauth, payment_id, currency_id, payout_id, ach_id, balance, optlock, payment_period, payment_notes) FROM stdin;
-1	2	1	4	20	2006-07-26 09:44:49.443	2006-12-21 11:04:58.113	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1	\N	\N
-2	2	1	4	7	2006-07-26 09:47:16.694	2006-12-21 11:04:51.974	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1	\N	\N
-3	2	1	4	10	2006-07-26 09:47:41.67	2006-12-21 11:04:44.875	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0	1	\N	\N
-4	2	1	4	20	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0	1	\N	\N
-5	2	1	4	10	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0	1	\N	\N
-6	2	1	4	95	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0	1	\N	\N
-1600	10746	1	4	100	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100	1	\N	\N
-1601	10746	1	4	50	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0	1	\N	\N
-1700	10747	1	4	50	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50	1	\N	\N
-1800	10748	1	4	25	2009-03-13 00:00:00	\N	2009-03-13	1	\N	0	0	0	\N	1	\N	\N	25	1	\N	\N
+1	2	1	4	20.0000000000	2006-07-26 09:44:49.443	2006-12-21 11:04:58.113	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+2	2	1	4	7.0000000000	2006-07-26 09:47:16.694	2006-12-21 11:04:51.974	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+3	2	1	4	10.0000000000	2006-07-26 09:47:41.67	2006-12-21 11:04:44.875	2006-07-26	1	\N	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+4	2	1	4	20.0000000000	2006-07-26 09:51:14.346	2006-12-21 11:04:36.935	2006-07-26	2	1	1	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+5	2	1	4	10.0000000000	2006-07-26 09:52:08.855	\N	2006-07-26	2	2	0	1	0	4	1	\N	\N	0.0000000000	1	\N	\N
+6	2	1	4	95.0000000000	2006-12-21 11:08:11.878	\N	2006-12-21	1	\N	0	0	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+1600	10746	1	4	100.0000000000	2009-03-25 00:00:00	\N	2009-03-25	1	\N	0	0	0	\N	1	\N	\N	100.0000000000	1	\N	\N
+1601	10746	1	4	50.0000000000	2009-03-27 00:00:00	\N	2009-03-27	1	\N	0	1	0	\N	1	\N	\N	0.0000000000	1	\N	\N
+1700	10747	1	4	50.0000000000	2009-03-10 00:00:00	\N	2009-03-10	1	\N	0	0	0	\N	1	\N	\N	50.0000000000	1	\N	\N
+1800	10748	1	4	25.0000000000	2009-03-13 00:00:00	\N	2009-03-13	1	\N	0	0	0	\N	1	\N	\N	25.0000000000	1	\N	\N
 \.
 
 
@@ -14241,7 +13854,7 @@ COPY payment_info_cheque (id, payment_id, bank, cheque_number, cheque_date, optl
 --
 
 COPY payment_invoice (id, payment_id, invoice_id, amount, create_datetime, optlock) FROM stdin;
-1	6	15	95	2006-12-21 11:08:11.928	1
+1	6	15	95.0000000000	2006-12-21 11:08:11.928	1
 \.
 
 
@@ -15070,8 +14683,8 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 2	2	5	1	\N	/billing/css/jbilling.css	\N
 3	3	5	1	\N	/billing/graphics/jbilling.jpg	\N
 4	4	5	1	5	\N	\N
-5	5	5	1	\N	\N	10
-6	6	5	1	\N	\N	0
+5	5	5	1	\N	\N	10.0000000000
+6	6	5	1	\N	\N	0.0000000000
 7	7	5	1	0	\N	\N
 8	8	5	1	1	\N	\N
 9	9	5	1	1	\N	\N
@@ -15084,8 +14697,8 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 26	2	5	2	\N	/billing/css/jbilling.css	\N
 27	3	5	2	\N	/billing/graphics/jbilling.jpg	\N
 28	4	5	2	5	\N	\N
-29	5	5	2	\N	\N	10
-30	6	5	2	\N	\N	0
+29	5	5	2	\N	\N	10.0000000000
+30	6	5	2	\N	\N	0.0000000000
 31	7	5	2	0	\N	\N
 32	8	5	2	1	\N	\N
 33	9	5	2	1	\N	\N
@@ -15103,7 +14716,7 @@ COPY preference (id, type_id, table_id, foreign_id, int_value, str_value, float_
 45	43	5	1	460	\N	\N
 46	44	5	1	1	\N	\N
 15	19	5	1	1023	\N	\N
-47	49	5	1	\N	\N	5
+47	49	5	1	\N	\N	5.0000000000
 \.
 
 
@@ -15145,7 +14758,7 @@ COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM st
 31	\N	2000-01-01	\N
 32	0	\N	\N
 33	0	\N	\N
-34	\N	\N	0
+34	\N	\N	0.0000000000
 35	0	\N	\N
 36	1	\N	\N
 37	0	\N	\N
@@ -15179,8 +14792,8 @@ COPY process_run (id, process_id, run_date, started, finished, payment_finished,
 --
 
 COPY process_run_total (id, process_run_id, currency_id, total_invoiced, total_paid, total_not_paid, optlock) FROM stdin;
-1	2	1	63	0	0	1
-11	12	1	83	0	0	1
+1	2	1	63.0000000000	0.0000000000	0.0000000000	1
+11	12	1	83.0000000000	0.0000000000	0.0000000000	1
 \.
 
 
@@ -21720,11 +21333,12 @@ ALTER TABLE ONLY user_role_map
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: public; Type: ACL; Schema: -; Owner: jbilling
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
+REVOKE ALL ON SCHEMA public FROM jbilling;
+GRANT ALL ON SCHEMA public TO jbilling;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 

@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatelessKnowledgeSession;
+import org.mvel2.optimizers.OptimizerFactory;
 
 /**
  *
@@ -42,6 +43,13 @@ public abstract class RulesBaseTask extends PluggableTask {
         for (Object o: rulesMemoryContext) {
         	LOG.debug("in memory context=" + o);
         }
+
+        // JBRULES-2253: NoClassDefFoundError with the ASM optimizer when optimizing MVEL consequences.
+        // Use the reflective optimizer as a workaround - this may reduce rules performance.
+        // @see http://mvel.codehaus.org/Optimizers
+        OptimizerFactory.setDefaultOptimizer("reflective");
+        LOG.debug("Using MVEL thread accessor optimizer: " + OptimizerFactory.getThreadAccessorOptimizer());
+        LOG.debug("Using MVEL accessor compiler: " + OptimizerFactory.getDefaultAccessorCompiler());
 
         KnowledgeBase knowledgeBase;
         StatelessKnowledgeSession statelessSession;

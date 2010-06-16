@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
 public interface JbillingAPI {
@@ -50,6 +51,11 @@ public interface JbillingAPI {
 
     public Integer[] getInvoicesByDate(String since, String until)
             throws JbillingAPIException;
+    
+    public Integer getAutoPaymentType(Integer userId) throws JbillingAPIException;
+    
+    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+    		throws JbillingAPIException;
 
     public Integer[] getUserInvoicesByDate(Integer userId, String since, 
             String until) throws JbillingAPIException;
@@ -95,6 +101,9 @@ public interface JbillingAPI {
 
     public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
             throws JbillingAPIException;
+    
+    public void updateAch(Integer userId, AchDTO ach)
+    		throws JbillingAPIException;
 
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
             throws JbillingAPIException;

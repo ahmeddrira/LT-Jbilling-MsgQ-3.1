@@ -28,7 +28,6 @@ import javax.jws.WebService;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
@@ -39,7 +38,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.util.api.JbillingAPIException;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 
 /**
  * Interface for WebServicesSessionBean
@@ -349,4 +348,11 @@ public interface IWebServicesSessionBean {
 
     public void updateItemCategory(ItemTypeWS itemType)
             throws SessionInternalError;
+
+	public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
+
+	public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+			throws SessionInternalError;
+
+	public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
 }

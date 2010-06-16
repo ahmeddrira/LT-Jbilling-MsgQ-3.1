@@ -58,11 +58,21 @@ public class AchDTO implements Serializable {
 
 	public AchDTO() {
 	}
+	
+	public AchDTO(AchDTO other) {
+		this.id = other.getId();
+		setAbaRouting(other.getAbaRouting());
+		setBankAccount(other.getBankAccount());
+		this.accountType = other.getAccountType();
+		this.bankName = other.getBankName();
+		setAccountName(other.getAccountName());
+		this.payments = other.payments;
+	}
 
 	public AchDTO(int id, String abaRouting, String bankAccount,
 			int accountType, String bankName, String accountName) {
 		this.id = id;
-		this.abaRouting = abaRouting;
+		setAbaRouting(abaRouting);
 		setBankAccount(bankAccount);
 		this.accountType = accountType;
 		this.bankName = bankName;
@@ -74,12 +84,26 @@ public class AchDTO implements Serializable {
 			String accountName, Set<PaymentDTO> payments) {
 		this.id = id;
 		this.baseUser = baseUser;
-		this.abaRouting = abaRouting;
+		setAbaRouting(abaRouting);
 		setBankAccount(bankAccount);
 		this.accountType = accountType;
 		this.bankName = bankName;
-		this.accountName = accountName;
+		setAccountName(accountName);
 		this.payments = payments;
+	}
+	
+	public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO) {
+		this.id = oldDTO.getId() == null ? 0 : oldDTO.getId().intValue();
+		setAbaRouting(oldDTO.getAbaRouting());
+		setBankAccount(oldDTO.getBankAccount());
+		this.accountType = oldDTO.getAccountType();
+		this.bankName = oldDTO.getBankName();
+		setAccountName(oldDTO.getAccountName());
+	}
+	
+	public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO, UserDTO baseUser) {
+		this(oldDTO);
+		this.baseUser = baseUser;
 	}
 
 	@Id
@@ -233,5 +257,12 @@ public class AchDTO implements Serializable {
 	@Transient
 	public boolean isBankAccountObscured() {
 		return getRawBankAccount() != null && getBankAccount().contains("*");
+	}
+	
+	@Transient
+	public com.sapienter.jbilling.server.entity.AchDTO getOldDTO() {
+		return new com.sapienter.jbilling.server.entity.AchDTO(
+				getId(), getAbaRouting(), getBankAccount(), getAccountType(),
+				getBankName(), getAccountName());
 	}
 }

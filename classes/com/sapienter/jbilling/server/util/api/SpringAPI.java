@@ -23,7 +23,7 @@ package com.sapienter.jbilling.server.util.api;
 import java.math.BigDecimal;
 import java.util.Date;
 
-
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
@@ -411,6 +411,15 @@ public class SpringAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+    
+    public void updateAch(Integer userId, AchDTO ach) throws JbillingAPIException {
+    	try {
+    		session.updateAch(userId, 
+    				new com.sapienter.jbilling.server.user.db.AchDTO(ach));
+    	} catch (Exception e) {
+    		throw new JbillingAPIException(e);
+    	}
+    }
 
     public void updateOrder(OrderWS order) throws JbillingAPIException {
         try {
@@ -588,4 +597,24 @@ public class SpringAPI implements JbillingAPI {
             throw new JbillingAPIException(e);
         }
     }
+
+	@Override
+	public Integer getAutoPaymentType(Integer userId)
+			throws JbillingAPIException {
+		try {
+			return session.getAuthPaymentType(userId);
+		} catch (Exception e) {
+			throw new JbillingAPIException(e);
+		}
+	}
+
+	@Override
+	public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+			throws JbillingAPIException {
+		try {
+			session.setAuthPaymentType(userId, autoPaymentType, use);
+		} catch (Exception e) {
+			throw new JbillingAPIException(e);
+		}
+	}
 }

@@ -25,6 +25,7 @@
 package com.sapienter.jbilling.server.user;
 
 import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -1669,6 +1670,97 @@ Ch8: no applicable orders
             e.printStackTrace();
             fail("Exception caught:" + e);
     	}
+    }
+    
+    public void testUserACHCreation() throws Exception {
+    	
+    	JbillingAPI api = JbillingAPIFactory.getAPI();
+        UserWS newUser = new UserWS();
+        newUser.setUserName("testUserName-" + Calendar.getInstance().getTimeInMillis());
+        newUser.setPassword("asdfasdf1");
+        newUser.setLanguageId(new Integer(1));
+        newUser.setMainRoleId(new Integer(5));
+        newUser.setParentId(null);
+        newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        newUser.setCurrencyId(null);
+        newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+        
+        // add a contact
+        ContactWS contact = new ContactWS();
+        contact.setEmail("frodo@shire.com");
+        contact.setFirstName("Frodo");
+        contact.setLastName("Baggins");
+        String fields[] = new String[2];
+        fields[0] = "1";
+        fields[1] = "2"; // the ID of the CCF for the processor
+        String fieldValues[] = new String[2];
+        fieldValues[0] = "serial-from-ws";
+        fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
+        contact.setFieldNames(fields);
+        contact.setFieldValues(fieldValues);
+        newUser.setContact(contact);
+        
+        // add a credit card
+        CreditCardDTO cc = new CreditCardDTO();
+        cc.setName("Frodo Baggins");
+        cc.setNumber("4111111111111152");
+        Calendar expiry = Calendar.getInstance();
+        expiry.set(Calendar.YEAR, expiry.get(Calendar.YEAR) + 1);
+        cc.setExpiry(expiry.getTime());        
+
+        newUser.setCreditCard(cc);
+        
+        AchDTO ach = new AchDTO();
+        ach.setAbaRouting("123456789");
+        ach.setAccountName("Frodo Baggins");
+        ach.setAccountType(Integer.valueOf(1));
+        ach.setBankAccount("123456789");
+        ach.setBankName("Shire Financial Bank");
+        
+        newUser.setAch(ach);
+        
+        System.out.println("Creating user with ACH record...");
+        newUser.setUserId(api.createUser(newUser));
+    	
+        UserWS saved = api.getUserWS(newUser.getUserId());
+        assertNotNull("Returned UserWS should not be null", saved);
+        assertNotNull("Returned ACH record should not be null", saved.getAch());
+        assertEquals("ABA Routing field does not match", 
+        		"123456789", saved.getAch().getAbaRouting());
+        assertEquals("Account Name field does not match", 
+        		"Frodo Baggins", saved.getAch().getAccountName());
+        assertEquals("Account Type field does not match", 
+        		Integer.valueOf(1), saved.getAch().getAccountType());
+        assertEquals("Bank Account field does not match", 
+        		"123456789", saved.getAch().getBankAccount());
+        assertEquals("Bank Name field does not match", 
+        		"Shire Financial Bank", saved.getAch().getBankName());
+ 
+        System.out.println("Passed ACH record creation test");
+        
+        ach = saved.getAch();
+        ach.setBankAccount("987654321");
+        api.updateAch(saved.getUserId(), ach);
+        
+        saved = api.getUserWS(newUser.getUserId());
+        assertNotNull("Returned UserWS should not be null", saved);
+        assertNotNull("Returned ACH record should not be null", saved.getAch());
+        assertEquals("Bank Account field does not match", 
+        		"987654321", saved.getAch().getBankAccount());
+        
+        System.out.println("Passed ACH record update test");
+        
+        assertNull("Auto payment should be null",
+        		api.getAutoPaymentType(newUser.getUserId()));
+        
+        api.setAutoPaymentType(newUser.getUserId(),
+        		Constants.AUTO_PAYMENT_TYPE_ACH, true);
+        
+        assertNotNull("Auto payment should not be null", 
+        		api.getAutoPaymentType(newUser.getUserId()));
+        assertEquals("Auto payment type should be set to ACH",
+        		Constants.AUTO_PAYMENT_TYPE_ACH, 
+        		api.getAutoPaymentType(newUser.getUserId()));
     }
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {

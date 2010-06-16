@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.Constants;
@@ -48,6 +49,7 @@ public class UserWS implements Serializable {
     private Integer languageId;
 
     private CreditCardDTO creditCard = null;
+    private AchDTO ach = null;
     private ContactWS contact = null;
     private String role = null;
     private String language = null;
@@ -96,6 +98,7 @@ public class UserWS implements Serializable {
         languageId = dto.getLanguageId();
 
         creditCard = dto.getCreditCard() == null ? null : dto.getCreditCard().getOldDTO();
+        ach = dto.getAch().getOldDTO();
         role = dto.getMainRoleStr();
         mainRoleId = dto.getMainRoleId();
         language = dto.getLanguageStr();
@@ -128,13 +131,12 @@ public class UserWS implements Serializable {
     }
     
     public String toString() {
-        return "id = [" + id + "] credit card = [" + creditCard + "] contact = [" +
-                contact + "] type = [" + role + "] language = [" + languageId +
-                language + "]  status = [" + status + "] statusId = [" +
-                statusId + "] subscriberStatusId = [" + subscriberStatusId +
-                "] roleId = [" + mainRoleId + "] " +  " parentId = [" + parentId +
-                "] " + super.toString();
-                
+        return "id = [" + id + "] credit card = [" + creditCard + "] ach = [" +
+        		ach + "] contact = [" + contact + "] type = [" + role + 
+        		"] language = [" + languageId + language + "]  status = [" + 
+        		status + "] statusId = [" + statusId + "] subscriberStatusId = [" + 
+        		subscriberStatusId + "] roleId = [" + mainRoleId + "] " +  
+        		" parentId = [" + parentId + "] " + super.toString();
     }
     /**
      * @return
@@ -162,6 +164,14 @@ public class UserWS implements Serializable {
      */
     public void setCreditCard(CreditCardDTO creditCard) {
         this.creditCard = creditCard;
+    }
+    
+    public AchDTO getAch() {
+    	return ach;
+    }
+    
+    public void setAch(AchDTO ach) {
+    	this.ach = ach;
     }
 
     /**

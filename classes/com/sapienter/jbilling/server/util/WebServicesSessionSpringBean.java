@@ -26,6 +26,8 @@ package com.sapienter.jbilling.server.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,9 +37,6 @@ import java.util.List;
 
 import javax.jws.WebService;
 
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
-import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -56,15 +55,17 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
+import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
-import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
+import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
 import com.sapienter.jbilling.server.order.OrderBL;
@@ -81,6 +82,7 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
+import com.sapienter.jbilling.server.payment.db.PaymentMethodDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
@@ -88,6 +90,7 @@ import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -99,6 +102,8 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.db.AchDAS;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
@@ -107,8 +112,6 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 
 @Transactional( propagation = Propagation.REQUIRED )
 @WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
@@ -296,6 +299,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
                 UserDTO userD = new UserDAS().find(userId);
                 userD.getCreditCards().add(ccBL.getEntity());
+            }
+            
+            if (newUser.getAch() != null) {
+            	AchDTO ach = new AchDTO(newUser.getAch());
+            	ach.setId(0);
+            	ach.setBaseUser(bl.getEntity());
+            	AchBL abl = new AchBL();
+            	abl.create(ach);
             }
             return userId;
         }
@@ -1868,4 +1879,40 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 prices, fieldsList);
         return ret;
     }
+
+	@Override
+	public void updateAch(Integer userId, AchDTO ach)
+			throws SessionInternalError {
+		
+		if (ach != null && (ach.getAbaRouting() == null ||
+                ach.getBankAccount() == null)) {
+            LOG.debug("WS - updateAch: " + "ACH validation error.");
+            throw new SessionInternalError("Missing ACH data.");
+        }
+
+        Integer executorId = getCallerId();
+        IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                Context.Name.USER_SESSION);
+        AchDTO ac = ach != null ? new AchDTO(ach) : null;
+
+        sess.updateACH(userId, executorId, ac);
+	}
+
+	@Override
+	public Integer getAuthPaymentType(Integer userId)
+			throws SessionInternalError {
+		
+		IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                Context.Name.USER_SESSION);
+		return sess.getAuthPaymentType(userId);
+	}
+
+	@Override
+	public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+			throws SessionInternalError {
+		
+		IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+                Context.Name.USER_SESSION);
+		sess.setAuthPaymentType(userId, autoPaymentType, use);
+	}
 }

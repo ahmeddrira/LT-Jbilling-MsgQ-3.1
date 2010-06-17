@@ -135,7 +135,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
         	resultId = getProcessResultId(creditCard);
         } else {
         	String val = payment.getAmount().toPlainString();
-        	resultId = (Integer.parseInt(val.substring(val.length() - 1)) / 2 == 0) ? 
+        	resultId = (Integer.parseInt(val.substring(val.length() - 1)) % 2 == 0) ? 
         			Constants.RESULT_OK : Constants.RESULT_FAIL;
         }
         payment.setPaymentResult(new PaymentResultDAS().find(resultId));

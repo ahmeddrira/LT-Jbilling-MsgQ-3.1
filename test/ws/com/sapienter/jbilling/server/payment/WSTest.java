@@ -32,11 +32,13 @@ import java.util.Calendar;
 
 import junit.framework.TestCase;
 
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
@@ -603,6 +605,103 @@ public class WSTest extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+    
+    public void testAchFakePayments() throws Exception {
+		
+		JbillingAPI api = JbillingAPIFactory.getAPI();
+		UserWS newUser = createUser();
+		newUser.setCreditCard(null);
+		
+		System.out.println("Creating user with ACH record and no CC...");
+        Integer userId = api.createUser(newUser);
+        
+        newUser = api.getUserWS(userId);
+		AchDTO ach = newUser.getAch();
+		// CreditCardDTO cc = newUser.getCreditCard();
+		
+		System.out.println("Testing ACH payment with even amount (should pass)");
+		PaymentWS payment = new PaymentWS();
+        payment.setAmount(new BigDecimal("15.00"));
+        payment.setIsRefund(new Integer(0));
+        payment.setMethodId(Constants.PAYMENT_METHOD_ACH);
+        payment.setPaymentDate(Calendar.getInstance().getTime());
+        payment.setResultId(Constants.RESULT_ENTERED);
+        payment.setCurrencyId(new Integer(1));
+        payment.setUserId(newUser.getUserId());
+		payment.setPaymentNotes("Notes");
+		payment.setPaymentPeriod(new Integer(1));
+		payment.setAch(ach);
+		
+		PaymentAuthorizationDTOEx result = api.processPayment(payment);
+		assertEquals("ACH payment with even amount should pass",
+				Constants.RESULT_OK, api.getPayment(result.getPaymentId()).getResultId());
+		
+		System.out.println("Testing ACH payment with odd amount (should fail)");
+		payment = new PaymentWS();
+        payment.setAmount(new BigDecimal("15.01"));
+        payment.setIsRefund(new Integer(0));
+        payment.setMethodId(Constants.PAYMENT_METHOD_ACH);
+        payment.setPaymentDate(Calendar.getInstance().getTime());
+        payment.setResultId(Constants.RESULT_ENTERED);
+        payment.setCurrencyId(new Integer(1));
+        payment.setUserId(newUser.getUserId());
+		payment.setPaymentNotes("Notes");
+		payment.setPaymentPeriod(new Integer(1));
+		payment.setAch(ach);
+		
+		result = api.processPayment(payment);
+		assertEquals("ACH payment with odd amount should fail",
+				Constants.RESULT_FAIL, api.getPayment(result.getPaymentId()).getResultId());
+	}
+    
+    private UserWS createUser() {
+		
+        UserWS newUser = new UserWS();
+        newUser.setUserName("testUserName-" + Calendar.getInstance().getTimeInMillis());
+        newUser.setPassword("asdfasdf1");
+        newUser.setLanguageId(new Integer(1));
+        newUser.setMainRoleId(new Integer(5));
+        newUser.setParentId(null);
+        newUser.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        newUser.setCurrencyId(null);
+        newUser.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+        
+        // add a contact
+        ContactWS contact = new ContactWS();
+        contact.setEmail("frodo@shire.com");
+        contact.setFirstName("Frodo");
+        contact.setLastName("Baggins");
+        String fields[] = new String[2];
+        fields[0] = "1";
+        fields[1] = "2"; // the ID of the CCF for the processor
+        String fieldValues[] = new String[2];
+        fieldValues[0] = "serial-from-ws";
+        fieldValues[1] = "FAKE_2"; // the plug-in parameter of the processor
+        contact.setFieldNames(fields);
+        contact.setFieldValues(fieldValues);
+        newUser.setContact(contact);
+        
+        // add a credit card
+        CreditCardDTO cc = new CreditCardDTO();
+        cc.setName("Frodo Baggins");
+        cc.setNumber("4111111111111152");
+        Calendar expiry = Calendar.getInstance();
+        expiry.set(Calendar.YEAR, expiry.get(Calendar.YEAR) + 1);
+        cc.setExpiry(expiry.getTime());        
+
+        newUser.setCreditCard(cc);
+        
+        AchDTO ach = new AchDTO();
+        ach.setAbaRouting("123456789");
+        ach.setAccountName("Frodo Baggins");
+        ach.setAccountType(Integer.valueOf(1));
+        ach.setBankAccount("123456789");
+        ach.setBankName("Shire Financial Bank");
+        
+        newUser.setAch(ach);
+        
+        return newUser;
+	}
     
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);

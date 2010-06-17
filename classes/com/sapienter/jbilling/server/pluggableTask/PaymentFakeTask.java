@@ -27,6 +27,7 @@ import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
@@ -56,7 +57,11 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
     public static final String PARAM_HANDLE_ALL_REQUESTS = "all";
     public static final String PARAM_NAME_PREFIX = "name_prefix";
     private static final String PREAUTH_TRANSACTION_PREFIX = "pAuth-";
+    public static final String PARAM_ACCEPT_ACH = "accept-ach";
+    
     private boolean myShouldBlockOtherProcessors;
+    private boolean acceptAch;
+    
     private Filter myFilter = Filter.ACCEPT_ALL;
     private static final Logger LOG = Logger.getLogger(PaymentFakeTask.class);
 
@@ -70,6 +75,7 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
         super.initializeParamters(task);
 
         myShouldBlockOtherProcessors = Boolean.parseBoolean((String) parameters.get(PARAM_HANDLE_ALL_REQUESTS));
+        acceptAch = Boolean.parseBoolean((String)parameters.get(PARAM_ACCEPT_ACH));
         myFilter = Filter.ACCEPT_ALL;
         if (!myShouldBlockOtherProcessors) {
             myFilter = createFilter((String) parameters.get(PARAM_NAME_PREFIX));
@@ -113,12 +119,25 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
 
     private Result doFakeAuthorization(PaymentDTOEx payment, String transactionId) throws PluggableTaskException {
         CreditCardDTO creditCard = payment.getCreditCard();
+        AchDTO ach = payment.getAch();
+        boolean isAch = false;
+        
         if (creditCard == null || !myFilter.accept(creditCard)) {
-            //give real processors a chance 
-            return new Result(null, true);
+            //give real processors a chance
+        	if (!acceptAch || ach == null) {
+        		return new Result(null, true);
+        	}
+        	isAch = true;
         }
 
-        Integer resultId = getProcessResultId(creditCard);
+        Integer resultId;
+        if (!isAch) {
+        	resultId = getProcessResultId(creditCard);
+        } else {
+        	String val = payment.getAmount().toPlainString();
+        	resultId = (Integer.parseInt(val.substring(val.length() - 1)) / 2 == 0) ? 
+        			Constants.RESULT_OK : Constants.RESULT_FAIL;
+        }
         payment.setPaymentResult(new PaymentResultDAS().find(resultId));
         PaymentAuthorizationDTO authInfo = createAuthorizationDTO(resultId, transactionId);
         storeProcessedAuthorization(payment, authInfo);

@@ -1881,7 +1881,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
 	@Override
-	public void updateAch(Integer userId, AchDTO ach)
+	public void updateAch(Integer userId, com.sapienter.jbilling.server.entity.AchDTO ach)
 			throws SessionInternalError {
 		
 		if (ach != null && (ach.getAbaRouting() == null ||

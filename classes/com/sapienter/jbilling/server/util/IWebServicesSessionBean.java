@@ -38,7 +38,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.entity.AchDTO;
 
 /**
  * Interface for WebServicesSessionBean

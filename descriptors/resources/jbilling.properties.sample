@@ -63,4 +63,4 @@ password_encrypt_all=true
 # the password that the user account is set to when a user is locked out (too many login retries)
 lockout_password=totalSecret
 # time interval for scanning cached rules bases for updates
-rules_scanner_interval=60
+rules_scanner_interval=5

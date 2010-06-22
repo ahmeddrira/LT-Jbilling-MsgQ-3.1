@@ -198,4 +198,6 @@ public interface JbillingAPI {
     public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
 
     void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
+
+    public void generateRules(String rulesData) throws JbillingAPIException;
 }

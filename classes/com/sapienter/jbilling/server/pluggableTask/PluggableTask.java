@@ -251,4 +251,11 @@ public abstract class PluggableTask {
             ResourceFactory.getResourceChangeScannerService().start();
         }
     }
+
+    /**
+     * For unit testing.
+     */ 
+    public void setParameters(HashMap<String, Object> parameters) {
+        this.parameters = parameters;
+    }
 }

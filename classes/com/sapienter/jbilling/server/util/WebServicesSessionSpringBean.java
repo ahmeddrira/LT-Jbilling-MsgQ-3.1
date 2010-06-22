@@ -91,6 +91,7 @@ import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.AchBL;
+import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -1915,4 +1916,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 Context.Name.USER_SESSION);
 		sess.setAuthPaymentType(userId, autoPaymentType, use);
 	}
+
+    public void generateRules(String rulesData) throws SessionInternalError {
+        try {
+            PluggableTaskManager<IRulesGenerator> tm =
+                    new PluggableTaskManager<IRulesGenerator>(
+                    getCallerCompanyId(),
+                    Constants.PLUGGABLE_TASK_RULES_GENERATOR);
+            IRulesGenerator rulesGenerator = tm.getNextClass();
+
+            rulesGenerator.unmarshal(rulesData);
+            rulesGenerator.process();
+
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
 }

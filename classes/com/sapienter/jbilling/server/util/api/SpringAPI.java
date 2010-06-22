@@ -414,8 +414,8 @@ public class SpringAPI implements JbillingAPI {
     
     public void updateAch(Integer userId, AchDTO ach) throws JbillingAPIException {
     	try {
-    		session.updateAch(userId, 
-    				new com.sapienter.jbilling.server.user.db.AchDTO(ach));
+    		session.updateAch(userId, ach);
+    				//new com.sapienter.jbilling.server.user.db.AchDTO(ach));
     	} catch (Exception e) {
     		throw new JbillingAPIException(e);
     	}
@@ -617,4 +617,12 @@ public class SpringAPI implements JbillingAPI {
 			throw new JbillingAPIException(e);
 		}
 	}
+
+    public void generateRules(String rulesData) throws JbillingAPIException {
+        try {
+            session.generateRules(rulesData);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 }

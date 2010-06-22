@@ -902,6 +902,16 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="RateCard.xls" />
         </rulebase>
+
+        <!-- Copy test Digester config and Velocity templates for 
+             generateRules API method. -->
+        <copy todir="${base_dir}/rules">
+            <fileset dir="${source.rules.dir}">
+                <include name="**/*.vm"/>
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+
     </target>
 
     <!-- use execution from command line with parameters rulesTemplateFile and rulesDataFile -->

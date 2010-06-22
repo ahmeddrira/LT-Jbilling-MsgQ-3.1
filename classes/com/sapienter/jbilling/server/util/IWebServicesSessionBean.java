@@ -355,4 +355,6 @@ public interface IWebServicesSessionBean {
 			throws SessionInternalError;
 
 	public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
+
+    public void generateRules(String rulesData) throws SessionInternalError;
 }

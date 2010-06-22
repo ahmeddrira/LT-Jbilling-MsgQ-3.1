@@ -2713,6 +2713,7 @@
     <PluggableTaskType Id="75" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentPaypalExternalTask" MinParameters="3"/>
     <PluggableTaskType Id="76" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask" MinParameters="2"/>
     <PluggableTaskType Id="77" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentMethodRouterTask" MinParameters="4"/>
+    <PluggableTaskType Id="78" CategoryId="23" ClassName="com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask" MinParameters="2"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
@@ -2736,6 +2737,7 @@
     <PluggableTaskTypeCategory Id="20" Description="BillingProcessFilterTask" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
     <PluggableTaskTypeCategory Id="21" Description="Mediation Error Handler" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
     <PluggableTaskTypeCategory Id="22" Description="Scheduled Tasks" InterfaceName="com.sapienter.jbilling.server.process.task.IScheduledTask"/>
+    <PluggableTaskTypeCategory Id="23" Description="Rules Generator" InterfaceName="com.sapienter.jbilling.server.rule.task.IRulesGenerator"/
 
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>

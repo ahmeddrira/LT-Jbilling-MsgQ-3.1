@@ -59,4 +59,11 @@ public class ItemDAS extends AbstractDAS<ItemDTO> {
 
         return criteria.list();
     }    
+
+    public List<ItemDTO> findItemsByInternalNumber(String internalNumber) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .add(Restrictions.eq("internalNumber", internalNumber));
+
+        return criteria.list();
+    }
 }

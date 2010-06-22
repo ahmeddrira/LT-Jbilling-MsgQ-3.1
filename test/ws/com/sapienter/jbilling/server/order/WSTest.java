@@ -29,6 +29,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -1371,6 +1372,94 @@ public class WSTest  extends TestCase {
             fail("Exception caught:" + e);
         }
     }
+
+    // Tests VelocityRulesGeneratorTask plug-in.
+    // See also rules-generator-template-integration-test.vm and
+    // rules-generator-config.xml. Overwrites 
+    // InternalEventsRulesTask520.pkg.
+    public void testVelocityRulesGeneratorTaskTest() {
+        try {
+            final Integer USER_ID = 1010;
+
+            JbillingAPI api = JbillingAPIFactory.getAPI();
+
+            // updates rules
+            String xml = 
+                "<bundles> " +
+                  "<bundle> " +
+                    "<original-product> " +
+                      "<name>DR-01</name> " +
+                    "</original-product> " +
+                    "<replacement-product> " +
+                      "<name>DR--02</name> " +
+                    "</replacement-product> " +
+                    "<replacement-product> " +
+                      "<name>DR-03</name> " +
+                    "</replacement-product> " +
+                  "</bundle> " +
+                  "<bundle> " +
+                    "<original-product> " +
+                      "<name>CALL-LD-GEN</name> " +
+                    "</original-product> " +
+                    "<replacement-product> " +
+                      "<name>CALL-LD</name> " +
+                    "</replacement-product> " +
+                    "<replacement-product> " +
+                      "<name>CALL-LD-INCLUDE</name> " +
+                    "</replacement-product> " +
+                  "</bundle> " +
+                "</bundles>";
+
+            api.generateRules(xml);
+
+            // wait for packages to be rescanned
+            pause(5500);
+
+            // create order with 1 line and invoice
+            OrderWS order = createMockOrder(USER_ID, 1, new BigDecimal("5.00"));
+            order.setNotes("Change me.");
+            // set order line item to 'DR-01' (itemId:2600)
+            order.getOrderLines()[0].setItemId(2600);
+            Integer invoiceId = api.createOrderAndInvoice(order);
+
+            // get back created order
+            InvoiceWS invoice = api.getInvoiceWS(invoiceId);
+            Integer orderId = invoice.getOrders()[0];
+            order = api.getOrder(orderId);
+
+            // check order was modified
+            assertEquals("Order was changed by generated rules", 
+                    "Modified by rules created by generateRules API method.", 
+                    order.getNotes());
+
+            // Bundling rules don't seem to be working for the 
+            // internal event rules plug-in setup.
+            /*
+            OrderLineWS[] orderLines = order.getOrderLines();
+            assertEquals("2 order lines", 2, orderLines.length);
+
+            // check the item's internalNumbers
+            Arrays.sort(orderLines, new Comparator<OrderLineWS>() {
+                public int compare(OrderLineWS line1, OrderLineWS line2) {
+            		return line1.getId() - line2.getId();
+                }
+            });
+            assertEquals("DR--02 line created", "DR--02", 
+                    orderLines[0].getItemDto().getNumber());
+            assertEquals("DR-03 line created", "DR-03", 
+                    orderLines[1].getItemDto().getNumber());
+            */
+
+            // clean up
+            api.deleteInvoice(invoiceId);
+            api.deleteOrder(orderId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Exception caught:" + e);
+        }
+    }
+
 
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);

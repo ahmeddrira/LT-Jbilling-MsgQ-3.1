@@ -21,10 +21,6 @@
 package com.sapienter.jbilling.server.process;
 
 import java.math.RoundingMode;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import junit.framework.TestCase;
 
@@ -34,19 +30,24 @@ import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
+import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.db.*;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.RemoteContext;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
+
 import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+
 import org.joda.time.DateMidnight;
 
 
@@ -141,7 +142,7 @@ public class BillingProcessTest extends TestCase {
             order.setActiveSince(new DateMidnight(2000, 11, 30).toDate());
             order.setCycleStarts(new DateMidnight(2000, 11, 01).toDate());
             order.setPeriod(2); // monthly
-            Integer orderId = remoteOrder.createUpdate(1, 1, new OrderBL().getDTO(order), 1);
+            Integer orderId = remoteOrder.createUpdate(1, 1, createOrderDtoFromWs(order), 1);
 
             // run the billing process. It should only get this order
             remoteBillingProcess.trigger(new DateMidnight(2000,12,1).toDate());
@@ -1055,5 +1056,73 @@ public class BillingProcessTest extends TestCase {
         assertEquals(message,
                      (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
                      (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
+    }
+
+    public static OrderDTO createOrderDtoFromWs(OrderWS other) {
+        OrderDTO retValue = new OrderDTO();
+        retValue.setId(other.getId());
+
+        retValue.setBaseUserByUserId(new UserDTO(other.getUserId()));
+        retValue.setBaseUserByCreatedBy(other.getCreatedBy() != null ? new UserDTO(other.getCreatedBy()) : null);
+        retValue.setCurrency(other.getCurrencyId() != null ? new CurrencyDTO(other.getCurrencyId()) : null);
+        retValue.setOrderStatus(other.getStatusId() != null ? new OrderStatusDTO(other.getStatusId()) : null);
+        retValue.setOrderPeriod(other.getPeriod() != null ? new OrderPeriodDTO(other.getPeriod()) : null);
+        retValue.setOrderBillingType(other.getBillingTypeId() != null ? new OrderBillingTypeDTO(other.getBillingTypeId()) : null);
+        retValue.setActiveSince(other.getActiveSince());
+        retValue.setActiveUntil(other.getActiveUntil());
+        retValue.setCreateDate(other.getCreateDate());
+        retValue.setNextBillableDay(other.getNextBillableDay());
+        retValue.setDeleted(other.getDeleted());
+        retValue.setNotify(other.getNotify());
+        retValue.setLastNotified(other.getLastNotified());
+        retValue.setNotificationStep(other.getNotificationStep());
+        retValue.setDueDateUnitId(other.getDueDateUnitId());
+        retValue.setDueDateValue(other.getDueDateValue());
+        retValue.setDfFm(other.getDfFm());
+        retValue.setAnticipatePeriods(other.getAnticipatePeriods());
+        retValue.setOwnInvoice(other.getOwnInvoice());
+        retValue.setNotes(other.getNotes());
+        retValue.setNotesInInvoice(other.getNotesInInvoice());
+        for (OrderLineWS line : other.getOrderLines()) {
+            retValue.getLines().add(getOrderLine(line, retValue));
+        }
+        retValue.setIsCurrent(other.getIsCurrent());
+        retValue.setCycleStarts(other.getCycleStarts());
+        retValue.setVersionNum(other.getVersionNum());
+        if (other.getPricingFields() != null) {
+            List<PricingField> pf = new ArrayList<PricingField>();
+            pf.addAll(Arrays.asList(PricingField.getPricingFieldsValue(other.getPricingFields())));
+            retValue.setPricingFields(pf);
+        }
+
+        return retValue;
+    }
+
+    public static OrderLineDTO getOrderLine(OrderLineWS ws, OrderDTO order) {
+
+        OrderLineTypeDTO type = null;
+        if (ws.getTypeId() != null) {
+            type = new OrderLineTypeDTO();
+            type.setId(ws.getTypeId());
+        }
+        OrderLineDTO dto = new OrderLineDTO();
+
+        dto.setId(ws.getId());
+        dto.setAmount(ws.getAmountAsDecimal());
+        dto.setCreateDatetime(ws.getCreateDatetime());
+        dto.setDeleted(ws.getDeleted());
+        dto.setDescription(ws.getDescription());
+        dto.setEditable(ws.getEditable());
+        dto.setItem(ws.getItemId() != null ? new ItemDTO(ws.getItemId()) : null);
+
+        dto.setOrderLineType(type);
+
+        dto.setPrice(ws.getPriceAsDecimal());
+        dto.setPurchaseOrder(order);
+        dto.setQuantity(ws.getQuantityAsDecimal());
+        dto.setVersionNum(ws.getVersionNum());
+        dto.setProvisioningStatus(ws.getProvisioningStatusId() != null ? new ProvisioningStatusDTO(ws.getProvisioningStatusId()) : null);
+        dto.setProvisioningRequestId(ws.getProvisioningRequestId());
+        return dto;
     }
 }

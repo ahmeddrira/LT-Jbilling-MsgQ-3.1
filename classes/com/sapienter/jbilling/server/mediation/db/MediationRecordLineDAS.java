@@ -19,8 +19,13 @@
 */
 package com.sapienter.jbilling.server.mediation.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import org.hibernate.Query;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
@@ -39,4 +44,26 @@ public class MediationRecordLineDAS extends AbstractDAS<MediationRecordLineDTO> 
         query.setParameter("orderId", orderId);
         return query.list();
     }
+
+    private static final String FIND_BY_INVOICE_HQL =
+        "select recordLine " +
+            "from MediationRecordLineDTO recordLine " +
+            "    inner join recordLine.orderLine.purchaseOrder as purchaseOrder " +
+            "    inner join purchaseOrder.orderProcesses orderProcess " +
+            "where orderProcess.invoice.id = :invoiceId";
+
+    /**
+     * Find all MediationRecordLineDTO events incorporated into the given
+     * invoice.
+     *
+     * @param invoiceId invoice id
+     * @return list of mediation events, empty list if none found
+     */
+    @SuppressWarnings("unchecked")
+    public List<MediationRecordLineDTO> findByInvoice(Integer invoiceId) {
+        Query query = getSession().createQuery(FIND_BY_INVOICE_HQL);
+        query.setParameter("invoiceId", invoiceId);
+        return query.list();
+    }
+
 }

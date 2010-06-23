@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
+import com.sapienter.jbilling.server.process.event.InvoicesGeneratedEvent;
 import org.apache.log4j.Logger;
 
 import org.hibernate.ScrollableResults;
@@ -203,72 +204,77 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
     }
     
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public void processEntity(Integer entityId, Date billingDate,
-            Integer periodType, Integer periodValue, boolean isReview)
-            throws SessionInternalError {
+    public void processEntity(Integer entityId, Date billingDate, Integer periodType, Integer periodValue,
+                              boolean isReview) throws SessionInternalError {
             
         if (entityId == null || billingDate == null) {
-            throw new SessionInternalError(
-                "entityId and billingDate " + "can't be null");
+            throw new SessionInternalError("entityId and billingDate can't be null");
         }
 
         try {
             ConfigurationBL conf = new ConfigurationBL(entityId);
 
-            IBillingProcessSessionBean local = (IBillingProcessSessionBean)
-                    Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+            IBillingProcessSessionBean local
+                = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
             
-            Integer billingProcessId = local.createProcessRecord(
-                    entityId, billingDate, periodType, periodValue, isReview,
-                    conf.getEntity().getRetries());
+            Integer billingProcessId = local.createProcessRecord(entityId,
+                                                                 billingDate,
+                                                                 periodType,
+                                                                 periodValue,
+                                                                 isReview,
+                                                                 conf.getEntity().getRetries());
             
-            ///// start processing users of this entity
+            // start processing users of this entity
             int totalInvoices = 0;
             
             boolean onlyRecurring;
             // find out parameters from the configuration
-            onlyRecurring = conf.getEntity().getOnlyRecurring().
-                    intValue() == 1;
-
+            onlyRecurring = conf.getEntity().getOnlyRecurring() == 1;
             LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
             boolean allGood = true;
 
-            BillingProcessDAS bpDas = new BillingProcessDAS();
             //Load the pluggable task for filtering the users
-            PluggableTaskManager taskManager = new PluggableTaskManager(
-                    entityId, 
-                    Constants.PLUGGABLE_TASK_BILL_PROCESS_FILTER);
-            IBillingProcessFilterTask task = (IBillingProcessFilterTask) taskManager
-                    .getNextClass();
+            PluggableTaskManager taskManager = new PluggableTaskManager(entityId,
+                                                                        Constants.PLUGGABLE_TASK_BILL_PROCESS_FILTER);
+
+            IBillingProcessFilterTask task = (IBillingProcessFilterTask) taskManager.getNextClass();
+
             // If one was not configured just use the basic task by default
             if (task == null) {
             	task = new BasicBillingProcessFilterTask();
             }
-            ScrollableResults userCursor = task.findUsersToProcess(entityId); 
+
+            // Event listing the id's of all generated invoices from this run
+            InvoicesGeneratedEvent generatedEvent = new InvoicesGeneratedEvent(entityId, billingProcessId);
+
+            BillingProcessDAS bpDas = new BillingProcessDAS();
+            ScrollableResults userCursor = task.findUsersToProcess(entityId);
         	if (userCursor!= null){
 	            int count = 0;
 	            while (userCursor.next()) {
 	                Integer userId = (Integer) userCursor.get(0);
-	                Integer result[] = local.processUser(billingProcessId, userId, 
-	                        isReview, onlyRecurring);
+	                Integer result[] = local.processUser(billingProcessId, userId, isReview, onlyRecurring);
+                    generatedEvent.addInvoiceIds(result);
+
 	                if (result != null) {
 	                    LOG.debug("User " + userId + " done invoice generation.");
-	                    if (!isReview) {
-	                        for (int f = 0; f < result.length; f++) {
-	                            local.emailAndPayment(entityId, result[f], 
-	                                    billingProcessId,  
-	                                    conf.getEntity().getAutoPayment().intValue() == 1);
-	                        }
-	                        LOG.debug("User " + userId + " done email & payment.");
-	                    }
-	                    totalInvoices += result.length;
-	                } else {
-	                    LOG.debug("User " + userId + " NOT done");
+                        if (!isReview) {
+                            for (Integer aResult : result) {
+                                local.emailAndPayment(entityId,
+                                                      aResult,
+                                                      billingProcessId,
+                                                      conf.getEntity().getAutoPayment() == 1);
+                            }
+                            LOG.debug("User " + userId + " done email & payment.");
+                        }
+                        totalInvoices += result.length;
+                    } else {
+                        LOG.debug("User " + userId + " NOT done");
 	                    allGood = false;
 	                }
 	
 	                // make sure the memory doesn't get flooded
-	                if ( ++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
+	                if (++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
 	                    bpDas.reset();
 	                }
 	            }
@@ -302,14 +308,12 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 if (!isReview) {
                     // the payment processing is happening in parallel
                     // this event marks the end of it
-                    EndProcessPaymentEvent event = new EndProcessPaymentEvent(
-                            processRunId, entityId);
+                    EndProcessPaymentEvent event = new EndProcessPaymentEvent(processRunId, entityId);
                     EventManager.process(event);
                     // and finally the next run date in the config
                     GregorianCalendar cal = new GregorianCalendar();
                     cal.setTime(billingDate);
-                    cal.add(MapPeriodToCalendar.map(periodType),
-                            periodValue.intValue());
+                    cal.add(MapPeriodToCalendar.map(periodType), periodValue.intValue());
                     conf.getEntity().setNextRunDate(cal.getTime());
                     LOG.debug("Updated run date to " + cal.getTime());
                 }
@@ -321,9 +325,10 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 // update the totals
                 runBL.updateTotals(billingProcessId);
             }
-            
 
             LOG.debug("**** ENTITY " + entityId + " DONE");
+            EventManager.process(generatedEvent);
+
         } catch (Exception e) {
             // no need to specify a rollback, an error in any of the
             // updates would not require the rest to be rolled back.
@@ -493,8 +498,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
      * @param userId
      */
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public Integer[] processUser(Integer processId, Integer userId,
-            boolean isReview, boolean onlyRecurring) {
+    public Integer[] processUser(Integer processId, Integer userId, boolean isReview, boolean onlyRecurring) {
         int invoiceGenerated = 0;
         Integer[] retValue = null;
 
@@ -502,8 +506,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             UserBL user = new UserBL(userId);
             
             if (!user.canInvoice()) {
-                LOG.debug("Skipping non-customer / subaccount user " + 
-                        userId);
+                LOG.debug("Skipping non-customer / subaccount user " + userId);
                 return new Integer[0];
             }
 
@@ -512,31 +515,28 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             
             // payment and notification only needed if this user gets a 
             // new invoice.
-            InvoiceDTO newInvoices[] = processBL.generateInvoice(
-                    process, user.getEntity(), isReview, onlyRecurring);
+            InvoiceDTO newInvoices[] = processBL.generateInvoice(process, user.getEntity(), isReview, onlyRecurring);
             if (newInvoices == null) {
             	if (!isReview) {
-	                NoNewInvoiceEvent event = new NoNewInvoiceEvent(
-	                        user.getEntityId(userId), userId, 
-	                        process.getBillingDate(), 
-	                        user.getEntity().getSubscriberStatus().getId());
-	                EventManager.process(event);
+                    NoNewInvoiceEvent event = new NoNewInvoiceEvent(user.getEntityId(userId),
+                                                                    userId,
+                                                                    process.getBillingDate(),
+                                                                    user.getEntity().getSubscriberStatus().getId());
+                    EventManager.process(event);
             	}
                 return new Integer[0];
             }
+
             retValue = new Integer[newInvoices.length];
             for (int f = 0; f < newInvoices.length; f++) {
                 retValue[f] = newInvoices[f].getId();
-                
                 invoiceGenerated++;
             }
-            LOG.info("The user " + userId + " has been processed."
-                    + invoiceGenerated);
+            LOG.info("The user " + userId + " has been processed." + invoiceGenerated);
+
         } catch (Throwable e) {
-            LOG.error("Exception caught when processing the user " + 
-                    userId, e);
-            // rollback !
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            LOG.error("Exception caught when processing the user " + userId, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // rollback !
             return null; // the user was not processed
         }
 
@@ -619,99 +619,98 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
         } 
     }  
     
-    public void trigger(Date pToday) 
-            throws SessionInternalError {
+    public void trigger(Date pToday) throws SessionInternalError {
         try {
-        
             Date today = Util.truncateDate(pToday);
             EventLogger eLogger = EventLogger.getInstance();
             BillingProcessBL processBL = new BillingProcessBL();
             GregorianCalendar cal = new GregorianCalendar();  
 
-            IBillingProcessSessionBean local = (IBillingProcessSessionBean) 
-                    Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+            IBillingProcessSessionBean local
+                = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
 
             // loop over all the entities
             EntityBL entityBL = new EntityBL();
             Integer entityArray[] = entityBL.getAllIDs();
-            LOG.debug("Running trigger. Today = " + today + "[" + today.getTime() +
-                    "] entities = " + entityArray.length);
-            for (int entityIndex = 0; entityIndex < entityArray.length;
-                    entityIndex++) {
-                LOG.debug("New entity row index " + entityIndex + 
-                        " of " + entityArray.length);
+            LOG.debug("Running trigger. Today = " + today + "[" + today.getTime() + "] entities = " + entityArray.length);
+
+            for (int entityIndex = 0; entityIndex < entityArray.length; entityIndex++) {
                 Integer entityId = entityArray[entityIndex];
-                LOG.debug("Processing (1) entity " + entityId + " total = " + 
-                        entityArray.length);
+                LOG.debug("New entity row index " + entityIndex + " of " + entityArray.length);
+                LOG.debug("Processing (1) entity " + entityId + " total = " + entityArray.length);
+
                 // now process this entity
                 ConfigurationBL configEntity = new ConfigurationBL(entityId);
                 BillingProcessConfigurationDTO config = configEntity.getDTO();
                 if (!config.getNextRunDate().after(today)) {
-                    // there should be a run today 
-                    boolean doRun = true;
+                    boolean doRun = true; // there should be a run today
                 	LOG.debug("A process has to be done for entity " + entityId);
+
                     // check that: the configuration requires a review
                     // AND, there is no partial run already there (failed)
-                    if (config.getGenerateReport() == 1 && 
-                            new BillingProcessDAS().isPresent(entityId, new Integer(0),
-                                    config.getNextRunDate()) == null) {
+                    if (config.getGenerateReport() == 1
+                        && new BillingProcessDAS().isPresent(entityId, 0, config.getNextRunDate()) == null) {
+
                         // a review had to be done for the run to go ahead
                         boolean reviewPresent = processBL.isReviewPresent(entityId); 
                         if (!reviewPresent) {  // review wasn't generated
-                            LOG.warn("Review is required but not present for " +
-                                    "entity " + entityId);
+                            LOG.warn("Review is required but not present for " + "entity " + entityId);
                             eLogger.warning(entityId, null, config.getId(), 
-                                    EventLogger.MODULE_BILLING_PROCESS, 
-                                    EventLogger.BILLING_REVIEW_NOT_GENERATED, 
-                                    Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
+                                            EventLogger.MODULE_BILLING_PROCESS,
+                                            EventLogger.BILLING_REVIEW_NOT_GENERATED,
+                                            Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
                             
-                            generateReview(entityId, config.getNextRunDate(), 
-                                    config.getPeriodUnit().getId(), config.
-                                        getPeriodValue());
+                            generateReview(entityId,
+                                           config.getNextRunDate(),
+                                           config.getPeriodUnit().getId(),
+                                           config.getPeriodValue());
 
                             doRun = false;
-                        } else if (new Integer(config.getReviewStatus()).
-                                equals(Constants.REVIEW_STATUS_GENERATED)) {
+
+                        } else if (new Integer(config.getReviewStatus()).equals(Constants.REVIEW_STATUS_GENERATED)) {
                             // the review has to be reviewd yet
                             GregorianCalendar now = new GregorianCalendar();
-                            LOG.warn("Review is required but is not approved" +
-                                    ".Entity " + entityId + " hour is " + 
-                                    now.get(GregorianCalendar.HOUR_OF_DAY));
+                            LOG.warn("Review is required but is not approved. Entity " + entityId
+                                + " hour is " + now.get(GregorianCalendar.HOUR_OF_DAY));
+
                             eLogger.warning(entityId, null, config.getId(), 
-                                    EventLogger.MODULE_BILLING_PROCESS, 
-                                    EventLogger.BILLING_REVIEW_NOT_APPROVED, 
-                                    Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
+                                            EventLogger.MODULE_BILLING_PROCESS,
+                                            EventLogger.BILLING_REVIEW_NOT_APPROVED,
+                                            Constants.TABLE_BILLING_PROCESS_CONFIGURATION);
+
                             try {
                                 // only once per day please
                                 if (now.get(GregorianCalendar.HOUR_OF_DAY) < 1) {
                                     String params[] = new String[1];
                                     params[0] = entityId.toString();
-                                    NotificationBL.sendSapienterEmail(entityId, 
-                                            "process.review_waiting", null, params);
+                                    NotificationBL.sendSapienterEmail(entityId, "process.review_waiting", null, params);
                                 }
                             } catch (Exception e) {
-                                LOG.warn("Exception sending an entity email", 
-                                        e);
+                                LOG.warn("Exception sending an entity email", e);
                             }
                             doRun = false;
-                        } else if (new Integer(config.getReviewStatus()).
-                                equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
+
+                        } else if (new Integer(config.getReviewStatus()).equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
                             // is has been disapproved, let's regenerate
-                            LOG.debug("The process should run, but the review " +
-                                    "has been disapproved");
-                            generateReview(entityId, config.getNextRunDate(), 
-                                    config.getPeriodUnit().getId(), config.
-                                        getPeriodValue());
+                            LOG.debug("The process should run, but the review has been disapproved");
+                            generateReview(entityId,
+                                           config.getNextRunDate(),
+                                           config.getPeriodUnit().getId(),
+                                           config.getPeriodValue());
+
                             doRun = false;
                         }
                     }
                     
                     // do the run
                     if (doRun) {
-                        local.processEntity(entityId, config.getNextRunDate(), 
-                                config.getPeriodUnit().getId(), config.getPeriodValue(),
-                                false);
+                        local.processEntity(entityId,
+                                            config.getNextRunDate(), 
+                                            config.getPeriodUnit().getId(),
+                                            config.getPeriodValue(),
+                                            false);
                     }
+
                 } else {
                     // no run, may be then a review generation
                 	LOG.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
@@ -721,19 +720,18 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                      */
                     if (config.getGenerateReport() == 1) {
                         cal.setTime(config.getNextRunDate());
-                        cal.add(GregorianCalendar.DAY_OF_MONTH, 
-                               -config.getDaysForReport().intValue());
+                        cal.add(GregorianCalendar.DAY_OF_MONTH, -config.getDaysForReport().intValue());
                         if (!cal.getTime().after(today)) {
                             boolean reviewPresent = processBL.isReviewPresent(entityId);
-                            if (reviewPresent && !new Integer(config.getReviewStatus()).
-                                    equals(Constants.REVIEW_STATUS_DISAPPROVED)) {
+                            if (reviewPresent && !Constants.REVIEW_STATUS_DISAPPROVED.equals(config.getReviewStatus())) {
                                 // there's already a review there, and it's been
                                 // either approved or not yet reviewed
                             } else {
                                 LOG.debug("Review disapproved. Regeneratting.");
-                                generateReview(entityId, config.getNextRunDate(),
-                                        config.getPeriodUnit().getId(), config.
-                                            getPeriodValue());
+                                generateReview(entityId,
+                                               config.getNextRunDate(),
+                                               config.getPeriodUnit().getId(),
+                                               config.getPeriodValue());
                             }
                         }
                     }
@@ -745,10 +743,8 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 if (config.getAutoPayment() == 1) {
                     // get the last process
                     Integer[] processToRetry = processBL.getToRetry(entityId);
-                    for (int f = 0; f < processToRetry.length; f++) {
-                        local.doRetry(processToRetry[f], 
-                                config.getDaysForRetry().intValue(), 
-                                today);
+                    for (Integer aProcessToRetry : processToRetry) {
+                        local.doRetry(aProcessToRetry, config.getDaysForRetry(), today);
                     }
                 }
 

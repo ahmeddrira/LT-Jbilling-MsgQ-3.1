@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 
+import com.sapienter.jbilling.server.process.event.InvoicesGeneratedEvent;
 import org.apache.log4j.Logger;
 
 import sun.jdbc.rowset.CachedRowSet;
@@ -252,6 +253,12 @@ public class BillingProcessBL extends ResultList
             LOG.warn("Exception in generate invoice ", e);
         }
 
+        if (retValue != null) {
+            InvoicesGeneratedEvent generatedEvent = new InvoicesGeneratedEvent(entityId, null);
+            generatedEvent.getInvoiceIds().add(retValue.getId());
+            EventManager.process(generatedEvent);
+        }
+
         return retValue;
     }
 
@@ -268,16 +275,13 @@ public class BillingProcessBL extends ResultList
         int maximumPeriods = 1;
         boolean paymentApplication = false;
         try {
-            ConfigurationBL config = new ConfigurationBL(
-                    process.getEntity().getId());
-            useProcessDateForInvoice = config.getEntity().
-                    getInvoiceDateProcess().intValue() == 1;
+            ConfigurationBL config = new ConfigurationBL(process.getEntity().getId());
+            useProcessDateForInvoice = config.getEntity().getInvoiceDateProcess() == 1;
             maximumPeriods = config.getEntity().getMaximumPeriods();
             paymentApplication = config.getEntity().getAutoPaymentApplication() == 1;
         } catch (Exception e) {
+            // swallow exception
         }
-
-
 
         // this contains the generated invoices, one per due date
         // found in the applicable purchase orders.
@@ -285,30 +289,28 @@ public class BillingProcessBL extends ResultList
         Hashtable<TimePeriod, NewInvoiceDTO> newInvoices = new Hashtable<TimePeriod, NewInvoiceDTO>();
         InvoiceDTO[] retValue = null;
 
-        LOG.debug("In generateInvoice for user " + userId +
-                " process date:" + process.getBillingDate());
+        LOG.debug("In generateInvoice for user " + userId + " process date:" + process.getBillingDate());
+
         /*
          * Go through the orders first
          * This method will recursively call itself to find sub-accounts in any
          * level
          */
         boolean includedOrders = processOrdersForUser(user, entityId, process,
-                isReview, onlyRecurring, useProcessDateForInvoice,
-                maximumPeriods, newInvoices);
-
+                                                      isReview, onlyRecurring, useProcessDateForInvoice,
+                                                      maximumPeriods, newInvoices);
 
         if (!includedOrders || newInvoices.size() == 0) {
             // check if invoices without orders are allowed
             PreferenceBL preferenceBL = new PreferenceBL();
             try {
-                preferenceBL.set(entityId,
-                        Constants.PREFERENCE_ALLOW_INVOICES_WITHOUT_ORDERS);
+                preferenceBL.set(entityId, Constants.PREFERENCE_ALLOW_INVOICES_WITHOUT_ORDERS);
             } catch (EmptyResultDataAccessException fe) {
                 // use default
             }
+
             if (preferenceBL.getInt() == 0) {
-                LOG.debug("No applicable orders. No invoice generated " +
-                        "(skipping invoices).");
+                LOG.debug("No applicable orders. No invoice generated (skipping invoices).");
                 return null;
             }
         }
@@ -334,14 +336,14 @@ public class BillingProcessBL extends ResultList
                 invoiceDas.findWithBalanceByUser(user);
         LOG.debug("Processing invoices for user " + user.getUserId());
         // go through each of them, and update the DTO if it applies
+
         for (Iterator it = dueInvoices.iterator(); it.hasNext();) {
             InvoiceDTO invoice = (InvoiceDTO) it.next();
             LOG.debug("Processing invoice " + invoice.getId());
             // apply any invoice processing filter pluggable task
             try {
-                PluggableTaskManager taskManager =
-                        new PluggableTaskManager(entityId,
-                        Constants.PLUGGABLE_TASK_INVOICE_FILTER);
+                PluggableTaskManager taskManager
+                    = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_INVOICE_FILTER);
                 InvoiceFilterTask task = (InvoiceFilterTask) taskManager.getNextClass();
                 boolean isProcessable = true;
                 while (task != null) {
@@ -385,6 +387,7 @@ public class BillingProcessBL extends ResultList
                     holder.addInvoice(ibl.getDTO());
                     // for those invoices wiht only overdue invoices, the
                     // currency has to be initialized
+
                     if (holder.getCurrency() == null) {
                         holder.setCurrency(invoice.getCurrency());
                     } else if (holder.getCurrency().getId() != invoice.getCurrency().getId()) {
@@ -405,8 +408,7 @@ public class BillingProcessBL extends ResultList
                         invoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
                 }
 
-                LOG.debug("invoice " + invoice.getId() + " result " +
-                        isProcessable);
+                LOG.debug("invoice " + invoice.getId() + " result " + isProcessable);
 
             } catch (PluggableTaskException e) {
                 LOG.fatal("Problems handling task invoice filter.", e);
@@ -421,26 +423,22 @@ public class BillingProcessBL extends ResultList
 
         if (newInvoices.size() == 0) {
             // no orders or invoices for this invoice
-            LOG.debug("No applicable orders or invoices. No invoice generated " +
-                    "(skipping invoices).");
+            LOG.debug("No applicable orders or invoices. No invoice generated (skipping invoices).");
             return null;
         }
 
         try {
             retValue = new InvoiceDTO[newInvoices.size()];
             int index = 0;
-            for (Iterator it = newInvoices.values().iterator();
-                    it.hasNext();) {
-                NewInvoiceDTO invoice = (NewInvoiceDTO) it.next();
+            for (NewInvoiceDTO invoice : newInvoices.values()) {
                 /*
                  * Apply invoice composition tasks to the new invoices object
                  */
                 composeInvoice(entityId, user.getUserId(), invoice);
-                
+
                 if (!isReview) {
                     // process events after orders added to invoice
                     processOrderAddedOnInvoiceEvents(invoice, entityId);
-
                     for (InvoiceDTO oldInvoice : invoice.getInvoices()) {
                         // since this invoice is being delegated, mark it as being carried forward
                         // so that it is not re-processed later. do not clear the old balance!
@@ -461,11 +459,11 @@ public class BillingProcessBL extends ResultList
                 // If this is a web services API call, the billing 
                 // process id is 0. Don't link to the billing process 
                 // object for API calls.
-                BillingProcessDTO billingProcess = 
-                        process.getId() != 0 ? process : null;
+                retValue[index] = generateDBInvoice(user.getUserId(),
+                                                    invoice,
+                                                    (process.getId() != 0 ? process : null),
+                                                    Constants.ORDER_PROCESS_ORIGIN_PROCESS);
 
-                retValue[index] = generateDBInvoice(user.getUserId(), invoice, 
-                        billingProcess, Constants.ORDER_PROCESS_ORIGIN_PROCESS);
                 // try to get this new invioce paid by previously unlinked 
                 // payments
                 if (paymentApplication && !isReview) {
@@ -485,6 +483,10 @@ public class BillingProcessBL extends ResultList
             LOG.error("Error, probably linking payments", e1);
             throw new SessionInternalError(e1);
         }
+
+        InvoicesGeneratedEvent generatedEvent = new InvoicesGeneratedEvent(entityId, process.getId());
+        generatedEvent.addInvoices(retValue);
+        EventManager.process(generatedEvent);
 
         return retValue;
     }

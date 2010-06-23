@@ -478,7 +478,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
          * metadata.
          */
         private void setColumnInfo(SqlRowSet records) throws SQLException {
-            boolean lowercase = getParamter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
+            boolean lowercase = getParameter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
 
             SqlRowSetMetaData metaData = records.getMetaData();
             columnTypes = new PricingField.Type[metaData.getColumnCount()];
@@ -573,29 +573,6 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
             // needed to comply with Iterator only
             throw new UnsupportedOperationException("remove not supported");
         }
-    }
-
-    /**
-     * Convenience method for boolean plug-in paramters.
-     *
-     * @param name         parameter name
-     * @param defaultValue default value if parameter not configured
-     * @return parameter value, or default if parameter not configured
-     */
-    private boolean getParamter(String name, boolean defaultValue) {
-        String value = (String) parameters.get(name);
-        return (value == null ? defaultValue : "true".equals(value));
-    }
-
-    /**
-     * Convenience method for getting String plug-in parameters
-     */
-    private String getParameter(String name, String defaultValue) {
-        String value = (String) parameters.get(name);
-        if (value != null) {
-            return value;
-        }
-        return defaultValue;
     }
 
     /**

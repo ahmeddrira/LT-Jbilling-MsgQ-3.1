@@ -76,9 +76,4 @@ public abstract class AbstractCronTask extends ScheduledTask {
     public String getScheduleString() {
         return getCronExpression();
     }
-
-    protected String getParameter(String key, String defaultValue) {
-        Object value = parameters.get(key);
-        return value != null ? (String) value : defaultValue;
-    }
 }

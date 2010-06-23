@@ -39,11 +39,15 @@ import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ByteArrayResource;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public abstract class PluggableTask {
+    public static final SimpleDateFormat PARAMETER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
+
     protected HashMap<String, Object> parameters = null;
     private Integer entityId = null;
     private PluggableTaskDTO task = null;
@@ -93,6 +97,72 @@ public abstract class PluggableTask {
             }
 
             parameters.put(parameter.getName(), value);
+        }
+    }
+
+    /**
+     * Returns the plug-in parameter value as a String if it exists, or
+     * returns the given default value if it doesn't
+     *
+     * @param key plug-in parameter name
+     * @param defaultValue default value if parameter not defined
+     * @return parameter value, or default if not defined
+     */
+    protected String getParameter(String key, String defaultValue) {
+        Object value = parameters.get(key);
+        return value != null ? (String) value : defaultValue;
+    }
+
+    /**
+     * Returns the plug-in parameter value as an Integer if it exists, or
+     * returns the given default value if it doesn't
+     *
+     * @param key plug-in parameter name
+     * @param defaultValue default value if parameter not defined
+     * @return parameter value, or default if not defined
+     */
+    protected Integer getParameter(String key, Integer defaultValue) throws PluggableTaskException {
+        Object value = parameters.get(key);
+
+        try {
+            return value != null ? Integer.parseInt((String) value) : defaultValue;
+        } catch (NumberFormatException e) {
+            throw new PluggableTaskException(key + " could not be parsed as an integer!", e);
+        }
+    }
+
+    /**
+     * Returns the plug-in parameter value as a boolean value if it exists, or
+     * returns the given default value if it doesn't.
+     *
+     * "true" and "True" equals Boolean.TRUE, all other values equate to false.
+     *
+     * @param key plug-in parameter name
+     * @param defaultValue default value if parameter not defined
+     * @return parameter value, or default if not defined
+     */
+    protected Boolean getParameter(String key, Boolean defaultValue) {
+        Object value = parameters.get(key);
+        return value != null ? ((String) value).equalsIgnoreCase("true") : defaultValue;
+    }    
+
+    /**
+     * Returns the plug-in parameter value as a Date value if it exists, or
+     * returns the given default value if it doesn't.
+     *
+     * Parameter date strings must be in the format "yyyyMMdd-HHmm"
+     *
+     * @param key plug-in parameter name
+     * @param defaultValue default value if parameter not defined
+     * @return parameter value, or default if not defined
+     * @throws PluggableTaskException thrown if parameter could not be parsed as a date
+     */
+    protected Date getParameter(String key, Date defaultValue) throws PluggableTaskException {
+        Object value = parameters.get(key);
+        try {
+            return value != null ? PARAMETER_DATE_FORMAT.parse((String) value) : defaultValue;
+        } catch (ParseException e) {
+            throw new PluggableTaskException(key + " could not be parsed as a date!", e);
         }
     }
 
@@ -250,12 +320,5 @@ public abstract class PluggableTask {
             ResourceFactory.getResourceChangeNotifierService().start();
             ResourceFactory.getResourceChangeScannerService().start();
         }
-    }
-
-    /**
-     * For unit testing.
-     */ 
-    public void setParameters(HashMap<String, Object> parameters) {
-        this.parameters = parameters;
     }
 }

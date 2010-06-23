@@ -251,7 +251,7 @@ public class BillingProcessTest extends TestCase {
             BillingProcessRunTotalDTOEx total = run.getTotals().get(0);
             assertEquals("Retry total paid equals to invoice total", 
                     invoice.getTotal(), total.getTotalPaid());
-           
+             assertEquals("Successful users runs count incorrect", new Integer(0), run.getUsersSucceeded());
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception:" + e);
@@ -323,10 +323,13 @@ public class BillingProcessTest extends TestCase {
             // no new process should have run
             assertTrue("4 - No new process", lastDto.getId() == 
                     lastDtoB.getId());
-                    
+
             // get the review
             reviewDto = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
+
+            assertEquals("Incorrect success users runs", new Integer(1032), reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersSucceeded());
+            assertEquals("Incorrect failed users runs", new Integer(0), reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersFailed());
 
             // now review should be there
             assertNotNull("5 - Review should be there", reviewDto);
@@ -382,7 +385,7 @@ public class BillingProcessTest extends TestCase {
             // get the review
             BillingProcessDTOEx reviewDto2 = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
-           
+
             assertEquals("8 - No new review run", reviewDto.getId(), 
                     reviewDto2.getId());
                     
@@ -416,7 +419,7 @@ public class BillingProcessTest extends TestCase {
             // get the review
             reviewDto2 = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
-            
+
             // since the last one was disapproved, a new one has to be created
             assertNotSame("11 - New review run", reviewDto.getId(), 
                     reviewDto2.getId());
@@ -487,7 +490,7 @@ public class BillingProcessTest extends TestCase {
             BillingProcessDTOEx lastDto = remoteBillingProcess.getDto(
                     remoteBillingProcess.getLast(entityId),
                     languageId);
-            
+
             // get the review, so we can later check that what id had
             // is the same that is generated in the real process
             BillingProcessDTOEx reviewDto = remoteBillingProcess.getReviewDto(

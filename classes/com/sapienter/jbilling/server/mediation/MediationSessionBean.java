@@ -339,7 +339,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                 // call error handler for mediation errors
                 handleMediationErrors(findRecordByKey(thisGroup, result.getRecordKey()),
                                       resolveMediationResultErrors(result),
-                                      entityId);
+                                      entityId, cfg);
 
             } else if (!result.getErrors().isEmpty()) {
                 // There are some user-detected errors
@@ -351,7 +351,7 @@ public class MediationSessionBean implements IMediationSessionBean {
                 // call error handler for rules errors
                 handleMediationErrors(findRecordByKey(thisGroup, result.getRecordKey()),
                                       result.getErrors(),
-                                      entityId);
+                                      entityId, cfg);
             } else {
                 // this record was process without any errors
                 LOG.debug("Record result is done");
@@ -469,7 +469,8 @@ public class MediationSessionBean implements IMediationSessionBean {
 
     private void handleMediationErrors(Record record,
                                        List<String> errors,
-                                       Integer entityId) {
+                                       Integer entityId,
+                                       MediationConfiguration cfg) {
         if (record == null) return;
         StopWatch watch = new StopWatch("saving errors watch");
         watch.start();
@@ -483,7 +484,7 @@ public class MediationSessionBean implements IMediationSessionBean {
             // and process errors
             while ((errorHandler = tm.getNextClass()) != null) {
                 try {
-                    errorHandler.process(record, errors, new Date());
+                    errorHandler.process(record, errors, new Date(), cfg);
                 } catch (TaskException e) {
                     // exception catched for opportunity of processing errors by other handlers
                     // and continue mediation process for other records

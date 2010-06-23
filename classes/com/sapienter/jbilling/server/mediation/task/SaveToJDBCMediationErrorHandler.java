@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.mediation.task;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import org.apache.log4j.Logger;
@@ -44,15 +45,16 @@ import java.util.List;
  * 
  * Plug-in parameters:
  *
- *      url             mandatory parameter, url for JDBC connection to database,
- *                          i.e. jdbc:postgresql://localhost:5432/jbilling_test
+ *      url                 mandatory parameter, url for JDBC connection to database,
+ *                              i.e. jdbc:postgresql://localhost:5432/jbilling_test
  *
- *      driver          JDBC driver class for connection to DB, defaults to 'org.postgresql.Driver'
- *      username        username for database, defaults to 'SA'
- *      password        password for database, defaults to a blank string ("")
- *      table_name      table name for saving records, defaults to 'mediation_errors'
- *      errors_column   column name for saving error codes, defaults to 'error_message'
- *      retry_column    column name for saving flag of reprocessing, defaults to 'should_retry'
+ *      driver              JDBC driver class for connection to DB, defaults to 'org.postgresql.Driver'
+ *      username            username for database, defaults to 'SA'
+ *      password            password for database, defaults to a blank string ("")
+ *      table_name          table name for saving records, defaults to 'mediation_errors'
+ *      errors_column       column name for saving error codes, defaults to 'error_message'
+ *      retry_column        column name for saving flag of reprocessing, defaults to 'should_retry'
+ *      mediation_cfg_id    id of mediation configuration for filtering errors handling (if param presented)
  *
  * @author Alexander Aksenov
  * @since 31.01.2010
@@ -73,6 +75,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     protected final static String PARAM_ERRORS_COLUMN_NAME = "errors_column";
     protected final static String PARAM_RETRY_COLUMN_NAME = "retry_column";
     protected final static String PARAM_JBILLING_TIMESTAMP_COLUMN_NAME = "timestamp_column";
+    protected final static String PARAM_MEDIATION_CONFIGURATION_ID = "mediation_cfg_id";
 
     // defaults
     public static final String DRIVER_DEFAULT = "org.postgresql.Driver";
@@ -86,7 +89,17 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
 
     private Boolean mysql;
 
-    public void process(Record record, List<String> errors, Date processingTime) throws TaskException {
+    public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
+        if (mediationConfiguration != null && getParameter(PARAM_MEDIATION_CONFIGURATION_ID, null) != null) {
+            try {
+                Integer configId = Integer.parseInt(getParameter(PARAM_MEDIATION_CONFIGURATION_ID, ""));
+                if (!mediationConfiguration.getId().equals(configId)) {
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                log.error("Error during plug-in parameters parsing, check the configuration", ex);
+            }
+        }
         log.debug("Perform saving errors to database ");
 
         Connection connection = null;

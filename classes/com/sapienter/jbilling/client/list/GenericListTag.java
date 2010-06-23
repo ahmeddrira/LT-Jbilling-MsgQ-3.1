@@ -158,6 +158,13 @@ public class GenericListTag extends ListTagBase {
                 listColumns.add("customer.last_name");
                 listColumns.add("customer.first_name");
                 listColumns.add("user.prompt.username");
+            } else if (type.equals(Constants.LIST_TYPE_PROCESS_RUN_SUCCESSFULL_USERS) ||
+                    type.equals(Constants.LIST_TYPE_PROCESS_RUN_FAILED_USERS)) {
+                listColumns.add("user.prompt.id");
+                listColumns.add("contact.list.organization");
+                listColumns.add("customer.last_name");
+                listColumns.add("customer.first_name");
+                listColumns.add("user.prompt.username");                
             } else if (type.equals(Constants.LIST_TYPE_ORDER)) {
                 listColumns.add("order.prompt.id");
                 listColumns.add("user.prompt.username");
@@ -358,6 +365,11 @@ public class GenericListTag extends ListTagBase {
                     BillingProcessDTOEx dto = (BillingProcessDTOEx) session.
                             getAttribute(Constants.SESSION_PROCESS_DTO);
                     parameters.put("processId", dto.getId());
+                } else if (type.equals(Constants.LIST_TYPE_PROCESS_RUN_SUCCESSFULL_USERS) ||
+                        type.equals(Constants.LIST_TYPE_PROCESS_RUN_FAILED_USERS)) {
+                    BillingProcessDTOEx dto = (BillingProcessDTOEx) session.
+                            getAttribute(Constants.SESSION_PROCESS_DTO);
+                    parameters.put("processId", dto.getId());                    
                 } else if (type.equals(Constants.LIST_TYPE_NOTIFICATION_TYPE)) {
                     parameters.put("languageId", languageId);
                 } else if (type.equals(Constants.LIST_TYPE_PARTNER)) {

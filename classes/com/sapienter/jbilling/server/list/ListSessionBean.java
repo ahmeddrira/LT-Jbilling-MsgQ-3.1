@@ -45,6 +45,7 @@ import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.payment.PaymentBL;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.BillingProcessRunBL;
 import com.sapienter.jbilling.server.user.partner.PartnerBL;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.GetSelectableOptions;
@@ -158,6 +159,16 @@ public class ListSessionBean implements IListSessionBean {
                 BillingProcessBL list = new BillingProcessBL();
                 Integer entityId = (Integer) parameters.get("entityId");
                 retValue = list.getList(entityId);
+            } else if (type.equals(Constants.LIST_TYPE_PROCESS_RUN_SUCCESSFULL_USERS)) {
+                BillingProcessRunBL list = new BillingProcessRunBL();
+                Integer entityId = (Integer) parameters.get("processId");
+                list.setProcess(entityId);
+                retValue = list.findSucceededUsersList();
+            } else if (type.equals(Constants.LIST_TYPE_PROCESS_RUN_FAILED_USERS)) {
+                BillingProcessRunBL list = new BillingProcessRunBL();
+                Integer entityId = (Integer) parameters.get("processId");
+                list.setProcess(entityId);
+                retValue = list.findFailedUsersList();                
             } else if (type.equals(Constants.LIST_TYPE_PROCESS_INVOICES)) {
                 InvoiceBL list = new InvoiceBL();
                 Integer processId = (Integer) parameters.get("processId");

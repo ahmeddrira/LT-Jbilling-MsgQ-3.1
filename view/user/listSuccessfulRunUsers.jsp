@@ -1,4 +1,4 @@
-/*
+<%--
     jBilling - The Enterprise Open Source Billing System
     Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
 
@@ -16,26 +16,9 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
-package com.sapienter.jbilling.server.process.db;
+--%>
 
-import java.util.Calendar;
-import java.util.Date;
+<%@ page language="java" %>
+<%@ taglib uri="/WEB-INF/struts-tiles.tld" prefix="tiles" %>
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
-
-public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
-
-    //private static final Logger LOG = Logger.getLogger(ProcessRunDAS.class);
-
-    public ProcessRunDTO create(BillingProcessDTO process, Date runDate, Integer invoicesGenerated, ProcessRunStatusDTO status) {
-        ProcessRunDTO dto = new ProcessRunDTO(0, runDate, Calendar.getInstance().getTime());
-        dto.setBillingProcess(process);
-        dto.setInvoicesGenerated(invoicesGenerated);
-        dto.setStatus(status);
-
-        dto = save(dto);
-        process.getProcessRuns().add(dto);
-        return dto;
-    }
-}
+<tiles:insert definition="process.run.successfull.list" flush="true" />

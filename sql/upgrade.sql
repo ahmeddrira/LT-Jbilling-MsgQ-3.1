@@ -268,3 +268,39 @@ alter table ach alter column bank_account type character varying(60); -- postgre
 -- new generate rules plug-in category
 insert into pluggable_task_type_category values (23, 'Rules Generator', 'com.sapienter.jbilling.server.rule.task.IRulesGenerator');
 insert into pluggable_task_type values (78, 23, 'com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask', 2);
+
+-- new process run status
+insert into generic_status_type values ('process_run_status');
+insert into generic_status (id, dtype, status_value) values (33, 'process_run_status', 1); -- running
+insert into generic_status (id, dtype, status_value) values (34, 'process_run_status', 2); -- finished: successful
+insert into generic_status (id, dtype, status_value) values (35, 'process_run_status', 3); -- finished: failed
+
+insert into jbilling_table values (92, 'process_run_status');
+
+--update jbilling_table set next_id = 36 where id = 87; -- generic_status
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (92, 1, 'description', 1, 'Running');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (92, 2, 'description', 1, 'Finished: successful');
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content)  values (92, 3, 'description', 1, 'Finished: failed');
+
+
+alter table process_run add column status_id integer;
+
+update process_run set status_id = 33 where finished is null;
+update process_run set status_id = 34 where finished is not null;
+
+alter table process_run alter column status_id set NOT NULL;
+alter table process_run ADD CONSTRAINT process_run_FK_2 FOREIGN KEY (status_id) REFERENCES generic_status (id);
+
+-- new table to store user status within process run
+drop table if exists process_run_user;
+create table process_run_user (
+  id int PRIMARY KEY NOT NULL,
+  process_run_id int NOT NULL,
+  user_id int NOT NULL,
+  status int NOT NULL,
+  created timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  OPTLOCK int NOT NULL
+);
+alter table process_run_user ADD CONSTRAINT process_run_user_FK_1 FOREIGN KEY (process_run_id) REFERENCES process_run (id);
+alter table process_run_user ADD CONSTRAINT process_run_user_FK_2 FOREIGN KEY (user_id) REFERENCES base_user (id);

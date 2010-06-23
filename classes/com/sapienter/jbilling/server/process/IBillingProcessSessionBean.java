@@ -140,7 +140,18 @@ public interface IBillingProcessSessionBean {
      * Update status of BillingProcessRun in new transaction
      * for accessing from other thread
      * @param billingProcessId id of billing process for searching ProcessRun
+     * @param processRunStatusId id of finished process run status (success or failure)
      * @return id of updated ProcessRunDTO
      */
-    public Integer updateProcessRunFinished(Integer billingProcessId);
+    public Integer updateProcessRunFinished(Integer billingProcessId, Integer processRunStatusId);
+
+    /**
+     * Adds ProcessRunUser in new transaction
+     * for accessing from other thread
+     * @param billingProcessId id of billing process for searching ProcessRun
+     * @param userId ID of user
+     * @param status Status of billing process for specified user: 0 - failed, 1 - succeeded
+     * @return id of inserted ProcessRunUserDTO
+     */
+    public Integer addProcessRunUser(Integer billingProcessId, Integer userId, Integer status);
 }

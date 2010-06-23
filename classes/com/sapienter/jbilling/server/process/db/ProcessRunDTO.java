@@ -59,6 +59,7 @@ public class ProcessRunDTO implements java.io.Serializable {
     private Integer invoicesGenerated;
     private Date paymentFinished;
     private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
+    private ProcessRunStatusDTO status;
     private int versionNum;
 
     public ProcessRunDTO() {
@@ -159,6 +160,16 @@ public class ProcessRunDTO implements java.io.Serializable {
         this.processRunTotals = processRunTotals;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
+    public ProcessRunStatusDTO getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProcessRunStatusDTO status) {
+        this.status = status;
+    }
+
     @Version
     @Column(name = "OPTLOCK")
     public int getVersionNum() {
@@ -172,7 +183,8 @@ public class ProcessRunDTO implements java.io.Serializable {
     public String toString() {
         StringBuffer ret = new StringBuffer(" ProcesRunDTO: id: " + id + " runDate: " + runDate + " started: " + started +
                 "  finished " + finished + " invoiceGenerated " + invoicesGenerated +
-                " paymentFinished: " + paymentFinished + " processRunTotals: ");
+                " status: " + status + " paymentFinished: " + paymentFinished + 
+                " processRunTotals: ");
 
         for (ProcessRunTotalDTO total : processRunTotals) {
             ret.append(total.toString());

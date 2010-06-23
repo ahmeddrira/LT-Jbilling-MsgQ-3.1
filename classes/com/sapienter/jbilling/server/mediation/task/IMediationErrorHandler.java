@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.mediation.task;
 
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
 import java.util.Date;
@@ -28,6 +29,6 @@ import java.util.List;
 
 public interface IMediationErrorHandler {
 
-    public void process(Record record, List<String> errors, Date processingTime)
+    public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration)
             throws TaskException;
 }

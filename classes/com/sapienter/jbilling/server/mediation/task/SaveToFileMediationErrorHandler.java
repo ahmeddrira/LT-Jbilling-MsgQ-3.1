@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.mediation.task;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import org.apache.log4j.Logger;
@@ -44,6 +45,7 @@ public class SaveToFileMediationErrorHandler extends PluggableTask
     protected final static String PARAM_DIRECTORY_NAME = "directory";
     protected final static String PARAM_FILE_NAME = "file_name";
     protected final static String PARAM_ROTATE_FILE_DAILY = "rotate_file_daily";
+    protected final static String PARAM_MEDIATION_CONFIGURATION_ID = "mediation_cfg_id";
 
     // default values
     protected final static String DEFAULT_DIRECTORY_NAME = "mediation" + File.separator + "errors";
@@ -52,7 +54,17 @@ public class SaveToFileMediationErrorHandler extends PluggableTask
     protected final static String DEFAULT_CSV_FILE_SEPARATOR = ",";
 
 
-    public void process(Record record, List<String> errors, Date processingTime) throws TaskException {
+    public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
+        if (mediationConfiguration != null &&  parameters.get(PARAM_MEDIATION_CONFIGURATION_ID) != null) {
+            try {
+                Integer configId = Integer.parseInt((String) parameters.get(PARAM_MEDIATION_CONFIGURATION_ID));
+                if (!mediationConfiguration.getId().equals(configId)) {
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                LOG.error("Error during plug-in parameters parsing, check the configuration", ex);
+            }
+        }
         File file = getFileForDate(processingTime);
         LOG.debug("Perform saving errors to file " + file.getAbsolutePath());
         FileWriter writer = null;

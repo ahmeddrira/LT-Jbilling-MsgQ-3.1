@@ -328,7 +328,7 @@ public class BillingProcessTest extends TestCase {
             reviewDto = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
 
-            assertEquals("Incorrect success users runs", new Integer(1032), reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersSucceeded());
+            assertTrue("Success users runs should be presented", reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersSucceeded() > 0);
             assertEquals("Incorrect failed users runs", new Integer(0), reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersFailed());
 
             // now review should be there

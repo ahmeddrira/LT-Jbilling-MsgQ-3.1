@@ -90,7 +90,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     private Boolean mysql;
 
     public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
-        if (mediationConfiguration != null && getParameter(PARAM_MEDIATION_CONFIGURATION_ID, null) != null) {
+        if (mediationConfiguration != null && parameters.get(PARAM_MEDIATION_CONFIGURATION_ID) != null) {
             try {
                 Integer configId = Integer.parseInt(getParameter(PARAM_MEDIATION_CONFIGURATION_ID, ""));
                 if (!mediationConfiguration.getId().equals(configId)) {

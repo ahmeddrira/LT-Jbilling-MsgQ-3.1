@@ -422,6 +422,8 @@
             <classpath refid="compile.classpath"/>
             <classpath path="${build.classes.dir}"/>
         </javac>
+        
+        <copy file="${base_dir}/../conf/jbilling.properties" todir="${build.test.dir}"/>
 
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
@@ -963,7 +965,7 @@ server="upload.sourceforge.net" userid="anonymous">
     <target name="checkout" description="Update files from GIT">
       <git command = "pull" dir = "${source.dir}"/>
     </target>
-
+    
 </project>
 <!--
   <property name="showme" refid="test.classpath"/>

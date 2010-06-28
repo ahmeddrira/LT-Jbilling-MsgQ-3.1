@@ -965,6 +965,14 @@ server="upload.sourceforge.net" userid="anonymous">
     <target name="checkout" description="Update files from GIT">
       <git command = "pull" dir = "${source.dir}"/>
     </target>
+
+    <target  name="reformat-text" description="Cleans up text files and sets the appropriate eol character.">
+        <!-- replace tab characters with spaces -->
+        <!-- replace UNIX eol characters with DOS characters -->
+        <fixcrlf srcdir="${source.classes.dir}" includes="**/*.java"
+                 tab="remove" tablength="4" javafiles="yes"
+                 eol="crlf"/>
+    </target>
     
 </project>
 <!--

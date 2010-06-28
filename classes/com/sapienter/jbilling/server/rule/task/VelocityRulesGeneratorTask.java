@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.rule.task;
 import java.io.File;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
@@ -122,5 +123,13 @@ public class VelocityRulesGeneratorTask extends AbstractGeneratorTask {
             // add the passed in Object itself to the context
             context.put("data", objects);
         }
+    }
+
+    /**
+     * For unit testing.
+     * @param parameters parameters to set
+     */
+    public void setParameters(HashMap<String, Object> parameters) {
+        this.parameters = parameters;
     }
 }

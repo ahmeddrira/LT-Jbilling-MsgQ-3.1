@@ -423,8 +423,6 @@
             <classpath path="${build.classes.dir}"/>
         </javac>
 
-        <copy file="${base_dir}/../conf/jbilling.properties" todir="${build.test.dir}"/>
-
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>
         <junit errorproperty="test.failed" failureproperty="test.failed">

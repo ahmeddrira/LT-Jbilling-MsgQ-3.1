@@ -478,7 +478,7 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
          * metadata.
          */
         private void setColumnInfo(SqlRowSet records) throws SQLException {
-            boolean lowercase = getParameter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
+            boolean lowercase = getParamter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
 
             SqlRowSetMetaData metaData = records.getMetaData();
             columnTypes = new PricingField.Type[metaData.getColumnCount()];

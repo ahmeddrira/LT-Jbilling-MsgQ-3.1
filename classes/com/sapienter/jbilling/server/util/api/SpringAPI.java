@@ -505,6 +505,14 @@ public class SpringAPI implements JbillingAPI {
     	}
     }
 
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws JbillingAPIException {
+        try {
+            return session.createInvoiceFromOrder(orderId, invoiceId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId)
     		throws JbillingAPIException {
     	try {

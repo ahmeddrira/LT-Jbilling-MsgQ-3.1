@@ -259,6 +259,64 @@ public class WSTest extends TestCase {
         }
     }
 
+    public void testCreateInvoiceFromOrder() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        final Integer USER_ID = 10730; // user has no orders
+
+        // setup orders
+        OrderWS order = new OrderWS();
+        order.setUserId(USER_ID);
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(1); // once
+        order.setCurrencyId(1);
+
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setDescription("Order line");
+        line.setItemId(1);
+        line.setQuantity(1);
+        line.setPrice(new BigDecimal("10.00"));
+        line.setAmount(new BigDecimal("10.00"));
+
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        // create orders
+        Integer orderId1 = api.createOrder(order);
+        Integer orderId2 = api.createOrder(order);
+
+        // generate invoice using first order
+        Integer invoiceId = api.createInvoiceFromOrder(orderId1, null);
+
+        assertNotNull("Order 1 created", orderId1);
+        assertNotNull("Order 2 created", orderId2);
+        assertNotNull("Invoice created", invoiceId);
+
+        Integer[] invoiceIds = api.getLastInvoices(USER_ID, 2);
+        assertEquals("Only 1 invoice was generated", 1, invoiceIds.length);        
+
+        InvoiceWS invoice = api.getInvoiceWS(invoiceId);
+        assertEquals("Invoice total is $10.00", new BigDecimal("10.00"), invoice.getTotalAsDecimal());
+        assertEquals("Only 1 order invoiced", 1, invoice.getOrders().length);
+        assertEquals("Invoice generated from 1st order", orderId1, invoice.getOrders()[0]);
+
+        // add second order to invoice
+        Integer invoiceId2 = api.createInvoiceFromOrder(orderId2, invoiceId);
+        assertEquals("Order added to the same invoice", invoiceId, invoiceId2);
+
+        invoiceIds = api.getLastInvoices(USER_ID, 2);
+        assertEquals("Still only 1 invoice generated", 1, invoiceIds.length);
+
+        invoice = api.getInvoiceWS(invoiceId);
+        assertEquals("Invoice total is $20.00", new BigDecimal("20.00"), invoice.getTotalAsDecimal());
+        assertEquals("2 orders invoiced", 2, invoice.getOrders().length);
+
+        // cleanup
+        api.deleteInvoice(invoiceId);
+        api.deleteOrder(orderId1);
+        api.deleteOrder(orderId2);
+    }
+
     public void testCreateInvoiceSecurity() {
         try {
             JbillingAPI api = JbillingAPIFactory.getAPI();

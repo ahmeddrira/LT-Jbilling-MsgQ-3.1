@@ -79,6 +79,7 @@ public interface IWebServicesSessionBean {
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
             throws SessionInternalError;
 
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
 
     /*
      * USERS

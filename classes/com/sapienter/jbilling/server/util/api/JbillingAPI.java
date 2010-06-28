@@ -63,6 +63,8 @@ public interface JbillingAPI {
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
             throws JbillingAPIException;
 
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws JbillingAPIException;
+
     public Integer createUser(UserWS newUser) throws JbillingAPIException;
 
     public void deleteUser(Integer userId) throws JbillingAPIException;

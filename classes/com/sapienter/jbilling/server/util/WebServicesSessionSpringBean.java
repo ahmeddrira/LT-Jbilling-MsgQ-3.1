@@ -37,6 +37,7 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -255,6 +256,40 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } else {
             return new Integer[]{};
         }
+    }
+
+    /**
+     * Generates a new invoice for an order, or adds the order to an
+     * existing invoice.
+     *
+     * @param orderId order id to generate an invoice for
+     * @param invoiceId optional invoice id to add the order to. If null, a new invoice will be created.
+     * @return id of generated invoice, null if no invoice generated.
+     * @throws SessionInternalError if user id or order id is null.
+     */
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError {
+        if (orderId == null) throw new SessionInternalError("Order id cannot be null.");
+
+        // validate order to be processed
+        OrderDTO order = new OrderDAS().find(orderId);
+        if (order == null || !Constants.ORDER_STATUS_ACTIVE.equals(order.getStatusId())) {
+            LOG.debug("Order must exist and be active to generate an invoice.");
+            return null;
+        }
+
+        // create new invoice, or add to an existing invoice
+        InvoiceDTO invoice;
+        if (invoiceId == null) {
+            LOG.debug("Creating a new invoice for order " + order.getId());
+            invoice = doCreateInvoice(order.getId());
+
+        } else {
+            LOG.debug("Adding order " + order.getId() + " to invoice " + invoiceId);
+            IBillingProcessSessionBean process = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+            invoice = process.generateInvoice(order.getId(), invoiceId, null);
+        }
+        
+        return invoice == null ? null : invoice.getId();
     }
 
     /*

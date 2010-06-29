@@ -35,7 +35,7 @@ import java.util.Date;
         pkColumnValue = "process_run_user",
         allocationSize = 100)
 @Table(name = "process_run_user")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+// No cache
 public class ProcessRunUserDTO implements java.io.Serializable {
 
     public static final Integer STATUS_FAILED = 0;

@@ -175,8 +175,6 @@
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         <index name="bp_run_user_run_ix">
             <index-column name="process_run_id"/>
-        </index>
-        <index name="bp_run_user_user_ix">
             <index-column name="user_id"/>
         </index>
         <foreign-key foreignTable="user">

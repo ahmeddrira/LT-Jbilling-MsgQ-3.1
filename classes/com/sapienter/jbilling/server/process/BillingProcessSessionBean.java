@@ -214,6 +214,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
             BillingProcessRunBL billingProcessRunBL = new BillingProcessRunBL();
             billingProcessRunBL.setProcess(billingProcessId);
+            // TODO: all the customer's id in memory is not a good idea. 1M customers would be 4MB of memory
             List<Integer> successfullUsers = billingProcessRunBL.findSuccessfullUsers();
             
             ///// start processing users of this entity
@@ -243,8 +244,8 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 	            int count = 0;
 	            while (userCursor.next()) {
 	                Integer userId = (Integer) userCursor.get(0);
-                    if(successfullUsers.contains(userId)) {
-                        LOG.debug("User #" + userId + " was successfully processed during previous run. Skip it now.");
+                    if(successfullUsers.contains(userId)) { // TODO: change this by a query to the DB
+                        LOG.debug("User #" + userId + " was successfully processed during previous run. Skipping.");
                         continue;
                     }
 
@@ -252,11 +253,9 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                     try {
 	                    result = local.processUser(billingProcessId, userId,
 	                            isReview, onlyRecurring);
-                    } catch(Exception ex) {
+                    } catch(Throwable ex) {
                         LOG.error("Exception was caught when processing User #" + userId + ". Continue process skipping user    .", ex);
                         local.addProcessRunUser(billingProcessId, userId, ProcessRunUserDTO.STATUS_FAILED);
-                        local.updateProcessRunFinished(
-                                billingProcessId, Constants.PROCESS_RUN_STATUS_FAILED);
                     }
 	                if (result != null) {
 	                    LOG.debug("User " + userId + " done invoice generation.");
@@ -338,7 +337,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             }
             
 
-            LOG.debug("**** ENTITY " + entityId + " DONE");
+            LOG.debug("**** ENTITY " + entityId + " DONE. Failed users = " + usersFailed);
         } catch (Exception e) {
             // no need to specify a rollback, an error in any of the
             // updates would not require the rest to be rolled back.

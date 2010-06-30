@@ -170,8 +170,8 @@ public class ListFieldDTO implements Serializable, Comparable<ListFieldDTO> {
         this.versionNum = versionNum;
     }
 
-	@Override
-	public int compareTo(ListFieldDTO field) {
-		return new Integer(this.id).compareTo(new Integer(field.getId()));
-	}
+    @Override
+    public int compareTo(ListFieldDTO field) {
+        return new Integer(this.id).compareTo(new Integer(field.getId()));
+    }
 }

@@ -41,12 +41,12 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
-		name = "process_run_GEN", 
-		table = "jbilling_seqs", 
-		pkColumnName = "name", 
-		valueColumnName = "next_id", 
-		pkColumnValue = "process_run", 
-		allocationSize = 100)
+        name = "process_run_GEN", 
+        table = "jbilling_seqs", 
+        pkColumnName = "name", 
+        valueColumnName = "next_id", 
+        pkColumnValue = "process_run", 
+        allocationSize = 100)
 @Table(name = "process_run")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ProcessRunDTO implements java.io.Serializable {

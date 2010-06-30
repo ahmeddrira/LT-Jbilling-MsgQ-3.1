@@ -92,7 +92,7 @@ public class RulesPricingTask extends PluggableTask implements IPricing {
         }
         // then execute the rules
         for (Object o: rulesMemoryContext) {
-        	LOG.debug("in memory context=" + o);
+            LOG.debug("in memory context=" + o);
         }
         mySession.execute(rulesMemoryContext);
 

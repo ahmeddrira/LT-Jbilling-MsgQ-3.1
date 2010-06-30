@@ -131,13 +131,13 @@ public class MediationProcess implements Serializable {
         this.configuration = configuration;
     }
 
-	public Collection<MediationRecordDTO> getRecords() {
-		return records;
-	}
+    public Collection<MediationRecordDTO> getRecords() {
+        return records;
+    }
 
-	public void setRecords(Collection<MediationRecordDTO> records) {
-		this.records = records;
-	}
+    public void setRecords(Collection<MediationRecordDTO> records) {
+        this.records = records;
+    }
 
     public String toString() {
         return "MediationProcess= " +

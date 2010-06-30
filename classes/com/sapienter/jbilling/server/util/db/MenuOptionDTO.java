@@ -42,86 +42,86 @@ import javax.persistence.Transient;
 @Table(name = "menu_option")
 public class MenuOptionDTO extends AbstractDescription implements java.io.Serializable {
 
-	private int id;
-	private MenuOptionDTO menuOption;
-	private String link;
-	private int levelField;
-	private Set<MenuOptionDTO> menuOptions = new HashSet<MenuOptionDTO>(0);
-	private static final Logger LOG = Logger.getLogger(MenuOptionDTO.class);
+    private int id;
+    private MenuOptionDTO menuOption;
+    private String link;
+    private int levelField;
+    private Set<MenuOptionDTO> menuOptions = new HashSet<MenuOptionDTO>(0);
+    private static final Logger LOG = Logger.getLogger(MenuOptionDTO.class);
 
-	public MenuOptionDTO() {
-	}
+    public MenuOptionDTO() {
+    }
 
-	public MenuOptionDTO(int id, String link, int levelField) {
-		this.id = id;
-		this.link = link;
-		this.levelField = levelField;
-	}
+    public MenuOptionDTO(int id, String link, int levelField) {
+        this.id = id;
+        this.link = link;
+        this.levelField = levelField;
+    }
 
-	public MenuOptionDTO(int id, MenuOptionDTO menuOption, String link,
-			int levelField, Set<MenuOptionDTO> menuOptions) {
-		this.id = id;
-		this.menuOption = menuOption;
-		this.link = link;
-		this.levelField = levelField;
-		this.menuOptions = menuOptions;
-	}
+    public MenuOptionDTO(int id, MenuOptionDTO menuOption, String link,
+            int levelField, Set<MenuOptionDTO> menuOptions) {
+        this.id = id;
+        this.menuOption = menuOption;
+        this.link = link;
+        this.levelField = levelField;
+        this.menuOptions = menuOptions;
+    }
 
     @Transient
     protected String getTable() {
         return Constants.TABLE_MENU_OPTION;
     }
 
-	@Id
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "parent_id")
-	public MenuOptionDTO getMenuOption() {
-		return this.menuOption;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    public MenuOptionDTO getMenuOption() {
+        return this.menuOption;
+    }
 
-	public void setMenuOption(MenuOptionDTO menuOption) {
-		this.menuOption = menuOption;
-	}
+    public void setMenuOption(MenuOptionDTO menuOption) {
+        this.menuOption = menuOption;
+    }
 
-	@Column(name = "link", nullable = false, length = 100)
-	public String getLink() {
-		return this.link;
-	}
+    @Column(name = "link", nullable = false, length = 100)
+    public String getLink() {
+        return this.link;
+    }
 
-	public void setLink(String link) {
-		this.link = link;
-	}
+    public void setLink(String link) {
+        this.link = link;
+    }
 
-	@Column(name = "level_field", nullable = false)
-	public int getLevelField() {
-		return this.levelField;
-	}
+    @Column(name = "level_field", nullable = false)
+    public int getLevelField() {
+        return this.levelField;
+    }
 
-	public void setLevelField(int levelField) {
-		this.levelField = levelField;
-	}
+    public void setLevelField(int levelField) {
+        this.levelField = levelField;
+    }
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "menuOption")
-	public Set<MenuOptionDTO> getMenuOptions() {
-		return this.menuOptions;
-	}
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "menuOption")
+    public Set<MenuOptionDTO> getMenuOptions() {
+        return this.menuOptions;
+    }
 
-	public void setMenuOptions(Set<MenuOptionDTO> menuOptions) {
-		this.menuOptions = menuOptions;
-	}
+    public void setMenuOptions(Set<MenuOptionDTO> menuOptions) {
+        this.menuOptions = menuOptions;
+    }
 
-	public String getDisplay(Integer language) {
-		return getDescription(language, "display");
-	}
+    public String getDisplay(Integer language) {
+        return getDescription(language, "display");
+    }
 
 
 }

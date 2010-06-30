@@ -20,5 +20,5 @@
 package com.sapienter.jbilling.server.notification.barcode;
 
 public enum TextPlacement {
-	TOP, BOTTOM, NONE
+    TOP, BOTTOM, NONE
 }

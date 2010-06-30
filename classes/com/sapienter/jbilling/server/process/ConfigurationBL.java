@@ -29,124 +29,124 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
 public class ConfigurationBL {
-	private BillingProcessConfigurationDAS configurationDas = null;
-	private BillingProcessConfigurationDTO configuration = null;
-	private EventLogger eLogger = null;
+    private BillingProcessConfigurationDAS configurationDas = null;
+    private BillingProcessConfigurationDTO configuration = null;
+    private EventLogger eLogger = null;
 
-	public ConfigurationBL(Integer entityId)  {
-		init();
+    public ConfigurationBL(Integer entityId)  {
+        init();
         configuration = configurationDas.findByEntity(new CompanyDAS().find(entityId));
-	}
+    }
 
-	public ConfigurationBL() {
-		init();
-	}
+    public ConfigurationBL() {
+        init();
+    }
 
-	public ConfigurationBL(BillingProcessConfigurationDTO cfg) {
-		init();
-		configuration = cfg;
-	}
+    public ConfigurationBL(BillingProcessConfigurationDTO cfg) {
+        init();
+        configuration = cfg;
+    }
 
-	private void init() {
-		eLogger = EventLogger.getInstance();
-		configurationDas = new BillingProcessConfigurationDAS();
+    private void init() {
+        eLogger = EventLogger.getInstance();
+        configurationDas = new BillingProcessConfigurationDAS();
 
-	}
+    }
 
-	public BillingProcessConfigurationDTO getEntity() {
-		return configuration;
-	}
+    public BillingProcessConfigurationDTO getEntity() {
+        return configuration;
+    }
 
-	public void set(Integer entityId) {
-		configuration = configurationDas.findByEntity(new CompanyDAS().find(entityId));
-	}
+    public void set(Integer entityId) {
+        configuration = configurationDas.findByEntity(new CompanyDAS().find(entityId));
+    }
 
-	public Integer createUpdate(Integer executorId,
-			BillingProcessConfigurationDTO dto) {
-		configuration = configurationDas.findByEntity(dto.getEntity());
-		if (configuration != null) {
+    public Integer createUpdate(Integer executorId,
+            BillingProcessConfigurationDTO dto) {
+        configuration = configurationDas.findByEntity(dto.getEntity());
+        if (configuration != null) {
 
-			if (!configuration.getGenerateReport().equals(
-					dto.getGenerateReport())) {
-				eLogger.audit(executorId, null,
-						Constants.TABLE_BILLING_PROCESS_CONFIGURATION,
-						configuration.getId(),
-						EventLogger.MODULE_BILLING_PROCESS,
-						EventLogger.ROW_UPDATED, new Integer(configuration
-								.getGenerateReport()), null, null);
-				configuration.setGenerateReport(dto.getGenerateReport());
-				configuration
-						.setReviewStatus(dto.getGenerateReport() == 1 ? Constants.REVIEW_STATUS_GENERATED
-								: Constants.REVIEW_STATUS_APPROVED);
-			} else {
-				eLogger.audit(executorId, null,
-						Constants.TABLE_BILLING_PROCESS_CONFIGURATION,
-						configuration.getId(),
-						EventLogger.MODULE_BILLING_PROCESS,
-						EventLogger.ROW_UPDATED, null, null, null);
-			}
+            if (!configuration.getGenerateReport().equals(
+                    dto.getGenerateReport())) {
+                eLogger.audit(executorId, null,
+                        Constants.TABLE_BILLING_PROCESS_CONFIGURATION,
+                        configuration.getId(),
+                        EventLogger.MODULE_BILLING_PROCESS,
+                        EventLogger.ROW_UPDATED, new Integer(configuration
+                                .getGenerateReport()), null, null);
+                configuration.setGenerateReport(dto.getGenerateReport());
+                configuration
+                        .setReviewStatus(dto.getGenerateReport() == 1 ? Constants.REVIEW_STATUS_GENERATED
+                                : Constants.REVIEW_STATUS_APPROVED);
+            } else {
+                eLogger.audit(executorId, null,
+                        Constants.TABLE_BILLING_PROCESS_CONFIGURATION,
+                        configuration.getId(),
+                        EventLogger.MODULE_BILLING_PROCESS,
+                        EventLogger.ROW_UPDATED, null, null, null);
+            }
 
-			configuration.setNextRunDate(dto.getNextRunDate());
-		} else {
-			configuration = configurationDas.create(dto.getEntity(), dto
-					.getNextRunDate(), dto.getGenerateReport());
-		}
+            configuration.setNextRunDate(dto.getNextRunDate());
+        } else {
+            configuration = configurationDas.create(dto.getEntity(), dto
+                    .getNextRunDate(), dto.getGenerateReport());
+        }
 
-		configuration.setDaysForReport(dto.getDaysForReport());
-		configuration.setDaysForRetry(dto.getDaysForRetry());
-		configuration.setRetries(dto.getRetries());
-		configuration.setPeriodUnit(dto.getPeriodUnit());
-		configuration.setPeriodValue(dto.getPeriodValue());
-		configuration.setDueDateUnitId(dto.getDueDateUnitId());
-		configuration.setDueDateValue(dto.getDueDateValue());
-		configuration.setDfFm(dto.getDfFm());
-		configuration.setOnlyRecurring(dto.getOnlyRecurring());
-		configuration.setInvoiceDateProcess(dto.getInvoiceDateProcess());
-		configuration.setAutoPayment(dto.getAutoPayment());
-		configuration
-				.setAutoPaymentApplication(dto.getAutoPaymentApplication());
-		configuration.setMaximumPeriods(dto.getMaximumPeriods());
+        configuration.setDaysForReport(dto.getDaysForReport());
+        configuration.setDaysForRetry(dto.getDaysForRetry());
+        configuration.setRetries(dto.getRetries());
+        configuration.setPeriodUnit(dto.getPeriodUnit());
+        configuration.setPeriodValue(dto.getPeriodValue());
+        configuration.setDueDateUnitId(dto.getDueDateUnitId());
+        configuration.setDueDateValue(dto.getDueDateValue());
+        configuration.setDfFm(dto.getDfFm());
+        configuration.setOnlyRecurring(dto.getOnlyRecurring());
+        configuration.setInvoiceDateProcess(dto.getInvoiceDateProcess());
+        configuration.setAutoPayment(dto.getAutoPayment());
+        configuration
+                .setAutoPaymentApplication(dto.getAutoPaymentApplication());
+        configuration.setMaximumPeriods(dto.getMaximumPeriods());
 
-		return configuration.getId();
-	}
+        return configuration.getId();
+    }
 
-	public BillingProcessConfigurationDTO getDTO() {
-		BillingProcessConfigurationDTO dto = new BillingProcessConfigurationDTO();
+    public BillingProcessConfigurationDTO getDTO() {
+        BillingProcessConfigurationDTO dto = new BillingProcessConfigurationDTO();
 
-		dto.setDaysForReport(configuration.getDaysForReport());
-		dto.setDaysForRetry(configuration.getDaysForRetry());
-		dto.setEntity(configuration.getEntity());
-		dto.setGenerateReport(configuration.getGenerateReport());
-		dto.setId(configuration.getId());
-		dto.setNextRunDate(configuration.getNextRunDate());
-		dto.setRetries(configuration.getRetries());
-		dto.setPeriodUnit(configuration.getPeriodUnit());
-		dto.setPeriodValue(configuration.getPeriodValue());
-		dto.setReviewStatus(configuration.getReviewStatus());
-		dto.setDueDateUnitId(configuration.getDueDateUnitId());
-		dto.setDueDateValue(configuration.getDueDateValue());
-		dto.setDfFm(configuration.getDfFm());
-		dto.setOnlyRecurring(configuration.getOnlyRecurring());
-		dto.setInvoiceDateProcess(configuration.getInvoiceDateProcess());
-		dto.setAutoPayment(configuration.getAutoPayment());
-		dto.setMaximumPeriods(configuration.getMaximumPeriods());
-		dto
-				.setAutoPaymentApplication(configuration
-						.getAutoPaymentApplication());
+        dto.setDaysForReport(configuration.getDaysForReport());
+        dto.setDaysForRetry(configuration.getDaysForRetry());
+        dto.setEntity(configuration.getEntity());
+        dto.setGenerateReport(configuration.getGenerateReport());
+        dto.setId(configuration.getId());
+        dto.setNextRunDate(configuration.getNextRunDate());
+        dto.setRetries(configuration.getRetries());
+        dto.setPeriodUnit(configuration.getPeriodUnit());
+        dto.setPeriodValue(configuration.getPeriodValue());
+        dto.setReviewStatus(configuration.getReviewStatus());
+        dto.setDueDateUnitId(configuration.getDueDateUnitId());
+        dto.setDueDateValue(configuration.getDueDateValue());
+        dto.setDfFm(configuration.getDfFm());
+        dto.setOnlyRecurring(configuration.getOnlyRecurring());
+        dto.setInvoiceDateProcess(configuration.getInvoiceDateProcess());
+        dto.setAutoPayment(configuration.getAutoPayment());
+        dto.setMaximumPeriods(configuration.getMaximumPeriods());
+        dto
+                .setAutoPaymentApplication(configuration
+                        .getAutoPaymentApplication());
 
-		return dto;
-	}
+        return dto;
+    }
 
-	public void setReviewApproval(Integer executorId, boolean flag) {
+    public void setReviewApproval(Integer executorId, boolean flag) {
 
-		eLogger.audit(executorId, null,
-				Constants.TABLE_BILLING_PROCESS_CONFIGURATION, configuration
-						.getId(), EventLogger.MODULE_BILLING_PROCESS,
-				EventLogger.ROW_UPDATED, configuration.getReviewStatus(), null,
-				null);
-		configuration.setReviewStatus(flag ? Constants.REVIEW_STATUS_APPROVED
-				: Constants.REVIEW_STATUS_DISAPPROVED);
+        eLogger.audit(executorId, null,
+                Constants.TABLE_BILLING_PROCESS_CONFIGURATION, configuration
+                        .getId(), EventLogger.MODULE_BILLING_PROCESS,
+                EventLogger.ROW_UPDATED, configuration.getReviewStatus(), null,
+                null);
+        configuration.setReviewStatus(flag ? Constants.REVIEW_STATUS_APPROVED
+                : Constants.REVIEW_STATUS_DISAPPROVED);
 
-	}
+    }
 
 }

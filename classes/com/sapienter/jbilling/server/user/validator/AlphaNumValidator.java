@@ -31,54 +31,54 @@ import org.apache.struts.validator.Resources;
 
 public class AlphaNumValidator {
 
-	private static String NUMBERS = ".*[0-9].*";
-	private static String LETTERS = ".*[A-Za-z].*";
+    private static String NUMBERS = ".*[0-9].*";
+    private static String LETTERS = ".*[A-Za-z].*";
 
-	
-	public static boolean basicValidation(String password) {
-		boolean result = true;
-		if (password == null || password.equals("")) {
-			return true;
-		}
-		if (!password.matches(LETTERS) || !password.matches(NUMBERS)) {
-			result = false;
-		}
-		return result;
-	}
+    
+    public static boolean basicValidation(String password) {
+        boolean result = true;
+        if (password == null || password.equals("")) {
+            return true;
+        }
+        if (!password.matches(LETTERS) || !password.matches(NUMBERS)) {
+            result = false;
+        }
+        return result;
+    }
 
 
-	public static boolean validateAlphaNum(
-			Object bean,
-			ValidatorAction va, 
-			Field field,
-			ActionErrors errors,
-			HttpServletRequest request, 
-			ServletContext application) {
+    public static boolean validateAlphaNum(
+            Object bean,
+            ValidatorAction va, 
+            Field field,
+            ActionErrors errors,
+            HttpServletRequest request, 
+            ServletContext application) {
 
-		String value = ValidatorUtils.getValueAsString(
-				bean, field.getProperty());
+        String value = ValidatorUtils.getValueAsString(
+                bean, field.getProperty());
 
-		if (!GenericValidator.isBlankOrNull(value)) {
-			try {
-				if (!basicValidation(value)) {
-					errors.add(field.getKey(),
-							Resources.getActionError(
-									request,
-									va,
-									field));
+        if (!GenericValidator.isBlankOrNull(value)) {
+            try {
+                if (!basicValidation(value)) {
+                    errors.add(field.getKey(),
+                            Resources.getActionError(
+                                    request,
+                                    va,
+                                    field));
 
-					return false;
-				}
-			} catch (Exception e) {
-				errors.add(field.getKey(),
-						Resources.getActionError(
-								request,
-								va,
-								field));
-				return false;
-			}
-		}
-		return true;
-	}
-	
+                    return false;
+                }
+            } catch (Exception e) {
+                errors.add(field.getKey(),
+                        Resources.getActionError(
+                                request,
+                                va,
+                                field));
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }

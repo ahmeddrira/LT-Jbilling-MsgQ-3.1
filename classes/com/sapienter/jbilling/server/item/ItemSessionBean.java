@@ -74,7 +74,7 @@ public class ItemSessionBean implements IItemSessionBean {
     }
     
     public boolean validateDecimals( Integer hasDecimals, Integer itemId ) {
-    	if( itemId == null ) { return true; }
+        if( itemId == null ) { return true; }
         ItemBL bl = new ItemBL(itemId);
         return bl.validateDecimals( hasDecimals );
     }

@@ -56,7 +56,7 @@ public class EventLogDAS extends AbstractDAS<EventLogDTO> {
     }
 
     public List<EventLogDTO> getEventsByAffectedUser(Integer userId) {
-		Criteria criteria = getSession().createCriteria(EventLogDTO.class)
+        Criteria criteria = getSession().createCriteria(EventLogDTO.class)
                 .add(Restrictions.eq("affectedUser.id", userId))
                 .addOrder(Order.desc("createDatetime"));
 

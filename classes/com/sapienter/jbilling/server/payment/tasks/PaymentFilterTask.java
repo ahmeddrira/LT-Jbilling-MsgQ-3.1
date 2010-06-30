@@ -91,12 +91,12 @@ public class PaymentFilterTask extends PaymentTaskBase implements PaymentTask {
             if (result.isBlacklisted()) {
                 // payment failed a blacklist filter, return result failed
                 LOG.debug("Blacklisted result: " + result.getMessage());
-        		PaymentAuthorizationDTO authInfo = new PaymentAuthorizationDTO();
-        		authInfo.setProcessor(PAYMENT_PROCESSOR_NAME);
-        		authInfo.setCode1(filter.getName());
+                PaymentAuthorizationDTO authInfo = new PaymentAuthorizationDTO();
+                authInfo.setProcessor(PAYMENT_PROCESSOR_NAME);
+                authInfo.setCode1(filter.getName());
                 authInfo.setResponseMessage(result.getMessage());
-		        storeProcessedAuthorization(paymentInfo, authInfo);
-		        paymentInfo.setAuthorization(authInfo);
+                storeProcessedAuthorization(paymentInfo, authInfo);
+                paymentInfo.setAuthorization(authInfo);
                 paymentInfo.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_FAIL));
                 return false;
             } 

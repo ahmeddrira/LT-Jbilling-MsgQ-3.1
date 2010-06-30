@@ -35,8 +35,8 @@ import com.sapienter.jbilling.server.report.db.ReportFieldDTO;
 
 public class Field extends ReportFieldDTO {
     
-	private static final Logger LOG = Logger.getLogger(Field.class);
-	
+    private static final Logger LOG = Logger.getLogger(Field.class);
+    
     /*
      * Supported data types
      */

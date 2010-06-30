@@ -87,14 +87,14 @@ public class PluggableTaskDTO implements java.io.Serializable {
 
  
    public String toString() {
-	  StringBuffer str = new StringBuffer("{");
+      StringBuffer str = new StringBuffer("{");
       str.append("-" + this.getClass().getName() + "-");
 
-	  str.append("id=" + getId() + " " + "entityId=" + getEntityId() + " " + "processingOrder=" + 
+      str.append("id=" + getId() + " " + "entityId=" + getEntityId() + " " + "processingOrder=" + 
               getProcessingOrder() + " " + "type=" + getType());
-	  str.append('}');
+      str.append('}');
 
-	  return(str.toString());
+      return(str.toString());
    }
 
 
@@ -123,14 +123,14 @@ public class PluggableTaskDTO implements java.io.Serializable {
     }
 
    public int hashCode(){
-	  int result = 17;
+      int result = 17;
       result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
 
       result = 37*result + ((this.entityId != null) ? this.entityId.hashCode() : 0);
 
       result = 37*result + ((this.processingOrder != null) ? this.processingOrder.hashCode() : 0);
 
-	  return result;
+      return result;
    }
 
 

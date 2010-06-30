@@ -57,7 +57,7 @@ public class PartnerRange  implements java.io.Serializable {
     public PartnerRange() {
     }
 
-	
+    
     public PartnerRange(int id, int rangeFrom, int rangeTo) {
         this.id = id;
         this.rangeFrom = rangeFrom;

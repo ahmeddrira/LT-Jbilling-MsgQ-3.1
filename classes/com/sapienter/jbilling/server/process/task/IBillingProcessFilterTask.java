@@ -4,5 +4,5 @@ import org.hibernate.ScrollableResults;
 
 public interface IBillingProcessFilterTask {
 
-	public ScrollableResults findUsersToProcess(Integer entityId);
+    public ScrollableResults findUsersToProcess(Integer entityId);
 }

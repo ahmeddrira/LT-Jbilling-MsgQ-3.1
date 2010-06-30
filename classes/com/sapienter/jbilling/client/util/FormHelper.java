@@ -36,65 +36,65 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.OptionDTO;
 
 public class FormHelper {
-	private final HttpSession mySession;
+    private final HttpSession mySession;
 
-	public FormHelper(HttpSession session) {
-		mySession = session;
-	}
+    public FormHelper(HttpSession session) {
+        mySession = session;
+    }
     
     public String getSessionId() {
         return mySession.getId();
     }
 
-	public Float string2float(String arg) {
-		return string2float(arg, mySession);
-	}
+    public Float string2float(String arg) {
+        return string2float(arg, mySession);
+    }
 
     public BigDecimal string2decimal(String arg) {
         return string2decimal(arg, mySession);
     }
 
-	public String float2string(Float arg) {
-		return float2string(arg, mySession);
-	}
+    public String float2string(Float arg) {
+        return float2string(arg, mySession);
+    }
 
     public String decimal2string(BigDecimal arg) {
         return decimal2string(arg, mySession);
     }
 
-	public Integer parseInteger(String text){
-		if (text == null){
-			text = "";
-		}
-		text = text.trim();
-		return text.length() == 0 ? null : Integer.valueOf(text);
-	}
-	
-	public Integer getIntegerFieldValue(DynaActionForm form, String fieldName){
-		String value = (String) form.get(fieldName);
-		return parseInteger(value);
-	}
+    public Integer parseInteger(String text){
+        if (text == null){
+            text = "";
+        }
+        text = text.trim();
+        return text.length() == 0 ? null : Integer.valueOf(text);
+    }
+    
+    public Integer getIntegerFieldValue(DynaActionForm form, String fieldName){
+        String value = (String) form.get(fieldName);
+        return parseInteger(value);
+    }
 
-	public static Float string2float(String arg, HttpSession sess) {
-		if (arg == null || arg.trim().length() == 0) {
-			return null;
-		}
-		UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
-		NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+    public static Float string2float(String arg, HttpSession sess) {
+        if (arg == null || arg.trim().length() == 0) {
+            return null;
+        }
+        UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
+        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
 
-		try {
-			return new Float(nf.parse(arg).floatValue());
-		} catch (ParseException e) {
-			return null;
-		}
-	}
+        try {
+            return new Float(nf.parse(arg).floatValue());
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 
     public static BigDecimal string2decimal(String arg, HttpSession sess) {
         if (arg == null || arg.trim().equals(""))
             return null;
 
         UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
-		NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
 
         if (nf instanceof DecimalFormat) {
             ((DecimalFormat) nf).setParseBigDecimal(true);
@@ -109,18 +109,18 @@ public class FormHelper {
         return new BigDecimal(arg);        
     }
 
-	public static String float2string(Float arg, HttpSession sess) {
-		if (arg == null) {
-			return null;
-		}
-		UserDTOEx user = (UserDTOEx) sess
-				.getAttribute(Constants.SESSION_USER_DTO);
-		NumberFormat nf = NumberFormat.getInstance(user.getLocale());
-		if (nf instanceof DecimalFormat) {
-			((DecimalFormat) nf).applyPattern("0.00");
-		}
-		return nf.format(arg);
-	}
+    public static String float2string(Float arg, HttpSession sess) {
+        if (arg == null) {
+            return null;
+        }
+        UserDTOEx user = (UserDTOEx) sess
+                .getAttribute(Constants.SESSION_USER_DTO);
+        NumberFormat nf = NumberFormat.getInstance(user.getLocale());
+        if (nf instanceof DecimalFormat) {
+            ((DecimalFormat) nf).applyPattern("0.00");
+        }
+        return nf.format(arg);
+    }
 
     public static String decimal2string(BigDecimal arg, HttpSession sess) {
         if (arg == null) return null;
@@ -128,10 +128,10 @@ public class FormHelper {
         UserDTOEx user = (UserDTOEx) sess.getAttribute(Constants.SESSION_USER_DTO);
         NumberFormat nf = NumberFormat.getInstance(user.getLocale());
 
-		if (nf instanceof DecimalFormat) {
-			((DecimalFormat) nf).applyPattern("0.00");
-		}
-		return nf.format(arg);
+        if (nf instanceof DecimalFormat) {
+            ((DecimalFormat) nf).applyPattern("0.00");
+        }
+        return nf.format(arg);
     }
 
     public String getOptionDescription(Integer id, String optionType) throws SessionInternalError {

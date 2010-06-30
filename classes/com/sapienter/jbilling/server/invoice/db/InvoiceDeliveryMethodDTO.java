@@ -55,56 +55,56 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class InvoiceDeliveryMethodDTO implements Serializable {
 
-	private int id;
-	private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
-	private Set<CustomerDTO> customers = new HashSet<CustomerDTO>(0);
-	private int versionNum;
+    private int id;
+    private Set<CompanyDTO> entities = new HashSet<CompanyDTO>(0);
+    private Set<CustomerDTO> customers = new HashSet<CustomerDTO>(0);
+    private int versionNum;
 
-	public InvoiceDeliveryMethodDTO() {
-	}
+    public InvoiceDeliveryMethodDTO() {
+    }
 
-	public InvoiceDeliveryMethodDTO(int id) {
-		this.id = id;
-	}
+    public InvoiceDeliveryMethodDTO(int id) {
+        this.id = id;
+    }
 
-	public InvoiceDeliveryMethodDTO(int id, Set<CompanyDTO> entities,
-			Set<CustomerDTO> customers) {
-		this.id = id;
-		this.entities = entities;
-		this.customers = customers;
-	}
+    public InvoiceDeliveryMethodDTO(int id, Set<CompanyDTO> entities,
+            Set<CustomerDTO> customers) {
+        this.id = id;
+        this.entities = entities;
+        this.customers = customers;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "invoice_delivery_method_GEN")
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "invoice_delivery_method_GEN")
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "entity_delivery_method_map", joinColumns = { @JoinColumn(name = "method_id", updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "entity_id", updatable = false) })
-	public Set<CompanyDTO> getEntities() {
-		return this.entities;
-	}
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "entity_delivery_method_map", joinColumns = { @JoinColumn(name = "method_id", updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "entity_id", updatable = false) })
+    public Set<CompanyDTO> getEntities() {
+        return this.entities;
+    }
 
-	public void setEntities(Set<CompanyDTO> entities) {
-		this.entities = entities;
-	}
+    public void setEntities(Set<CompanyDTO> entities) {
+        this.entities = entities;
+    }
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "invoiceDeliveryMethod")
-	public Set<CustomerDTO> getCustomers() {
-		return this.customers;
-	}
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "invoiceDeliveryMethod")
+    public Set<CustomerDTO> getCustomers() {
+        return this.customers;
+    }
 
-	public void setCustomers(Set<CustomerDTO> customers) {
-		this.customers = customers;
-	}
-	
-	@Version
+    public void setCustomers(Set<CustomerDTO> customers) {
+        this.customers = customers;
+    }
+    
+    @Version
     @Column(name="OPTLOCK")
     public int getVersionNum() {
         return versionNum;

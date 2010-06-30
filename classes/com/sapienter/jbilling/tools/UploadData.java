@@ -58,21 +58,21 @@ import java.math.BigDecimal;
  */
 public class UploadData {
 
-	public static void main(String[] args) {
-		
-		// for each field that will be sent to the server we need an index
-		int first_name = -1;
-		int last_name = -1;
+    public static void main(String[] args) {
+        
+        // for each field that will be sent to the server we need an index
+        int first_name = -1;
+        int last_name = -1;
         int user_name = -1;
         int password = -1;
-		int organization_name = -1;
-		int street_addres1 = -1;
-		int street_addres2 = -1;
+        int organization_name = -1;
+        int street_addres1 = -1;
+        int street_addres2 = -1;
         int phone_area_code = -1;
-		int phone_phone_number = -1;
-		int notes = -1;
-		int country = -1;
-		int status = -1;
+        int phone_phone_number = -1;
+        int notes = -1;
+        int country = -1;
+        int status = -1;
         int email = -1;
         int city = -1;
         int state = -1;
@@ -81,31 +81,31 @@ public class UploadData {
         int expiry_month = -1;
         int expiry_year = -1;
         int name_on_card = -1;
-		// these are for the orders
-		int box = -1;
-		int period = -1;
-		int active_since = -1;
-		int active_until = -1;
-		int total = -1;
+        // these are for the orders
+        int box = -1;
+        int period = -1;
+        int active_since = -1;
+        int active_until = -1;
+        int total = -1;
         // these are for entity-specific contact fields
         Hashtable entitySpecificFeilds;
         int specific[];
         int specificType[];
-		
+        
         String record = null;
-		try {
-			// see if all the properties are in place
+        try {
+            // see if all the properties are in place
             Properties prop = new Properties();
             FileInputStream gpFile = new FileInputStream("upload.properties");
             prop.load(gpFile);
             
-			Integer entityId = Integer.valueOf(prop.getProperty("entity_id"));
+            Integer entityId = Integer.valueOf(prop.getProperty("entity_id"));
             Integer languageId = Integer.valueOf((String) prop.getProperty(
                     "entity_language"));
-			String entityName = prop.getProperty("entity_name");
-			String fileName = prop.getProperty("file");
-			Boolean processOrders = Boolean.valueOf(
-					prop.getProperty("load_orders"));
+            String entityName = prop.getProperty("entity_name");
+            String fileName = prop.getProperty("file");
+            Boolean processOrders = Boolean.valueOf(
+                    prop.getProperty("load_orders"));
             // initialize the entity specific data
             entitySpecificFeilds = new Hashtable();
             int totalSpecificFields = Integer.valueOf(prop.getProperty(
@@ -117,42 +117,42 @@ public class UploadData {
                 specific[f] = -1;
             }
             
-			
-			System.out.println("Processing file " + fileName + " for entity " + 
-					entityId);
+            
+            System.out.println("Processing file " + fileName + " for entity " + 
+                    entityId);
     
-			// open the file
-			BufferedReader file = new BufferedReader(new FileReader(fileName));
+            // open the file
+            BufferedReader file = new BufferedReader(new FileReader(fileName));
 
             IUserSessionBean remoteSession = (IUserSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.USER_REMOTE_SESSION);
 
-			String header = file.readLine();
-			String columns[] = header.split("\t");
-			for (int f = 0; f < columns.length; f++) {
-				// scan for the columns
-				if (columns[f].equalsIgnoreCase("first_name")) {
-					first_name = f;
-				} else if (columns[f].equalsIgnoreCase("last_name")) {
-					last_name = f;
-				} else if (columns[f].equalsIgnoreCase("organization_name")) {
-					organization_name = f;
-				} else if (columns[f].equalsIgnoreCase("street_addres1")) {
-					street_addres1 = f;
-				} else if (columns[f].equalsIgnoreCase("street_addres2")) {
-					street_addres2 = f;
-				} else if (columns[f].equalsIgnoreCase("phone_phone_number")) {
-					phone_phone_number = f;
+            String header = file.readLine();
+            String columns[] = header.split("\t");
+            for (int f = 0; f < columns.length; f++) {
+                // scan for the columns
+                if (columns[f].equalsIgnoreCase("first_name")) {
+                    first_name = f;
+                } else if (columns[f].equalsIgnoreCase("last_name")) {
+                    last_name = f;
+                } else if (columns[f].equalsIgnoreCase("organization_name")) {
+                    organization_name = f;
+                } else if (columns[f].equalsIgnoreCase("street_addres1")) {
+                    street_addres1 = f;
+                } else if (columns[f].equalsIgnoreCase("street_addres2")) {
+                    street_addres2 = f;
+                } else if (columns[f].equalsIgnoreCase("phone_phone_number")) {
+                    phone_phone_number = f;
                 } else if (columns[f].equalsIgnoreCase("phone_area_code")) {
                     phone_area_code = f;
-				} else if (columns[f].equalsIgnoreCase("notes")) {
-					notes = f;
-				} else if (columns[f].equalsIgnoreCase("country")) {
-					country = f;
-				} else if (columns[f].equalsIgnoreCase("status")) {
-					status = f;
-				} else if (columns[f].equalsIgnoreCase("user_name")) {
+                } else if (columns[f].equalsIgnoreCase("notes")) {
+                    notes = f;
+                } else if (columns[f].equalsIgnoreCase("country")) {
+                    country = f;
+                } else if (columns[f].equalsIgnoreCase("status")) {
+                    status = f;
+                } else if (columns[f].equalsIgnoreCase("user_name")) {
                     user_name = f;
                 } else if (columns[f].equalsIgnoreCase("password")) {
                     password = f;
@@ -175,20 +175,20 @@ public class UploadData {
                 } else if (columns[f].equalsIgnoreCase("postal_code")) {
                     postal_code = f;
                 }
-				
-				if (processOrders.booleanValue()) {
-					if (columns[f].equalsIgnoreCase("period")) {
-						period = f;
-					} else if (columns[f].equalsIgnoreCase("active_since")) {
-						active_since = f;
-					} else if (columns[f].equalsIgnoreCase("active_until")) {
-						active_until = f;
-					} else if (columns[f].equalsIgnoreCase("total")) {
-						total = f;
-					} else if (columns[f].equalsIgnoreCase("box")) {
-						box = f;
-					}
-				}
+                
+                if (processOrders.booleanValue()) {
+                    if (columns[f].equalsIgnoreCase("period")) {
+                        period = f;
+                    } else if (columns[f].equalsIgnoreCase("active_since")) {
+                        active_since = f;
+                    } else if (columns[f].equalsIgnoreCase("active_until")) {
+                        active_until = f;
+                    } else if (columns[f].equalsIgnoreCase("total")) {
+                        total = f;
+                    } else if (columns[f].equalsIgnoreCase("box")) {
+                        box = f;
+                    }
+                }
                 
                 // go over the specific fields
                 for (int spField = 1; spField <= totalSpecificFields; 
@@ -203,53 +203,53 @@ public class UploadData {
                         break;
                     }
                 }
-			}
-			
-			int totalRows = 0;
-			record = readLine(file);
-			while (record != null) {
-				totalRows++;
-				String fields[] = record.split("\t");
-				
-				// get the user object ready
-				UserDTOEx user = new UserDTOEx();
-				ContactDTOEx contact = new ContactDTOEx();
-				CustomerDTO customer = new CustomerDTO();
+            }
+            
+            int totalRows = 0;
+            record = readLine(file);
+            while (record != null) {
+                totalRows++;
+                String fields[] = record.split("\t");
+                
+                // get the user object ready
+                UserDTOEx user = new UserDTOEx();
+                ContactDTOEx contact = new ContactDTOEx();
+                CustomerDTO customer = new CustomerDTO();
                 contact.setInclude(new Integer(1));
-				
-				user.setEntityId(entityId);
-		        user.getRoles().add(new RoleDTO(Constants.TYPE_CUSTOMER));
-				
-				if (first_name >= 0) {
-					contact.setFirstName(fields[first_name].trim());
-				}
-				if (last_name >= 0) {
-					contact.setLastName(fields[last_name].trim());
-				}
-				if (organization_name >= 0) {
-					contact.setOrganizationName(fields[organization_name].trim());
-				}
-				if (street_addres1 >= 0) {
-					contact.setAddress1(fields[street_addres1].trim());
-				}
-				if (street_addres2 >= 0) {
-					contact.setAddress2(fields[street_addres2].trim());
-				}
-				if (phone_phone_number >= 0) {
-					contact.setPhoneNumber(fields[phone_phone_number].trim());
-				}
+                
+                user.setEntityId(entityId);
+                user.getRoles().add(new RoleDTO(Constants.TYPE_CUSTOMER));
+                
+                if (first_name >= 0) {
+                    contact.setFirstName(fields[first_name].trim());
+                }
+                if (last_name >= 0) {
+                    contact.setLastName(fields[last_name].trim());
+                }
+                if (organization_name >= 0) {
+                    contact.setOrganizationName(fields[organization_name].trim());
+                }
+                if (street_addres1 >= 0) {
+                    contact.setAddress1(fields[street_addres1].trim());
+                }
+                if (street_addres2 >= 0) {
+                    contact.setAddress2(fields[street_addres2].trim());
+                }
+                if (phone_phone_number >= 0) {
+                    contact.setPhoneNumber(fields[phone_phone_number].trim());
+                }
                 if (phone_area_code >= 0) {
                     if (fields[phone_area_code].trim().length() > 0) {
                         contact.setPhoneAreaCode(Integer.valueOf(
                                 fields[phone_area_code]));
                     }
                 }
-				if (country >= 0) {
-					contact.setCountryCode(fields[country].trim());
-				}
-				if (notes >= 0) {
-					customer.setNotes(fields[notes].trim());
-				}
+                if (country >= 0) {
+                    contact.setCountryCode(fields[country].trim());
+                }
+                if (notes >= 0) {
+                    customer.setNotes(fields[notes].trim());
+                }
                 if (email >= 0) {
                     contact.setEmail(fields[email].trim());
                 }
@@ -262,42 +262,42 @@ public class UploadData {
                 if (postal_code >= 0) {
                     contact.setPostalCode(fields[postal_code].trim());
                 }
-				if (status >= 0) {
-					if (fields[status].charAt(0) == 'A' ||
-							fields[status].equals("FA")) {
-						user.setStatusId(UserDTOEx.STATUS_ACTIVE);
-					} else {
-						user.setStatusId(UserDTOEx.STATUS_DELETED);
-					}
-				} else {
+                if (status >= 0) {
+                    if (fields[status].charAt(0) == 'A' ||
+                            fields[status].equals("FA")) {
+                        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+                    } else {
+                        user.setStatusId(UserDTOEx.STATUS_DELETED);
+                    }
+                } else {
                     // default to active
                     user.setStatusId(UserDTOEx.STATUS_ACTIVE);
                 }
-				
-				// define the username
+                
+                // define the username
                 String username = new String();
                 if (user_name >= 0) {
                     username = fields[user_name].trim();
                 } else { // cook our own
-    				if (contact.getFirstName() != null && 
-    						contact.getFirstName().length() > 0) {
-    					username += contact.getFirstName().charAt(0);
-    				}
-    				if (contact.getLastName() != null) {
-    					if (contact.getLastName().length() >= 15) {
-    						username += contact.getLastName().substring(
-    								0, 15 - username.length());
-    					} else {
-    						username += contact.getLastName();;
-    					}
-    				}
-    				if (username.length() == 0) {
-    					username += entityName;
-    				}
-    				// add a number for uniqueness
-    				username += "_" + totalRows;
+                    if (contact.getFirstName() != null && 
+                            contact.getFirstName().length() > 0) {
+                        username += contact.getFirstName().charAt(0);
+                    }
+                    if (contact.getLastName() != null) {
+                        if (contact.getLastName().length() >= 15) {
+                            username += contact.getLastName().substring(
+                                    0, 15 - username.length());
+                        } else {
+                            username += contact.getLastName();;
+                        }
+                    }
+                    if (username.length() == 0) {
+                        username += entityName;
+                    }
+                    // add a number for uniqueness
+                    username += "_" + totalRows;
                 }
-				user.setUserName(username);
+                user.setUserName(username);
                 
                 // now the password
                 if (password >= 0) {
@@ -343,8 +343,8 @@ public class UploadData {
                     }
                 }
                 contact.setFieldsTable(entitySpecificFeilds);
-				
-				Integer newUserId = remoteSession.create(user, contact);
+                
+                Integer newUserId = remoteSession.create(user, contact);
                 if (newUserId != null && notes >= 0) {
                     remoteSession.setCustomerNotes(newUserId, 
                             customer.getNotes().replaceAll("\n", "<br/>"));
@@ -365,64 +365,64 @@ public class UploadData {
                 } else {
                     System.out.println("New user " + newUserId + " created");
                 }
-				
-				if (processOrders.booleanValue() && newUserId != null) {
-					OrderDTO summary = new OrderDTO();
+                
+                if (processOrders.booleanValue() && newUserId != null) {
+                    OrderDTO summary = new OrderDTO();
                     String ext = fields[period].trim();
                     System.out.print("[" + ext + "]");
-					Integer periodId = Integer.valueOf((String) prop.get(
-							"order_period_" + ext));
-		            //summary.setPeriodId(periodId);
-		            //summary.setUserId(newUserId);
+                    Integer periodId = Integer.valueOf((String) prop.get(
+                            "order_period_" + ext));
+                    //summary.setPeriodId(periodId);
+                    //summary.setUserId(newUserId);
                     if (active_since >= 0) {
-    		            summary.setActiveSince(Util.parseDate(
-    		            		fields[active_since].trim()));
+                        summary.setActiveSince(Util.parseDate(
+                                fields[active_since].trim()));
                     }
                     if (active_until >= 0) {
-    		            summary.setActiveUntil(Util.parseDate(
-    		            		fields[active_until].trim()));
+                        summary.setActiveUntil(Util.parseDate(
+                                fields[active_until].trim()));
                     }
-		            // this makes it prepaid (2 is pospaid)
-		            //summary.setBillingTypeId(new Integer(1));
+                    // this makes it prepaid (2 is pospaid)
+                    //summary.setBillingTypeId(new Integer(1));
                     IOrderSessionBean remoteOrder = (IOrderSessionBean) 
                             RemoteContext.getBean(
                             RemoteContext.Name.ORDER_REMOTE_SESSION);
-		            // add the item (quantity = 1)
-		            Integer itemId = Integer.valueOf((String) prop.getProperty(
-        					"item_id"));
-		            OrderDTO thisOrder = remoteOrder.addItem(itemId, Constants.BIGDECIMAL_ONE, summary, languageId,
+                    // add the item (quantity = 1)
+                    Integer itemId = Integer.valueOf((String) prop.getProperty(
+                            "item_id"));
+                    OrderDTO thisOrder = remoteOrder.addItem(itemId, Constants.BIGDECIMAL_ONE, summary, languageId,
                                                              newUserId, entityId);
                     
-		            // to edit the total I need to get the line ..
-		            OrderLineDTO thisLine = (OrderLineDTO) thisOrder.
-							getLine(itemId);
-		            Float price = new Float(0);
-		            if (fields[total] != null && fields[total].length() > 0) {
-		            	price = Float.valueOf(fields[total]);
-		            }
-		            thisLine.setPrice(new BigDecimal(price));
-		            thisLine.setDescription(prop.getProperty("order_description"));
-		            //System.out.println("desc = " + thisLine.getDescription());
-		            thisOrder = remoteOrder.recalculate(thisOrder, entityId);
-		            Integer newOrderId = remoteOrder.createUpdate(entityId, 
-		            		Integer.valueOf((String) prop.getProperty(
-	            				"creator_id")), thisOrder, languageId);
-		            System.out.println("Order " + newOrderId + " created for" +
-		            		" user " + newUserId);
-					
-				}
-				
-				record = readLine(file);
-			}
-			
-			file.close();
+                    // to edit the total I need to get the line ..
+                    OrderLineDTO thisLine = (OrderLineDTO) thisOrder.
+                            getLine(itemId);
+                    Float price = new Float(0);
+                    if (fields[total] != null && fields[total].length() > 0) {
+                        price = Float.valueOf(fields[total]);
+                    }
+                    thisLine.setPrice(new BigDecimal(price));
+                    thisLine.setDescription(prop.getProperty("order_description"));
+                    //System.out.println("desc = " + thisLine.getDescription());
+                    thisOrder = remoteOrder.recalculate(thisOrder, entityId);
+                    Integer newOrderId = remoteOrder.createUpdate(entityId, 
+                            Integer.valueOf((String) prop.getProperty(
+                                "creator_id")), thisOrder, languageId);
+                    System.out.println("Order " + newOrderId + " created for" +
+                            " user " + newUserId);
+                    
+                }
+                
+                record = readLine(file);
+            }
+            
+            file.close();
 
-			System.out.println("Total users uploaded: " + totalRows);
+            System.out.println("Total users uploaded: " + totalRows);
             
             /*
              *  now process the items if present
              */
-			//  open the file
+            //  open the file
             fileName = prop.getProperty("fileTypes");
             if (fileName == null) {
                 System.out.println("No items files specified");
@@ -497,12 +497,12 @@ public class UploadData {
             
             System.out.println("Created " + totalRows + " items");
 
-		} catch (Exception e) {
-			System.err.println("Exception on record " + record + " : " 
-                    + e.getMessage());		
-			e.printStackTrace();
-		} 
-	}
+        } catch (Exception e) {
+            System.err.println("Exception on record " + record + " : " 
+                    + e.getMessage());      
+            e.printStackTrace();
+        } 
+    }
     
     static String readLine(BufferedReader file) 
             throws IOException {

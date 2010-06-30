@@ -58,7 +58,7 @@ public class PaypalApi {
             throws PayPalException {
 
         NVPEncoder encoder = new NVPEncoder();
-		NVPDecoder decoder = new NVPDecoder();
+        NVPDecoder decoder = new NVPDecoder();
 
         NVPCallerServices caller = new NVPCallerServices();
         caller.setAPIProfile(profile);
@@ -103,7 +103,7 @@ public class PaypalApi {
             throws PayPalException {
 
         NVPEncoder encoder = new NVPEncoder();
-		NVPDecoder decoder = new NVPDecoder();
+        NVPDecoder decoder = new NVPDecoder();
 
         NVPCallerServices caller = new NVPCallerServices();
         caller.setAPIProfile(profile);
@@ -133,7 +133,7 @@ public class PaypalApi {
             throws PayPalException {
 
         NVPEncoder encoder = new NVPEncoder();
-		NVPDecoder decoder = new NVPDecoder();
+        NVPDecoder decoder = new NVPDecoder();
 
         NVPCallerServices caller = new NVPCallerServices();
         caller.setAPIProfile(profile);
@@ -163,7 +163,7 @@ public class PaypalApi {
             throws PayPalException {
 
         NVPEncoder encoder = new NVPEncoder();
-		NVPDecoder decoder = new NVPDecoder();
+        NVPDecoder decoder = new NVPDecoder();
 
         NVPCallerServices caller = new NVPCallerServices();
         caller.setAPIProfile(profile);
@@ -190,7 +190,7 @@ public class PaypalApi {
             throws PayPalException {
 
         NVPEncoder encoder = new NVPEncoder();
-		NVPDecoder decoder = new NVPDecoder();
+        NVPDecoder decoder = new NVPDecoder();
 
         NVPCallerServices caller = new NVPCallerServices();
         caller.setAPIProfile(profile);

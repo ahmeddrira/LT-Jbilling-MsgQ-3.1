@@ -70,11 +70,11 @@ public class PaymentWorldPayTask extends PaymentWorldPayBaseTask {
     String getProcessorName() { return "WorldPay"; }
 
     public boolean process(PaymentDTOEx payment) throws PluggableTaskException {
-		LOG.debug("Payment processing for " + getProcessorName() + " gateway");
+        LOG.debug("Payment processing for " + getProcessorName() + " gateway");
 
         if (payment.getPayoutId() != null) return true;
 
-		SvcType transaction = SvcType.SALE;                      
+        SvcType transaction = SvcType.SALE;                      
         if (BigDecimal.ZERO.compareTo(payment.getAmount()) > 0 || (payment.getIsRefund() != 0)) {
             LOG.debug("Doing a refund using credit card transaction");
             transaction = SvcType.REFUND_CREDIT;            
@@ -83,15 +83,15 @@ public class PaymentWorldPayTask extends PaymentWorldPayBaseTask {
         boolean result;
         try {
             result = doProcess(payment, transaction, null).shouldCallOtherProcessors();
-			LOG.debug("Processing result is "
-					+ payment.getPaymentResult().getId()
-					+ ", return value of process is " + result);
+            LOG.debug("Processing result is "
+                    + payment.getPaymentResult().getId()
+                    + ", return value of process is " + result);
             
-		} catch (Exception e) {
-			LOG.error("Exception", e);
-			throw new PluggableTaskException(e);
-		}
-		return result;
+        } catch (Exception e) {
+            LOG.error("Exception", e);
+            throw new PluggableTaskException(e);
+        }
+        return result;
     }
 
     public void failure(Integer userId, Integer retry) {
@@ -99,41 +99,41 @@ public class PaymentWorldPayTask extends PaymentWorldPayBaseTask {
     }
 
     public boolean preAuth(PaymentDTOEx payment) throws PluggableTaskException {
-		LOG.debug("Pre-authorization processing for " + getProcessorName() + " gateway");
-		return doProcess(payment, SvcType.AUTHORIZE, null).shouldCallOtherProcessors();
+        LOG.debug("Pre-authorization processing for " + getProcessorName() + " gateway");
+        return doProcess(payment, SvcType.AUTHORIZE, null).shouldCallOtherProcessors();
     }
 
     public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx payment)
             throws PluggableTaskException {
 
-		LOG.debug("Confirming pre-authorization for " + getProcessorName() + " gateway");
+        LOG.debug("Confirming pre-authorization for " + getProcessorName() + " gateway");
 
-		if (!getProcessorName() .equals(auth.getProcessor())) {
-			/*  let the processor be called and fail, so the caller can do something
-			    about it: probably re-call this payment task as a new "process()" run */
-			LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
-		}
+        if (!getProcessorName() .equals(auth.getProcessor())) {
+            /*  let the processor be called and fail, so the caller can do something
+                about it: probably re-call this payment task as a new "process()" run */
+            LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
+        }
 
-		CreditCardDTO card = payment.getCreditCard();
-		if (card == null) {
-			throw new PluggableTaskException("Credit card is required capturing" + " payment: " + payment.getId());
-		}
+        CreditCardDTO card = payment.getCreditCard();
+        if (card == null) {
+            throw new PluggableTaskException("Credit card is required capturing" + " payment: " + payment.getId());
+        }
 
-		if (!isApplicable(payment)) {
-			LOG.error("This payment can not be captured" + payment);
-			return true;
-		}
+        if (!isApplicable(payment)) {
+            LOG.error("This payment can not be captured" + payment);
+            return true;
+        }
 
-		return doProcess(payment, SvcType.SETTLE, auth).shouldCallOtherProcessors();
+        return doProcess(payment, SvcType.SETTLE, auth).shouldCallOtherProcessors();
     }
 
     @Override // implements abstract method
     public NVPList buildRequest(PaymentDTOEx payment, SvcType transaction) throws PluggableTaskException {
         NVPList request = new NVPList();
 
-		request.add(PARAMETER_MERCHANT_ID, getMerchantId());
+        request.add(PARAMETER_MERCHANT_ID, getMerchantId());
         request.add(PARAMETER_STORE_ID, getStoreId());
-		request.add(PARAMETER_TERMINAL_ID, getTerminalId());
+        request.add(PARAMETER_TERMINAL_ID, getTerminalId());
         request.add(PARAMETER_SELLER_ID, getSellerId());
         request.add(PARAMETER_PASSWORD, getPassword());
     
@@ -150,17 +150,17 @@ public class PaymentWorldPayTask extends PaymentWorldPayBaseTask {
         request.add(WorldPayParams.General.COUNTRY, contact.getEntity().getCountryCode());
 
         request.add(WorldPayParams.General.AMOUNT, formatDollarAmount(payment.getAmount()));
-		request.add(WorldPayParams.General.SVC_TYPE, transaction.getCode());
+        request.add(WorldPayParams.General.SVC_TYPE, transaction.getCode());
 
-		CreditCardDTO card = payment.getCreditCard();
-		request.add(WorldPayParams.CreditCard.CARD_NUMBER, card.getNumber());
+        CreditCardDTO card = payment.getCreditCard();
+        request.add(WorldPayParams.CreditCard.CARD_NUMBER, card.getNumber());
         request.add(WorldPayParams.CreditCard.EXPIRATION_DATE, EXPIRATION_DATE_FORMAT.format(card.getCcExpiry()));
 
         if (card.getSecurityCode() != null) {
-			request.add(WorldPayParams.CreditCard.CVV2, String.valueOf(payment.getCreditCard().getSecurityCode()));
-		}
+            request.add(WorldPayParams.CreditCard.CVV2, String.valueOf(payment.getCreditCard().getSecurityCode()));
+        }
 
         return request;
-	}
+    }
 
 }

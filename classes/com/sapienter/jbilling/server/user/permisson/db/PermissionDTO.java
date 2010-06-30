@@ -57,7 +57,7 @@ public class PermissionDTO  implements java.io.Serializable {
     public PermissionDTO(int id) {
         this.id = id;
     }
-	
+    
     public PermissionDTO(int id, PermissionTypeDTO permissionType) {
         this.id = id;
         this.permissionType = permissionType;

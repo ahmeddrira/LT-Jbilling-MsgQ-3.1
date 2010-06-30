@@ -70,7 +70,7 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
      public OrderPeriodDTO() {
      }
 
-	
+    
     public OrderPeriodDTO(int id) {
         this.id = id;
     }
@@ -84,7 +84,7 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
     
     @Transient
     protected String getTable() {
-    	return Constants.TABLE_ORDER_PERIOD;
+        return Constants.TABLE_ORDER_PERIOD;
     }
    
     @Id  @GeneratedValue(strategy=GenerationType.TABLE, generator="order_period_GEN") 
@@ -134,33 +134,33 @@ public class OrderPeriodDTO extends AbstractDescription implements java.io.Seria
 
     @Version
     @Column(name="OPTLOCK")
-	public Integer getVersionNum() {
-		return versionNum;
-	}
-	protected void setVersionNum(Integer versionNum) {
-		this.versionNum = versionNum;
-	}
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    protected void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
 
-	public String toString() {
-		return "OrderPeriodDTO:[" + 
-	     " id=" + id +
-	     " company=" + company +
-	     " periodUnitDTO=" + periodUnitDTO + 
-	     " value=" + value +
-	     " versionNum=" + versionNum + "]";
-	}
+    public String toString() {
+        return "OrderPeriodDTO:[" + 
+         " id=" + id +
+         " company=" + company +
+         " periodUnitDTO=" + periodUnitDTO + 
+         " value=" + value +
+         " versionNum=" + versionNum + "]";
+    }
     // convenient methods for migration from entity beans
     @Transient
     public Integer getUnitId() {
-    	return getPeriodUnit().getId();
+        return getPeriodUnit().getId();
     }
     public void setUnitId(int id) {
-    	PeriodUnitDTO period = new PeriodUnitDTO(id);
-    	setPeriodUnit(period);
+        PeriodUnitDTO period = new PeriodUnitDTO(id);
+        setPeriodUnit(period);
     }
     
     public void touch() {
-    	getUnitId();
+        getUnitId();
     }
 }
 

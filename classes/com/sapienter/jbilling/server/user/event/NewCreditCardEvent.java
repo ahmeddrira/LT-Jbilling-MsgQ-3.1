@@ -29,12 +29,12 @@ import com.sapienter.jbilling.server.system.event.Event;
  */
 public class NewCreditCardEvent implements Event {
 
-	private final CreditCardDTO creditCard;
+    private final CreditCardDTO creditCard;
     private final Integer entityId;
 
     public CreditCardDTO getCreditCard() {
-		return creditCard;
-	}
+        return creditCard;
+    }
 
     public NewCreditCardEvent(CreditCardDTO creditCard, Integer entityId) {
         this.creditCard = creditCard;

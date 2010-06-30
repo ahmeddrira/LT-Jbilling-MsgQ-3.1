@@ -68,7 +68,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     }
 
     public void refresh(T entity) {
-    	getHibernateTemplate().refresh(entity);
+        getHibernateTemplate().refresh(entity);
     }
     
     public Class<T> getPersistentClass() {
@@ -85,7 +85,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
      */
     @SuppressWarnings("unchecked")
     public T find(Serializable id) {
-    	if (id == null) return null;
+        if (id == null) return null;
         T entity = (T) getHibernateTemplate().load(getPersistentClass(), id);
 
         return entity;
@@ -99,7 +99,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
      */
     @SuppressWarnings("unchecked")
     public T findNow(Serializable id) {
-    	if (id == null) return null;
+        if (id == null) return null;
         T entity = (T) getHibernateTemplate().get(getPersistentClass(), id);
 
         return entity;
@@ -202,7 +202,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
      * @param dto
      */
     public void reattach(T dto) {
-    	getSession().update(dto);
+        getSession().update(dto);
     }
 
     /**
@@ -211,7 +211,7 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
      * @param dto
      */
     public void reattachUnmodified(T dto) {
-    	getSession().lock(dto, LockMode.NONE);
+        getSession().lock(dto, LockMode.NONE);
     }
 
     /**
@@ -224,24 +224,24 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
     }
     
     protected void touch(List<T> list, String methodName) {
-    	
-//    	// find any getter, but not the id or we'll get stuck with the proxy
-//    	for (Method myMethod: persistentClass.getDeclaredMethods()) {
-//    		if (myMethod.getName().startsWith("get") && !myMethod.getName().equals("getId")) {
-//    			toCall = myMethod;
-//    			break;
-//    		}
-//    	}
-    	
-    	try {
-        	Method toCall = persistentClass.getMethod(methodName, null);
-			for(int f=0; list.size() < f; f++) {
-				toCall.invoke(list.get(f), null);
-			}
-		} catch (Exception e) {
-			throw new SessionInternalError("Error invoking method when touching proxy object", 
-					AbstractDAS.class, e);
-			
-		} 
-	}
+        
+//      // find any getter, but not the id or we'll get stuck with the proxy
+//      for (Method myMethod: persistentClass.getDeclaredMethods()) {
+//          if (myMethod.getName().startsWith("get") && !myMethod.getName().equals("getId")) {
+//              toCall = myMethod;
+//              break;
+//          }
+//      }
+        
+        try {
+            Method toCall = persistentClass.getMethod(methodName, null);
+            for(int f=0; list.size() < f; f++) {
+                toCall.invoke(list.get(f), null);
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError("Error invoking method when touching proxy object", 
+                    AbstractDAS.class, e);
+            
+        } 
+    }
 }

@@ -29,23 +29,23 @@ import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
  */
 public class NewContactEvent implements Event {
 
-	private final Integer entityId;
-	private final ContactDTO contactDto;
-	
-	public ContactDTO getContactDto() {
-		return contactDto;
-	}
+    private final Integer entityId;
+    private final ContactDTO contactDto;
+    
+    public ContactDTO getContactDto() {
+        return contactDto;
+    }
 
-	public NewContactEvent(ContactDTO contactDto, Integer entityId) {
-		this.contactDto = contactDto;
-		this.entityId = entityId;
-	}
+    public NewContactEvent(ContactDTO contactDto, Integer entityId) {
+        this.contactDto = contactDto;
+        this.entityId = entityId;
+    }
 
-	public String getName() {
-		return "New Contact Event";
-	}
+    public String getName() {
+        return "New Contact Event";
+    }
 
-	public Integer getEntityId() {
-		return entityId;
-	}
+    public Integer getEntityId() {
+        return entityId;
+    }
 }

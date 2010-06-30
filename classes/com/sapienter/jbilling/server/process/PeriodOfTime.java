@@ -28,33 +28,33 @@ import org.joda.time.Days;
 
 public class PeriodOfTime {
     
-	private final DateMidnight start;
-	private final DateMidnight end;
-	private final int position;
-	private final int daysInCycle;
+    private final DateMidnight start;
+    private final DateMidnight end;
+    private final int position;
+    private final int daysInCycle;
 
-	public PeriodOfTime(Date start, Date end, int dayInCycle, int position) {
-		this.start = new DateMidnight(start);
-		this.end = new DateMidnight(end);
-		this.position = position;
-		this.daysInCycle = dayInCycle;
-	}
+    public PeriodOfTime(Date start, Date end, int dayInCycle, int position) {
+        this.start = new DateMidnight(start);
+        this.end = new DateMidnight(end);
+        this.position = position;
+        this.daysInCycle = dayInCycle;
+    }
 
-	public Date getEnd() {
-		return end.toDate();
-	}
+    public Date getEnd() {
+        return end.toDate();
+    }
 
-	public int getPosition() {
-		return position;
-	}
+    public int getPosition() {
+        return position;
+    }
 
-	public Date getStart() {
-		return start.toDate();
-	}
+    public Date getStart() {
+        return start.toDate();
+    }
 
-	public int getDaysInCycle() {
-		return daysInCycle;
-	}
+    public int getDaysInCycle() {
+        return daysInCycle;
+    }
 
     /**
      * Find the number of days between the period start date to the period end date. This means
@@ -66,16 +66,16 @@ public class PeriodOfTime {
      *
      * @return number of days between start and end dates
      */
-	public int getDaysInPeriod() {
+    public int getDaysInPeriod() {
         if (end.isBefore(start)) { // not sure why this is necessary. 
             return 0;
         }
         return Days.daysBetween(start, end).getDays();
-	}
+    }
 
     @Override
-	public String toString() {
-		return "period starts: " + start + " ends " + end + " position "
-				+ position + " days in cycle " + getDaysInCycle();
-	}
+    public String toString() {
+        return "period starts: " + start + " ends " + end + " position "
+                + position + " days in cycle " + getDaysInCycle();
+    }
 }

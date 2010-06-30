@@ -268,7 +268,7 @@ public class BasicOrderFilterTask
     }
 
     private Date thisOrActiveUntil(Date thisDate, Date activeUntil) {
-    	if (activeUntil == null) return thisDate;
-    	return activeUntil.before(thisDate) ? activeUntil : thisDate;
+        if (activeUntil == null) return thisDate;
+        return activeUntil.before(thisDate) ? activeUntil : thisDate;
     }
 }

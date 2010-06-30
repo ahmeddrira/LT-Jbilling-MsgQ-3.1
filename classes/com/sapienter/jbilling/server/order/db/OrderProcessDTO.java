@@ -69,13 +69,13 @@ public class OrderProcessDTO  implements java.io.Serializable {
     public OrderProcessDTO() {
     }
 
-	
+    
     public OrderProcessDTO(int id, int isReview) {
         this.id = id;
         this.isReview = isReview;
     }
     public OrderProcessDTO(int id, BillingProcessDTO billingProcessDTO, OrderDTO orderDTO, InvoiceDTO invoice, 
-    		Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
+            Integer periodsIncluded, Date periodStart, Date periodEnd, int isReview, Integer origin) {
        this.id = id;
        this.billingProcessDTO = billingProcessDTO;
        this.orderDTO = orderDTO;
@@ -174,13 +174,13 @@ public class OrderProcessDTO  implements java.io.Serializable {
 
     @Version
     @Column(name="OPTLOCK")
-	public Integer getVersionNum() {
-		return versionNum;
-	}
-	protected void setVersionNum(Integer versionNum) {
-		this.versionNum = versionNum;
-	}
-	
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    protected void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
+    
 }
 
 

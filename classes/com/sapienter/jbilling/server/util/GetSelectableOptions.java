@@ -100,10 +100,10 @@ public class GetSelectableOptions {
                 argEntity = true;
                 argLanguage = false;
             } else if (type.equals("orderPeriod")) {
-            	// The union is for those order periods that are global
-            	// The descriptions of those should be in all lanugages
-            	// The descriptions for the entity specific should be in the
-            	// language of the entity only.
+                // The union is for those order periods that are global
+                // The descriptions of those should be in all lanugages
+                // The descriptions for the entity specific should be in the
+                // language of the entity only.
                 sql =
                 "select op.id, id.content " +
                 "  from order_period op, international_description id, jbilling_table bt " +
@@ -113,8 +113,8 @@ public class GetSelectableOptions {
                 "   and id.language_id = ? " +
                 "   and op.entity_id = ? " +
                 "   and id.psudo_column = 'description' " +
-				"union " +
-				"select op.id, id.content " +
+                "union " +
+                "select op.id, id.content " +
                 "  from order_period op, international_description id, jbilling_table bt " +
                 " where id.table_id = bt.id " +
                 "   and bt.name = 'order_period' " +
@@ -245,8 +245,8 @@ public class GetSelectableOptions {
             
             // custom parameters
             if (type.equals("orderPeriod")) {
-            	/// the order period needs an extra language because of the union
-            	stmt.setInt(parameterIndex, languageId.intValue());
+                /// the order period needs an extra language because of the union
+                stmt.setInt(parameterIndex, languageId.intValue());
                 parameterIndex++;
             }
             

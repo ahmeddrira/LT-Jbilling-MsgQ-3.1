@@ -68,7 +68,7 @@ public class ItemPriceDTO  implements java.io.Serializable {
     public ItemPriceDTO() {
     }
 
-	
+    
     public ItemPriceDTO(Integer id, BigDecimal price) {
         this.id = id;
         this.price = price;

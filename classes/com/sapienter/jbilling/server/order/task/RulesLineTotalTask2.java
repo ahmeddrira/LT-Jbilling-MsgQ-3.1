@@ -31,8 +31,8 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
  *
  */
 public class RulesLineTotalTask2 extends RulesItemManager2
-		implements OrderProcessingTask {
-	
+        implements OrderProcessingTask {
+    
     public void doProcessing(OrderDTO order) throws TaskException {        
         processRules(order, order.getBaseUserByUserId().getUserId());        
     }

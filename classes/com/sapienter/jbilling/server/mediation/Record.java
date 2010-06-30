@@ -41,7 +41,7 @@ public class Record {
     public void addField(PricingField field, boolean isKey) {
         fields.add(field);
         if (isKey) {
-        	key.append(field.getValue().toString());
+            key.append(field.getValue().toString());
         }
     }
 
@@ -57,7 +57,7 @@ public class Record {
     }
     
     public String getKey() {
-    	return key.toString();
+        return key.toString();
     }
  
     public String toString() {

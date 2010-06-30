@@ -41,79 +41,79 @@ import com.sapienter.jbilling.server.util.Context;
  * @see preEdit()
  */
 public abstract class AbstractPaymentMethodMaintainAction<DTO> extends
-		CrudActionBase<DTO> {
-	private final String myNumberField;
-	private final String myForwardEdit;
+        CrudActionBase<DTO> {
+    private final String myNumberField;
+    private final String myForwardEdit;
 
-	private final IUserSessionBean myUserSession;
-	private final IPaymentSessionBean myPaymentSession;
+    private final IUserSessionBean myUserSession;
+    private final IPaymentSessionBean myPaymentSession;
 
-	public AbstractPaymentMethodMaintainAction(String formName,
-			String logFriendlyActionType, String numberField, String forwardEdit) {
-		super(formName, logFriendlyActionType);
-		myNumberField = numberField;
-		myForwardEdit = forwardEdit;
+    public AbstractPaymentMethodMaintainAction(String formName,
+            String logFriendlyActionType, String numberField, String forwardEdit) {
+        super(formName, logFriendlyActionType);
+        myNumberField = numberField;
+        myForwardEdit = forwardEdit;
 
-		try {
-			myUserSession = (IUserSessionBean) Context.getBean(
+        try {
+            myUserSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-			myPaymentSession = (IPaymentSessionBean) Context.getBean(
+            myPaymentSession = (IPaymentSessionBean) Context.getBean(
                     Context.Name.PAYMENT_SESSION);
 
-		} catch (Exception e) {
-			throw new SessionInternalError("Initializing "
-					+ logFriendlyActionType + " CRUD action: " + e.getMessage());
-		}
-	}
+        } catch (Exception e) {
+            throw new SessionInternalError("Initializing "
+                    + logFriendlyActionType + " CRUD action: " + e.getMessage());
+        }
+    }
 
-	@Override
-	protected void preEdit() {
-		super.preEdit();
-		// this default forward used, e.g, in case of validation problems
-		String forwardOnValidationProblem = myForwardEdit;
-		setForward(forwardOnValidationProblem);
-	}
+    @Override
+    protected void preEdit() {
+        super.preEdit();
+        // this default forward used, e.g, in case of validation problems
+        String forwardOnValidationProblem = myForwardEdit;
+        setForward(forwardOnValidationProblem);
+    }
 
-	/**
-	 * Called by subclass from setup() indicating that DTO were not found.
-	 */
-	protected void setupNotFound() {
-		// we will use empty field number as a flag for postSetup();
-		// @see postSetup
-		myForm.set(myNumberField, "");
-	}
+    /**
+     * Called by subclass from setup() indicating that DTO were not found.
+     */
+    protected void setupNotFound() {
+        // we will use empty field number as a flag for postSetup();
+        // @see postSetup
+        myForm.set(myNumberField, "");
+    }
 
-	@Override
-	protected void postSetup() {
-		super.postSetup();
-		// we are using an empty <number-field> as a flag indicating
-		// that DTO were not found
-		// in any case, empty <number-field> means that something is wrong
-		// so it makes sence to remove the cached form anyway
-		// @see setup()
+    @Override
+    protected void postSetup() {
+        super.postSetup();
+        // we are using an empty <number-field> as a flag indicating
+        // that DTO were not found
+        // in any case, empty <number-field> means that something is wrong
+        // so it makes sence to remove the cached form anyway
+        // @see setup()
 
-		if ("".equals(myForm.get(myNumberField))) {
-			removeFormFromSession();
-		}
-	}
+        if ("".equals(myForm.get(myNumberField))) {
+            removeFormFromSession();
+        }
+    }
 
-	@Override
-	protected ForwardAndMessage doCreate(DTO dto) {
-		throw new UnsupportedOperationException(
-				"Can't create payment method. Create mode is not directly supported");
-	}
+    @Override
+    protected ForwardAndMessage doCreate(DTO dto) {
+        throw new UnsupportedOperationException(
+                "Can't create payment method. Create mode is not directly supported");
+    }
 
-	@Override
-	protected void resetCachedList() {
-		// single payment method per customer, no lists
-	}
+    @Override
+    protected void resetCachedList() {
+        // single payment method per customer, no lists
+    }
 
-	protected IUserSessionBean getUserSession() {
-		return myUserSession;
-	}
+    protected IUserSessionBean getUserSession() {
+        return myUserSession;
+    }
 
-	protected IPaymentSessionBean getPaymentSession() {
-		return myPaymentSession;
-	}
+    protected IPaymentSessionBean getPaymentSession() {
+        return myPaymentSession;
+    }
 
 }

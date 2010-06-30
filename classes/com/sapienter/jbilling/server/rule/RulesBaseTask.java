@@ -41,7 +41,7 @@ public abstract class RulesBaseTask extends PluggableTask {
     protected void executeRules() throws TaskException {
         // show what's in first
         for (Object o: rulesMemoryContext) {
-        	LOG.debug("in memory context=" + o);
+            LOG.debug("in memory context=" + o);
         }
 
         // JBRULES-2253: NoClassDefFoundError with the ASM optimizer when optimizing MVEL consequences.

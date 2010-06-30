@@ -73,9 +73,9 @@ public class MediationProcessDAS extends AbstractDAS<MediationProcess> {
      * @param list processes to touch
      */
     public void touch(List<MediationProcess> list) {
-    	super.touch(list, "getOrdersAffected");
-    	for (MediationProcess proc : list) {
-    		proc.getConfiguration().getCreateDatetime();
-    	}
+        super.touch(list, "getOrdersAffected");
+        for (MediationProcess proc : list) {
+            proc.getConfiguration().getCreateDatetime();
+        }
     }
 }

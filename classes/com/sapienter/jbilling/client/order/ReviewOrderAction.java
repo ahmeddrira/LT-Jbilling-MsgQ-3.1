@@ -96,9 +96,9 @@ public class ReviewOrderAction extends Action {
                 ((NewOrderDTOForm) form).setOrderLines(hashlines);
                 // the price has to be formated i18n
                 for(OrderLineDTO line : newOrder.getLines()) {
-                	if (line.getDeleted() == 0) {
-        	            line.setPriceStr(FormHelper.decimal2string(line.getPrice(), session));
-                    	hashlines.put(line.getItemId(), line);
+                    if (line.getDeleted() == 0) {
+                        line.setPriceStr(FormHelper.decimal2string(line.getPrice(), session));
+                        hashlines.put(line.getItemId(), line);
                     }
                 }
                 
@@ -218,13 +218,13 @@ public class ReviewOrderAction extends Action {
             log.error("Error processing a new order", e);
             
             if( e instanceof ItemDecimalsException ){
-            	errors.add(
-                		ActionErrors.GLOBAL_ERROR,
-                		new ActionError("order.error.item.decimals"));
+                errors.add(
+                        ActionErrors.GLOBAL_ERROR,
+                        new ActionError("order.error.item.decimals"));
             } else {
-	            errors.add(
-	                ActionErrors.GLOBAL_ERROR,
-	                new ActionError("all.internal"));
+                errors.add(
+                    ActionErrors.GLOBAL_ERROR,
+                    new ActionError("all.internal"));
             }
             
             forward = "show";

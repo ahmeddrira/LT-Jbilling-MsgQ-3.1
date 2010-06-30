@@ -54,10 +54,10 @@ public class ProcessRunTotalPmDTO implements Serializable {
     private PaymentMethodDTO paymentMethod;
     private BigDecimal total;
     private ProcessRunTotalDTO processRunTotal;
-	private int versionNum;
+    private int versionNum;
 
-	public ProcessRunTotalPmDTO() {
-	}
+    public ProcessRunTotalPmDTO() {
+    }
 
 
     public ProcessRunTotalPmDTO(int id, BigDecimal total) {
@@ -102,17 +102,17 @@ public class ProcessRunTotalPmDTO implements Serializable {
     public void setProcessRunTotal(ProcessRunTotalDTO processRunTotal) {
         this.processRunTotal = processRunTotal;
     }
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "payment_method_id")
-	public PaymentMethodDTO getPaymentMethod() {
-		return this.paymentMethod;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_method_id")
+    public PaymentMethodDTO getPaymentMethod() {
+        return this.paymentMethod;
+    }
 
-	public void setPaymentMethod(PaymentMethodDTO paymentMethod) {
-		this.paymentMethod = paymentMethod;
-	}
+    public void setPaymentMethod(PaymentMethodDTO paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 
-	@Version
+    @Version
     @Column(name="OPTLOCK")
     public int getVersionNum() {
         return versionNum;

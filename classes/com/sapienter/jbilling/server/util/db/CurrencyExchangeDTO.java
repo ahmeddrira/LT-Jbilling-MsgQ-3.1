@@ -63,7 +63,7 @@ public class CurrencyExchangeDTO  implements java.io.Serializable {
     public CurrencyExchangeDTO() {
     }
 
-	
+    
     public CurrencyExchangeDTO(int id, BigDecimal rate, Date createDatetime) {
         this.id = id;
         this.rate = rate;

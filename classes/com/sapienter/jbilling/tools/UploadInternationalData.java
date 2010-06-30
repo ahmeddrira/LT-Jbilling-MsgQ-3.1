@@ -37,8 +37,8 @@ import java.util.Properties;
  */
 public class UploadInternationalData {
     
-	public static void main(String[] args) {
-		
+    public static void main(String[] args) {
+        
         String sqlInsert = "insert into international_description (table_id," +
                 "foreign_id, psudo_column, language_id, content) values ( " +
                 "?,?,?,?,?)";
@@ -49,10 +49,10 @@ public class UploadInternationalData {
         int inserted = 0;
         int updated = 0;
         Connection conn = null;
-		try {
-			
+        try {
+            
             if (args.length != 2) {
-            	System.err.println("Usage: UploadInternationalData file languageId");
+                System.err.println("Usage: UploadInternationalData file languageId");
                 return;
             }
             String fileName = args[0];
@@ -72,20 +72,20 @@ public class UploadInternationalData {
 
             conn.setAutoCommit(false);
             
-			System.out.println("Processing file " + fileName + " for " +
+            System.out.println("Processing file " + fileName + " for " +
                     "language " + languageId);
     
-			// open the file
-			BufferedReader file = new BufferedReader(new FileReader(fileName));
+            // open the file
+            BufferedReader file = new BufferedReader(new FileReader(fileName));
             // prepare the statement
             PreparedStatement insertStmt = conn.prepareStatement(sqlInsert);
             PreparedStatement updateStmt = conn.prepareStatement(sqlUpdate);
             Statement checkStmt = conn.createStatement();
-			
-			String record = file.readLine();
-			while (record != null) {
-				String fields[] = record.split("\\|");
-				
+            
+            String record = file.readLine();
+            while (record != null) {
+                String fields[] = record.split("\\|");
+                
                 // the position of the columns is fixed
                 int tableId = Integer.valueOf(fields[0].trim()).intValue();
                 // the second field is just help for the translator
@@ -94,7 +94,7 @@ public class UploadInternationalData {
                 /* this was necessary because a table was added in between the
                 // file was generated and now. 
                 if (tableId >= 44) {
-                	tableId++; // compensate for the new ACH table
+                    tableId++; // compensate for the new ACH table
                 }
                 */
                 
@@ -123,25 +123,25 @@ public class UploadInternationalData {
                     insertStmt.executeUpdate();
                     inserted++;
                 }
-				
-				record = file.readLine();
-			}
-			
-			file.close();
+                
+                record = file.readLine();
+            }
+            
+            file.close();
             conn.commit();
             insertStmt.close();
             conn.close();
 
-			System.out.println("Total rows inserted: " + inserted
+            System.out.println("Total rows inserted: " + inserted
                     + " updated: " + updated);;
-			
-		} catch (Exception e) {
-			System.err.println("Exception in row: " + inserted + " - " +
-                    e.getMessage());		
-			e.printStackTrace();
+            
+        } catch (Exception e) {
+            System.err.println("Exception in row: " + inserted + " - " +
+                    e.getMessage());        
+            e.printStackTrace();
             if (conn != null) {
-            	try { conn.close(); } catch(Exception e1) {}
+                try { conn.close(); } catch(Exception e1) {}
             }
-		} 
-	}
+        } 
+    }
 }

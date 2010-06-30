@@ -38,8 +38,8 @@ import com.sapienter.jbilling.server.order.db.OrderDTO;
 public class OrderPeriodAnticipateTask extends BasicOrderPeriodTask {
     
 
-	private static final Logger LOG = Logger.getLogger(OrderPeriodAnticipateTask.class);
-	
+    private static final Logger LOG = Logger.getLogger(OrderPeriodAnticipateTask.class);
+    
     public Date calculateEnd(OrderDTO order, Date processDate,
             int maxPeriods, Date periodStarts) 
             throws TaskException {

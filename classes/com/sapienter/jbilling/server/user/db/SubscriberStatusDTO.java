@@ -42,7 +42,7 @@ public class SubscriberStatusDTO extends AbstractGenericStatus implements java.i
     public SubscriberStatusDTO() {
     }
 
-	
+    
     public SubscriberStatusDTO(int statusValue) {
         this.statusValue = statusValue;
     }

@@ -242,13 +242,13 @@ public class Trigger implements Job {
                 }
              // run the provisioning process
                 if (Util.getSysPropBooleanTrue("process.run_provisioning")) {
-        			LOG.info("Running trigger for " + today);
-        			LOG.info("Starting provisioning process at " + 
-        					Calendar.getInstance().getTime());
-        			remoteProvisioningProcess.trigger();
-        			LOG.info("Ended provisioning process at " + 
-        					Calendar.getInstance().getTime());
-        			
+                    LOG.info("Running trigger for " + today);
+                    LOG.info("Starting provisioning process at " + 
+                            Calendar.getInstance().getTime());
+                    remoteProvisioningProcess.trigger();
+                    LOG.info("Ended provisioning process at " + 
+                            Calendar.getInstance().getTime());
+                    
                 }
             }
 

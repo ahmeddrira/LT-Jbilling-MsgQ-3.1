@@ -47,7 +47,7 @@ public class PermissionUserDTO  implements java.io.Serializable {
     public PermissionUserDTO() {
     }
 
-	
+    
     public PermissionUserDTO(int id, short isGrant) {
         this.id = id;
         this.isGrant = isGrant;

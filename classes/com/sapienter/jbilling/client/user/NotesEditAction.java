@@ -61,51 +61,51 @@ public class NotesEditAction extends Action {
         String forward = "error";
         ActionErrors errors = new ActionErrors();
         String action = request.getParameter("action");
-    	try {
-    		UserDTOEx user = (UserDTOEx) session.getAttribute(
-	        		Constants.SESSION_CUSTOMER_DTO);
-    		
-    		if (action.equals("edit")) {
-	            IUserSessionBean userSession = (IUserSessionBean) 
+        try {
+            UserDTOEx user = (UserDTOEx) session.getAttribute(
+                    Constants.SESSION_CUSTOMER_DTO);
+            
+            if (action.equals("edit")) {
+                IUserSessionBean userSession = (IUserSessionBean) 
                         Context.getBean(Context.Name.USER_SESSION);
-	            DynaActionForm myForm = (DynaActionForm) form;
-	            
-	            String notes = (String) myForm.get("notes");
-	            notes = notes.trim();
-	            if (notes.length() > 1000) {
-	            	notes.substring(0,1000);
-	            } else if (notes.length() == 0) {
-	            	notes = null;
-	            }
+                DynaActionForm myForm = (DynaActionForm) form;
+                
+                String notes = (String) myForm.get("notes");
+                notes = notes.trim();
+                if (notes.length() > 1000) {
+                    notes.substring(0,1000);
+                } else if (notes.length() == 0) {
+                    notes = null;
+                }
 
-	            // parse new lines
-	            if (notes != null) {
-	            	notes = notes.replaceAll("\r\n", "<br/>");
-	            }
-	            Integer userId = (Integer) session.getAttribute(
-	            		Constants.SESSION_USER_ID);
-	            userSession.setCustomerNotes(userId, notes);
+                // parse new lines
+                if (notes != null) {
+                    notes = notes.replaceAll("\r\n", "<br/>");
+                }
+                Integer userId = (Integer) session.getAttribute(
+                        Constants.SESSION_USER_ID);
+                userSession.setCustomerNotes(userId, notes);
 
-	            // refresh the object in the session
-	            user.getCustomer().setNotes(notes);
+                // refresh the object in the session
+                user.getCustomer().setNotes(notes);
 
-	            forward = "customer_view";
-    		} else if (action.equals("setup")) {
-    	        ModuleConfig moduleConfig = RequestUtils.getModuleConfig(request,
-    	                servlet.getServletContext());
-    	        DynaActionForm myForm = (DynaActionForm) RequestUtils.createActionForm(
-    	                request, mapping, moduleConfig, servlet);
-    	        
-    	        String notes = user.getCustomer().getNotes();
-    	        if (notes != null) {
-    	        	notes = notes.replaceAll("<br/>", "\r\n");
-    	        }
-        		myForm.set("notes", notes);
-        		session.setAttribute("notes", myForm);
-        		forward = "notes_edit";
-    		}
+                forward = "customer_view";
+            } else if (action.equals("setup")) {
+                ModuleConfig moduleConfig = RequestUtils.getModuleConfig(request,
+                        servlet.getServletContext());
+                DynaActionForm myForm = (DynaActionForm) RequestUtils.createActionForm(
+                        request, mapping, moduleConfig, servlet);
+                
+                String notes = user.getCustomer().getNotes();
+                if (notes != null) {
+                    notes = notes.replaceAll("<br/>", "\r\n");
+                }
+                myForm.set("notes", notes);
+                session.setAttribute("notes", myForm);
+                forward = "notes_edit";
+            }
         } catch (Exception e) {
-        	log.error("Exception in action", e);
+            log.error("Exception in action", e);
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("all.internal"));
         }

@@ -44,21 +44,21 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
  */
 public final class ItemListBL extends ResultList 
         implements ItemSQL, Serializable { 
-	
+    
     private static final Logger LOG = Logger.getLogger(ItemListBL.class);
 
 
-	public CachedRowSet getList(Integer entityID) 
+    public CachedRowSet getList(Integer entityID) 
             throws SQLException, Exception{
-	    prepareStatement(ItemSQL.list);
-	    cachedResults.setInt(1,entityID.intValue());
+        prepareStatement(ItemSQL.list);
+        cachedResults.setInt(1,entityID.intValue());
         // the language is now always the entity's
         // cachedResults.setInt(2,languageId.intValue());
-	    
-	    execute();
-	    conn.close();
-	    return cachedResults;
-	}
+        
+        execute();
+        conn.close();
+        return cachedResults;
+    }
 
     public CachedRowSet getTypeList(Integer entityID) 
             throws SQLException, Exception{

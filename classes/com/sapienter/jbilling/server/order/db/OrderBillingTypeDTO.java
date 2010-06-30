@@ -51,7 +51,7 @@ public class OrderBillingTypeDTO extends AbstractDescription implements java.io.
     public OrderBillingTypeDTO() {
     }
 
-	
+    
     public OrderBillingTypeDTO(int id) {
         this.id = id;
     }
@@ -62,7 +62,7 @@ public class OrderBillingTypeDTO extends AbstractDescription implements java.io.
 
     @Transient
     public String getTable() {
-    	return Constants.TABLE_ORDER_BILLING_TYPE;
+        return Constants.TABLE_ORDER_BILLING_TYPE;
     }
     
     @Id 
@@ -84,7 +84,7 @@ public class OrderBillingTypeDTO extends AbstractDescription implements java.io.
     }
     
     public String toString() {
-    	return " OrderBillingType=" + id;
+        return " OrderBillingType=" + id;
     }
 }
 

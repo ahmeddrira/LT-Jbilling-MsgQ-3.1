@@ -31,9 +31,9 @@ import com.sapienter.jbilling.common.SessionInternalError;
  *         related services.
  */
 public interface IProvisioningProcessSessionBean {
-	public void trigger() throws SessionInternalError;
+    public void trigger() throws SessionInternalError;
 
-	public void updateProvisioningStatus(Integer in_order_id,
+    public void updateProvisioningStatus(Integer in_order_id,
             Integer in_order_line_id, String result);
 
     public void updateProvisioningStatus(Integer orderLineId, 

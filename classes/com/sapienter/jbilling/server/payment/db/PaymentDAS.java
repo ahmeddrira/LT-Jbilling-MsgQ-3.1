@@ -38,63 +38,63 @@ import java.math.BigDecimal;
 
 public class PaymentDAS extends AbstractDAS<PaymentDTO> {
 
-	// used for the web services call to get the latest X
-	public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
-		Criteria criteria = getSession().createCriteria(PaymentDTO.class)
+    // used for the web services call to get the latest X
+    public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class)
                 .add(Restrictions.eq("deleted", 0))
                 .createAlias("baseUser", "u")
-				    .add(Restrictions.eq("u.id", userId))
+                    .add(Restrictions.eq("u.id", userId))
                 .setProjection(Projections.id()).addOrder(Order.desc("id"))
-				.setMaxResults(maxResults);
-		return criteria.list();
-	}
+                .setMaxResults(maxResults);
+        return criteria.list();
+    }
 
-	public PaymentDTO create(BigDecimal amount, PaymentMethodDTO paymentMethod,
-			Integer userId, Integer attempt, PaymentResultDTO paymentResult,
-			CurrencyDTO currency) {
+    public PaymentDTO create(BigDecimal amount, PaymentMethodDTO paymentMethod,
+            Integer userId, Integer attempt, PaymentResultDTO paymentResult,
+            CurrencyDTO currency) {
 
-		PaymentDTO payment = new PaymentDTO();
-		payment.setAmount(amount);
-		payment.setPaymentMethod(paymentMethod);
-		payment.setBaseUser(new UserDAS().find(userId));
-		payment.setAttempt(attempt);
-		payment.setPaymentResult(paymentResult);
-		payment.setCurrency(new CurrencyDAS().find(currency.getId()));
-		payment.setCreateDatetime(Calendar.getInstance().getTime());
-		payment.setDeleted(new Integer(0));
-		payment.setIsRefund(new Integer(0));
-		payment.setIsPreauth(new Integer(0));
+        PaymentDTO payment = new PaymentDTO();
+        payment.setAmount(amount);
+        payment.setPaymentMethod(paymentMethod);
+        payment.setBaseUser(new UserDAS().find(userId));
+        payment.setAttempt(attempt);
+        payment.setPaymentResult(paymentResult);
+        payment.setCurrency(new CurrencyDAS().find(currency.getId()));
+        payment.setCreateDatetime(Calendar.getInstance().getTime());
+        payment.setDeleted(new Integer(0));
+        payment.setIsRefund(new Integer(0));
+        payment.setIsPreauth(new Integer(0));
 
-		return save(payment);
+        return save(payment);
 
-	}
+    }
 
-	/**
-	 * * query="SELECT OBJECT(p) FROM payment p WHERE p.userId = ?1 AND
-	 * p.balance >= 0.01 AND p.isRefund = 0 AND p.isPreauth = 0 AND p.deleted =
-	 * 0"
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	public Collection findWithBalance(Integer userId) {
+    /**
+     * * query="SELECT OBJECT(p) FROM payment p WHERE p.userId = ?1 AND
+     * p.balance >= 0.01 AND p.isRefund = 0 AND p.isPreauth = 0 AND p.deleted =
+     * 0"
+     * 
+     * @param userId
+     * @return
+     */
+    public Collection findWithBalance(Integer userId) {
 
-		UserDTO user = new UserDAS().find(userId);
+        UserDTO user = new UserDAS().find(userId);
 
-		Criteria criteria = getSession().createCriteria(PaymentDTO.class);
-		criteria.add(Restrictions.eq("baseUser", user));
-		criteria.add(Restrictions.ge("balance", Constants.BIGDECIMAL_ONE_CENT));
-		criteria.add(Restrictions.eq("isRefund", 0));
-		criteria.add(Restrictions.eq("isPreauth", 0));
-		criteria.add(Restrictions.eq("deleted", 0));
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.ge("balance", Constants.BIGDECIMAL_ONE_CENT));
+        criteria.add(Restrictions.eq("isRefund", 0));
+        criteria.add(Restrictions.eq("isPreauth", 0));
+        criteria.add(Restrictions.eq("deleted", 0));
 
-		return criteria.list();
-	}
+        return criteria.list();
+    }
 
     public BigDecimal findTotalBalanceByUser(Integer userId) {
         Criteria criteria = getSession().createCriteria(PaymentDTO.class);
         criteria.add(Restrictions.eq("deleted", 0))
-				.createAlias("baseUser", "u")
+                .createAlias("baseUser", "u")
                     .add(Restrictions.eq("u.id", userId));
         criteria.add(Restrictions.ne("balance", BigDecimal.ZERO));
         criteria.setProjection(Projections.sum("balance"));
@@ -103,31 +103,31 @@ public class PaymentDAS extends AbstractDAS<PaymentDTO> {
         return (criteria.uniqueResult() == null ? BigDecimal.ZERO : (BigDecimal) criteria.uniqueResult());
     }
 
-	/**
-	 * 
-	 * query="SELECT OBJECT(p) FROM payment p WHERE 
-	 * p.userId = ?1 AND 
-	 * p.balance >= 0.01 AND 
-	 * p.isRefund = 0 AND 
-	 * p.isPreauth = 1 AND 
-	 * p.deleted = 0"
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	public Collection<PaymentDTO> findPreauth(Integer userId) {
-		
-		UserDTO user = new UserDAS().find(userId);
+    /**
+     * 
+     * query="SELECT OBJECT(p) FROM payment p WHERE 
+     * p.userId = ?1 AND 
+     * p.balance >= 0.01 AND 
+     * p.isRefund = 0 AND 
+     * p.isPreauth = 1 AND 
+     * p.deleted = 0"
+     * 
+     * @param userId
+     * @return
+     */
+    public Collection<PaymentDTO> findPreauth(Integer userId) {
+        
+        UserDTO user = new UserDAS().find(userId);
 
-		Criteria criteria = getSession().createCriteria(PaymentDTO.class);
-		criteria.add(Restrictions.eq("baseUser", user));
-		criteria.add(Restrictions.ge("balance", Constants.BIGDECIMAL_ONE_CENT));
-		criteria.add(Restrictions.eq("isRefund", 0));
-		criteria.add(Restrictions.eq("isPreauth", 1));
-		criteria.add(Restrictions.eq("deleted", 0));
+        Criteria criteria = getSession().createCriteria(PaymentDTO.class);
+        criteria.add(Restrictions.eq("baseUser", user));
+        criteria.add(Restrictions.ge("balance", Constants.BIGDECIMAL_ONE_CENT));
+        criteria.add(Restrictions.eq("isRefund", 0));
+        criteria.add(Restrictions.eq("isPreauth", 1));
+        criteria.add(Restrictions.eq("deleted", 0));
 
-		return criteria.list();
+        return criteria.list();
 
-	}
+    }
 
 }

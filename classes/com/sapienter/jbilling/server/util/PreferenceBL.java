@@ -210,7 +210,7 @@ public class PreferenceBL {
     }
     
     public boolean isNull() {
-    	return preference.getIntValue() == null && 
+        return preference.getIntValue() == null && 
                 preference.getStrValue() == null &&
                 preference.getFloatValue() == null;
     }

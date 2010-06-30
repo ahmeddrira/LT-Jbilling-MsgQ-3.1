@@ -127,10 +127,10 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
      * @param amount dollar float value to format
      * @return formatted amount as a string
      */
-	private static String formatDollarAmount(BigDecimal amount) {
-		amount = amount.abs().setScale(2, RoundingMode.HALF_EVEN); // gateway format, do not change!
-		return amount.toPlainString();
-	}
+    private static String formatDollarAmount(BigDecimal amount) {
+        amount = amount.abs().setScale(2, RoundingMode.HALF_EVEN); // gateway format, do not change!
+        return amount.toPlainString();
+    }
 
     /**
      * Utility method to check if a given {@link PaymentDTOEx} payment can be processed
@@ -139,13 +139,13 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
      * @param payment payment to check
      * @return true if payment can be processed with this task, false if not
      */
-	private static boolean isApplicable(PaymentDTOEx payment) {
-		if (payment.getCreditCard() == null && payment.getAch() == null) {
-			LOG.warn("Can't process without a credit card or ach");
-			return false;
-		}
+    private static boolean isApplicable(PaymentDTOEx payment) {
+        if (payment.getCreditCard() == null && payment.getAch() == null) {
+            LOG.warn("Can't process without a credit card or ach");
+            return false;
+        }
         return true;
-	}
+    }
 
     /**
      * Returns the name of this payment processor.
@@ -166,21 +166,21 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
     private PaymentAuthorizationDTO buildPaymentAuthorization(PaypalResult paypalResult) {
         LOG.debug("Payment authorization result of " + getProcessorName() + " gateway parsing....");
 
-		PaymentAuthorizationDTO paymentAuthDTO = new PaymentAuthorizationDTO();
+        PaymentAuthorizationDTO paymentAuthDTO = new PaymentAuthorizationDTO();
         paymentAuthDTO.setProcessor(getProcessorName());
 
-		String txID = paypalResult.getTransactionId();
+        String txID = paypalResult.getTransactionId();
         if (txID != null) {
-		    paymentAuthDTO.setTransactionId(txID);
+            paymentAuthDTO.setTransactionId(txID);
             paymentAuthDTO.setCode1(txID);
-			LOG.debug("transactionId/code1 [" + txID + "]");
-		}
+            LOG.debug("transactionId/code1 [" + txID + "]");
+        }
 
-		String errorMsg = paypalResult.getErrorCode();
-		if (errorMsg != null) {
-		    paymentAuthDTO.setResponseMessage(errorMsg);
-			LOG.debug("errorMessage [" + errorMsg + "]");
-		}
+        String errorMsg = paypalResult.getErrorCode();
+        if (errorMsg != null) {
+            paymentAuthDTO.setResponseMessage(errorMsg);
+            LOG.debug("errorMessage [" + errorMsg + "]");
+        }
 
         String avs = paypalResult.getAvs();
         if(avs != null) {
@@ -263,7 +263,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
         } catch (PayPalException e) {
             LOG.error("Couldn't handle payment request due to error", e);
-			payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return NOT_APPLICABLE;
         }
     }
@@ -282,7 +282,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
         } catch (PayPalException e) {
             LOG.error("Couldn't handle payment request due to error", e);
-			payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return NOT_APPLICABLE;
         }
     }
@@ -303,7 +303,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
         } catch (PayPalException e) {
             LOG.error("Couldn't handle payment request due to error", e);
-			payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return NOT_APPLICABLE;
         }
     }
@@ -322,7 +322,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
 
         } catch (PayPalException e) {
             LOG.error("Couldn't handle payment request due to error", e);
-			payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return NOT_APPLICABLE;
         }
     }
@@ -356,8 +356,8 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         LOG.debug("Payment processing for " + getProcessorName() + " gateway");
 
         if (payment.getPayoutId() != null) {
-			return true;
-		}
+            return true;
+        }
 
         if(!isApplicable(payment)) {
             return NOT_APPLICABLE.shouldCallOtherProcessors();
@@ -382,10 +382,10 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         
         LOG.debug("Confirming pre-authorization for " + getProcessorName() + " gateway");
         if (!getProcessorName().equals(auth.getProcessor())) {
-			/*  let the processor be called and fail, so the caller can do something
-			    about it: probably re-call this payment task as a new "process()" run */
-			LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
-		}
+            /*  let the processor be called and fail, so the caller can do something
+                about it: probably re-call this payment task as a new "process()" run */
+            LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
+        }
         
         CreditCardDTO card = payment.getCreditCard();
         if (card == null) {

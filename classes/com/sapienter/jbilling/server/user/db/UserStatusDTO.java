@@ -46,7 +46,7 @@ public class UserStatusDTO extends AbstractGenericStatus implements java.io.Seri
     public UserStatusDTO() {
     }
 
-	
+    
     public UserStatusDTO(int statusValue, int canLogin) {
         this.statusValue = statusValue;
         this.canLogin = canLogin;

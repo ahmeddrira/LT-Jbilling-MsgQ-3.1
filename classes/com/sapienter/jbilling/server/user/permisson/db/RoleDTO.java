@@ -55,7 +55,7 @@ public class RoleDTO extends AbstractDescription implements java.io.Serializable
     public RoleDTO() {
     }
 
-	
+    
     public RoleDTO(int id) {
         this.id = id;
     }

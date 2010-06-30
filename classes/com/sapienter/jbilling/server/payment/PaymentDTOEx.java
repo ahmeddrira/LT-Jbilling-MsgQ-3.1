@@ -105,7 +105,7 @@ public class PaymentDTOEx extends PaymentDTO {
 
         if (dto.getResultId() != null)
         setPaymentResult(new PaymentResultDAS().find(dto.getResultId()));
-		
+        
         userId = dto.getUserId();
         
         if (dto.getCheque() != null) {
@@ -364,18 +364,18 @@ public class PaymentDTOEx extends PaymentDTO {
         this.payoutId = payoutId;
     }
 
-	/**
-	 * @return Returns the ach.
-	 */
-	public AchDTO getAch() {
-		return ach;
-	}
-	/**
-	 * @param ach The ach to set.
-	 */
-	public void setAch(AchDTO ach) {
-		this.ach = ach;
-	}
+    /**
+     * @return Returns the ach.
+     */
+    public AchDTO getAch() {
+        return ach;
+    }
+    /**
+     * @param ach The ach to set.
+     */
+    public void setAch(AchDTO ach) {
+        this.ach = ach;
+    }
     public List getPaymentMaps() {
         Logger.getLogger(PaymentDTOEx.class).debug("Returning " + 
                 paymentMaps.size() + " elements in the map");

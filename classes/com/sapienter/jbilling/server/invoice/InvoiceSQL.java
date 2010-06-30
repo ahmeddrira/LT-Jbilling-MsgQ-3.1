@@ -28,7 +28,7 @@ public interface InvoiceSQL {
         "       c.symbol, i.total, i.balance " +
         "  from invoice i, currency c " +
         " where i.user_id = ? " +
-		"   and (i.balance >= 0.01 or i.balance <= -0.01) " +
+        "   and (i.balance >= 0.01 or i.balance <= -0.01) " +
         "   and i.is_review = 0 " +
         "   and i.currency_id = c.id " +
         "   and i.deleted = 0 " +

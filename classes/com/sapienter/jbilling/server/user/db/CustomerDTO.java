@@ -94,7 +94,7 @@ public class CustomerDTO  implements java.io.Serializable {
     public CustomerDTO(int id) {
         this.id = id;
     }
-	
+    
     public CustomerDTO(int id, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, int excludeAging) {
         this.id = id;
         this.invoiceDeliveryMethod = invoiceDeliveryMethod;
@@ -102,8 +102,8 @@ public class CustomerDTO  implements java.io.Serializable {
     }
 
     public CustomerDTO(int id, UserDTO baseUser, InvoiceDeliveryMethodDTO invoiceDeliveryMethod, Partner partner, 
-    		Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, 
-    		Integer dueDateValue, Integer dfFm, CustomerDTO parent, Integer isParent, int excludeAging, Integer invoiceChild, Integer currentOrderId) {
+            Integer referralFeePaid, String notes, Integer autoPaymentType, Integer dueDateUnitId, 
+            Integer dueDateValue, Integer dfFm, CustomerDTO parent, Integer isParent, int excludeAging, Integer invoiceChild, Integer currentOrderId) {
        this.id = id;
        this.baseUser = baseUser;
        this.invoiceDeliveryMethod = invoiceDeliveryMethod;
@@ -243,10 +243,10 @@ public class CustomerDTO  implements java.io.Serializable {
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy="parent")
     public Set<CustomerDTO> getChildren() {
-    	return children;
+        return children;
     }
     public void setChildren(Set<CustomerDTO> children) {
-    	this.children = children;
+        this.children = children;
     }
 
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)

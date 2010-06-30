@@ -53,21 +53,21 @@ public final class EventManager {
         // PaymentFailedEvent
         subscriptions.put(PaymentFailedEvent.class, 
                 new Class[] { 
-        			SubscriptionStatusEventProcessor.class,
-        			GatewayAlarmEventProcessor.class,
-        		} );
+                    SubscriptionStatusEventProcessor.class,
+                    GatewayAlarmEventProcessor.class,
+                } );
         // PaymentSuccessful
         subscriptions.put(PaymentSuccessfulEvent.class,
                 new Class[] { 
-        			SubscriptionStatusEventProcessor.class,
-        			GatewayAlarmEventProcessor.class,
-        		} );
+                    SubscriptionStatusEventProcessor.class,
+                    GatewayAlarmEventProcessor.class,
+                } );
         // PaymentProcessorUnavailable
         subscriptions.put(PaymentProcessorUnavailableEvent.class,
                 new Class[] { 
-        			SubscriptionStatusEventProcessor.class,
-        			GatewayAlarmEventProcessor.class,
-        		} );
+                    SubscriptionStatusEventProcessor.class,
+                    GatewayAlarmEventProcessor.class,
+                } );
         // NewActiveUntil (orders)
         subscriptions.put(NewActiveUntilEvent.class,
                 new Class[] { SubscriptionStatusEventProcessor.class, } );

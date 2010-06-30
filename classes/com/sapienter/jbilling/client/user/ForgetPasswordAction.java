@@ -41,20 +41,20 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.util.Context;
 
 public class ForgetPasswordAction extends Action {
-	// Actionmethod for processing "forget password" operation
+    // Actionmethod for processing "forget password" operation
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-    	Logger log = Logger.getLogger(ForgetPasswordAction.class);
-    	ActionErrors errors = new ActionErrors();
+        Logger log = Logger.getLogger(ForgetPasswordAction.class);
+        ActionErrors errors = new ActionErrors();
         ActionMessages messages = new ActionMessages();
-    	
-    	UserLoginForm info = (UserLoginForm) form;
+        
+        UserLoginForm info = (UserLoginForm) form;
         String username = info.getUserName().trim();
         String entityId = info.getEntityId().trim();
-    	
+        
         log.debug("Received ForgetPasswordAction Request with userName " + 
-        		username + " entityId " + entityId);
+                username + " entityId " + entityId);
         
         // now do the call to the business object
         // get the value from a Session EJB 
@@ -62,22 +62,22 @@ public class ForgetPasswordAction extends Action {
             IUserSessionBean myRemoteSession = (IUserSessionBean) 
                     Context.getBean(Context.Name.USER_SESSION);
             myRemoteSession.sendLostPassword(entityId, username);
-    	} catch( NotificationNotFoundException e) {
-    		errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
+        } catch( NotificationNotFoundException e) {
+            errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
                     "forgetPassword.errors.notificationnotactivated"));
-    	} catch (Exception e) {
-        	errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("all.internal"));
+        } catch (Exception e) {
+            errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("all.internal"));
         }
-    	
-    	if (!errors.isEmpty()) {
-    		saveErrors(request, errors);
+        
+        if (!errors.isEmpty()) {
+            saveErrors(request, errors);
             return (new ActionForward(mapping.getInput()));
-    	} else {
+        } else {
             messages.add(ActionMessages.GLOBAL_MESSAGE, 
                     new ActionMessage("forgetPassword.ok"));
             saveMessages(request, messages);
         }
-    	
-    	return mapping.findForward("success");
+        
+        return mapping.findForward("success");
     }
 }

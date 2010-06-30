@@ -33,71 +33,71 @@ import com.sapienter.jbilling.server.list.db.ListFieldDTO;
  * 
  */
 public class PagedListDTO implements Serializable {
-	private Integer count = null;
-	private Integer keyFieldId = null;
-	private Integer pageSize = null;
-	private Integer listId = null;
-	private String titleKey = null;
-	// now only those searchable go here
-	private ListFieldDTO fields[] = null;
+    private Integer count = null;
+    private Integer keyFieldId = null;
+    private Integer pageSize = null;
+    private Integer listId = null;
+    private String titleKey = null;
+    // now only those searchable go here
+    private ListFieldDTO fields[] = null;
 
-	public PagedListDTO() {
-	}
+    public PagedListDTO() {
+    }
 
-	public PagedListDTO(PagedListDTO another) {
-		count = another.getCount();
-		keyFieldId = another.getKeyFieldId();
-		pageSize = another.getPageSize();
-		listId = another.getListId();
-		fields = another.fields;
-		titleKey = another.titleKey;
-	}
+    public PagedListDTO(PagedListDTO another) {
+        count = another.getCount();
+        keyFieldId = another.getKeyFieldId();
+        pageSize = another.getPageSize();
+        listId = another.getListId();
+        fields = another.fields;
+        titleKey = another.titleKey;
+    }
 
-	public Integer getCount() {
-		return count;
-	}
+    public Integer getCount() {
+        return count;
+    }
 
-	public void setCount(Integer count) {
-		this.count = count;
-	}
+    public void setCount(Integer count) {
+        this.count = count;
+    }
 
-	public Integer getKeyFieldId() {
-		return keyFieldId;
-	}
+    public Integer getKeyFieldId() {
+        return keyFieldId;
+    }
 
-	public void setKeyFieldId(Integer keyFieldId) {
-		this.keyFieldId = keyFieldId;
-	}
+    public void setKeyFieldId(Integer keyFieldId) {
+        this.keyFieldId = keyFieldId;
+    }
 
-	public Integer getPageSize() {
-		return pageSize;
-	}
+    public Integer getPageSize() {
+        return pageSize;
+    }
 
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
 
-	public Integer getListId() {
-		return listId;
-	}
+    public Integer getListId() {
+        return listId;
+    }
 
-	public void setListId(Integer listId) {
-		this.listId = listId;
-	}
+    public void setListId(Integer listId) {
+        this.listId = listId;
+    }
 
-	public ListFieldDTO[] getFields() {
-		return fields;
-	}
+    public ListFieldDTO[] getFields() {
+        return fields;
+    }
 
-	public void setFields(ListFieldDTO[] fields) {
-		this.fields = fields;
-	}
+    public void setFields(ListFieldDTO[] fields) {
+        this.fields = fields;
+    }
 
-	public String getTitleKey() {
-		return titleKey;
-	}
+    public String getTitleKey() {
+        return titleKey;
+    }
 
-	public void setTitleKey(String titleKey) {
-		this.titleKey = titleKey;
-	}
+    public void setTitleKey(String titleKey) {
+        this.titleKey = titleKey;
+    }
 }

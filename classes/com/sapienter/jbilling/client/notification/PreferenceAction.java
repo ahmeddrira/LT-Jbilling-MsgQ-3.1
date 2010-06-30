@@ -41,60 +41,60 @@ import com.sapienter.jbilling.client.util.PreferencesMap;
  * 
  */
 public class PreferenceAction extends PreferencesCrudActionBase<PreferenceActionContext> {
-	private static final String MESSAGE_UPDATED_OK = "notification.preference.update";
-	private static final String FORM = "notificationPreference";
-	private static final String FORWARD_EDIT = "notificationPreference_edit";
+    private static final String MESSAGE_UPDATED_OK = "notification.preference.update";
+    private static final String FORM = "notificationPreference";
+    private static final String FORWARD_EDIT = "notificationPreference_edit";
 
-	private static final String FIELD_SELF_DELIVERY = "chbx_self_delivery";
-	private static final String FIELD_SHOW_NOTES = "chbx_show_notes";
-	private static final String FIELD_ORDER_DAYS_1 = "order_days1";
-	private static final String FIELD_ORDER_DAYS_2 = "order_days2";
-	private static final String FIELD_ORDER_DAYS_3 = "order_days3";
-	private static final String FIELD_INVOICE_REMINDER = "chbx_invoice_reminders";
-	private static final String FIELD_FIRST_REMINDER = "first_reminder";
-	private static final String FIELD_NEXT_REMINDER = "next_reminder";
+    private static final String FIELD_SELF_DELIVERY = "chbx_self_delivery";
+    private static final String FIELD_SHOW_NOTES = "chbx_show_notes";
+    private static final String FIELD_ORDER_DAYS_1 = "order_days1";
+    private static final String FIELD_ORDER_DAYS_2 = "order_days2";
+    private static final String FIELD_ORDER_DAYS_3 = "order_days3";
+    private static final String FIELD_INVOICE_REMINDER = "chbx_invoice_reminders";
+    private static final String FIELD_FIRST_REMINDER = "first_reminder";
+    private static final String FIELD_NEXT_REMINDER = "next_reminder";
 
-	public PreferenceAction() {
-		super(FORM, "notification preferences", FORWARD_EDIT);
-	}
-	
-	@Override
-	protected PreferenceActionContext doEditFormToDTO() throws RemoteException {
-		PreferenceActionContext result = new PreferenceActionContext(); 
-		result.setSelfDelivery(getCheckBoxBooleanValue(FIELD_SELF_DELIVERY));
-		result.setShowNotes(getCheckBoxBooleanValue(FIELD_SHOW_NOTES));
-		result.setInvoiceReminders(getCheckBoxBooleanValue(FIELD_INVOICE_REMINDER));
-		result.setOrderDays1(getIntegerFieldValue(FIELD_ORDER_DAYS_1));
-		result.setOrderDays2(getIntegerFieldValue(FIELD_ORDER_DAYS_2));
-		result.setOrderDays3(getIntegerFieldValue(FIELD_ORDER_DAYS_3));
-		
-		result.setFirstReminder(getIntegerFieldValue(FIELD_FIRST_REMINDER));
-		result.setNextReminder(getIntegerFieldValue(FIELD_NEXT_REMINDER));
-		
-		if (!result.validateDayValuesIncremental()){
+    public PreferenceAction() {
+        super(FORM, "notification preferences", FORWARD_EDIT);
+    }
+    
+    @Override
+    protected PreferenceActionContext doEditFormToDTO() throws RemoteException {
+        PreferenceActionContext result = new PreferenceActionContext(); 
+        result.setSelfDelivery(getCheckBoxBooleanValue(FIELD_SELF_DELIVERY));
+        result.setShowNotes(getCheckBoxBooleanValue(FIELD_SHOW_NOTES));
+        result.setInvoiceReminders(getCheckBoxBooleanValue(FIELD_INVOICE_REMINDER));
+        result.setOrderDays1(getIntegerFieldValue(FIELD_ORDER_DAYS_1));
+        result.setOrderDays2(getIntegerFieldValue(FIELD_ORDER_DAYS_2));
+        result.setOrderDays3(getIntegerFieldValue(FIELD_ORDER_DAYS_3));
+        
+        result.setFirstReminder(getIntegerFieldValue(FIELD_FIRST_REMINDER));
+        result.setNextReminder(getIntegerFieldValue(FIELD_NEXT_REMINDER));
+        
+        if (!result.validateDayValuesIncremental()){
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("notification.orderDays.error"));
-		}
-		
-		if (!result.validateReminders()){
+        }
+        
+        if (!result.validateReminders()){
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("notification.reminders.error"));
-		}
-		
-		return result;
-	}
-	
-	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
+        }
+        
+        return result;
+    }
+    
+    @Override
+    protected ForwardAndMessage doSetup() throws RemoteException {
         Integer[] ids = new Integer[] { //
-        		Constants.PREFERENCE_PAPER_SELF_DELIVERY, 
-        		Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE, 
-        		Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1, 
-        		Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2, 
-        		Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3, 
-        		Constants.PREFERENCE_FIRST_REMINDER, 
-        		Constants.PREFERENCE_NEXT_REMINDER, 
-        		Constants.PREFERENCE_USE_INVOICE_REMINDERS,
+                Constants.PREFERENCE_PAPER_SELF_DELIVERY, 
+                Constants.PREFERENCE_SHOW_NOTE_IN_INVOICE, 
+                Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S1, 
+                Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S2, 
+                Constants.PREFERENCE_DAYS_ORDER_NOTIFICATION_S3, 
+                Constants.PREFERENCE_FIRST_REMINDER, 
+                Constants.PREFERENCE_NEXT_REMINDER, 
+                Constants.PREFERENCE_USE_INVOICE_REMINDERS,
         };
         PreferencesMap prefs = getEntityPreferences(ids);
         
@@ -110,13 +110,13 @@ public class PreferenceAction extends PreferencesCrudActionBase<PreferenceAction
         myForm.set(FIELD_NEXT_REMINDER, prefs.getString(Constants.PREFERENCE_NEXT_REMINDER));
         
         return getForwardEdit();
-	}
+    }
 
-	@Override
-	protected ForwardAndMessage doUpdate(PreferenceActionContext dto) throws RemoteException {
-		HashMap<Integer, Integer> preferencesMap = dto.asPreferencesMap();
+    @Override
+    protected ForwardAndMessage doUpdate(PreferenceActionContext dto) throws RemoteException {
+        HashMap<Integer, Integer> preferencesMap = dto.asPreferencesMap();
         getUserSession().setEntityParameters(entityId, preferencesMap);
         return getForwardEdit(MESSAGE_UPDATED_OK);
-	}
+    }
 
 }

@@ -49,13 +49,13 @@ public class JBillingListener implements ServletContextListener {
 
     private static final Logger LOG = Logger.getLogger(JBillingListener.class);
 
-	public void contextInitialized(ServletContextEvent event) {
-		
+    public void contextInitialized(ServletContextEvent event) {
+        
         // validate that the java version is correct
         validateJava();
-		
+        
         // initializes scheduled billing batch processes
-		Trigger.Initialize();
+        Trigger.Initialize();
 
         // initializes ScheduledTask plug-ins
         JobScheduler scheduler = JobScheduler.getInstance();

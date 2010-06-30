@@ -55,7 +55,7 @@ public class JbillingTable  implements java.io.Serializable {
     public JbillingTable() {
     }
 
-	
+    
     public JbillingTable(int id, String name, int nextId) {
         this.id = id;
         this.name = name;

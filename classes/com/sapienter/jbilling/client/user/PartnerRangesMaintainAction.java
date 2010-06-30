@@ -45,39 +45,39 @@ import com.sapienter.jbilling.server.util.Context;
  * @author Emil
  */
 public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMaintainActionContext> {
-	private static final String MESSAGE_UPDATED_OK = "partner.ranges.updated";
+    private static final String MESSAGE_UPDATED_OK = "partner.ranges.updated";
 
-	private static final String FORM = "ranges";
+    private static final String FORM = "ranges";
 
-	private static final String FIELD_REFERRAL_FEE = "referral_fee";
-	private static final String FIELD_PERCENTAGE = "percentage_rate";
-	private static final String FIELD_RANGE_TO = "range_to";
-	private static final String FIELD_RANGE_FROM = "range_from";
+    private static final String FIELD_REFERRAL_FEE = "referral_fee";
+    private static final String FIELD_PERCENTAGE = "percentage_rate";
+    private static final String FIELD_RANGE_TO = "range_to";
+    private static final String FIELD_RANGE_FROM = "range_from";
 
-	private static final String FORWARD_EDIT = "ranges_edit";
-	private static final String FORWARD_PARTNER = "partner_list";
+    private static final String FORWARD_EDIT = "ranges_edit";
+    private static final String FORWARD_PARTNER = "partner_list";
 
-	private IUserSessionBean myUserSession;
-	
-	public PartnerRangesMaintainAction(){
-		super(FORM, "ranges");
+    private IUserSessionBean myUserSession;
+    
+    public PartnerRangesMaintainAction(){
+        super(FORM, "ranges");
         try {
             myUserSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
         } catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing order CRUD action: " + e.getMessage());
+            throw new SessionInternalError(
+                    "Initializing order CRUD action: " + e.getMessage());
         }
-	}
-	
-	@Override
-	protected void preEdit() {
-		super.preEdit();
-		setForward(FORWARD_EDIT);
-	}
-	
-	@Override
-	protected PartnerRangedMaintainActionContext doEditFormToDTO() {
+    }
+    
+    @Override
+    protected void preEdit() {
+        super.preEdit();
+        setForward(FORWARD_EDIT);
+    }
+    
+    @Override
+    protected PartnerRangedMaintainActionContext doEditFormToDTO() {
         String from[] = (String[]) myForm.get(FIELD_RANGE_FROM);
         String to[] = (String[]) myForm.get(FIELD_RANGE_TO);
         String percentage[] = (String[]) myForm.get(FIELD_PERCENTAGE);
@@ -97,7 +97,7 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
                             (range.getPercentageRate() == null && range.getReferralFee() == null) ||
                             (range.getPercentageRate() != null && range.getReferralFee() != null)) {
                     
-                    	errors.add(ActionErrors.GLOBAL_ERROR,
+                        errors.add(ActionErrors.GLOBAL_ERROR,
                                 new ActionError("partner.ranges.error", f + 1));
                     } else {
                         ranges.add(range);
@@ -118,7 +118,7 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
             validateRanges(ranges);
         }
         return new PartnerRangedMaintainActionContext(data);
-	}
+    }
 
     /**
      * validate that the ranges start from 1, have no superpositions and
@@ -142,28 +142,28 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
             }
         }
     }
-	
-	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
+    
+    @Override
+    protected ForwardAndMessage doSetup() throws RemoteException {
         Partner partner = (Partner) session.getAttribute(
                 Constants.SESSION_PARTNER_DTO);
         final int MAX_RANGES = 20;
         String[] allFrom = new String[MAX_RANGES];
-		String[] allTo = new String[MAX_RANGES];
-		String[] allPercentages = new String[MAX_RANGES];
-		String[] allReferralFees = new String[MAX_RANGES];
+        String[] allTo = new String[MAX_RANGES];
+        String[] allPercentages = new String[MAX_RANGES];
+        String[] allReferralFees = new String[MAX_RANGES];
 
         ArrayList<PartnerRange> ranges = new ArrayList(partner.getRanges());
         Collections.sort(ranges, new PartnerRangeComparator());
         int numOfRanges = Math.min(MAX_RANGES, partner.getRanges().size());
 
-		for (int f = 0; f < numOfRanges; f++) {
-			PartnerRange next = ranges.get(f);
-			allFrom[f] = String.valueOf(next.getRangeFrom());
-			allTo[f] = String.valueOf(next.getRangeTo());
-			allPercentages[f] = float2string(next.getPercentageRate());
-			allReferralFees[f] = float2string(next.getReferralFee());
-		}
+        for (int f = 0; f < numOfRanges; f++) {
+            PartnerRange next = ranges.get(f);
+            allFrom[f] = String.valueOf(next.getRangeFrom());
+            allTo[f] = String.valueOf(next.getRangeTo());
+            allPercentages[f] = float2string(next.getPercentageRate());
+            allReferralFees[f] = float2string(next.getReferralFee());
+        }
 
         myForm.set(FIELD_RANGE_FROM, allFrom);
         myForm.set(FIELD_RANGE_TO, allTo);
@@ -171,38 +171,38 @@ public class PartnerRangesMaintainAction extends CrudActionBase<PartnerRangedMai
         myForm.set(FIELD_REFERRAL_FEE, allReferralFees);
         
         return new ForwardAndMessage(FORWARD_EDIT);
-	}
-	
-	@Override
-	protected ForwardAndMessage doUpdate(PartnerRangedMaintainActionContext dto) throws RemoteException {
+    }
+    
+    @Override
+    protected ForwardAndMessage doUpdate(PartnerRangedMaintainActionContext dto) throws RemoteException {
         Partner partner = (Partner) session.getAttribute(
                 Constants.SESSION_PARTNER_DTO);
         
         partner.getRanges().addAll(Arrays.asList(dto.getData()));
         myUserSession.updatePartnerRanges(//
-        		executorId, partner.getId(), dto.getData());
+                executorId, partner.getId(), dto.getData());
         return new ForwardAndMessage(FORWARD_PARTNER, MESSAGE_UPDATED_OK);
-	}
-	
-	@Override
-	protected ForwardAndMessage doCreate(PartnerRangedMaintainActionContext dto) {
-		throw new IllegalArgumentException("At max 20 ranges are supported. " +
-				"Direct create is not available");
-	}
-	
-	@Override
-	protected ForwardAndMessage doDelete() throws RemoteException {
-		throw new UnsupportedOperationException("Direct delete is not available. " +
-				"Just clear the data from one of the ranges");
-	}
-	
-	@Override
-	protected void resetCachedList() {
-		session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
-	}
-	
-	private Integer parseInteger(String text){
-		return getFormHelper().parseInteger(text);
-	}
-	
+    }
+    
+    @Override
+    protected ForwardAndMessage doCreate(PartnerRangedMaintainActionContext dto) {
+        throw new IllegalArgumentException("At max 20 ranges are supported. " +
+                "Direct create is not available");
+    }
+    
+    @Override
+    protected ForwardAndMessage doDelete() throws RemoteException {
+        throw new UnsupportedOperationException("Direct delete is not available. " +
+                "Just clear the data from one of the ranges");
+    }
+    
+    @Override
+    protected void resetCachedList() {
+        session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
+    }
+    
+    private Integer parseInteger(String text){
+        return getFormHelper().parseInteger(text);
+    }
+    
 }

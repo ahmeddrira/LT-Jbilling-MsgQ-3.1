@@ -84,7 +84,7 @@ public class ContactDTO  implements java.io.Serializable {
     public ContactDTO() {
     }
 
-	
+    
     public ContactDTO(int id, Date createDatetime, int deleted) {
         this.id = id;
         this.createDate = createDatetime;

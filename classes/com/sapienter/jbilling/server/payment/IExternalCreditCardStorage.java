@@ -39,5 +39,5 @@ public interface IExternalCreditCardStorage {
      * @param creditCard credit card to store, may be null if triggered by NewContactEvent without credit card.
      * @return gateway key of stored credit card, null if storage failed
      */
-	public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard);
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard);
 }

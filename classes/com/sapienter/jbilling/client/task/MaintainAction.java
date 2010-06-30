@@ -37,57 +37,57 @@ import com.sapienter.jbilling.server.util.Context;
 import java.util.ArrayList;
 
 public class MaintainAction extends
-		UpdateOnlyCrudActionBase<PluggableTaskDTO> {
+        UpdateOnlyCrudActionBase<PluggableTaskDTO> {
 
-	private static final String FORM_PARAMETER = "parameter";
-	private static final String MESSAGE_UPDATED = "task.parameter.update.done";
-	private static final String FORWARD_EDIT = "parameter_edit";
-	
-	private final IPluggableTaskSessionBean mySession;
+    private static final String FORM_PARAMETER = "parameter";
+    private static final String MESSAGE_UPDATED = "task.parameter.update.done";
+    private static final String FORWARD_EDIT = "parameter_edit";
+    
+    private final IPluggableTaskSessionBean mySession;
 
-	public MaintainAction() {
-		super(FORM_PARAMETER, "pluggable task parameters",
-				FORWARD_EDIT);
+    public MaintainAction() {
+        super(FORM_PARAMETER, "pluggable task parameters",
+                FORWARD_EDIT);
 
-		try {
-			mySession = (IPluggableTaskSessionBean) Context.getBean(
+        try {
+            mySession = (IPluggableTaskSessionBean) Context.getBean(
                     Context.Name.PLUGGABLE_TASK_SESSION);
-		} catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing pluggable task parameters CRUD action: " + e.getMessage());
+        } catch (Exception e) {
+            throw new SessionInternalError(
+                    "Initializing pluggable task parameters CRUD action: " + e.getMessage());
 
-		}
-	}
+        }
+    }
 
-	@Override
-	protected PluggableTaskDTO doEditFormToDTO() {
-		PluggableTaskDTO result = (PluggableTaskDTO) session
-				.getAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO);
-		String values[] = (String[]) myForm.get("value");
-		String names[] = (String[]) myForm.get("name");
+    @Override
+    protected PluggableTaskDTO doEditFormToDTO() {
+        PluggableTaskDTO result = (PluggableTaskDTO) session
+                .getAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO);
+        String values[] = (String[]) myForm.get("value");
+        String names[] = (String[]) myForm.get("name");
 
-		List<PluggableTaskParameterDTO> allParams = getParamsImpl(result);
-		for (int f = 0; f < values.length; f++) {
-			PluggableTaskParameterDTO next = allParams.get(f);
-			next.setValue(values[f]);
-			try {
-				next.expandValue();
-			} catch (NumberFormatException e) {
-				errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
-						"task.parameter.prompt.invalid", names[f]));
-			}
-		}
-		return result;
-	}
-	
-	@Override
-	protected ForwardAndMessage doUpdate(PluggableTaskDTO dto) {
+        List<PluggableTaskParameterDTO> allParams = getParamsImpl(result);
+        for (int f = 0; f < values.length; f++) {
+            PluggableTaskParameterDTO next = allParams.get(f);
+            next.setValue(values[f]);
+            try {
+                next.expandValue();
+            } catch (NumberFormatException e) {
+                errors.add(ActionErrors.GLOBAL_ERROR, new ActionError(
+                        "task.parameter.prompt.invalid", names[f]));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    protected ForwardAndMessage doUpdate(PluggableTaskDTO dto) {
         mySession.updateParameters(executorId, dto);
         return getForwardEdit(MESSAGE_UPDATED);
-	}
-	
-	@Override
-	protected ForwardAndMessage doSetup() {
+    }
+    
+    @Override
+    protected ForwardAndMessage doSetup() {
         Integer type = null;
         if (request.getParameter("type").equals("notification")) {
             type = PluggableTaskDTO.TYPE_EMAIL;
@@ -108,16 +108,16 @@ public class MaintainAction extends
         // this will be needed for the update                    
         session.setAttribute(Constants.SESSION_PLUGGABLE_TASK_DTO, dto);
         return getForwardEdit();
-	}
-	
-	protected boolean isCancelled(HttpServletRequest request) {
-		return !request.getParameter("mode").equals("setup")
-				|| super.isCancelled(request);
-	}
-	
-	private List<PluggableTaskParameterDTO> getParamsImpl(PluggableTaskDTO dto){
-		return new ArrayList<PluggableTaskParameterDTO>(dto.getParameters());
-	}
+    }
+    
+    protected boolean isCancelled(HttpServletRequest request) {
+        return !request.getParameter("mode").equals("setup")
+                || super.isCancelled(request);
+    }
+    
+    private List<PluggableTaskParameterDTO> getParamsImpl(PluggableTaskDTO dto){
+        return new ArrayList<PluggableTaskParameterDTO>(dto.getParameters());
+    }
 
 
 }

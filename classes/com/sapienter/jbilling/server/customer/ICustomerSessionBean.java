@@ -25,6 +25,6 @@ import com.sapienter.jbilling.server.user.ContactDTOEx;
 
 public interface ICustomerSessionBean {
 
-	public ContactDTOEx getPrimaryContactDTO(Integer userId)
+    public ContactDTOEx getPrimaryContactDTO(Integer userId)
             throws SessionInternalError;
 }

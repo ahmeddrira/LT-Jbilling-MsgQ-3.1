@@ -20,5 +20,5 @@
 package com.sapienter.jbilling.server.notification.barcode;
 
 public enum Checksum {
-	ADD, AUTO, CHECK, IGNORE
+    ADD, AUTO, CHECK, IGNORE
 }

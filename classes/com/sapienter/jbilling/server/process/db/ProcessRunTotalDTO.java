@@ -43,112 +43,112 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @TableGenerator(
-		name = "process_run_total_GEN", 
-		table = "jbilling_seqs", 
-		pkColumnName = "name", 
-		valueColumnName = "next_id", 
-		pkColumnValue = "process_run_total", 
-		allocationSize = 100)
+        name = "process_run_total_GEN", 
+        table = "jbilling_seqs", 
+        pkColumnName = "name", 
+        valueColumnName = "next_id", 
+        pkColumnValue = "process_run_total", 
+        allocationSize = 100)
 @Table(name = "process_run_total")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ProcessRunTotalDTO implements java.io.Serializable {
 
-	private int id;
-	private ProcessRunDTO processRun;
-	private CurrencyDTO currencyDTO;
-	private BigDecimal totalInvoiced;
-	private BigDecimal totalPaid;
-	private BigDecimal totalNotPaid;
+    private int id;
+    private ProcessRunDTO processRun;
+    private CurrencyDTO currencyDTO;
+    private BigDecimal totalInvoiced;
+    private BigDecimal totalPaid;
+    private BigDecimal totalNotPaid;
 
-	private Set<ProcessRunTotalPmDTO> totalsPaymentMethod = new HashSet<ProcessRunTotalPmDTO>(0);
-	private int versionNum;
-	
-	public ProcessRunTotalDTO() {
-	}
+    private Set<ProcessRunTotalPmDTO> totalsPaymentMethod = new HashSet<ProcessRunTotalPmDTO>(0);
+    private int versionNum;
+    
+    public ProcessRunTotalDTO() {
+    }
 
-	public ProcessRunTotalDTO(int id, CurrencyDTO currencyDTO) {
-		this.id = id;
-		this.currencyDTO = currencyDTO;
-	}
+    public ProcessRunTotalDTO(int id, CurrencyDTO currencyDTO) {
+        this.id = id;
+        this.currencyDTO = currencyDTO;
+    }
 
-	public ProcessRunTotalDTO(int id, ProcessRunDTO processRun, CurrencyDTO currencyDTO,
+    public ProcessRunTotalDTO(int id, ProcessRunDTO processRun, CurrencyDTO currencyDTO,
                               BigDecimal totalInvoiced, BigDecimal totalPaid, BigDecimal totalNotPaid) {
-		this.id = id;
-		this.processRun = processRun;
-		this.currencyDTO = currencyDTO;
-		this.totalInvoiced = totalInvoiced;
-		this.totalPaid = totalPaid;
-		this.totalNotPaid = totalNotPaid;
-	}
+        this.id = id;
+        this.processRun = processRun;
+        this.currencyDTO = currencyDTO;
+        this.totalInvoiced = totalInvoiced;
+        this.totalPaid = totalPaid;
+        this.totalNotPaid = totalNotPaid;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "process_run_total_GEN")
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "process_run_total_GEN")
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "process_run_id")
-	public ProcessRunDTO getProcessRun() {
-		return this.processRun;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "process_run_id")
+    public ProcessRunDTO getProcessRun() {
+        return this.processRun;
+    }
 
-	public void setProcessRun(ProcessRunDTO processRun) {
-		this.processRun = processRun;
-	}
+    public void setProcessRun(ProcessRunDTO processRun) {
+        this.processRun = processRun;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "currency_id", nullable = false)
-	public CurrencyDTO getCurrency() {
-		return this.currencyDTO;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id", nullable = false)
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
+    }
 
-	public void setCurrency(CurrencyDTO currencyDTO) {
-		this.currencyDTO = currencyDTO;
-	}
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
+    }
 
-	@Column(name = "total_invoiced", precision = 17, scale = 17)
-	public BigDecimal getTotalInvoiced() {
-		return this.totalInvoiced;
-	}
+    @Column(name = "total_invoiced", precision = 17, scale = 17)
+    public BigDecimal getTotalInvoiced() {
+        return this.totalInvoiced;
+    }
 
-	public void setTotalInvoiced(BigDecimal totalInvoiced) {
-		this.totalInvoiced = totalInvoiced;
-	}
+    public void setTotalInvoiced(BigDecimal totalInvoiced) {
+        this.totalInvoiced = totalInvoiced;
+    }
 
-	@Column(name = "total_paid", precision = 17, scale = 17)
-	public BigDecimal getTotalPaid() {
-		return this.totalPaid;
-	}
+    @Column(name = "total_paid", precision = 17, scale = 17)
+    public BigDecimal getTotalPaid() {
+        return this.totalPaid;
+    }
 
-	public void setTotalPaid(BigDecimal totalPaid) {
-		this.totalPaid = totalPaid;
-	}
+    public void setTotalPaid(BigDecimal totalPaid) {
+        this.totalPaid = totalPaid;
+    }
 
-	@Column(name = "total_not_paid", precision = 17, scale = 17)
-	public BigDecimal getTotalNotPaid() {
-		return this.totalNotPaid;
-	}
+    @Column(name = "total_not_paid", precision = 17, scale = 17)
+    public BigDecimal getTotalNotPaid() {
+        return this.totalNotPaid;
+    }
 
-	public void setTotalNotPaid(BigDecimal totalNotPaid) {
-		this.totalNotPaid = totalNotPaid;
-	}
+    public void setTotalNotPaid(BigDecimal totalNotPaid) {
+        this.totalNotPaid = totalNotPaid;
+    }
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="processRunTotal")
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="processRunTotal")
     public Set<ProcessRunTotalPmDTO> getTotalsPaymentMethod() {
         return totalsPaymentMethod;
     }
-	
-	public void setTotalsPaymentMethod(Set<ProcessRunTotalPmDTO> totalsPaymentMethod) {
-		this.totalsPaymentMethod = totalsPaymentMethod;
-	}
+    
+    public void setTotalsPaymentMethod(Set<ProcessRunTotalPmDTO> totalsPaymentMethod) {
+        this.totalsPaymentMethod = totalsPaymentMethod;
+    }
 
-	@Version
+    @Version
     @Column(name="OPTLOCK")
     public int getVersionNum() {
         return versionNum;

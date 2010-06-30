@@ -43,8 +43,8 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
     public void addItem(Integer itemID, Integer quantity, Integer language,
             Integer userId, Integer entityId, Integer currencyId,
             OrderDTO newOrder, List<Record> records) throws TaskException {
-    	
-    	addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId,
+        
+        addItem(itemID, new BigDecimal(quantity), language, userId, entityId, currencyId,
             newOrder, records);
     }
     
@@ -56,19 +56,19 @@ public class BasicItemManager extends PluggableTask implements IItemPurchaseMana
 
         // Validate decimal quantity with the item
         if (quantity.remainder(Constants.BIGDECIMAL_ONE).compareTo(BigDecimal.ZERO) > 0) {        
-    		try {
-	        	ItemBL bl = new ItemBL();
-	        	bl.set(itemID);
-		        if( bl.getEntity().getHasDecimals().intValue() == 0 ) {
-		        	latestLine = null;
-		        	throw new ItemDecimalsException( "Item does not allow Decimals" );
-		        }
-    		} catch( Exception e ) {
-    			throw new TaskException(e);
-    		}
-    	}
+            try {
+                ItemBL bl = new ItemBL();
+                bl.set(itemID);
+                if( bl.getEntity().getHasDecimals().intValue() == 0 ) {
+                    latestLine = null;
+                    throw new ItemDecimalsException( "Item does not allow Decimals" );
+                }
+            } catch( Exception e ) {
+                throw new TaskException(e);
+            }
+        }
         
-    	// check if the item is already in the order
+        // check if the item is already in the order
         OrderLineDTO line = (OrderLineDTO) newOrder.getLine(itemID);
 
         OrderLineDTO myLine = new OrderLineDTO();

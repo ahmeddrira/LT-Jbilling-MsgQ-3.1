@@ -47,19 +47,19 @@ public class PricingField {
      * @param encoded encoded string to parse
      */
     public PricingField(String encoded) {
-    	String[] fields = encoded.split(":");
+        String[] fields = encoded.split(":");
 
         if (fields == null || fields.length != 4) {
-    		this.name = "";
-    		this.type = Type.INTEGER;
+            this.name = "";
+            this.type = Type.INTEGER;
             this.value = "0";
-    		return;
-    	}
+            return;
+        }
 
-    	this.name = fields[0];
-    	this.position = Integer.parseInt(fields[1]);
-    	this.type = mapType(fields[2]);
-    	this.value = fields[3]; 
+        this.name = fields[0];
+        this.position = Integer.parseInt(fields[1]);
+        this.type = mapType(fields[2]);
+        this.value = fields[3]; 
     }
 
     /**
@@ -200,9 +200,9 @@ public class PricingField {
     public Calendar getCalendarValue() {
         if (value == null) return null;
 
-    	Calendar cal = Calendar.getInstance();
-    	cal.setTime(getDateValue());
-    	return cal;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getDateValue());
+        return cal;
     }
 
     public Integer getIntValue() {
@@ -309,12 +309,12 @@ public class PricingField {
      * @return encoded string
      */
     public static String encode(PricingField field) {
-    	StringBuffer sb = new StringBuffer()
+        StringBuffer sb = new StringBuffer()
             .append(field.getName())
             .append(":")
             .append(field.getPosition());
 
-    	switch(field.getType()) {
+        switch(field.getType()) {
             case STRING:
                 sb.append(":string:");
                 break;
@@ -333,11 +333,11 @@ public class PricingField {
             case BOOLEAN:
                 sb.append(":boolean:");
                 break;
-    	}
+        }
 
         sb.append(field.getStrValue());
 
-    	return sb.toString();
+        return sb.toString();
     }
 
     /**
@@ -348,20 +348,20 @@ public class PricingField {
      * @return array of fields
      */
     public static PricingField[] getPricingFieldsValue(String pricingFields) {
-		if (pricingFields == null)
-			return null;
-		String[] fields = pricingFields.split(",");
-		if (fields == null || fields.length == 0) {
-			return null;
-		}
-		List<PricingField> result = new ArrayList<PricingField>();
-		for (int i = 0; i < fields.length; i++) {
-			if (fields[i] != null && !fields[i].equals("") && fields[i].split(":").length == 4) {
-				result.add(new PricingField(fields[i]));
-			}
-		}
-		return result.toArray(new PricingField[0]); 
-	}
+        if (pricingFields == null)
+            return null;
+        String[] fields = pricingFields.split(",");
+        if (fields == null || fields.length == 0) {
+            return null;
+        }
+        List<PricingField> result = new ArrayList<PricingField>();
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i] != null && !fields[i].equals("") && fields[i].split(":").length == 4) {
+                result.add(new PricingField(fields[i]));
+            }
+        }
+        return result.toArray(new PricingField[0]); 
+    }
 
     /**
      * Returns a comma separated list of encoded PricingField strings from the given
@@ -370,19 +370,19 @@ public class PricingField {
      * @param pricingFields array of fields to convert
      * @return comma separated list of encoded pricing field strings
      */
-	public static String setPricingFieldsValue(PricingField[] pricingFields) {
-		PricingField[] fields = pricingFields; // defensive copy
-		StringBuffer result = new StringBuffer();
-		if (fields != null && fields.length > 0) {
-			for (int i = 0; i < fields.length; i++) {
-				result.append(PricingField.encode(fields[i]));
-				if (i < (fields.length - 1)) {
-					result.append(",");
-				}
-			}
-		}
-		return result.toString();
-	}
+    public static String setPricingFieldsValue(PricingField[] pricingFields) {
+        PricingField[] fields = pricingFields; // defensive copy
+        StringBuffer result = new StringBuffer();
+        if (fields != null && fields.length > 0) {
+            for (int i = 0; i < fields.length; i++) {
+                result.append(PricingField.encode(fields[i]));
+                if (i < (fields.length - 1)) {
+                    result.append(",");
+                }
+            }
+        }
+        return result.toString();
+    }
 
     @Override
     public String toString() {

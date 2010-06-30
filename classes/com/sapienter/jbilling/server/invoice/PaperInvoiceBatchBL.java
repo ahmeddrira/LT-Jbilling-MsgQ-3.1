@@ -71,8 +71,8 @@ public class PaperInvoiceBatchBL {
     }
     
     public PaperInvoiceBatchBL(PaperInvoiceBatchDTO batch) {
-    	init();
-    	this.batch = batch;
+        init();
+        this.batch = batch;
     }
 
     public PaperInvoiceBatchBL() {
@@ -118,20 +118,20 @@ public class PaperInvoiceBatchBL {
      * This then will facilitate the printing of a batch.
      */
     public void compileInvoiceFilesForProcess(Integer entityId) 
-    		throws DocumentException, IOException {
-    	String filePrefix = Util.getSysProp("base_dir") + "invoices/" + 
+            throws DocumentException, IOException {
+        String filePrefix = Util.getSysProp("base_dir") + "invoices/" + 
             entityId + "-";
-    	// now go through each of the invoices
+        // now go through each of the invoices
         // first - sort them
         List invoices = new ArrayList(batch.getInvoices());
         Collections.sort(invoices, new InvoiceEntityComparator());
         Integer[] invoicesIds = new Integer[invoices.size()];
 
 
-    	for (int f = 0; f < invoices.size(); f++) {
-    		InvoiceDTO invoice = (InvoiceDTO) invoices.get(f);
+        for (int f = 0; f < invoices.size(); f++) {
+            InvoiceDTO invoice = (InvoiceDTO) invoices.get(f);
             invoicesIds[f] = invoice.getId();
-    	}
+        }
         
         compileInvoiceFiles(filePrefix, new Integer(batch.getId()).toString(), entityId,
                 invoicesIds);
@@ -203,9 +203,9 @@ public class PaperInvoiceBatchBL {
             writer.setOutlines(master);
         // step 5: we close the document
         if (document != null) {
-        	document.close();
+            document.close();
         } else {
-        	LOG.warn("document == null");
+            LOG.warn("document == null");
         }
 
         LOG.debug("PDF batch file is ready " + outFile);
@@ -213,23 +213,23 @@ public class PaperInvoiceBatchBL {
 
     
     public void sendEmail() {
-    	Integer entityId = batch.getProcess().getEntity().getId();
-    	
-    	PreferenceBL prefBL = new PreferenceBL();
-    	prefBL.set(entityId, Constants.PREFERENCE_PAPER_SELF_DELIVERY);
-    	Boolean selfDelivery = new Boolean(prefBL.getInt() == 1);
-    	// If the entity doesn't want to delivery the invoices, then
-    	// sapienter has to. Entity 1 is always sapienter.
+        Integer entityId = batch.getProcess().getEntity().getId();
+        
+        PreferenceBL prefBL = new PreferenceBL();
+        prefBL.set(entityId, Constants.PREFERENCE_PAPER_SELF_DELIVERY);
+        Boolean selfDelivery = new Boolean(prefBL.getInt() == 1);
+        // If the entity doesn't want to delivery the invoices, then
+        // sapienter has to. Entity 1 is always sapienter.
         Integer pritingEntity;
-    	if (!selfDelivery.booleanValue()) {
+        if (!selfDelivery.booleanValue()) {
             pritingEntity = new Integer(1);
-    	} else {
-    	    pritingEntity = entityId;
+        } else {
+            pritingEntity = entityId;
         }
-    	try {
+        try {
             NotificationBL.sendSapienterEmail(pritingEntity, "invoice_batch",
-            		Util.getSysProp("base_dir") + "invoices/" + entityId + 
-            		"-" + batch.getId() + "-batch.pdf", null);
+                    Util.getSysProp("base_dir") + "invoices/" + entityId + 
+                    "-" + batch.getId() + "-batch.pdf", null);
         } catch (Exception e) {
             LOG.error("Could no send the email with the paper invoices " +
                     "for entity " + entityId, e);

@@ -25,15 +25,15 @@ public class NumberingActionContext {
     private String myNumber;
     
     public NumberingActionContext(String prefix, String number){
-    	myNumber = number;
-    	myPrefix = prefix;
+        myNumber = number;
+        myPrefix = prefix;
     }
     
     public String getNumber() {
-		return myNumber;
-	}
+        return myNumber;
+    }
     
     public String getPrefix() {
-		return myPrefix;
-	}
+        return myPrefix;
+    }
 }

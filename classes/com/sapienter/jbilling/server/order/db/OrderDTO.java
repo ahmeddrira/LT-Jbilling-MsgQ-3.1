@@ -74,7 +74,7 @@ import java.util.ArrayList;
 // No cache, mutable and critical
 public class OrderDTO implements java.io.Serializable {
 
-	private static Logger LOG = Logger.getLogger(OrderDTO.class);
+    private static Logger LOG = Logger.getLogger(OrderDTO.class);
 
      private Integer id;
      private UserDTO baseUserByUserId;
@@ -120,40 +120,40 @@ public class OrderDTO implements java.io.Serializable {
     }
     
     public OrderDTO(OrderDTO other) {
-    	init(other);
+        init(other);
     }
 
     public void init(OrderDTO other) {
-    	this.id = other.getId();
-    	this.baseUserByUserId = other.getBaseUserByUserId();
-    	this.baseUserByCreatedBy = other.getBaseUserByCreatedBy();
-    	this.currencyDTO = other.getCurrency();
-    	this.orderStatusDTO = other.getOrderStatus(); 
-    	this.orderPeriodDTO = other.getOrderPeriod();
-    	this.orderBillingTypeDTO = other.getOrderBillingType();
-    	this.activeSince = other.getActiveSince();
-    	this.activeUntil = other.getActiveUntil();
-    	this.createDate = other.getCreateDate();
-    	this.nextBillableDay = other.getNextBillableDay();
-    	this.deleted = other.getDeleted();
-    	this.notify = other.getNotify();
-    	this.lastNotified = other.getLastNotified();
-    	this.notificationStep = other.getNotificationStep();
-    	this.dueDateUnitId = other.getDueDateUnitId();
-    	this.dueDateValue = other.getDueDateValue();
-    	this.dfFm = other.getDfFm();
-    	this.anticipatePeriods = other.getAnticipatePeriods();
-    	this.ownInvoice = other.getOwnInvoice();
-    	this.notes = other.getNotes();
-    	this.notesInInvoice = other.getNotesInInvoice();
-    	this.orderProcesses.addAll(other.getOrderProcesses());
-	for (OrderLineDTO line: other.getLines()) {
-		this.lines.add(new OrderLineDTO(line));
-	}
-    	this.isCurrent = other.getIsCurrent();
-    	this.versionNum = other.getVersionNum();
-    	this.cycleStarts = other.getCycleStarts();
-    	this.pricingFields = other.getPricingFields();
+        this.id = other.getId();
+        this.baseUserByUserId = other.getBaseUserByUserId();
+        this.baseUserByCreatedBy = other.getBaseUserByCreatedBy();
+        this.currencyDTO = other.getCurrency();
+        this.orderStatusDTO = other.getOrderStatus(); 
+        this.orderPeriodDTO = other.getOrderPeriod();
+        this.orderBillingTypeDTO = other.getOrderBillingType();
+        this.activeSince = other.getActiveSince();
+        this.activeUntil = other.getActiveUntil();
+        this.createDate = other.getCreateDate();
+        this.nextBillableDay = other.getNextBillableDay();
+        this.deleted = other.getDeleted();
+        this.notify = other.getNotify();
+        this.lastNotified = other.getLastNotified();
+        this.notificationStep = other.getNotificationStep();
+        this.dueDateUnitId = other.getDueDateUnitId();
+        this.dueDateValue = other.getDueDateValue();
+        this.dfFm = other.getDfFm();
+        this.anticipatePeriods = other.getAnticipatePeriods();
+        this.ownInvoice = other.getOwnInvoice();
+        this.notes = other.getNotes();
+        this.notesInInvoice = other.getNotesInInvoice();
+        this.orderProcesses.addAll(other.getOrderProcesses());
+    for (OrderLineDTO line: other.getLines()) {
+        this.lines.add(new OrderLineDTO(line));
+    }
+        this.isCurrent = other.getIsCurrent();
+        this.versionNum = other.getVersionNum();
+        this.cycleStarts = other.getCycleStarts();
+        this.pricingFields = other.getPricingFields();
     }
     
     public OrderDTO(int id, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, OrderStatusDTO orderStatusDTO, OrderBillingTypeDTO orderBillingTypeDTO, Date createDatetime, Integer deleted) {
@@ -166,12 +166,12 @@ public class OrderDTO implements java.io.Serializable {
         this.deleted = deleted;
     }
     public OrderDTO(int id, UserDTO baseUserByUserId, UserDTO baseUserByCreatedBy, CurrencyDTO currencyDTO, 
-    		OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO, 
-    		OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime, 
-    		Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep, 
-    		Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods, 
-    		Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses, 
-    		List<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
+            OrderStatusDTO orderStatusDTO, OrderPeriodDTO orderPeriodDTO, 
+            OrderBillingTypeDTO orderBillingTypeDTO, Date activeSince, Date activeUntil, Date createDatetime, 
+            Date nextBillableDay, Integer deleted, Integer notify, Date lastNotified, Integer notificationStep, 
+            Integer dueDateUnitId, Integer dueDateValue, Integer dfFm, Integer anticipatePeriods, 
+            Integer ownInvoice, String notes, Integer notesInInvoice, Set<OrderProcessDTO> orderProcesses, 
+            List<OrderLineDTO> orderLineDTOs, Integer isCurrent) {
        this.id = id;
        this.baseUserByUserId = baseUserByUserId;
        this.baseUserByCreatedBy = baseUserByCreatedBy;
@@ -282,13 +282,13 @@ public class OrderDTO implements java.io.Serializable {
     }
     
     @Column(name="cycle_start")
-	public Date getCycleStarts() {
-		return cycleStarts;
-	}
+    public Date getCycleStarts() {
+        return cycleStarts;
+    }
 
-	public void setCycleStarts(Date cycleStarts) {
-		this.cycleStarts = cycleStarts;
-	}
+    public void setCycleStarts(Date cycleStarts) {
+        this.cycleStarts = cycleStarts;
+    }
 
     @Column(name="active_until", length=13)
     public Date getActiveUntil() {
@@ -427,7 +427,7 @@ public class OrderDTO implements java.io.Serializable {
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     @Fetch ( FetchMode.SUBSELECT)
     @OrderBy (
-    	clause = "id desc"
+        clause = "id desc"
     )
     public Set<OrderProcessDTO> getOrderProcesses() {
         return this.orderProcesses;
@@ -439,8 +439,8 @@ public class OrderDTO implements java.io.Serializable {
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="purchaseOrder")
     @Cascade( 
-    		value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN
-    		)
+            value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN
+            )
     @Fetch (FetchMode.SUBSELECT)
     @OrderBy(clause="id")
     public List<OrderLineDTO> getLines() {
@@ -452,286 +452,286 @@ public class OrderDTO implements java.io.Serializable {
     }
 
     @Column(name="is_current")
-	public Integer getIsCurrent() {
-		return isCurrent;
-	}
-	public void setIsCurrent(Integer isCurrent) {
-		this.isCurrent = isCurrent;
-	}
-	
+    public Integer getIsCurrent() {
+        return isCurrent;
+    }
+    public void setIsCurrent(Integer isCurrent) {
+        this.isCurrent = isCurrent;
+    }
+    
     @Version
     @Column(name="OPTLOCK")
-	public Integer getVersionNum() {
-		return versionNum;
-	}
-	public void setVersionNum(Integer versionNum) {
-		this.versionNum = versionNum;
-	}
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
 
 
 
-	/*
-	 * Conveniant methods to ease migration from entity beans
-	 */
-	@Transient
-	public Integer getBillingTypeId() {
-		return getOrderBillingType() == null ? null : getOrderBillingType().getId();
-	}
-	/*
-	public void setBillingTypeId(Integer typeId) {
-		if (orderBillingTypeDTO == null) {
-			OrderBillingTypeDTO dto = new OrderBillingTypeDTO();
-			dto.setId(typeId);
-			setOrderBillingType(dto);
-		} else {
-			orderBillingTypeDTO.setId(id)
-		}
-	}
-	*/
+    /*
+     * Conveniant methods to ease migration from entity beans
+     */
+    @Transient
+    public Integer getBillingTypeId() {
+        return getOrderBillingType() == null ? null : getOrderBillingType().getId();
+    }
+    /*
+    public void setBillingTypeId(Integer typeId) {
+        if (orderBillingTypeDTO == null) {
+            OrderBillingTypeDTO dto = new OrderBillingTypeDTO();
+            dto.setId(typeId);
+            setOrderBillingType(dto);
+        } else {
+            orderBillingTypeDTO.setId(id)
+        }
+    }
+    */
 
-	@Transient
-	public Integer getStatusId() {
-		return getOrderStatus() == null ? null : getOrderStatus().getId();
-	}
-	public void setStatusId(Integer statusId) {
-		if (statusId == null) {
-			setOrderStatus(null);
-			return;
-		}
-		OrderStatusDTO dto = new OrderStatusDTO();
-		dto.setId(statusId);
-		setOrderStatus(dto);
-	}
+    @Transient
+    public Integer getStatusId() {
+        return getOrderStatus() == null ? null : getOrderStatus().getId();
+    }
+    public void setStatusId(Integer statusId) {
+        if (statusId == null) {
+            setOrderStatus(null);
+            return;
+        }
+        OrderStatusDTO dto = new OrderStatusDTO();
+        dto.setId(statusId);
+        setOrderStatus(dto);
+    }
 
     @Transient
     public Integer getCurrencyId() {
-    	return getCurrency().getId();
+        return getCurrency().getId();
     }
     public void setCurrencyId(Integer currencyId) {
-    	if (currencyId == null) {
-    		setCurrency(null);
-    	} else {
-	    	CurrencyDTO currency = new CurrencyDTO(currencyId);
-	    	setCurrency(currency);
-    	}
+        if (currencyId == null) {
+            setCurrency(null);
+        } else {
+            CurrencyDTO currency = new CurrencyDTO(currencyId);
+            setCurrency(currency);
+        }
     }
     
     @Transient
     public UserDTO getUser() {
-    	return getBaseUserByUserId();
+        return getBaseUserByUserId();
     }
     
     @Transient
     public BigDecimal getTotal() {
-    	if (total != null) {
-    		return total;
-    	}
-    	BigDecimal result = new BigDecimal(0);
-    	for (OrderLineDTO line: lines) {
-    		if (line.getDeleted() == 0 && line.getAmount() != null) {
-    			result = result.add(line.getAmount());
-    		}
-    	}
-    	return result;
+        if (total != null) {
+            return total;
+        }
+        BigDecimal result = new BigDecimal(0);
+        for (OrderLineDTO line: lines) {
+            if (line.getDeleted() == 0 && line.getAmount() != null) {
+                result = result.add(line.getAmount());
+            }
+        }
+        return result;
     }
 
-	public void setTotal(BigDecimal total) {
-		this.total = total;
-	}
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
 
     @Transient
     // all the periods, but excluding those from process reviews
     public Collection<OrderProcessDTO> getPeriods() {
-    	return nonReviewPeriods;
+        return nonReviewPeriods;
     }
 
     @Transient
     public Collection<InvoiceDTO> getInvoices() {
-    	return invoices;
-    	
+        return invoices;
+        
     }
     
     @Transient
     public String getPeriodStr() {
-    	return periodStr;
+        return periodStr;
     }
     public void setPeriodStr(String str) {
-    	periodStr = str;
+        periodStr = str;
     }
 
     @Transient
     public String getBillingTypeStr() {
-    	return billingTypeStr;
+        return billingTypeStr;
     }
     public void setBillingTypeStr(String str) {
-    	this.billingTypeStr = str;
+        this.billingTypeStr = str;
     }
 
     @Transient
     public String getStatusStr() {
-    	return statusStr;
+        return statusStr;
     }
     
     @Transient
     public String getTimeUnitStr() {
-    	return timeUnitStr;
+        return timeUnitStr;
     }
     
     @Transient
-	public String getCurrencyName() {
-		return currencyName;
-	}
+    public String getCurrencyName() {
+        return currencyName;
+    }
 
     @Transient
-	public String getCurrencySymbol() {
-		return currencySymbol;
-	}
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
     
     public void addExtraFields(Integer languageId) {
-    	invoices = new ArrayList<InvoiceDTO>();
-    	billingProcesses = new ArrayList<BillingProcessDTO>();
-    	nonReviewPeriods = new ArrayList<OrderProcessDTO>();
-    	
-    	for (OrderProcessDTO process: getOrderProcesses()) {
-    		if (process.getIsReview() == 1) continue;
-    		nonReviewPeriods.add(process);
-    		
-    		try {
-				InvoiceBL invoiceBl = new InvoiceBL(process.getInvoice().getId());
-				invoices.add(invoiceBl.getDTO());
-			} catch (Exception e) {
-				throw new SessionInternalError(e);
-			} 
-			
-			billingProcesses.add(process.getBillingProcess());
-    	}
-    	
-    	periodStr = getOrderPeriod().getDescription(languageId);
-    	billingTypeStr = getOrderBillingType().getDescription(languageId);
-    	statusStr = getOrderStatus().getDescription(languageId);
-    	timeUnitStr = Util.getPeriodUnitStr(
+        invoices = new ArrayList<InvoiceDTO>();
+        billingProcesses = new ArrayList<BillingProcessDTO>();
+        nonReviewPeriods = new ArrayList<OrderProcessDTO>();
+        
+        for (OrderProcessDTO process: getOrderProcesses()) {
+            if (process.getIsReview() == 1) continue;
+            nonReviewPeriods.add(process);
+            
+            try {
+                InvoiceBL invoiceBl = new InvoiceBL(process.getInvoice().getId());
+                invoices.add(invoiceBl.getDTO());
+            } catch (Exception e) {
+                throw new SessionInternalError(e);
+            } 
+            
+            billingProcesses.add(process.getBillingProcess());
+        }
+        
+        periodStr = getOrderPeriod().getDescription(languageId);
+        billingTypeStr = getOrderBillingType().getDescription(languageId);
+        statusStr = getOrderStatus().getDescription(languageId);
+        timeUnitStr = Util.getPeriodUnitStr(
                 getDueDateUnitId(), languageId);
-    	
-    	currencySymbol = getCurrency().getSymbol();
-    	currencyName = getCurrency().getDescription(languageId);
+        
+        currencySymbol = getCurrency().getSymbol();
+        currencyName = getCurrency().getDescription(languageId);
 
-    	for (OrderLineDTO line : getLines()) {
+        for (OrderLineDTO line : getLines()) {
             line.addExtraFields(languageId);
         } 
     }
     
     @Transient
     public Integer getPeriodId() {
-    	return getOrderPeriod().getId();
+        return getOrderPeriod().getId();
     }
     
     @Transient
     public Integer getUserId() {
-    	return (getBaseUserByUserId() == null) ? null : getBaseUserByUserId().getId();
+        return (getBaseUserByUserId() == null) ? null : getBaseUserByUserId().getId();
     }
 
     @Transient
     public Integer getCreatedBy() {
-    	return (getBaseUserByCreatedBy() == null) ? null : getBaseUserByCreatedBy().getId();
+        return (getBaseUserByCreatedBy() == null) ? null : getBaseUserByCreatedBy().getId();
     }
 
-	@Transient
-	public OrderLineDTO getLine(Integer itemId) {
-		for (OrderLineDTO line : lines) {
-			if (line.getDeleted() == 0 && line.getItem() != null && line.getItem().getId() == itemId) {
-				return line;
-			}
-		}
-		
-		return null;
-	}
-	
-	@Transient
-	public void removeLine(Integer itemId) {
-		OrderLineDTO line = getLine(itemId);
-		if (line != null) {
-			lines.remove(line);
-		}
-	}
+    @Transient
+    public OrderLineDTO getLine(Integer itemId) {
+        for (OrderLineDTO line : lines) {
+            if (line.getDeleted() == 0 && line.getItem() != null && line.getItem().getId() == itemId) {
+                return line;
+            }
+        }
+        
+        return null;
+    }
+    
+    @Transient
+    public void removeLine(Integer itemId) {
+        OrderLineDTO line = getLine(itemId);
+        if (line != null) {
+            lines.remove(line);
+        }
+    }
 
-	@Transient
+    @Transient
     public boolean isEmpty() {
         return lines.isEmpty();
     }
-	
-	@Transient
-	public int getNumberOfLines() {
-		int count = 0;
-		for (OrderLineDTO line: getLines()) {
-			if (line.getDeleted() == 0) {
-				count++;
-			}
-		}
-		return count;
-	}
+    
+    @Transient
+    public int getNumberOfLines() {
+        int count = 0;
+        for (OrderLineDTO line: getLines()) {
+            if (line.getDeleted() == 0) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-	
-	/**
-	 * Makes sure that all the proxies are loaded, so no session is needed to
-	 * use the pojo
-	 */
-	public void touch() {
-		getActiveSince();
-		if (getBaseUserByUserId() != null) 
-			getBaseUserByUserId().getCreateDatetime();
-		if (getBaseUserByCreatedBy() != null)
-			getBaseUserByCreatedBy().getCreateDatetime();
-		for (OrderLineDTO line: getLines()) {
-			line.touch();
-		}
+    
+    /**
+     * Makes sure that all the proxies are loaded, so no session is needed to
+     * use the pojo
+     */
+    public void touch() {
+        getActiveSince();
+        if (getBaseUserByUserId() != null) 
+            getBaseUserByUserId().getCreateDatetime();
+        if (getBaseUserByCreatedBy() != null)
+            getBaseUserByCreatedBy().getCreateDatetime();
+        for (OrderLineDTO line: getLines()) {
+            line.touch();
+        }
         for (InvoiceDTO invoice: getInvoices()) {
             invoice.getCreateDatetime();
         }
         for (OrderProcessDTO process: getOrderProcesses()) {
             process.getPeriodStart();
         }
-		getOrderBillingType().getId();
-		getOrderPeriod().getId();
+        getOrderBillingType().getId();
+        getOrderPeriod().getId();
         getOrderStatus().getId();
-	}
-	
-	public String toString() {
-		StringBuffer str = new StringBuffer("Order = " +
-	     "id=" + id + "," + 
-	     "baseUserByUserId=" + ((baseUserByUserId == null) ? null : baseUserByUserId.getId()) + "," +
-	     "baseUserByCreatedBy=" + ((baseUserByCreatedBy== null) ? null : baseUserByCreatedBy.getId()) + "," +
-	     "currencyDTO=" + currencyDTO + "," +
-	     "orderStatusDTO=" + ((orderStatusDTO == null) ? null : orderStatusDTO) + "," +
-	     "orderPeriodDTO=" + ((orderPeriodDTO == null) ? null : orderPeriodDTO) + "," +
-	     "orderBillingTypeDTO=" + ((orderBillingTypeDTO == null) ? null : orderBillingTypeDTO) + "," +
-	     "activeSince=" + activeSince + "," +
-	     "activeUntil=" + activeUntil + "," +
-	     "createDate=" + createDate + "," +
-	     "nextBillableDay=" + nextBillableDay + "," +
-	     "deleted=" + deleted + "," +
-	     "notify=" + notify + "," +
-	     "lastNotified=" + lastNotified + "," +
-	     "notificationStep=" + notificationStep + "," +
-	     "dueDateUnitId=" + dueDateUnitId + "," +
-	     "dueDateValue=" + dueDateValue + "," +
-	     "dfFm=" + dfFm + "," +
-	     "anticipatePeriods=" + anticipatePeriods + "," +
-	     "ownInvoice=" + ownInvoice + "," +
-	     "notes=" + notes + "," +
-	     "notesInInvoice=" + notesInInvoice + "," +
-	     "orderProcesses=" + orderProcesses + "," +
-	     "isCurrent=" + isCurrent + "," +
-	     "versionNum=" + versionNum +
-	     " lines:[");
-		
-		for (OrderLineDTO line: getLines()) {
-			str.append(line.toString() + "-");
-		}
-		str.append("]");
-		return str.toString();
+    }
+    
+    public String toString() {
+        StringBuffer str = new StringBuffer("Order = " +
+         "id=" + id + "," + 
+         "baseUserByUserId=" + ((baseUserByUserId == null) ? null : baseUserByUserId.getId()) + "," +
+         "baseUserByCreatedBy=" + ((baseUserByCreatedBy== null) ? null : baseUserByCreatedBy.getId()) + "," +
+         "currencyDTO=" + currencyDTO + "," +
+         "orderStatusDTO=" + ((orderStatusDTO == null) ? null : orderStatusDTO) + "," +
+         "orderPeriodDTO=" + ((orderPeriodDTO == null) ? null : orderPeriodDTO) + "," +
+         "orderBillingTypeDTO=" + ((orderBillingTypeDTO == null) ? null : orderBillingTypeDTO) + "," +
+         "activeSince=" + activeSince + "," +
+         "activeUntil=" + activeUntil + "," +
+         "createDate=" + createDate + "," +
+         "nextBillableDay=" + nextBillableDay + "," +
+         "deleted=" + deleted + "," +
+         "notify=" + notify + "," +
+         "lastNotified=" + lastNotified + "," +
+         "notificationStep=" + notificationStep + "," +
+         "dueDateUnitId=" + dueDateUnitId + "," +
+         "dueDateValue=" + dueDateValue + "," +
+         "dfFm=" + dfFm + "," +
+         "anticipatePeriods=" + anticipatePeriods + "," +
+         "ownInvoice=" + ownInvoice + "," +
+         "notes=" + notes + "," +
+         "notesInInvoice=" + notesInInvoice + "," +
+         "orderProcesses=" + orderProcesses + "," +
+         "isCurrent=" + isCurrent + "," +
+         "versionNum=" + versionNum +
+         " lines:[");
+        
+        for (OrderLineDTO line: getLines()) {
+            str.append(line.toString() + "-");
+        }
+        str.append("]");
+        return str.toString();
 
-	}
-	
+    }
+    
     // default values
     @Transient
     public void setDefaults() {
@@ -750,11 +750,11 @@ public class OrderDTO implements java.io.Serializable {
     
     @Transient
     public List<PricingField> getPricingFields() {
-    	return this.pricingFields;
+        return this.pricingFields;
     }
     
     public void setPricingFields(List<PricingField> fields) {
-    	this.pricingFields = fields;
+        this.pricingFields = fields;
     }
 
 }

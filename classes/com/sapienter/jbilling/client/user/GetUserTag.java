@@ -59,7 +59,7 @@ public class GetUserTag extends TagSupport {
         HttpSession session = pageContext.getSession();
 
 
-		try {
+        try {
             // get the order session bean
             IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
@@ -140,10 +140,10 @@ public class GetUserTag extends TagSupport {
                 // make sure there's no confusion
                 session.removeAttribute(Constants.SESSION_PARTNER_ID);
             }
-		} catch (Exception e) {
-		    log.error("Exception on getting a user information", e);
-		    throw new JspException(e);
-		}
+        } catch (Exception e) {
+            log.error("Exception on getting a user information", e);
+            throw new JspException(e);
+        }
 
         return SKIP_BODY;
     }

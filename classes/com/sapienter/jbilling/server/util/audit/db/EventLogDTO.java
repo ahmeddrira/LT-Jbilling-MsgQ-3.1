@@ -109,7 +109,7 @@ public class EventLogDTO  implements java.io.Serializable {
     protected EventLogDTO() {
     }
 
-	
+    
     public EventLogDTO(Integer id, JbillingTable jbillingTable, 
             UserDTO baseUser, UserDTO affectedUser, 
             EventLogMessageDTO eventLogMessage, 

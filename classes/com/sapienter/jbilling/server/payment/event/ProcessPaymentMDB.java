@@ -49,10 +49,10 @@ public class ProcessPaymentMDB implements MessageListener {
 
             String type = message.getStringProperty("type"); 
             if (type.equals("payment")) {
-            	LOG.debug("Now processing asynch payment:" +
-            			" processId: " + myMessage.getInt("processId") +
-            			" runId:" + myMessage.getInt("runId") +
-            			" invoiceId:" + myMessage.getInt("invoiceId"));
+                LOG.debug("Now processing asynch payment:" +
+                        " processId: " + myMessage.getInt("processId") +
+                        " runId:" + myMessage.getInt("runId") +
+                        " invoiceId:" + myMessage.getInt("invoiceId"));
                 Integer invoiceId = (myMessage.getInt("invoiceId") == -1) ? null : myMessage.getInt("invoiceId");
                 if (invoiceId != null) {
                     // lock it

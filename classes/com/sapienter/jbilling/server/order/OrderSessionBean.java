@@ -50,22 +50,22 @@ public class OrderSessionBean implements IOrderSessionBean {
 
     @Transactional( propagation = Propagation.REQUIRES_NEW )
     public void reviewNotifications(Date today) 
-    		throws SessionInternalError {
-    	
-    	try {
-    		OrderBL order = new OrderBL();
-    		order.reviewNotifications(today);
-    	} catch (Exception e) {
-    		throw new SessionInternalError(e);
-    	}
+            throws SessionInternalError {
+        
+        try {
+            OrderBL order = new OrderBL();
+            order.reviewNotifications(today);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
 
     public OrderDTO getOrder(Integer orderId) throws SessionInternalError {
         try {
-        	OrderDAS das = new OrderDAS();
-        	OrderDTO order = das.find(orderId);
-        	order.touch();
-        	return order;
+            OrderDAS das = new OrderDAS();
+            OrderDTO order = das.find(orderId);
+            order.touch();
+            return order;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -74,14 +74,14 @@ public class OrderSessionBean implements IOrderSessionBean {
     public OrderDTO getOrderEx(Integer orderId, Integer languageId) 
             throws SessionInternalError {
         try {
-        	OrderDAS das = new OrderDAS();
-        	OrderDTO order = das.find(orderId);
-        	order.addExtraFields(languageId);
-        	order.touch();
-        	das.detach(order);
-        	Collections.sort(order.getLines(), new OrderLineComparator());
-        	//LOG.debug("returning order " + order);
-        	return order;
+            OrderDAS das = new OrderDAS();
+            OrderDTO order = das.find(orderId);
+            order.addExtraFields(languageId);
+            order.touch();
+            das.detach(order);
+            Collections.sort(order.getLines(), new OrderLineComparator());
+            //LOG.debug("returning order " + order);
+            return order;
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
@@ -246,7 +246,7 @@ public class OrderSessionBean implements IOrderSessionBean {
             OrderDTO order, Integer languageId) throws SessionInternalError {
         Integer retValue = null;
         try {
-        	OrderBL bl = new OrderBL();
+            OrderBL bl = new OrderBL();
             if (order.getId() == null) {
                 retValue = bl.create(entityId, executorId, order);
             } else {
@@ -263,7 +263,7 @@ public class OrderSessionBean implements IOrderSessionBean {
      public Long getCountWithDecimals(Integer itemId) 
              throws SessionInternalError {
          try {
-         	return new OrderLineDAS().findLinesWithDecimals(itemId);
+            return new OrderLineDAS().findLinesWithDecimals(itemId);
          } catch (Exception e) {
              throw new SessionInternalError(e);
          }

@@ -294,7 +294,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                             // requires hour/minute conversion
                             record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
                                     convertDuration(intStr, field.getDurationFormat()) : null),
-                                    	field.getIsKey());
+                                        field.getIsKey());
                         } else {
                             try {
                                 record.addField(new PricingField(field.getName(), intStr.length() > 0 ?

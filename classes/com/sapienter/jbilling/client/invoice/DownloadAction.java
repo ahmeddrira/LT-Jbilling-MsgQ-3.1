@@ -57,42 +57,42 @@ import com.sapienter.jbilling.server.util.Context;
  */
 public final class DownloadAction extends Action {
 
-	Logger log;
+    Logger log;
     private Date dateFrom;
     private Date dateTo;
 
-	public DownloadAction() {
-		log = Logger.getLogger(DownloadAction.class);
-	}
+    public DownloadAction() {
+        log = Logger.getLogger(DownloadAction.class);
+    }
 
-	public ActionForward execute(ActionMapping mapping, ActionForm form,
-			HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
 
         DynaValidatorForm downloadForm = (DynaValidatorForm) form;
         
         ActionErrors errors = validate(mapping, request, downloadForm);
 
         Integer operationType = (Integer) downloadForm.get("operationType");
-		if (operationType != null && errors.isEmpty()) {
-			Map map = new HashMap();
-			map.put("operationType", operationType);
-			map.put("entityId", request.getSession().getAttribute(
+        if (operationType != null && errors.isEmpty()) {
+            Map map = new HashMap();
+            map.put("operationType", operationType);
+            map.put("entityId", request.getSession().getAttribute(
                                             com.sapienter.jbilling.client.util.Constants.SESSION_ENTITY_ID_KEY));
 
-			if (operationType.equals(
-					Constants.OPERATION_TYPE_CUSTOMER)) {
-				map.put("customer", new Integer(
+            if (operationType.equals(
+                    Constants.OPERATION_TYPE_CUSTOMER)) {
+                map.put("customer", new Integer(
                         (String) downloadForm.get("customer")));
-			} else if (operationType.equals(
-					Constants.OPERATION_TYPE_RANGE)) {
-				map.put("from", new Integer(
+            } else if (operationType.equals(
+                    Constants.OPERATION_TYPE_RANGE)) {
+                map.put("from", new Integer(
                         (String) downloadForm.get("rangeStart")));
-				map.put("to", new Integer(
+                map.put("to", new Integer(
                         (String) downloadForm.get("rangeEnd")));
-			} else if (operationType.equals(
-					Constants.OPERATION_TYPE_PROCESS)) {
-				map.put("process", new Integer(
+            } else if (operationType.equals(
+                    Constants.OPERATION_TYPE_PROCESS)) {
+                map.put("process", new Integer(
                         (String) downloadForm.get("process")));
             } else if (operationType.equals(
                     Constants.OPERATION_TYPE_DATE)) {
@@ -104,35 +104,35 @@ public final class DownloadAction extends Action {
                 map.put("number_to", (String) downloadForm.get("number_to"));
             }
 
-			try {
-				IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
+            try {
+                IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) 
                         Context.getBean(Context.Name.INVOICE_SESSION);
-				String filename = invoiceSession.generatePDFFile(map,
+                String filename = invoiceSession.generatePDFFile(map,
                         getServlet().getServletContext().getRealPath("/_FILE_NAME_"));
 
-				if (filename == null) {
-					ActionMessages messages = new ActionMessages();
-					messages.add(ActionMessages.GLOBAL_MESSAGE,
-						new ActionMessage("invoice.download.msg.no.invoices"));
-					saveMessages(request, messages);
-					return mapping.findForward("form");
-				} else {
-					request.setAttribute("filename", filename);
-					return mapping.findForward("done");
-				}
+                if (filename == null) {
+                    ActionMessages messages = new ActionMessages();
+                    messages.add(ActionMessages.GLOBAL_MESSAGE,
+                        new ActionMessage("invoice.download.msg.no.invoices"));
+                    saveMessages(request, messages);
+                    return mapping.findForward("form");
+                } else {
+                    request.setAttribute("filename", filename);
+                    return mapping.findForward("done");
+                }
 
-			} catch (Exception e) {
-				log.error("Exception ", e);
-			}
-			return mapping.findForward("error");
+            } catch (Exception e) {
+                log.error("Exception ", e);
+            }
+            return mapping.findForward("error");
 
-		} else {
+        } else {
             saveErrors(request, errors);
-			return mapping.findForward("form");
-		}
+            return mapping.findForward("form");
+        }
         
         
-	}
+    }
     
     public ActionErrors validate(ActionMapping mapping,
             HttpServletRequest request, DynaValidatorForm form) {
@@ -179,7 +179,7 @@ public final class DownloadAction extends Action {
                             "invoice.download.err.positive.value"));
                 }
             } else if (operationType.equals(Constants.OPERATION_TYPE_DATE)) {
-            	FormDateHelper helper = new FormDateHelper(form, request);
+                FormDateHelper helper = new FormDateHelper(form, request);
                 dateFrom = helper.parseDate("date_from", process, errors);
                 dateTo = helper.parseDate("date_to", process, errors);
 

@@ -46,64 +46,64 @@ import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
-	private static final String CREDIT_CARD_MASK = "************";
+    private static final String CREDIT_CARD_MASK = "************";
 
-	private static final String FORM = "payment";
+    private static final String FORM = "payment";
 
-	private static final String FIELD_CREATE = "create";
-	
-	private static final String FIELD_PAY_METHOD = "method";
-	private static final String FIELD_GROUP_DATE = "date";
-	private static final String FIELD_AMOUNT = "amount";
-	private static final String FIELD_ID = "id";
-	private static final String FIELD_CURRENCY = "currencyId";
-	private static final String FIELD_PROCESS_NOW = "chbx_processNow";
-	
-	private static final String FIELD_ACH_ACCOUNT_NAME = "account_name";
-	private static final String FIELD_ACH_BANK_NAME = "bank_name";
-	private static final String FIELD_ACH_ACCOUNT_TYPE = "account_type";
-	private static final String FIELD_ACH_ACCOUNT_NUMBER = "account_number";
-	private static final String FIELD_ACH_ABA_CODE = "aba_code";
-	
-	private static final String FIELD_GROUP_CC_EXPIRY = "ccExpiry";
-	private static final String FIELD_CC_NAME = "ccName";
-	private static final String FIELD_CC_NUMBER = "ccNumber";
+    private static final String FIELD_CREATE = "create";
+    
+    private static final String FIELD_PAY_METHOD = "method";
+    private static final String FIELD_GROUP_DATE = "date";
+    private static final String FIELD_AMOUNT = "amount";
+    private static final String FIELD_ID = "id";
+    private static final String FIELD_CURRENCY = "currencyId";
+    private static final String FIELD_PROCESS_NOW = "chbx_processNow";
+    
+    private static final String FIELD_ACH_ACCOUNT_NAME = "account_name";
+    private static final String FIELD_ACH_BANK_NAME = "bank_name";
+    private static final String FIELD_ACH_ACCOUNT_TYPE = "account_type";
+    private static final String FIELD_ACH_ACCOUNT_NUMBER = "account_number";
+    private static final String FIELD_ACH_ABA_CODE = "aba_code";
+    
+    private static final String FIELD_GROUP_CC_EXPIRY = "ccExpiry";
+    private static final String FIELD_CC_NAME = "ccName";
+    private static final String FIELD_CC_NUMBER = "ccNumber";
 
-	private static final String FIELD_GROUP_CHEQUE_DATE = "chequeDate";
-	private static final String FIELD_CHEQUE_NUMBER = "chequeNumber";
-	private static final String FIELD_CHEQUE_BANK = "bank";
-	
-	private static final String FORWARD_FROM_ORDER = "payment_fromOrder";
-	private static final String FORWARD_EDIT = "payment_edit";
-	private static final String FORWARD_LIST = "payment_list";
-	private static final String FORWARD_UPDATE = "payment_update";
-	private static final String FORWARD_REVIEW = "payment_review";
-	private static final String FORWARD_REVIEW_PAYOUT = "payment_reviewPayout";
-	private static final String FORWARD_PAYOUT = "payment_payout";
-	private static final String FORWARD_DELETED = "payment_deleted";
-	
-	private static final String MESSAGE_REVIEW = "payment.review";
-	private static final String MESSAGE_INVOICE_GENERATED = "process.invoiceGenerated";
-	
-	private final IPaymentSessionBean myPaymentSession;
-	
-	public PaymentCrudAction(IPaymentSessionBean paymentSession){
-		super(FORM, "payment");
-		myPaymentSession = paymentSession;
-		LOG = Logger.getLogger(PaymentCrudAction.class);
-	}
-	
-	@Override
-	protected void preEdit() {
-		super.preEdit();
-		setForward(FORWARD_EDIT);
-		if ("yes".equals(myForm.get("direct"))) {
-			setForward(FORWARD_FROM_ORDER);
-		}
-	}
-	
-	@Override
-	protected ForwardAndMessage doCreate(PaymentDTOEx dto) {
+    private static final String FIELD_GROUP_CHEQUE_DATE = "chequeDate";
+    private static final String FIELD_CHEQUE_NUMBER = "chequeNumber";
+    private static final String FIELD_CHEQUE_BANK = "bank";
+    
+    private static final String FORWARD_FROM_ORDER = "payment_fromOrder";
+    private static final String FORWARD_EDIT = "payment_edit";
+    private static final String FORWARD_LIST = "payment_list";
+    private static final String FORWARD_UPDATE = "payment_update";
+    private static final String FORWARD_REVIEW = "payment_review";
+    private static final String FORWARD_REVIEW_PAYOUT = "payment_reviewPayout";
+    private static final String FORWARD_PAYOUT = "payment_payout";
+    private static final String FORWARD_DELETED = "payment_deleted";
+    
+    private static final String MESSAGE_REVIEW = "payment.review";
+    private static final String MESSAGE_INVOICE_GENERATED = "process.invoiceGenerated";
+    
+    private final IPaymentSessionBean myPaymentSession;
+    
+    public PaymentCrudAction(IPaymentSessionBean paymentSession){
+        super(FORM, "payment");
+        myPaymentSession = paymentSession;
+        LOG = Logger.getLogger(PaymentCrudAction.class);
+    }
+    
+    @Override
+    protected void preEdit() {
+        super.preEdit();
+        setForward(FORWARD_EDIT);
+        if ("yes".equals(myForm.get("direct"))) {
+            setForward(FORWARD_FROM_ORDER);
+        }
+    }
+    
+    @Override
+    protected ForwardAndMessage doCreate(PaymentDTOEx dto) {
         // this is not an update, it's the previous step of the review
         // payments have no updates (unmodifiable transactions).
         if (dto.getIsRefund() == 1) {
@@ -113,14 +113,14 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         }
         
         if ("payout".equals(myForm.get(FIELD_CREATE))){
-        	return new ForwardAndMessage(FORWARD_REVIEW_PAYOUT, MESSAGE_REVIEW);
+            return new ForwardAndMessage(FORWARD_REVIEW_PAYOUT, MESSAGE_REVIEW);
         } else {
-        	return new ForwardAndMessage(FORWARD_REVIEW, MESSAGE_REVIEW);
+            return new ForwardAndMessage(FORWARD_REVIEW, MESSAGE_REVIEW);
         }
-	}
-	
-	@Override
-	protected ForwardAndMessage doSetup() {
+    }
+    
+    @Override
+    protected ForwardAndMessage doSetup() {
         CreditCardDTO ccDto = null;
         AchDTO achDto = null;
         PaymentInfoChequeDTO chequeDto = null;
@@ -190,7 +190,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         }    
         
         if (achDto != null) {
-        	myForm.set(FIELD_ACH_ABA_CODE, achDto.getAbaRouting());
+            myForm.set(FIELD_ACH_ABA_CODE, achDto.getAbaRouting());
             myForm.set(FIELD_ACH_ACCOUNT_NUMBER, achDto.getBankAccount());
             myForm.set(FIELD_ACH_BANK_NAME, achDto.getBankName());
             myForm.set(FIELD_ACH_ACCOUNT_NAME, achDto.getAccountName());
@@ -220,15 +220,15 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         
         // payment edition has a different layout
         if (isEdit) {
-        	result = new ForwardAndMessage(FORWARD_UPDATE);
+            result = new ForwardAndMessage(FORWARD_UPDATE);
         }
         
         return result;
-	}
+    }
 
-	@Override
-	protected PaymentDTOEx doEditFormToDTO() {
-		PaymentDTOEx dto = new PaymentDTOEx();
+    @Override
+    protected PaymentDTOEx doEditFormToDTO() {
+        PaymentDTOEx dto = new PaymentDTOEx();
         // the id, only for payment edits
         dto.setId((Integer) myForm.get(FIELD_ID) == null ? 0 : (Integer) myForm.get(FIELD_ID));
         // set the amount
@@ -319,13 +319,13 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             }
 
         } else if ("ach".equals(payMethod)) {
-        	AchDTO ach = new AchDTO();
-        	ach.setAbaRouting((String) myForm.get(FIELD_ACH_ABA_CODE));
-        	ach.setBankAccount((String) myForm.get(FIELD_ACH_ACCOUNT_NUMBER));
-        	ach.setAccountType((Integer) myForm.get(FIELD_ACH_ACCOUNT_TYPE));
-        	ach.setBankName((String) myForm.get(FIELD_ACH_BANK_NAME));
-        	ach.setAccountName((String) myForm.get(FIELD_ACH_ACCOUNT_NAME));
-        	dto.setAch(ach);
+            AchDTO ach = new AchDTO();
+            ach.setAbaRouting((String) myForm.get(FIELD_ACH_ABA_CODE));
+            ach.setBankAccount((String) myForm.get(FIELD_ACH_ACCOUNT_NUMBER));
+            ach.setAccountType((Integer) myForm.get(FIELD_ACH_ACCOUNT_TYPE));
+            ach.setBankName((String) myForm.get(FIELD_ACH_BANK_NAME));
+            ach.setAccountName((String) myForm.get(FIELD_ACH_ACCOUNT_NAME));
+            dto.setAch(ach);
             //this will be checked when the payment is sent
             session.setAttribute("tmp_process_now",  new Boolean(true));
 
@@ -363,18 +363,18 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             boolean processNow = (Boolean) myForm.get(FIELD_PROCESS_NOW);
             if ("cc".equals(payMethod) && processNow){
                 if (refundPayment == null || 
-                	refundPayment.getCreditCard() == null ||
+                    refundPayment.getCreditCard() == null ||
                     refundPayment.getAuthorization() == null ||
                     !Constants.RESULT_OK.equals(refundPayment.getPaymentResult().getId())) {
-                	
-                	realTimeNoPayment = new ActionError(//
-                			"refund.error.realtimeNoPayment", 
-                    		"payment.cc.processNow");
+                    
+                    realTimeNoPayment = new ActionError(//
+                            "refund.error.realtimeNoPayment", 
+                            "payment.cc.processNow");
                 }
             }
             
             if (realTimeNoPayment != null){
-            	errors.add(ActionErrors.GLOBAL_ERROR, realTimeNoPayment);	
+                errors.add(ActionErrors.GLOBAL_ERROR, realTimeNoPayment);   
             } else {
                 dto.setPayment(refundPayment);
             }
@@ -401,7 +401,7 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             if (!myPaymentSession.isMethodAccepted((Integer)
                     session.getAttribute(Constants.SESSION_ENTITY_ID_KEY),
                     dto.getPaymentMethod().getId())) {
-            	
+                
                 errors.add(ActionErrors.GLOBAL_ERROR,
                         new ActionError("payment.error.notAccepted", 
                             "payment.method"));
@@ -412,83 +412,83 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         LOG.debug("now paymentDto = " + dto);
 
         return dto;
-	}
-	
-	@Override
-	protected ForwardAndMessage doUpdate(PaymentDTOEx dto) {
-		ForwardAndMessage result;
+    }
+    
+    @Override
+    protected ForwardAndMessage doUpdate(PaymentDTOEx dto) {
+        ForwardAndMessage result;
         if ("yes".equals(myForm.get("direct"))) {
-        	result = new ForwardAndMessage(FORWARD_FROM_ORDER);
+            result = new ForwardAndMessage(FORWARD_FROM_ORDER);
         } else {
-        	result = new ForwardAndMessage(FORWARD_LIST);
+            result = new ForwardAndMessage(FORWARD_LIST);
         }
         return result;
-	}
-	
-	@Override
-	protected ForwardAndMessage doDelete() {
+    }
+    
+    @Override
+    protected ForwardAndMessage doDelete() {
         PaymentDTOEx paymentDto = (PaymentDTOEx) //
                 session.getAttribute(Constants.SESSION_PAYMENT_DTO);
         Integer id = paymentDto.getId();
         myPaymentSession.deletePayment(id);
         return new ForwardAndMessage(FORWARD_DELETED);
-	}
-	
-	@Override
-	protected void resetCachedList() {
-		session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
+    }
+    
+    @Override
+    protected void resetCachedList() {
+        session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
+    }
+    
+    @Override
+    public void reset() {
+        super.reset();
         session.removeAttribute(Constants.SESSION_INVOICE_DTO);
         session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
-	}
+    }
 
-	private void validateCreditCard() {
-		// set up for cc validation, 
-		// (meant for use within Validator framework)
+    private void validateCreditCard() {
+        // set up for cc validation, 
+        // (meant for use within Validator framework)
 
-		// from validator.xml
-		Arg arg = new Arg();
-		arg.setKey("all.prompt.creditCard");
-		arg.setPosition(0);
-		Field field = new Field();
-		field.addArg(arg);
-		field.setProperty(FIELD_CC_NUMBER);
-		field.setDepends("creditCard");
+        // from validator.xml
+        Arg arg = new Arg();
+        arg.setKey("all.prompt.creditCard");
+        arg.setPosition(0);
+        Field field = new Field();
+        field.addArg(arg);
+        field.setProperty(FIELD_CC_NUMBER);
+        field.setDepends("creditCard");
 
-		// from validator-rules.xml
-		ValidatorAction va = new ValidatorAction();
-		va.setName("creditCard");
-		va.setClassname("org.apache.struts.validator.FieldChecks");
-		va.setMethod("validateCreditCard");
-		va.setMethodParams("java.lang.Object, "
-		        + "org.apache.commons.validator.ValidatorAction, "
-		        + "org.apache.commons.validator.Field, "
-		        + "org.apache.struts.action.ActionErrors, "
-		        + "javax.servlet.http.HttpServletRequest");
-		va.setDepends("");
-		va.setMsg("errors.creditcard");
+        // from validator-rules.xml
+        ValidatorAction va = new ValidatorAction();
+        va.setName("creditCard");
+        va.setClassname("org.apache.struts.validator.FieldChecks");
+        va.setMethod("validateCreditCard");
+        va.setMethodParams("java.lang.Object, "
+                + "org.apache.commons.validator.ValidatorAction, "
+                + "org.apache.commons.validator.Field, "
+                + "org.apache.struts.action.ActionErrors, "
+                + "javax.servlet.http.HttpServletRequest");
+        va.setDepends("");
+        va.setMsg("errors.creditcard");
 
-		// do cc number validation
-		LOG.debug("doing credit card number validation");
-		FieldChecks.validateCreditCard(myForm, va, field, errors, request);
-	}
-	
-	private UserDTOEx getSessionUser() {
+        // do cc number validation
+        LOG.debug("doing credit card number validation");
+        FieldChecks.validateCreditCard(myForm, va, field, errors, request);
+    }
+    
+    private UserDTOEx getSessionUser() {
         return getUser((Integer) session.getAttribute(Constants.SESSION_USER_ID));
-	}
-	
-	private String maskCreditCard(String ccNumber) {
-		return CREDIT_CARD_MASK + ccNumber.substring(
-		        ccNumber.length() - 4);
-	}
+    }
+    
+    private String maskCreditCard(String ccNumber) {
+        return CREDIT_CARD_MASK + ccNumber.substring(
+                ccNumber.length() - 4);
+    }
 
-	private boolean isMaskedCreditCard(String ccNumber) {
-		return ccNumber != null && ccNumber.length() >= 16
-		        && ccNumber.startsWith(CREDIT_CARD_MASK);
-	}
+    private boolean isMaskedCreditCard(String ccNumber) {
+        return ccNumber != null && ccNumber.length() >= 16
+                && ccNumber.startsWith(CREDIT_CARD_MASK);
+    }
 
 }

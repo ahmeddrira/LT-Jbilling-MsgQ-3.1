@@ -55,8 +55,8 @@ public class EntityBL extends ResultList
     }
     
     public EntityBL(Integer id)  {
-    	init();
-    	entity = das.find(id);
+        init();
+        entity = das.find(id);
     }
 
     /*
@@ -76,24 +76,24 @@ public class EntityBL extends ResultList
     }
     
     public Locale getLocale()  {
-    	Locale retValue = null;
-    	// get the language first
-    	Integer languageId = entity.getLanguageId();
-    	LanguageDTO language = new LanguageDAS().find(languageId);
-    	String languageCode = language.getCode();
-    	
-    	// now the country
-    	ContactBL contact = new ContactBL();
-    	contact.setEntity(entity.getId());
-    	String countryCode = contact.getEntity().getCountryCode();
-    	
-    	if (countryCode != null) {
-    		retValue = new Locale(languageCode, countryCode);
-    	} else {
-    		retValue = new Locale(languageCode);
-    	}
+        Locale retValue = null;
+        // get the language first
+        Integer languageId = entity.getLanguageId();
+        LanguageDTO language = new LanguageDAS().find(languageId);
+        String languageCode = language.getCode();
+        
+        // now the country
+        ContactBL contact = new ContactBL();
+        contact.setEntity(entity.getId());
+        String countryCode = contact.getEntity().getCountryCode();
+        
+        if (countryCode != null) {
+            retValue = new Locale(languageCode, countryCode);
+        } else {
+            retValue = new Locale(languageCode);
+        }
 
-    	return retValue;
+        return retValue;
     }
 
     /**

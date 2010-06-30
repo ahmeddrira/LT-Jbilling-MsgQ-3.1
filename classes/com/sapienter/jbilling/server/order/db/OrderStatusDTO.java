@@ -43,7 +43,7 @@ public class OrderStatusDTO  extends AbstractGenericStatus implements java.io.Se
     public OrderStatusDTO() {
     }
 
-	
+    
     public OrderStatusDTO(int statusValue) {
         this.statusValue = statusValue;
     }
@@ -54,7 +54,7 @@ public class OrderStatusDTO  extends AbstractGenericStatus implements java.io.Se
 
     @Transient
     protected String getTable() {
-    	return Constants.TABLE_ORDER_STATUS;
+        return Constants.TABLE_ORDER_STATUS;
     }
 
 @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderStatus")

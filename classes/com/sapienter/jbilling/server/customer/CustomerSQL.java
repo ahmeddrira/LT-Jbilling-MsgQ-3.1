@@ -30,27 +30,27 @@ public interface CustomerSQL {
     // ROOT: all the STAFF users within its entity
     static final String listRoot = 
         "select c.id, c.id, a.organization_name, a.last_name, a.first_name, " +
-		"       c.user_name " +
-    	"from contact a, contact_map b, base_user c, jbilling_table d, " +
+        "       c.user_name " +
+        "from contact a, contact_map b, base_user c, jbilling_table d, " +
         "     contact_type ct, user_role_map urm " +
-    	"where a.id = b.contact_id" +
-    	"  and b.foreign_id = c.id" +
-    	"  and b.table_id = d.id" +
+        "where a.id = b.contact_id" +
+        "  and b.foreign_id = c.id" +
+        "  and b.table_id = d.id" +
         "  and b.type_id = ct.id " +
         "  and ct.is_primary = 1 " +
-    	"  and d.name = 'base_user'" +
-    	"  and c.deleted = 0 " +
-    	"  and a.deleted = 0 " +
+        "  and d.name = 'base_user'" +
+        "  and c.deleted = 0 " +
+        "  and a.deleted = 0 " +
         "  and c.id = urm.user_id " +
         "  and urm.role_id in (2,3,4) " + // no customers or internals
-    	"  and c.entity_id = ? " +
+        "  and c.entity_id = ? " +
         " order by 3,4,5";
 
 
     // CLERK: same as root, but restricted to customers and partners
     static final String listClerk = 
         "select c.id, c.id, a.organization_name, a.last_name, a.first_name, " +
-		"       c.user_name " +
+        "       c.user_name " +
         "from contact a, contact_map b, base_user c, jbilling_table d, " +
         "     contact_type ct, user_role_map urm  " +
         "where a.id = b.contact_id" +
@@ -69,7 +69,7 @@ public interface CustomerSQL {
     // PARTNER: will show only customers that belong to this partner
     static final String listPartner = 
         "select c.id, c.id, a.organization_name, a.last_name, a.first_name, " +
-		"       c.user_name " +
+        "       c.user_name " +
         "from contact a, contact_map b, base_user c, jbilling_table d, " +
         "     customer cu, partner pa, " +
         "     contact_type ct " +
@@ -90,7 +90,7 @@ public interface CustomerSQL {
     // it excluded sub-accounts (child customers)
     static final String listCustomers = 
         "select c.id, c.id, a.organization_name, a.last_name, a.first_name, " +
-		"       c.user_name " +
+        "       c.user_name " +
         "from contact a, contact_map b, base_user c, jbilling_table d, " +
         "     user_role_map urm, customer cu, " +
         "     contact_type ct " +

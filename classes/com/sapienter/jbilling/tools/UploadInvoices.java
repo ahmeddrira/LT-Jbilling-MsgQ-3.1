@@ -48,100 +48,100 @@ import java.math.BigDecimal;
  */
 public class UploadInvoices {
 
-	public static void main(String[] args) {
-		
-		// for each field that will be sent to the server we need an index
-		int number = -1;
-		int date = -1;
+    public static void main(String[] args) {
+        
+        // for each field that will be sent to the server we need an index
+        int number = -1;
+        int date = -1;
         int user_id = -1;
         int due_date = -1;
-		int total = -1;
-		int payable = -1;
-		int balance = -1;
+        int total = -1;
+        int payable = -1;
+        int balance = -1;
         int currency_id = -1;
-		int notes = -1;
-		
+        int notes = -1;
+        
         String record = null;
-		try {
-			// see if all the properties are in place
+        try {
+            // see if all the properties are in place
             Properties prop = new Properties();
             FileInputStream gpFile = new FileInputStream("upload.properties");
             prop.load(gpFile);
             
-			Integer entityId = Integer.valueOf(prop.getProperty("entity_id"));
-			String fileName = prop.getProperty("file");
-			System.out.println("Processing file " + fileName + " for entity " + 
-					entityId);
+            Integer entityId = Integer.valueOf(prop.getProperty("entity_id"));
+            String fileName = prop.getProperty("file");
+            System.out.println("Processing file " + fileName + " for entity " + 
+                    entityId);
     
-			// open the file
-			BufferedReader file = new BufferedReader(new FileReader(fileName));
+            // open the file
+            BufferedReader file = new BufferedReader(new FileReader(fileName));
             IInvoiceSessionBean remoteSession = (IInvoiceSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.INVOICE_REMOTE_SESSION);
 
-			String header = file.readLine();
-			String columns[] = header.split("\t");
-			for (int f = 0; f < columns.length; f++) {
-				// scan for the columns
-				if (columns[f].equalsIgnoreCase("number")) {
+            String header = file.readLine();
+            String columns[] = header.split("\t");
+            for (int f = 0; f < columns.length; f++) {
+                // scan for the columns
+                if (columns[f].equalsIgnoreCase("number")) {
                     number = f;
-				} else if (columns[f].equalsIgnoreCase("date")) {
+                } else if (columns[f].equalsIgnoreCase("date")) {
                     date = f;
-				} else if (columns[f].equalsIgnoreCase("user_id")) {
+                } else if (columns[f].equalsIgnoreCase("user_id")) {
                     user_id = f;
-				} else if (columns[f].equalsIgnoreCase("due_date")) {
+                } else if (columns[f].equalsIgnoreCase("due_date")) {
                     due_date = f;
-				} else if (columns[f].equalsIgnoreCase("total")) {
+                } else if (columns[f].equalsIgnoreCase("total")) {
                     total = f;
-				} else if (columns[f].equalsIgnoreCase("payable")) {
+                } else if (columns[f].equalsIgnoreCase("payable")) {
                     payable = f;
                 } else if (columns[f].equalsIgnoreCase("balance")) {
                     balance = f;
-				} else if (columns[f].equalsIgnoreCase("notes")) {
-					notes = f;
-				} else if (columns[f].equalsIgnoreCase("currency_id")) {
+                } else if (columns[f].equalsIgnoreCase("notes")) {
+                    notes = f;
+                } else if (columns[f].equalsIgnoreCase("currency_id")) {
                     currency_id = f;
-				} 
-			}
-			
-			int totalRows = 0;
-			record = readLine(file);
-			while (record != null) {
-				totalRows++;
-				String fields[] = record.split("\t");
-				
-				// get the user object ready
-				NewInvoiceDTO invoice = new NewInvoiceDTO();
+                } 
+            }
+            
+            int totalRows = 0;
+            record = readLine(file);
+            while (record != null) {
+                totalRows++;
+                String fields[] = record.split("\t");
+                
+                // get the user object ready
+                NewInvoiceDTO invoice = new NewInvoiceDTO();
                 Integer userId = null;
-				
-				if (number >= 0) {
-					invoice.setPublicNumber(fields[number].trim());
-				}
-				if (date >= 0) {
-					invoice.setBillingDate(Util.parseDate(fields[date].trim()));
-				}
-				if (user_id >= 0) {
-					userId = Integer.valueOf(fields[user_id].trim());
-				}
-				if (due_date >= 0) {
-					invoice.setDueDate(Util.parseDate(fields[due_date].trim()));
-				}
-				if (total >= 0) {
-					invoice.setTotal(new BigDecimal(fields[total].trim()));
-				}
-				if (payable >= 0) {
-					invoice.setToProcess(Integer.valueOf(fields[payable].trim()));
-				}
+                
+                if (number >= 0) {
+                    invoice.setPublicNumber(fields[number].trim());
+                }
+                if (date >= 0) {
+                    invoice.setBillingDate(Util.parseDate(fields[date].trim()));
+                }
+                if (user_id >= 0) {
+                    userId = Integer.valueOf(fields[user_id].trim());
+                }
+                if (due_date >= 0) {
+                    invoice.setDueDate(Util.parseDate(fields[due_date].trim()));
+                }
+                if (total >= 0) {
+                    invoice.setTotal(new BigDecimal(fields[total].trim()));
+                }
+                if (payable >= 0) {
+                    invoice.setToProcess(Integer.valueOf(fields[payable].trim()));
+                }
                 if (balance >= 0) {
                     invoice.setBalance(new BigDecimal(fields[balance].trim()));
                 }
-				if (currency_id >= 0) {
-					CurrencyDTO currency = new CurrencyDAS().find(Integer.valueOf(fields[currency_id].trim()));
+                if (currency_id >= 0) {
+                    CurrencyDTO currency = new CurrencyDAS().find(Integer.valueOf(fields[currency_id].trim()));
                     invoice.setCurrency(currency);
-				}
-				if (notes >= 0) {
+                }
+                if (notes >= 0) {
                     invoice.setCustomerNotes(fields[notes].trim());
-				}
+                }
                 
                 // get the lines
                 readInvoiceLines(invoice, fileName);
@@ -152,21 +152,21 @@ public class UploadInvoices {
                 invoice.setIsReview(new Integer(0));
                 
                 remoteSession.create(entityId, userId, invoice);
-				
-				record = readLine(file);
-			}
-			
-			file.close();
+                
+                record = readLine(file);
+            }
+            
+            file.close();
 
-			System.out.println("Total invoices uploaded: " + totalRows);
+            System.out.println("Total invoices uploaded: " + totalRows);
             
 
-		} catch (Exception e) {
-			System.err.println("Exception on record " + record + " : " 
-                    + e.getMessage());		
-			e.printStackTrace();
-		} 
-	}
+        } catch (Exception e) {
+            System.err.println("Exception on record " + record + " : " 
+                    + e.getMessage());      
+            e.printStackTrace();
+        } 
+    }
     
     public static void readInvoiceLines(NewInvoiceDTO invoice, String fileName) 
             throws FileNotFoundException, IOException {
@@ -183,10 +183,10 @@ public class UploadInvoices {
                 line.setQuantity(new BigDecimal(fields[2].trim()));
                 line.setPrice(new BigDecimal(fields[3].trim()));
                 if (fields[4].trim().length() > 0) {
-                	ItemDTO item = new ItemDAS().find(Integer.valueOf(fields[4].trim()));
+                    ItemDTO item = new ItemDAS().find(Integer.valueOf(fields[4].trim()));
                     line.setItem(item);
                 } else {
-                	
+                    
                     line.setItem(null);
                 }
                 line.setDescription(fields[5].trim());

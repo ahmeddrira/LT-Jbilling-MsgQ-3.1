@@ -34,20 +34,20 @@ import org.apache.struts.validator.Resources;
 import com.sapienter.jbilling.common.Util;
 
 public class FormDateHelper {
-	public static final String SUFFIX_DAY = "_day";
-	public static final String SUFFIX_MONTH = "_month";
-	public static final String SUFFIX_YEAR = "_year";
+    public static final String SUFFIX_DAY = "_day";
+    public static final String SUFFIX_MONTH = "_month";
+    public static final String SUFFIX_YEAR = "_year";
 
-	private static final Logger log = Logger.getLogger(FormDateHelper.class);
-	private final DynaActionForm myForm;
-	private final HttpServletRequest myRequest;
-	
-	public FormDateHelper(DynaActionForm form, HttpServletRequest request){
-		myForm = form;
-		myRequest = request;
-	}
+    private static final Logger log = Logger.getLogger(FormDateHelper.class);
+    private final DynaActionForm myForm;
+    private final HttpServletRequest myRequest;
+    
+    public FormDateHelper(DynaActionForm form, HttpServletRequest request){
+        myForm = form;
+        myRequest = request;
+    }
 
-	public Date parseDate(String prefix, String prompt, ActionErrors errorsCollector) {
+    public Date parseDate(String prefix, String prompt, ActionErrors errorsCollector) {
         Date date = null;
         String year = (String) myForm.get(prefix + SUFFIX_YEAR);
         String month = (String) myForm.get(prefix + SUFFIX_MONTH);
@@ -84,7 +84,7 @@ public class FormDateHelper {
         }
         return date;
     }
-	
+    
     public void setFormDate(String prefix, Date date) {
         if (date != null) {
             GregorianCalendar cal = new GregorianCalendar();
@@ -101,5 +101,5 @@ public class FormDateHelper {
             myForm.set(prefix + SUFFIX_YEAR, null);
         }
     }
-	
+    
 }

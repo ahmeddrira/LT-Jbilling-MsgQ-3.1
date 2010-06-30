@@ -32,12 +32,12 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
  *
  */
 public class RulesLineTotalTask extends RulesItemManager 
-		implements OrderProcessingTask {
-	
+        implements OrderProcessingTask {
+    
     public void doProcessing(OrderDTO order) throws TaskException {
         helperOrder = new OrderManager(order, order.getBaseUserByUserId().getLanguage().getId(), 
-        		order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity().getId(), 
-        		order.getBaseUserByUserId().getCurrency().getId());
+                order.getBaseUserByUserId().getUserId(), order.getBaseUserByUserId().getEntity().getId(), 
+                order.getBaseUserByUserId().getCurrency().getId());
         
         processRules(order);        
         

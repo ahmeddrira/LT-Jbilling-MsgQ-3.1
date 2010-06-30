@@ -61,35 +61,35 @@ public class BasicPaymentInfoTask
             throws TaskException {
         PaymentDTOEx retValue = null;
         try {
-        	Integer method = Constants.AUTO_PAYMENT_TYPE_CC; // def to cc
+            Integer method = Constants.AUTO_PAYMENT_TYPE_CC; // def to cc
             UserBL userBL = new UserBL(userId);
             CreditCardBL ccBL = new CreditCardBL();
             if (userBL.getEntity().getCustomer() != null) {
-            	// now non-customers only use credit cards
-            	method = userBL.getEntity().getCustomer().getAutoPaymentType();
-            	if (method == null) { 
-            		method = Constants.AUTO_PAYMENT_TYPE_CC;
-            	}
+                // now non-customers only use credit cards
+                method = userBL.getEntity().getCustomer().getAutoPaymentType();
+                if (method == null) { 
+                    method = Constants.AUTO_PAYMENT_TYPE_CC;
+                }
             }
             
             if (method.equals(Constants.AUTO_PAYMENT_TYPE_CC)) {
-            	
-	            if (userBL.getEntity().getCreditCards().isEmpty()) {
-	                // no credit cards entered! no payment ...
-	            } else {
-	                // go around the provided cards and get one that is sendable
-	                // to the processor
-	                for (Iterator it = userBL.getEntity().getCreditCards().
-	                        iterator(); it.hasNext(); ) {
-	                    ccBL.set(((CreditCardDTO) it.next()).getId());
-	                    if (ccBL.validate()) {
-	                        retValue = new PaymentDTOEx();
-	                        retValue.setCreditCard(ccBL.getDTO());
-	                        retValue.setPaymentMethod(new PaymentMethodDAS().find(ccBL.getPaymentMethod()));
-	                        break;
-	                    }
-	                }
-	            }
+                
+                if (userBL.getEntity().getCreditCards().isEmpty()) {
+                    // no credit cards entered! no payment ...
+                } else {
+                    // go around the provided cards and get one that is sendable
+                    // to the processor
+                    for (Iterator it = userBL.getEntity().getCreditCards().
+                            iterator(); it.hasNext(); ) {
+                        ccBL.set(((CreditCardDTO) it.next()).getId());
+                        if (ccBL.validate()) {
+                            retValue = new PaymentDTOEx();
+                            retValue.setCreditCard(ccBL.getDTO());
+                            retValue.setPaymentMethod(new PaymentMethodDAS().find(ccBL.getPaymentMethod()));
+                            break;
+                        }
+                    }
+                }
             } else if (method.equals(Constants.AUTO_PAYMENT_TYPE_ACH)) {
                 
                 AchDTO ach =  null;
@@ -97,15 +97,15 @@ public class BasicPaymentInfoTask
                     AchBL bl = new AchBL(((AchDTO)userBL.getEntity().getAchs().toArray()[0]).getId());
                     ach = bl.getEntity();
                 }
-            	if (ach == null) {
-            		// no info, no payment
-            	} else {
-            		retValue = new PaymentDTOEx();
-            		retValue.setAch(new AchDTO(0, ach.getAbaRouting(),
-            				ach.getBankAccount(), ach.getAccountType(),
-							ach.getBankName(), ach.getAccountName()));
-            		retValue.setPaymentMethod(new PaymentMethodDAS().find(Constants.PAYMENT_METHOD_ACH));
-            	}
+                if (ach == null) {
+                    // no info, no payment
+                } else {
+                    retValue = new PaymentDTOEx();
+                    retValue.setAch(new AchDTO(0, ach.getAbaRouting(),
+                            ach.getBankAccount(), ach.getAccountType(),
+                            ach.getBankName(), ach.getAccountName()));
+                    retValue.setPaymentMethod(new PaymentMethodDAS().find(Constants.PAYMENT_METHOD_ACH));
+                }
             }
         } catch (Exception e) {
             throw new TaskException(e);

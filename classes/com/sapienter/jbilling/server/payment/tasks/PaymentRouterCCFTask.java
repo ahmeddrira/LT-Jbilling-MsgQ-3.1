@@ -46,29 +46,29 @@ public class PaymentRouterCCFTask extends AbstractPaymentRouterTask {
 
     @Override
     protected PaymentTask selectDelegate(PaymentDTOEx paymentInfo)
-   		    throws PluggableTaskException {
+            throws PluggableTaskException {
         Integer userId = paymentInfo.getUserId();
-	    String processorName = getProcessorName(userId);
+        String processorName = getProcessorName(userId);
         if (processorName == null) {
             return null;
         }
-	    Integer selectedTaskId;
-	    try {
+        Integer selectedTaskId;
+        try {
             // it is a task parameter the id of the processor
-	    	selectedTaskId = intValueOf(parameters.get(processorName));
-	    } catch (NumberFormatException e) {
-	    	throw new PluggableTaskException("Invalid payment task id :"
-	    			+ processorName + " for userId: " + userId);
-	    }
-	    if (selectedTaskId == null) {
+            selectedTaskId = intValueOf(parameters.get(processorName));
+        } catch (NumberFormatException e) {
+            throw new PluggableTaskException("Invalid payment task id :"
+                    + processorName + " for userId: " + userId);
+        }
+        if (selectedTaskId == null) {
             LOG.warn("Could not find processor for " + parameters.get(processorName));
-	    	return null;
-	    }
+            return null;
+        }
 
         LOG.debug("Delegating to task id " + selectedTaskId);
-	    PaymentTask selectedTask = instantiateTask(selectedTaskId);
+        PaymentTask selectedTask = instantiateTask(selectedTaskId);
 
-	    return selectedTask;
+        return selectedTask;
     }
 
     @Override

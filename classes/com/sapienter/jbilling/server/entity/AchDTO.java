@@ -51,43 +51,43 @@ public class AchDTO
 
    public AchDTO( java.lang.Integer id,java.lang.String abaRouting,java.lang.String bankAccount,java.lang.Integer accountType,java.lang.String bankName,java.lang.String accountName )
    {
-	  this.id = id;
-	  idHasBeenSet = true;
-	  this.abaRouting = abaRouting;
-	  abaRoutingHasBeenSet = true;
-	  this.bankAccount = bankAccount;
-	  bankAccountHasBeenSet = true;
-	  this.accountType = accountType;
-	  accountTypeHasBeenSet = true;
-	  this.bankName = bankName;
-	  bankNameHasBeenSet = true;
-	  this.accountName = accountName;
-	  accountNameHasBeenSet = true;
-	  pk = this.getId();
+      this.id = id;
+      idHasBeenSet = true;
+      this.abaRouting = abaRouting;
+      abaRoutingHasBeenSet = true;
+      this.bankAccount = bankAccount;
+      bankAccountHasBeenSet = true;
+      this.accountType = accountType;
+      accountTypeHasBeenSet = true;
+      this.bankName = bankName;
+      bankNameHasBeenSet = true;
+      this.accountName = accountName;
+      accountNameHasBeenSet = true;
+      pk = this.getId();
    }
 
    //TODO Cloneable is better than this !
    public AchDTO( AchDTO otherValue )
    {
-	  this.id = otherValue.id;
-	  idHasBeenSet = true;
-	  this.abaRouting = otherValue.abaRouting;
-	  abaRoutingHasBeenSet = true;
-	  this.bankAccount = otherValue.bankAccount;
-	  bankAccountHasBeenSet = true;
-	  this.accountType = otherValue.accountType;
-	  accountTypeHasBeenSet = true;
-	  this.bankName = otherValue.bankName;
-	  bankNameHasBeenSet = true;
-	  this.accountName = otherValue.accountName;
-	  accountNameHasBeenSet = true;
+      this.id = otherValue.id;
+      idHasBeenSet = true;
+      this.abaRouting = otherValue.abaRouting;
+      abaRoutingHasBeenSet = true;
+      this.bankAccount = otherValue.bankAccount;
+      bankAccountHasBeenSet = true;
+      this.accountType = otherValue.accountType;
+      accountTypeHasBeenSet = true;
+      this.bankName = otherValue.bankName;
+      bankNameHasBeenSet = true;
+      this.accountName = otherValue.accountName;
+      accountNameHasBeenSet = true;
 
-	  pk = this.getId();
+      pk = this.getId();
    }
 
    public java.lang.Integer getPrimaryKey()
    {
-	  return pk;
+      return pk;
    }
 
    public void setPrimaryKey( java.lang.Integer pk )
@@ -95,109 +95,109 @@ public class AchDTO
       // it's also nice to update PK object - just in case
       // somebody would ask for it later...
       this.pk = pk;
-	  setId( pk );
+      setId( pk );
    }
 
    public java.lang.Integer getId()
    {
-	  return this.id;
+      return this.id;
    }
 
    public void setId( java.lang.Integer id )
    {
-	  this.id = id;
-	  idHasBeenSet = true;
+      this.id = id;
+      idHasBeenSet = true;
 
-		  pk = id;
+          pk = id;
    }
 
    public boolean idHasBeenSet(){
-	  return idHasBeenSet;
+      return idHasBeenSet;
    }
    public java.lang.String getAbaRouting()
    {
-	  return this.abaRouting;
+      return this.abaRouting;
    }
 
    public void setAbaRouting( java.lang.String abaRouting )
    {
-	  this.abaRouting = abaRouting;
-	  abaRoutingHasBeenSet = true;
+      this.abaRouting = abaRouting;
+      abaRoutingHasBeenSet = true;
 
    }
 
    public boolean abaRoutingHasBeenSet(){
-	  return abaRoutingHasBeenSet;
+      return abaRoutingHasBeenSet;
    }
    public java.lang.String getBankAccount()
    {
-	  return this.bankAccount;
+      return this.bankAccount;
    }
 
    public void setBankAccount( java.lang.String bankAccount )
    {
-	  this.bankAccount = bankAccount;
-	  bankAccountHasBeenSet = true;
+      this.bankAccount = bankAccount;
+      bankAccountHasBeenSet = true;
 
    }
 
    public boolean bankAccountHasBeenSet(){
-	  return bankAccountHasBeenSet;
+      return bankAccountHasBeenSet;
    }
    public java.lang.Integer getAccountType()
    {
-	  return this.accountType;
+      return this.accountType;
    }
 
    public void setAccountType( java.lang.Integer accountType )
    {
-	  this.accountType = accountType;
-	  accountTypeHasBeenSet = true;
+      this.accountType = accountType;
+      accountTypeHasBeenSet = true;
 
    }
 
    public boolean accountTypeHasBeenSet(){
-	  return accountTypeHasBeenSet;
+      return accountTypeHasBeenSet;
    }
    public java.lang.String getBankName()
    {
-	  return this.bankName;
+      return this.bankName;
    }
 
    public void setBankName( java.lang.String bankName )
    {
-	  this.bankName = bankName;
-	  bankNameHasBeenSet = true;
+      this.bankName = bankName;
+      bankNameHasBeenSet = true;
 
    }
 
    public boolean bankNameHasBeenSet(){
-	  return bankNameHasBeenSet;
+      return bankNameHasBeenSet;
    }
    public java.lang.String getAccountName()
    {
-	  return this.accountName;
+      return this.accountName;
    }
 
    public void setAccountName( java.lang.String accountName )
    {
-	  this.accountName = accountName;
-	  accountNameHasBeenSet = true;
+      this.accountName = accountName;
+      accountNameHasBeenSet = true;
 
    }
 
    public boolean accountNameHasBeenSet(){
-	  return accountNameHasBeenSet;
+      return accountNameHasBeenSet;
    }
 
    public String toString()
    {
-	  StringBuffer str = new StringBuffer("{");
+      StringBuffer str = new StringBuffer("{");
 
-	  str.append("id=" + getId() + " " + "abaRouting=" + getAbaRouting() + " " + "bankAccount=" + getBankAccount() + " " + "accountType=" + getAccountType() + " " + "bankName=" + getBankName() + " " + "accountName=" + getAccountName());
-	  str.append('}');
+      str.append("id=" + getId() + " " + "abaRouting=" + getAbaRouting() + " " + "bankAccount=" + getBankAccount() + " " + "accountType=" + getAccountType() + " " + "bankName=" + getBankName() + " " + "accountName=" + getAccountName());
+      str.append('}');
 
-	  return(str.toString());
+      return(str.toString());
    }
 
    /**
@@ -207,95 +207,95 @@ public class AchDTO
     */
    protected boolean hasIdentity()
    {
-	  return idHasBeenSet;
+      return idHasBeenSet;
    }
 
    public boolean equals(Object other)
    {
       if (this == other)
          return true;
-	  if ( ! hasIdentity() ) return false;
-	  if (other instanceof AchDTO)
-	  {
-		 AchDTO that = (AchDTO) other;
-		 if ( ! that.hasIdentity() ) return false;
-		 boolean lEquals = true;
-		 if( this.id == null )
-		 {
-			lEquals = lEquals && ( that.id == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.id.equals( that.id );
-		 }
+      if ( ! hasIdentity() ) return false;
+      if (other instanceof AchDTO)
+      {
+         AchDTO that = (AchDTO) other;
+         if ( ! that.hasIdentity() ) return false;
+         boolean lEquals = true;
+         if( this.id == null )
+         {
+            lEquals = lEquals && ( that.id == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.id.equals( that.id );
+         }
 
-		 lEquals = lEquals && isIdentical(that);
+         lEquals = lEquals && isIdentical(that);
 
-		 return lEquals;
-	  }
-	  else
-	  {
-		 return false;
-	  }
+         return lEquals;
+      }
+      else
+      {
+         return false;
+      }
    }
 
    public boolean isIdentical(Object other)
    {
-	  if (other instanceof AchDTO)
-	  {
-		 AchDTO that = (AchDTO) other;
-		 boolean lEquals = true;
-		 if( this.abaRouting == null )
-		 {
-			lEquals = lEquals && ( that.abaRouting == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.abaRouting.equals( that.abaRouting );
-		 }
-		 if( this.bankAccount == null )
-		 {
-			lEquals = lEquals && ( that.bankAccount == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.bankAccount.equals( that.bankAccount );
-		 }
-		 if( this.accountType == null )
-		 {
-			lEquals = lEquals && ( that.accountType == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.accountType.equals( that.accountType );
-		 }
-		 if( this.bankName == null )
-		 {
-			lEquals = lEquals && ( that.bankName == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.bankName.equals( that.bankName );
-		 }
-		 if( this.accountName == null )
-		 {
-			lEquals = lEquals && ( that.accountName == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.accountName.equals( that.accountName );
-		 }
+      if (other instanceof AchDTO)
+      {
+         AchDTO that = (AchDTO) other;
+         boolean lEquals = true;
+         if( this.abaRouting == null )
+         {
+            lEquals = lEquals && ( that.abaRouting == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.abaRouting.equals( that.abaRouting );
+         }
+         if( this.bankAccount == null )
+         {
+            lEquals = lEquals && ( that.bankAccount == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.bankAccount.equals( that.bankAccount );
+         }
+         if( this.accountType == null )
+         {
+            lEquals = lEquals && ( that.accountType == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.accountType.equals( that.accountType );
+         }
+         if( this.bankName == null )
+         {
+            lEquals = lEquals && ( that.bankName == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.bankName.equals( that.bankName );
+         }
+         if( this.accountName == null )
+         {
+            lEquals = lEquals && ( that.accountName == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.accountName.equals( that.accountName );
+         }
 
-		 return lEquals;
-	  }
-	  else
-	  {
-		 return false;
-	  }
+         return lEquals;
+      }
+      else
+      {
+         return false;
+      }
    }
 
    public int hashCode(){
-	  int result = 17;
+      int result = 17;
       result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
 
       result = 37*result + ((this.abaRouting != null) ? this.abaRouting.hashCode() : 0);
@@ -308,7 +308,7 @@ public class AchDTO
 
       result = 37*result + ((this.accountName != null) ? this.accountName.hashCode() : 0);
 
-	  return result;
+      return result;
    }
 
 }

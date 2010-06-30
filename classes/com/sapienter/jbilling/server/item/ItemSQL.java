@@ -33,13 +33,13 @@ public interface ItemSQL {
     // the general list of items, shows always the description of
     // the entity. This then prevents items not showing up because
     // the logged user has a differenct language
-	static final String list = 
-		"select a.id, a.id, a.internal_number, b.content " +
-		"  from item a, international_description b, jbilling_table c," +
+    static final String list = 
+        "select a.id, a.id, a.internal_number, b.content " +
+        "  from item a, international_description b, jbilling_table c," +
         "       entity e " +
-		" where a.entity_id = e.id " +
+        " where a.entity_id = e.id " +
         "   and e.id = ? " +
-		"   and a.deleted = 0 " +
+        "   and a.deleted = 0 " +
         "   and b.table_id = c.id " +
         "   and c.name = 'item' " +
         "   and b.foreign_id = a.id " +

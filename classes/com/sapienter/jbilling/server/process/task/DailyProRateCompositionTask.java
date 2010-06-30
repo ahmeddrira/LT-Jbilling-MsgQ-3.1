@@ -33,28 +33,28 @@ import com.sapienter.jbilling.server.util.Constants;
  *
  */
 public class DailyProRateCompositionTask extends BasicCompositionTask {
-	private static final Logger LOG = Logger.getLogger(DailyProRateCompositionTask.class);
-	
+    private static final Logger LOG = Logger.getLogger(DailyProRateCompositionTask.class);
+    
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
-    	if (period == null || fullPrice == null) {
-    		LOG.warn("Called with null parameters");
-    		return null;
-    	}
-    	
-    	// this is an amount from a one-time order, not a real period of time
-    	if (period.getDaysInCycle() == 0) {
-    		return fullPrice;
-    	}
-    	
-    	// if this is not a fraction of a period, don't bother making any calculations
-    	if (period.getDaysInCycle() == period.getDaysInPeriod()) {
-    		return fullPrice;
-    	}
-    	
-    	BigDecimal oneDay = fullPrice.divide(new BigDecimal(period.getDaysInCycle()), 
-    			Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
-    	BigDecimal proRatedAmount = oneDay.multiply(new BigDecimal(period.getDaysInPeriod()));
-    	return proRatedAmount;
+        if (period == null || fullPrice == null) {
+            LOG.warn("Called with null parameters");
+            return null;
+        }
+        
+        // this is an amount from a one-time order, not a real period of time
+        if (period.getDaysInCycle() == 0) {
+            return fullPrice;
+        }
+        
+        // if this is not a fraction of a period, don't bother making any calculations
+        if (period.getDaysInCycle() == period.getDaysInPeriod()) {
+            return fullPrice;
+        }
+        
+        BigDecimal oneDay = fullPrice.divide(new BigDecimal(period.getDaysInCycle()), 
+                Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+        BigDecimal proRatedAmount = oneDay.multiply(new BigDecimal(period.getDaysInPeriod()));
+        return proRatedAmount;
     }
 
 }

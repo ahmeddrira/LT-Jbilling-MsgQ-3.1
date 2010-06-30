@@ -158,16 +158,16 @@ public class MaintainAction extends Action {
                         new ActionMessage("user.delete.done", userId));
                 // get rid of the cached list of users
                 session.removeAttribute(Constants.SESSION_LIST_KEY + 
-                		Constants.LIST_TYPE_CUSTOMER);
+                        Constants.LIST_TYPE_CUSTOMER);
                 session.removeAttribute(Constants.SESSION_LIST_KEY + 
-                		Constants.LIST_TYPE_CUSTOMER_SIMPLE);
+                        Constants.LIST_TYPE_CUSTOMER_SIMPLE);
             } else if (action.equals("update")) {
                 DynaValidatorForm userForm = (DynaValidatorForm) form;
 
-				// get the info in its current status
+                // get the info in its current status
                 UserDTOEx orgUser = (UserDTOEx) session.getAttribute(
                         Constants.SESSION_CUSTOMER_DTO);
-				LOG.debug("Updating user: ");
+                LOG.debug("Updating user: ");
                 // general validation first
                 errors = userForm.validate(mapping, request);
                 // verify that the password and the verification password 
@@ -195,17 +195,17 @@ public class MaintainAction extends Action {
                 //and probably knows what to do.
                 //XXX: see commented block below
                 /**
-				 * <code>
-				 * // test that the old password is correct if this is a self-update
-				 * if (updatePassword && userId.equals(executorId) &&
-				 * 		!userDto.getPassword().equals((String) userForm.get(
-				 * 			"oldPassword"))) {
-				 * 
-				 * 		errors.add(ActionErrors.GLOBAL_ERROR,
-				 * 			new ActionError("user.edit.error.invalidOldPassword"));
-				 * }
-				 * </code>
-				 */
+                 * <code>
+                 * // test that the old password is correct if this is a self-update
+                 * if (updatePassword && userId.equals(executorId) &&
+                 *      !userDto.getPassword().equals((String) userForm.get(
+                 *          "oldPassword"))) {
+                 * 
+                 *      errors.add(ActionErrors.GLOBAL_ERROR,
+                 *          new ActionError("user.edit.error.invalidOldPassword"));
+                 * }
+                 * </code>
+                 */
                 
                 String partnerId = (String) userForm.get("partnerId");
                 // validate the partnerId if present

@@ -30,17 +30,17 @@ import java.math.BigDecimal;
 
 public class ProcessRunTotalDAS extends AbstractDAS<ProcessRunTotalDTO> {
 
-	public ProcessRunTotalDTO create(ProcessRunDTO run, BigDecimal invoiced, BigDecimal notPaid, BigDecimal paid, Integer currencyId) {
-		ProcessRunTotalDTO dto = new ProcessRunTotalDTO();
-		dto.setTotalInvoiced(invoiced);
-		dto.setTotalNotPaid(notPaid);
-		dto.setTotalPaid(paid);
-		dto.setCurrency(new CurrencyDAS().find(currencyId));
+    public ProcessRunTotalDTO create(ProcessRunDTO run, BigDecimal invoiced, BigDecimal notPaid, BigDecimal paid, Integer currencyId) {
+        ProcessRunTotalDTO dto = new ProcessRunTotalDTO();
+        dto.setTotalInvoiced(invoiced);
+        dto.setTotalNotPaid(notPaid);
+        dto.setTotalPaid(paid);
+        dto.setCurrency(new CurrencyDAS().find(currencyId));
         dto.setProcessRun(run);
         dto = save(dto);
         run.getProcessRunTotals().add(dto);
-		return dto;
-	}
+        return dto;
+    }
 
     /**
      * Returns the locked row, since payment processing updates this in parallel
@@ -50,13 +50,13 @@ public class ProcessRunTotalDAS extends AbstractDAS<ProcessRunTotalDTO> {
      */
     public ProcessRunTotalDTO getByCurrency(ProcessRunDTO run, Integer currencyId) {
         Criteria criteria = getSession().createCriteria(ProcessRunTotalDTO.class)
-				.createAlias("processRun", "r")
-					.add(Restrictions.eq("r.id", run.getId()))
-				.createAlias("currency", "c")
-					.add(Restrictions.eq("c.id", currencyId))
+                .createAlias("processRun", "r")
+                    .add(Restrictions.eq("r.id", run.getId()))
+                .createAlias("currency", "c")
+                    .add(Restrictions.eq("c.id", currencyId))
                 .setComment("ProcessRunTotalDAS.getByCurrency");
 
-		return (ProcessRunTotalDTO) criteria.uniqueResult();
+        return (ProcessRunTotalDTO) criteria.uniqueResult();
     }
 
 }

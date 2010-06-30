@@ -56,7 +56,7 @@ import java.util.ArrayList;
  * @author emilc
  *
  * @jsp:tag name="genericList"
- * 			body-content="JSP"
+ *          body-content="JSP"
  */
 public class GenericListTag extends ListTagBase {
     

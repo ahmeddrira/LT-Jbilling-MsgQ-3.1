@@ -49,13 +49,13 @@ public class ProcessRunTotalPmDAS extends AbstractDAS<ProcessRunTotalPmDTO> {
      */
     public ProcessRunTotalPmDTO getByMethod(Integer methodId, ProcessRunTotalDTO total) {
         Criteria criteria = getSession().createCriteria(ProcessRunTotalPmDTO.class)
-				.createAlias("processRunTotal", "r")
-					.add(Restrictions.eq("r.id", total.getId()))
-				.createAlias("paymentMethod", "c")
-					.add(Restrictions.eq("c.id", methodId))
+                .createAlias("processRunTotal", "r")
+                    .add(Restrictions.eq("r.id", total.getId()))
+                .createAlias("paymentMethod", "c")
+                    .add(Restrictions.eq("c.id", methodId))
                 .setComment("ProcessRunTotalPmDAS.getByMethod");
 
-		return (ProcessRunTotalPmDTO) criteria.uniqueResult();
+        return (ProcessRunTotalPmDTO) criteria.uniqueResult();
     }
    
 

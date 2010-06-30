@@ -106,7 +106,7 @@ public class ItemDTO extends AbstractDescription {
         this.deleted = deleted;
         this.entity = entity;
     }
-	
+    
     public ItemDTO(int id, Integer priceManual, Integer deleted, Integer hasDecimals) {
         this.id = id;
         this.priceManual = priceManual;
@@ -265,7 +265,7 @@ public class ItemDTO extends AbstractDescription {
 
     @Transient
     public String getNumber() {
-    	return getInternalNumber();
+        return getInternalNumber();
     }
 
     @Transient

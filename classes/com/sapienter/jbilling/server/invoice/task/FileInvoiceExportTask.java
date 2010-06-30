@@ -49,7 +49,7 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
     private static final Logger LOG = Logger.getLogger(FileInvoiceExportTask.class);
 
     // Required parameters
-	private static final String FILE = "file";
+    private static final String FILE = "file";
 
     public void process(Event event) throws PluggableTaskException {
         NewInvoiceEvent myEvent = (NewInvoiceEvent) event;
@@ -90,7 +90,7 @@ public class FileInvoiceExportTask extends PluggableTask implements IInternalEve
         ContactBL contact = new ContactBL();
         contact.set(userId);
 
-        // cono															
+        // cono                                                         
         line.append("\"" + emptyIfNull(contact.getEntity().getPostalCode()) + "\"");
         line.append(",");
         // custno

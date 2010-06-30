@@ -55,7 +55,7 @@ public interface JbillingAPI {
     public Integer getAutoPaymentType(Integer userId) throws JbillingAPIException;
     
     public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
-    		throws JbillingAPIException;
+            throws JbillingAPIException;
 
     public Integer[] getUserInvoicesByDate(Integer userId, String since, 
             String until) throws JbillingAPIException;
@@ -105,7 +105,7 @@ public interface JbillingAPI {
             throws JbillingAPIException;
     
     public void updateAch(Integer userId, AchDTO ach)
-    		throws JbillingAPIException;
+            throws JbillingAPIException;
 
     public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
             throws JbillingAPIException;
@@ -165,7 +165,7 @@ public interface JbillingAPI {
             throws JbillingAPIException;
     
     public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields)
-    		throws JbillingAPIException;
+            throws JbillingAPIException;
 
     public OrderWS rateOrder(OrderWS order) throws JbillingAPIException;
 

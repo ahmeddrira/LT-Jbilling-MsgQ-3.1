@@ -60,7 +60,7 @@ public class ContactFieldTypeDTO  implements java.io.Serializable {
         }
     }
 
-	
+    
     public ContactFieldTypeDTO(int id, String promptKey, String dataType) {
         this.id = id;
         this.promptKey = promptKey;

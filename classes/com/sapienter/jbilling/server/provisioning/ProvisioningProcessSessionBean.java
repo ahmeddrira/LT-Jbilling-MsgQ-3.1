@@ -46,71 +46,71 @@ import com.sapienter.jbilling.server.util.Constants;
 @Transactional( propagation = Propagation.REQUIRED )
 public class ProvisioningProcessSessionBean 
         implements IProvisioningProcessSessionBean {
-	private static final Logger LOG = Logger.getLogger(ProvisioningProcessSessionBean.class);
+    private static final Logger LOG = Logger.getLogger(ProvisioningProcessSessionBean.class);
 
-	public void trigger() throws SessionInternalError {
-		LOG.debug("calling ProvisioningProcessSessionBean trigger() method");
+    public void trigger() throws SessionInternalError {
+        LOG.debug("calling ProvisioningProcessSessionBean trigger() method");
 
-		try {
-			ProvisioningProcessBL processBL = new ProvisioningProcessBL();
+        try {
+            ProvisioningProcessBL processBL = new ProvisioningProcessBL();
 
-			processBL.activateOrders();
-			processBL.deActivateOrders();
-		} catch (Exception e) {
-			throw new SessionInternalError(e);
-		}
-	}
+            processBL.activateOrders();
+            processBL.deActivateOrders();
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
 
-	public void updateProvisioningStatus(Integer in_order_id,
-			Integer in_order_line_id, String result) 
+    public void updateProvisioningStatus(Integer in_order_id,
+            Integer in_order_line_id, String result) 
             throws EmptyResultDataAccessException {
-		OrderDAS orderDb = new OrderDAS();
-		OrderDTO order = orderDb.find(in_order_id);
-		OrderBL order_bl = new OrderBL(order);
-		OrderLineDAS lineDAS = new OrderLineDAS();
-		OrderLineDTO order_line =  lineDAS.findForUpdate(in_order_line_id);//lineDb.findNow(in_order_line_id);
+        OrderDAS orderDb = new OrderDAS();
+        OrderDTO order = orderDb.find(in_order_id);
+        OrderBL order_bl = new OrderBL(order);
+        OrderLineDAS lineDAS = new OrderLineDAS();
+        OrderLineDTO order_line =  lineDAS.findForUpdate(in_order_line_id);//lineDb.findNow(in_order_line_id);
 
         if (order_line == null) {
             throw new EmptyResultDataAccessException("Didn't find order line: "
                     + in_order_line_id, 1);
         }
-		LOG.debug("update order line : " + order_line.getId());
+        LOG.debug("update order line : " + order_line.getId());
 
-		if (result.equals("fail")) {
-			order_bl.setProvisioningStatus(in_order_line_id,
-					Constants.PROVISIONING_STATUS_FAILED);
-			LOG.debug("Provisioning status set to 'FAILED' for order line : "
-					+ order_line.getId());
+        if (result.equals("fail")) {
+            order_bl.setProvisioningStatus(in_order_line_id,
+                    Constants.PROVISIONING_STATUS_FAILED);
+            LOG.debug("Provisioning status set to 'FAILED' for order line : "
+                    + order_line.getId());
         } else if (result.equals("unavailable")) {
-			order_bl.setProvisioningStatus(in_order_line_id,
-					Constants.PROVISIONING_STATUS_UNAVAILABLE);
-			LOG.debug("Provisioning status set to 'UNAVAILABLE' for order line : "
-					+ order_line.getId());
-		} else if (result.equals("success")) {
-			LOG.debug("order line Status before : "
-					+ order_line.getProvisioningStatusId());
-			if (order_line.getProvisioningStatusId().equals(
-					Constants.PROVISIONING_STATUS_PENDING_ACTIVE)) {
-				order_bl.setProvisioningStatus(in_order_line_id,
-						Constants.PROVISIONING_STATUS_ACTIVE);
+            order_bl.setProvisioningStatus(in_order_line_id,
+                    Constants.PROVISIONING_STATUS_UNAVAILABLE);
+            LOG.debug("Provisioning status set to 'UNAVAILABLE' for order line : "
+                    + order_line.getId());
+        } else if (result.equals("success")) {
+            LOG.debug("order line Status before : "
+                    + order_line.getProvisioningStatusId());
+            if (order_line.getProvisioningStatusId().equals(
+                    Constants.PROVISIONING_STATUS_PENDING_ACTIVE)) {
+                order_bl.setProvisioningStatus(in_order_line_id,
+                        Constants.PROVISIONING_STATUS_ACTIVE);
                 LOG.debug("Provisioning status set to 'ACTIVE' for order line : "
                         + order_line.getId());
-			} else if (order_line.getProvisioningStatusId().equals(
-					Constants.PROVISIONING_STATUS_PENDING_INACTIVE)) {
-				order_bl.setProvisioningStatus(in_order_line_id,
-						Constants.PROVISIONING_STATUS_INACTIVE);
+            } else if (order_line.getProvisioningStatusId().equals(
+                    Constants.PROVISIONING_STATUS_PENDING_INACTIVE)) {
+                order_bl.setProvisioningStatus(in_order_line_id,
+                        Constants.PROVISIONING_STATUS_INACTIVE);
                 LOG.debug("Provisioning status set to 'INACTIVE' for order line : "
                         + order_line.getId());
-			} else {
+            } else {
                 throw new SessionInternalError("Invalid or unexpected " + 
                         "provisioning status: " + 
                         order_line.getProvisioningStatusId());
             }
-		} else {
-			throw new SessionInternalError("Can not process message with " +
+        } else {
+            throw new SessionInternalError("Can not process message with " +
                     "result property value " + result);
-		}
-	}
+        }
+    }
 
     public void updateProvisioningStatus(Integer orderLineId, 
             Integer provisioningStatus) {
@@ -122,7 +122,7 @@ public class ProvisioningProcessSessionBean
     /**
      * Runs the external provisioning code in a transation.
      */
-	public void externalProvisioning(Message message) {
+    public void externalProvisioning(Message message) {
         ExternalProvisioning provisioning = new ExternalProvisioning();
         provisioning.onMessage(message);
     }

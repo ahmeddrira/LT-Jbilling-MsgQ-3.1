@@ -204,6 +204,6 @@ public class EventLogger {
      * @return the id of the last queried transitions list.
      */
     public Integer getLastTransitionEvent(Integer entityId)  {
-    	return eventLogDAS.getLastTransitionEvent(entityId);
+        return eventLogDAS.getLastTransitionEvent(entityId);
     }
 }

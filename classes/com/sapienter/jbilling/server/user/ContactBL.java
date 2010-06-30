@@ -98,7 +98,7 @@ public class ContactBL {
 
     public void setEntity(Integer entityId) {
         this.entityId = entityId;
-    	contact = contactDas.findEntityContact(entityId);
+        contact = contactDas.findEntityContact(entityId);
     }
 
     public boolean setInvoice(Integer invoiceId) {
@@ -126,7 +126,7 @@ public class ContactBL {
      * @return
      */
     public ContactDTO getEntity() {
-    	return contact;
+        return contact;
     }
     
     
@@ -369,7 +369,7 @@ public class ContactBL {
         contact.setTitle(dto.getTitle());
         contact.setInclude(dto.getInclude());
         if (entityId == null) {
-        	setEntityFromUser(contact.getUserId());
+            setEntityFromUser(contact.getUserId());
         }
         
         NewContactEvent event = new NewContactEvent(contact, entityId);

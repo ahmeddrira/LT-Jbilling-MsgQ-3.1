@@ -34,43 +34,43 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 public class OrderDAS extends AbstractDAS<OrderDTO> {
-	public OrderProcessDTO findProcessByEndDate(Integer id, Date myDate) {
-		return (OrderProcessDTO) getSession().createFilter(find(id).getOrderProcesses(), 
-				"where this.periodEnd = :endDate").setDate("endDate", 
-						Util.truncateDate(myDate)).uniqueResult();
-		
-	}
+    public OrderProcessDTO findProcessByEndDate(Integer id, Date myDate) {
+        return (OrderProcessDTO) getSession().createFilter(find(id).getOrderProcesses(), 
+                "where this.periodEnd = :endDate").setDate("endDate", 
+                        Util.truncateDate(myDate)).uniqueResult();
+        
+    }
 
-	/**
-	 * Finds active recurring orders for a given user
-	 * @param userId
-	 * @return
-	 */
-	public List<OrderDTO> findByUserSubscriptions(Integer userId) {
-		// I need to access an association, so I can't use the parent helper class
-		Criteria criteria = getSession().createCriteria(OrderDTO.class)
-				.createAlias("orderStatus", "s")
-					.add(Restrictions.eq("s.id", Constants.ORDER_STATUS_ACTIVE))
-				.add(Restrictions.eq("deleted", 0))
-				.createAlias("baseUserByUserId", "u")
-					.add(Restrictions.eq("u.id", userId))
-				.createAlias("orderPeriod", "p")
-					.add(Restrictions.ne("p.id", Constants.ORDER_PERIOD_ONCE));
-		
-		return criteria.list();
-	}
-	
-	public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {
-		// I need to access an association, so I can't use the parent helper class
-		Criteria criteria = getSession().createCriteria(OrderDTO.class)
-				.add(Restrictions.eq("deleted", 0))
-				.createAlias("baseUserByUserId", "u")
-					.add(Restrictions.eq("u.id", userId))
-				.createAlias("orderStatus", "s")
-					.add(Restrictions.eq("s.id", statusId));
-		
-		return criteria.list();
-	}
+    /**
+     * Finds active recurring orders for a given user
+     * @param userId
+     * @return
+     */
+    public List<OrderDTO> findByUserSubscriptions(Integer userId) {
+        // I need to access an association, so I can't use the parent helper class
+        Criteria criteria = getSession().createCriteria(OrderDTO.class)
+                .createAlias("orderStatus", "s")
+                    .add(Restrictions.eq("s.id", Constants.ORDER_STATUS_ACTIVE))
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUserByUserId", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .createAlias("orderPeriod", "p")
+                    .add(Restrictions.ne("p.id", Constants.ORDER_PERIOD_ONCE));
+        
+        return criteria.list();
+    }
+    
+    public List<OrderDTO> findByUser_Status(Integer userId,Integer statusId) {
+        // I need to access an association, so I can't use the parent helper class
+        Criteria criteria = getSession().createCriteria(OrderDTO.class)
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("baseUserByUserId", "u")
+                    .add(Restrictions.eq("u.id", userId))
+                .createAlias("orderStatus", "s")
+                    .add(Restrictions.eq("s.id", statusId));
+        
+        return criteria.list();
+    }
 
     // used for the web services call to get the latest X orders
     public List<Integer> findIdsByUserLatestFirst(Integer userId, int maxResults) {
@@ -107,49 +107,49 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         return data;
     }
 
-	/**
-	 * @author othman
-	 * @return list of active orders
-	 */
-	public List<OrderDTO> findToActivateOrders() {
-		Date today = Util.truncateDate(new Date());
-		Criteria criteria = getSession().createCriteria(OrderDTO.class);
+    /**
+     * @author othman
+     * @return list of active orders
+     */
+    public List<OrderDTO> findToActivateOrders() {
+        Date today = Util.truncateDate(new Date());
+        Criteria criteria = getSession().createCriteria(OrderDTO.class);
 
-		criteria.add(Restrictions.eq("deleted", 0));
-		criteria.add(Restrictions.or(Expression.le("activeSince", today),
-				Expression.isNull("activeSince")));
-		criteria.add(Restrictions.or(Expression.gt("activeUntil", today),
-				Expression.isNull("activeUntil")));
+        criteria.add(Restrictions.eq("deleted", 0));
+        criteria.add(Restrictions.or(Expression.le("activeSince", today),
+                Expression.isNull("activeSince")));
+        criteria.add(Restrictions.or(Expression.gt("activeUntil", today),
+                Expression.isNull("activeUntil")));
 
-		return criteria.list();
-	}
+        return criteria.list();
+    }
 
-	/**
-	 * @author othman
-	 * @return list of inactive orders
-	 */
-	public List<OrderDTO> findToDeActiveOrders() {
-		Date today = Util.truncateDate(new Date());
-		Criteria criteria = getSession().createCriteria(OrderDTO.class);
+    /**
+     * @author othman
+     * @return list of inactive orders
+     */
+    public List<OrderDTO> findToDeActiveOrders() {
+        Date today = Util.truncateDate(new Date());
+        Criteria criteria = getSession().createCriteria(OrderDTO.class);
 
-		criteria.add(Restrictions.eq("deleted", 0));
-		criteria.add(Restrictions.or(Expression.gt("activeSince", today),
-				Expression.le("activeUntil", today)));
+        criteria.add(Restrictions.eq("deleted", 0));
+        criteria.add(Restrictions.or(Expression.gt("activeSince", today),
+                Expression.le("activeUntil", today)));
 
-		return criteria.list();
-	}
-	
-	public BigDecimal findIsUserSubscribedTo(Integer userId, Integer itemId) {
-		String hql = 
-				"select sum(l.quantity) " +
-				"from OrderDTO o " +
-				"inner join o.lines l " +
-				"where l.item.id = :itemId and " +
-				"o.baseUserByUserId.id = :userId and " +
-				"o.orderPeriod.id != :periodVal and " +
-				"o.orderStatus.id = :status and " +
-				"o.deleted = 0 and " +
-				"l.deleted = 0";
+        return criteria.list();
+    }
+    
+    public BigDecimal findIsUserSubscribedTo(Integer userId, Integer itemId) {
+        String hql = 
+                "select sum(l.quantity) " +
+                "from OrderDTO o " +
+                "inner join o.lines l " +
+                "where l.item.id = :itemId and " +
+                "o.baseUserByUserId.id = :userId and " +
+                "o.orderPeriod.id != :periodVal and " +
+                "o.orderStatus.id = :status and " +
+                "o.deleted = 0 and " +
+                "l.deleted = 0";
 
         BigDecimal result = (BigDecimal) getSession()
                 .createQuery(hql)
@@ -160,13 +160,13 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
                 .uniqueResult();
         
         return (result == null ? BigDecimal.ZERO : result);
-	}
-	
-	public Integer[] findUserItemsByCategory(Integer userId, 
-			Integer categoryId) {
-		
-		Integer[] result = null;
-		
+    }
+    
+    public Integer[] findUserItemsByCategory(Integer userId, 
+            Integer categoryId) {
+        
+        Integer[] result = null;
+        
         final String hql =
                 "select distinct(i.id) " +
                 "from OrderDTO o " +
@@ -188,7 +188,7 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
             result = (Integer[])qRes.toArray(new Integer[0]);
         }
         return result;
-	}
+    }
 
     public List<OrderDTO> findOneTimersByDate(Integer userId, Date activeSince) {
         final String hql = 

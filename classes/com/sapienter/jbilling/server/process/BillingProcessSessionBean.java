@@ -241,7 +241,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
             // If one was not configured just use the basic task by default
             if (task == null) {
-            	task = new BasicBillingProcessFilterTask();
+                task = new BasicBillingProcessFilterTask();
             }
 
             // Event listing the id's of all generated invoices from this run
@@ -249,15 +249,15 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
             BillingProcessDAS bpDas = new BillingProcessDAS();
             ScrollableResults userCursor = task.findUsersToProcess(entityId);
-        	if (userCursor!= null){
-	            int count = 0;
-	            while (userCursor.next()) {
-	                Integer userId = (Integer) userCursor.get(0);
-	                Integer result[] = local.processUser(billingProcessId, userId, isReview, onlyRecurring);
+            if (userCursor!= null){
+                int count = 0;
+                while (userCursor.next()) {
+                    Integer userId = (Integer) userCursor.get(0);
+                    Integer result[] = local.processUser(billingProcessId, userId, isReview, onlyRecurring);
                     generatedEvent.addInvoiceIds(result);
 
-	                if (result != null) {
-	                    LOG.debug("User " + userId + " done invoice generation.");
+                    if (result != null) {
+                        LOG.debug("User " + userId + " done invoice generation.");
                         if (!isReview) {
                             for (Integer aResult : result) {
                                 local.emailAndPayment(entityId,
@@ -270,16 +270,16 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                         totalInvoices += result.length;
                     } else {
                         LOG.debug("User " + userId + " NOT done");
-	                    allGood = false;
-	                }
-	
-	                // make sure the memory doesn't get flooded
-	                if (++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
-	                    bpDas.reset();
-	                }
-	            }
-            	userCursor.close(); // done with the cursor, needs manual closing
-        	}
+                        allGood = false;
+                    }
+    
+                    // make sure the memory doesn't get flooded
+                    if (++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
+                        bpDas.reset();
+                    }
+                }
+                userCursor.close(); // done with the cursor, needs manual closing
+            }
             // restore the configuration in the session, the reset removed it
             conf.set(entityId);
             
@@ -517,13 +517,13 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             // new invoice.
             InvoiceDTO newInvoices[] = processBL.generateInvoice(process, user.getEntity(), isReview, onlyRecurring);
             if (newInvoices == null) {
-            	if (!isReview) {
+                if (!isReview) {
                     NoNewInvoiceEvent event = new NoNewInvoiceEvent(user.getEntityId(userId),
                                                                     userId,
                                                                     process.getBillingDate(),
                                                                     user.getEntity().getSubscriberStatus().getId());
                     EventManager.process(event);
-            	}
+                }
                 return new Integer[0];
             }
 
@@ -644,7 +644,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 BillingProcessConfigurationDTO config = configEntity.getDTO();
                 if (!config.getNextRunDate().after(today)) {
                     boolean doRun = true; // there should be a run today
-                	LOG.debug("A process has to be done for entity " + entityId);
+                    LOG.debug("A process has to be done for entity " + entityId);
 
                     // check that: the configuration requires a review
                     // AND, there is no partial run already there (failed)
@@ -713,7 +713,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
                 } else {
                     // no run, may be then a review generation
-                	LOG.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
+                    LOG.debug("No run scheduled. Next run on " + config.getNextRunDate().getTime());
                     
                     /*
                      * Review generation

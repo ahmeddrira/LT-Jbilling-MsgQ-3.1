@@ -64,7 +64,7 @@ public class ContactMapDTO  implements java.io.Serializable {
     public ContactMapDTO() {
     }
 
-	
+    
     public ContactMapDTO(int id, JbillingTable jbillingTable, ContactTypeDTO contactType, int foreignId) {
         this.id = id;
         this.jbillingTable = jbillingTable;

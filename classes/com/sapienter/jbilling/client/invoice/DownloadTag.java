@@ -81,7 +81,7 @@ public class DownloadTag extends TagSupport {
 
             byte[] document = invoiceSession.getPDFInvoice(invoice.getId());
             for(int f = 0; f < document.length; f++) {
-            	out.write(document[f]);
+                out.write(document[f]);
             }
             
             out.close();

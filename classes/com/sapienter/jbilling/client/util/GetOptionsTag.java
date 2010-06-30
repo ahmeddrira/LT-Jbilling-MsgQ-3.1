@@ -91,7 +91,7 @@ public class GetOptionsTag extends TagSupport {
         String attributeKey = null;
         String type = null;
 
-		try {
+        try {
             IListSessionBean remoteList = (IListSessionBean) Context.getBean(
                     Context.Name.LIST_SESSION);
   
@@ -170,7 +170,7 @@ public class GetOptionsTag extends TagSupport {
                 pageContext.setAttribute(attributeKey,
                         retValue, PageContext.PAGE_SCOPE);
             }
-		    // in some cases, the result is needed also in the session
+            // in some cases, the result is needed also in the session
             if (inSession.booleanValue()) {
                 pageContext.setAttribute("SESSION_" + attributeKey,
                         retValue, PageContext.SESSION_SCOPE);
@@ -178,9 +178,9 @@ public class GetOptionsTag extends TagSupport {
             
             
         } catch (Exception e) {
-		    log.error("Exception on getting the order periods", e);
-		    throw new JspException(e);
-		}
+            log.error("Exception on getting the order periods", e);
+            throw new JspException(e);
+        }
 
         return SKIP_BODY;
     }

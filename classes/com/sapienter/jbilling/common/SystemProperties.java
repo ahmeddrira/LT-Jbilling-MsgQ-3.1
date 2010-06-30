@@ -46,7 +46,7 @@ public class SystemProperties {
             throws IOException{
         if (ref == null) {
             // it's ok, we can call this constructor
-            ref = new SystemProperties();		
+            ref = new SystemProperties();       
         }
         return ref;
     }
@@ -68,7 +68,7 @@ public class SystemProperties {
     
 
     public Object clone()
-	    throws CloneNotSupportedException {
+        throws CloneNotSupportedException {
         throw new CloneNotSupportedException(); 
         // a singleton should never be cloned
     }

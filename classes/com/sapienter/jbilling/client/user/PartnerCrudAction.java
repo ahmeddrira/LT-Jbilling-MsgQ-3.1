@@ -38,37 +38,37 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 
 public class PartnerCrudAction extends CrudActionBase<Partner> {
-	private static final String FORM = "partner";
+    private static final String FORM = "partner";
 
-	private static final String FIELD_BALANCE = "balance";
-	private static final String FIELD_RATE = "rate";
-	private static final String FIELD_FEE = "fee";
-	private static final String FIELD_FEE_CURRENCY = "fee_currency";
-	private static final String FIELD_ONE_TIME = "chbx_one_time";
-	private static final String FIELD_PERIOD_UNIT_ID = "period_unit_id";
-	private static final String FIELD_PERIOD_VALUE = "period_value";
-	private static final String FIELD_GROUP_PAYOUT = "payout";
-	private static final String FIELD_PROCESS = "chbx_process";
-	private static final String FIELD_CLERK = "clerk";
-	
-	private static final String FORWARD_EDIT = "partner_edit";
-	private static final String FORWARD_LIST = "partner_list";
-	private static final String FORWARD_RANGES = "partner_ranges";
-	private static final String FORWARD_CREATE = "partner_create";
+    private static final String FIELD_BALANCE = "balance";
+    private static final String FIELD_RATE = "rate";
+    private static final String FIELD_FEE = "fee";
+    private static final String FIELD_FEE_CURRENCY = "fee_currency";
+    private static final String FIELD_ONE_TIME = "chbx_one_time";
+    private static final String FIELD_PERIOD_UNIT_ID = "period_unit_id";
+    private static final String FIELD_PERIOD_VALUE = "period_value";
+    private static final String FIELD_GROUP_PAYOUT = "payout";
+    private static final String FIELD_PROCESS = "chbx_process";
+    private static final String FIELD_CLERK = "clerk";
+    
+    private static final String FORWARD_EDIT = "partner_edit";
+    private static final String FORWARD_LIST = "partner_list";
+    private static final String FORWARD_RANGES = "partner_ranges";
+    private static final String FORWARD_CREATE = "partner_create";
 
-	private static final String MESSAGE_CREATED = "partner.created";
-	private static final String MESSAGE_UPDATED = "partner.updated";
-	
-	private final IUserSessionBean myUserSession;
-	
-	public PartnerCrudAction(IUserSessionBean userSession) {
-		super(FORM, "partner");
-		myUserSession = userSession;
-	}
-	
-	
-	@Override
-	protected ForwardAndMessage doCreate(Partner dto) throws RemoteException {
+    private static final String MESSAGE_CREATED = "partner.created";
+    private static final String MESSAGE_UPDATED = "partner.updated";
+    
+    private final IUserSessionBean myUserSession;
+    
+    public PartnerCrudAction(IUserSessionBean userSession) {
+        super(FORM, "partner");
+        myUserSession = userSession;
+    }
+    
+    
+    @Override
+    protected ForwardAndMessage doCreate(Partner dto) throws RemoteException {
         // get the user dto from the session. This is the dto with the
         // info of the user to create
         UserDTOEx user = (UserDTOEx) session.getAttribute(Constants.SESSION_CUSTOMER_DTO);
@@ -84,24 +84,24 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
         session.setAttribute(Constants.SESSION_PARTNER_DTO, 
                 myUserSession.getUserDTOEx(newUserID).getPartner());
         return (request.getParameter("ranges") == null) ?
-        		new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATED) :
-        		new ForwardAndMessage(FORWARD_RANGES, MESSAGE_CREATED);
-	}
-	
-	@Override
-	protected ForwardAndMessage doDelete() throws RemoteException {
-		throw new UnsupportedOperationException("Delete mode is not directly supported for partners");
-	}
+                new ForwardAndMessage(FORWARD_LIST, MESSAGE_CREATED) :
+                new ForwardAndMessage(FORWARD_RANGES, MESSAGE_CREATED);
+    }
+    
+    @Override
+    protected ForwardAndMessage doDelete() throws RemoteException {
+        throw new UnsupportedOperationException("Delete mode is not directly supported for partners");
+    }
 
-	@Override
-	protected void preEdit() {
-		super.preEdit();
-		setForward(FORWARD_EDIT);
-	}
-	
-	@Override
-	protected Partner doEditFormToDTO() throws RemoteException {
-		Partner dto = (Partner)session.getAttribute(Constants.SESSION_PARTNER_DTO);
+    @Override
+    protected void preEdit() {
+        super.preEdit();
+        setForward(FORWARD_EDIT);
+    }
+    
+    @Override
+    protected Partner doEditFormToDTO() throws RemoteException {
+        Partner dto = (Partner)session.getAttribute(Constants.SESSION_PARTNER_DTO);
         if (dto == null) {
             dto = new Partner();
         }
@@ -128,34 +128,34 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
                 clerk.getDeleted() == 1 ||
                 clerk.getMainRoleId().intValue() > 
                 Constants.TYPE_CLERK.intValue()) {
-            	
+                
             errors.add(ActionErrors.GLOBAL_ERROR,
                     new ActionError("partner.error.clerkinvalid"));
         } else {
             dto.setRelatedClerkUserId(clerkId);
         }
         return dto;
-	}
-	
-	@Override
-	protected ForwardAndMessage doUpdate(Partner dto) throws RemoteException {
+    }
+    
+    @Override
+    protected ForwardAndMessage doUpdate(Partner dto) throws RemoteException {
         dto.setId((Integer) session.getAttribute(Constants.SESSION_PARTNER_ID));
         myUserSession.updatePartner(executorId, dto);
         return (request.getParameter("ranges") == null) ?
-        		new ForwardAndMessage(FORWARD_LIST, MESSAGE_UPDATED) :
-        		new ForwardAndMessage(FORWARD_RANGES, MESSAGE_CREATED);
-	}
-	
-	@Override
-	protected void resetCachedList() {
+                new ForwardAndMessage(FORWARD_LIST, MESSAGE_UPDATED) :
+                new ForwardAndMessage(FORWARD_RANGES, MESSAGE_CREATED);
+    }
+    
+    @Override
+    protected void resetCachedList() {
         session.removeAttribute(Constants.SESSION_LIST_KEY + "partner");
-	}
-	
-	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
-		final ForwardAndMessage result;
+    }
+    
+    @Override
+    protected ForwardAndMessage doSetup() throws RemoteException {
+        final ForwardAndMessage result;
         
-		Integer partnerId = (Integer) session.getAttribute(
+        Integer partnerId = (Integer) session.getAttribute(
                 Constants.SESSION_PARTNER_ID);
         
         Partner partner;
@@ -184,49 +184,49 @@ public class PartnerCrudAction extends CrudActionBase<Partner> {
         setFormDate(FIELD_GROUP_PAYOUT, partner.getNextPayoutDate());
         
         return result;
-	}
-	
-	private Partner createPartnerFromDefaults() throws RemoteException {
-		Partner partner;
-		partner = new Partner();
-		// set the values from the preferences (defaults)
-		Integer[] preferenceIds = new Integer[] {
-				Constants.PREFERENCE_PART_DEF_RATE, 
-				Constants.PREFERENCE_PART_DEF_FEE, 
-				Constants.PREFERENCE_PART_DEF_FEE_CURR, 
-				Constants.PREFERENCE_PART_DEF_ONE_TIME, 
-				Constants.PREFERENCE_PART_DEF_PER_UNIT, 
-				Constants.PREFERENCE_PART_DEF_PER_VALUE, 
-				Constants.PREFERENCE_PART_DEF_AUTOMATIC, 
-				Constants.PREFERENCE_PART_DEF_CLERK, 
-		};
+    }
+    
+    private Partner createPartnerFromDefaults() throws RemoteException {
+        Partner partner;
+        partner = new Partner();
+        // set the values from the preferences (defaults)
+        Integer[] preferenceIds = new Integer[] {
+                Constants.PREFERENCE_PART_DEF_RATE, 
+                Constants.PREFERENCE_PART_DEF_FEE, 
+                Constants.PREFERENCE_PART_DEF_FEE_CURR, 
+                Constants.PREFERENCE_PART_DEF_ONE_TIME, 
+                Constants.PREFERENCE_PART_DEF_PER_UNIT, 
+                Constants.PREFERENCE_PART_DEF_PER_VALUE, 
+                Constants.PREFERENCE_PART_DEF_AUTOMATIC, 
+                Constants.PREFERENCE_PART_DEF_CLERK, 
+        };
       
-		PreferencesMap prefs = mapEntityParameters(preferenceIds);
-		partner.setPercentageRate(string2decimal(prefs.getString(Constants.PREFERENCE_PART_DEF_RATE)));
-		partner.setReferralFee(string2decimal(prefs.getString(Constants.PREFERENCE_PART_DEF_FEE)));
-		if (partner.getReferralFee() != null){
-			partner.setFeeCurrency(new CurrencyDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_FEE_CURR)));
-		}
-		partner.setOneTime(prefs.getInteger(Constants.PREFERENCE_PART_DEF_ONE_TIME));
-		partner.setPeriodUnit(new PeriodUnitDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_UNIT)));
-		partner.setPeriodValue(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_VALUE));
-		partner.setAutomaticProcess(prefs.getInteger(Constants.PREFERENCE_PART_DEF_AUTOMATIC));
-		partner.setRelatedClerkUserId(prefs.getInteger(Constants.PREFERENCE_PART_DEF_CLERK));
-		// some that are not preferences
-		partner.setBalance(BigDecimal.ZERO);
-		return partner;
-	}
+        PreferencesMap prefs = mapEntityParameters(preferenceIds);
+        partner.setPercentageRate(string2decimal(prefs.getString(Constants.PREFERENCE_PART_DEF_RATE)));
+        partner.setReferralFee(string2decimal(prefs.getString(Constants.PREFERENCE_PART_DEF_FEE)));
+        if (partner.getReferralFee() != null){
+            partner.setFeeCurrency(new CurrencyDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_FEE_CURR)));
+        }
+        partner.setOneTime(prefs.getInteger(Constants.PREFERENCE_PART_DEF_ONE_TIME));
+        partner.setPeriodUnit(new PeriodUnitDTO(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_UNIT)));
+        partner.setPeriodValue(prefs.getInteger(Constants.PREFERENCE_PART_DEF_PER_VALUE));
+        partner.setAutomaticProcess(prefs.getInteger(Constants.PREFERENCE_PART_DEF_AUTOMATIC));
+        partner.setRelatedClerkUserId(prefs.getInteger(Constants.PREFERENCE_PART_DEF_CLERK));
+        // some that are not preferences
+        partner.setBalance(BigDecimal.ZERO);
+        return partner;
+    }
 
-	@SuppressWarnings("unchecked")
-	private PreferencesMap mapEntityParameters(Integer[] ids) throws RemoteException {
-		HashMap<Integer, String> result = myUserSession.getEntityParameters(entityId, ids);
-		return new PreferencesMap(result);
-	}
+    @SuppressWarnings("unchecked")
+    private PreferencesMap mapEntityParameters(Integer[] ids) throws RemoteException {
+        HashMap<Integer, String> result = myUserSession.getEntityParameters(entityId, ids);
+        return new PreferencesMap(result);
+    }
 
-	private Integer valueOfCheckBox(String fieldName){
-		Boolean value = (Boolean) myForm.get(fieldName);
-		return value ? 1 : 0;
-	}
-	
-	
+    private Integer valueOfCheckBox(String fieldName){
+        Boolean value = (Boolean) myForm.get(fieldName);
+        return value ? 1 : 0;
+    }
+    
+    
 }

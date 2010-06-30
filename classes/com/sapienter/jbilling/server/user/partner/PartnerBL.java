@@ -344,7 +344,7 @@ public class PartnerBL extends ResultList implements PartnerSQL {
      */
     public PartnerPayout calculatePayout(Date start, Date end, Integer currencyId) 
             throws NamingException, SQLException, SessionInternalError {
-    	BigDecimal total = new BigDecimal("0");
+        BigDecimal total = new BigDecimal("0");
         BigDecimal paymentTotal = new BigDecimal("0");
         BigDecimal refundTotal = new BigDecimal("0");
         
@@ -375,7 +375,7 @@ public class PartnerBL extends ResultList implements PartnerSQL {
                 total = total.add(amount);
                 paymentTotal = paymentTotal.add(amount);
             } else {
-            	total = total.subtract(amount);
+                total = total.subtract(amount);
                 refundTotal = refundTotal.add(amount);
             }
             if (payout != null) {
@@ -441,7 +441,7 @@ public class PartnerBL extends ResultList implements PartnerSQL {
             throws SessionInternalError {
 
         // the balance goes down with a payout
-    	BigDecimal balance = partner.getBalance().subtract(dto.getPayment().getAmount());
+        BigDecimal balance = partner.getBalance().subtract(dto.getPayment().getAmount());
         partner.setBalance(balance);
         
         // add this payout to her total
@@ -460,23 +460,23 @@ public class PartnerBL extends ResultList implements PartnerSQL {
         // make the notification
         NotificationBL notification = new NotificationBL();
         try {
-	        MessageDTO message = notification.getPayoutMessage(entityId,
-	                languageId, total, start, end, clerk, partner.getId());
-	 
-	        INotificationSessionBean notificationSess = 
+            MessageDTO message = notification.getPayoutMessage(entityId,
+                    languageId, total, start, end, clerk, partner.getId());
+     
+            INotificationSessionBean notificationSess = 
                     (INotificationSessionBean) Context.getBean(
                     Context.Name.NOTIFICATION_SESSION);
-	        if (!clerk) {
-	            notificationSess.notify(partner.getUser(), message);
-	        } else {
-	            notificationSess.notify(partner.getBaseUserByRelatedClerk(), message);
+            if (!clerk) {
+                notificationSess.notify(partner.getUser(), message);
+            } else {
+                notificationSess.notify(partner.getBaseUserByRelatedClerk(), message);
 
-	        }
+            }
         } catch (NotificationNotFoundException e) {
-        	//  this entity has not defined
-        	// a message for the payout
-        	LOG.warn("A payout message shoule've been sent, but entity " + 
-        			entityId + " has not defined a notification");
+            //  this entity has not defined
+            // a message for the payout
+            LOG.warn("A payout message shoule've been sent, but entity " + 
+                    entityId + " has not defined a notification");
         }
     }
     
@@ -517,8 +517,8 @@ public class PartnerBL extends ResultList implements PartnerSQL {
         // apply the rate to get the commission value
         if (rate != null && (rate.compareTo(BigDecimal.ZERO) != 0)) {
             result = amount.divide(new BigDecimal("100"),
-            		CommonConstants.BIGDECIMAL_SCALE,
-            		CommonConstants.BIGDECIMAL_ROUND).multiply(rate);
+                    CommonConstants.BIGDECIMAL_SCALE,
+                    CommonConstants.BIGDECIMAL_ROUND).multiply(rate);
         } else if (fee != null && (fee.compareTo(BigDecimal.ZERO) != 0)) {
             CurrencyBL currency = new CurrencyBL();
             Integer partnerCurrencyId = partner.getFeeCurrency().getId();

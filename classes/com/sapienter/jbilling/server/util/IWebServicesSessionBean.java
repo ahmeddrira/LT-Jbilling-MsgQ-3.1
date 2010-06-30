@@ -262,7 +262,7 @@ public interface IWebServicesSessionBean {
     public Integer[] getLastPayments(Integer userId, Integer number)
             throws SessionInternalError;
 
-	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
 
     /**
      * Validate if the user can buy this. This depends on the balance type:
@@ -336,9 +336,9 @@ public interface IWebServicesSessionBean {
     public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId,
             Integer number) throws SessionInternalError;
 
-	public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId);
+    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId);
 
-	public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
 
@@ -350,12 +350,12 @@ public interface IWebServicesSessionBean {
     public void updateItemCategory(ItemTypeWS itemType)
             throws SessionInternalError;
 
-	public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
+    public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
 
-	public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
-			throws SessionInternalError;
+    public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+            throws SessionInternalError;
 
-	public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
+    public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
 
     public void generateRules(String rulesData) throws SessionInternalError;
 }

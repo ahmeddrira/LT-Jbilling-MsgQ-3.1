@@ -48,12 +48,12 @@ import org.apache.log4j.Logger;
 
 @Entity
 @TableGenerator(
-		name = "credit_card_GEN",
-		table = "jbilling_seqs",
-		pkColumnName = "name",
-		valueColumnName = "next_id",
-		pkColumnValue = "credit_card",
-		allocationSize = 100)
+        name = "credit_card_GEN",
+        table = "jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue = "credit_card",
+        allocationSize = 100)
 @Table(name = "credit_card")
 public class CreditCardDTO implements Serializable {
 
@@ -165,7 +165,7 @@ public class CreditCardDTO implements Serializable {
             setRawName(null);
             return;
         }
-    	setRawName(JBCrypto.getCreditCardCrypto().encrypt(name));
+        setRawName(JBCrypto.getCreditCardCrypto().encrypt(name));
         // validate that the saved name is retrivable and valid
         try {
             if (!getName().equals(name)) {

@@ -23,12 +23,12 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
 public class PaymentProcessorUnavailableEvent extends AbstractPaymentEvent {
 
-	public PaymentProcessorUnavailableEvent(Integer entityId,
-			PaymentDTOEx payment) {
-		super(entityId, payment);
-	}
-	
-	public String getName() {
-		return "Processor unavailable";
-	}
+    public PaymentProcessorUnavailableEvent(Integer entityId,
+            PaymentDTOEx payment) {
+        super(entityId, payment);
+    }
+    
+    public String getName() {
+        return "Processor unavailable";
+    }
 }

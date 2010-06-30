@@ -66,16 +66,16 @@ public interface OrderSQL {
         "  order by 1 desc";
     
     static final String getAboutToExpire =
-    	"select purchase_order.id, purchase_order.active_until, " +
+        "select purchase_order.id, purchase_order.active_until, " +
         "       purchase_order.notification_step " +
-    	" from purchase_order, base_user " +
-    	"where active_until >= ? " +
-    	"  and active_until <= ? " +
-    	"  and notify = 1 " +
-    	"  and purchase_order.status_id = (select id from generic_status " +
+        " from purchase_order, base_user " +
+        "where active_until >= ? " +
+        "  and active_until <= ? " +
+        "  and notify = 1 " +
+        "  and purchase_order.status_id = (select id from generic_status " +
         "    where dtype = 'order_status' AND status_value = 1 )" +
-    	"  and user_id = base_user.id " +
-    	"  and entity_id = ? " +
+        "  and user_id = base_user.id " +
+        "  and entity_id = ? " +
         "  and (notification_step is null or notification_step < ?)";
     
     static final String getLatest =

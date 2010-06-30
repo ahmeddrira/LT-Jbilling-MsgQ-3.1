@@ -40,63 +40,63 @@ import com.sapienter.jbilling.server.list.db.ListFieldEntityDTO;
  * 
  */
 public class ListFieldEntityBL {
-	private ListFieldEntityDAS fieldEntityDas = null;
-	private ListFieldEntityDTO fieldEntity = null;
-	private Logger log = null;
+    private ListFieldEntityDAS fieldEntityDas = null;
+    private ListFieldEntityDTO fieldEntity = null;
+    private Logger log = null;
 
-	public ListFieldEntityBL(Integer fieldEntityId) throws NamingException {
-		init();
-		set(fieldEntityId);
-	}
+    public ListFieldEntityBL(Integer fieldEntityId) throws NamingException {
+        init();
+        set(fieldEntityId);
+    }
 
-	public ListFieldEntityBL() throws NamingException {
-		init();
-	}
+    public ListFieldEntityBL() throws NamingException {
+        init();
+    }
 
-	public ListFieldEntityBL(ListFieldEntityDTO fieldEntity) {
-		init();
-		set(fieldEntity);
-	}
+    public ListFieldEntityBL(ListFieldEntityDTO fieldEntity) {
+        init();
+        set(fieldEntity);
+    }
 
-	private void init() {
-		log = Logger.getLogger(ListFieldEntityBL.class);
-		fieldEntityDas = new ListFieldEntityDAS();
-	}
+    private void init() {
+        log = Logger.getLogger(ListFieldEntityBL.class);
+        fieldEntityDas = new ListFieldEntityDAS();
+    }
 
-	public ListFieldEntityDTO getEntity() {
-		return fieldEntity;
-	}
+    public ListFieldEntityDTO getEntity() {
+        return fieldEntity;
+    }
 
-	public ListFieldEntityDAS getHome() {
-		return fieldEntityDas;
-	}
+    public ListFieldEntityDAS getHome() {
+        return fieldEntityDas;
+    }
 
-	public void set(Integer id) {
-		fieldEntity = fieldEntityDas.find(id);
-	}
+    public void set(Integer id) {
+        fieldEntity = fieldEntityDas.find(id);
+    }
 
-	public void set(ListFieldEntityDTO fieldEntity) {
-		this.fieldEntity = fieldEntity;
-	}
+    public void set(ListFieldEntityDTO fieldEntity) {
+        this.fieldEntity = fieldEntity;
+    }
 
-	public void set(Integer fieldId, Integer listEntityId) {
-		fieldEntity = fieldEntityDas.findByFieldEntity(fieldId, listEntityId);
-	}
+    public void set(Integer fieldId, Integer listEntityId) {
+        fieldEntity = fieldEntityDas.findByFieldEntity(fieldId, listEntityId);
+    }
 
-	public void createUpdate(ListFieldDTO field, ListEntityDTO entity,
-			Integer min, Integer max, String minStr, String maxStr,
-			Date minDate, Date maxDate) {
-		fieldEntity = fieldEntityDas.findByFieldEntity(field.getId(), entity
-				.getId());
-		if (fieldEntity == null) {
-			fieldEntity = fieldEntityDas.create(entity, field);
-		}
+    public void createUpdate(ListFieldDTO field, ListEntityDTO entity,
+            Integer min, Integer max, String minStr, String maxStr,
+            Date minDate, Date maxDate) {
+        fieldEntity = fieldEntityDas.findByFieldEntity(field.getId(), entity
+                .getId());
+        if (fieldEntity == null) {
+            fieldEntity = fieldEntityDas.create(entity, field);
+        }
 
-		fieldEntity.setMaxValue(max);
-		fieldEntity.setMinValue(min);
-		fieldEntity.setMaxStrValue(maxStr);
-		fieldEntity.setMinStrValue(minStr);
-		fieldEntity.setMinDateValue(minDate);
-		fieldEntity.setMaxDateValue(maxDate);
-	}
+        fieldEntity.setMaxValue(max);
+        fieldEntity.setMinValue(min);
+        fieldEntity.setMaxStrValue(maxStr);
+        fieldEntity.setMinStrValue(minStr);
+        fieldEntity.setMinDateValue(minDate);
+        fieldEntity.setMaxDateValue(maxDate);
+    }
 }

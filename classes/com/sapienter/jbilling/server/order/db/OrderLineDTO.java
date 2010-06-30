@@ -98,19 +98,19 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
     
     public OrderLineDTO(OrderLineDTO other) {
-    	this.id = other.id;
-    	this.orderLineTypeDTO = other.getOrderLineType();
-    	this.item = other.getItem();
-    	this.amount = other.getAmount();
-    	this.quantity = other.getQuantity();
-    	this.price = other.getPrice();
-    	this.createDatetime = other.getCreateDatetime();
-    	this.deleted = other.getDeleted();
-    	this.description = other.getDescription();
-    	this.orderDTO = other.getPurchaseOrder();
-    	this.versionNum = other.getVersionNum();
+        this.id = other.id;
+        this.orderLineTypeDTO = other.getOrderLineType();
+        this.item = other.getItem();
+        this.amount = other.getAmount();
+        this.quantity = other.getQuantity();
+        this.price = other.getPrice();
+        this.createDatetime = other.getCreateDatetime();
+        this.deleted = other.getDeleted();
+        this.description = other.getDescription();
+        this.orderDTO = other.getPurchaseOrder();
+        this.versionNum = other.getVersionNum();
     }
-	
+    
     public OrderLineDTO(int id, BigDecimal amount, Date createDatetime, Integer deleted) {
         this.id = id;
         this.amount = amount;
@@ -119,7 +119,7 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
 
     public OrderLineDTO(int id, OrderLineTypeDTO orderLineTypeDTO, ItemDTO item, OrderDTO orderDTO, BigDecimal amount,
-    		BigDecimal quantity, BigDecimal price, Date createDatetime, Integer deleted,
+            BigDecimal quantity, BigDecimal price, Date createDatetime, Integer deleted,
             String description, ProvisioningStatusDTO provisioningStatus, String provisioningRequestId) {
        this.id = id;
        this.orderLineTypeDTO = orderLineTypeDTO;
@@ -203,7 +203,7 @@ public class OrderLineDTO implements Serializable, Comparable {
 
     @Transient
     public void setQuantity(Integer quantity) {
-    	setQuantity(new BigDecimal(quantity));
+        setQuantity(new BigDecimal(quantity));
     }
 
     /**
@@ -252,12 +252,12 @@ public class OrderLineDTO implements Serializable, Comparable {
 
     @Version
     @Column(name="OPTLOCK")
-	public Integer getVersionNum() {
-		return versionNum;
-	}
-	public void setVersionNum(Integer versionNum) {
-		this.versionNum = versionNum;
-	}
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
         
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="orderLine")
     @Cascade( value= org.hibernate.annotations.CascadeType.DELETE_ORPHAN )
@@ -270,50 +270,50 @@ public class OrderLineDTO implements Serializable, Comparable {
         this.events = events;
     }        
 
-	/*
-	 * Conveniant methods to ease migration from entity beans
-	 */
+    /*
+     * Conveniant methods to ease migration from entity beans
+     */
     @Transient
     public Integer getItemId() {
-    	return (getItem() == null) ? null : getItem().getId();
+        return (getItem() == null) ? null : getItem().getId();
     }
 
     public void setItemId(Integer itemId) {
-    	ItemDAS das = new ItemDAS();
-    	setItem(das.find(itemId));
+        ItemDAS das = new ItemDAS();
+        setItem(das.find(itemId));
     }
 
     @Transient
-	public Boolean getEditable() {
-    	if (editable == null) {
-			editable = getOrderLineType().getEditable() == 1;
-    	}
-    	return editable;
-	}
+    public Boolean getEditable() {
+        if (editable == null) {
+            editable = getOrderLineType().getEditable() == 1;
+        }
+        return editable;
+    }
     public void setEditable(Boolean editable) {
-    	this.editable = editable;
+        this.editable = editable;
     }
 
     @Transient
-	public String getPriceStr() {
-		return priceStr;
-	}
+    public String getPriceStr() {
+        return priceStr;
+    }
 
-	public void setPriceStr(String priceStr) {
-		this.priceStr = priceStr;
-	}
-	
+    public void setPriceStr(String priceStr) {
+        this.priceStr = priceStr;
+    }
+    
     @Transient
-	public Boolean getTotalReadOnly() {
+    public Boolean getTotalReadOnly() {
         if (totalReadOnly == null) {
             setTotalReadOnly(false);
         }
-		return totalReadOnly;
-	}
+        return totalReadOnly;
+    }
 
-	public void setTotalReadOnly(Boolean totalReadOnly) {
-		this.totalReadOnly = totalReadOnly;
-	}
+    public void setTotalReadOnly(Boolean totalReadOnly) {
+        this.totalReadOnly = totalReadOnly;
+    }
 
     @Transient
     public String getProvisioningStatusStr() {
@@ -325,14 +325,14 @@ public class OrderLineDTO implements Serializable, Comparable {
     }
 
     @Transient
-	public Integer getTypeId() {
-		return getOrderLineType() == null ? null : getOrderLineType().getId();
-	}
+    public Integer getTypeId() {
+        return getOrderLineType() == null ? null : getOrderLineType().getId();
+    }
 
-	public void setTypeId(Integer typeId) {
-		OrderLineTypeDAS das = new OrderLineTypeDAS();
-		setOrderLineType(das.find(typeId));
-	}
+    public void setTypeId(Integer typeId) {
+        OrderLineTypeDAS das = new OrderLineTypeDAS();
+        setOrderLineType(das.find(typeId));
+    }
     
     @Transient
     public Integer getQuantityInt() {
@@ -340,47 +340,47 @@ public class OrderLineDTO implements Serializable, Comparable {
         return this.quantity.intValue();
     }
 
-	/**
-	 * @return the provisioningStatus
-	 */
+    /**
+     * @return the provisioningStatus
+     */
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="provisioning_status")
-	public ProvisioningStatusDTO getProvisioningStatus() {
-		return provisioningStatus;
-	}
+    public ProvisioningStatusDTO getProvisioningStatus() {
+        return provisioningStatus;
+    }
 
-	/**
-	 * @param provisioningStatus the provisioningStatus to set
-	 */
-	public void setProvisioningStatus(ProvisioningStatusDTO provisioningStatus) {
-		this.provisioningStatus = provisioningStatus;
-	}
+    /**
+     * @param provisioningStatus the provisioningStatus to set
+     */
+    public void setProvisioningStatus(ProvisioningStatusDTO provisioningStatus) {
+        this.provisioningStatus = provisioningStatus;
+    }
 
     @Transient
-	public Integer getProvisioningStatusId() {
-		return getProvisioningStatus() == null ? null : 
+    public Integer getProvisioningStatusId() {
+        return getProvisioningStatus() == null ? null : 
                 getProvisioningStatus().getId();
-	}
+    }
 
-	public void setProvisioningStatusId(Integer provisioningStatusId) {
-		ProvisioningStatusDAS das = new ProvisioningStatusDAS();
-		setProvisioningStatus(das.find(provisioningStatusId));
-	}
+    public void setProvisioningStatusId(Integer provisioningStatusId) {
+        ProvisioningStatusDAS das = new ProvisioningStatusDAS();
+        setProvisioningStatus(das.find(provisioningStatusId));
+    }
 
-	/**
-	 * @return the provisioningRequestId
-	 */
-	@Column(name="provisioning_request_id")
-	public String getProvisioningRequestId() {
-		return provisioningRequestId;
-	}
+    /**
+     * @return the provisioningRequestId
+     */
+    @Column(name="provisioning_request_id")
+    public String getProvisioningRequestId() {
+        return provisioningRequestId;
+    }
 
-	/**
-	 * @param provisioningRequestId the provisioningRequestId to set
-	 */
-	public void setProvisioningRequestId(String provisioningRequestId) {
-		this.provisioningRequestId = provisioningRequestId;
-	}
+    /**
+     * @param provisioningRequestId the provisioningRequestId to set
+     */
+    public void setProvisioningRequestId(String provisioningRequestId) {
+        this.provisioningRequestId = provisioningRequestId;
+    }
 
     public void addExtraFields(Integer languageId) {
         if (getProvisioningStatus() != null) {
@@ -388,14 +388,14 @@ public class OrderLineDTO implements Serializable, Comparable {
         }
     }
 
-	public void touch() {
-		getCreateDatetime();
-		if (getItem() != null) {
+    public void touch() {
+        getCreateDatetime();
+        if (getItem() != null) {
             getItem().getInternalNumber();
         }
-		getEditable();
-	}
-	
+        getEditable();
+    }
+    
     @Transient
     public void setDefaults() {
         if (getCreateDatetime() == null) {
@@ -405,11 +405,11 @@ public class OrderLineDTO implements Serializable, Comparable {
     
     // this helps to add lines to the treeSet
     public int compareTo(Object o) {
-    	OrderLineDTO other = (OrderLineDTO) o;
-    	if (other.getItem() == null || this.getItem() == null) {
-    		return -1;
-    	}
-    	return new Integer(this.getItem().getId()).compareTo(other.getItem().getId());
+        OrderLineDTO other = (OrderLineDTO) o;
+        if (other.getItem() == null || this.getItem() == null) {
+            return -1;
+        }
+        return new Integer(this.getItem().getId()).compareTo(other.getItem().getId());
     }
 
     @Override

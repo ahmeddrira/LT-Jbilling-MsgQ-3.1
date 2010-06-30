@@ -36,17 +36,17 @@ import com.sapienter.jbilling.server.util.Context;
 
 public class MaintainAction extends CrudActionBase<MessageDTO> {
 
-	private static final String FORM = "notification";
+    private static final String FORM = "notification";
 
-	private static final String FIELD_SECTION_CONSTANTS = "sectionNumbers";
-	private static final String FIELD_SECTIONS = "sections";
-	private static final String FIELD_USE_ME = "chbx_use_flag";
-	private static final String FIELD_LANGUAGE = "language";
-	
-	private static final String FORWARD_EDIT = "notification_edit";
-	private static final String MESSAGE_UPDATE_OK = "notification.message.update.done";
+    private static final String FIELD_SECTION_CONSTANTS = "sectionNumbers";
+    private static final String FIELD_SECTIONS = "sections";
+    private static final String FIELD_USE_ME = "chbx_use_flag";
+    private static final String FIELD_LANGUAGE = "language";
+    
+    private static final String FORWARD_EDIT = "notification_edit";
+    private static final String MESSAGE_UPDATE_OK = "notification.message.update.done";
 
-	private final INotificationSessionBean myNotificationSession;
+    private final INotificationSessionBean myNotificationSession;
 
     public MaintainAction() {
         super(FORM, "notification");
@@ -59,10 +59,10 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
                     "Initializing notification CRUD action: " + e.getMessage());
         }
     }
-	
-	@Override
-	protected MessageDTO doEditFormToDTO() throws RemoteException {
-		MessageDTO dto = new MessageDTO();
+    
+    @Override
+    protected MessageDTO doEditFormToDTO() throws RemoteException {
+        MessageDTO dto = new MessageDTO();
         dto.setLanguageId((Integer) myForm.get("language"));
         dto.setTypeId(selectedId);
         dto.setUseFlag((Boolean) myForm.get("chbx_use_flag"));
@@ -75,16 +75,16 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
         }
         LOG.debug("message is " + dto);
         return dto;
-	}
-	
-	@Override
-	protected ForwardAndMessage doUpdate(MessageDTO dto) throws RemoteException {
+    }
+    
+    @Override
+    protected ForwardAndMessage doUpdate(MessageDTO dto) throws RemoteException {
         myNotificationSession.createUpdate(dto, entityId);
         return new ForwardAndMessage(FORWARD_EDIT, MESSAGE_UPDATE_OK);
-	}
-	
-	@Override
-	protected ForwardAndMessage doSetup() throws RemoteException {
+    }
+    
+    @Override
+    protected ForwardAndMessage doSetup() throws RemoteException {
         MessageDTO dto = myNotificationSession.getDTO(selectedId, languageId, entityId);
         myForm.set(FIELD_LANGUAGE, languageId);
         myForm.set(FIELD_USE_ME, dto.getUseFlag());
@@ -98,53 +98,53 @@ public class MaintainAction extends CrudActionBase<MessageDTO> {
         myForm.set(FIELD_SECTIONS, sections);
         myForm.set(FIELD_SECTION_CONSTANTS, sectionNubmers);
         return new ForwardAndMessage(FORWARD_EDIT);
-	}
-	
-	@Override
-	protected void resetCachedList() {
-		session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
-	}
-	
-	@Override
-	protected ForwardAndMessage doDelete() throws RemoteException {
-		throw new UnsupportedOperationException(
-				"Set of notification events is fixed. You can not delete it, only switch it off");
-	}
-	
-	@Override
-	protected ForwardAndMessage doCreate(MessageDTO dto) throws RemoteException {
-		throw new UnsupportedOperationException(
-				"Set of notification events is fixed. You can not create it, only switch it on");
-	}
+    }
+    
+    @Override
+    protected void resetCachedList() {
+        session.removeAttribute(Constants.SESSION_LIST_KEY + FORM);
+    }
+    
+    @Override
+    protected ForwardAndMessage doDelete() throws RemoteException {
+        throw new UnsupportedOperationException(
+                "Set of notification events is fixed. You can not delete it, only switch it off");
+    }
+    
+    @Override
+    protected ForwardAndMessage doCreate(MessageDTO dto) throws RemoteException {
+        throw new UnsupportedOperationException(
+                "Set of notification events is fixed. You can not create it, only switch it on");
+    }
 
-	@Override
-	protected boolean isCancelled(HttpServletRequest request) {
-		return !request.getParameter("mode").equals("setup");
-	}
-	
-	@Override
-	protected boolean isResetRequested() {
-		return request.getParameter("reload") != null || super.isResetRequested();
-	}
-	
-	@Override
-	protected void preReset() {
-		//call to super would re-init the form from mapping 
-		setForward(FORWARD_EDIT);
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
-		// this is just a change of language the requires a reload
-		// of the bean
-		languageId = (Integer) myForm.get(FIELD_LANGUAGE);
-		setup();
-	}
-	
-	@Override
-	protected void preEdit() {
-		super.preEdit();
-		setForward(FORWARD_EDIT);
-	}
+    @Override
+    protected boolean isCancelled(HttpServletRequest request) {
+        return !request.getParameter("mode").equals("setup");
+    }
+    
+    @Override
+    protected boolean isResetRequested() {
+        return request.getParameter("reload") != null || super.isResetRequested();
+    }
+    
+    @Override
+    protected void preReset() {
+        //call to super would re-init the form from mapping 
+        setForward(FORWARD_EDIT);
+    }
+    
+    @Override
+    public void reset() {
+        super.reset();
+        // this is just a change of language the requires a reload
+        // of the bean
+        languageId = (Integer) myForm.get(FIELD_LANGUAGE);
+        setup();
+    }
+    
+    @Override
+    protected void preEdit() {
+        super.preEdit();
+        setForward(FORWARD_EDIT);
+    }
 }

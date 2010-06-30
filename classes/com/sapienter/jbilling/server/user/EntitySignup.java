@@ -80,8 +80,8 @@ public final class EntitySignup {
      */
     public EntitySignup(UserDTOEx root, ContactDTO contact,
             Integer languageId) {
-    	
-    	checkMainRole(root);
+        
+        checkMainRole(root);
         this.user = root;
         this.contact = contact;
         this.languageId = languageId;
@@ -99,19 +99,19 @@ public final class EntitySignup {
             int newEntity = initData();
 
             conn.close();
-			return newEntity;
-			
+            return newEntity;
+            
         } catch (Exception e) {
-        	try {
-        		conn.close();
-        	} catch(Exception x) {}
-			throw new Exception(e);
+            try {
+                conn.close();
+            } catch(Exception x) {}
+            throw new Exception(e);
         }
     }
     
     
     void processTable(Table table) 
-        	throws Exception {
+            throws Exception {
 
         StringBuffer sql = new StringBuffer();
         if (table.columns[0].equals("i_id")) {
@@ -149,7 +149,7 @@ public final class EntitySignup {
             // for each row to be inserted, apply the data to the '?' 
             int rowCount = 0;
             for (rowCount = 0; table.data != null && rowCount < table.data.length;
-            		rowCount++, rowIdx++) {
+                    rowCount++, rowIdx++) {
 
                 // normal tables don't have data for the first column (the id)
                 // but map tables have data for every column
@@ -277,15 +277,15 @@ public final class EntitySignup {
         }
     
     void initTable(Table table) 
-    		throws SQLException {
-    	PreparedStatement stmt = conn.prepareStatement(
-    		"select js.next_id, jt.id from jbilling_seqs js, jbilling_table jt " +
+            throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(
+            "select js.next_id, jt.id from jbilling_seqs js, jbilling_table jt " +
                 "where js.name = ? and js.name = jt.name");
         stmt.setString(1, table.name);
         ResultSet res = stmt.executeQuery();
         if (res.next()) {
-        	table.nextId = res.getInt(1);
-        	table.index = res.getInt(2);
+            table.nextId = res.getInt(1);
+            table.index = res.getInt(2);
             
             stmt = conn.prepareStatement(
                     "select max(id) from " + table.name);
@@ -296,10 +296,10 @@ public final class EntitySignup {
                 table.nextId = maxId + 1;
             }
         } else {
-        	throw new SQLException("No rows for table " + table.name);
+            throw new SQLException("No rows for table " + table.name);
         }
         res.close();
-        stmt.close();  	
+        stmt.close();   
     }
 
     void insertPseudoColumns(int tableId, int rowId, String data[][])
@@ -347,7 +347,7 @@ public final class EntitySignup {
             { null, contact.getOrganizationName(), now, languageId.toString(), "1", "1" }, 
         };
         Table table = addTable(Constants.TABLE_ENTITY, entityColumns, 
-        		entityData, false);
+                entityData, false);
         processTable(table);
         int newEntityId = table.nextId - 1;
         
@@ -489,7 +489,7 @@ public final class EntitySignup {
         String contactMapColumns[] =
         { "i_id", "i_contact_id", "i_type_id", "i_table_id", "i_foreign_id", "i_optlock" };
         String contactMapData[][] = { 
-			{ String.valueOf(contactId), "1", "5", String.valueOf(newEntityId), "1" }, // the contact for the entity
+            { String.valueOf(contactId), "1", "5", String.valueOf(newEntityId), "1" }, // the contact for the entity
             { String.valueOf(contactId + 1), String.valueOf(pContactType), "10", String.valueOf(rootUserId), "1" }, 
         };
         table = addTable(Constants.TABLE_CONTACT_MAP, contactMapColumns, contactMapData, false);
@@ -561,17 +561,17 @@ public final class EntitySignup {
         addTaskParameter(table, firstPT, "all", null, "yes", null);
         
         // email parameters. They are all optional
-		addTaskParameter(table, firstPT + 7, "smtp_server", null, 
-    			null, null);
-		addTaskParameter(table, firstPT + 7, "from", null, 
-    			contact.getEmail(), null);
-		addTaskParameter(table, firstPT + 7, "username", null, 
+        addTaskParameter(table, firstPT + 7, "smtp_server", null, 
                 null, null);
-		addTaskParameter(table, firstPT + 7, "password", null, 
+        addTaskParameter(table, firstPT + 7, "from", null, 
+                contact.getEmail(), null);
+        addTaskParameter(table, firstPT + 7, "username", null, 
                 null, null);
-		addTaskParameter(table, firstPT + 7, "port", null, 
+        addTaskParameter(table, firstPT + 7, "password", null, 
                 null, null);
-		addTaskParameter(table, firstPT + 7, "reply_to", null, 
+        addTaskParameter(table, firstPT + 7, "port", null, 
+                null, null);
+        addTaskParameter(table, firstPT + 7, "reply_to", null, 
                 null, null);
         addTaskParameter(table, firstPT + 7, "bcc_to", null, 
                 null, null);
@@ -589,8 +589,8 @@ public final class EntitySignup {
         };
         
         String entityPaymentMethodMapData[][] = new String[3][2];
-    	entityPaymentMethodMapData[0][0] = String.valueOf(newEntityId);
-    	entityPaymentMethodMapData[0][1] = "1"; // cheque
+        entityPaymentMethodMapData[0][0] = String.valueOf(newEntityId);
+        entityPaymentMethodMapData[0][1] = "1"; // cheque
         entityPaymentMethodMapData[1][0] = String.valueOf(newEntityId);
         entityPaymentMethodMapData[1][1] = "2"; // visa
         entityPaymentMethodMapData[2][0] = String.valueOf(newEntityId);
@@ -627,7 +627,7 @@ public final class EntitySignup {
             {"11","5", String.valueOf(newEntityId), String.valueOf(rootUserId), null, null },
             {"12","5", String.valueOf(newEntityId), "1", null, null },
             {"13","5", String.valueOf(newEntityId), "1", null, null },
-			{"14","5", String.valueOf(newEntityId), "0", null, null },
+            {"14","5", String.valueOf(newEntityId), "0", null, null },
         };
         table = addTable(Constants.TABLE_PREFERENCE, preferenceColumns, 
                 preferenceData, false);
@@ -827,55 +827,55 @@ public final class EntitySignup {
     }
     
     void addTaskParameter(Table ptTable, int taskId, 
-    		String desc, Integer intP, String strP, Float floP)
-			throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement(
-				"insert into pluggable_task_parameter " +
-				"(id, task_id, name, int_value, str_value, float_value, optlock)" +
-				" values(?, ?, ?, ?, ?, ?, 1)");
-		stmt.setInt(1, ptTable.nextId);
-		stmt.setInt(2, taskId);
-		stmt.setString(3, desc);
-		if (intP != null) {
-			stmt.setInt(4, intP.intValue());
-		} else {
-			stmt.setNull(4, Types.INTEGER);
-		}
-		stmt.setString(5, strP);
-		if (floP != null) {
-			stmt.setFloat(6, floP.floatValue());
-		} else {
-			stmt.setNull(6, Types.FLOAT);
-		}
-		stmt.executeUpdate();
-		stmt.close();
-		ptTable.nextId++;
-	}
+            String desc, Integer intP, String strP, Float floP)
+            throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(
+                "insert into pluggable_task_parameter " +
+                "(id, task_id, name, int_value, str_value, float_value, optlock)" +
+                " values(?, ?, ?, ?, ?, ?, 1)");
+        stmt.setInt(1, ptTable.nextId);
+        stmt.setInt(2, taskId);
+        stmt.setString(3, desc);
+        if (intP != null) {
+            stmt.setInt(4, intP.intValue());
+        } else {
+            stmt.setNull(4, Types.INTEGER);
+        }
+        stmt.setString(5, strP);
+        if (floP != null) {
+            stmt.setFloat(6, floP.floatValue());
+        } else {
+            stmt.setNull(6, Types.FLOAT);
+        }
+        stmt.executeUpdate();
+        stmt.close();
+        ptTable.nextId++;
+    }
     
     void addTask(Table ptTable, int entityId, int type, int position) 
-    		throws SQLException {
+            throws SQLException {
         PreparedStatement stmt = conn.prepareStatement(
-        		"insert into pluggable_task (id, entity_id, type_id, processing_order)" +
-        		" values(?, ?, ?, ?)");
+                "insert into pluggable_task (id, entity_id, type_id, processing_order)" +
+                " values(?, ?, ?, ?)");
         stmt.setInt(1, ptTable.nextId);
         stmt.setInt(2, entityId);
         stmt.setInt(3, type);
         stmt.setInt(4, position);
         stmt.executeUpdate();
         stmt.close();
-    	ptTable.nextId++;
+        ptTable.nextId++;
     }
     
     private static void checkMainRole(UserDTOEx root){
-    	if (CommonConstants.TYPE_ROOT.equals(root.getMainRoleId())){
-    		Logger.getLogger(EntitySignup.class).warn("Attention: Root user passed with roleId: " + root.getMainRoleId());
-    	}
-    	root.setMainRoleId(CommonConstants.TYPE_ROOT);
+        if (CommonConstants.TYPE_ROOT.equals(root.getMainRoleId())){
+            Logger.getLogger(EntitySignup.class).warn("Attention: Root user passed with roleId: " + root.getMainRoleId());
+        }
+        root.setMainRoleId(CommonConstants.TYPE_ROOT);
     }
     
     private static String getDBPassword(UserDTOEx root){
-    	checkMainRole(root);
-    	JBCrypto crypto = JBCrypto.getPasswordCrypto(root.getMainRoleId());
-    	return crypto.encrypt(root.getPassword());
+        checkMainRole(root);
+        JBCrypto crypto = JBCrypto.getPasswordCrypto(root.getMainRoleId());
+        return crypto.encrypt(root.getPassword());
     }
 }

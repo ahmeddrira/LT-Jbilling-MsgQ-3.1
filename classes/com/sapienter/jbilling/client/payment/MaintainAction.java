@@ -315,9 +315,9 @@ public class MaintainAction extends Action {
                 session.removeAttribute(Constants.SESSION_PAYMENT_DTO);
                 forward = "payment_setupView";
             } else {
-            	PaymentCrudAction delegate = new PaymentCrudAction(myRemoteSession);
-            	delegate.setServlet(getServlet());
-            	retValue = delegate.execute(mapping, form, request, response);
+                PaymentCrudAction delegate = new PaymentCrudAction(myRemoteSession);
+                delegate.setServlet(getServlet());
+                retValue = delegate.execute(mapping, form, request, response);
             }      
             
             saveMessages(request, messages);      

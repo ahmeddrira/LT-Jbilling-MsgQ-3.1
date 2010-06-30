@@ -63,8 +63,8 @@ public class ExternalCallbackServlet extends HttpServlet {
             }
             
             if (!verifyTransactionType(request.getParameter("txn_type"))) {
-            	LOG.debug("transaction is type " +request.getParameter("txn_type") + " ignoring");
-            	return;
+                LOG.debug("transaction is type " +request.getParameter("txn_type") + " ignoring");
+                return;
             }
             
             // go over the parameters, making my string for the validation
@@ -141,29 +141,29 @@ public class ExternalCallbackServlet extends HttpServlet {
     }
     
     private Integer getInt(String str) {
-    	Integer retValue = null;
-    	if (str != null && str.length() > 0) {
-        	try {
-        		retValue = Integer.parseInt(str);
-			} catch (NumberFormatException e) {
-				LOG.debug("Invalid int field." + str + " - " + e.getMessage());
-			}
+        Integer retValue = null;
+        if (str != null && str.length() > 0) {
+            try {
+                retValue = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                LOG.debug("Invalid int field." + str + " - " + e.getMessage());
+            }
         }
-    	return retValue;
+        return retValue;
     }
     
     private boolean verifyTransactionType(String type) {
-    	if (type == null || type.length() == 0) {
-    		return true;
-    	} else {
-    		if (type.equals("subscr_signup") ||
-    				type.equals("subscr_cancel") ||
-    				type.equals("subscr_failed") ||
-    				type.equals("subscr_eot") ||
-    				type.equals("subscr_modify")) {
-    			return false;
-    		}
-    		return true;
-    	}
+        if (type == null || type.length() == 0) {
+            return true;
+        } else {
+            if (type.equals("subscr_signup") ||
+                    type.equals("subscr_cancel") ||
+                    type.equals("subscr_failed") ||
+                    type.equals("subscr_eot") ||
+                    type.equals("subscr_modify")) {
+                return false;
+            }
+            return true;
+        }
     }
 }

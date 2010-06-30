@@ -31,18 +31,18 @@ import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
  * scope.
  */
 class PartnerRangedMaintainActionContext {
-	private final PartnerRange[] myData;
+    private final PartnerRange[] myData;
 
-	public PartnerRangedMaintainActionContext(PartnerRange[] ranges) {
-		myData = ranges;
-	}
+    public PartnerRangedMaintainActionContext(PartnerRange[] ranges) {
+        myData = ranges;
+    }
 
-	/**
-	 * Generally it is bad idea to return not guarded array. Intentionally done
-	 * this way, but made package local.
-	 */
-	PartnerRange[] getData() {
-		return myData;
-	}
+    /**
+     * Generally it is bad idea to return not guarded array. Intentionally done
+     * this way, but made package local.
+     */
+    PartnerRange[] getData() {
+        return myData;
+    }
 
 }

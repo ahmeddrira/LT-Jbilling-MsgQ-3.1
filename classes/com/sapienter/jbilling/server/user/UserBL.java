@@ -150,11 +150,11 @@ public class UserBL extends ResultList
     public void update(Integer executorId, UserDTOEx dto)
             throws SessionInternalError {
         // password is the only one that might've not been set
-    	String changedPassword = dto.getPassword();
-    	if (changedPassword != null){
-    		//encrypt it based on the user role
-    		changedPassword = JBCrypto.getPasswordCrypto(getMainRole()).encrypt(changedPassword);
-    	}
+        String changedPassword = dto.getPassword();
+        if (changedPassword != null){
+            //encrypt it based on the user role
+            changedPassword = JBCrypto.getPasswordCrypto(getMainRole()).encrypt(changedPassword);
+        }
 
         if (changedPassword != null &&
                 !changedPassword.equals(user.getPassword())) {
@@ -165,29 +165,29 @@ public class UserBL extends ResultList
             user.setPassword(changedPassword);
         }
         if (dto.getUserName() != null && !user.getUserName().equals(
-        		dto.getUserName())) {
-        	user.setUserName(dto.getUserName());
+                dto.getUserName())) {
+            user.setUserName(dto.getUserName());
         }
         if (dto.getLanguageId() != null && !user.getLanguageIdField().equals(
-        		dto.getLanguageId())) {
+                dto.getLanguageId())) {
 
-        		user.setLanguage(new LanguageDAS().find(dto.getLanguageId()));
+                user.setLanguage(new LanguageDAS().find(dto.getLanguageId()));
         }
         if (dto.getEntityId() != null && user.getEntity().getId() !=
-        		dto.getEntityId()) {
+                dto.getEntityId()) {
 
-	        user.setCompany(new CompanyDAS().find(dto.getEntityId()));
+            user.setCompany(new CompanyDAS().find(dto.getEntityId()));
         }
         if (dto.getStatusId() != null && user.getStatus().getId() !=
-        		dto.getStatusId()) {
+                dto.getStatusId()) {
             AgeingBL age = new AgeingBL();
             age.setUserStatus(executorId, user.getUserId(), dto.getStatusId(),
                     Calendar.getInstance().getTime());
         }
         updateSubscriptionStatus(dto.getSubscriptionStatusId());
         if (dto.getCurrencyId() != null && !user.getCurrencyId().equals(
-        		dto.getCurrencyId())) {
-        	user.setCurrency(new CurrencyDAS().find(dto.getCurrencyId()));
+                dto.getCurrencyId())) {
+            user.setCurrency(new CurrencyDAS().find(dto.getCurrencyId()));
         }
         if (dto.getCustomer() != null) {
             if (dto.getCustomer().getInvoiceDeliveryMethod() != null) {
@@ -288,8 +288,8 @@ public class UserBL extends ResultList
         // may be this is a partner
         if (dto.getPartner() != null) {
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
-            		dto.getLanguageId(), roles, dto.getCurrencyId(),
-					dto.getStatusId(), dto.getSubscriptionStatusId());
+                    dto.getLanguageId(), roles, dto.getCurrencyId(),
+                    dto.getStatusId(), dto.getSubscriptionStatusId());
             PartnerBL partner = new PartnerBL();
             partner.create(dto.getPartner());
             user.setPartner(partner.getEntity());
@@ -331,7 +331,7 @@ public class UserBL extends ResultList
         } else { // all the rest
             newId = create(dto.getEntityId(), dto.getUserName(), dto.getPassword(),
                     dto.getLanguageId(), roles, dto.getCurrencyId(),
-					dto.getStatusId(), dto.getSubscriptionStatusId());
+                    dto.getStatusId(), dto.getSubscriptionStatusId());
         }
 
         LOG.debug("created user id " + newId);
@@ -341,7 +341,7 @@ public class UserBL extends ResultList
 
     private Integer create(Integer entityId, String userName, String password,
             Integer languageId, List<Integer> roles, Integer currencyId,
-			Integer statusId, Integer subscriberStatusId)
+            Integer statusId, Integer subscriberStatusId)
            throws SessionInternalError {
         // Default the language and currency to that one of the entity
         if (languageId == null) {
@@ -373,7 +373,7 @@ public class UserBL extends ResultList
         newUser.setCreateDatetime(Calendar.getInstance().getTime());
         newUser.setFailedAttempts(0);
 
-    	user = das.save(newUser);
+        user = das.save(newUser);
         HashSet<RoleDTO> rolesDTO = new HashSet<RoleDTO>();
         for (Integer roleId: roles) {
             rolesDTO.add(new RoleDAS().find(roleId));
@@ -400,17 +400,17 @@ public class UserBL extends ResultList
         if (db.getDeleted() == 0 &&
                 loggingUser.getEntityId().equals(db.getEntityId())) {
 
-        	String dbPassword = db.getPassword();
-        	String notCryptedLoggingPassword = loggingUser.getPassword();
+            String dbPassword = db.getPassword();
+            String notCryptedLoggingPassword = loggingUser.getPassword();
 
-        	//using service specific for DB-user, loging one may not have its role set
-        	JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());
-        	String comparableLoggingPassword = passwordCryptoService.encrypt(notCryptedLoggingPassword);
+            //using service specific for DB-user, loging one may not have its role set
+            JBCrypto passwordCryptoService = JBCrypto.getPasswordCrypto(db.getMainRoleId());
+            String comparableLoggingPassword = passwordCryptoService.encrypt(notCryptedLoggingPassword);
 
-        	if (comparableLoggingPassword.equals(dbPassword)){
+            if (comparableLoggingPassword.equals(dbPassword)){
                 user = getUserEntity(db.getUserId());
                 return true;
-        	}
+            }
         }
 
         return false;
@@ -462,8 +462,8 @@ public class UserBL extends ResultList
      public void sendLostPassword(Integer entityId, Integer userId,
              Integer languageId) throws SessionInternalError,
              NotificationNotFoundException {
-    	 NotificationBL notif = new NotificationBL();
-    	 MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
+         NotificationBL notif = new NotificationBL();
+         MessageDTO message = notif.getForgetPasswordEmailMessage(entityId, userId, languageId);
          INotificationSessionBean notificationSess =
                  (INotificationSessionBean) Context.getBean(
                  Context.Name.NOTIFICATION_SESSION);
@@ -666,9 +666,9 @@ public class UserBL extends ResultList
         if (mainRole == null) {
             List roleIds = new LinkedList();
             for (RoleDTO nextRoleObject : user.getRoles()){
-        		roleIds.add(nextRoleObject.getId());
-        	}
-        	mainRole = selectMainRole(roleIds);
+                roleIds.add(nextRoleObject.getId());
+            }
+            mainRole = selectMainRole(roleIds);
         }
         return mainRole;
     }
@@ -676,13 +676,13 @@ public class UserBL extends ResultList
     private static Integer selectMainRole(Collection allRoleIds){
         // the main role is the smallest of them, so they have to be ordered in the
         // db in ascending order (small = important);
-    	Integer result = null;
-    	for (Iterator roleIds = allRoleIds.iterator(); roleIds.hasNext();){
+        Integer result = null;
+        for (Iterator roleIds = allRoleIds.iterator(); roleIds.hasNext();){
             Integer nextId = (Integer)roleIds.next();
             if (result == null || nextId.compareTo(result) < 0) {
                 result = nextId;
             }
-    	}
+        }
         return result;
     }
 
@@ -794,20 +794,20 @@ public class UserBL extends ResultList
     }
 
     public void updateAch(AchDTO ach, Integer executorId)
-    		throws NamingException, SessionInternalError {
-    	AchBL bl = new AchBL();
-    	if (ach.getBaseUser() == null) {
-    		ach.setBaseUser(user);
-    	}
-    	// let's see if this guy already has an ach record
-    	Set<AchDTO> rows = user.getAchs();
-    	if (rows.size() == 0) {
-    		bl.create(ach);
+            throws NamingException, SessionInternalError {
+        AchBL bl = new AchBL();
+        if (ach.getBaseUser() == null) {
+            ach.setBaseUser(user);
+        }
+        // let's see if this guy already has an ach record
+        Set<AchDTO> rows = user.getAchs();
+        if (rows.size() == 0) {
+            bl.create(ach);
             rows.add(new AchDAS().find(bl.getEntity().getId()));
-    	} else { // its an update
+        } else { // its an update
                 bl.set(((AchDTO)rows.toArray()[0]).getId());
                 bl.update(executorId, ach);
-    	}
+        }
     }
 
     public static boolean validate(UserWS userWS) {
@@ -1056,30 +1056,30 @@ public class UserBL extends ResultList
     }
 
     public boolean validatePassword(String password) {
-    	boolean result = true;
-    	try {
-    		result = AlphaNumValidator.basicValidation(password);
+        boolean result = true;
+        try {
+            result = AlphaNumValidator.basicValidation(password);
 
-    		if (result != false) {
-    			result = RepeatedPasswordValidator.basicValidation(
-    					getEntity().getUserId(),
-    					getMainRole(),
-    					password);
+            if (result != false) {
+                result = RepeatedPasswordValidator.basicValidation(
+                        getEntity().getUserId(),
+                        getMainRole(),
+                        password);
 
-    			if (result != false) {
-    				ContactBL cbl = new ContactBL();
-    				cbl.set(getEntity().getUserId());
-    				ContactDTOEx contact = cbl.getDTO();
-    				result = NoUserInfoInPasswordValidator.basicValidation(
-    						contact,
-    						password);
-    			}
-    		}
-    	} catch (Throwable e) {
+                if (result != false) {
+                    ContactBL cbl = new ContactBL();
+                    cbl.set(getEntity().getUserId());
+                    ContactDTOEx contact = cbl.getDTO();
+                    result = NoUserInfoInPasswordValidator.basicValidation(
+                            contact,
+                            password);
+                }
+            }
+        } catch (Throwable e) {
             LOG.error("Error validating password " + password, e);
-    		result = false;
-    	}
-    	return result;
+            result = false;
+        }
+        return result;
     }
 
     public boolean isPasswordExpired() {
@@ -1246,16 +1246,16 @@ public class UserBL extends ResultList
     }
 
     public CreditCardDTO getCreditCard() {
-    	if (user.getCreditCards().isEmpty()) {
-    		return null;
-    	} else {
-    		return (CreditCardDTO) user.getCreditCards().toArray()[0];
-    	}
+        if (user.getCreditCards().isEmpty()) {
+            return null;
+        } else {
+            return (CreditCardDTO) user.getCreditCards().toArray()[0];
+        }
     }
 
     public Integer getByEmail(String email) {
         try {
-        	Integer retValue = null;
+            Integer retValue = null;
             prepareStatement(UserSQL.findByEmail);
             // this is being use for paypal subscriptions. It only has an email
             // so there is not way to limit by entity_id
@@ -1284,8 +1284,8 @@ public class UserBL extends ResultList
         if (userId == null) {
             userId = user.getUserId();
         }
-       	UserDTO user = das.find(userId);
-       	return user.getCompany().getId();
+        UserDTO user = das.find(userId);
+        return user.getCompany().getId();
 
     }
 

@@ -56,10 +56,10 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     
     @Override
     public void initializeParamters(PluggableTaskDTO task) throws PluggableTaskException {
-    	super.initializeParamters(task);
-    	failedLimit = parseInt(parameters.get(PARAMETER_FAILED_LIMIT));
-    	failedTime = parseInt(parameters.get(PARAMETER_FAILED_TIME));
-    	failedTime = parseInt(parameters.get(PARAMETER_TIME_BETWEEN_ALARMS));
+        super.initializeParamters(task);
+        failedLimit = parseInt(parameters.get(PARAMETER_FAILED_LIMIT));
+        failedTime = parseInt(parameters.get(PARAMETER_FAILED_TIME));
+        failedTime = parseInt(parameters.get(PARAMETER_TIME_BETWEEN_ALARMS));
     }
 
     // Initialisation
@@ -120,16 +120,16 @@ public class ProcessorEmailAlarmTask extends PluggableTask
     }
     
     private int parseInt(Object object) throws PluggableTaskException {
-    	if (object instanceof Number){
-    		return ((Number)object).intValue();
-    	}
-    	if (object instanceof String){
-    		try {
-    			return Integer.parseInt((String)object);
-    		} catch (NumberFormatException e){
-    			//fall through
-    		}
-    	}
-    	throw new PluggableTaskException("Number expected: " + object);
+        if (object instanceof Number){
+            return ((Number)object).intValue();
+        }
+        if (object instanceof String){
+            try {
+                return Integer.parseInt((String)object);
+            } catch (NumberFormatException e){
+                //fall through
+            }
+        }
+        throw new PluggableTaskException("Number expected: " + object);
     }
 }

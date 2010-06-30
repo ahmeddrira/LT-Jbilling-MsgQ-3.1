@@ -35,20 +35,20 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
  */
 public class BillingProcessConfigurationDAS extends AbstractDAS<BillingProcessConfigurationDTO> {
 
-	public BillingProcessConfigurationDTO create(CompanyDTO entity,
-			Date nextRunDate, Integer generateReport) {
-		BillingProcessConfigurationDTO nuevo = new BillingProcessConfigurationDTO();
-		nuevo.setEntity(entity);
-		nuevo.setNextRunDate(nextRunDate);
-		nuevo.setGenerateReport(generateReport);
-		
-		return save(nuevo);
-	}
+    public BillingProcessConfigurationDTO create(CompanyDTO entity,
+            Date nextRunDate, Integer generateReport) {
+        BillingProcessConfigurationDTO nuevo = new BillingProcessConfigurationDTO();
+        nuevo.setEntity(entity);
+        nuevo.setNextRunDate(nextRunDate);
+        nuevo.setGenerateReport(generateReport);
+        
+        return save(nuevo);
+    }
 
-	public BillingProcessConfigurationDTO findByEntity(CompanyDTO entity) {
-		Criteria criteria = getSession().createCriteria(BillingProcessConfigurationDTO.class);
-		criteria.add(Restrictions.eq("entity", entity));
-		return (BillingProcessConfigurationDTO) criteria.uniqueResult();
-	}
+    public BillingProcessConfigurationDTO findByEntity(CompanyDTO entity) {
+        Criteria criteria = getSession().createCriteria(BillingProcessConfigurationDTO.class);
+        criteria.add(Restrictions.eq("entity", entity));
+        return (BillingProcessConfigurationDTO) criteria.uniqueResult();
+    }
 
 }

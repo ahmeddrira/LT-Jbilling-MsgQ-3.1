@@ -31,9 +31,9 @@ import java.util.ArrayList;
 
 
 public class ReportDTOEx extends ReportDTO {
-	
-	private static final Logger LOG = Logger.getLogger(ReportDTOEx.class);
-	
+    
+    private static final Logger LOG = Logger.getLogger(ReportDTOEx.class);
+    
     /*
      * Constants that define a report, it has to stay in synch with 
      * the database ( saved_report_type ).
@@ -169,7 +169,7 @@ public class ReportDTOEx extends ReportDTO {
     
     public boolean validate() {
 
-    	boolean retValue = true;
+        boolean retValue = true;
         int fieldsOrdered = 0;
         errorFields = new ArrayList();
         errorCodes = new ArrayList();

@@ -64,33 +64,33 @@ public class PaymentInfoNoValidateTask
             throws TaskException {
         PaymentDTOEx retValue = null;
         try {
-        	Integer method = Constants.AUTO_PAYMENT_TYPE_CC; // def to cc
+            Integer method = Constants.AUTO_PAYMENT_TYPE_CC; // def to cc
             UserBL userBL = new UserBL(userId);
             CreditCardBL ccBL = new CreditCardBL();
             if (userBL.getEntity().getCustomer() != null) {
-            	// now non-customers only use credit cards
-            	method = userBL.getEntity().getCustomer().getAutoPaymentType();
-            	if (method == null) { 
-            		method = Constants.AUTO_PAYMENT_TYPE_CC;
-            	}
+                // now non-customers only use credit cards
+                method = userBL.getEntity().getCustomer().getAutoPaymentType();
+                if (method == null) { 
+                    method = Constants.AUTO_PAYMENT_TYPE_CC;
+                }
             }
             
             if (method.equals(Constants.AUTO_PAYMENT_TYPE_CC)) {
-	            if (userBL.getEntity().getCreditCards().isEmpty()) {
-	                // no credit cards entered! no payment ...
-	            } else {
-	                // go around the provided cards and get one that is sendable
-	                // to the processor
-	                for (Iterator it = userBL.getEntity().getCreditCards().
-	                        iterator(); it.hasNext(); ) {
+                if (userBL.getEntity().getCreditCards().isEmpty()) {
+                    // no credit cards entered! no payment ...
+                } else {
+                    // go around the provided cards and get one that is sendable
+                    // to the processor
+                    for (Iterator it = userBL.getEntity().getCreditCards().
+                            iterator(); it.hasNext(); ) {
                         ccBL.set(((CreditCardDTO) it.next()).getId());
-	                    // takes the first one, no validation
+                        // takes the first one, no validation
                         retValue = new PaymentDTOEx();
                         retValue.setCreditCard(ccBL.getDTO());
                         retValue.setPaymentMethod(new PaymentMethodDAS().find(ccBL.getPaymentMethod()));
                         break;
-	                }
-	            }
+                    }
+                }
             } else if (method.equals(Constants.AUTO_PAYMENT_TYPE_ACH)) {
                 AchDTO ach =  null;
                 if (userBL.getEntity().getAchs().size() > 0) {

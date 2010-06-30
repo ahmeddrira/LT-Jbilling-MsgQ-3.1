@@ -44,7 +44,7 @@ public class PaymentRouterCurrencyTask extends AbstractPaymentRouterTask {
 
     @Override
     protected PaymentTask selectDelegate(PaymentDTOEx paymentInfo)
-   		    throws PluggableTaskException {
+            throws PluggableTaskException {
         String currencyCode = paymentInfo.getCurrency().getCode();
         Integer selectedTaskId = null;
 

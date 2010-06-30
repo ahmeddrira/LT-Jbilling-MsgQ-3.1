@@ -25,25 +25,25 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
  * Blacklist filter interface.
  */
 public interface BlacklistFilter {
-	/**
-	 * Checks if a payment is blacklisted
-	 */
+    /**
+     * Checks if a payment is blacklisted
+     */
     public Result checkPayment(PaymentDTOEx paymentInfo);
 
-	/**
-	 * Checks if a user is blacklisted
-	 */
+    /**
+     * Checks if a user is blacklisted
+     */
     public Result checkUser(Integer userId);
 
-	/**
-	 * Returns the filter name to place on the authorization record for
-	 * blacklisted payments/users.
-	 */
+    /**
+     * Returns the filter name to place on the authorization record for
+     * blacklisted payments/users.
+     */
     public String getName();
 
-	/**
-	 * Used to return the result of blacklisted payments/users
-	 */
+    /**
+     * Used to return the result of blacklisted payments/users
+     */
     static final class Result {
         private final boolean isBlacklisted;
         private final String message;

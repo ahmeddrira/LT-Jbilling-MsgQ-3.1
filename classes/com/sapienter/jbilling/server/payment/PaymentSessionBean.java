@@ -101,10 +101,10 @@ public class PaymentSessionBean implements IPaymentSessionBean {
     public Integer generatePayment(InvoiceDTO invoice) 
             throws SessionInternalError {
         
-    	LOG.debug("Generating payment for invoice " + invoice.getId());
+        LOG.debug("Generating payment for invoice " + invoice.getId());
         // go fetch the entity for this invoice
-    	Integer userId = invoice.getBaseUser().getUserId();
-    	UserDAS userDas = new UserDAS();
+        Integer userId = invoice.getBaseUser().getUserId();
+        UserDAS userDas = new UserDAS();
         Integer entityId = userDas.find(userId).getCompany().getId();
         Integer retValue = null;
         // create the dto with the information of the payment to create
@@ -116,8 +116,8 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             
             boolean noInstrument = false;
             if (dto == null) {
-            	noInstrument = true;
-            	dto = new PaymentDTOEx();
+                noInstrument = true;
+                dto = new PaymentDTOEx();
             }
 
             dto.setIsRefund(new Integer(0)); //it is not a refund
@@ -139,17 +139,17 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     retValue = dto.getPaymentMethod().getId();
                 }
             } else {
-            	// audit that this guy was about to get a payment
-            	EventLogger logger = new EventLogger();
-            	logger.auditBySystem(entityId, userId, Constants.TABLE_BASE_USER, userId, 
-            			EventLogger.MODULE_PAYMENT_MAINTENANCE, EventLogger.PAYMENT_INSTRUMENT_NOT_FOUND,
-            			null, null, null);
+                // audit that this guy was about to get a payment
+                EventLogger logger = new EventLogger();
+                logger.auditBySystem(entityId, userId, Constants.TABLE_BASE_USER, userId, 
+                        EventLogger.MODULE_PAYMENT_MAINTENANCE, EventLogger.PAYMENT_INSTRUMENT_NOT_FOUND,
+                        null, null, null);
                 // update the invoice attempts
                 invoice.setPaymentAttempts(dto.getAttempt() == null ? 
                         new Integer(1) : dto.getAttempt());
-            	// treat this as a failed payment
-            	PaymentFailedEvent event = new PaymentFailedEvent(entityId, dto);
-            	EventManager.process(event);
+                // treat this as a failed payment
+                PaymentFailedEvent event = new PaymentFailedEvent(entityId, dto);
+                EventManager.process(event);
             }
             
         } catch (Exception e) {
@@ -356,7 +356,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                 // update the invoice's balance if applicable
                 BigDecimal balance = invoice.getBalance();
                 if (balance != null) {
-					boolean balanceSign = (balance.compareTo(BigDecimal.ZERO) < 0) ? false : true;
+                    boolean balanceSign = (balance.compareTo(BigDecimal.ZERO) < 0) ? false : true;
 
                     BigDecimal newBalance = null;
                     if (payment.getIsRefund() == 0) {
@@ -383,7 +383,7 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                         newBalance = balance.add(payment.getAmount());
                     }
                         
-					// only level the balance if the original balance wasn't negative
+                    // only level the balance if the original balance wasn't negative
                     if (newBalance.compareTo(Constants.BIGDECIMAL_ONE_CENT) < 0 && balanceSign) {
                         // the payment balance was greater than the invoice's
                         newBalance = BigDecimal.ZERO;
@@ -418,13 +418,13 @@ public class PaymentSessionBean implements IPaymentSessionBean {
                     BigDecimal paymentAmount = payment.getAmount();
 
                     if (payment.getIsRefund() == 0) {
-                    	pBalance = pBalance.add(paymentAmount);
-                    	paymentAmount = paymentAmount.add(partner.getTotalPayments());
+                        pBalance = pBalance.add(paymentAmount);
+                        paymentAmount = paymentAmount.add(partner.getTotalPayments());
                         partner.setTotalPayments(paymentAmount);
                         
                     } else {
-                    	pBalance = pBalance.subtract(paymentAmount);
-                    	paymentAmount = paymentAmount.add(partner.getTotalRefunds());
+                        pBalance = pBalance.subtract(paymentAmount);
+                        paymentAmount = paymentAmount.add(partner.getTotalRefunds());
                         partner.setTotalRefunds(paymentAmount);
                     }
                     partner.setBalance(pBalance);
@@ -537,11 +537,11 @@ public class PaymentSessionBean implements IPaymentSessionBean {
     public Boolean processPaypalPayment(Integer invoiceId, String entityEmail,
             BigDecimal amount, String currency, Integer paramUserId, String userEmail) 
             throws SessionInternalError {
-    	
-    	if (userEmail == null && invoiceId == null && paramUserId == null) {
-    		LOG.debug("Too much null, returned");
-    		return false;
-    	}
+        
+        if (userEmail == null && invoiceId == null && paramUserId == null) {
+            LOG.debug("Too much null, returned");
+            return false;
+        }
         try {
             boolean ret = false;
             InvoiceBL invoice = null;
@@ -549,28 +549,28 @@ public class PaymentSessionBean implements IPaymentSessionBean {
             Integer userId = null;
             CurrencyBL curr = null;
             if (invoiceId != null) {
-            	invoice = new InvoiceBL(invoiceId);
-            	entityId = invoice.getEntity().getBaseUser().getEntity().getId();
-            	userId = invoice.getEntity().getBaseUser().getUserId();
+                invoice = new InvoiceBL(invoiceId);
+                entityId = invoice.getEntity().getBaseUser().getEntity().getId();
+                userId = invoice.getEntity().getBaseUser().getUserId();
                 curr = new CurrencyBL(
                         invoice.getEntity().getCurrency().getId());
             } else {
-            	UserBL user = new UserBL();
-            	// identify the user some other way
-            	if (paramUserId != null) {
-            		// easy
-            		userId = paramUserId;
-            	} else {
-            		// find a user by the email address
-            		userId = user.getByEmail(userEmail);
-            		if (userId == null) {
-            			LOG.debug("Could not find a user for email " + userEmail);
-            			return false;
-            		}
-            	}
-            	user = new UserBL(userId);
-            	entityId = user.getEntityId(userId);
-            	curr = new CurrencyBL(user.getCurrencyId());
+                UserBL user = new UserBL();
+                // identify the user some other way
+                if (paramUserId != null) {
+                    // easy
+                    userId = paramUserId;
+                } else {
+                    // find a user by the email address
+                    userId = user.getByEmail(userEmail);
+                    if (userId == null) {
+                        LOG.debug("Could not find a user for email " + userEmail);
+                        return false;
+                    }
+                }
+                user = new UserBL(userId);
+                entityId = user.getEntityId(userId);
+                curr = new CurrencyBL(user.getCurrencyId());
             }
             
             // validate the entity

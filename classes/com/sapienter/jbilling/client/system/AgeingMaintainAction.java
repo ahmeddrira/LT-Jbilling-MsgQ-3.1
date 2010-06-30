@@ -159,8 +159,8 @@ public class AgeingMaintainAction extends Action {
                     }
                     
                     if (errors.isEmpty()) {
-                    	log.debug("Sending update of ageing for enitity " + 
-                    			entityId);
+                        log.debug("Sending update of ageing for enitity " + 
+                                entityId);
                         processSession.setAgeingSteps(entityId, languageId, 
                                 myForm.getLines());
                         // update the grace period in another call

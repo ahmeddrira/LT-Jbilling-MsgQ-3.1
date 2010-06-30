@@ -52,7 +52,7 @@ public class ContactTypeDTO  implements java.io.Serializable {
     public ContactTypeDTO() {
     }
 
-	
+    
     public ContactTypeDTO(int id) {
         this.id = id;
     }

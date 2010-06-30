@@ -55,10 +55,10 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step one, go over the non-percentage items,
         // collecting both tax and non-tax values
         for (OrderLineDTO line : order.getLines()) {
-        	if (line.getDeleted() == 1)
+            if (line.getDeleted() == 1)
                 continue;
 
-        	ItemDTO item = new ItemDAS().find(line.getItemId()); // the line might be dettached
+            ItemDTO item = new ItemDAS().find(line.getItemId()); // the line might be dettached
             if (item != null && item.getPercentage() == null) { 
 
                 BigDecimal amount;
@@ -80,7 +80,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         
         // step two non tax percetage items
         for (OrderLineDTO line : order.getLines()) {
-        	if (line.getDeleted() == 1)
+            if (line.getDeleted() == 1)
                 continue;
 
             ItemDTO item = new ItemDAS().find(line.getItemId());
@@ -104,7 +104,7 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
         // step three: tax percetage items
         BigDecimal allNonTaxes = nonTaxNonPerTotal.add(nonTaxPerTotal);
         for (OrderLineDTO line : order.getLines()) {
-        	if (line.getDeleted() == 1)
+            if (line.getDeleted() == 1)
                 continue;
 
             ItemDTO item = new ItemDAS().find(line.getItemId());
@@ -131,11 +131,11 @@ public class BasicLineTotalTask extends PluggableTask implements OrderProcessing
     }
     
     public void validateLinesQuantity( OrderDTO order ) throws TaskException {
-    	for (OrderLineDTO line: order.getLines()) {
+        for (OrderLineDTO line: order.getLines()) {
             if (line.getItem() != null
                     && line.getQuantity().remainder(Constants.BIGDECIMAL_ONE).compareTo(BigDecimal.ZERO) != 0.0
                     && line.getItem().getHasDecimals() == 0 ) {
-            	throw new TaskException(new ItemDecimalsException( "Item does not allow Decimals" ));
+                throw new TaskException(new ItemDecimalsException( "Item does not allow Decimals" ));
             }
         }
     }

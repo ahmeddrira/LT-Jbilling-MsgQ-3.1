@@ -280,30 +280,30 @@ public class AgeingBL {
             AgeingEntityStepDTO step = new AgeingEntityStepDAS().findStep(
                     user.getEntity().getId(), status);
             if (step != null) {    
-	            ageing = ageingDas.find(step.getId());
+                ageing = ageingDas.find(step.getId());
             
-	            // verify if it is time for another notch
-	            GregorianCalendar cal = new GregorianCalendar();
-	            Date lastChange = user.getLastStatusChange();
-	            if (lastChange == null) {
-	            	lastChange = user.getCreateDatetime();
-	            }
-	            cal.setTime(lastChange);
-	            cal.add(Calendar.DATE, ageing.getDays());
-	            LOG.debug("last time + days=" + cal.getTime() + " today " + today
-	                    + "compare=" + cal.getTime().compareTo(today));
-	            if (cal.getTime().compareTo(today) <= 0) {
-	                nextStatus =  getNextStep(user.
-	                        getEntity(),user.getStatus().getId());
-	            } else {
-	                return;
-	            }
+                // verify if it is time for another notch
+                GregorianCalendar cal = new GregorianCalendar();
+                Date lastChange = user.getLastStatusChange();
+                if (lastChange == null) {
+                    lastChange = user.getCreateDatetime();
+                }
+                cal.setTime(lastChange);
+                cal.add(Calendar.DATE, ageing.getDays());
+                LOG.debug("last time + days=" + cal.getTime() + " today " + today
+                        + "compare=" + cal.getTime().compareTo(today));
+                if (cal.getTime().compareTo(today) <= 0) {
+                    nextStatus =  getNextStep(user.
+                            getEntity(),user.getStatus().getId());
+                } else {
+                    return;
+                }
             } else {
-            	// this user is an ageing status that has been removed.
-            	// may be this is a bug, and a currently-in-use status
-            	// should not be removable.
-            	// Now it will simple jump to the next status.
-            	nextStatus =  getNextStep(user.
+                // this user is an ageing status that has been removed.
+                // may be this is a bug, and a currently-in-use status
+                // should not be removable.
+                // Now it will simple jump to the next status.
+                nextStatus =  getNextStep(user.
                         getEntity(),user.getStatus().getId());
             }         
         }
@@ -331,14 +331,14 @@ public class AgeingBL {
         // this will return the next step, even if statusId doesn
         // exists in the current set of steps.
         // The steps are returned order by status id.
-    	for (AgeingEntityStepDTO step : entity.getAgeingEntitySteps()) {
-    		Integer stepId = step.getUserStatus().getId();
-    		if (stepId.compareTo(statusId) > 0) {
-    			return stepId;
-    		}
-    	}
-    	
-    	return null;
+        for (AgeingEntityStepDTO step : entity.getAgeingEntitySteps()) {
+            Integer stepId = step.getUserStatus().getId();
+            if (stepId.compareTo(statusId) > 0) {
+                return stepId;
+            }
+        }
+        
+        return null;
     }
     
     public static boolean isAgeingInUse(CompanyDTO entity) {

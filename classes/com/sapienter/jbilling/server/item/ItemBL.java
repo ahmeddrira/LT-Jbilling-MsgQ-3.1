@@ -158,32 +158,32 @@ public class ItemBL {
     }
     
     private void updateCurrencies(ItemDTO dto) {
-    	LOG.debug("updating prices. prices " + (dto.getPrices() != null) + 
-    			" price = " + dto.getPrice());
+        LOG.debug("updating prices. prices " + (dto.getPrices() != null) + 
+                " price = " + dto.getPrice());
         ItemPriceDAS itemPriceDas = new ItemPriceDAS();
-    	// may be there's just one simple price
-    	if (dto.getPrices() == null) {
-    		if (dto.getPrice() != null) {
-    			List prices = new ArrayList();
-    			// get the defualt currency of the entity
+        // may be there's just one simple price
+        if (dto.getPrices() == null) {
+            if (dto.getPrice() != null) {
+                List prices = new ArrayList();
+                // get the defualt currency of the entity
                 CurrencyDTO currency = new CurrencyDAS().findNow(
                         dto.getCurrencyId());
-    			if (currency == null) {
-        			EntityBL entity = new EntityBL(dto.getEntityId());
-    				currency = entity.getEntity().getCurrency();
-    			}
-    			ItemPriceDTO price = new ItemPriceDTO(null, dto, dto.getPrice(),
-    					currency);
-    			prices.add(price);
-    			dto.setPrices(prices);
-    		} else {
-    			LOG.warn("updatedCurrencies was called, but this " +
-    					"item has no price");
-        		return;
-    		}
-    	}
-    	
-    	// a call to clear() would simply set item_price.entity_id = null
+                if (currency == null) {
+                    EntityBL entity = new EntityBL(dto.getEntityId());
+                    currency = entity.getEntity().getCurrency();
+                }
+                ItemPriceDTO price = new ItemPriceDTO(null, dto, dto.getPrice(),
+                        currency);
+                prices.add(price);
+                dto.setPrices(prices);
+            } else {
+                LOG.warn("updatedCurrencies was called, but this " +
+                        "item has no price");
+                return;
+            }
+        }
+        
+        // a call to clear() would simply set item_price.entity_id = null
         // instead of removing the row
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO price = (ItemPriceDTO) dto.getPrices().get(f);
@@ -235,12 +235,12 @@ public class ItemBL {
     }
     
     public boolean validateDecimals( Integer hasDecimals ){
-	    if( hasDecimals == 0 ){
-	        if(new OrderLineDAS().findLinesWithDecimals(item.getId()) > 0) {
-	        	return false;
-	        }
-	    }
-	    return true;
+        if( hasDecimals == 0 ){
+            if(new OrderLineDAS().findLinesWithDecimals(item.getId()) > 0) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

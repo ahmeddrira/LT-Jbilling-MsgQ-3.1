@@ -163,8 +163,8 @@ public final class UserLoginAction extends Action {
         // Save our logged-in user in the session
         HttpSession session = request.getSession();
         if (!session.isNew()) {
-        	session.invalidate();
-        	session = request.getSession();
+            session.invalidate();
+            session = request.getSession();
         }
         
         // this is for struts to pick up the right messges file

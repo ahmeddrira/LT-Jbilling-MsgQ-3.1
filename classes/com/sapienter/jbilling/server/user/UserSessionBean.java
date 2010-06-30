@@ -92,7 +92,7 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
         Integer result = Constants.AUTH_WRONG_CREDENTIALS;
         try {
             LOG.debug("Authentication of " + clientUser.getUserName() + 
-            		" password = [" + clientUser.getPassword() + "]" +
+                    " password = [" + clientUser.getPassword() + "]" +
                     " entity = " + clientUser.getEntityId());
             UserDTOEx dbUser = DTOFactory.getUserDTO(clientUser.getUserName(), 
                     clientUser.getEntityId());
@@ -248,10 +248,10 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     }
 
     public String getCustomerNotes(Integer userId)
-    		throws SessionInternalError {
-    	try {
-    		UserBL user = new UserBL(userId);
-    		return user.getEntity().getCustomer().getNotes();
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
+            return user.getEntity().getCustomer().getNotes();
         } catch (Exception e) { 
             throw new SessionInternalError(e);
         }
@@ -268,10 +268,10 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     }
    
     public void setCustomerNotes(Integer userId, String notes)
-    		throws SessionInternalError {
-    	try {
-    		UserBL user = new UserBL(userId);
-    		user.getEntity().getCustomer().setNotes(notes);
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
+            user.getEntity().getCustomer().setNotes(notes);
         } catch (Exception e) { 
             throw new SessionInternalError(e);
         }
@@ -437,7 +437,7 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
         }
     }
 
-	// Check if there is any Active Children under this client
+    // Check if there is any Active Children under this client
     public Boolean hasSubAccounts(Integer userId) 
             throws SessionInternalError {
         try {
@@ -536,9 +536,9 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
             userBL.set(user);
             // if it starts with a *, it is passing a masked cc, which means no update
             if (dto != null && (dto.getNumber() == null || dto.getNumber().charAt(0) != '*')) { // it is providing a new cc
-            	
+                
                 if (!userBL.getEntity().getCreditCards().isEmpty()) {
-                	
+                    
                     CreditCardBL ccBL = new CreditCardBL(((CreditCardDTO)
                             userBL.getEntity().getCreditCards().iterator().next()).getId());
                     ccBL.update(executorId, dto, user.getId());
@@ -555,36 +555,36 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     }   
 
     public void setAuthPaymentType(Integer userId, Integer newMethod, 
-    		Boolean use) 
-    		throws SessionInternalError {
-    	try {
-    		UserBL user = new UserBL(userId);
+            Boolean use) 
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
             if (user.getEntity().getCustomer() == null) {
                 LOG.warn("Trying to update the automatic payment type of a " +
                         "non customer");
                 return;
             }
-        	Integer method = user.getEntity().getCustomer().
-					getAutoPaymentType();
-        	// it wants to use this one now
-        	if (use.booleanValue()) {
-        		user.getEntity().getCustomer().setAutoPaymentType(newMethod);
-        	}
-        	// it has this method, and doesn't want to use it any more
-        	if (method != null && method.equals(newMethod) && 
-        			!use.booleanValue()) {
-        		user.getEntity().getCustomer().setAutoPaymentType(null);
-        	}
-    	} catch (Exception e) {
-    		throw new SessionInternalError(e);
-    	}
+            Integer method = user.getEntity().getCustomer().
+                    getAutoPaymentType();
+            // it wants to use this one now
+            if (use.booleanValue()) {
+                user.getEntity().getCustomer().setAutoPaymentType(newMethod);
+            }
+            // it has this method, and doesn't want to use it any more
+            if (method != null && method.equals(newMethod) && 
+                    !use.booleanValue()) {
+                user.getEntity().getCustomer().setAutoPaymentType(null);
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
     
     public Integer getAuthPaymentType(Integer userId)
-    		throws SessionInternalError {
-    	try {
-    		UserBL user = new UserBL(userId);
-        	Integer method;
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
+            Integer method;
             if (user.getEntity().getCustomer() != null) {
                 method = user.getEntity().getCustomer().getAutoPaymentType();
             } else {
@@ -592,51 +592,51 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
                 // a credit card
                 method = new Integer(0); 
             }
-        	return method;
-    	} catch (Exception e) {
-    		throw new SessionInternalError(e);
-    	}
+            return method;
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
 
     public void updateACH(Integer userId, Integer executorId, AchDTO ach)
-			throws SessionInternalError {
-		try {
-			UserBL user = new UserBL(userId);
-			user.updateAch(ach, executorId);
-		} catch (Exception e) {
-			throw new SessionInternalError(e);
-		}
-	}
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
+            user.updateAch(ach, executorId);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
     
     public AchDTO getACH(Integer userId)
-			throws SessionInternalError {
-		try {
-			UserBL user = new UserBL(userId);
-			Set<AchDTO> ach = user.getEntity().getAchs();
-			if (ach.size() > 0) {
-				AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
-				return bl.getDTO();
-			} 
-			return null;
-			
-		} catch (Exception e) {
-			throw new SessionInternalError(e);
-		}
-	}
-
-    public void removeACH(Integer userId, Integer executorId)
-			throws SessionInternalError {
-		try {
-			UserBL user = new UserBL(userId);
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
             Set<AchDTO> ach = user.getEntity().getAchs();
             if (ach.size() > 0) {
                 AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
-				bl.delete(executorId);
-			}
-		} catch (Exception e) {
-			throw new SessionInternalError(e);
-		}
-	}
+                return bl.getDTO();
+            } 
+            return null;
+            
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    public void removeACH(Integer userId, Integer executorId)
+            throws SessionInternalError {
+        try {
+            UserBL user = new UserBL(userId);
+            Set<AchDTO> ach = user.getEntity().getAchs();
+            if (ach.size() > 0) {
+                AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
+                bl.delete(executorId);
+            }
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
 
     /**
      * Since now we are only supporting one cc per user, this will
@@ -822,7 +822,7 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     public void setEntityParameter(Integer entityId, Integer preferenceId, String paramStr, Integer paramInt,
                                    BigDecimal paramDecimal) throws SessionInternalError {
         try {
-        	LOG.debug("updating preference " + preferenceId + " for entity " + entityId);
+            LOG.debug("updating preference " + preferenceId + " for entity " + entityId);
             PreferenceBL preference = new PreferenceBL();
             preference.createUpdateForEntity(entityId, preferenceId, paramInt, paramStr, paramDecimal);
         } catch (Exception e) {
@@ -1022,9 +1022,9 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
     public void sendLostPassword(String entityId, String username) 
             throws NumberFormatException, SessionInternalError, 
             NotificationNotFoundException {
-    	UserBL user = new UserBL(username, Integer.valueOf(entityId));
+        UserBL user = new UserBL(username, Integer.valueOf(entityId));
 
-		user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField());	
+        user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField()); 
     }
     
    public boolean isPasswordExpired(Integer userId) {

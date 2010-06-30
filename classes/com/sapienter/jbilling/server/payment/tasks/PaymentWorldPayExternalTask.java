@@ -83,33 +83,33 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
     public boolean preAuth(PaymentDTOEx payment) throws PluggableTaskException {
         LOG.debug("Pre-authorization processing for " + getProcessorName() + " gateway");
         prepareExternalPayment(payment);
-		return doProcess(payment, SvcType.AUTHORIZE, null).shouldCallOtherProcessors();
+        return doProcess(payment, SvcType.AUTHORIZE, null).shouldCallOtherProcessors();
     }
 
     public boolean confirmPreAuth(PaymentAuthorizationDTO auth, PaymentDTOEx payment)
             throws PluggableTaskException {
 
-		LOG.debug("Confirming pre-authorization for " + getProcessorName() + " gateway");
+        LOG.debug("Confirming pre-authorization for " + getProcessorName() + " gateway");
 
-		if (!getProcessorName().equals(auth.getProcessor())) {
-			/*  let the processor be called and fail, so the caller can do something
-			    about it: probably re-call this payment task as a new "process()" run */
-			LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
-		}
+        if (!getProcessorName().equals(auth.getProcessor())) {
+            /*  let the processor be called and fail, so the caller can do something
+                about it: probably re-call this payment task as a new "process()" run */
+            LOG.warn("The processor of the pre-auth is not " + getProcessorName() + ", is " + auth.getProcessor());
+        }
 
-		CreditCardDTO card = payment.getCreditCard();
-		if (card == null) {
-			throw new PluggableTaskException("Credit card is required, capturing payment: " + payment.getId());
-		}
+        CreditCardDTO card = payment.getCreditCard();
+        if (card == null) {
+            throw new PluggableTaskException("Credit card is required, capturing payment: " + payment.getId());
+        }
 
-		if (!isApplicable(payment)) {
-			LOG.error("This payment can not be captured" + payment);
-			return true;
-		}
+        if (!isApplicable(payment)) {
+            LOG.error("This payment can not be captured" + payment);
+            return true;
+        }
 
         // process
         prepareExternalPayment(payment);
-		Result result = doProcess(payment, SvcType.SETTLE, auth);
+        Result result = doProcess(payment, SvcType.SETTLE, auth);
 
         // update the stored external gateway key
         if (Constants.RESULT_OK.equals(payment.getResultId()))
@@ -220,16 +220,16 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
     public NVPList buildRequest(PaymentDTOEx payment, SvcType transaction) throws PluggableTaskException {
         NVPList request = new NVPList();
 
-		request.add(PARAMETER_MERCHANT_ID, getMerchantId());
+        request.add(PARAMETER_MERCHANT_ID, getMerchantId());
         request.add(PARAMETER_STORE_ID, getStoreId());
-		request.add(PARAMETER_TERMINAL_ID, getTerminalId());
+        request.add(PARAMETER_TERMINAL_ID, getTerminalId());
         request.add(PARAMETER_SELLER_ID, getSellerId());
         request.add(PARAMETER_PASSWORD, getPassword());
 
         request.add(WorldPayParams.General.AMOUNT, formatDollarAmount(payment.getAmount()));
-		request.add(WorldPayParams.General.SVC_TYPE, transaction.getCode());
+        request.add(WorldPayParams.General.SVC_TYPE, transaction.getCode());
 
-		CreditCardDTO card = payment.getCreditCard();
+        CreditCardDTO card = payment.getCreditCard();
 
         /*  Sale transactions do not support the use of the ORDER_ID gateway key. After an initial sale
             transaction RBS WorldPay will have a record of our transactions for reference - so all
@@ -266,5 +266,5 @@ public class PaymentWorldPayExternalTask extends PaymentWorldPayBaseTask impleme
         }
 
         return request;
-	}
+    }
 }

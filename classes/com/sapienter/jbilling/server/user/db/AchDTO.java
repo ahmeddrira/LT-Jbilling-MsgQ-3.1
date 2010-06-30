@@ -46,223 +46,223 @@ import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 @Table(name = "ach")
 public class AchDTO implements Serializable {
 
-	private int id;
-	private UserDTO baseUser;
-	private String abaRouting;
-	private String bankAccount;
-	private int accountType;
-	private String bankName;
-	private String accountName;
-	private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
-	private int versionNum;
+    private int id;
+    private UserDTO baseUser;
+    private String abaRouting;
+    private String bankAccount;
+    private int accountType;
+    private String bankName;
+    private String accountName;
+    private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
+    private int versionNum;
 
-	public AchDTO() {
-	}
-	
-	public AchDTO(AchDTO other) {
-		this.id = other.getId();
-		setAbaRouting(other.getAbaRouting());
-		setBankAccount(other.getBankAccount());
-		this.accountType = other.getAccountType();
-		this.bankName = other.getBankName();
-		setAccountName(other.getAccountName());
-		this.payments = other.payments;
-	}
+    public AchDTO() {
+    }
+    
+    public AchDTO(AchDTO other) {
+        this.id = other.getId();
+        setAbaRouting(other.getAbaRouting());
+        setBankAccount(other.getBankAccount());
+        this.accountType = other.getAccountType();
+        this.bankName = other.getBankName();
+        setAccountName(other.getAccountName());
+        this.payments = other.payments;
+    }
 
-	public AchDTO(int id, String abaRouting, String bankAccount,
-			int accountType, String bankName, String accountName) {
-		this.id = id;
-		setAbaRouting(abaRouting);
-		setBankAccount(bankAccount);
-		this.accountType = accountType;
-		this.bankName = bankName;
-		setAccountName(accountName);
-	}
+    public AchDTO(int id, String abaRouting, String bankAccount,
+            int accountType, String bankName, String accountName) {
+        this.id = id;
+        setAbaRouting(abaRouting);
+        setBankAccount(bankAccount);
+        this.accountType = accountType;
+        this.bankName = bankName;
+        setAccountName(accountName);
+    }
 
-	public AchDTO(int id, UserDTO baseUser, String abaRouting,
-			String bankAccount, int accountType, String bankName,
-			String accountName, Set<PaymentDTO> payments) {
-		this.id = id;
-		this.baseUser = baseUser;
-		setAbaRouting(abaRouting);
-		setBankAccount(bankAccount);
-		this.accountType = accountType;
-		this.bankName = bankName;
-		setAccountName(accountName);
-		this.payments = payments;
-	}
-	
-	public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO) {
-		this.id = oldDTO.getId() == null ? 0 : oldDTO.getId().intValue();
-		setAbaRouting(oldDTO.getAbaRouting());
-		setBankAccount(oldDTO.getBankAccount());
-		this.accountType = oldDTO.getAccountType();
-		this.bankName = oldDTO.getBankName();
-		setAccountName(oldDTO.getAccountName());
-	}
-	
-	public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO, UserDTO baseUser) {
-		this(oldDTO);
-		this.baseUser = baseUser;
-	}
+    public AchDTO(int id, UserDTO baseUser, String abaRouting,
+            String bankAccount, int accountType, String bankName,
+            String accountName, Set<PaymentDTO> payments) {
+        this.id = id;
+        this.baseUser = baseUser;
+        setAbaRouting(abaRouting);
+        setBankAccount(bankAccount);
+        this.accountType = accountType;
+        this.bankName = bankName;
+        setAccountName(accountName);
+        this.payments = payments;
+    }
+    
+    public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO) {
+        this.id = oldDTO.getId() == null ? 0 : oldDTO.getId().intValue();
+        setAbaRouting(oldDTO.getAbaRouting());
+        setBankAccount(oldDTO.getBankAccount());
+        this.accountType = oldDTO.getAccountType();
+        this.bankName = oldDTO.getBankName();
+        setAccountName(oldDTO.getAccountName());
+    }
+    
+    public AchDTO(com.sapienter.jbilling.server.entity.AchDTO oldDTO, UserDTO baseUser) {
+        this(oldDTO);
+        this.baseUser = baseUser;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "ach_GEN")
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "ach_GEN")
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	public UserDTO getBaseUser() {
-		return this.baseUser;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    public UserDTO getBaseUser() {
+        return this.baseUser;
+    }
 
-	public void setBaseUser(UserDTO baseUser) {
-		this.baseUser = baseUser;
-	}
+    public void setBaseUser(UserDTO baseUser) {
+        this.baseUser = baseUser;
+    }
 
-	@Transient
-	public String getAbaRouting() {
-		if (getRawAbaRouting() == null)
-			return null;
-		return JBCrypto.getCreditCardCrypto().decrypt(getRawAbaRouting());
-	}
+    @Transient
+    public String getAbaRouting() {
+        if (getRawAbaRouting() == null)
+            return null;
+        return JBCrypto.getCreditCardCrypto().decrypt(getRawAbaRouting());
+    }
 
-	@Transient
-	public void setAbaRouting(String abaRouting) {
-		if (abaRouting == null || abaRouting.trim().equals("")) {
-			setRawAbaRouting(null);
-		} else {
-			String crip = JBCrypto.getCreditCardCrypto().encrypt(abaRouting);
-			setRawAbaRouting(crip);
-		}
-	}
-	
-	@Column(name = "aba_routing", nullable = false, length = 9)
-	public String getRawAbaRouting() {
-		return abaRouting;
-	}
-	
-	public void setRawAbaRouting(String abaRouting) {
-		this.abaRouting = abaRouting;
-	}
+    @Transient
+    public void setAbaRouting(String abaRouting) {
+        if (abaRouting == null || abaRouting.trim().equals("")) {
+            setRawAbaRouting(null);
+        } else {
+            String crip = JBCrypto.getCreditCardCrypto().encrypt(abaRouting);
+            setRawAbaRouting(crip);
+        }
+    }
+    
+    @Column(name = "aba_routing", nullable = false, length = 9)
+    public String getRawAbaRouting() {
+        return abaRouting;
+    }
+    
+    public void setRawAbaRouting(String abaRouting) {
+        this.abaRouting = abaRouting;
+    }
 
-	@Transient
-	public String getBankAccount() {
-		if (getRawBankAccount() == null)
-			return null;
-		return JBCrypto.getCreditCardCrypto().decrypt(getRawBankAccount());
-	}
+    @Transient
+    public String getBankAccount() {
+        if (getRawBankAccount() == null)
+            return null;
+        return JBCrypto.getCreditCardCrypto().decrypt(getRawBankAccount());
+    }
 
-	@Transient
-	public void setBankAccount(String bankAccount) {
-		if (bankAccount == null || bankAccount.trim().equals("")) {
-			setRawBankAccount(null);
-		} else {
-			String crip = JBCrypto.getCreditCardCrypto().encrypt(bankAccount);
-			setRawBankAccount(crip);
-		}
-	}
+    @Transient
+    public void setBankAccount(String bankAccount) {
+        if (bankAccount == null || bankAccount.trim().equals("")) {
+            setRawBankAccount(null);
+        } else {
+            String crip = JBCrypto.getCreditCardCrypto().encrypt(bankAccount);
+            setRawBankAccount(crip);
+        }
+    }
 
-	@Column(name = "bank_account", nullable = false, length = 20)
-	public String getRawBankAccount() {
-		return this.bankAccount;
-	}
+    @Column(name = "bank_account", nullable = false, length = 20)
+    public String getRawBankAccount() {
+        return this.bankAccount;
+    }
 
-	public void setRawBankAccount(String bankAccount) {
-		this.bankAccount = bankAccount;
-	}
+    public void setRawBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount;
+    }
 
-	@Column(name = "account_type", nullable = false)
-	public int getAccountType() {
-		return this.accountType;
-	}
+    @Column(name = "account_type", nullable = false)
+    public int getAccountType() {
+        return this.accountType;
+    }
 
-	public void setAccountType(int accountType) {
-		this.accountType = accountType;
-	}
+    public void setAccountType(int accountType) {
+        this.accountType = accountType;
+    }
 
-	@Column(name = "bank_name", nullable = false, length = 50)
-	public String getBankName() {
-		return this.bankName;
-	}
+    @Column(name = "bank_name", nullable = false, length = 50)
+    public String getBankName() {
+        return this.bankName;
+    }
 
-	public void setBankName(String bankName) {
-		this.bankName = bankName;
-	}
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
 
-	@Transient
-	public String getAccountName() {
-		if (getRawAccountName() == null)
-			return null;
-		return JBCrypto.getCreditCardCrypto().decrypt(getRawAccountName());
-	}
+    @Transient
+    public String getAccountName() {
+        if (getRawAccountName() == null)
+            return null;
+        return JBCrypto.getCreditCardCrypto().decrypt(getRawAccountName());
+    }
 
-	@Transient
-	public void setAccountName(String accountName) {
-		if (accountName == null || accountName.trim().equals("")) {
-			setRawAccountName(null);
-		} else {
-			String crip = JBCrypto.getCreditCardCrypto().encrypt(accountName);
-			setRawAccountName(crip);
-		}
-	}
-	
-	@Column(name = "account_name", nullable = false, length = 100)
-	public String getRawAccountName() {
-		return this.accountName;
-	}
-	public void setRawAccountName(String accountName) {
-		this.accountName = accountName;
-	}
+    @Transient
+    public void setAccountName(String accountName) {
+        if (accountName == null || accountName.trim().equals("")) {
+            setRawAccountName(null);
+        } else {
+            String crip = JBCrypto.getCreditCardCrypto().encrypt(accountName);
+            setRawAccountName(crip);
+        }
+    }
+    
+    @Column(name = "account_name", nullable = false, length = 100)
+    public String getRawAccountName() {
+        return this.accountName;
+    }
+    public void setRawAccountName(String accountName) {
+        this.accountName = accountName;
+    }
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "ach")
-	public Set<PaymentDTO> getPayments() {
-		return this.payments;
-	}
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "ach")
+    public Set<PaymentDTO> getPayments() {
+        return this.payments;
+    }
 
-	public void setPayments(Set<PaymentDTO> payments) {
-		this.payments = payments;
-	}
+    public void setPayments(Set<PaymentDTO> payments) {
+        this.payments = payments;
+    }
 
-	@Version
-	@Column(name = "OPTLOCK")
-	public int getVersionNum() {
-		return versionNum;
-	}
+    @Version
+    @Column(name = "OPTLOCK")
+    public int getVersionNum() {
+        return versionNum;
+    }
 
-	public void setVersionNum(int versionNum) {
-		this.versionNum = versionNum;
-	}
+    public void setVersionNum(int versionNum) {
+        this.versionNum = versionNum;
+    }
 
-	public void obscureBankAccount() {
-		if (getRawBankAccount() != null) {
-			String plain = getBankAccount();
-			int len = plain.length() - 4;
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < len; i++) {
-				sb.append('*');
-			}
-			sb.append(plain.substring(len));
-			setBankAccount(sb.toString());
-		}
-	}
-	
-	@Transient
-	public boolean isBankAccountObscured() {
-		return getRawBankAccount() != null && getBankAccount().contains("*");
-	}
-	
-	@Transient
-	public com.sapienter.jbilling.server.entity.AchDTO getOldDTO() {
-		return new com.sapienter.jbilling.server.entity.AchDTO(
-				getId(), getAbaRouting(), getBankAccount(), getAccountType(),
-				getBankName(), getAccountName());
-	}
+    public void obscureBankAccount() {
+        if (getRawBankAccount() != null) {
+            String plain = getBankAccount();
+            int len = plain.length() - 4;
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < len; i++) {
+                sb.append('*');
+            }
+            sb.append(plain.substring(len));
+            setBankAccount(sb.toString());
+        }
+    }
+    
+    @Transient
+    public boolean isBankAccountObscured() {
+        return getRawBankAccount() != null && getBankAccount().contains("*");
+    }
+    
+    @Transient
+    public com.sapienter.jbilling.server.entity.AchDTO getOldDTO() {
+        return new com.sapienter.jbilling.server.entity.AchDTO(
+                getId(), getAbaRouting(), getBankAccount(), getAccountType(),
+                getBankName(), getAccountName());
+    }
 }

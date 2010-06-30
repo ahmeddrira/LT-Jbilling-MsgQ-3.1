@@ -338,11 +338,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             }
             
             if (newUser.getAch() != null) {
-            	AchDTO ach = new AchDTO(newUser.getAch());
-            	ach.setId(0);
-            	ach.setBaseUser(bl.getEntity());
-            	AchBL abl = new AchBL();
-            	abl.create(ach);
+                AchDTO ach = new AchDTO(newUser.getAch());
+                ach.setId(0);
+                ach.setBaseUser(bl.getEntity());
+                AchBL abl = new AchBL();
+                abl.create(ach);
             }
             return userId;
         }
@@ -501,7 +501,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     private Integer[] getByCCNumber(Integer entityId, String number) {
-    	List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
+        List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
         
         Integer[] ids = new Integer[usersIds.size()];
         return usersIds.toArray(ids);
@@ -1622,11 +1622,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             LOG.info("copying line: " + line);
             if (line.getDeleted() == 0) {
 
-            	OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
-                		line.getAmount(), line.getQuantity(), line.getPrice(),
-                		line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
-                		line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
-                		null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
+                OrderLineWS lineWS = new OrderLineWS(line.getId(), line.getItem().getId(), line.getDescription(),
+                        line.getAmount(), line.getQuantity(), line.getPrice(),
+                        line.getCreateDatetime(), line.getDeleted(), line.getOrderLineType().getId(), 
+                        line.getEditable(), (line.getPurchaseOrder() != null?line.getPurchaseOrder().getId():null), 
+                        null, line.getVersionNum(),line.getProvisioningStatusId(),line.getProvisioningRequestId());
               
                 lines.add(lineWS);
             }
@@ -1726,7 +1726,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
-    	Integer[] result = null;
+        Integer[] result = null;
         OrderDAS das = new OrderDAS();
         result = das.findUserItemsByCategory(userId, categoryId);
         return result;
@@ -1741,7 +1741,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
-		validatePayment(payment);
+        validatePayment(payment);
         Integer entityId = getCallerCompanyId();
         PaymentDTOEx dto = new PaymentDTOEx(payment);
 
@@ -1785,7 +1785,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             auth.setResult(result.equals(Constants.RESULT_FAIL));
         }
         return auth;
-	}
+    }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
             String fields) {
@@ -1889,8 +1889,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // find the prices first
-	// this will do nothing if the mediation process was uses. In that case
-	// the itemIdsList will be empty
+    // this will do nothing if the mediation process was uses. In that case
+    // the itemIdsList will be empty
         int itemNum = 0;
         for (Integer itemId : itemIdsList) {
             ItemBL item = new ItemBL(itemId);
@@ -1916,11 +1916,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ret;
     }
 
-	@Override
-	public void updateAch(Integer userId, com.sapienter.jbilling.server.entity.AchDTO ach)
-			throws SessionInternalError {
-		
-		if (ach != null && (ach.getAbaRouting() == null ||
+    @Override
+    public void updateAch(Integer userId, com.sapienter.jbilling.server.entity.AchDTO ach)
+            throws SessionInternalError {
+        
+        if (ach != null && (ach.getAbaRouting() == null ||
                 ach.getBankAccount() == null)) {
             LOG.debug("WS - updateAch: " + "ACH validation error.");
             throw new SessionInternalError("Missing ACH data.");
@@ -1932,25 +1932,25 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         AchDTO ac = ach != null ? new AchDTO(ach) : null;
 
         sess.updateACH(userId, executorId, ac);
-	}
+    }
 
-	@Override
-	public Integer getAuthPaymentType(Integer userId)
-			throws SessionInternalError {
-		
-		IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+    @Override
+    public Integer getAuthPaymentType(Integer userId)
+            throws SessionInternalError {
+        
+        IUserSessionBean sess = (IUserSessionBean) Context.getBean(
                 Context.Name.USER_SESSION);
-		return sess.getAuthPaymentType(userId);
-	}
+        return sess.getAuthPaymentType(userId);
+    }
 
-	@Override
-	public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
-			throws SessionInternalError {
-		
-		IUserSessionBean sess = (IUserSessionBean) Context.getBean(
+    @Override
+    public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+            throws SessionInternalError {
+        
+        IUserSessionBean sess = (IUserSessionBean) Context.getBean(
                 Context.Name.USER_SESSION);
-		sess.setAuthPaymentType(userId, autoPaymentType, use);
-	}
+        sess.setAuthPaymentType(userId, autoPaymentType, use);
+    }
 
     public void generateRules(String rulesData) throws SessionInternalError {
         try {

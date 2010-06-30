@@ -30,108 +30,108 @@ import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public class BrandingMaintainAction extends CrudAction {
-	private static final String FORM_BRANDING = "branding";
-	private static final String FIELD_CSS = "css";
-	private static final String FIELD_LOGO = "logo";
-	private static final String MESSAGE_SUCCESS = "system.branding.updated";
-	private static final String FORWARD_SUCCESS = "branding_edit";
+    private static final String FORM_BRANDING = "branding";
+    private static final String FIELD_CSS = "css";
+    private static final String FIELD_LOGO = "logo";
+    private static final String MESSAGE_SUCCESS = "system.branding.updated";
+    private static final String FORWARD_SUCCESS = "branding_edit";
 
-	private final IUserSessionBean myUserSession;
+    private final IUserSessionBean myUserSession;
 
-	public BrandingMaintainAction() {
-		setFormName(FORM_BRANDING);
-		try {
-			myUserSession = (IUserSessionBean) Context.getBean(
+    public BrandingMaintainAction() {
+        setFormName(FORM_BRANDING);
+        try {
+            myUserSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-		} catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing branding CRUD action: " + e.getMessage());
-		}
-	}
+        } catch (Exception e) {
+            throw new SessionInternalError(
+                    "Initializing branding CRUD action: " + e.getMessage());
+        }
+    }
 
-	@Override
-	public void setup() {
-		// set up which preferences do we need
-		Integer[] preferenceIds = new Integer[] { //
-				Constants.PREFERENCE_CSS_LOCATION, //
-				Constants.PREFERENCE_LOGO_LOCATION, //
-		};
-		// get'em
-		Map<?, ?> result;
+    @Override
+    public void setup() {
+        // set up which preferences do we need
+        Integer[] preferenceIds = new Integer[] { //
+                Constants.PREFERENCE_CSS_LOCATION, //
+                Constants.PREFERENCE_LOGO_LOCATION, //
+        };
+        // get'em
+        Map<?, ?> result;
 
         result = myUserSession.getEntityParameters(entityId, preferenceIds);
 
-		myForm.set(FIELD_CSS, stringNotNull(result
-				.get(Constants.PREFERENCE_CSS_LOCATION)));
-		myForm.set(FIELD_LOGO, stringNotNull(result
-				.get(Constants.PREFERENCE_LOGO_LOCATION)));
-		
-		setForward(FORWARD_SUCCESS);
-	}
+        myForm.set(FIELD_CSS, stringNotNull(result
+                .get(Constants.PREFERENCE_CSS_LOCATION)));
+        myForm.set(FIELD_LOGO, stringNotNull(result
+                .get(Constants.PREFERENCE_LOGO_LOCATION)));
+        
+        setForward(FORWARD_SUCCESS);
+    }
 
-	@Override
-	public String delete() {
-		throw new UnsupportedOperationException(
-				"Can't delete branding. Delete mode is not supported");
-	}
+    @Override
+    public String delete() {
+        throw new UnsupportedOperationException(
+                "Can't delete branding. Delete mode is not supported");
+    }
 
-	@Override
-	public void create(Object dtoHolder) {
-		throw new UnsupportedOperationException(
-				"Can't create branding. Create mode is not supported");
-	}
-	
-	@Override
-	public void reset() {
-		//do nothing, reset is not supported
-	}
-	
-	@Override
-	public boolean otherAction(String action) {
-		return false;
-	}
+    @Override
+    public void create(Object dtoHolder) {
+        throw new UnsupportedOperationException(
+                "Can't create branding. Create mode is not supported");
+    }
+    
+    @Override
+    public void reset() {
+        //do nothing, reset is not supported
+    }
+    
+    @Override
+    public boolean otherAction(String action) {
+        return false;
+    }
 
-	@Override
-	public String update(Object dtoHolder) {
-		CssAndLogo cssAndLogo = (CssAndLogo) dtoHolder;
-		HashMap<Integer, String> map = new HashMap<Integer, String>();
-		map.put(Constants.PREFERENCE_CSS_LOCATION, cssAndLogo.getCss());
-		map.put(Constants.PREFERENCE_LOGO_LOCATION, cssAndLogo.getLogo());
+    @Override
+    public String update(Object dtoHolder) {
+        CssAndLogo cssAndLogo = (CssAndLogo) dtoHolder;
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        map.put(Constants.PREFERENCE_CSS_LOCATION, cssAndLogo.getCss());
+        map.put(Constants.PREFERENCE_LOGO_LOCATION, cssAndLogo.getLogo());
         myUserSession.setEntityParameters(entityId, map);
-		setForward(FORWARD_SUCCESS);
-		return MESSAGE_SUCCESS;
-	}
+        setForward(FORWARD_SUCCESS);
+        return MESSAGE_SUCCESS;
+    }
 
-	@Override
-	public Object editFormToDTO() {
-		return new CssAndLogo((String) myForm.get(FIELD_CSS), (String) myForm
-				.get(FIELD_LOGO));
-	}
+    @Override
+    public Object editFormToDTO() {
+        return new CssAndLogo((String) myForm.get(FIELD_CSS), (String) myForm
+                .get(FIELD_LOGO));
+    }
 
-	protected static String stringNotNull(Object object) {
-		return object == null ? "" : String.valueOf(object);
-	}
+    protected static String stringNotNull(Object object) {
+        return object == null ? "" : String.valueOf(object);
+    }
 
-	protected static String safeTrim(String text) {
-		return stringNotNull(text).trim();
-	}
+    protected static String safeTrim(String text) {
+        return stringNotNull(text).trim();
+    }
 
-	private static class CssAndLogo {
-		private final String myLogo;
-		private final String myCss;
+    private static class CssAndLogo {
+        private final String myLogo;
+        private final String myCss;
 
-		public CssAndLogo(String css, String logo) {
-			myCss = safeTrim(css);
-			myLogo = safeTrim(logo);
-		}
+        public CssAndLogo(String css, String logo) {
+            myCss = safeTrim(css);
+            myLogo = safeTrim(logo);
+        }
 
-		public String getCss() {
-			return myCss;
-		}
+        public String getCss() {
+            return myCss;
+        }
 
-		public String getLogo() {
-			return myLogo;
-		}
-	}
+        public String getLogo() {
+            return myLogo;
+        }
+    }
 
 }

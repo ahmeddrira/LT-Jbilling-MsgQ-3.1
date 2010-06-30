@@ -66,7 +66,7 @@ public class ContactFieldDTO  implements java.io.Serializable {
         setContent(other.getContent());
     }
 
-	
+    
     public ContactFieldDTO(int id, String content) {
         this.id = id;
         this.content = content;

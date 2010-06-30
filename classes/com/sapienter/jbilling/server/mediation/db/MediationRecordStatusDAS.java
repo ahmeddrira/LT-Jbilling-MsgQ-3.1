@@ -27,9 +27,9 @@ import java.util.List;
 public class MediationRecordStatusDAS extends AbstractGenericStatusDAS<MediationRecordStatusDTO> {
 
     public void touch(List<MediationRecordStatusDTO> list) {
-    	for(MediationRecordStatusDTO proc: list) {
-    		initialize(proc);
-    	}
+        for(MediationRecordStatusDTO proc: list) {
+            initialize(proc);
+        }
     }
 
     /** This method can be used for initializing any proxy (entities, collections)

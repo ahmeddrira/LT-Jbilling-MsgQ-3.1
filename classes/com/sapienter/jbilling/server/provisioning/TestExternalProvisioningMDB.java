@@ -59,7 +59,7 @@ public class TestExternalProvisioningMDB implements MessageListener {
             }else if (myMessage.getStringProperty("in_command")
                     .equals("mmsc_test")) {
                 testMMSCProvisioningTask(myMessage);
-            	
+                
             }
         } catch (Exception e) {
             LOG.error("Error processing message", e);
@@ -227,68 +227,68 @@ public class TestExternalProvisioningMDB implements MessageListener {
     }
     
     private void testMMSCProvisioningTask(MapMessage message) {
-		try {
+        try {
             // let ProvisioningCommandsMDB update order line first
-			pause(500);
-			
-			boolean success = true;
+            pause(500);
+            
+            boolean success = true;
 
-			String value = message.getStringProperty("out_result");
-			if (!value.equals("success")) {
-				success = false;
-				LOG.error("Expected a result of 'success', but got '" + value
-						+ "'");
-			} else {
-				LOG.debug("Got 'success' result");
-			}
+            String value = message.getStringProperty("out_result");
+            if (!value.equals("success")) {
+                success = false;
+                LOG.error("Expected a result of 'success', but got '" + value
+                        + "'");
+            } else {
+                LOG.debug("Got 'success' result");
+            }
 
-			value = message.getStringProperty("out_statusCode");
-			if (!value.equals("0")) {
-				success = false;
-				LOG.error("Expected a statusCode of '0', but got '" + value + "'");
-			} else {
-				LOG.debug("Got '0' statusCode");
-			}
+            value = message.getStringProperty("out_statusCode");
+            if (!value.equals("0")) {
+                success = false;
+                LOG.error("Expected a statusCode of '0', but got '" + value + "'");
+            } else {
+                LOG.debug("Got '0' statusCode");
+            }
 
-			value = message.getStringProperty("out_transactionId");
-			if (value.length() != 36) {
-				success = false;
-				LOG.error("Expected a transactionId length of 36. Got: '" + value
-						+ "'");
-			} else {
-				LOG.debug("Got transactionId with a length of 36");
-			}
-			
-			value = message.getStringProperty("out_statusMessage");
-			
-			if (!value.equals("Operation Performed Successfully")) {
-				success = false;
-				LOG.error("Expected a statusMessage of 'Operation Performed Successfully'. But Got: '" + value
-						+ "'");
-			} else {
-				LOG.debug("Got statusMessage of 'Operation Performed Successfully' ");
-			}
+            value = message.getStringProperty("out_transactionId");
+            if (value.length() != 36) {
+                success = false;
+                LOG.error("Expected a transactionId length of 36. Got: '" + value
+                        + "'");
+            } else {
+                LOG.debug("Got transactionId with a length of 36");
+            }
+            
+            value = message.getStringProperty("out_statusMessage");
+            
+            if (!value.equals("Operation Performed Successfully")) {
+                success = false;
+                LOG.error("Expected a statusMessage of 'Operation Performed Successfully'. But Got: '" + value
+                        + "'");
+            } else {
+                LOG.debug("Got statusMessage of 'Operation Performed Successfully' ");
+            }
 
-			Integer orderLineId = message.getIntProperty("in_order_line_id");
+            Integer orderLineId = message.getIntProperty("in_order_line_id");
 
-			// Set the order line's provisioning status to 'ACTIVE' if
-			// test is successful, others to 'FAILED' (overrides
-			// ProvisioningCommandsMDB).
-			if (success) {
-				LOG.debug("Provisioning status of order line id " + orderLineId
-						+ " updated to ACTIVE");
-				updateProvisioningStatus(orderLineId,
-						Constants.PROVISIONING_STATUS_ACTIVE);
-			} else {
-				LOG.debug("Provisioning status of order line id " + orderLineId
-						+ " updated to FAILED");
-				updateProvisioningStatus(orderLineId,
-						Constants.PROVISIONING_STATUS_FAILED);
-			}
-		} catch (Exception e) {
-			LOG.error("processing mmsc provisioning command", e);
-		}
-	}
+            // Set the order line's provisioning status to 'ACTIVE' if
+            // test is successful, others to 'FAILED' (overrides
+            // ProvisioningCommandsMDB).
+            if (success) {
+                LOG.debug("Provisioning status of order line id " + orderLineId
+                        + " updated to ACTIVE");
+                updateProvisioningStatus(orderLineId,
+                        Constants.PROVISIONING_STATUS_ACTIVE);
+            } else {
+                LOG.debug("Provisioning status of order line id " + orderLineId
+                        + " updated to FAILED");
+                updateProvisioningStatus(orderLineId,
+                        Constants.PROVISIONING_STATUS_FAILED);
+            }
+        } catch (Exception e) {
+            LOG.error("processing mmsc provisioning command", e);
+        }
+    }
     private void updateProvisioningStatus(int orderLineId, 
             int provisioningStatusId) {
         try {

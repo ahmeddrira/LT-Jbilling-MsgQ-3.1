@@ -122,12 +122,12 @@ public abstract class CrudAction extends Action {
         LOG.debug("processing action : " + action);
         try {
             if (action.equals("edit")) {
-            	if (isResetRequested()){
+                if (isResetRequested()){
                     preReset();
                     reset();
                 }
 
-            	if (forward == null) {
+                if (forward == null) {
                     preEdit();
                     if (errors.isEmpty()) {
                         dtoHolder = editFormToDTO();
@@ -158,20 +158,20 @@ public abstract class CrudAction extends Action {
                     if (!createCalled) {
                         String messageKey = update(dtoHolder);
                         if (messageKey != null) {
-                        	addGlobalMessage(messageKey);
+                            addGlobalMessage(messageKey);
                         }
                     }
                     
                     if (forward.equals("list")) {
                         //XXX: [MG] 
-                    	//Most probably this is never called
-                    	//Subclasses generally return forwards in the form of <mode>_<action>,
-                    	//e.g: "type_list" instead of just "list"
-                    	//
-                    	//Original intention was:
-                    	// remove the form from the session, otherwise it
+                        //Most probably this is never called
+                        //Subclasses generally return forwards in the form of <mode>_<action>,
+                        //e.g: "type_list" instead of just "list"
+                        //
+                        //Original intention was:
+                        // remove the form from the session, otherwise it
                         // might show up in a later
-                    	removeFormFromSession();
+                        removeFormFromSession();
                     } 
                 }
             } else if(action.equals("setup")) {
@@ -182,7 +182,7 @@ public abstract class CrudAction extends Action {
                 preDelete();
                 String messageKey = delete();
                 if (messageKey != null) {
-                	addGlobalMessage(messageKey);
+                    addGlobalMessage(messageKey);
                 }
                 postDelete();
             } else if (!otherAction(action)){
@@ -220,7 +220,7 @@ public abstract class CrudAction extends Action {
         return mapping.findForward(forward);
     }
     
-	private void preSetup() {
+    private void preSetup() {
         ModuleConfig moduleConfig = RequestUtils.getModuleConfig(request,
                 servlet.getServletContext());
         myForm = (DynaValidatorForm) RequestUtils.createActionForm(
@@ -293,7 +293,7 @@ public abstract class CrudAction extends Action {
     public abstract String delete();
     
     public void postDelete() {
-    	removeFormFromSession();
+        removeFormFromSession();
     }
     
     protected void preReset() {
@@ -314,14 +314,14 @@ public abstract class CrudAction extends Action {
     public abstract boolean otherAction(String action);
     
     protected boolean isResetRequested(){
-    	String reset;
-    	try {
+        String reset;
+        try {
             // this deals with a button that resets a form
             // that is why it works on a field from the form, 
             // and not on an action from the request.
             reset = (String) myForm.get("reset");
         } catch (IllegalArgumentException e) {
-        	return false;
+            return false;
         }
 
         return (reset != null && reset.length() > 0);
@@ -336,22 +336,22 @@ public abstract class CrudAction extends Action {
     }
     
     protected void setForward(String aForward){
-    	this.forward = aForward;
+        this.forward = aForward;
     }
 
     protected final void removeFormFromSession() {
-    	session.removeAttribute(formName);		
-	}
+        session.removeAttribute(formName);      
+    }
     
     protected final void addGlobalMessage(String messageCode){
-    	if (messageCode != null){
-    		messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(messageCode));
-    	}
+        if (messageCode != null){
+            messages.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage(messageCode));
+        }
     }
 
     protected final String float2string(Float arg) {
-		return getFormHelper().float2string(arg);
-	}
+        return getFormHelper().float2string(arg);
+    }
 
     protected final String float2string(Double arg) {
         if (arg == null) return null;
@@ -376,38 +376,38 @@ public abstract class CrudAction extends Action {
         else return new Double(fl);
     }
 
-	protected final UserDTOEx getUser(Integer userId) {    
-		UserDTOEx retValue = null;
-		try {
-			IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
+    protected final UserDTOEx getUser(Integer userId) {    
+        UserDTOEx retValue = null;
+        try {
+            IUserSessionBean userSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-			retValue = userSession.getUserDTOEx(userId);
-		} catch (Exception e) {
-			throw new SessionInternalError(e);
-		}
-		return retValue;
-	}
-	
-	protected FormHelper getFormHelper(){
+            retValue = userSession.getUserDTOEx(userId);
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+        return retValue;
+    }
+    
+    protected FormHelper getFormHelper(){
         if (formHelper == null || !session.getId().equals(formHelper.getSessionId())) {
             formHelper = new FormHelper(session);
         }
-		return formHelper;
-	}
-	
-	protected FormDateHelper getDateHelper(){
-		if (dateHelper == null){
-			dateHelper = new FormDateHelper(myForm, request);
-		}
-		return dateHelper;
-	}
-	
+        return formHelper;
+    }
+    
+    protected FormDateHelper getDateHelper(){
+        if (dateHelper == null){
+            dateHelper = new FormDateHelper(myForm, request);
+        }
+        return dateHelper;
+    }
+    
     protected final Date parseDate(String prefix, String prompt) {
-    	return getDateHelper().parseDate(prefix, prompt, errors);
+        return getDateHelper().parseDate(prefix, prompt, errors);
     }
     
     protected final void setFormDate(String prefix, Date date) {
-    	getDateHelper().setFormDate(prefix, date);
+        getDateHelper().setFormDate(prefix, date);
     }
     
     protected void required(String field, String key) {

@@ -97,7 +97,7 @@ public class CompanyDTO  implements java.io.Serializable {
     public CompanyDTO(int i) {
         id = i;
     }
-	
+    
     public CompanyDTO(int id, CurrencyDTO currencyDTO, LanguageDTO language, String description, Date createDatetime) {
         this.id = id;
         this.currencyDTO = currencyDTO;

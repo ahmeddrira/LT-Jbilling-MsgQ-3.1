@@ -413,12 +413,12 @@ public class SpringAPI implements JbillingAPI {
     }
     
     public void updateAch(Integer userId, AchDTO ach) throws JbillingAPIException {
-    	try {
-    		session.updateAch(userId, ach);
-    				//new com.sapienter.jbilling.server.user.db.AchDTO(ach));
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        try {
+            session.updateAch(userId, ach);
+                    //new com.sapienter.jbilling.server.user.db.AchDTO(ach));
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     public void updateOrder(OrderWS order) throws JbillingAPIException {
@@ -464,45 +464,45 @@ public class SpringAPI implements JbillingAPI {
     }
     
     public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) 
-    		throws JbillingAPIException {
-    	try {
-    		return session.getItem(itemId, userId, PricingField.setPricingFieldsValue(fields));
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+            throws JbillingAPIException {
+        try {
+            return session.getItem(itemId, userId, PricingField.setPricingFieldsValue(fields));
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
     
     public OrderWS rateOrder(OrderWS order) throws JbillingAPIException {
-    	try {
-    		return session.rateOrder(order);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        try {
+            return session.rateOrder(order);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     public OrderWS[] rateOrders(OrderWS orders[]) throws JbillingAPIException {
-    	try {
-    		return session.rateOrders(orders);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        try {
+            return session.rateOrders(orders);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
     
     public void updateItem(ItemDTOEx item) throws JbillingAPIException {
-    	try {
-    		session.updateItem(item);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        try {
+            session.updateItem(item);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
         throws JbillingAPIException {
-    	try {
-    		return session.createInvoice(userId, onlyRecurring);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        try {
+            return session.createInvoice(userId, onlyRecurring);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws JbillingAPIException {
@@ -514,52 +514,52 @@ public class SpringAPI implements JbillingAPI {
     }
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId)
-    		throws JbillingAPIException {
-    	try {
-    		return session.isUserSubscribedTo(userId, itemId);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+            throws JbillingAPIException {
+        try {
+            return session.isUserSubscribedTo(userId, itemId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     @Override
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId)
-    		throws JbillingAPIException {
-    	try {
-    		return session.getUserItemsByCategory(userId, categoryId);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+            throws JbillingAPIException {
+        try {
+            return session.getUserItemsByCategory(userId, categoryId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException {
         try {
             return session.getItemByCategory(itemTypeId);
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
     public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException {
         try {
             return session.getAllItemCategories();
-    	} catch (Exception e) {
-    		throw new JbillingAPIException(e);
-    	}
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
     }
 
-	/*
-	 * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
-	 */
-	@Override
-	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment)
-			throws JbillingAPIException {
-		try {
-			return session.processPayment(payment);
-		} catch (Exception e) {
-			throw new JbillingAPIException(e);
-		}
-	}
+    /*
+     * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
+     */
+    @Override
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment)
+            throws JbillingAPIException {
+        try {
+            return session.processPayment(payment);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 
     public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
             PricingField[] fields) throws JbillingAPIException {
@@ -606,25 +606,25 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-	@Override
-	public Integer getAutoPaymentType(Integer userId)
-			throws JbillingAPIException {
-		try {
-			return session.getAuthPaymentType(userId);
-		} catch (Exception e) {
-			throw new JbillingAPIException(e);
-		}
-	}
+    @Override
+    public Integer getAutoPaymentType(Integer userId)
+            throws JbillingAPIException {
+        try {
+            return session.getAuthPaymentType(userId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 
-	@Override
-	public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
-			throws JbillingAPIException {
-		try {
-			session.setAuthPaymentType(userId, autoPaymentType, use);
-		} catch (Exception e) {
-			throw new JbillingAPIException(e);
-		}
-	}
+    @Override
+    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
+            throws JbillingAPIException {
+        try {
+            session.setAuthPaymentType(userId, autoPaymentType, use);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 
     public void generateRules(String rulesData) throws JbillingAPIException {
         try {

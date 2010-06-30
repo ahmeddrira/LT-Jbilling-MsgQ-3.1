@@ -47,35 +47,35 @@ public class PaymentInfoChequeDTO
 
    public PaymentInfoChequeDTO( java.lang.Integer id,java.lang.String bank,java.lang.String number,java.util.Date date )
    {
-	  this.id = id;
-	  idHasBeenSet = true;
-	  this.bank = bank;
-	  bankHasBeenSet = true;
-	  this.number = number;
-	  numberHasBeenSet = true;
-	  this.date = date;
-	  dateHasBeenSet = true;
-	  pk = this.getId();
+      this.id = id;
+      idHasBeenSet = true;
+      this.bank = bank;
+      bankHasBeenSet = true;
+      this.number = number;
+      numberHasBeenSet = true;
+      this.date = date;
+      dateHasBeenSet = true;
+      pk = this.getId();
    }
 
    //TODO Cloneable is better than this !
    public PaymentInfoChequeDTO( PaymentInfoChequeDTO otherValue )
    {
-	  this.id = otherValue.id;
-	  idHasBeenSet = true;
-	  this.bank = otherValue.bank;
-	  bankHasBeenSet = true;
-	  this.number = otherValue.number;
-	  numberHasBeenSet = true;
-	  this.date = otherValue.date;
-	  dateHasBeenSet = true;
+      this.id = otherValue.id;
+      idHasBeenSet = true;
+      this.bank = otherValue.bank;
+      bankHasBeenSet = true;
+      this.number = otherValue.number;
+      numberHasBeenSet = true;
+      this.date = otherValue.date;
+      dateHasBeenSet = true;
 
-	  pk = this.getId();
+      pk = this.getId();
    }
 
    public java.lang.Integer getPrimaryKey()
    {
-	  return pk;
+      return pk;
    }
 
    public void setPrimaryKey( java.lang.Integer pk )
@@ -83,79 +83,79 @@ public class PaymentInfoChequeDTO
       // it's also nice to update PK object - just in case
       // somebody would ask for it later...
       this.pk = pk;
-	  setId( pk );
+      setId( pk );
    }
 
    public java.lang.Integer getId()
    {
-	  return this.id;
+      return this.id;
    }
 
    public void setId( java.lang.Integer id )
    {
-	  this.id = id;
-	  idHasBeenSet = true;
+      this.id = id;
+      idHasBeenSet = true;
 
-		  pk = id;
+          pk = id;
    }
 
    public boolean idHasBeenSet(){
-	  return idHasBeenSet;
+      return idHasBeenSet;
    }
    public java.lang.String getBank()
    {
-	  return this.bank;
+      return this.bank;
    }
 
    public void setBank( java.lang.String bank )
    {
-	  this.bank = bank;
-	  bankHasBeenSet = true;
+      this.bank = bank;
+      bankHasBeenSet = true;
 
    }
 
    public boolean bankHasBeenSet(){
-	  return bankHasBeenSet;
+      return bankHasBeenSet;
    }
    public java.lang.String getNumber()
    {
-	  return this.number;
+      return this.number;
    }
 
    public void setNumber( java.lang.String number )
    {
-	  this.number = number;
-	  numberHasBeenSet = true;
+      this.number = number;
+      numberHasBeenSet = true;
 
    }
 
    public boolean numberHasBeenSet(){
-	  return numberHasBeenSet;
+      return numberHasBeenSet;
    }
    public java.util.Date getDate()
    {
-	  return this.date;
+      return this.date;
    }
 
    public void setDate( java.util.Date date )
    {
-	  this.date = date;
-	  dateHasBeenSet = true;
+      this.date = date;
+      dateHasBeenSet = true;
 
    }
 
    public boolean dateHasBeenSet(){
-	  return dateHasBeenSet;
+      return dateHasBeenSet;
    }
 
    public String toString()
    {
-	  StringBuffer str = new StringBuffer("{");
+      StringBuffer str = new StringBuffer("{");
 
-	  str.append("id=" + getId() + " " + "bank=" + getBank() + " " + "number=" + getNumber() + " " + "date=" + getDate());
-	  str.append('}');
+      str.append("id=" + getId() + " " + "bank=" + getBank() + " " + "number=" + getNumber() + " " + "date=" + getDate());
+      str.append('}');
 
-	  return(str.toString());
+      return(str.toString());
    }
 
    /**
@@ -165,79 +165,79 @@ public class PaymentInfoChequeDTO
     */
    protected boolean hasIdentity()
    {
-	  return idHasBeenSet;
+      return idHasBeenSet;
    }
 
    public boolean equals(Object other)
    {
       if (this == other)
          return true;
-	  if ( ! hasIdentity() ) return false;
-	  if (other instanceof PaymentInfoChequeDTO)
-	  {
-		 PaymentInfoChequeDTO that = (PaymentInfoChequeDTO) other;
-		 if ( ! that.hasIdentity() ) return false;
-		 boolean lEquals = true;
-		 if( this.id == null )
-		 {
-			lEquals = lEquals && ( that.id == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.id.equals( that.id );
-		 }
+      if ( ! hasIdentity() ) return false;
+      if (other instanceof PaymentInfoChequeDTO)
+      {
+         PaymentInfoChequeDTO that = (PaymentInfoChequeDTO) other;
+         if ( ! that.hasIdentity() ) return false;
+         boolean lEquals = true;
+         if( this.id == null )
+         {
+            lEquals = lEquals && ( that.id == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.id.equals( that.id );
+         }
 
-		 lEquals = lEquals && isIdentical(that);
+         lEquals = lEquals && isIdentical(that);
 
-		 return lEquals;
-	  }
-	  else
-	  {
-		 return false;
-	  }
+         return lEquals;
+      }
+      else
+      {
+         return false;
+      }
    }
 
    public boolean isIdentical(Object other)
    {
-	  if (other instanceof PaymentInfoChequeDTO)
-	  {
-		 PaymentInfoChequeDTO that = (PaymentInfoChequeDTO) other;
-		 boolean lEquals = true;
-		 if( this.bank == null )
-		 {
-			lEquals = lEquals && ( that.bank == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.bank.equals( that.bank );
-		 }
-		 if( this.number == null )
-		 {
-			lEquals = lEquals && ( that.number == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.number.equals( that.number );
-		 }
-		 if( this.date == null )
-		 {
-			lEquals = lEquals && ( that.date == null );
-		 }
-		 else
-		 {
-			lEquals = lEquals && this.date.equals( that.date );
-		 }
+      if (other instanceof PaymentInfoChequeDTO)
+      {
+         PaymentInfoChequeDTO that = (PaymentInfoChequeDTO) other;
+         boolean lEquals = true;
+         if( this.bank == null )
+         {
+            lEquals = lEquals && ( that.bank == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.bank.equals( that.bank );
+         }
+         if( this.number == null )
+         {
+            lEquals = lEquals && ( that.number == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.number.equals( that.number );
+         }
+         if( this.date == null )
+         {
+            lEquals = lEquals && ( that.date == null );
+         }
+         else
+         {
+            lEquals = lEquals && this.date.equals( that.date );
+         }
 
-		 return lEquals;
-	  }
-	  else
-	  {
-		 return false;
-	  }
+         return lEquals;
+      }
+      else
+      {
+         return false;
+      }
    }
 
    public int hashCode(){
-	  int result = 17;
+      int result = 17;
       result = 37*result + ((this.id != null) ? this.id.hashCode() : 0);
 
       result = 37*result + ((this.bank != null) ? this.bank.hashCode() : 0);
@@ -246,7 +246,7 @@ public class PaymentInfoChequeDTO
 
       result = 37*result + ((this.date != null) ? this.date.hashCode() : 0);
 
-	  return result;
+      return result;
    }
 
 }

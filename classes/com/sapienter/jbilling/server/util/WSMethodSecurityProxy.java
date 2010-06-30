@@ -381,23 +381,23 @@ public class WSMethodSecurityProxy extends WSMethodBaseSecurityProxy {
                     validate(arg);
                 }
             } else if (m.getName().equals("getItem")) {
-            	Integer itemId = (Integer) args[0];
-            	Integer userId = (Integer) args[1];
-            	
-            	Integer itemEntityId = new ItemDAS().find(itemId).getEntity().getId();
-        		if (!itemEntityId.equals(WebServicesCaller.getCompanyId())) {
+                Integer itemId = (Integer) args[0];
+                Integer userId = (Integer) args[1];
+                
+                Integer itemEntityId = new ItemDAS().find(itemId).getEntity().getId();
+                if (!itemEntityId.equals(WebServicesCaller.getCompanyId())) {
                     throw new SecurityException("Item belongs to entity " + itemEntityId);
                 }
-            	if (userId != null) {
-            		validate(userId);
-            	}
+                if (userId != null) {
+                    validate(userId);
+                }
             } else if (m.getName().equals("updateItem")) {
-            	ItemDTOEx item = (ItemDTOEx) args[0];
-            	Integer itemEntityId = new ItemDAS().find(item.getId()).getEntity().getId();
-            	if (!itemEntityId.equals(WebServicesCaller.getCompanyId())) {
-            		throw new SecurityException("Item belongs to entity " + itemEntityId);
-            	}
-            	validate(WebServicesCaller.getUserId());
+                ItemDTOEx item = (ItemDTOEx) args[0];
+                Integer itemEntityId = new ItemDAS().find(item.getId()).getEntity().getId();
+                if (!itemEntityId.equals(WebServicesCaller.getCompanyId())) {
+                    throw new SecurityException("Item belongs to entity " + itemEntityId);
+                }
+                validate(WebServicesCaller.getUserId());
             }
 
         } catch (Exception e) {

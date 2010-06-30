@@ -289,19 +289,19 @@ public class PaymentWS implements Serializable {
     }
     
     public void setPaymentNotes(String paymentNotes){
-    	this.paymentNotes = paymentNotes;
+        this.paymentNotes = paymentNotes;
     }
     
     public String getPaymentNotes(){
-    	return paymentNotes;
+        return paymentNotes;
     }
     
     public void setPaymentPeriod(Integer paymentPeriod){
-    	this.paymentPeriod = paymentPeriod;
+        this.paymentPeriod = paymentPeriod;
     }
     
     public Integer getPaymentPeriod(){
-    	return paymentPeriod;
+        return paymentPeriod;
     }
     
     /**

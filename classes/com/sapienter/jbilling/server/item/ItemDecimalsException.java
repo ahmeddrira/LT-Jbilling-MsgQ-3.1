@@ -21,7 +21,7 @@ package com.sapienter.jbilling.server.item;
 
 public class ItemDecimalsException extends RuntimeException {
 
-	/**
+    /**
      * Constructor for ItemDecimalsException.
      */
     public ItemDecimalsException() {
@@ -39,5 +39,5 @@ public class ItemDecimalsException extends RuntimeException {
     public ItemDecimalsException(String message) {
         super(message);
     }
-	
+    
 }

@@ -71,7 +71,7 @@ public class CalculateDueDate
     }
     
     public BigDecimal calculatePeriodAmount(BigDecimal fullPrice, PeriodOfTime period) {
-    	throw new UnsupportedOperationException("Can't call this method");
+        throw new UnsupportedOperationException("Can't call this method");
     }
 
 

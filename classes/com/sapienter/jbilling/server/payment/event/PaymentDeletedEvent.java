@@ -33,7 +33,7 @@ public class PaymentDeletedEvent implements Event {
     private final Integer entityId;
 
     public PaymentDeletedEvent(Integer entityId, PaymentDTO payment) {
-    	this.payment = payment;
+        this.payment = payment;
         this.entityId = entityId;
     }
 

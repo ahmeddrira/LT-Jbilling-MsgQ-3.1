@@ -372,18 +372,18 @@ public final class UserDTOEx extends UserDTO {
         this.currencyName = currencyName;
     }
 
-	/**
-	 * @return Returns the ach.
-	 */
-	public AchDTO getAch() {
-		return ach;
-	}
-	/**
-	 * @param ach The ach to set.
-	 */
-	public void setAch(AchDTO ach) {
-		this.ach = ach;
-	}
+    /**
+     * @return Returns the ach.
+     */
+    public AchDTO getAch() {
+        return ach;
+    }
+    /**
+     * @param ach The ach to set.
+     */
+    public void setAch(AchDTO ach) {
+        this.ach = ach;
+    }
     public Locale getLocale() {
         return locale;
     }

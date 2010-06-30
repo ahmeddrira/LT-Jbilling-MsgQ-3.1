@@ -35,15 +35,15 @@ public class CustomerSessionBean implements ICustomerSessionBean {
     private static final Logger LOG = Logger.getLogger(
             CustomerSessionBean.class);
 
-	public ContactDTOEx getPrimaryContactDTO(Integer userId)
-			throws SessionInternalError {
-	    try {
+    public ContactDTOEx getPrimaryContactDTO(Integer userId)
+            throws SessionInternalError {
+        try {
             ContactBL bl = new ContactBL();
             bl.set(userId);
-	    	return bl.getDTO();
-	    } catch (Exception e) {
+            return bl.getDTO();
+        } catch (Exception e) {
             LOG.error("Exception retreiving the customer contact", e);
             throw new SessionInternalError("Customer primary contact");
-	    }
-	}
+        }
+    }
 }

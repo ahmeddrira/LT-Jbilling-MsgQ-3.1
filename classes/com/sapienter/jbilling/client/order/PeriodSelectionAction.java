@@ -57,7 +57,7 @@ public class PeriodSelectionAction extends Action {
         OrderDTO summary =
             (OrderDTO) session.getAttribute(Constants.SESSION_ORDER_SUMMARY);
 
-		
+        
         Integer period =
             Integer.valueOf(
                 (String)request.getParameter(Constants.REQUEST_ORDER_PERIOD));

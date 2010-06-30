@@ -124,19 +124,19 @@ public class PaymentFakeTask extends PaymentTaskBase implements PaymentTask {
         
         if (creditCard == null || !myFilter.accept(creditCard)) {
             //give real processors a chance
-        	if (!acceptAch || ach == null) {
-        		return new Result(null, true);
-        	}
-        	isAch = true;
+            if (!acceptAch || ach == null) {
+                return new Result(null, true);
+            }
+            isAch = true;
         }
 
         Integer resultId;
         if (!isAch) {
-        	resultId = getProcessResultId(creditCard);
+            resultId = getProcessResultId(creditCard);
         } else {
-        	String val = payment.getAmount().toPlainString();
-        	resultId = (Integer.parseInt(val.substring(val.length() - 1)) % 2 == 0) ? 
-        			Constants.RESULT_OK : Constants.RESULT_FAIL;
+            String val = payment.getAmount().toPlainString();
+            resultId = (Integer.parseInt(val.substring(val.length() - 1)) % 2 == 0) ? 
+                    Constants.RESULT_OK : Constants.RESULT_FAIL;
         }
         payment.setPaymentResult(new PaymentResultDAS().find(resultId));
         PaymentAuthorizationDTO authInfo = createAuthorizationDTO(resultId, transactionId);

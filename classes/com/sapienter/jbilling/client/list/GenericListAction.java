@@ -306,7 +306,7 @@ public class GenericListAction extends Action {
                             Context.getBean(Context.Name.CUSTOMER_SESSION);
                     ContactDTO info = remoteCustomer.getPrimaryContactDTO(selectionId);
                     session.setAttribute(Constants.SESSION_CUSTOMER_CONTACT_DTO,
-                    		info);
+                            info);
                     
                     session.setAttribute(Constants.SESSION_USER_ID,
                             selectionId);

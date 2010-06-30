@@ -29,20 +29,20 @@ public abstract class AbstractPaymentEvent implements Event {
     private final Integer entityId;
     
     public static AbstractPaymentEvent forPaymentResult(Integer entityId, PaymentDTOEx payment){
-		Integer result = payment.getPaymentResult().getId();
-		AbstractPaymentEvent event = null;
-		if (Constants.RESULT_UNAVAILABLE.equals(result)){
-			event = new PaymentProcessorUnavailableEvent(entityId, payment);
-		} else if (Constants.RESULT_OK.equals(result)){
-			event = new PaymentSuccessfulEvent(entityId, payment);
-		} else if (Constants.RESULT_FAIL.equals(result)){
-			event = new PaymentFailedEvent(entityId, payment);
-		} else if (Constants.RESULT_NULL.equals(result)){
+        Integer result = payment.getPaymentResult().getId();
+        AbstractPaymentEvent event = null;
+        if (Constants.RESULT_UNAVAILABLE.equals(result)){
+            event = new PaymentProcessorUnavailableEvent(entityId, payment);
+        } else if (Constants.RESULT_OK.equals(result)){
+            event = new PaymentSuccessfulEvent(entityId, payment);
+        } else if (Constants.RESULT_FAIL.equals(result)){
+            event = new PaymentFailedEvent(entityId, payment);
+        } else if (Constants.RESULT_NULL.equals(result)){
            // some processors don't do anything (fake), only pass to the next
            // processor in the chain
             event = null;
         }
-		return event;
+        return event;
     }
     
     public AbstractPaymentEvent(Integer entityId, PaymentDTOEx payment) {
@@ -63,8 +63,8 @@ public abstract class AbstractPaymentEvent implements Event {
     }
     
     public String getPaymentProcessor(){
-    	PaymentAuthorizationDTO auth = payment.getAuthorization();
-    	return auth == null ? null : auth.getProcessor();
+        PaymentAuthorizationDTO auth = payment.getAuthorization();
+        return auth == null ? null : auth.getProcessor();
     }
 
 }

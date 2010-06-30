@@ -144,8 +144,8 @@ public final class Constants implements CommonConstants {
     public static final Integer PERIOD_UNIT_YEAR= new Integer(4);
     
     // order billing types
-	public static final Integer ORDER_BILLING_PRE_PAID = new Integer(1);
-	public static final Integer ORDER_BILLING_POST_PAID = new Integer(2);
+    public static final Integer ORDER_BILLING_PRE_PAID = new Integer(1);
+    public static final Integer ORDER_BILLING_POST_PAID = new Integer(2);
     
     // pluggable tasks categories
     public static final Integer PLUGGABLE_TASK_PROCESSING_ORDERS = new Integer(1);

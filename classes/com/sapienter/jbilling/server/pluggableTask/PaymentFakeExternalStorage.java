@@ -45,11 +45,11 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
      * @param creditCard credit card to process
      * @return resulting unique gateway key for the credit card/contact
      */
-	public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
         if (getParameter(PARAM_RETURN_NULL, false))
             return null;        
         
         String gatewayKey = (String) parameters.get(PARAM_RETURN_VALUE);
-		return (gatewayKey != null ? gatewayKey : DEFAULT_RETURN_VALUE);
-	}
+        return (gatewayKey != null ? gatewayKey : DEFAULT_RETURN_VALUE);
+    }
 }

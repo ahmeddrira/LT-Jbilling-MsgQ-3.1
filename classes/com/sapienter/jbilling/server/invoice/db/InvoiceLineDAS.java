@@ -32,21 +32,21 @@ import java.math.BigDecimal;
  */
 public class InvoiceLineDAS extends AbstractDAS<InvoiceLineDTO> {
 
-	public InvoiceLineDTO create(String description, BigDecimal amount,
-			BigDecimal quantity, BigDecimal price, Integer typeId, ItemDTO itemId,
-			Integer sourceUserId, Integer isPercentage) {
+    public InvoiceLineDTO create(String description, BigDecimal amount,
+            BigDecimal quantity, BigDecimal price, Integer typeId, ItemDTO itemId,
+            Integer sourceUserId, Integer isPercentage) {
 
-		InvoiceLineDTO newEntity = new InvoiceLineDTO();
-		newEntity.setDescription(description);
-		newEntity.setAmount(amount);
-		newEntity.setQuantity(quantity);
-		newEntity.setPrice(price);
-		newEntity.setInvoiceLineType(new InvoiceLineTypeDAS().find(typeId));
-		newEntity.setItem(itemId);
-		newEntity.setSourceUserId(sourceUserId);
-		newEntity.setIsPercentage(isPercentage);
-		newEntity.setDeleted(0);
-		return save(newEntity);
-	}
+        InvoiceLineDTO newEntity = new InvoiceLineDTO();
+        newEntity.setDescription(description);
+        newEntity.setAmount(amount);
+        newEntity.setQuantity(quantity);
+        newEntity.setPrice(price);
+        newEntity.setInvoiceLineType(new InvoiceLineTypeDAS().find(typeId));
+        newEntity.setItem(itemId);
+        newEntity.setSourceUserId(sourceUserId);
+        newEntity.setIsPercentage(isPercentage);
+        newEntity.setDeleted(0);
+        return save(newEntity);
+    }
 
 }

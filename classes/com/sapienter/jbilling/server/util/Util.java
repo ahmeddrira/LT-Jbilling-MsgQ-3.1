@@ -170,7 +170,7 @@ public class Util {
                 "description", language);
         
        if (inter == null) {
-    	   log.debug("Description not set for period unit " + id + " language" +
+           log.debug("Description not set for period unit " + id + " language" +
                    " " + language);
            return null;   
        }

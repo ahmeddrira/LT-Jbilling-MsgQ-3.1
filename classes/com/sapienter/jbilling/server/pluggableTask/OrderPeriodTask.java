@@ -27,10 +27,10 @@ import com.sapienter.jbilling.server.process.PeriodOfTime;
 import java.util.List;
 
 public interface OrderPeriodTask {
-	Date calculateStart(OrderDTO order) throws TaskException;
+    Date calculateStart(OrderDTO order) throws TaskException;
 
-	Date calculateEnd(OrderDTO order, Date processDate, int maxPeriods,
-			Date periodStart) throws TaskException;
+    Date calculateEnd(OrderDTO order, Date processDate, int maxPeriods,
+            Date periodStart) throws TaskException;
 
-	public List<PeriodOfTime> getPeriods(); // the actual dates of the periods in between the main start/end
+    public List<PeriodOfTime> getPeriods(); // the actual dates of the periods in between the main start/end
 }

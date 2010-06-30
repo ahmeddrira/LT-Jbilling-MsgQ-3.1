@@ -29,10 +29,10 @@ package com.sapienter.jbilling.server.report;
  * @author Emil
  */
 public interface ReportSQL {
-	static final String list = 
-		"select a.id, a.titleKey " +
-		"  from report a, report_entity_map b, report_type rt, report_type_map rtm " +
-		" where b.entity_id = ? " +
+    static final String list = 
+        "select a.id, a.titleKey " +
+        "  from report a, report_entity_map b, report_type rt, report_type_map rtm " +
+        " where b.entity_id = ? " +
         "   and a.id = rtm.report_id " +
         "   and rt.id = rtm.type_id " +
         "   and rt.showable = 1 " +

@@ -48,7 +48,7 @@ public class OrderLineTypeDTO  implements java.io.Serializable {
     public OrderLineTypeDTO() {
     }
 
-	
+    
     public OrderLineTypeDTO(int id, Integer editable) {
         this.id = id;
         this.editable = editable;

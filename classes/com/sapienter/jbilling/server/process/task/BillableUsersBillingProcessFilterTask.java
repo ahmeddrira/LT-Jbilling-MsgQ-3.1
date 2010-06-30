@@ -32,12 +32,12 @@ import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
  *
  */
 public class BillableUsersBillingProcessFilterTask extends PluggableTask
-	implements IBillingProcessFilterTask {
-	
+    implements IBillingProcessFilterTask {
+    
     public ScrollableResults findUsersToProcess(Integer theEntityId){
     
         ScrollableResults userCursor =  new BillingProcessDAS().findBillableUsersToProcess(theEntityId);
-    	
-    	return userCursor;    	
+        
+        return userCursor;      
     }
 }

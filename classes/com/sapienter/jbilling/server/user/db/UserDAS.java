@@ -68,22 +68,22 @@ public class UserDAS extends AbstractDAS<UserDTO> {
          "   AND a.customer.excludeAging = 0 " +
          "   AND a.deleted = 0";
 
-	public UserDTO findRoot(String username) {
+    public UserDTO findRoot(String username) {
         if (username == null || username.length() == 0) {
             LOG.error("can not find an empty root: " + username);
             return null;
         }
-		// I need to access an association, so I can't use the parent helper class
-		Criteria criteria = getSession().createCriteria(UserDTO.class)
-			.add(Restrictions.eq("userName", username))
-			.add(Restrictions.eq("deleted", 0))
-			.createAlias("roles", "r")
-				.add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT));
-		
-		criteria.setCacheable(true); // it will be called over an over again
-		
-		return (UserDTO) criteria.uniqueResult();
-	}
+        // I need to access an association, so I can't use the parent helper class
+        Criteria criteria = getSession().createCriteria(UserDTO.class)
+            .add(Restrictions.eq("userName", username))
+            .add(Restrictions.eq("deleted", 0))
+            .createAlias("roles", "r")
+                .add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT));
+        
+        criteria.setCacheable(true); // it will be called over an over again
+        
+        return (UserDTO) criteria.uniqueResult();
+    }
 
     public UserDTO findWebServicesRoot(String username) {
         if (username == null || username.length() == 0) {
@@ -95,25 +95,25 @@ public class UserDAS extends AbstractDAS<UserDTO> {
             .add(Restrictions.eq("userName", username))
             .add(Restrictions.eq("deleted", 0))
             .createAlias("roles", "r")
-		   	    .add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT))
+                .add(Restrictions.eq("r.id", CommonConstants.TYPE_ROOT))
             .createAlias("permissions", "p")
                 .add(Restrictions.eq("p.permission.id", 120));
-		
+        
         criteria.setCacheable(true); // it will be called over an over again
-		
+        
         return (UserDTO) criteria.uniqueResult();
     }
 
-	public UserDTO findByUserName(String username, Integer entityId) {
-		// I need to access an association, so I can't use the parent helper class
-		Criteria criteria = getSession().createCriteria(UserDTO.class)
-				.add(Restrictions.eq("userName", username))
-				.add(Restrictions.eq("deleted", 0))
-				.createAlias("company", "e")
-					.add(Restrictions.eq("e.id", entityId));
-		
-		return (UserDTO) criteria.uniqueResult();
-	}
+    public UserDTO findByUserName(String username, Integer entityId) {
+        // I need to access an association, so I can't use the parent helper class
+        Criteria criteria = getSession().createCriteria(UserDTO.class)
+                .add(Restrictions.eq("userName", username))
+                .add(Restrictions.eq("deleted", 0))
+                .createAlias("company", "e")
+                    .add(Restrictions.eq("e.id", entityId));
+        
+        return (UserDTO) criteria.uniqueResult();
+    }
     
     public List<UserDTO> findInStatus(Integer entityId, Integer statusId) {
         Query query = getSession().createQuery(findInStatusSQL);

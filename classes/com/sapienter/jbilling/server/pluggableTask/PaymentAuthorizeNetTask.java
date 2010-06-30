@@ -81,23 +81,23 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             System.setProperty("javax.net.ssl.trustStorePassword", "myPassword");
         */
         try {
-        	int method = -1; // 1 cc , 2 ach
+            int method = -1; // 1 cc , 2 ach
             
             if (paymentInfo.getCreditCard() == null &&
-            		paymentInfo.getAch() == null) {
+                    paymentInfo.getAch() == null) {
                 log.error("Can't process without a credit card or ach");
                 throw new TaskException("Credit card/ACH not present in payment");
             }
             
             if (paymentInfo.getCreditCard() != null) {
-            	method = 1;
+                method = 1;
             }
             if (paymentInfo.getAch() != null) {
-            	method = 2;
+                method = 2;
             }
             
             if (paymentInfo.getCreditCard() != null &&
-            		paymentInfo.getAch() != null) {
+                    paymentInfo.getAch() != null) {
                 log.warn("Both cc and ach are present");
                 method = 2; // default to ach (cheaper)
             }
@@ -129,7 +129,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             String testStr = (String) parameters.get(PARAMETER_TEST);
             if (testStr != null) {
-            	isTest = true;
+                isTest = true;
             }
             
             // find the currency code of this payment
@@ -142,39 +142,39 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             
             NameValuePair[] data;
             if (method == 1) {
-	            if (paymentInfo.getIsRefund() == 0) {
-	                data = getChargeData(login, transaction, isTest, 
-	                        paymentInfo.getAmount(), 
-	                        paymentInfo.getCreditCard().getNumber(), expiry,
-	                        currencyCode, true, paymentInfo.getId());
-	            } else {
-	                data = getRefundData(login, transaction, isTest, 
-	                        paymentInfo.getAmount(), 
-	                        paymentInfo.getCreditCard().getNumber(), expiry,
-	                        paymentInfo.getPayment().getAuthorization().
-	                            getTransactionId());
-	            }
+                if (paymentInfo.getIsRefund() == 0) {
+                    data = getChargeData(login, transaction, isTest, 
+                            paymentInfo.getAmount(), 
+                            paymentInfo.getCreditCard().getNumber(), expiry,
+                            currencyCode, true, paymentInfo.getId());
+                } else {
+                    data = getRefundData(login, transaction, isTest, 
+                            paymentInfo.getAmount(), 
+                            paymentInfo.getCreditCard().getNumber(), expiry,
+                            paymentInfo.getPayment().getAuthorization().
+                                getTransactionId());
+                }
             } else {
-	            if (paymentInfo.getIsRefund() == 0) {
-	                data = getACHChargeData(login, transaction, isTest, 
-	                        paymentInfo.getAmount(), 
-	                        paymentInfo.getAch().getAbaRouting(),
-	                        paymentInfo.getAch().getBankAccount(),
-	                        paymentInfo.getAch().getAccountType(),
-	                        paymentInfo.getAch().getBankName(),
-	                        paymentInfo.getAch().getAccountName(),
-	                        currencyCode);
-	            } else {
-	                data = getACHRefundData(login, transaction, isTest, 
-	                        paymentInfo.getAmount(),
-							paymentInfo.getAch().getAbaRouting(),
-	                        paymentInfo.getAch().getBankAccount(),
-	                        paymentInfo.getAch().getAccountType(),
-	                        paymentInfo.getAch().getBankName(),
-	                        paymentInfo.getAch().getAccountName(),
-	                        paymentInfo.getPayment().getAuthorization().
-	                            getTransactionId());
-	            }           	
+                if (paymentInfo.getIsRefund() == 0) {
+                    data = getACHChargeData(login, transaction, isTest, 
+                            paymentInfo.getAmount(), 
+                            paymentInfo.getAch().getAbaRouting(),
+                            paymentInfo.getAch().getBankAccount(),
+                            paymentInfo.getAch().getAccountType(),
+                            paymentInfo.getAch().getBankName(),
+                            paymentInfo.getAch().getAccountName(),
+                            currencyCode);
+                } else {
+                    data = getACHRefundData(login, transaction, isTest, 
+                            paymentInfo.getAmount(),
+                            paymentInfo.getAch().getAbaRouting(),
+                            paymentInfo.getAch().getBankAccount(),
+                            paymentInfo.getAch().getAccountType(),
+                            paymentInfo.getAch().getBankName(),
+                            paymentInfo.getAch().getAccountName(),
+                            paymentInfo.getPayment().getAuthorization().
+                                getTransactionId());
+                }               
             }
             
             // see if AVS info has to be included
@@ -302,8 +302,8 @@ public class PaymentAuthorizeNetTask extends PluggableTask
 
     private NameValuePair[] getACHChargeData(String login, 
             String transaction, boolean test, BigDecimal amount,String aba,
-			String account,
-			Integer type, String bank, String name, String currencyCode) {
+            String account,
+            Integer type, String bank, String name, String currencyCode) {
 
         NameValuePair[] data = {
             new NameValuePair("x_Version", "3.1"),
@@ -315,7 +315,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             new NameValuePair("x_bank_aba_code", aba),
             new NameValuePair("x_bank_acct_num", account),
             new NameValuePair("x_bank_acct_type", type.intValue() == 1 ? 
-            		"CHECKING" : "SAVINGS"),
+                    "CHECKING" : "SAVINGS"),
             new NameValuePair("x_bank_name", bank),
             new NameValuePair("x_bank_acct_name", name),
             new NameValuePair("x_Type", "AUTH_CAPTURE"),
@@ -328,8 +328,8 @@ public class PaymentAuthorizeNetTask extends PluggableTask
 
     private NameValuePair[] getACHRefundData(String login, 
             String transaction, boolean test, BigDecimal amount, String aba, 
-			String account,
-			Integer type, String bank, String name,String transactionId) {
+            String account,
+            Integer type, String bank, String name,String transactionId) {
 
         NameValuePair[] data = {
             new NameValuePair("x_Version", "3.1"),
@@ -341,7 +341,7 @@ public class PaymentAuthorizeNetTask extends PluggableTask
             new NameValuePair("x_bank_aba_code", aba),
             new NameValuePair("x_bank_acct_num", account),
             new NameValuePair("x_bank_acct_type", type.intValue() == 1 ? 
-            		"CHECKING" : "SAVINGS"),
+                    "CHECKING" : "SAVINGS"),
             new NameValuePair("x_bank_name", bank),
             new NameValuePair("x_bank_acct_name", name),
             new NameValuePair("x_Type", "CREDIT"),

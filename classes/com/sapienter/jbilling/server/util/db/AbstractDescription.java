@@ -28,12 +28,12 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.util.Context;
 
 public abstract class AbstractDescription implements Serializable {
-	
+    
     private static final Logger LOG = Logger.getLogger(AbstractDescription.class);
-	private String description = null;
+    private String description = null;
     // do not add not Serializable fields here... or feel the pain.
-	abstract public int getId();
-	abstract protected String getTable();
+    abstract public int getId();
+    abstract protected String getTable();
 
     /**
      * Returns the description.
@@ -68,7 +68,7 @@ public abstract class AbstractDescription implements Serializable {
     public void setDescription(String labelProperty, Integer languageId, String content) {
         JbillingTableDAS jbDAS = (JbillingTableDAS) Context.getBean(Context.Name.JBILLING_TABLE_DAS);
         InternationalDescriptionId iid = new InternationalDescriptionId(jbDAS.findByName(
-        		getTable()).getId(), getId(), labelProperty, languageId);
+                getTable()).getId(), getId(), labelProperty, languageId);
         InternationalDescriptionDTO desc = new InternationalDescriptionDTO(iid, content);
         
         DescriptionDAS de = new DescriptionDAS();
@@ -80,13 +80,13 @@ public abstract class AbstractDescription implements Serializable {
     }
     
     public String getDescription() {
-    	if (description == null) {
-    		return getDescription(1);
-    	} else {
-    		return description;
-    	}
+        if (description == null) {
+            return getDescription(1);
+        } else {
+            return description;
+        }
     }
     public void setDescription(String text) {
-    	description = text;
+        description = text;
     }
 }

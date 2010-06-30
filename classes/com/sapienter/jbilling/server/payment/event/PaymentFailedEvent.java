@@ -23,7 +23,7 @@ import com.sapienter.jbilling.server.payment.PaymentDTOEx;
 
 public class PaymentFailedEvent extends AbstractPaymentEvent {
     public PaymentFailedEvent(Integer entityId, PaymentDTOEx payment) {
-    	super(entityId, payment);
+        super(entityId, payment);
     }
     
     public String getName() {

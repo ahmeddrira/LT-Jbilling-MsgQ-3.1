@@ -39,25 +39,25 @@ import com.sapienter.jbilling.server.provisioning.task.mmsc.ModifyCustomerReques
  * Dummy MMSC communication class for testing MMSCProvisioningTask.
  */
 public class TestMMSCCommunication implements IMMSCHandlerFacade {
-	private static final Logger LOG = Logger
-			.getLogger(TestMMSCCommunication.class);
+    private static final Logger LOG = Logger
+            .getLogger(TestMMSCCommunication.class);
 
 
     public MmscFacadeHandlerResponse addCustomer(AddCustomerRequest request)
             throws MMSCException_Exception {
-		LOG.debug("Calling Dummy method addCustomer");
+        LOG.debug("Calling Dummy method addCustomer");
         return getResponse(request.getTransactionId());
     }
 
     public MmscFacadeHandlerResponse modifyCustomer(
             ModifyCustomerRequest request) throws MMSCException_Exception {
-		LOG.debug("Calling Dummy method modifyCustomer");
+        LOG.debug("Calling Dummy method modifyCustomer");
         return getResponse(request.getTransactionId());
     }
 
     public MmscFacadeHandlerResponse deleteCustomer(
             DeleteCustomerRequest request) throws MMSCException_Exception {
-		LOG.debug("Calling Dummy method deleteCustomer");
+        LOG.debug("Calling Dummy method deleteCustomer");
         return getResponse(request.getTransactionId());
     }
 
@@ -68,23 +68,23 @@ public class TestMMSCCommunication implements IMMSCHandlerFacade {
 
     private MmscFacadeHandlerResponse getResponse(String transactionId) {
         MmscFacadeHandlerResponse response = new MmscFacadeHandlerResponse();
-		// wait for command rules task transaction to complete
-		//pause(2000);
+        // wait for command rules task transaction to complete
+        //pause(2000);
 
-		response.setTransactionId(transactionId);
-		response.setStatusCode(MMSCProvisioningTask.STATUS_CODE_OK);
-		response.setStatusMessage("Operation Performed Successfully");
+        response.setTransactionId(transactionId);
+        response.setStatusCode(MMSCProvisioningTask.STATUS_CODE_OK);
+        response.setStatusMessage("Operation Performed Successfully");
 
-		return response;
+        return response;
     }
 
-	private void pause(long t) {
-		LOG.debug("TestMMSCCommunication: pausing for " + t + " ms...");
+    private void pause(long t) {
+        LOG.debug("TestMMSCCommunication: pausing for " + t + " ms...");
 
-		try {
-			Thread.sleep(t);
-		} catch (InterruptedException e) {
-		}
-	}
+        try {
+            Thread.sleep(t);
+        } catch (InterruptedException e) {
+        }
+    }
 
 }

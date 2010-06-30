@@ -48,7 +48,7 @@ public class EventLogMessageDTO  implements java.io.Serializable {
 
     protected EventLogMessageDTO() {
     }
-	
+    
     public EventLogMessageDTO(int id) {
         this.id = id;
     }

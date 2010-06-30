@@ -60,7 +60,7 @@ public class OrderWS implements Serializable {
     private String statusStr = null;
     private String timeUnitStr = null;
 
-	// 
+    // 
     private OrderLineWS orderLines[] = null;
     private Integer period = null;
     private Integer userId = null; // who is buying ?
@@ -89,38 +89,38 @@ public class OrderWS implements Serializable {
      * @param deleted
      */
     public OrderWS(Integer id, Integer billingTypeId, Integer notify,
-    		Date activeSince, Date activeUntil, Date createDate, 
-    		Date nextBillableDay, Integer createdBy, Integer statusId, 
-    		Integer deleted, Integer currencyId, Date lastNotified, 
-    		Integer notifStep, Integer dueDateUnitId, Integer dueDateValue, 
-    		Integer anticipatePeriods, Integer dfFm, Integer isCurrent, 
-    		String notes, Integer notesInInvoice, Integer ownInvoice, 
-    		Integer period, Integer userId, Integer version, Date cycleStarts) {
-    	setId(id);
-    	setBillingTypeId(billingTypeId);
-    	setNotify(notify);
-    	setActiveSince(activeSince);
-    	setActiveUntil(activeUntil);
-    	setAnticipatePeriods(anticipatePeriods);
-    	setCreateDate(createDate);
-    	setNextBillableDay(nextBillableDay);
-    	setCreatedBy(createdBy);
-    	setStatusId(statusId);
-    	setDeleted(deleted.shortValue());
-    	setCurrencyId(currencyId);
-    	setLastNotified(lastNotified);
-    	setNotificationStep(notifStep);
-    	setDueDateUnitId(dueDateUnitId);
-    	setDueDateValue(dueDateValue);
-    	setDfFm(dfFm);
-    	setIsCurrent(isCurrent);
-    	setNotes(notes);
-    	setNotesInInvoice(notesInInvoice);
-    	setOwnInvoice(ownInvoice);
-    	setPeriod(period);
-    	setUserId(userId);
-    	setVersionNum(version);
-    	setCycleStarts(cycleStarts);
+            Date activeSince, Date activeUntil, Date createDate, 
+            Date nextBillableDay, Integer createdBy, Integer statusId, 
+            Integer deleted, Integer currencyId, Date lastNotified, 
+            Integer notifStep, Integer dueDateUnitId, Integer dueDateValue, 
+            Integer anticipatePeriods, Integer dfFm, Integer isCurrent, 
+            String notes, Integer notesInInvoice, Integer ownInvoice, 
+            Integer period, Integer userId, Integer version, Date cycleStarts) {
+        setId(id);
+        setBillingTypeId(billingTypeId);
+        setNotify(notify);
+        setActiveSince(activeSince);
+        setActiveUntil(activeUntil);
+        setAnticipatePeriods(anticipatePeriods);
+        setCreateDate(createDate);
+        setNextBillableDay(nextBillableDay);
+        setCreatedBy(createdBy);
+        setStatusId(statusId);
+        setDeleted(deleted.shortValue());
+        setCurrencyId(currencyId);
+        setLastNotified(lastNotified);
+        setNotificationStep(notifStep);
+        setDueDateUnitId(dueDateUnitId);
+        setDueDateValue(dueDateValue);
+        setDfFm(dfFm);
+        setIsCurrent(isCurrent);
+        setNotes(notes);
+        setNotesInInvoice(notesInInvoice);
+        setOwnInvoice(ownInvoice);
+        setPeriod(period);
+        setUserId(userId);
+        setVersionNum(version);
+        setCycleStarts(cycleStarts);
     }
 
     /**
@@ -194,227 +194,227 @@ public class OrderWS implements Serializable {
         this.userId = userId;
     }
 
-	public Integer getCurrencyId() {
-		return currencyId;
-	}
+    public Integer getCurrencyId() {
+        return currencyId;
+    }
 
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
-	
-	public String toString() {
-		StringBuffer str = new StringBuffer(super.toString() + "periodStr= " + periodStr +
-				" currencyId= " + currencyId);
-		str.append("lines=");
-		if (getOrderLines() != null) {
-			for (OrderLineWS line: getOrderLines()) {
-				str.append(line.toString() + "-");
-			}
-		} else {
-			str.append(" none ");
-		}
-		str.append("]");
-		return str.toString();
+    public void setCurrencyId(Integer currencyId) {
+        this.currencyId = currencyId;
+    }
+    
+    public String toString() {
+        StringBuffer str = new StringBuffer(super.toString() + "periodStr= " + periodStr +
+                " currencyId= " + currencyId);
+        str.append("lines=");
+        if (getOrderLines() != null) {
+            for (OrderLineWS line: getOrderLines()) {
+                str.append(line.toString() + "-");
+            }
+        } else {
+            str.append(" none ");
+        }
+        str.append("]");
+        return str.toString();
 
-	}
+    }
 
-	public Date getActiveSince() {
-		return activeSince;
-	}
+    public Date getActiveSince() {
+        return activeSince;
+    }
 
-	public void setActiveSince(Date activeSince) {
-		this.activeSince = activeSince;
-	}
+    public void setActiveSince(Date activeSince) {
+        this.activeSince = activeSince;
+    }
 
-	public Date getActiveUntil() {
-		return activeUntil;
-	}
+    public Date getActiveUntil() {
+        return activeUntil;
+    }
 
-	public void setActiveUntil(Date activeUntil) {
-		this.activeUntil = activeUntil;
-	}
+    public void setActiveUntil(Date activeUntil) {
+        this.activeUntil = activeUntil;
+    }
 
-	public Integer getAnticipatePeriods() {
-		return anticipatePeriods;
-	}
+    public Integer getAnticipatePeriods() {
+        return anticipatePeriods;
+    }
 
-	public void setAnticipatePeriods(Integer anticipatePeriods) {
-		this.anticipatePeriods = anticipatePeriods;
-	}
+    public void setAnticipatePeriods(Integer anticipatePeriods) {
+        this.anticipatePeriods = anticipatePeriods;
+    }
 
-	public Integer getBillingTypeId() {
-		return billingTypeId;
-	}
+    public Integer getBillingTypeId() {
+        return billingTypeId;
+    }
 
-	public void setBillingTypeId(Integer billingTypeId) {
-		this.billingTypeId = billingTypeId;
-	}
+    public void setBillingTypeId(Integer billingTypeId) {
+        this.billingTypeId = billingTypeId;
+    }
 
-	public Date getCreateDate() {
-		return createDate;
-	}
+    public Date getCreateDate() {
+        return createDate;
+    }
 
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
-	public Integer getCreatedBy() {
-		return createdBy;
-	}
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
 
-	public void setCreatedBy(Integer createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	public int getDeleted() {
-		return deleted;
-	}
+    public int getDeleted() {
+        return deleted;
+    }
 
-	public void setDeleted(int deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
+    }
 
-	public Integer getDfFm() {
-		return dfFm;
-	}
+    public Integer getDfFm() {
+        return dfFm;
+    }
 
-	public void setDfFm(Integer dfFm) {
-		this.dfFm = dfFm;
-	}
+    public void setDfFm(Integer dfFm) {
+        this.dfFm = dfFm;
+    }
 
-	public Integer getDueDateUnitId() {
-		return dueDateUnitId;
-	}
+    public Integer getDueDateUnitId() {
+        return dueDateUnitId;
+    }
 
-	public void setDueDateUnitId(Integer dueDateUnitId) {
-		this.dueDateUnitId = dueDateUnitId;
-	}
+    public void setDueDateUnitId(Integer dueDateUnitId) {
+        this.dueDateUnitId = dueDateUnitId;
+    }
 
-	public Integer getDueDateValue() {
-		return dueDateValue;
-	}
+    public Integer getDueDateValue() {
+        return dueDateValue;
+    }
 
-	public void setDueDateValue(Integer dueDateValue) {
-		this.dueDateValue = dueDateValue;
-	}
+    public void setDueDateValue(Integer dueDateValue) {
+        this.dueDateValue = dueDateValue;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Integer getIsCurrent() {
-		return isCurrent;
-	}
+    public Integer getIsCurrent() {
+        return isCurrent;
+    }
 
-	public void setIsCurrent(Integer isCurrent) {
-		this.isCurrent = isCurrent;
-	}
+    public void setIsCurrent(Integer isCurrent) {
+        this.isCurrent = isCurrent;
+    }
 
-	public Date getLastNotified() {
-		return lastNotified;
-	}
+    public Date getLastNotified() {
+        return lastNotified;
+    }
 
-	public void setLastNotified(Date lastNotified) {
-		this.lastNotified = lastNotified;
-	}
+    public void setLastNotified(Date lastNotified) {
+        this.lastNotified = lastNotified;
+    }
 
-	public Date getNextBillableDay() {
-		return nextBillableDay;
-	}
+    public Date getNextBillableDay() {
+        return nextBillableDay;
+    }
 
-	public void setNextBillableDay(Date nextBillableDay) {
-		this.nextBillableDay = nextBillableDay;
-	}
+    public void setNextBillableDay(Date nextBillableDay) {
+        this.nextBillableDay = nextBillableDay;
+    }
 
-	public String getNotes() {
-		return notes;
-	}
+    public String getNotes() {
+        return notes;
+    }
 
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
-	public Integer getNotesInInvoice() {
-		return notesInInvoice;
-	}
+    public Integer getNotesInInvoice() {
+        return notesInInvoice;
+    }
 
-	public void setNotesInInvoice(Integer notesInInvoice) {
-		this.notesInInvoice = notesInInvoice;
-	}
+    public void setNotesInInvoice(Integer notesInInvoice) {
+        this.notesInInvoice = notesInInvoice;
+    }
 
-	public Integer getNotificationStep() {
-		return notificationStep;
-	}
+    public Integer getNotificationStep() {
+        return notificationStep;
+    }
 
-	public void setNotificationStep(Integer notificationStep) {
-		this.notificationStep = notificationStep;
-	}
+    public void setNotificationStep(Integer notificationStep) {
+        this.notificationStep = notificationStep;
+    }
 
-	public Integer getNotify() {
-		return notify;
-	}
+    public Integer getNotify() {
+        return notify;
+    }
 
-	public void setNotify(Integer notify) {
-		this.notify = notify;
-	}
+    public void setNotify(Integer notify) {
+        this.notify = notify;
+    }
 
-	public Integer getOwnInvoice() {
-		return ownInvoice;
-	}
+    public Integer getOwnInvoice() {
+        return ownInvoice;
+    }
 
-	public void setOwnInvoice(Integer ownInvoice) {
-		this.ownInvoice = ownInvoice;
-	}
+    public void setOwnInvoice(Integer ownInvoice) {
+        this.ownInvoice = ownInvoice;
+    }
 
-	public Integer getStatusId() {
-		return statusId;
-	}
+    public Integer getStatusId() {
+        return statusId;
+    }
 
-	public void setStatusId(Integer statusId) {
-		this.statusId = statusId;
-	}
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
+    }
 
-	public String getStatusStr() {
-		return statusStr;
-	}
+    public String getStatusStr() {
+        return statusStr;
+    }
 
-	public void setStatusStr(String statusStr) {
-		this.statusStr = statusStr;
-	}
+    public void setStatusStr(String statusStr) {
+        this.statusStr = statusStr;
+    }
 
-	public String getTimeUnitStr() {
-		return timeUnitStr;
-	}
+    public String getTimeUnitStr() {
+        return timeUnitStr;
+    }
 
-	public void setTimeUnitStr(String timeUnitStr) {
-		this.timeUnitStr = timeUnitStr;
-	}
+    public void setTimeUnitStr(String timeUnitStr) {
+        this.timeUnitStr = timeUnitStr;
+    }
 
-	public Integer getVersionNum() {
-		return versionNum;
-	}
+    public Integer getVersionNum() {
+        return versionNum;
+    }
 
-	public void setVersionNum(Integer versionNum) {
-		this.versionNum = versionNum;
-	}
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
 
-	public Date getCycleStarts() {
-		return cycleStarts;
-	}
+    public Date getCycleStarts() {
+        return cycleStarts;
+    }
 
-	public void setCycleStarts(Date cycleStarts) {
-		this.cycleStarts = cycleStarts;
-	}
-	
-	public String getPricingFields() {
-		return pricingFields;
-	}
-	
-	public void setPricingFields(String pricingFields) {
-		this.pricingFields = pricingFields;
-	}
+    public void setCycleStarts(Date cycleStarts) {
+        this.cycleStarts = cycleStarts;
+    }
+    
+    public String getPricingFields() {
+        return pricingFields;
+    }
+    
+    public void setPricingFields(String pricingFields) {
+        this.pricingFields = pricingFields;
+    }
 }

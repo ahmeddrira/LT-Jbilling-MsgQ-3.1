@@ -50,8 +50,8 @@ public class SubscriptionStatusEventProcessor extends EventProcessor<ISubscripti
             PaymentFailedEvent pfEvent = (PaymentFailedEvent) event;
             task.paymentFailed(pfEvent.getEntityId(), pfEvent.getPayment());
         } else if (event instanceof PaymentProcessorUnavailableEvent) {
-			PaymentProcessorUnavailableEvent puEvent = (PaymentProcessorUnavailableEvent) event;
-			task.paymentFailed(puEvent.getEntityId(), puEvent.getPayment());
+            PaymentProcessorUnavailableEvent puEvent = (PaymentProcessorUnavailableEvent) event;
+            task.paymentFailed(puEvent.getEntityId(), puEvent.getPayment());
         } else if (event instanceof PaymentSuccessfulEvent) {
             PaymentSuccessfulEvent psEvent = (PaymentSuccessfulEvent) event;
             task.paymentSuccessful(psEvent.getEntityId(), psEvent.getPayment());

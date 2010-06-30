@@ -42,7 +42,7 @@ public class ProvisioningStatusDTO extends AbstractGenericStatus
 
     public ProvisioningStatusDTO() {
     }
-	
+    
     public ProvisioningStatusDTO(int statusValue) {
         this.statusValue = statusValue;
     }
@@ -54,7 +54,7 @@ public class ProvisioningStatusDTO extends AbstractGenericStatus
 */
     @Transient
     protected String getTable() {
-    	return Constants.TABLE_ORDER_LINE_PROVISIONING_STATUS;
+        return Constants.TABLE_ORDER_LINE_PROVISIONING_STATUS;
     }
 /*
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="provisioningStatus")

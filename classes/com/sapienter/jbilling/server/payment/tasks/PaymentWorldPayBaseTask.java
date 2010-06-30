@@ -53,60 +53,60 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
     /**
      * Parameters for RBS WorldPay payment gateway requests
      */
-	public interface WorldPayParams {
-		interface CreditCard {
-			public static final String CARD_NUMBER      = "CardNumber";
-			public static final String EXPIRATION_DATE  = "ExpirationDate"; // mm/yy or mm/yyyy
-			public static final String CVV2             = "CVV2";           // optional CVV or CVC value
-		}
+    public interface WorldPayParams {
+        interface CreditCard {
+            public static final String CARD_NUMBER      = "CardNumber";
+            public static final String EXPIRATION_DATE  = "ExpirationDate"; // mm/yy or mm/yyyy
+            public static final String CVV2             = "CVV2";           // optional CVV or CVC value
+        }
 
         interface ReAuthorize {
             public static final String ORDER_ID = "OrderID";                // order id returned from a previously
         }                                                                   // successful transaction
 
-		interface ForceParams {
-			public static final String APPROVAL_CODE = "ApprovalCode";
-		}
+        interface ForceParams {
+            public static final String APPROVAL_CODE = "ApprovalCode";
+        }
 
-		interface SettleParams {
-			public static final String ORDER_ID = "OrderID";                // order number of the transaction
-		}
+        interface SettleParams {
+            public static final String ORDER_ID = "OrderID";                // order number of the transaction
+        }
 
         /**
          * common parameters for ACH and credit card payment
          */
-		interface General {
-			public static final String SVC_TYPE       = "SvcType";          // @see SvcType
-			public static final String FIRST_NAME     = "FirstName";
-			public static final String LAST_NAME      = "LastName";
-			public static final String STREET_ADDRESS = "StreetAddress";
-			public static final String CITY           = "City";
-			public static final String STATE          = "State";
-			public static final String ZIP            = "Zip";
-			public static final String COUNTRY        = "Country";
-			public static final String AMOUNT         = "Amount";
-		}
-	}
+        interface General {
+            public static final String SVC_TYPE       = "SvcType";          // @see SvcType
+            public static final String FIRST_NAME     = "FirstName";
+            public static final String LAST_NAME      = "LastName";
+            public static final String STREET_ADDRESS = "StreetAddress";
+            public static final String CITY           = "City";
+            public static final String STATE          = "State";
+            public static final String ZIP            = "Zip";
+            public static final String COUNTRY        = "Country";
+            public static final String AMOUNT         = "Amount";
+        }
+    }
 
     /**
      * RBS WorldPay gateway response parameters
      */
-	public interface WorldPayResponse {
-		public static final String TRANSACTION_STATUS = "TransactionStatus"; // @see TransactionStatus
+    public interface WorldPayResponse {
+        public static final String TRANSACTION_STATUS = "TransactionStatus"; // @see TransactionStatus
 
         /*  transaction order number, which may be stored and used for subsequent payments
             through a re-authorization transaction. */
-		public static final String ORDER_ID = "OrderId";
+        public static final String ORDER_ID = "OrderId";
         
         /* approval codes returned by the Issuer if the authorization was approved */
-		public static final String APPROVAL_CODE = "ApprovalCode";
+        public static final String APPROVAL_CODE = "ApprovalCode";
         public static final String AVS_RESPONSE = "AVSResponse";            // Address Verification Service
-		public static final String CVV2_RESPONSE = "CVV2Response";          // returned if CVV2 value was set
+        public static final String CVV2_RESPONSE = "CVV2Response";          // returned if CVV2 value was set
 
         public static final String ERROR_MSG = "ErrorMsg";
-		public static final String ERROR_CODE = "ErrorCode";
+        public static final String ERROR_CODE = "ErrorCode";
 
-	}
+    }
 
     /**
      * Represents the transaction type supported by the RBS WorldPay gateway.
@@ -114,8 +114,8 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      * Please see <em>Appendix H: SVCTYPE</em> of the <em>API Specification - RBS WorldPay
      * Internet Processing Message Format</em> document.
      */
-	public enum SvcType {
-		AUTHORIZE       ("Authorize"),
+    public enum SvcType {
+        AUTHORIZE       ("Authorize"),
         RE_AUTHORIZE    ("ReAuthorize"),
         SALE            ("Sale"),
         SETTLE          ("Settle"),
@@ -128,7 +128,7 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
 
         SvcType(String code) { this.code = code; }
         public String getCode() { return code; }
-	}
+    }
 
     /**
      * Represents transaction status codes returned by the RBS WorldPay gateway.
@@ -136,62 +136,62 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      * Please see <em>Appendix K: Transaction Status</em> of the <em>API Specification - RBS WorldPay
      * Internet Processing Message Format</em> document.
      */
-	public enum TransactionStatus {
-		APPROVED        ("0"),
+    public enum TransactionStatus {
+        APPROVED        ("0"),
         NOT_APPROVED    ("1"),
         EXCEPTION       ("2");
 
-		private String code;
+        private String code;
 
-		TransactionStatus(String code) { this.code = code; }
-		public String getCode() { return code; }
-	}
+        TransactionStatus(String code) { this.code = code; }
+        public String getCode() { return code; }
+    }
 
-	/**
-	 * Class for encapsulating authorization responses
-	 */
-	public class WorldPayAuthorization {
-		private final PaymentAuthorizationDTO paymentAuthDTO;
+    /**
+     * Class for encapsulating authorization responses
+     */
+    public class WorldPayAuthorization {
+        private final PaymentAuthorizationDTO paymentAuthDTO;
 
-		public WorldPayAuthorization(String gatewayResponse) {
-			LOG.debug("Payment authorization result of " + getProcessorName() + " gateway parsing....");
+        public WorldPayAuthorization(String gatewayResponse) {
+            LOG.debug("Payment authorization result of " + getProcessorName() + " gateway parsing....");
 
-			WorldPayResponseParser responseParser = new WorldPayResponseParser(gatewayResponse);
-			paymentAuthDTO = new PaymentAuthorizationDTO();
-			paymentAuthDTO.setProcessor(getProcessorName());
+            WorldPayResponseParser responseParser = new WorldPayResponseParser(gatewayResponse);
+            paymentAuthDTO = new PaymentAuthorizationDTO();
+            paymentAuthDTO.setProcessor(getProcessorName());
 
-			String approvalCode = responseParser.getValue(WorldPayResponse.APPROVAL_CODE);
-			if (approvalCode != null) {
-				paymentAuthDTO.setApprovalCode(approvalCode);
-				LOG.debug("approvalCode [" + paymentAuthDTO.getApprovalCode() + "]");
-			}
+            String approvalCode = responseParser.getValue(WorldPayResponse.APPROVAL_CODE);
+            if (approvalCode != null) {
+                paymentAuthDTO.setApprovalCode(approvalCode);
+                LOG.debug("approvalCode [" + paymentAuthDTO.getApprovalCode() + "]");
+            }
 
-			String transactionStatus = responseParser.getValue(WorldPayResponse.TRANSACTION_STATUS);
-			if (transactionStatus != null) {
-				paymentAuthDTO.setCode2(transactionStatus);
-				LOG.debug("transactionStatus [" + paymentAuthDTO.getCode2() + "]");
-			}
+            String transactionStatus = responseParser.getValue(WorldPayResponse.TRANSACTION_STATUS);
+            if (transactionStatus != null) {
+                paymentAuthDTO.setCode2(transactionStatus);
+                LOG.debug("transactionStatus [" + paymentAuthDTO.getCode2() + "]");
+            }
 
-			String orderID = responseParser.getValue(WorldPayResponse.ORDER_ID);
-			if (orderID != null) {
-				paymentAuthDTO.setTransactionId(orderID);
-				paymentAuthDTO.setCode1(orderID);
-				LOG.debug("transactionID/OrderID [" + paymentAuthDTO.getTransactionId() + "]");
-			}
+            String orderID = responseParser.getValue(WorldPayResponse.ORDER_ID);
+            if (orderID != null) {
+                paymentAuthDTO.setTransactionId(orderID);
+                paymentAuthDTO.setCode1(orderID);
+                LOG.debug("transactionID/OrderID [" + paymentAuthDTO.getTransactionId() + "]");
+            }
 
-			String errorMsg = responseParser.getValue(WorldPayResponse.ERROR_MSG);
-			if (errorMsg != null) {
-				paymentAuthDTO.setResponseMessage(errorMsg);
-				LOG.debug("errorMessage [" + paymentAuthDTO.getResponseMessage() + "]");
-			}
-		}
+            String errorMsg = responseParser.getValue(WorldPayResponse.ERROR_MSG);
+            if (errorMsg != null) {
+                paymentAuthDTO.setResponseMessage(errorMsg);
+                LOG.debug("errorMessage [" + paymentAuthDTO.getResponseMessage() + "]");
+            }
+        }
 
-		public PaymentAuthorizationDTO getDTO() {
-			return paymentAuthDTO;
-		}
+        public PaymentAuthorizationDTO getDTO() {
+            return paymentAuthDTO;
+        }
 
-		public Integer getJBResultId() {
-			Integer resultId = Constants.RESULT_UNAVAILABLE;
+        public Integer getJBResultId() {
+            Integer resultId = Constants.RESULT_UNAVAILABLE;
 
             if (TransactionStatus.APPROVED.getCode().equals(paymentAuthDTO.getCode2()))
                 resultId = Constants.RESULT_OK;
@@ -202,72 +202,72 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
             if (TransactionStatus.EXCEPTION.getCode().equals(paymentAuthDTO.getCode2()))
                 resultId = Constants.RESULT_UNAVAILABLE;
 
-			return resultId;
-		}
+            return resultId;
+        }
 
         public boolean isCommunicationProblem() {
             return TransactionStatus.EXCEPTION.getCode().equals(paymentAuthDTO.getCode2());
         }
-	}
+    }
 
-	/**
-	 * Class for gateway response parsing
-	 */
-	private class WorldPayResponseParser {
-		private final String gatewayResponse;
-		private List<NameValuePair> responseEntries;
+    /**
+     * Class for gateway response parsing
+     */
+    private class WorldPayResponseParser {
+        private final String gatewayResponse;
+        private List<NameValuePair> responseEntries;
 
-		WorldPayResponseParser(String gatewayResponse) {
-			this.gatewayResponse = gatewayResponse;
-			parseResponse();
-		}
+        WorldPayResponseParser(String gatewayResponse) {
+            this.gatewayResponse = gatewayResponse;
+            parseResponse();
+        }
 
-		public String getGatewayResponse() {
-			return gatewayResponse;
-		}
+        public String getGatewayResponse() {
+            return gatewayResponse;
+        }
 
-		public List<NameValuePair> getResponseEntries() {
-			return responseEntries;
-		}
+        public List<NameValuePair> getResponseEntries() {
+            return responseEntries;
+        }
 
-		public String getValue(String responseParamName) {
-			String val = null;
-			for (NameValuePair pair : responseEntries) {
-				if (pair.getName().equals(responseParamName)) {
-					val = pair.getValue();
-					break;
-				}
-			}
-			return val;
-		}
+        public String getValue(String responseParamName) {
+            String val = null;
+            for (NameValuePair pair : responseEntries) {
+                if (pair.getName().equals(responseParamName)) {
+                    val = pair.getValue();
+                    break;
+                }
+            }
+            return val;
+        }
 
         @SuppressWarnings("unchecked")
-		private void parseResponse() {
-			ParameterParser parser = new ParameterParser();
-			responseEntries = parser.parse(gatewayResponse, '&');
+        private void parseResponse() {
+            ParameterParser parser = new ParameterParser();
+            responseEntries = parser.parse(gatewayResponse, '&');
 
-		}
-	}
+        }
+    }
 
     /**
      * Name value pair list to hold request parameters, to be used in conjunction with the
      * {@link PaymentWorldPayBaseTask#buildRequest(PaymentDTOEx, SvcType)} method as a request
      * builder object.
      */
-	public static class NVPList {
+    public static class NVPList {
         List<NameValuePair> pairs = new LinkedList<NameValuePair>();
 
         public void add(String name, String value) {
-			pairs.add(new NameValuePair(name, value));
-		}
+            pairs.add(new NameValuePair(name, value));
+        }
 
-		public NameValuePair[] toArray() {
-			return pairs.toArray(new NameValuePair[pairs.size()]);
-		}
+        public NameValuePair[] toArray() {
+            return pairs.toArray(new NameValuePair[pairs.size()]);
+        }
 
-		@Override
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
             for (Iterator<NameValuePair> it = pairs.iterator(); it.hasNext();) {
                 NameValuePair pair = it.next();
                 sb.append(pair.getName())
@@ -277,8 +277,8 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
                 if (it.hasNext()) sb.append("&");
             }
             return sb.toString();
-		}        
-	}    
+        }        
+    }    
 
     public static final SimpleDateFormat EXPIRATION_DATE_FORMAT = new SimpleDateFormat("MM/yyyy");
 
@@ -303,12 +303,12 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      */
     public static final String PARAMETER_PASSWORD = "PASSWORD";
 
-	private String url;
-	private String merchantId;
-	private String storeId;
-	private String terminalId;
-	private String sellerId;
-	private String password;
+    private String url;
+    private String merchantId;
+    private String storeId;
+    private String terminalId;
+    private String sellerId;
+    private String password;
 
     public String getGatewayUrl() {
         if (url == null) url = getOptionalParameter(PARAMETER_WORLD_PAY_URL, DEFAULT_WORLD_PAY_URL);
@@ -347,10 +347,10 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      * @param amount dollar float value to format
      * @return formatted amount as a string
      */
-	public static String formatDollarAmount(BigDecimal amount) {
-		amount = amount.abs().setScale(2, RoundingMode.HALF_EVEN); // gateway format, do not change!
-		return amount.toPlainString();
-	}
+    public static String formatDollarAmount(BigDecimal amount) {
+        amount = amount.abs().setScale(2, RoundingMode.HALF_EVEN); // gateway format, do not change!
+        return amount.toPlainString();
+    }
 
     /**
      * Utility method to check if a given {@link PaymentDTOEx} payment can be processed
@@ -359,13 +359,13 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      * @param payment payment to check
      * @return true if payment can be processed with this task, false if not
      */
-	public static boolean isApplicable(PaymentDTOEx payment) {
-		if (payment.getCreditCard() == null && payment.getAch() == null) {
-			LOG.warn("Can't process without a credit card or ach");
-			return false;
-		}        
+    public static boolean isApplicable(PaymentDTOEx payment) {
+        if (payment.getCreditCard() == null && payment.getAch() == null) {
+            LOG.warn("Can't process without a credit card or ach");
+            return false;
+        }        
         return true;
-	}
+    }
 
     /**
      * Returns the name of this payment processor.
@@ -395,81 +395,81 @@ public abstract class PaymentWorldPayBaseTask extends PaymentTaskWithTimeout {
      * @return payment result
      * @throws PluggableTaskException thrown if payment instrument is not a credit card, or if a refund is attempted with no authorization
      */
-	protected Result doProcess(PaymentDTOEx payment, SvcType transaction, PaymentAuthorizationDTO auth)
+    protected Result doProcess(PaymentDTOEx payment, SvcType transaction, PaymentAuthorizationDTO auth)
             throws PluggableTaskException {
 
         if (!isApplicable(payment))
-			return NOT_APPLICABLE;
+            return NOT_APPLICABLE;
 
-		if (payment.getCreditCard() == null) {
-			LOG.error("Can't process without a credit card");
-			throw new PluggableTaskException("Credit card not present in payment");
-		}
+        if (payment.getCreditCard() == null) {
+            LOG.error("Can't process without a credit card");
+            throw new PluggableTaskException("Credit card not present in payment");
+        }
 
-		if (payment.getAch() != null) {
-			LOG.error("Can't process with a cheque");
-			throw new PluggableTaskException("Can't process ACH charge");
-		}
+        if (payment.getAch() != null) {
+            LOG.error("Can't process with a cheque");
+            throw new PluggableTaskException("Can't process ACH charge");
+        }
 
-		NVPList request = buildRequest(payment, transaction);
+        NVPList request = buildRequest(payment, transaction);
 
-		if (auth != null && !SvcType.RE_AUTHORIZE.equals(transaction)) {
-			// add approvalCode & orderID parameters for this settlement transaction
-			request.add(WorldPayParams.ForceParams.APPROVAL_CODE, auth.getApprovalCode());
-			request.add(WorldPayParams.SettleParams.ORDER_ID, auth.getTransactionId());
-		}
+        if (auth != null && !SvcType.RE_AUTHORIZE.equals(transaction)) {
+            // add approvalCode & orderID parameters for this settlement transaction
+            request.add(WorldPayParams.ForceParams.APPROVAL_CODE, auth.getApprovalCode());
+            request.add(WorldPayParams.SettleParams.ORDER_ID, auth.getTransactionId());
+        }
 
-		if (payment.getIsRefund() == 1
+        if (payment.getIsRefund() == 1
                 && (payment.getPayment() == null || payment.getPayment().getAuthorization() == null)) {
-			LOG.error("Can't process refund without a payment with an authorization record");
-			throw new PluggableTaskException("Refund without previous authorization");
-		}
+            LOG.error("Can't process refund without a payment with an authorization record");
+            throw new PluggableTaskException("Refund without previous authorization");
+        }
 
-		try {
-			LOG.debug("Processing " + transaction + " for credit card");
-			WorldPayAuthorization wrapper = new WorldPayAuthorization(post(request));
-			payment.setPaymentResult(new PaymentResultDAS().find(wrapper.getJBResultId()));
+        try {
+            LOG.debug("Processing " + transaction + " for credit card");
+            WorldPayAuthorization wrapper = new WorldPayAuthorization(post(request));
+            payment.setPaymentResult(new PaymentResultDAS().find(wrapper.getJBResultId()));
 
             // if transaction successful store it
-			if (wrapper.getJBResultId().equals(Constants.RESULT_OK))
-				storeProcessedAuthorization(payment, wrapper.getDTO());
+            if (wrapper.getJBResultId().equals(Constants.RESULT_OK))
+                storeProcessedAuthorization(payment, wrapper.getDTO());
 
-			return new Result(wrapper.getDTO(), wrapper.isCommunicationProblem());
+            return new Result(wrapper.getDTO(), wrapper.isCommunicationProblem());
 
-		} catch (Exception e) {
-			LOG.error("Couldn't handle payment request due to error", e);
-			payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
-			return NOT_APPLICABLE;
-		}
-	}
+        } catch (Exception e) {
+            LOG.error("Couldn't handle payment request due to error", e);
+            payment.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
+            return NOT_APPLICABLE;
+        }
+    }
 
-	/**
-	 * Make request to the configured RBS WorldPay gateway. This method returns the response
+    /**
+     * Make request to the configured RBS WorldPay gateway. This method returns the response
      * body of an HTTP post request which can be parsed using the nested {@link WorldPayResponseParser}
      * class.
      *
      * @param request name value pair list of request parameters
-	 * @return response from gateway
+     * @return response from gateway
      * @throws IOException thrown by {@link HttpClient#executeMethod(org.apache.commons.httpclient.HttpMethod)}
-	 */
-	protected String post(NVPList request) throws IOException {
+     */
+    protected String post(NVPList request) throws IOException {
         LOG.debug("Making POST request to " + getProcessorName() + " gateway ...");
 
-		HttpClient client = new HttpClient();
-		client.setConnectionTimeout(getTimeoutSeconds() * 1000); // todo: remove deprecated connection timeout
+        HttpClient client = new HttpClient();
+        client.setConnectionTimeout(getTimeoutSeconds() * 1000); // todo: remove deprecated connection timeout
         
-		PostMethod post = new PostMethod(getGatewayUrl());		       
+        PostMethod post = new PostMethod(getGatewayUrl());             
         post.setRequestEntity(new StringRequestEntity(request.toString()));        
         LOG.debug("request body string: " + request.toString());
 
         // execute the method
-		client.executeMethod(post);
-		String responseBody = post.getResponseBodyAsString();
-		LOG.debug("Got response:" + responseBody);
+        client.executeMethod(post);
+        String responseBody = post.getResponseBodyAsString();
+        LOG.debug("Got response:" + responseBody);
 
         // clean up the connection resources
-		post.releaseConnection();
+        post.releaseConnection();
 
         return responseBody;
-	}
+    }
 }

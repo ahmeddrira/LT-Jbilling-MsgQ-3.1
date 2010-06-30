@@ -38,7 +38,7 @@ public class PaymentInvoiceId  implements java.io.Serializable {
     public PaymentInvoiceId() {
     }
 
-	
+    
     public PaymentInvoiceId(int id) {
         this.id = id;
     }
@@ -99,11 +99,11 @@ public class PaymentInvoiceId  implements java.io.Serializable {
 
    public boolean equals(Object other) {
          if ( (this == other ) ) return true;
-		 if ( (other == null ) ) return false;
-		 if ( !(other instanceof PaymentInvoiceId) ) return false;
-		 PaymentInvoiceId castOther = ( PaymentInvoiceId ) other; 
+         if ( (other == null ) ) return false;
+         if ( !(other instanceof PaymentInvoiceId) ) return false;
+         PaymentInvoiceId castOther = ( PaymentInvoiceId ) other; 
          
-		 return ( (this.getPaymentId()==castOther.getPaymentId()) || ( this.getPaymentId()!=null && castOther.getPaymentId()!=null && this.getPaymentId().equals(castOther.getPaymentId()) ) )
+         return ( (this.getPaymentId()==castOther.getPaymentId()) || ( this.getPaymentId()!=null && castOther.getPaymentId()!=null && this.getPaymentId().equals(castOther.getPaymentId()) ) )
  && ( (this.getInvoiceId()==castOther.getInvoiceId()) || ( this.getInvoiceId()!=null && castOther.getInvoiceId()!=null && this.getInvoiceId().equals(castOther.getInvoiceId()) ) )
  && ( (this.getAmount()==castOther.getAmount()) || ( this.getAmount()!=null && castOther.getAmount()!=null && this.getAmount().equals(castOther.getAmount()) ) )
  && ( (this.getCreateDatetime()==castOther.getCreateDatetime()) || ( this.getCreateDatetime()!=null && castOther.getCreateDatetime()!=null && this.getCreateDatetime().equals(castOther.getCreateDatetime()) ) )

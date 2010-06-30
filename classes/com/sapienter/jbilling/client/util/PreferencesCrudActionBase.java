@@ -27,31 +27,31 @@ import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.util.Context;
 
 public abstract class PreferencesCrudActionBase<DTO> extends UpdateOnlyCrudActionBase<DTO> {
-	private final IUserSessionBean myUserSession;
-	
-	public PreferencesCrudActionBase(String formName, String logFriendlyActionType, String forwardEdit) {
-		super(formName, logFriendlyActionType, forwardEdit);
-		try {
-			myUserSession = (IUserSessionBean) Context.getBean(
+    private final IUserSessionBean myUserSession;
+    
+    public PreferencesCrudActionBase(String formName, String logFriendlyActionType, String forwardEdit) {
+        super(formName, logFriendlyActionType, forwardEdit);
+        try {
+            myUserSession = (IUserSessionBean) Context.getBean(
                     Context.Name.USER_SESSION);
-		} catch (Exception e) {
-			throw new SessionInternalError(
-					"Initializing " + logFriendlyActionType + " CRUD action: "
-							+ e.getMessage());
-		}
-	}
+        } catch (Exception e) {
+            throw new SessionInternalError(
+                    "Initializing " + logFriendlyActionType + " CRUD action: "
+                            + e.getMessage());
+        }
+    }
 
-	protected final IUserSessionBean getUserSession(){
-		return myUserSession;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected final PreferencesMap getEntityPreferences(Integer[] ids) throws RemoteException {
-		return new PreferencesMap(myUserSession.getEntityParameters(entityId, ids));
-	}
-	
-	protected final boolean getCheckBoxBooleanValue(String fieldName) {
-		return (Boolean) myForm.get(fieldName);
-	}
+    protected final IUserSessionBean getUserSession(){
+        return myUserSession;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected final PreferencesMap getEntityPreferences(Integer[] ids) throws RemoteException {
+        return new PreferencesMap(myUserSession.getEntityParameters(entityId, ids));
+    }
+    
+    protected final boolean getCheckBoxBooleanValue(String fieldName) {
+        return (Boolean) myForm.get(fieldName);
+    }
 
 }

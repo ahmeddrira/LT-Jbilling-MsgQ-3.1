@@ -49,7 +49,7 @@ public class EventLogModuleDTO  implements java.io.Serializable {
     protected EventLogModuleDTO() {
     }
 
-	
+    
     public EventLogModuleDTO(int id, Set<EventLogDTO> eventLogs) {
        this.id = id;
        this.eventLogs = eventLogs;

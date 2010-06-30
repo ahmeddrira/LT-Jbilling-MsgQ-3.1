@@ -82,11 +82,11 @@ public class InternationalDescriptionId  implements java.io.Serializable {
 
    public boolean equals(Object other) {
          if ( (this == other ) ) return true;
-		 if ( (other == null ) ) return false;
-		 if ( !(other instanceof InternationalDescriptionId) ) return false;
-		 InternationalDescriptionId castOther = ( InternationalDescriptionId ) other; 
+         if ( (other == null ) ) return false;
+         if ( !(other instanceof InternationalDescriptionId) ) return false;
+         InternationalDescriptionId castOther = ( InternationalDescriptionId ) other; 
          
-		 return (this.getTableId()==castOther.getTableId())
+         return (this.getTableId()==castOther.getTableId())
  && (this.getForeignId()==castOther.getForeignId())
  && ( (this.getPsudoColumn()==castOther.getPsudoColumn()) || ( this.getPsudoColumn()!=null && castOther.getPsudoColumn()!=null && this.getPsudoColumn().equals(castOther.getPsudoColumn()) ) )
  && (this.getLanguageId()==castOther.getLanguageId());

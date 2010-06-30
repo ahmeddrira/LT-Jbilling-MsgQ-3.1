@@ -241,6 +241,13 @@
 			<td class="infocommands" colspan="2">&nbsp;</td>
 		</tr>
 		<tr class="infoB">
+            <td class="infoprompt"><bean:message key="process.run.prompt.status"/></td>
+            <td class="infodata">
+                <bean:write name="run"
+                            property="statusStr" />
+            </td>
+        </tr>
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.started"/></td>
 			<td class="infodata">	
 				<bean:write name="run" 
@@ -248,7 +255,7 @@
 							formatKey="format.timestamp" />
 			</td>
 		</tr>
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="process.run.prompt.finished"/></td>
 			<td class="infodata">	
 				<bean:write name="run" 
@@ -256,7 +263,35 @@
 							formatKey="format.timestamp" />
 			</td>
 		</tr>
-		<tr class="infoB">
+		<tr class="infoA">
+            <td class="infoprompt"><bean:message key="process.run.prompt.users_succeeded"/></td>
+            <td class="infodata">
+                <bean:write name="run"
+                            property="usersSucceeded" />
+                <logic:notEqual name="run"
+                             property="usersSucceeded"
+                             value="0" >
+                    <html:link page="/user/listSuccessfulRunUsers.jsp">
+                            <bean:message key="process.prompt.viewList"/>
+                    </html:link>
+                </logic:notEqual>
+            </td>
+        </tr>
+        <tr class="infoB">
+            <td class="infoprompt"><bean:message key="process.run.prompt.users_failed"/></td>
+            <td class="infodata">
+                <bean:write name="run"
+                            property="usersFailed" />
+                <logic:notEqual name="run"
+                             property="usersFailed"
+                             value="0" >
+                    <html:link page="/user/listFailedRunUsers.jsp">
+                            <bean:message key="process.prompt.viewList"/>
+                    </html:link>
+                </logic:notEqual>
+            </td>
+        </tr>
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.payment_finished"/></td>
 			<td class="infodata">	
 				<bean:write name="run" 
@@ -264,7 +299,7 @@
 							formatKey="format.timestamp" />
 			</td>
 		</tr>
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="process.run.prompt.invoicesGenerated"/></td>
 			<td class="infodata">	
 				<bean:write name="run" 
@@ -277,14 +312,14 @@
 				   property="totals"
 				   id="total">
 		
-		<tr class="infoB">
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="currency.external.prompt.name"/></td>
 			<td class="infodata">	
 				<bean:write name="total" property="currencyName"/>
 			</td>
 		</tr>
 		
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalInvoiced"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
@@ -299,7 +334,7 @@
 			</td>
 		</tr>
 		
-		<tr class="infoB">
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalPaid"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
@@ -313,7 +348,7 @@
 							formatKey="format.money"/>
 			</td>
 		</tr>
-		<tr class="infoA">
+		<tr class="infoB">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalNotPaid"/></td>
 			<td class="infodata">	
 				<bean:define id="index" name="total"
@@ -327,7 +362,7 @@
 							formatKey="format.money"/>
 			</td>
 		</tr>
-		<tr class="infoB">
+		<tr class="infoA">
 			<td class="infoprompt"><bean:message key="process.run.prompt.totalPaymentMethod"/></td>
 			<td></td>
 		</tr>

@@ -36,6 +36,9 @@ import java.util.ArrayList;
 public class BillingProcessRunDTOEx extends ProcessRunDTO {
 
     List<BillingProcessRunTotalDTOEx> totals = null;
+    String statusStr;
+    Integer usersSucceeded;
+    Integer usersFailed;
     /**
      * 
      */
@@ -73,6 +76,30 @@ public class BillingProcessRunDTOEx extends ProcessRunDTO {
 
     public void setTotals(List<BillingProcessRunTotalDTOEx> totals) {
         this.totals = totals;
+    }
+
+    public String getStatusStr() {
+        return statusStr;
+    }
+
+    public void setStatusStr(String statusStr) {
+        this.statusStr = statusStr;
+    }
+
+    public Integer getUsersSucceeded() {
+        return usersSucceeded;
+    }
+
+    public void setUsersSucceeded(Integer usersSucceeded) {
+        this.usersSucceeded = usersSucceeded;
+    }
+
+    public Integer getUsersFailed() {
+        return usersFailed;
+    }
+
+    public void setUsersFailed(Integer usersFailed) {
+        this.usersFailed = usersFailed;
     }
 
     @Override

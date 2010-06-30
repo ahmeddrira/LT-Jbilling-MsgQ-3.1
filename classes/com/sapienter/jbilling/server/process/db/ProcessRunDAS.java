@@ -28,14 +28,25 @@ public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
 
     //private static final Logger LOG = Logger.getLogger(ProcessRunDAS.class);
 
+<<<<<<< HEAD
     public ProcessRunDTO create(BillingProcessDTO process, Date runDate, Integer invoicesGenerated) {
         ProcessRunDTO dto = new ProcessRunDTO(0, runDate, Calendar.getInstance().getTime());
         dto.setBillingProcess(process);
         dto.setInvoicesGenerated(invoicesGenerated);
+=======
+    public ProcessRunDTO create(BillingProcessDTO process, Date runDate, Integer invoicesGenerated, ProcessRunStatusDTO status) {
+        ProcessRunDTO dto = new ProcessRunDTO(0, runDate, Calendar.getInstance().getTime());
+        dto.setBillingProcess(process);
+        dto.setInvoicesGenerated(invoicesGenerated);
+        dto.setStatus(status);
+>>>>>>> contrib
 
         dto = save(dto);
         process.getProcessRuns().add(dto);
         return dto;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> contrib
 }

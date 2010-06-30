@@ -43,7 +43,21 @@ public interface ProcessSQL {
         "where entity_id = ? " +
         "  and is_review = 0 " +
         "  and retries_to_do > 0";
-    
+
+    static String findProcessRunUsersBase =
+            "select u.id, u.id, c.organization_name, c.last_name, c.first_name, u.user_name " +
+            "from process_run_user pru inner join base_user u on pru.user_id = u.id " +
+            "inner join contact_map cm on u.id = cm.foreign_id " +
+            "inner join contact c on c.id = cm.contact_id " +
+            "where pru.process_run_id = ? and u.deleted = 0 and c.deleted = 0 ";
+
+    static String findSucceededUsers =
+            findProcessRunUsersBase +
+            "and pru.status = 1";
+
+    static String findFailedUsers =
+            findProcessRunUsersBase +
+            "and pru.status = 0";
 }
 
 

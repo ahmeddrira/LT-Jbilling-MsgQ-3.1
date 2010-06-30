@@ -124,11 +124,15 @@
         <column name="payment_finished" type="TIMESTAMP"/>
         <column name="invoices_generated" type="INTEGER"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
+        <column name="status_id" required="true" type="INTEGER"/>
         <index name="bp_run_process_ix">
             <index-column name="process_id"/>
         </index>
         <foreign-key foreignTable="billing_process">
             <reference foreign="id" local="process_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="generic_status">
+            <reference foreign="id" local="status_id"/>
         </foreign-key>
     </table>
     <table name="process_run_total">
@@ -160,6 +164,24 @@
         </index>
         <foreign-key foreignTable="payment_method">
             <reference foreign="id" local="payment_method_id"/>
+        </foreign-key>
+    </table>
+    <table name="process_run_user">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="process_run_id" required="true" type="INTEGER"/>
+        <column name="user_id" required="true" type="INTEGER"/>
+        <column name="status" required="true" type="INTEGER"/>
+        <column name="created" required="true" type="DATE"/>
+        <column name="OPTLOCK" required="true" type="INTEGER"/>
+        <index name="bp_run_user_run_ix">
+            <index-column name="process_run_id"/>
+            <index-column name="user_id"/>
+        </index>
+        <foreign-key foreignTable="user">
+            <reference foreign="id" local="user_id"/>
+        </foreign-key>
+        <foreign-key foreignTable="process_run">
+            <reference foreign="id" local="process_run_id"/>
         </foreign-key>
     </table>
     <table name="contact">

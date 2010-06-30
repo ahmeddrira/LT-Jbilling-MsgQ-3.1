@@ -107,4 +107,24 @@ public abstract class AbstractSimpleScheduledTask extends ScheduledTask {
 
         return builder.toString();
     }
+
+    protected Date getParameter(String key, Date defaultValue) throws PluggableTaskException {
+        Object value = parameters.get(key);
+
+        try {
+            return value != null ? DATE_FORMAT.parse((String) value) : defaultValue;
+        } catch (ParseException e) {
+            throw new PluggableTaskException(key + " could not be parsed as a date!", e);
+        }
+    }
+
+    protected Integer getParameter(String key, Integer defaultValue) throws PluggableTaskException {
+        Object value = parameters.get(key);
+
+        try {
+            return value != null ? Integer.parseInt((String) value) : defaultValue;
+        } catch (NumberFormatException e) {
+            throw new PluggableTaskException(key + " could not be parsed as an integer!", e);
+        }
+    }
 }

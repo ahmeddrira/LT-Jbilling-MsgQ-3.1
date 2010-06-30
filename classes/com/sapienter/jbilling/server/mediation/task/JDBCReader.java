@@ -576,6 +576,29 @@ public class JDBCReader extends AbstractReader implements IMediationReader {
     }
 
     /**
+     * Convenience method for boolean plug-in paramters.
+     *
+     * @param name         parameter name
+     * @param defaultValue default value if parameter not configured
+     * @return parameter value, or default if parameter not configured
+     */
+    private boolean getParamter(String name, boolean defaultValue) {
+        String value = (String) parameters.get(name);
+        return (value == null ? defaultValue : "true".equals(value));
+    }
+
+    /**
+     * Convenience method for getting String plug-in parameters
+     */
+    private String getParameter(String name, String defaultValue) {
+        String value = (String) parameters.get(name);
+        if (value != null) {
+            return value;
+        }
+        return defaultValue;
+    }
+
+    /**
      * Returns table name in correct case, determined from database
      * metadata. (Needed for hsqldb driver,which is case-sensitive
      * for metadata info).

@@ -276,6 +276,22 @@
     </definition>
     <definition name="order.list.process.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/order/listProcessTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />
     </definition>
+    <definition name="process.run.successfull.list" extends="main">
+        <put name="featureTitle" value="bar.run.successfull.users" />
+        <put name="body" value="run.successfull.users.body" />
+    </definition>
+    <definition name="run.successfull.users.body" path="/layouts/bodySplitTwo.jsp">
+        <put name="top" value="/user/listProcessSuccessfulUsersTop.jsp" />
+        <put name="bottom" value="/other/genericList.jsp" />
+    </definition>
+    <definition name="process.run.failed.list" extends="main">
+        <put name="featureTitle" value="bar.run.failed.users" />
+        <put name="body" value="run.failed.users.body" />
+    </definition>
+    <definition name="run.failed.users.body" path="/layouts/bodySplitTwo.jsp">
+        <put name="top" value="/user/listProcessFailedUsersTop.jsp" />
+        <put name="bottom" value="/other/genericList.jsp" />
+    </definition>
     <definition name="notification.list.types" extends="main"><put name="body" value="notification.list.types.body" /><put name="featureTitle" value="bar.notification.list" />
     </definition>
     <definition name="notification.list.types.body" path="/layouts/bodySplitTwo.jsp"><put name="top" value="/notification/listTypesTop.jsp" /><put name="bottom" value="/other/genericList.jsp" />

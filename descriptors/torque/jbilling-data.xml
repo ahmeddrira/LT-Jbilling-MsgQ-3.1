@@ -1797,6 +1797,9 @@
     <InternationalDescription TableId="91" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Done and not billable"/>
     <InternationalDescription TableId="91" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Error detected"/>
     <InternationalDescription TableId="91" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Error declared"/>
+    <InternationalDescription TableId="92" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Running"/>
+    <InternationalDescription TableId="92" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Finished: successful"/>
+    <InternationalDescription TableId="92" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Finished: failed"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>
@@ -1893,6 +1896,7 @@
     <JbillingTable Id="88" Name="order_line_provisioning_status"/>
     <JbillingTable Id="89" Name="balance_type"/>
     <JbillingTable Id="91" Name="mediation_record_status"/>
+    <JbillingTable Id="92" Name="process_run_status"/>
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>
     <JbillingSeqs Name="entity_payment_method_map" NextId="26"/>
@@ -4005,6 +4009,7 @@
     <GenericStatusType Id="user_status"/>
     <GenericStatusType Id="invoice_status"/>
     <GenericStatusType Id="mediation_record_status"/>
+    <GenericStatusType Id="process_run_status"/>
     <GenericStatus Id="1" Dtype="user_status" StatusValue="1" CanLogin="1"/>
     <GenericStatus Id="2" Dtype="user_status" StatusValue="2" CanLogin="1"/>
     <GenericStatus Id="3" Dtype="user_status" StatusValue="3" CanLogin="1"/>
@@ -4037,4 +4042,7 @@
     <GenericStatus Id="30" Dtype="mediation_record_status" StatusValue="2"/>
     <GenericStatus Id="31" Dtype="mediation_record_status" StatusValue="3"/>
     <GenericStatus Id="32" Dtype="mediation_record_status" StatusValue="4"/>
+    <GenericStatus Id="33" Dtype="process_run_status" StatusValue="1"/>
+    <GenericStatus Id="34" Dtype="process_run_status" StatusValue="2"/>
+    <GenericStatus Id="35" Dtype="process_run_status" StatusValue="3"/>
 </dataset>

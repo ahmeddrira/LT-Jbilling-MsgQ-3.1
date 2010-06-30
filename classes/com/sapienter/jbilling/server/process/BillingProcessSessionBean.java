@@ -22,11 +22,7 @@ package com.sapienter.jbilling.server.process;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.*;
 
 import com.sapienter.jbilling.server.process.event.InvoicesGeneratedEvent;
 import org.apache.log4j.Logger;
@@ -40,7 +36,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.process.db.PaperInvoiceBatchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.PaperInvoiceBatchBL;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -52,12 +47,7 @@ import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
 import com.sapienter.jbilling.server.payment.event.EndProcessPaymentEvent;
 import com.sapienter.jbilling.server.payment.event.ProcessPaymentEvent;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
-import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
-import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
+import com.sapienter.jbilling.server.process.db.*;
 import com.sapienter.jbilling.server.process.event.NoNewInvoiceEvent;
 import com.sapienter.jbilling.server.process.task.BasicBillingProcessFilterTask;
 import com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask;
@@ -217,12 +207,14 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             IBillingProcessSessionBean local
                 = (IBillingProcessSessionBean) Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
             
-            Integer billingProcessId = local.createProcessRecord(entityId,
-                                                                 billingDate,
-                                                                 periodType,
-                                                                 periodValue,
-                                                                 isReview,
-                                                                 conf.getEntity().getRetries());
+            Integer billingProcessId = local.createProcessRecord(
+                    entityId, billingDate, periodType, periodValue, isReview,
+                    conf.getEntity().getRetries());
+
+            BillingProcessRunBL billingProcessRunBL = new BillingProcessRunBL();
+            billingProcessRunBL.setProcess(billingProcessId);
+            // TODO: all the customer's id in memory is not a good idea. 1M customers would be 4MB of memory
+            List<Integer> successfullUsers = billingProcessRunBL.findSuccessfullUsers();
             
             // start processing users of this entity
             int totalInvoices = 0;
@@ -231,7 +223,6 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             // find out parameters from the configuration
             onlyRecurring = conf.getEntity().getOnlyRecurring() == 1;
             LOG.debug("**** ENTITY " + entityId + " PROCESSING USERS");
-            boolean allGood = true;
 
             //Load the pluggable task for filtering the users
             PluggableTaskManager taskManager = new PluggableTaskManager(entityId,
@@ -243,38 +234,46 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             if (task == null) {
                 task = new BasicBillingProcessFilterTask();
             }
-
-            // Event listing the id's of all generated invoices from this run
-            InvoicesGeneratedEvent generatedEvent = new InvoicesGeneratedEvent(entityId, billingProcessId);
-
-            BillingProcessDAS bpDas = new BillingProcessDAS();
-            ScrollableResults userCursor = task.findUsersToProcess(entityId);
+            int usersFailed = 0;
+            ScrollableResults userCursor = task.findUsersToProcess(entityId); 
             if (userCursor!= null){
                 int count = 0;
                 while (userCursor.next()) {
                     Integer userId = (Integer) userCursor.get(0);
-                    Integer result[] = local.processUser(billingProcessId, userId, isReview, onlyRecurring);
-                    generatedEvent.addInvoiceIds(result);
+                    if(successfullUsers.contains(userId)) { // TODO: change this by a query to the DB
+                        LOG.debug("User #" + userId + " was successfully processed during previous run. Skipping.");
+                        continue;
+                    }
 
+                    Integer result[] = null;
+                    try {
+                        result = local.processUser(billingProcessId, userId,
+                                isReview, onlyRecurring);
+                    } catch(Throwable ex) {
+                        LOG.error("Exception was caught when processing User #" + userId + ". Continue process skipping user    .", ex);
+                        local.addProcessRunUser(billingProcessId, userId, ProcessRunUserDTO.STATUS_FAILED);
+                    }
                     if (result != null) {
                         LOG.debug("User " + userId + " done invoice generation.");
                         if (!isReview) {
-                            for (Integer aResult : result) {
-                                local.emailAndPayment(entityId,
-                                                      aResult,
-                                                      billingProcessId,
-                                                      conf.getEntity().getAutoPayment() == 1);
+                            for (int f = 0; f < result.length; f++) {
+                                local.emailAndPayment(entityId, result[f], 
+                                        billingProcessId,  
+                                        conf.getEntity().getAutoPayment().intValue() == 1);
                             }
                             LOG.debug("User " + userId + " done email & payment.");
                         }
                         totalInvoices += result.length;
+                        local.addProcessRunUser(billingProcessId, userId, ProcessRunUserDTO.STATUS_SUCCEEDED);
                     } else {
                         LOG.debug("User " + userId + " NOT done");
-                        allGood = false;
+                        local.addProcessRunUser(billingProcessId, userId, ProcessRunUserDTO.STATUS_FAILED);
+
+                        ++usersFailed;
                     }
     
                     // make sure the memory doesn't get flooded
-                    if (++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
+                    if ( ++count % Constants.HIBERNATE_BATCH_SIZE == 0) {
                         bpDas.reset();
                     }
                 }
@@ -283,7 +282,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             // restore the configuration in the session, the reset removed it
             conf.set(entityId);
             
-            if (allGood) { // only if all got well processed
+            if (usersFailed == 0) { // only if all got well processed
                 // if some of the invoices were paper invoices, a new file with all
                 // of them has to be generated
                 try {
@@ -302,8 +301,9 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 // now update the billing proces record 
             }
 
-            if (allGood) {
-                Integer processRunId = local.updateProcessRunFinished(billingProcessId);
+            if (usersFailed == 0) {
+                Integer processRunId = local.updateProcessRunFinished(
+                        billingProcessId, Constants.PROCESS_RUN_STATUS_SUCCESS);                
 
                 if (!isReview) {
                     // the payment processing is happening in parallel
@@ -318,6 +318,10 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                     LOG.debug("Updated run date to " + cal.getTime());
                 }
             } else {
+                local.updateProcessRunFinished(
+                        billingProcessId, Constants.PROCESS_RUN_STATUS_FAILED);
+                billingProcessRunBL.notifyProcessRunFailure(entityId, usersFailed);
+                
                 // TODO: check, if updating totals needed
                 // TODO: in the case of errors during users processing
                 BillingProcessRunBL runBL = new BillingProcessRunBL();
@@ -326,9 +330,8 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 runBL.updateTotals(billingProcessId);
             }
 
-            LOG.debug("**** ENTITY " + entityId + " DONE");
-            EventManager.process(generatedEvent);
-
+            LOG.debug("**** ENTITY " + entityId + " DONE. Failed users = " + usersFailed);
+            // TODO: review that this is not needed: EventManager.process(generatedEvent);
         } catch (Exception e) {
             // no need to specify a rollback, an error in any of the
             // updates would not require the rest to be rolled back.
@@ -412,7 +415,7 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
                 // update the end date of this run
                 BillingProcessRunBL runBl = new BillingProcessRunBL(runId);
-                runBl.updateFinished();
+                runBl.updateFinished(Constants.PROCESS_RUN_STATUS_SUCCESS);
 
                 // the payment processing is happening in parallel
                 // this event marks the end of it
@@ -518,10 +521,10 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             InvoiceDTO newInvoices[] = processBL.generateInvoice(process, user.getEntity(), isReview, onlyRecurring);
             if (newInvoices == null) {
                 if (!isReview) {
-                    NoNewInvoiceEvent event = new NoNewInvoiceEvent(user.getEntityId(userId),
-                                                                    userId,
-                                                                    process.getBillingDate(),
-                                                                    user.getEntity().getSubscriberStatus().getId());
+                    NoNewInvoiceEvent event = new NoNewInvoiceEvent(
+                            user.getEntityId(userId), userId, 
+                            process.getBillingDate(), 
+                            user.getEntity().getSubscriberStatus().getId());
                     EventManager.process(event);
                 }
                 return new Integer[0];
@@ -643,9 +646,9 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
                 ConfigurationBL configEntity = new ConfigurationBL(entityId);
                 BillingProcessConfigurationDTO config = configEntity.getDTO();
                 if (!config.getNextRunDate().after(today)) {
-                    boolean doRun = true; // there should be a run today
+                    // there should be a run today 
+                    boolean doRun = true;
                     LOG.debug("A process has to be done for entity " + entityId);
-
                     // check that: the configuration requires a review
                     // AND, there is no partial run already there (failed)
                     if (config.getGenerateReport() == 1
@@ -788,10 +791,17 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
      * @return id of updated ProcessRunDTO
      */
     @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public Integer updateProcessRunFinished(Integer billingProcessId) {
+    public Integer updateProcessRunFinished(Integer billingProcessId, Integer processRunStatusId) {
         BillingProcessRunBL runBL = new BillingProcessRunBL();
         runBL.setProcess(billingProcessId);
-        runBL.updateFinished();
+        runBL.updateFinished(processRunStatusId);
         return runBL.getEntity().getId();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Integer addProcessRunUser(Integer billingProcessId, Integer userId, Integer status) {
+        BillingProcessRunBL runBL = new BillingProcessRunBL();
+        runBL.setProcess(billingProcessId);
+        return runBL.addProcessRunUser(userId, status).getId();
     }
 }

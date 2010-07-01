@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 
-import com.sapienter.jbilling.server.process.event.InvoicesGeneratedEvent;
 import org.apache.log4j.Logger;
 
 import org.hibernate.ScrollableResults;

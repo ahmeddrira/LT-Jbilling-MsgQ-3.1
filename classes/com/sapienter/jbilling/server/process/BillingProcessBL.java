@@ -403,9 +403,6 @@ public class BillingProcessBL extends ResultList
                     BigDecimal balance = (invoice.getBalance() == null) ? BigDecimal.ZERO : invoice.getBalance();
                     BigDecimal carried = balance.add(holder.getCarriedBalance());
                     holder.setCarriedBalance(carried);
-
-                    if (carried.compareTo(BigDecimal.ZERO) > 0)
-                        invoice.setInvoiceStatus(new InvoiceStatusDAS().find(Constants.INVOICE_STATUS_UNPAID_AND_CARRIED));
                 }
 
                 LOG.debug("invoice " + invoice.getId() + " result " + isProcessable);

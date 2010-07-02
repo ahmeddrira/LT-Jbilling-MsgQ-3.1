@@ -344,8 +344,8 @@ public class BillingProcessTest extends TestCase {
             Integer reviewInvoiceId = invoice.getId();
             invoice = getNoReviewInvoice(remoteInvoice.getAllInvoices(121));
             assertNull("Overdue invoice not delegated", invoice.getInvoice());
-            assertEquals("Overdue invoice marked as 'unpaid and carried'",
-                    Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
+            assertEquals("Overdue invoice should remain 'unpaid', since this is only a review",
+                    Constants.INVOICE_STATUS_UNPAID.intValue(), invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice balance 15", new BigDecimal("15.0"), invoice.getBalance());
             Integer overdueInvoiceId = invoice.getId();
 
@@ -361,8 +361,8 @@ public class BillingProcessTest extends TestCase {
 
             invoice = getNoReviewInvoice(remoteInvoice.getAllInvoices(121));
             assertNotNull("Overdue invoice still there", invoice);
-            assertEquals("Overdue invoice marked as 'unpaid and carried'",
-                    Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
+            assertEquals("Overdue invoice should remain 'unpaid', after disapproval",
+                    Constants.INVOICE_STATUS_UNPAID.intValue(), invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice balance 15", new BigDecimal("15.0"), invoice.getBalance());
 
             // run trigger, but too early (six days, instead of 5)    
@@ -397,8 +397,8 @@ public class BillingProcessTest extends TestCase {
 
             invoice = remoteInvoice.getInvoice(overdueInvoiceId);
             assertNotNull("Overdue invoice still there", invoice);
-            assertEquals("Overdue invoice marked as 'unpaid and carried'",
-                    Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(), invoice.getInvoiceStatus().getId());
+            assertEquals("Overdue invoice should remain 'unpaid', after disapproval",
+                    Constants.INVOICE_STATUS_UNPAID.intValue(), invoice.getInvoiceStatus().getId());
             assertEquals("Overdue invoice balance 15", new BigDecimal("15.0"), invoice.getBalance());
             invoice = remoteInvoice.getInvoice(reviewInvoiceId);
             assertNull("Review invoice not longer present", invoice);
@@ -504,11 +504,12 @@ public class BillingProcessTest extends TestCase {
             // validate invoice delegation
             InvoiceDTO invoice = remoteInvoice.getInvoice(8500);
             assertNotNull("Overdue invoice still there", invoice);
-            assertEquals("Overdue invoice is now  'paid'", 0, invoice.getToProcess().intValue());
-            assertEquals("Overdue invoice is now  'carried over'", Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(),
+            assertEquals("Overdue invoice is not 'paid'", 0, invoice.getToProcess().intValue());
+            assertEquals("Overdue invoice is now 'carried over'", Constants.INVOICE_STATUS_UNPAID_AND_CARRIED.intValue(),
                     invoice.getInvoiceStatus().getId());
-            assertEquals("Overdue invoice carried balance remains the same",
+            assertEquals("Overdue invoice balance remains the same",
                     new BigDecimal("15.0"), invoice.getBalance());
+            assertNotNull("Overdue invoice is now delegated", invoice.getInvoice());
 
             // get the latest process
             BillingProcessDTOEx lastDtoB = remoteBillingProcess.getDto(

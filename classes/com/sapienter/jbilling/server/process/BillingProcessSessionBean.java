@@ -233,8 +233,11 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             if (task == null) {
                 task = new BasicBillingProcessFilterTask();
             }
+
+            BillingProcessDAS bpDas = new BillingProcessDAS();
+
             int usersFailed = 0;
-            ScrollableResults userCursor = task.findUsersToProcess(entityId); 
+            ScrollableResults userCursor = task.findUsersToProcess(entityId);
             if (userCursor!= null){
                 int count = 0;
                 while (userCursor.next()) {

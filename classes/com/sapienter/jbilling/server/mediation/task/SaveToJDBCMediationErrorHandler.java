@@ -90,7 +90,7 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
     private Boolean mysql;
 
     public void process(Record record, List<String> errors, Date processingTime, MediationConfiguration mediationConfiguration) throws TaskException {
-        if (mediationConfiguration != null && getParameter(PARAM_MEDIATION_CONFIGURATION_ID, null) != null) {
+        if (mediationConfiguration != null && getParameter(PARAM_MEDIATION_CONFIGURATION_ID, (String) null) != null) {
             try {
                 Integer configId = Integer.parseInt(getParameter(PARAM_MEDIATION_CONFIGURATION_ID, ""));
                 if (!mediationConfiguration.getId().equals(configId)) {
@@ -204,13 +204,6 @@ public class SaveToJDBCMediationErrorHandler extends PluggableTask
         Class.forName(driver); // load driver
         return DriverManager.getConnection((String) url, username, password);
     }
-
-
-    protected String getParameter(String key, String defaultValue) {
-        Object value = parameters.get(key);
-        return value != null ? (String) value : defaultValue;
-    }
-
 
     protected String escapedKeywordsColumnName(String columnName) {
         String escape =  isMySQL() ? "`" : "\""; // escape mysql column names with backtick

@@ -48,23 +48,7 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
     public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
         if (getParameter(PARAM_RETURN_NULL, false))
             return null;        
-        
-        String gatewayKey = (String) parameters.get(PARAM_RETURN_VALUE);
-        return (gatewayKey != null ? gatewayKey : DEFAULT_RETURN_VALUE);
-    }
-
-    /**
-     * Returns the plug-in parameter value as a boolean value if it exists, or
-     * returns the given default value if it doesn't.
-     *
-     * "true" and "True" equals Boolean.TRUE, all other values equate to false.
-     *
-     * @param key plug-in parameter name
-     * @param defaultValue default value if parameter not defined
-     * @return parameter value, or default if not defined
-     */
-    private Boolean getParameter(String key, Boolean defaultValue) {
-        Object value = parameters.get(key);
-        return value != null ? ((String) value).equalsIgnoreCase("true") : defaultValue;
+             
+        return getParameter(PARAM_RETURN_VALUE, DEFAULT_RETURN_VALUE);
     }
 }

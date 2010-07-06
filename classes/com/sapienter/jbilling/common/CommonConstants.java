@@ -43,6 +43,8 @@ public interface CommonConstants {
     public static final String LIST_TYPE_INVOICE_GRAL = "invoiceGeneral";
     public static final String LIST_TYPE_PROCESS = "process";
     public static final String LIST_TYPE_PROCESS_INVOICES = "processInvoices";
+    public static final String LIST_TYPE_PROCESS_RUN_SUCCESSFULL_USERS = "processRunSuccessfullUsers";
+    public static final String LIST_TYPE_PROCESS_RUN_FAILED_USERS = "processRunFailedUsers";    
     public static final String LIST_TYPE_PROCESS_ORDERS= "processOrders";
     public static final String LIST_TYPE_NOTIFICATION_TYPE= "notificationType";
     public static final String LIST_TYPE_PARTNER = "partner";
@@ -144,6 +146,11 @@ public interface CommonConstants {
     public static final Integer INVOICE_STATUS_UNPAID = new Integer(2);
     public static final Integer INVOICE_STATUS_UNPAID_AND_CARRIED = new Integer(3);
 
+    // process run status, in synch with db
+    public static final Integer PROCESS_RUN_STATUS_RINNING = new Integer(1);
+    public static final Integer PROCESS_RUN_STATUS_SUCCESS = new Integer(2);
+    public static final Integer PROCESS_RUN_STATUS_FAILED = new Integer(3);
+    
     // invoice delivery method types
     public static final Integer D_METHOD_EMAIL = new Integer(1);
     public static final Integer D_METHOD_PAPER = new Integer(2);

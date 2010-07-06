@@ -116,6 +116,10 @@ public class BillingProcessBL extends ResultList
         return billingProcess;
     }
 
+    public ProcessRunDTO getProcessRun() {
+        return processRun;
+    }    
+
     public BillingProcessDAS getHome() {
         return billingProcessDas;
     }
@@ -144,7 +148,9 @@ public class BillingProcessBL extends ResultList
                 dto.getBillingDate(), dto.getPeriodUnit().getId(),
                 dto.getPeriodValue(), dto.getRetriesToDo());
         billingProcess.setIsReview(dto.getIsReview());
-        processRun = processRunHome.create(billingProcess, dto.getBillingDate(), 0);
+        processRun = processRunHome.create(
+                billingProcess, dto.getBillingDate(), 0,
+                new ProcessRunStatusDAS().find(Constants.PROCESS_RUN_STATUS_RINNING));        
 
         if (dto.getIsReview() == 1) {
             ConfigurationBL config = new ConfigurationBL(dto.getEntity().getId());
@@ -1122,6 +1128,10 @@ public class BillingProcessBL extends ResultList
             processDas.delete(orderDto);
         }
         processDto.getOrderProcesses().clear();
+        // delete processRunUsers otherwise will be constraint violation
+        for (ProcessRunDTO processRun : review.getProcessRuns()) {
+            new ProcessRunUserDAS().removeProcessRunUsersForProcessRun(processRun.getId());
+        }
         // otherwise this line would cascade de delete
         getHome().delete(review);
     }

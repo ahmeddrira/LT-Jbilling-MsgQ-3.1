@@ -19,23 +19,8 @@
 */
 package com.sapienter.jbilling.server.process.db;
 
-import java.util.Calendar;
-import java.util.Date;
+import com.sapienter.jbilling.server.util.db.AbstractGenericStatusDAS;
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+public class ProcessRunStatusDAS extends AbstractGenericStatusDAS<ProcessRunStatusDTO> {
 
-public class ProcessRunDAS extends AbstractDAS<ProcessRunDTO> {
-
-    //private static final Logger LOG = Logger.getLogger(ProcessRunDAS.class);
-
-    public ProcessRunDTO create(BillingProcessDTO process, Date runDate, Integer invoicesGenerated, ProcessRunStatusDTO status) {
-        ProcessRunDTO dto = new ProcessRunDTO(0, runDate, Calendar.getInstance().getTime());
-        dto.setBillingProcess(process);
-        dto.setInvoicesGenerated(invoicesGenerated);
-        dto.setStatus(status);
-
-        dto = save(dto);
-        process.getProcessRuns().add(dto);
-        return dto;
-    }
 }

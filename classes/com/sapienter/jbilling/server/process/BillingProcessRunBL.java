@@ -21,29 +21,33 @@
 package com.sapienter.jbilling.server.process;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.*;
+import java.sql.SQLException;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.payment.db.PaymentMethodDAS;
-import com.sapienter.jbilling.server.process.db.BillingProcessDAS;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunDAS;
-import com.sapienter.jbilling.server.process.db.ProcessRunDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunTotalDAS;
-import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
-import com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDAS;
-import com.sapienter.jbilling.server.process.db.ProcessRunTotalPmDTO;
+import com.sapienter.jbilling.server.process.db.*;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.list.ResultList;
+import com.sapienter.jbilling.server.order.OrderSQL;
+import com.sapienter.jbilling.server.notification.NotificationBL;
+import com.sapienter.jbilling.server.notification.NotificationNotFoundException;
+import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.notification.INotificationSessionBean;
+import com.sapienter.jbilling.server.util.Context;
+import sun.jdbc.rowset.CachedRowSet;
 
-public class BillingProcessRunBL {
+import javax.mail.MessagingException;
+
+public class BillingProcessRunBL  extends ResultList implements ProcessSQL {
     private ProcessRunDAS processRunDas = null;
+    private ProcessRunUserDAS processRunUserDas = null;
     private ProcessRunTotalDAS processRunTotalDas = null;
     private ProcessRunTotalPmDAS billingProcessRunTotalPmDas = null;
     private ProcessRunDTO billingProcessRun = null;
@@ -84,11 +88,9 @@ public class BillingProcessRunBL {
     
     private void init() {
         processRunDas = new ProcessRunDAS();
-
         processRunTotalDas = new ProcessRunTotalDAS();
-
         billingProcessRunTotalPmDas = new ProcessRunTotalPmDAS();
-
+        processRunUserDas = new ProcessRunUserDAS();
     }
 
     public ProcessRunDTO getEntity() {
@@ -120,9 +122,51 @@ public class BillingProcessRunBL {
             throw new SessionInternalError("run date can't be null");
         }
 
-        billingProcessRun = processRunDas.create(process, runDate, 0);
+        billingProcessRun = processRunDas.create(process, runDate, 0,
+                new ProcessRunStatusDAS().find(Constants.PROCESS_RUN_STATUS_RINNING));
         return billingProcessRun.getId();
     }
+
+
+    public CachedRowSet findSucceededUsersList() throws SQLException {
+        prepareStatement(ProcessSQL.findSucceededUsers);
+        cachedResults.setInt(1, billingProcessRun.getId());
+        execute();
+        conn.close();
+        return cachedResults;
+    }
+
+    public CachedRowSet findFailedUsersList() throws SQLException {
+        prepareStatement(ProcessSQL.findFailedUsers);
+        cachedResults.setInt(1, billingProcessRun.getId());
+        execute();
+        conn.close();
+        return cachedResults;
+    }
+
+    public void notifyProcessRunFailure(Integer entityId, int failedUsersCount)
+            throws SessionInternalError {
+
+        LOG.debug("Sending process run failure notification.");
+        try {
+            new BillingProcessDAS().reset();
+
+            ProcessRunDTO processRunDTO = processRunDas.find(billingProcessRun.getId());
+            String[] params = new String[] {
+                entityId.toString(),
+                processRunDTO.getStarted().toString(),
+                processRunDTO.getFinished().toString(),
+                Integer.toString(failedUsersCount)
+            };
+
+            NotificationBL.sendSapienterEmail(entityId, "process.run_failed", null, params);
+
+        } catch (MessagingException e) {
+            LOG.warn("Could not send email.", e);
+        } catch (IOException e) {
+            LOG.warn("Could not send email.", e);
+        }
+    }    
     
     /**
      * Adds the payment total to the run totals
@@ -191,12 +235,25 @@ public class BillingProcessRunBL {
     }
 
     // called when the run is over, to update the dates only
-    public void updateFinished() {
+    public void updateFinished(Integer processRunStatusId) {
         // get the very latest version
         billingProcessRun = processRunDas.findForUpdate(billingProcessRun.getId());
         billingProcessRun.setFinished(Calendar.getInstance().getTime());
+        billingProcessRun.setStatus(new ProcessRunStatusDAS().find(processRunStatusId));
         LOG.debug("updating run " + billingProcessRun.getId() +" version " + billingProcessRun.getVersionNum());
         billingProcessRun = processRunDas.save(billingProcessRun);
+    }
+
+    public ProcessRunUserDTO addProcessRunUser(Integer userId, Integer status) {
+
+        ProcessRunUserDTO processRunUser = processRunUserDas.getUser(billingProcessRun.getId(), userId);
+        if(processRunUser == null) {
+            return processRunUserDas.create(billingProcessRun.getId(), userId,
+                    status, Calendar.getInstance().getTime());
+        }
+
+        processRunUser.setStatus(status);
+        return processRunUser;
     }
     
     public void updatePaymentsFinished() {
@@ -218,6 +275,11 @@ public class BillingProcessRunBL {
         dto.setStarted(billingProcessRun.getStarted());
         dto.setRunDate(billingProcessRun.getRunDate());
         dto.setPaymentFinished(billingProcessRun.getPaymentFinished());
+        ProcessRunStatusDTO statusRow = new ProcessRunStatusDAS().find(billingProcessRun.getStatus().getId());
+        dto.setStatusStr(statusRow.getDescription(language));
+        ProcessRunUserDAS processRunUserDAS = new ProcessRunUserDAS();
+        dto.setUsersSucceeded(processRunUserDAS.findSuccessfullUsersCount(billingProcessRun.getId()));
+        dto.setUsersFailed(processRunUserDAS.findFailedUsersCount(billingProcessRun.getId()));        
         // now the totals
         if (!billingProcessRun.getProcessRunTotals().isEmpty()) {
             for (Iterator tIt = billingProcessRun.getProcessRunTotals().iterator(); 
@@ -274,5 +336,9 @@ public class BillingProcessRunBL {
             Object[] row = (Object[]) it.next();
             run.updateNewPayment((Integer) row[0], null, (BigDecimal) row[1], false);
         }
+    }
+
+    public List<Integer> findSuccessfullUsers() {
+        return new ProcessRunUserDAS().findSuccessfullUserIds(billingProcessRun.getId());
     }
 }

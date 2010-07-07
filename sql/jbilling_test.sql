@@ -12105,6 +12105,7 @@ COPY notification_message_type (id, optlock) FROM stdin;
 COPY order_billing_type (id) FROM stdin;
 1
 2
+9
 \.
 
 

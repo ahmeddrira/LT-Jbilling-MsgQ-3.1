@@ -21,7 +21,15 @@
 package com.sapienter.jbilling.server.process;
 
 import java.math.RoundingMode;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
+
+import com.sapienter.jbilling.server.order.db.OrderBillingTypeDTO;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
 import junit.framework.TestCase;
 
 import com.sapienter.jbilling.common.Util;
@@ -30,24 +38,19 @@ import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.payment.IPaymentSessionBean;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.order.OrderLineWS;
-import com.sapienter.jbilling.server.order.db.*;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderProcessDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.RemoteContext;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.provisioning.db.ProvisioningStatusDTO;
-
 import java.math.BigDecimal;
-import java.util.*;
-
+import java.util.Iterator;
+import java.util.Set;
 import org.joda.time.DateMidnight;
 
 
@@ -142,7 +145,7 @@ public class BillingProcessTest extends TestCase {
             order.setActiveSince(new DateMidnight(2000, 11, 30).toDate());
             order.setCycleStarts(new DateMidnight(2000, 11, 01).toDate());
             order.setPeriod(2); // monthly
-            Integer orderId = remoteOrder.createUpdate(1, 1, createOrderDtoFromWs(order), 1);
+            Integer orderId = remoteOrder.createUpdate(1, 1, new OrderBL().getDTO(order), 1);
 
             // run the billing process. It should only get this order
             remoteBillingProcess.trigger(new DateMidnight(2000,12,1).toDate());
@@ -251,7 +254,7 @@ public class BillingProcessTest extends TestCase {
             BillingProcessRunTotalDTOEx total = run.getTotals().get(0);
             assertEquals("Retry total paid equals to invoice total", 
                     invoice.getTotal(), total.getTotalPaid());
-             assertEquals("Successful users runs count incorrect", new Integer(0), run.getUsersSucceeded());
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception:" + e);
@@ -327,9 +330,6 @@ public class BillingProcessTest extends TestCase {
             // get the review
             reviewDto = remoteBillingProcess.getReviewDto(
                     entityId, languageId);
-
-            assertTrue("Success users runs should be presented", reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersSucceeded() > 0);
-            assertEquals("Incorrect failed users runs", new Integer(0), reviewDto.getRuns().get(reviewDto.getRuns().size() - 1).getUsersFailed());
 
             // now review should be there
             assertNotNull("5 - Review should be there", reviewDto);
@@ -547,10 +547,11 @@ public class BillingProcessTest extends TestCase {
             // verify that the transition from pending unsubscription to unsubscribed worked
             assertEquals("User should stay on pending unsubscription",
                     UserDTOEx.SUBSCRIBER_PENDING_UNSUBSCRIPTION,
-                    remoteUser.getUserDTOEx("pendunsus1", new Integer(1)).getSubscriptionStatusId());
+                    remoteUser.getUserDTOEx("pendunsus1", entityId).getSubscriptionStatusId());
+            
             assertEquals("User should have changed to unsubscribed",
                     UserDTOEx.SUBSCRIBER_UNSUBSCRIBED,
-                    remoteUser.getUserDTOEx("pendunsus2", new Integer(1)).getSubscriptionStatusId());
+                    remoteUser.getUserDTOEx("pendunsus2", entityId).getSubscriptionStatusId());
            
         } catch (Exception e) {
             e.printStackTrace();
@@ -635,7 +636,7 @@ public class BillingProcessTest extends TestCase {
             fail("Exception:" + e);
         }
     }
-    
+
     /*
      * VALIDATE ORDERS
      */
@@ -754,6 +755,82 @@ public class BillingProcessTest extends TestCase {
             fail("Exception:" + e);
         }
 
+    }
+
+    /**
+     * Test that the BillingProcess will fail with status "Finished: failed" if
+     * an exception occurs and that resolving the failure allows the process
+     * to complete successfully in a later run.
+     *
+     * @throws Exception testing
+     */
+    public void testBillingProcessFailure() throws Exception {
+        // order period aligned with the 13th
+        Date runDate = new DateMidnight(2000, 12, 13).toDate();
+
+        // create testing user and order
+        UserWS user = com.sapienter.jbilling.server.user.WSTest
+                .createUser(true, null, null);
+
+        OrderWS brokenOrder = com.sapienter.jbilling.server.order.WSTest
+                .createMockOrder(user.getUserId(), 1, new BigDecimal(10));
+
+        brokenOrder.setActiveSince(runDate);
+        brokenOrder.setCycleStarts(runDate);
+        brokenOrder.setPeriod(2);        // monthly
+        brokenOrder.setBillingTypeId(9); // invalid billing type id to trigger failure
+
+        Integer orderId = remoteOrder.createUpdate(1, 1, new OrderBL().getDTO(brokenOrder), 1);
+        System.out.println("Order id: " + orderId);
+
+        // set the configuration to include the corrupt order
+        BillingProcessConfigurationDTO configDto = remoteBillingProcess.getConfigurationDto(entityId);
+        configDto.setNextRunDate(runDate);
+        configDto.setRetries(1);
+        configDto.setDaysForRetry(5);
+        configDto.setGenerateReport(0);
+        configDto.setAutoPayment(1);
+        configDto.setAutoPaymentApplication(1);
+        configDto.setDfFm(0);
+        configDto.setDueDateUnitId(Constants.PERIOD_UNIT_MONTH);
+        configDto.setDueDateValue(1);
+        configDto.setInvoiceDateProcess(1);
+        configDto.setMaximumPeriods(10);
+        configDto.setOnlyRecurring(1);
+        configDto.setPeriodUnit(new PeriodUnitDTO(Constants.PERIOD_UNIT_MONTH));
+        configDto.setPeriodValue(1);
+
+        // trigger billing
+        // process should finish with status "failed" because of the corrupt order
+        remoteBillingProcess.createUpdateConfiguration(1, configDto);
+        remoteBillingProcess.trigger(runDate);
+
+        Integer billingProcessId = remoteBillingProcess.getLast(entityId);
+        BillingProcessDTOEx billingProcess = remoteBillingProcess.getDto(billingProcessId, languageId);
+        BillingProcessRunDTOEx run = billingProcess.getRuns().iterator().next();
+
+        assertEquals("Last billing process run should have failed.", "Finished: failed", run.getStatusStr());
+
+        // fix the order by setting billing type ID to a proper value
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+        OrderWS fixedOrder = api.getOrder(orderId);
+        fixedOrder.setBillingTypeId(Constants.ORDER_BILLING_POST_PAID);
+        api.updateOrder(fixedOrder);
+
+        // reset the configuration and retry
+        // process should finish with status "successful"
+        remoteBillingProcess.createUpdateConfiguration(1 ,configDto);
+        remoteBillingProcess.trigger(runDate);
+
+        billingProcessId = remoteBillingProcess.getLast(entityId);
+        billingProcess = remoteBillingProcess.getDto(billingProcessId, languageId);
+        run = billingProcess.getRuns().iterator().next();
+
+        assertEquals("Last billing process run should have passed.", "Finished: successful", run.getStatusStr());
+
+        // cleanup
+        remoteOrder.delete(orderId, 1);
+        remoteUser.delete(1, user.getUserId());
     }
 
     public void testAgeing() {
@@ -1060,73 +1137,5 @@ public class BillingProcessTest extends TestCase {
         assertEquals(message,
                      (Object) (expected == null ? null : expected.setScale(2, RoundingMode.HALF_UP)),
                      (Object) (actual == null ? null : actual.setScale(2, RoundingMode.HALF_UP)));
-    }
-
-    public static OrderDTO createOrderDtoFromWs(OrderWS other) {
-        OrderDTO retValue = new OrderDTO();
-        retValue.setId(other.getId());
-
-        retValue.setBaseUserByUserId(new UserDTO(other.getUserId()));
-        retValue.setBaseUserByCreatedBy(other.getCreatedBy() != null ? new UserDTO(other.getCreatedBy()) : null);
-        retValue.setCurrency(other.getCurrencyId() != null ? new CurrencyDTO(other.getCurrencyId()) : null);
-        retValue.setOrderStatus(other.getStatusId() != null ? new OrderStatusDTO(other.getStatusId()) : null);
-        retValue.setOrderPeriod(other.getPeriod() != null ? new OrderPeriodDTO(other.getPeriod()) : null);
-        retValue.setOrderBillingType(other.getBillingTypeId() != null ? new OrderBillingTypeDTO(other.getBillingTypeId()) : null);
-        retValue.setActiveSince(other.getActiveSince());
-        retValue.setActiveUntil(other.getActiveUntil());
-        retValue.setCreateDate(other.getCreateDate());
-        retValue.setNextBillableDay(other.getNextBillableDay());
-        retValue.setDeleted(other.getDeleted());
-        retValue.setNotify(other.getNotify());
-        retValue.setLastNotified(other.getLastNotified());
-        retValue.setNotificationStep(other.getNotificationStep());
-        retValue.setDueDateUnitId(other.getDueDateUnitId());
-        retValue.setDueDateValue(other.getDueDateValue());
-        retValue.setDfFm(other.getDfFm());
-        retValue.setAnticipatePeriods(other.getAnticipatePeriods());
-        retValue.setOwnInvoice(other.getOwnInvoice());
-        retValue.setNotes(other.getNotes());
-        retValue.setNotesInInvoice(other.getNotesInInvoice());
-        for (OrderLineWS line : other.getOrderLines()) {
-            retValue.getLines().add(getOrderLine(line, retValue));
-        }
-        retValue.setIsCurrent(other.getIsCurrent());
-        retValue.setCycleStarts(other.getCycleStarts());
-        retValue.setVersionNum(other.getVersionNum());
-        if (other.getPricingFields() != null) {
-            List<PricingField> pf = new ArrayList<PricingField>();
-            pf.addAll(Arrays.asList(PricingField.getPricingFieldsValue(other.getPricingFields())));
-            retValue.setPricingFields(pf);
-        }
-
-        return retValue;
-    }
-
-    public static OrderLineDTO getOrderLine(OrderLineWS ws, OrderDTO order) {
-
-        OrderLineTypeDTO type = null;
-        if (ws.getTypeId() != null) {
-            type = new OrderLineTypeDTO();
-            type.setId(ws.getTypeId());
-        }
-        OrderLineDTO dto = new OrderLineDTO();
-
-        dto.setId(ws.getId());
-        dto.setAmount(ws.getAmountAsDecimal());
-        dto.setCreateDatetime(ws.getCreateDatetime());
-        dto.setDeleted(ws.getDeleted());
-        dto.setDescription(ws.getDescription());
-        dto.setEditable(ws.getEditable());
-        dto.setItem(ws.getItemId() != null ? new ItemDTO(ws.getItemId()) : null);
-
-        dto.setOrderLineType(type);
-
-        dto.setPrice(ws.getPriceAsDecimal());
-        dto.setPurchaseOrder(order);
-        dto.setQuantity(ws.getQuantityAsDecimal());
-        dto.setVersionNum(ws.getVersionNum());
-        dto.setProvisioningStatus(ws.getProvisioningStatusId() != null ? new ProvisioningStatusDTO(ws.getProvisioningStatusId()) : null);
-        dto.setProvisioningRequestId(ws.getProvisioningRequestId());
-        return dto;
     }
 }

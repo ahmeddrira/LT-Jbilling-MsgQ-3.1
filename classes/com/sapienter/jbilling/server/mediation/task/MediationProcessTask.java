@@ -12,6 +12,7 @@ import org.quartz.SimpleTrigger;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Scheduled mediation process plug-in, executing the mediation process on a simple schedule.
@@ -29,22 +30,34 @@ import java.util.Date;
 public class MediationProcessTask extends AbstractSimpleScheduledTask {
     private static final Logger LOG = Logger.getLogger(MediationProcessTask.class);
 
+    private static final AtomicBoolean running = new AtomicBoolean(false);
+
     private static final String PROPERTY_RUN_MEDIATION = "process.run_mediation";
     private static final String PROPERTY_PROCESS_TIME = "process.time";
     private static final String PROPERTY_PROCESS_FREQ = "process.frequency";
 
     public String getTaskName() {
-        return "mediation process - " + getScheduleString();
+        return "mediation process: " + getScheduleString();
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         _init(context);
-        IMediationSessionBean mediation = (IMediationSessionBean) Context.getBean(Context.Name.MEDIATION_SESSION);
 
-        if (Util.getSysPropBooleanTrue(PROPERTY_RUN_MEDIATION)) {
-            LOG.info("Starting mediation at " + new Date());
-            mediation.trigger(getEntityId());
-            LOG.info("Ended mediation at " + new Date());
+        if (running.compareAndSet(false, true)) {
+            IMediationSessionBean mediation = (IMediationSessionBean) Context.getBean(Context.Name.MEDIATION_SESSION);
+
+            try {
+                if (Util.getSysPropBooleanTrue(PROPERTY_RUN_MEDIATION)) {
+                    LOG.info("Starting mediation at " + new Date());
+                    mediation.trigger(getEntityId());
+                    LOG.info("Ended mediation at " + new Date());
+                }
+            } finally {
+                running.set(false);
+            }
+        } else {
+            LOG.warn("Failed to trigger mediation process at " + context.getFireTime()
+                    + ", another process is already running.");
         }
     }
 

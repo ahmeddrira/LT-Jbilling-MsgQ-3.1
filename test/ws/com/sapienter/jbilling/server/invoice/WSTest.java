@@ -476,7 +476,19 @@ public class WSTest extends TestCase {
             }
         }
     }
-    
+
+    public void testGetPaperInvoicePDF() throws Exception {
+        final Integer USER_ID = 2; // user has invoices
+
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        Integer[] invoiceIds = api.getLastInvoices(USER_ID, 1);
+        assertEquals("Invoice found for user", 1, invoiceIds.length);
+
+        byte[] pdf = api.getPaperInvoicePDF(invoiceIds[0]);
+        assertTrue("PDF invoice bytes returned", pdf.length > 0);        
+    }
+
     public static void assertEquals(BigDecimal expected, BigDecimal actual) {
         assertEquals(null, expected, actual);
     }

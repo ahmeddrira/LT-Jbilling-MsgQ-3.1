@@ -171,6 +171,14 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
+    public byte[] getPaperInvoicePDF(Integer invoiceId) throws JbillingAPIException {
+        try {
+            return session.getPaperInvoicePDF(invoiceId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }    
+
     public Integer[] getLastInvoices(Integer userId, Integer number)
             throws JbillingAPIException {
         try {

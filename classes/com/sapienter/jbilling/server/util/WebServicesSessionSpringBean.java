@@ -37,6 +37,7 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
@@ -206,6 +207,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 dUntil);
 
         return results;
+    }
+
+    /**
+     * Generates and returns the paper invoice PDF for the given invoiceId.
+     *
+     * @param invoiceId invoice to generate PDF for
+     * @return PDF invoice bytes
+     * @throws SessionInternalError
+     */
+    public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError {
+        IInvoiceSessionBean invoiceSession = (IInvoiceSessionBean) Context.getBean(Context.Name.INVOICE_SESSION);
+        return invoiceSession.getPDFInvoice(invoiceId);
     }
 
     /**

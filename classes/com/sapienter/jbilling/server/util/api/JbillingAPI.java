@@ -52,6 +52,8 @@ public interface JbillingAPI {
     public Integer[] getInvoicesByDate(String since, String until)
             throws JbillingAPIException;
     
+    public byte[] getPaperInvoicePDF(Integer invoiceId) throws JbillingAPIException;
+
     public Integer getAutoPaymentType(Integer userId) throws JbillingAPIException;
     
     public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)

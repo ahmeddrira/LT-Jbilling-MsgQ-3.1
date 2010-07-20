@@ -31,17 +31,17 @@ import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 
 /**
- *
  * @author emilc
- **/
+ */
 public interface IMediationSessionBean {
 
     public void trigger(Integer entityId);
 
-    /**
-     * Needs to be in its own transaction, so it gets created right away
-     */
     public MediationProcess createProcessRecord(MediationConfiguration cfg);
+
+    public MediationProcess updateProcessRecord(MediationProcess process, Date enddate);
+
+    public boolean isProcessing(Integer entityId);    
 
     public List<MediationProcess> getAll(Integer entityId);
 
@@ -52,20 +52,23 @@ public interface IMediationSessionBean {
     public void createConfiguration(MediationConfiguration cfg);
 
     public List updateAllConfiguration(Integer executorId,
-            List<MediationConfiguration> configurations)
-            throws InvalidArgumentException;
+                                       List<MediationConfiguration> configurations) throws InvalidArgumentException;
 
     public void delete(Integer executorId, Integer cfgId);
 
     public boolean hasBeenProcessed(MediationProcess process, Record thisGroup);
 
-    public void normalizeRecordGroup(IMediationProcess processTask, 
-            Integer executorId, MediationProcess process, 
-            List<Record> thisGroup, Integer entityId,
-            MediationConfiguration cfg) throws TaskException;
+    public void normalizeRecordGroup(IMediationProcess processTask,
+                                     Integer executorId,
+                                     MediationProcess process,
+                                     List<Record> thisGroup,
+                                     Integer entityId,
+                                     MediationConfiguration cfg) throws TaskException;
 
     public void saveEventRecordLines(List<OrderLineDTO> newLines,
-            MediationRecordDTO record, Date eventDate, String description);
+                                     MediationRecordDTO record,
+                                     Date eventDate,
+                                     String description);
 
     public List<MediationRecordLineDTO> getEventsForOrder(Integer orderId);
 

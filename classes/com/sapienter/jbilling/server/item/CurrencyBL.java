@@ -44,7 +44,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Emil
@@ -105,8 +109,7 @@ public class CurrencyBL {
 
         // make the conversion itself
         CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
-        BigDecimal tmp = amount;
-        return tmp.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
+        return amount.divide(exchange.getRate(), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
     }
     
     public BigDecimal convertPivotToCurrency(Integer currencyId, BigDecimal amount, Integer entityId)
@@ -118,8 +121,7 @@ public class CurrencyBL {
         
         CurrencyExchangeDTO exchange = findExchange(entityId, currencyId);
         // make the conversion itself
-        BigDecimal tmp = amount;
-        return tmp.multiply(exchange.getRate());
+        return amount.multiply(exchange.getRate());
     }
     
     public CurrencyExchangeDTO findExchange(Integer entityId, Integer currencyId) throws SessionInternalError {

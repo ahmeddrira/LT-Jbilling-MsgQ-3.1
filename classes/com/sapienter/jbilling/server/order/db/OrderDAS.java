@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -190,21 +191,22 @@ public class OrderDAS extends AbstractDAS<OrderDTO> {
         return result;
     }
 
+    private static final String FIND_ONETIMERS_BY_DATE_HQL =
+            "select o " +
+                    "  from OrderDTO o " +
+                    " where o.baseUserByUserId.id = :userId " +
+                    "   and o.orderPeriod.id = :periodId " +
+                    "   and date(activeSince) = :activeSince " +
+                    "   and deleted = 0";    
+
+    @SuppressWarnings("unchecked")
     public List<OrderDTO> findOneTimersByDate(Integer userId, Date activeSince) {
-        final String hql = 
-        "select o " +
-        "  from OrderDTO o " +
-        " where o.baseUserByUserId.id = :userId " +
-        "   and o.orderPeriod.id = " + Constants.ORDER_PERIOD_ONCE +
-        "   and activeSince = :activeSince " +
-        "   and deleted = 0";
-
-        List<OrderDTO> result = (List<OrderDTO>) getSession()
-                .createQuery(hql)
+        Query query = getSession().createQuery(FIND_ONETIMERS_BY_DATE_HQL)
                 .setInteger("userId", userId)
-                .setDate("activeSince", activeSince).list();
+                .setInteger("periodId", Constants.ORDER_PERIOD_ONCE)
+                .setDate("activeSince", activeSince);
 
-        return result;
+        return query.list();
     }
 
     public OrderDTO findForUpdate(Integer id) {

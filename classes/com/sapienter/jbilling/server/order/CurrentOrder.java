@@ -44,49 +44,53 @@ import org.springmodules.cache.FlushingModel;
 import org.springmodules.cache.provider.CacheProviderFacade;
 
 public class CurrentOrder {
+    private static final Logger LOG = Logger.getLogger(CurrentOrder.class);
+
+    private final EventLogger eLogger = EventLogger.getInstance();
+
     private final Date eventDate;
     private final Integer userId;
     private final UserBL user;
-    private static final Logger LOG = Logger.getLogger(CurrentOrder.class);
+
+    // current order
     private OrderBL order = null;
-    private final EventLogger eLogger = EventLogger.getInstance();
 
     // cache management
     private CacheProviderFacade cache;
     private CachingModel cacheModel;
     private FlushingModel flushModel;
 
-    protected CurrentOrder(Integer userId, Date eventDate) {
-        LOG.debug("Current order constructed with user " + userId + " event date " +
-                eventDate);
-        if (userId == null || eventDate == null) {
-            throw new IllegalArgumentException("user and date are mandatory for current " +
-                    "orders [" + userId + '-' + eventDate + ']');
-        }
+    public CurrentOrder(Integer userId, Date eventDate) {
+        if (userId == null) throw new IllegalArgumentException("Parameter userId cannot be null!");
+        if (eventDate == null) throw new IllegalArgumentException("Parameter eventDate cannot be null!");
+
         this.userId = userId;
         this.eventDate = eventDate;
-        user = new UserBL(userId);
+        this.user = new UserBL(userId);
 
         cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
-        cacheModel = (CachingModel) Context.getBean(
-                Context.Name.CACHE_MODEL_RW);
-        flushModel = (FlushingModel) Context.getBean(
-                Context.Name.CACHE_FLUSH_MODEL_RW);
+        cacheModel = (CachingModel) Context.getBean(Context.Name.CACHE_MODEL_RW);
+        flushModel = (FlushingModel) Context.getBean(Context.Name.CACHE_FLUSH_MODEL_RW);
+
+        LOG.debug("Current order constructed with user " + userId + " event date " + eventDate);
     }
     
     /**
      * Returns the ID of a one-time order, where to add an event.
      * Returns null if no applicable order
-     * @return
+     *
+     * @return order ID of the current order
      */
     public Integer getCurrent() {
 
         // find in the cache
-        Integer retValue = (Integer) cache.getFromCache(userId.toString() + Util.truncateDate(eventDate) ,
-                cacheModel);
+        String cacheKey = userId.toString() + Util.truncateDate(eventDate);
+        Integer retValue = (Integer) cache.getFromCache(cacheKey, cacheModel);
+        LOG.debug("Retrieved from cache '" + cacheKey + "', order id: " + retValue);
 
-        if (retValue != null) {
-            LOG.debug("cache hit for " + retValue);
+        // a hit is only a hit if the order is still active
+        if (retValue != null && Constants.ORDER_STATUS_ACTIVE.equals(new OrderDAS().find(retValue).getStatusId())) {
+            LOG.debug("Cache hit for " + retValue);
             return retValue;
         }
 
@@ -96,37 +100,43 @@ public class CurrentOrder {
         if (subscriptionId == null) {
             return null;
         }
+
+        // find main subscription order for user
+        Integer mainOrder;
         try {
             order = new OrderBL(subscriptionId);
             entityId = order.getEntity().getBaseUserByUserId().getCompany().getId();
             currencyId = order.getEntity().getCurrencyId();
+            mainOrder = order.getEntity().getId();
         } catch (Exception e) {
             throw new SessionInternalError("Error looking for main subscription order", 
                     CurrentOrder.class, e);
         }
-        
+
+        // loop through future periods until we find a usable current order
         int futurePeriods = 0;
         boolean orderFound = false;
         do {
-            LOG.debug("Calculating one timer date. Future periods " + futurePeriods);
+            order.set(mainOrder);
             final Date newOrderDate = calculateDate(futurePeriods);
+            LOG.debug("Calculated one timer date: " + newOrderDate + ", for future periods: " + futurePeriods);
+
             if (newOrderDate == null) {
                 // this is an error, there isn't a good date give the event date and
                 // the main subscription order
                 return null;
             }
+
             // now that the date is set, let's see if there is a one-time order for that date
             boolean somePresent = false;
             try {
-                List<OrderDTO> rows = new OrderDAS().findOneTimersByDate(userId,
-                        newOrderDate);
+                List<OrderDTO> rows = new OrderDAS().findOneTimersByDate(userId, newOrderDate);
+                LOG.debug("Found " + rows.size() + " one-time orders for new order date: " + newOrderDate);
                 for (OrderDTO oneTime : rows) {
                     somePresent = true;
                     order.set(oneTime.getId());
-                    if (order.getEntity().getStatusId().equals(
-                            Constants.ORDER_STATUS_FINISHED)) {
-                        LOG.debug("Found one timer " + oneTime.getId()
-                                + " but status is finished");
+                    if (order.getEntity().getStatusId().equals(Constants.ORDER_STATUS_FINISHED)) {
+                        LOG.debug("Found one timer " + oneTime.getId() + " but status is finished");
                     } else {
                         orderFound = true;
                         LOG.debug("Found existing one-time order");
@@ -134,21 +144,24 @@ public class CurrentOrder {
                     }
                 }
             } catch (Exception e) {
-                throw new SessionInternalError(
-                        "Error looking for one time orders",
-                        CurrentOrder.class, e);
+                throw new SessionInternalError("Error looking for one time orders", CurrentOrder.class, e);
             }
+
             if (somePresent && !orderFound) {
-                eLogger.auditBySystem(entityId, userId, Constants.TABLE_PUCHASE_ORDER, order.getEntity().getId(), 
-                        EventLogger.MODULE_MEDIATION, EventLogger.CURRENT_ORDER_FINISHED, 
-                        subscriptionId, null, null);
+                eLogger.auditBySystem(entityId, userId,
+                                      Constants.TABLE_PUCHASE_ORDER,
+                                      order.getEntity().getId(),
+                                      EventLogger.MODULE_MEDIATION,
+                                      EventLogger.CURRENT_ORDER_FINISHED,
+                                      subscriptionId, null, null);
+
             } else if (!somePresent) {
                 // there aren't any one-time orders for this date at all, create one
                 create(newOrderDate, currencyId, entityId);
-                
                 orderFound = true;
                 LOG.debug("Created new one-time order");
             }
+
             // non present -> create new one with correct date
             // some present & none found -> try next date
             // some present & found -> use the found one
@@ -158,38 +171,40 @@ public class CurrentOrder {
         // the result is in 'order'
         retValue = order.getEntity().getId();
 
-        cache.putInCache(userId.toString() + Util.truncateDate(eventDate), cacheModel,
-                retValue);
+        LOG.debug("Caching order " + retValue + " with key '" + cacheKey + "'");
+        cache.putInCache(cacheKey, cacheModel, retValue);
+
         LOG.debug("Returning " + retValue);
         return retValue;
     }
     
     /**
      * Assumes that the order has been set with the main subscription order
-     * @return
+     * @param futurePeriods date for N periods into the future
+     * @return calculated period date for N future periods
      */
     private Date calculateDate(int futurePeriods) {
         GregorianCalendar cal = new GregorianCalendar();
+
         // start from the active since if it is there, otherwise the create time
-        final Date startingTime = order.getEntity().getActiveSince() == null ? order
-                .getEntity().getCreateDate() : order.getEntity()
-                .getActiveSince();
+        final Date startingTime = order.getEntity().getActiveSince() == null
+                                  ? order.getEntity().getCreateDate()
+                                  : order.getEntity().getActiveSince();
                 
         // calculate the event date with the added future periods
         Date actualEventDate = eventDate;
         cal.setTime(actualEventDate);
-        for(int f = 0; f < futurePeriods; f++) {
+        for (int f = 0; f < futurePeriods; f++) {
             cal.add(MapPeriodToCalendar.map(order.getEntity().getOrderPeriod().getPeriodUnit().getId()), 
-                    order.getEntity().getOrderPeriod().getValue());
+                                            order.getEntity().getOrderPeriod().getValue());
         }
         actualEventDate = cal.getTime();
                 
         // is the starting date beyond the time frame of the main order?
-        if (order.getEntity().getActiveSince() != null && 
-                actualEventDate.before(order.getEntity().getActiveSince())) {
-            LOG.error("The event for date " + actualEventDate + " can not be assigned for " +
-                    "order " + order.getEntity().getId() + 
-                    " active since " + order.getEntity().getActiveSince());
+        if (order.getEntity().getActiveSince() != null && actualEventDate.before(order.getEntity().getActiveSince())) {
+            LOG.error("The event for date " + actualEventDate
+                    + " can not be assigned for order " + order.getEntity().getId()
+                    + " active since " + order.getEntity().getActiveSince());
             return null;
         }
         
@@ -198,33 +213,38 @@ public class CurrentOrder {
         while (cal.getTime().before(actualEventDate)) {
             newOrderDate = cal.getTime();
             cal.add(MapPeriodToCalendar.map(order.getEntity().getOrderPeriod().getPeriodUnit().getId()), 
-                    order.getEntity().getOrderPeriod().getValue());
+                                            order.getEntity().getOrderPeriod().getValue());
         }
         
         // is the found date beyond the time frame of the main order?
-        if (order.getEntity().getActiveUntil() != null && 
-                newOrderDate.after(order.getEntity().getActiveUntil())) {
-            LOG.error("The event for date " + actualEventDate + " can not be assigned for " +
-                    "order " + order.getEntity().getId() + 
-                    " active until " + order.getEntity().getActiveUntil());
+        if (order.getEntity().getActiveUntil() != null && newOrderDate.after(order.getEntity().getActiveUntil())) {
+            LOG.error("The event for date " + actualEventDate
+                    + " can not be assigned for order " + order.getEntity().getId()
+                    + " active until " + order.getEntity().getActiveUntil());
             return null;
         }
 
         return newOrderDate;
     }
-    
+
+    /**
+     * Creates a new one-time order for the given active since date.
+     * @param activeSince active since date
+     * @param currencyId currency of order
+     * @param entityId company id of order
+     * @return new order
+     */
     public Integer create(Date activeSince, Integer currencyId, Integer entityId) {
         OrderDTO currentOrder = new OrderDTO();
         currentOrder.setCurrency(new CurrencyDTO(currencyId));
+
         // notes
         try {
             EntityBL entity = new EntityBL(entityId);
-            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", 
-                    entity.getLocale());
+            ResourceBundle bundle = ResourceBundle.getBundle("entityNotifications", entity.getLocale());
             currentOrder.setNotes(bundle.getString("order.current.notes"));
         } catch (Exception e) {
-            throw new SessionInternalError("Error setting the new order notes", 
-                    CurrentOrder.class, e);
+            throw new SessionInternalError("Error setting the new order notes", CurrentOrder.class, e);
         } 
 
         currentOrder.setActiveSince(activeSince);
@@ -233,8 +253,10 @@ public class CurrentOrder {
         if (order == null) {
             order = new OrderBL();
         }
+
         order.set(currentOrder);
         order.addRelationships(userId, Constants.ORDER_PERIOD_ONCE, currencyId);
+
         return order.create(entityId, null, currentOrder);
     }
 }

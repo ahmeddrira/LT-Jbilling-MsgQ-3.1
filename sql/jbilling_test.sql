@@ -386,29 +386,29 @@ DROP TABLE public.ach;
 DROP PROCEDURAL LANGUAGE plpgsql;
 DROP SCHEMA public;
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: public; Type: SCHEMA; Schema: -; Owner: jbilling
 --
 
 CREATE SCHEMA public;
 
 
-ALTER SCHEMA public OWNER TO postgres;
+ALTER SCHEMA public OWNER TO jbilling;
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: jbilling
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: jbilling
 --
 
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO jbilling;
 
 SET search_path = public, pg_catalog;
 
@@ -1550,7 +1550,7 @@ CREATE TABLE payment_authorization (
     code3 character varying(40),
     approval_code character varying(20),
     avs character varying(20),
-    transaction_id character varying(20),
+    transaction_id character varying(40),
     md5 character varying(100),
     card_code character varying(100),
     create_datetime date NOT NULL,
@@ -1819,7 +1819,7 @@ CREATE TABLE process_run_total_pm (
 ALTER TABLE public.process_run_total_pm OWNER TO jbilling;
 
 --
--- Name: process_run_user; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: process_run_user; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE process_run_user (
@@ -1832,7 +1832,7 @@ CREATE TABLE process_run_user (
 );
 
 
-ALTER TABLE public.process_run_user OWNER TO postgres;
+ALTER TABLE public.process_run_user OWNER TO jbilling;
 
 --
 -- Name: promotion; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -15232,7 +15232,7 @@ COPY process_run_total_pm (id, process_run_total_id, payment_method_id, total, o
 
 
 --
--- Data for Name: process_run_user; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: process_run_user; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
 COPY process_run_user (id, process_run_id, user_id, status, created, optlock) FROM stdin;
@@ -20276,7 +20276,7 @@ ALTER TABLE ONLY process_run_total_pm
 
 
 --
--- Name: process_run_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: process_run_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY process_run_user
@@ -21647,7 +21647,7 @@ ALTER TABLE ONLY process_run_total_pm
 
 
 --
--- Name: process_run_user_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: process_run_user_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
 ALTER TABLE ONLY process_run_user
@@ -21655,7 +21655,7 @@ ALTER TABLE ONLY process_run_user
 
 
 --
--- Name: process_run_user_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: process_run_user_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
 ALTER TABLE ONLY process_run_user
@@ -21799,11 +21799,12 @@ ALTER TABLE ONLY user_role_map
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: public; Type: ACL; Schema: -; Owner: jbilling
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
+REVOKE ALL ON SCHEMA public FROM jbilling;
+GRANT ALL ON SCHEMA public TO jbilling;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 

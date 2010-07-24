@@ -990,7 +990,7 @@
         <column name="code3" size="40" type="VARCHAR"/>
         <column name="approval_code" size="20" type="VARCHAR"/>
         <column name="avs" size="20" type="VARCHAR"/>
-        <column name="transaction_id" size="20" type="VARCHAR"/>
+        <column name="transaction_id" size="40" type="VARCHAR"/>
         <column name="md5" size="100" type="VARCHAR"/>
         <column name="card_code" size="100" type="VARCHAR"/>
         <column name="create_datetime" required="true" type="DATE"/>

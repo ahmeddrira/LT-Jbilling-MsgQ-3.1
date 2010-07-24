@@ -304,3 +304,5 @@ create table process_run_user (
 );
 alter table process_run_user ADD CONSTRAINT process_run_user_FK_1 FOREIGN KEY (process_run_id) REFERENCES process_run (id);
 alter table process_run_user ADD CONSTRAINT process_run_user_FK_2 FOREIGN KEY (user_id) REFERENCES base_user (id);
+ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40);
+-- alter table payment_authorization modify transaction_id varchar(40); -- mysql

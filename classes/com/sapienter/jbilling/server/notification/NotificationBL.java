@@ -96,6 +96,7 @@ import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.Util;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -1059,6 +1060,20 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             retValue.addParameter("tools-sort", new SortTool());
             retValue.addParameter("tools-iterator", new IteratorTool());
 
+            //Adding a CCF Field to Email Template
+            List<ContactDTOEx> listDto= contact.getAll(userId);
+            if (null != listDto && listDto.size() > 0 ) {
+                ContactDTOEx contactDTOEx= listDto.get(0);
+                Map<String, ContactFieldDTO> fieldsMap= contactDTOEx.getFieldsTable();
+                for (Iterator<?> it= fieldsMap.values().iterator();it.hasNext(); ) {
+                     ContactFieldDTO contactFieldDTO= (ContactFieldDTO) it.next();
+                     if ( null != contactFieldDTO && null != contactFieldDTO.getContent()
+                        && null != contactFieldDTO.getType())
+                     {
+                        retValue.addParameter(contactFieldDTO.getType().getPromptKey(), contactFieldDTO.getContent());
+                     }
+                }
+            }
             
         } catch (Exception e) {
             throw new SessionInternalError(e);

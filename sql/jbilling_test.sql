@@ -14902,6 +14902,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 6020	1	44	1	1
 6030	1	77	1	1
 6040	1	78	1	4
+6050	1	79	2	7
 \.
 
 
@@ -14986,6 +14987,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 830800	6040	config_filename	\N	rules-generator-config.xml	\N	1
 830801	6040	output_filename	\N	InternalEventsRulesTask520.pkg	\N	1
 830802	6040	template_filename	\N	rules-generator-template-integration-test.vm	\N	1
+831200	6050	start_time	\N	20100728-0000	\N	1
 \.
 
 
@@ -15066,6 +15068,7 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 76	6	com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask	2
 77	22	com.sapienter.jbilling.server.mediation.task.MediationProcessTask	0
 78	23	com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask	2
+79	22	com.sapienter.jbilling.server.billing.task.BillingProcessTask	1
 \.
 
 

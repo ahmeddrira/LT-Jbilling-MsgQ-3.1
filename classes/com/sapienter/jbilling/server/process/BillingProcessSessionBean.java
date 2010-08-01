@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.process;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 
@@ -70,6 +71,8 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 public class BillingProcessSessionBean implements IBillingProcessSessionBean {
 
     private static final Logger LOG = Logger.getLogger(BillingProcessSessionBean.class);
+
+    private static final AtomicBoolean running = new AtomicBoolean(false);
 
     /**
      * Gets the invoices for the specified process id. The returned collection
@@ -621,10 +624,17 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             return getConfigurationDto(entityId);
         } catch (Exception e) {
             throw new SessionInternalError(e);
-        } 
-    }  
-    
-    public void trigger(Date pToday) throws SessionInternalError {
+        }
+    }
+
+    public boolean trigger(Date pToday) throws SessionInternalError {
+
+     if (!running.compareAndSet(false, true)) {
+         LOG.warn("Failed to trigger billing process at " + pToday.getTime()
+                     + ", another process is already running.");
+         return false;
+     }
+
         try {
             Date today = Util.truncateDate(pToday);
             EventLogger eLogger = EventLogger.getInstance();
@@ -756,9 +766,12 @@ public class BillingProcessSessionBean implements IBillingProcessSessionBean {
             } // for all entities
         } catch (Exception e) {
             throw new SessionInternalError(e);
+        } finally {
+            running.set(false);
         }
-    } 
-    
+        return true;
+    }
+
     /**
      * @return the id of the invoice generated
      */

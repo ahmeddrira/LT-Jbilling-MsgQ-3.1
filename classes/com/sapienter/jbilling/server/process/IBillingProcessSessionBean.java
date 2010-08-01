@@ -125,9 +125,9 @@ public interface IBillingProcessSessionBean {
 
     public BillingProcessConfigurationDTO setReviewApproval(Integer executorId,
             Integer entityId, Boolean flag) throws SessionInternalError;
-    
-    public void trigger(Date pToday) throws SessionInternalError;
-    
+
+    public boolean trigger(Date pToday) throws SessionInternalError;
+
     /**
      * @return the id of the invoice generated
      */

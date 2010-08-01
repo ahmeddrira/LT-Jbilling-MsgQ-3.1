@@ -894,9 +894,73 @@ public class BillingProcessTest extends TestCase {
         }
     }
 
+    /**
+     * Test that the BillingProcess will not run because an existing one is runnin
+
+     *
+     * @throws Exception testing
+     */
+    public void testBillingProcessLock() throws Exception {
+
+		// order period aligned with the 13th
+        Date runDate = new Date();
+
+        final int USER_ID = 2;
+	final int LINES = 2;
+
+	OrderWS requestOrder = com.sapienter.jbilling.server.order.WSTest.createMockOrder(USER_ID, LINES, new BigDecimal("567.00"));
+	assertEquals(LINES, requestOrder.getOrderLines().length);
+        requestOrder.setActiveSince(runDate);
+        requestOrder.setCycleStarts(runDate);
+        requestOrder.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        requestOrder.setPeriod(2); // monthly
+        requestOrder.setCurrencyId(1);
+
+        Integer orderId = remoteOrder.createUpdate(1, 1, new OrderBL().getDTO(requestOrder), 1);
+        System.out.println("Order id: " + orderId);
+
+        // set the configuration to include the corrupt order
+        BillingProcessConfigurationDTO configDto = remoteBillingProcess.getConfigurationDto(entityId);
+        configDto.setNextRunDate(runDate);
+        configDto.setRetries(1);
+        configDto.setDaysForRetry(5);
+        configDto.setGenerateReport(0);
+        configDto.setAutoPayment(1);
+        configDto.setAutoPaymentApplication(1);
+        configDto.setDfFm(0);
+        configDto.setDueDateUnitId(Constants.PERIOD_UNIT_MONTH);
+        configDto.setDueDateValue(1);
+        configDto.setInvoiceDateProcess(1);
+        configDto.setMaximumPeriods(10);
+        configDto.setOnlyRecurring(1);
+        configDto.setPeriodUnit(new PeriodUnitDTO(Constants.PERIOD_UNIT_MONTH));
+        configDto.setPeriodValue(1);
+
+        remoteBillingProcess.createUpdateConfiguration(1, configDto);
+//        trigger billing
+//        process should show status "running"
+        //boolean firstProcess= false;
+        new Thread () {
+		public void run() {
+			remoteBillingProcess.trigger(new Date());
+		}
+        }.start();
+        //boolean firstProcess= remoteBillingProcess.trigger(runDate);
+
+		configDto.setNextRunDate(new Date());
+		remoteBillingProcess.createUpdateConfiguration(1, configDto);
+        boolean secondProcess= remoteBillingProcess.trigger(new Date());
+        System.out.println("second Billing Process running = " + secondProcess);
+        assertFalse("Issue373-The second billing process trigger should have returned false.", secondProcess);
+
+        // cleanup
+        remoteOrder.delete(orderId, 1);
+    }
+
+
     /*
     public void testInvoicesFlaggedOut() {
-        int invoices[] = { 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 17, 18, 19, 
+        int invoices[] = { 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 17, 18, 19,
                 20, 21, 22, 23 };
 
         try {

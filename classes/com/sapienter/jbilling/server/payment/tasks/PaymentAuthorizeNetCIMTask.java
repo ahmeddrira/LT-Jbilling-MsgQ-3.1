@@ -25,8 +25,8 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Calendar;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,23 +37,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationBL;
 import com.sapienter.jbilling.server.payment.PaymentDTOEx;
-import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.payment.db.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentResultDAS;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTask;
 import com.sapienter.jbilling.server.pluggableTask.PaymentTaskWithTimeout;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.user.ContactBL;
-import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.user.db.CreditCardDAS;
-import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
-import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.util.Constants;
 
 public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
@@ -94,9 +91,41 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
     public void failure(Integer userId, Integer retry) { /* noop */ }
 
     private boolean doProcess(PaymentDTOEx info, String txType, String approvalCode) throws PluggableTaskException {
-        if (isCreditCardStored(info)) {
+       	int method = -1; /* 1 cc , 2 ach*/
+
+       	if (info.getCreditCard() != null) {
+            method = 1;
+        }
+        if (info.getAch() != null) {
+            method = 2;
+        }
+
+       	if ( Constants.PAYMENT_METHOD_ACH.equals(info.getMethodId() ) ) {
+       	    method = 2;
+       	    if (null == info.getAch()) {
+       	        LOG.error("Can't process payment without a ACH Details");
+       	        throw new PluggableTaskException("Payment Method ACH but ACH Info not present in payment");
+       	    }
+       	} else {
+       	    method=1;
+       	}
+
+        if (info.getCreditCard() == null &&
+        	info.getAch() == null) {
+            LOG.error("Can't process without a credit card or ach");
+            throw new PluggableTaskException("Credit card/ACH not present in payment");
+        }
+
+//        if (info.getCreditCard() != null &&
+//        	info.getAch() != null) {
+//            LOG.warn("Both cc and ach are present");
+//            method = 2; // default to ach (cheaper)
+//        }
+
+        if (isCreditCardStored(info, method == 1)) {
             LOG.debug("credit card is obscured, retrieving from database to use external store.");
-            info.setCreditCard(new UserBL(info.getUserId()).getCreditCard());
+       	    if (method == 1) 
+	            info.setCreditCard(new UserBL(info.getUserId()).getCreditCard());
         } else {
             /*  Credit cards being used for one time payments do not need to be saved in the CIM
                as they do not represent the customers primary card.
@@ -104,13 +133,14 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
                Process using the next payment processor in the chain. This should be configured
                as the PaymentAuthorizeNetTask to process normal credit cards through Authorize.net
             */
-            LOG.debug("One time payment credit card (not obscured!), process using the next PaymentTask.");
+            LOG.debug("One time payment credit card (not obscured!) or ACH Gateway Key Not available, process using the next PaymentTask.");
             info.setPaymentResult(new PaymentResultDAS().find(Constants.RESULT_UNAVAILABLE));
             return true;
         }
 
+        String gatewayKey = (method == 1) ? info.getCreditCard().getGatewayKey() : info.getAch().getGatewayKey();
         AuthorizeNetCIMApi api = createApi();
-        CustomerProfileData profile = CustomerProfileData.buildFromGatewayKey(info.getCreditCard().getGatewayKey());
+        CustomerProfileData profile = CustomerProfileData.buildFromGatewayKey(gatewayKey);
         PaymentAuthorizationDTO paymentDTO = api.performTransaction(info.getAmount(),
                                                                     profile,
                                                                     txType, approvalCode);
@@ -130,12 +160,41 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
         }
     }
 
-    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
-        LOG.debug("Storing credit card info within " + getProcessorName() + " gateway");
+    public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
+        //credit card or ach was passed as null
+        if (creditCard == null && ach == null) {
+            LOG.warn("No credit card/Ach details to store externally.");
+            return null;
+        }
+        
+        try {
+            deletePaymentProfile(creditCard, ach, createApi());
+        } catch (PluggableTaskException e) {
+            LOG.debug("Could not process delete event.");
+            return null;
+        }
+
+    	return ach.getGatewayKey();
+    }
+
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
+        
+    	// new contact that has not had a credit card created yet
+        if (creditCard == null && ach == null) {
+            LOG.warn("No credit card/Ach details to store externally.");
+            return null;
+        }
+
+    	LOG.debug("Storing credit card/ach details info within " + getProcessorName() + " gateway");
 
         // fetch contact info if missing
-        if (contact == null && creditCard != null && !creditCard.getBaseUsers().isEmpty()) {
-            UserDTO user = creditCard.getBaseUsers().iterator().next();
+        if (contact == null) {
+        	UserDTO user = null;
+        	if (creditCard != null && !creditCard.getBaseUsers().isEmpty()) {
+                user = creditCard.getBaseUsers().iterator().next();
+        	} else if (ach != null && ach.getBaseUser() != null) {
+                user = ach.getBaseUser();
+        	}
             if (user != null) {
                 ContactBL bl = new ContactBL();
                 bl.set(user.getId());
@@ -149,14 +208,8 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
             return null;
         }
 
-        // new contact that has not had a credit card created yet
-        if (creditCard == null) {
-            LOG.warn("No credit card to store externally.");
-            return null;
-        }
-
         try {
-            CustomerProfileData profile = createOrUpdateProfile(contact, creditCard, createApi());
+            CustomerProfileData profile = createOrUpdateProfile(contact, creditCard, ach, createApi());
             String gatewayKey = profile.toGatewayKey();
             LOG.debug("Obtained card reference number during external storage: " + gatewayKey);
             return gatewayKey;            
@@ -174,41 +227,62 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
                                       getTimeoutSeconds());
     }
 
-    private CustomerProfileData createOrUpdateProfile(ContactDTO contact, CreditCardDTO creditCard,
+    private CustomerProfileData createOrUpdateProfile(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach,
                                                       AuthorizeNetCIMApi api) throws PluggableTaskException {
 
-        if (!creditCard.isNumberObsucred()) {
+        if ( ( creditCard != null && !creditCard.isNumberObsucred() ) || ach != null) {
             try {
-                return api.createCustomerProfile(CustomerProfileData.buildFromContactAndCreditCard(contact, creditCard));
+                return api.createCustomerProfile(CustomerProfileData.buildFromContactAndCreditCardOrACH(contact, creditCard, ach));
             } catch (DublicateProfileRecordException e) {
-                return updateProfile(contact, creditCard, e.getProfileId(), api);
+                return updateProfile(contact, creditCard, ach, e.getProfileId(), api);
             }
         } else {
-            CustomerProfileData customerProfile = CustomerProfileData.buildFromGatewayKey(creditCard.getGatewayKey());
-            return updateProfile(contact, creditCard, customerProfile.getCustomerProfileId(), api);
+            CustomerProfileData customerProfile = CustomerProfileData.buildFromGatewayKey((creditCard != null) ? creditCard.getGatewayKey() :
+ 		ach.getGatewayKey());
+            return updateProfile(contact, creditCard, ach, customerProfile.getCustomerProfileId(), api);
         }
     }
 
-    private CustomerProfileData updateProfile(ContactDTO contact, CreditCardDTO creditCard, String profileID,
+    private CustomerProfileData updateProfile(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach, String profileID,
                                               AuthorizeNetCIMApi api) throws PluggableTaskException {
 
         CustomerProfileData customerProfile = api.getCustomerProfile(profileID);
-        customerProfile.fillWith(contact, creditCard);
-
+        customerProfile.fillWith(contact, creditCard, ach);
+//        customerProfile.setCustomerProfileId(profileID);
         api.updateCustomerProfile(customerProfile);
 
         return customerProfile;
     }
 
-    private static boolean isCreditCardStored(PaymentDTOEx payment) {
-        return payment.getCreditCard().useGatewayKey();
+    private void deletePaymentProfile(CreditCardDTO creditCard, AchDTO ach, AuthorizeNetCIMApi api) throws PluggableTaskException { 
+
+        String gatewayKey= null;
+
+        if ( ach != null ) {
+            gatewayKey= ach.getGatewayKey();
+        } else {
+            gatewayKey= creditCard.getGatewayKey();
+        }
+
+        try {
+            CustomerProfileData customerProfile= CustomerProfileData.buildFromGatewayKey(gatewayKey);
+            api.deletePaymentProfile(customerProfile);
+        } catch (Exception e) {
+            throw new PluggableTaskException("Could not process delete Payment Profile.");
+        }
+    }
+
+    private static boolean isCreditCardStored(PaymentDTOEx payment, boolean bUseCreditCard) {
+    	LOG.debug("IsCreditCardStored called, bUseCreditCard = " + bUseCreditCard + ", cc = " + payment.getCreditCard() + ", ACH = " + payment.getAch());
+    	return (bUseCreditCard) ? payment.getCreditCard().useGatewayKey() : payment.getAch().useGatewayKey();
     }
 }
 
 
 class DublicateProfileRecordException extends Exception {
 
-    private final String profileId;
+	private static final long serialVersionUID = 1L;
+	private final String profileId;
 
     DublicateProfileRecordException(String profileId, String errorMessage) {
         super(errorMessage);
@@ -221,6 +295,9 @@ class DublicateProfileRecordException extends Exception {
 }
 
 class CustomerProfileData {
+
+    public static final int CREDIT_CARD = 1;
+    public static final int BANK_ACCOUNT = 2;
 
     private static final String GATEWAY_KEY_DELIMITER = "/";
 
@@ -240,6 +317,13 @@ class CustomerProfileData {
     private String creditCardNumber;
     private String creditCardExpirationDate;
     private String creditCardCode;
+    // Added for ACH support
+    private int paymentType;
+    private String accountType;
+    private String routingNumber;
+    private String accountNumber;
+    private String accountName;
+    private String bankName;
 
     CustomerProfileData(String customerProfileId, String customerPaymentProfileId) {
         this.customerProfileId = customerProfileId;
@@ -373,7 +457,55 @@ class CustomerProfileData {
         return customerProfileId + GATEWAY_KEY_DELIMITER + customerPaymentProfileId;
     }
 
-    public void fillWith(ContactDTO contact, CreditCardDTO creditCard) {
+    public int getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(int paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getRoutingNumber() {
+        return routingNumber;
+    }
+
+    public void setRoutingNumber(String routingNumber) {
+        this.routingNumber = routingNumber;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public void fillWith(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         if (contact != null) {
             setEmail(contact.getEmail());
             setFirstName(contact.getFirstName());
@@ -387,14 +519,28 @@ class CustomerProfileData {
             setFaxNumber(contact.getFaxNumber());
         }
 
-        if (!creditCard.isNumberObsucred()) {
-            setCreditCardNumber(creditCard.getNumber());
-            setCreditCardExpirationDate(new SimpleDateFormat("yyyy-MM").format(creditCard.getCcExpiry()));
+        if (ach != null) {
+        	setAccountType(ach.getAccountType() == 1 ? "checking" : "savings");
+        	setRoutingNumber(ach.getAbaRouting());
+        	setAccountNumber(ach.getBankAccount());
+        	setAccountName(ach.getAccountName());
+        	setBankName(ach.getBankName());
+	        setPaymentType(CustomerProfileData.BANK_ACCOUNT);
         }
+        else if (creditCard != null) {
+	        if (!creditCard.isNumberObsucred()) {
+    	        setCreditCardNumber(creditCard.getNumber());
+	            setCreditCardExpirationDate(new SimpleDateFormat("yyyy-MM").format(creditCard.getCcExpiry()));
+    	    }
 
-        if (creditCard.getSecurityCode() != null) {
-            setCreditCardNumber(creditCard.getSecurityCode());
-        }
+	        if (creditCard.getSecurityCode() != null) {
+    	        setCreditCardNumber(creditCard.getSecurityCode());
+	        }
+	        setPaymentType(CustomerProfileData.CREDIT_CARD);
+	  	}
+
+
+
     }
 
     public static CustomerProfileData buildFromGatewayKey(String gatewayKey) {
@@ -406,9 +552,9 @@ class CustomerProfileData {
         return new CustomerProfileData(customerProfileId, paymentProfileId);
     }
 
-    public static CustomerProfileData buildFromContactAndCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+    public static CustomerProfileData buildFromContactAndCreditCardOrACH(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         CustomerProfileData customerProfileData = new CustomerProfileData();
-        customerProfileData.fillWith(contact, creditCard);
+        customerProfileData.fillWith(contact, creditCard, ach);
         return customerProfileData;
     }
 }
@@ -476,6 +622,11 @@ class AuthorizeNetCIMApi {
         parseSimpleResponse(HTTPResponse, "updateCustomerPaymentProfile");
     }
 
+    public void deletePaymentProfile(CustomerProfileData customerProfile) throws PluggableTaskException {
+        String XML = buildDeleteCustomerPaymentProfileRequest(customerProfile);
+        String HTTPResponse = sendViaXML(XML);
+        parseSimpleResponse(HTTPResponse, "deleteCustomerPaymentProfileRequest");
+    }
 
     private void buildTag(StringBuffer xml, String name, String value) {
         xml.append(String.format("<%s>%s</%s>", name, value, name));
@@ -506,6 +657,17 @@ class AuthorizeNetCIMApi {
         return xml.toString();
     }
 
+    private String buildDeleteCustomerPaymentProfileRequest(CustomerProfileData customerProfileData)
+        throws PluggableTaskException {
+        StringBuffer XML = new StringBuffer();
+        XML.append("<deleteCustomerPaymentProfileRequest xmlns=\"" + AUTHNET_XML_NAMESPACE + "\">");
+        XML.append(getMerchantAuthenticationXML());
+        buildTag(XML, "customerProfileId", customerProfileData.getCustomerProfileId());
+        buildTag(XML, "customerPaymentProfileId", customerProfileData.getCustomerPaymentProfileId());
+        endTag(XML, "deleteCustomerPaymentProfileRequest");
+        return XML.toString();
+    }
+    
     private String buildCreateCustomerProfileRequest(CustomerProfileData customerProfileData)
         throws PluggableTaskException {
 
@@ -531,11 +693,21 @@ class AuthorizeNetCIMApi {
         endTag(XML, "billTo");
 
         beginTag(XML, "payment");
-        beginTag(XML, "creditCard");
-        buildTag(XML, "cardNumber", customerProfileData.getCreditCardNumber());
-        buildTag(XML, "expirationDate", customerProfileData.getCreditCardExpirationDate());
-        buildTagIfNotEmpty(XML, "cardCode", customerProfileData.getCreditCardCode());
-        endTag(XML, "creditCard");
+        if (customerProfileData.getPaymentType() == CustomerProfileData.CREDIT_CARD) {
+	        beginTag(XML, "creditCard");
+    	    buildTag(XML, "cardNumber", customerProfileData.getCreditCardNumber());
+	        buildTag(XML, "expirationDate", customerProfileData.getCreditCardExpirationDate());
+	   	    buildTagIfNotEmpty(XML, "cardCode", customerProfileData.getCreditCardCode());
+    	    endTag(XML, "creditCard");
+        } else if (customerProfileData.getPaymentType() == CustomerProfileData.BANK_ACCOUNT) {
+	        beginTag(XML, "bankAccount");
+    	    buildTag(XML, "accountType", customerProfileData.getAccountType());
+	        buildTag(XML, "routingNumber", customerProfileData.getRoutingNumber());
+	        buildTag(XML, "accountNumber", customerProfileData.getAccountNumber());
+	        buildTag(XML, "nameOnAccount", customerProfileData.getAccountName());
+	        buildTag(XML, "bankName", customerProfileData.getBankName());
+    	    endTag(XML, "bankAccount");
+        }
         endTag(XML, "payment");
 
         endTag(XML, "paymentProfiles");
@@ -587,11 +759,21 @@ class AuthorizeNetCIMApi {
         endTag(XML, "billTo");
 
         beginTag(XML, "payment");
-        beginTag(XML, "creditCard");
-        buildTag(XML, "cardNumber", customerProfileData.getCreditCardNumber());
-        buildTag(XML, "expirationDate", customerProfileData.getCreditCardExpirationDate());
-        buildTagIfNotEmpty(XML, "cardCode", customerProfileData.getCreditCardCode());
-        endTag(XML, "creditCard");
+        if (customerProfileData.getPaymentType() == CustomerProfileData.CREDIT_CARD) {
+            beginTag(XML, "creditCard");
+            buildTag(XML, "cardNumber", customerProfileData.getCreditCardNumber());
+            buildTag(XML, "expirationDate", customerProfileData.getCreditCardExpirationDate());
+            buildTagIfNotEmpty(XML, "cardCode", customerProfileData.getCreditCardCode());
+            endTag(XML, "creditCard");
+        } else if (customerProfileData.getPaymentType() == CustomerProfileData.BANK_ACCOUNT) {
+            beginTag(XML, "bankAccount");
+            buildTag(XML, "accountType", customerProfileData.getAccountType());
+            buildTag(XML, "routingNumber", customerProfileData.getRoutingNumber());
+            buildTag(XML, "accountNumber", customerProfileData.getAccountNumber());
+            buildTag(XML, "nameOnAccount", customerProfileData.getAccountName());
+            buildTag(XML, "bankName", customerProfileData.getBankName());
+            endTag(XML, "bankAccount");
+        }
         endTag(XML, "payment");
 
         buildTag(XML, "customerPaymentProfileId", customerProfileData.getCustomerPaymentProfileId());
@@ -794,6 +976,7 @@ class AuthorizeNetCIMApi {
     }
 
     private CustomerProfileData parseGetCustomerProfileResponse(String HTTPResponse) throws PluggableTaskException {
+        CustomerProfileData customerProfile =null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             InputSource inStream = new InputSource();
@@ -823,6 +1006,10 @@ class AuthorizeNetCIMApi {
             NodeList emailNode = profileNodeLst.item(0).getChildNodes();
             NodeList customerProfileIdNode = profileNodeLst.item(1).getChildNodes();
 
+            customerProfile = new CustomerProfileData();
+            customerProfile.setCustomerProfileId(customerProfileIdNode.item(0).getNodeValue());
+            customerProfile.setEmail(emailNode.item(0).getNodeValue());
+            
             NodeList paymentProfilesNodeLst = profileNodeLst.item(2).getChildNodes();
             NodeList billToNodeLst = paymentProfilesNodeLst.item(0).getChildNodes();
             NodeList firstNameNode = billToNodeLst.item(0).getChildNodes();
@@ -839,13 +1026,32 @@ class AuthorizeNetCIMApi {
 
             NodeList paymentNodeLst = paymentProfilesNodeLst.item(2).getChildNodes();
             NodeList creditCardNodeLst = paymentNodeLst.item(0).getChildNodes();
-            NodeList cardNumberNode = creditCardNodeLst.item(0).getChildNodes();
-            NodeList expirationDateNode = creditCardNodeLst.item(1).getChildNodes();
+            
+            if (null != creditCardNodeLst ) {
+                if( "creditCard".equalsIgnoreCase(paymentNodeLst.item(0).getNodeName()))
+                {
+                    NodeList cardNumberNode = creditCardNodeLst.item(0).getChildNodes();
+                    NodeList expirationDateNode = creditCardNodeLst.item(1).getChildNodes();
+                    customerProfile.setCreditCardNumber(cardNumberNode.item(0).getNodeValue());
+                    customerProfile.setCreditCardExpirationDate(expirationDateNode.item(0).getNodeValue());
+                } else if ( "bankAccount".equalsIgnoreCase(paymentNodeLst.item(0).getNodeName() )) {
+                    NodeList nlAccountType= creditCardNodeLst.item(0).getChildNodes();
+                    NodeList nlRoutingNumber= creditCardNodeLst.item(1).getChildNodes();
+                    NodeList nlAccountNumber= creditCardNodeLst.item(2).getChildNodes();
+                    NodeList nlNameOnAccount= creditCardNodeLst.item(3).getChildNodes();
+                    NodeList nlBankName= creditCardNodeLst.item(4).getChildNodes();
+                    customerProfile.setAccountName(nlNameOnAccount.item(0).getNodeValue());
+                    customerProfile.setAccountType(nlAccountType.item(0).getNodeValue());
+                    customerProfile.setAccountNumber(nlAccountNumber.item(0).getNodeValue());
+                    customerProfile.setBankName(nlBankName.item(0).getNodeValue());
+                    customerProfile.setRoutingNumber(nlRoutingNumber.item(0).getNodeValue());
+                }
+            }
 
-            CustomerProfileData customerProfile = new CustomerProfileData();
-            customerProfile.setCustomerProfileId(customerProfileIdNode.item(0).getNodeValue());
+//            customerProfile = new CustomerProfileData();
+//            customerProfile.setCustomerProfileId(customerProfileIdNode.item(0).getNodeValue());
             customerProfile.setCustomerPaymentProfileId(customerPaymentProfileIdNode.item(0).getNodeValue());
-            customerProfile.setEmail(emailNode.item(0).getNodeValue());
+//            customerProfile.setEmail(emailNode.item(0).getNodeValue());
             customerProfile.setFirstName(firstNameNode.item(0).getNodeValue());
             customerProfile.setLastName(lastNameNode.item(0).getNodeValue());
             customerProfile.setCompany(companyNode.item(0).getNodeValue());
@@ -855,14 +1061,15 @@ class AuthorizeNetCIMApi {
             customerProfile.setCountry(countryNode.item(0).getNodeValue());
             customerProfile.setPhoneNumber(phoneNumberNode.item(0).getNodeValue());
             customerProfile.setFaxNumber(faxNumberNode.item(0).getNodeValue());
-            customerProfile.setCreditCardNumber(cardNumberNode.item(0).getNodeValue());
-            customerProfile.setCreditCardExpirationDate(expirationDateNode.item(0).getNodeValue());
 
-            return customerProfile;
+        } catch (NullPointerException e) {
+            //noop
+            if ( null == customerProfile ) customerProfile= new CustomerProfileData();
         } catch (Exception e) {
             LOG.error(e);
             throw new PluggableTaskException(e);
         }
+        return customerProfile;
     }
 
     private void parseSimpleResponse(String HTTPResponse, String request) throws PluggableTaskException {
@@ -905,4 +1112,14 @@ class AuthorizeNetCIMApi {
 
         throw new DublicateProfileRecordException(profileId, errorMessage);
     }
+    
+    public static void main(String args[]) throws Exception {
+        AuthorizeNetCIMApi api= new AuthorizeNetCIMApi("83b5RDdq", "776cUfAjjzY7u64B",
+                "none",true, 10);
+        String XML = api.buildGetCustomerProfileRequest("2023666");
+        System.out.println("REQUEST\n" + XML);
+        String HTTPResponse = api.sendViaXML(XML);
+        System.out.println("RESPONSE\n"+HTTPResponse);
+    }
+    
 }

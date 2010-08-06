@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.payment.tasks.paypal.PaypalApi;
 import com.sapienter.jbilling.server.payment.db.*;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.ContactBL;
@@ -402,7 +403,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
         return doCapture(payment, auth).shouldCallOtherProcessors();
     }
 
-    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         LOG.debug("Storing creadit card info within " + getProcessorName() + " gateway");
         UserDTO user;
         if (contact != null) {
@@ -452,5 +453,13 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
             LOG.error("Could not process external storage payment", e);
             return null;
         }
+    }
+    
+    /**
+     * 
+     */
+    public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
+    	//noop
+    	return null;
     }
 }

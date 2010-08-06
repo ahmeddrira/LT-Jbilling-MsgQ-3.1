@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.pluggableTask;
 import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
 
 /**
  * A fake IExternalCreditCardStorage task for use with the SaveCreditCardExternallyTask. This plugin
@@ -45,10 +46,16 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
      * @param creditCard credit card to process
      * @return resulting unique gateway key for the credit card/contact
      */
-    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard) {
+    public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         if (getParameter(PARAM_RETURN_NULL, false))
             return null;        
-             
-        return getParameter(PARAM_RETURN_VALUE, DEFAULT_RETURN_VALUE);
+        
+        String gatewayKey = (String) parameters.get(PARAM_RETURN_VALUE);
+        return (gatewayKey != null ? gatewayKey : DEFAULT_RETURN_VALUE);
+    }
+    
+    public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
+    	//noop
+    	return "deleted externally";
     }
 }

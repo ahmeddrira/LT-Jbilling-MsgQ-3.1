@@ -319,12 +319,13 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
             }
 
         } else if ("ach".equals(payMethod)) {
-            AchDTO ach = new AchDTO();
-            ach.setAbaRouting((String) myForm.get(FIELD_ACH_ABA_CODE));
+            UserDTOEx user = getSessionUser();            
+            AchDTO ach = user.getAch();
+            /*ach.setAbaRouting((String) myForm.get(FIELD_ACH_ABA_CODE));
             ach.setBankAccount((String) myForm.get(FIELD_ACH_ACCOUNT_NUMBER));
             ach.setAccountType((Integer) myForm.get(FIELD_ACH_ACCOUNT_TYPE));
             ach.setBankName((String) myForm.get(FIELD_ACH_BANK_NAME));
-            ach.setAccountName((String) myForm.get(FIELD_ACH_ACCOUNT_NAME));
+            ach.setAccountName((String) myForm.get(FIELD_ACH_ACCOUNT_NAME));*/
             dto.setAch(ach);
             //this will be checked when the payment is sent
             session.setAttribute("tmp_process_now",  new Boolean(true));

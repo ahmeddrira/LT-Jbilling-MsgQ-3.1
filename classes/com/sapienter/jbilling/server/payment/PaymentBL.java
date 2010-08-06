@@ -516,6 +516,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             achDTO.setAccountType(dto.getAch().getAccountType());
             achDTO.setBankAccount(dto.getAch().getBankAccount());
             achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setGatewayKey(dto.getAch().getGatewayKey());
             achDTO.setId(dto.getAch().getId());
             ws.setAch(achDTO);
         } else {

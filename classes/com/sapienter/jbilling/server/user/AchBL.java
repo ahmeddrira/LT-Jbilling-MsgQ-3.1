@@ -27,6 +27,9 @@ import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
+import com.sapienter.jbilling.server.system.event.EventManager;
+import com.sapienter.jbilling.server.user.event.AchUpdateEvent;
+import com.sapienter.jbilling.server.user.event.AchDeleteEvent;
 
 public class AchBL {
     private AchDAS achDas = null;
@@ -68,8 +71,12 @@ public class AchBL {
     
     public Integer create(AchDTO dto) {
         ach = achDas.create(dto.getBaseUser(), dto.getAbaRouting(), dto.getBankAccount(),
-                dto.getAccountType(), dto.getBankName(),
-                dto.getAccountName());
+                dto.getAccountType(), dto.getBankName(), dto.getAccountName(), dto.getGatewayKey());
+
+	    if (ach.getBaseUser() != null) {
+	        log.debug("create: Generating Update ACH event " + ach.getBaseUser().getCompany().getId());
+	    	EventManager.process(new AchUpdateEvent(ach, ach.getBaseUser().getCompany().getId()));
+	    }
 
         return ach.getId();
     }
@@ -87,16 +94,32 @@ public class AchBL {
         ach.setAccountType(dto.getAccountType());
         ach.setBankAccount(dto.getBankAccount());
         ach.setBankName(dto.getBankName());
+        ach.setGatewayKey(dto.getGatewayKey());
+        if (ach.getBaseUser() != null) {
+            log.debug("create: Generating Update ACH event " + ach.getBaseUser().getCompany().getId());
+            EventManager.process(new AchUpdateEvent(ach, ach.getBaseUser().getCompany().getId()));
+        }
     }
     
     public void delete(Integer executorId) {
-        // now delete this ach record
-        eLogger.audit(executorId, ach.getBaseUser().getId(), 
-                Constants.TABLE_ACH, ach.getId(),
+        //delete the external ach info by invoking the AchDeleteEvent.
+        if (ach.getBaseUser() != null) {
+            log.debug("create: Generating Delete ACH event " + ach.getBaseUser().getCompany().getId());
+            EventManager.process(new AchDeleteEvent(ach, ach.getBaseUser().getCompany().getId()));
+        }
+        //for the logger
+        Integer userId = ach.getBaseUser().getId();
+        Integer achId = ach.getId();
+        
+        ach.getBaseUser().getAchs().remove(ach);
+        
+        //now delete this ach record
+        achDas.delete(ach);
+        ach= null;
+        eLogger.audit(executorId, userId, 
+                Constants.TABLE_ACH, achId,
                 EventLogger.MODULE_CREDIT_CARD_MAINTENANCE, 
                 EventLogger.ROW_DELETED, null, null,null);
-        
-        achDas.delete(ach);
     }
     
     public AchDTO getDTO() {
@@ -108,6 +131,7 @@ public class AchBL {
         dto.setAccountType(ach.getAccountType());
         dto.setBankAccount(ach.getBankAccount());
         dto.setBankName(ach.getBankName());
+        dto.setGatewayKey(ach.getGatewayKey());
         
         return dto;
     }

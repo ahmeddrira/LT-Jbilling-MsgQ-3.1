@@ -20,20 +20,25 @@
 
 package com.sapienter.jbilling.server.payment.tasks;
 
-import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
+import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.user.db.UserDTO;
+import org.apache.log4j.Logger;
+
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
-import com.sapienter.jbilling.server.user.CreditCardBL;
+import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
-import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.event.NewContactEvent;
 import com.sapienter.jbilling.server.user.event.NewCreditCardEvent;
-import org.apache.log4j.Logger;
+import com.sapienter.jbilling.server.user.event.AchUpdateEvent;
+import com.sapienter.jbilling.server.user.event.AchDeleteEvent;
 
 /**
  * Internal Event Plugin designed to save a unique "gateway key" returned by the configured IExternalCreditCardStorage
@@ -59,7 +64,9 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
     @SuppressWarnings("unchecked")
     private static final Class<Event> events[] = new Class[] {
             NewCreditCardEvent.class,
-            NewContactEvent.class
+            NewContactEvent.class,
+            AchUpdateEvent.class,
+			AchDeleteEvent.class
     };
 
     public Class<Event>[] getSubscribedEvents() { return events; }
@@ -112,6 +119,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
      * @throws PluggableTaskException
      */
     public void process(Event event) throws PluggableTaskException {
+        LOG.debug("SaveCreditCardExternallyTask::process...");
 		PluggableTaskBL<IExternalCreditCardStorage> ptbl = new PluggableTaskBL<IExternalCreditCardStorage>(getExternalSavingPluginId());
         IExternalCreditCardStorage externalCCStorage = ptbl.instantiateTask();
 
@@ -153,6 +161,16 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                     updateCreditCard(creditCard, gateWayKey);
                 }
             }
+        } else if (event instanceof AchUpdateEvent) {
+            LOG.debug("Processing AchUpdateEvent ...");
+            AchUpdateEvent ev = (AchUpdateEvent) event;
+            String gateWayKey = externalCCStorage.storeCreditCard(null, null, ev.getAch());
+            updateAch(ev.getAch(), gateWayKey);
+        } else if (event instanceof AchDeleteEvent) {
+            LOG.debug("Processing AchDeleteEvent ...");
+            AchDeleteEvent ev = (AchDeleteEvent) event;
+            String gateWayKey = externalCCStorage.deleteCreditCard(null, null, ev.getAch());
+            deleteAch(ev.getAch(), gateWayKey);
 		} else {
             throw new PluggableTaskException("Cant not process event " + event);
         }
@@ -193,5 +211,34 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                 LOG.warn("gateway key returned from external store is null, deleting card and removing from user map");
             }
         }
-    }    
+    }
+    /**
+     * Update the ACH object with the given gateway key. 
+     *
+     * @param ach - ACH object to update
+     * @param gatewayKey gateway key from external storage, null if storage failed.
+     */
+    private void updateAch(AchDTO ach, String gatewayKey) {
+
+        if (gatewayKey != null) {
+            LOG.debug("Storing ACH gateway key: " + gatewayKey);
+            ach.setGatewayKey(gatewayKey);
+            AchDAS achdas = new AchDAS();		    
+            achdas.makePersistent(ach);
+        } 
+    }
+    /**
+     * Delete the ACH Object
+     * @param ach
+     * @param gatewayKey
+     */
+    private void deleteAch(AchDTO ach, String gatewayKey) {
+        if (gatewayKey == null) {
+            LOG.debug("Failed to delete the ACH Record - gateway key returned null." ); 
+            return;
+        }
+//        LOG.debug("Deleting ACH record - gateway key: " + gatewayKey);
+//        AchDAS achdas = new AchDAS();          
+//        achdas.delete(ach);
+    }
 }

@@ -1113,13 +1113,13 @@ class AuthorizeNetCIMApi {
         throw new DublicateProfileRecordException(profileId, errorMessage);
     }
     
-    public static void main(String args[]) throws Exception {
-        AuthorizeNetCIMApi api= new AuthorizeNetCIMApi("83b5RDdq", "776cUfAjjzY7u64B",
+    /*public static void main(String args[]) throws Exception {
+        AuthorizeNetCIMApi api= new AuthorizeNetCIMApi("", "",
                 "none",true, 10);
-        String XML = api.buildGetCustomerProfileRequest("2023666");
+        String XML = api.buildGetCustomerProfileRequest("");
         System.out.println("REQUEST\n" + XML);
         String HTTPResponse = api.sendViaXML(XML);
         System.out.println("RESPONSE\n"+HTTPResponse);
-    }
+    }*/
     
 }

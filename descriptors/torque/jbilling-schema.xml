@@ -239,6 +239,9 @@
             <index-column name="phone_area_code"/>
             <index-column name="phone_country_code"/>
         </index>
+        <index name="ix_user">
+            <index-column name="user_id"/>
+        </index>
     </table>
     <table name="contact_field">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>

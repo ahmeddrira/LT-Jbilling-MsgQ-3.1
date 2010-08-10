@@ -22,7 +22,6 @@ package com.sapienter.jbilling.server.user;
 
 
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
-import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.apache.log4j.Logger;
 
@@ -77,13 +76,12 @@ public class AchBL {
     public Integer create(AchDTO dto) {
         // Only save un-obscured ach data. If a ach is obscured, we assume that it is an
         // existing ach stored against an external payment gateway - fetch from the db instead
-        if (!dto.useGatewayKey() || !dto.isBankAccountObscured()) {            
+        if (!dto.useGatewayKey() || !dto.isBankAccountObscured()) {
             ach = achDas.create(dto.getBaseUser(), dto.getAbaRouting(), dto.getBankAccount(), dto.getAccountType(),
                                 dto.getBankName(), dto.getAccountName(), dto.getGatewayKey());
 
-            UserDTO user = getUser(ach);
+            UserDTO user = getUser(dto);
             EventManager.process(new AchUpdateEvent(ach, user.getCompany().getId()));
-            LOG.debug("Saved new ACH: " + ach.getId());
         } else {
             UserDTO user = getUser(dto);
             ach = new UserBL(user.getId()).getEntity().getAchs().iterator().next();

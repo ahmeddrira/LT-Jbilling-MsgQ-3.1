@@ -248,7 +248,6 @@ public class PaymentAuthorizeNetCIMTask extends PaymentTaskWithTimeout
 
         CustomerProfileData customerProfile = api.getCustomerProfile(profileID);
         customerProfile.fillWith(contact, creditCard, ach);
-//        customerProfile.setCustomerProfileId(profileID);
         api.updateCustomerProfile(customerProfile);
 
         return customerProfile;
@@ -617,8 +616,22 @@ class AuthorizeNetCIMApi {
         String HTTPResponse = sendViaXML(XML);
         parseSimpleResponse(HTTPResponse, "updateCustomerProfile");
 
-        XML = buildUpdateCustomerPaymentProfileRequest(customerProfile);
+        if ( null == customerProfile.getCustomerPaymentProfileId()) {
+            XML= buildCreateCustomerPaymentProfileRequest(customerProfile);
+        } else {        
+            XML = buildUpdateCustomerPaymentProfileRequest(customerProfile);
+        }
         HTTPResponse = sendViaXML(XML);
+        if ( null == customerProfile.getCustomerPaymentProfileId()) {
+            try {
+                String customerPaymentProfileId= parseCreateCustomerPaymentProfileResponse(HTTPResponse);
+                customerProfile.setCustomerPaymentProfileId(customerPaymentProfileId);
+            } catch (DublicateProfileRecordException e) {
+                LOG.warn("Error creating a Payment Profile for this customer in absence of any. "  
+                        + customerProfile.getCustomerProfileId());
+                throw new PluggableTaskException(e);
+            }
+        }
         parseSimpleResponse(HTTPResponse, "updateCustomerPaymentProfile");
     }
 
@@ -735,6 +748,52 @@ class AuthorizeNetCIMApi {
         return XML.toString();
     }
 
+    private String buildCreateCustomerPaymentProfileRequest(CustomerProfileData customerProfileData)
+    throws PluggableTaskException {
+
+    StringBuffer XML = new StringBuffer();
+    XML.append("<createCustomerPaymentProfileRequest xmlns=\"" + AUTHNET_XML_NAMESPACE + "\">");
+    XML.append(getMerchantAuthenticationXML());
+
+    buildTag(XML, "customerProfileId", customerProfileData.getCustomerProfileId());
+
+    beginTag(XML, "paymentProfile");
+
+    beginTag(XML, "billTo");
+    buildTag(XML, "firstName", customerProfileData.getFirstName());
+    buildTag(XML, "lastName", customerProfileData.getLastName());
+    buildTag(XML, "company", customerProfileData.getCompany());
+    buildTag(XML, "address", customerProfileData.getAddress());
+    buildTag(XML, "city", customerProfileData.getCity());
+    buildTag(XML, "state", customerProfileData.getState());
+    buildTag(XML, "country", customerProfileData.getCountry());
+    buildTag(XML, "phoneNumber", customerProfileData.getPhoneNumber());
+    buildTag(XML, "faxNumber", customerProfileData.getFaxNumber());
+    endTag(XML, "billTo");
+
+    beginTag(XML, "payment");
+    if (customerProfileData.getPaymentType() == CustomerProfileData.CREDIT_CARD) {
+        beginTag(XML, "creditCard");
+        buildTag(XML, "cardNumber", customerProfileData.getCreditCardNumber());
+        buildTag(XML, "expirationDate", customerProfileData.getCreditCardExpirationDate());
+        buildTagIfNotEmpty(XML, "cardCode", customerProfileData.getCreditCardCode());
+        endTag(XML, "creditCard");
+    } else if (customerProfileData.getPaymentType() == CustomerProfileData.BANK_ACCOUNT) {
+        beginTag(XML, "bankAccount");
+        buildTag(XML, "accountType", customerProfileData.getAccountType());
+        buildTag(XML, "routingNumber", customerProfileData.getRoutingNumber());
+        buildTag(XML, "accountNumber", customerProfileData.getAccountNumber());
+        buildTag(XML, "nameOnAccount", customerProfileData.getAccountName());
+        buildTag(XML, "bankName", customerProfileData.getBankName());
+        endTag(XML, "bankAccount");
+    }
+    endTag(XML, "payment");
+    endTag(XML, "paymentProfile");
+    endTag(XML, "createCustomerPaymentProfileRequest");
+
+    return XML.toString();
+}
+    
     private String buildUpdateCustomerPaymentProfileRequest(CustomerProfileData customerProfileData)
         throws PluggableTaskException {
 
@@ -1097,6 +1156,54 @@ class AuthorizeNetCIMApi {
 
                 throw new PluggableTaskException(errorMessage);
             }
+        } catch (Exception e) {
+            LOG.error(e);
+            throw new PluggableTaskException(e);
+        }
+    }
+    
+    private String parseCreateCustomerPaymentProfileResponse(String HTTPResponse)
+        throws PluggableTaskException, DublicateProfileRecordException {
+
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            InputSource inStream = new InputSource();
+            inStream.setCharacterStream(new StringReader(HTTPResponse));
+            Document doc = builder.parse(inStream);
+            doc.getDocumentElement().normalize();
+            Element rootElement = doc.getDocumentElement();
+            NodeList nodeLst = rootElement.getChildNodes();
+            NodeList messagesNodeLst = nodeLst.item(0).getChildNodes();
+            NodeList resultCodeNodeLst = messagesNodeLst.item(0).getChildNodes();
+            String resultCode = resultCodeNodeLst.item(0).getNodeValue();
+            NodeList messageNodeLst = messagesNodeLst.item(1).getChildNodes();
+            NodeList codeNodeLst = messageNodeLst.item(0).getChildNodes();
+            String code = codeNodeLst.item(0).getNodeValue();
+            NodeList textNodeLst = messageNodeLst.item(1).getChildNodes();
+            String text = textNodeLst.item(0).getNodeValue();
+    
+            // check for errors
+            if (!resultCode.equals("Ok")) {
+                String errorMessage = String.format(
+                    "Authorize.Net createCustomerPaymentProfile error: %s (code1: %s, code2: %s)",
+                    text, resultCode, code);
+
+                if (DUPLICATE_PROFILE_ERROR_CODE.equals(code)) {
+                    throwDuplicateProfileError(errorMessage, text);
+                }
+                throw new PluggableTaskException(errorMessage);
+            }
+    
+            /**
+             * If the response was ok the direct response node gets parsed and
+             * a new Customer Payment Profile ID gets returned with the parsed values
+             */
+            NodeList customerPaymentProfileIdNodeLst = nodeLst.item(1).getChildNodes();
+            String customerPaymentProfileId = customerPaymentProfileIdNodeLst.item(0).getNodeValue();
+
+            return customerPaymentProfileId;
+        } catch (DublicateProfileRecordException e) {
+            throw e;
         } catch (Exception e) {
             LOG.error(e);
             throw new PluggableTaskException(e);

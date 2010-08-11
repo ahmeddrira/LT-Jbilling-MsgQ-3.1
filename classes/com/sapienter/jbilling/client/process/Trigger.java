@@ -33,14 +33,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.list.IListSessionBean;
-import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
@@ -189,15 +187,6 @@ public class Trigger implements Job {
                 firstOfToday = lastFire.before(today);
             }
 
-            // run the billing process
-            if (Util.getSysPropBooleanTrue("process.run_billing")) {
-                LOG.info("Running trigger for " + today);
-                LOG.info("Starting billing process at " +
-                        Calendar.getInstance().getTime());
-                remoteBillingProcess.trigger(today);
-                LOG.info("Ended billing process at " +
-                        Calendar.getInstance().getTime());
-            }
 
             // now the ageing process
             if (firstOfToday) {

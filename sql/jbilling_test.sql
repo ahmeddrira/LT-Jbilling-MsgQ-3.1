@@ -15063,7 +15063,6 @@ COPY pluggable_task_type (id, category_id, class_name, min_parameters) FROM stdi
 70	20	com.sapienter.jbilling.server.process.task.BillableUsersBillingProcessFilterTask	0
 71	21	com.sapienter.jbilling.server.mediation.task.SaveToFileMediationErrorHandler	0
 73	21	com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler	1
-74	22	com.sapienter.jbilling.server.process.task.LoggerCronTask	1
 75	6	com.sapienter.jbilling.server.payment.tasks.PaymentPaypalExternalTask	3
 76	6	com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask	2
 77	22	com.sapienter.jbilling.server.mediation.task.MediationProcessTask	0

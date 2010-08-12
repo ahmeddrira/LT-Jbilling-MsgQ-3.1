@@ -72,14 +72,18 @@ public class JBillingListener implements ServletContextListener {
 
                 IScheduledTask task = taskManager.getNextClass();
                 while (task != null) {
-                    LOG.debug("scheduled task '" + task.getTaskName() + "', " + task.getClass());
-                    scheduler.getScheduler().scheduleJob(task.getJobDetail(), task.getTrigger());
+                    try {
+                        scheduler.getScheduler().scheduleJob(task.getJobDetail(), task.getTrigger());
+                        LOG.debug("scheduled task '" + task.getTaskName() + "', " + task.getClass());
+                    } catch (PluggableTaskException e) {
+                        LOG.warn("Failed scheduling the pluggable tasks - " + task.getTaskName());
+                    } catch (SchedulerException e) {
+                        LOG.warn("Failed scheduling the pluggable tasks - " + task.getTaskName());
+                    }
                     task = taskManager.getNextClass();
                 }
             }
         } catch (PluggableTaskException e) {
-            LOG.error("Exception occurred scheduling pluggable tasks.", e);
-        } catch (SchedulerException e) {
             LOG.error("Exception occurred scheduling pluggable tasks.", e);
         }
 

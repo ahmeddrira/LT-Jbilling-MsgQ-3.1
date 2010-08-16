@@ -20,12 +20,8 @@
 
 package com.sapienter.jbilling.server.util;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.jws.WebService;
-
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
@@ -33,12 +29,17 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.entity.AchDTO;
+
+import javax.jws.WebService;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Interface for WebServicesSessionBean
@@ -360,4 +361,17 @@ public interface IWebServicesSessionBean {
     public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
 
     public void generateRules(String rulesData) throws SessionInternalError;
+    
+    // special plans and pricing
+
+    public PriceModelWS getPriceModel(Integer id);
+    public PriceModelWS[] getPriceModels(Integer planItemId);
+    public PriceModelWS[] getPriceModelsByType(String type) throws SessionInternalError;
+    public PriceModelWS[] getPriceModelsByItemAndAttributes(Integer[] planItemIds, Map<String, String> attributes);
+    public PriceModelWS[] getPriceModelsByItemAndWildcardAttributes(Integer[] planItemIds, Map<String, String> attributes);
+
+    public Integer[] createPriceModels(PriceModelWS[] models);
+    public void updatePriceModel(PriceModelWS model);
+    public void deletePriceModel(Integer modelId);
+
 }

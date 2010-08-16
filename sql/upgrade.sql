@@ -306,3 +306,34 @@ alter table process_run_user ADD CONSTRAINT process_run_user_FK_1 FOREIGN KEY (p
 alter table process_run_user ADD CONSTRAINT process_run_user_FK_2 FOREIGN KEY (user_id) REFERENCES base_user (id);
 ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40);
 -- alter table payment_authorization modify transaction_id varchar(40); -- mysql
+
+-- pricing model table schema ddl.
+-- @see com.sapienter.jbilling.server.pricing.db.*
+DROP TABLE IF EXISTS price_model;
+CREATE TABLE price_model (
+    id integer NOT NULL,
+    strategy_type varchar(20) NOT NULL,
+    plan_item_id integer,
+    precedence integer NOT NULL,
+    rate numeric(22,10) NOT NULL,
+    included_quantity integer,
+    is_default boolean NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX price_model_strategy_type_i ON price_model (strategy_type);
+CREATE INDEX price_model_plan_item_i ON price_model (plan_item_id);
+CREATE INDEX price_model_is_default_i ON price_model (is_default);
+
+DROP TABLE IF EXISTS price_model_attribute;
+CREATE TABLE price_model_attribute (
+    price_model_id integer NOT NULL,
+    attribute_name varchar(255) NOT NULL,
+    attribute_value varchar(255),
+    PRIMARY KEY (price_model_id, attribute_name)
+);
+
+insert into jbilling_table (id, name) values (93, 'price_model');
+insert into jbilling_table (id, name) values (94, 'price_model_attribute');
+
+insert into jbilling_seqs (name, next_id) values ('price_model', 1);
+insert into jbilling_seqs (name, next_id) values ('price_model_attribute', 1);

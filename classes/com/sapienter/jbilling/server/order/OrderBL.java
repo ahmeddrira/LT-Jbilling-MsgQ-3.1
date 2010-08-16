@@ -34,6 +34,7 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import org.joda.time.DateMidnight;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -260,6 +261,7 @@ public class OrderBL extends ResultList
         order.setBaseUserByUserId(user.find(order.getBaseUserByUserId().getId()));
         // some things can't be null, otherwise hibernate complains
         order.setDefaults();
+        order.touch();
 
         try {
             PluggableTaskManager taskManager = new PluggableTaskManager(
@@ -1210,6 +1212,10 @@ public class OrderBL extends ResultList
         dto.setProvisioningRequestId(ws.getProvisioningRequestId());
         return dto;
     }
+
+    public List<OrderLineDTO> getRecurringOrderLines(Integer userId) {
+        return orderLineDAS.findRecurringByUser(userId);
+    }    
 
     public OrderLineDTO getRecurringOrderLine(Integer userId, Integer itemId) {
         return orderLineDAS.findRecurringByUserItem(userId, itemId);

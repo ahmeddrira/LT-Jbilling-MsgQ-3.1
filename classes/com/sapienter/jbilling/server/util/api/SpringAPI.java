@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.util.api;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -33,6 +34,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -637,6 +639,76 @@ public class SpringAPI implements JbillingAPI {
     public void generateRules(String rulesData) throws JbillingAPIException {
         try {
             session.generateRules(rulesData);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    // special plans and pricing
+
+    public PriceModelWS getPriceModel(Integer id) throws JbillingAPIException {
+        try {
+            return session.getPriceModel(id);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }        
+    }
+
+    public PriceModelWS[] getPriceModels(Integer planItemId) throws JbillingAPIException {
+        try {
+            return session.getPriceModels(planItemId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public PriceModelWS[] getPriceModelsByType(String type) throws JbillingAPIException {
+        try {
+            return session.getPriceModelsByType(type);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public PriceModelWS[] getPriceModelsByItemAndAttributes(Integer[] planItemIds, Map<String, String> attributes)
+            throws JbillingAPIException {
+
+        try {
+            return session.getPriceModelsByItemAndAttributes(planItemIds, attributes);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public PriceModelWS[] getPriceModelsByItemAndWildcardAttributes(Integer[] planItemIds, Map<String, String> attributes)
+            throws JbillingAPIException {
+
+        try {
+            return session.getPriceModelsByItemAndWildcardAttributes(planItemIds, attributes);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Integer[] createPriceModels(PriceModelWS[] models) throws JbillingAPIException {
+        try {
+            return session.createPriceModels(models);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void updatePriceModel(PriceModelWS model) throws JbillingAPIException {
+        try {
+            session.updatePriceModel(model);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void deletePriceModel(Integer modelId) throws JbillingAPIException {
+        try {
+            session.deletePriceModel(modelId);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

@@ -148,6 +148,9 @@ DROP INDEX public.report_entity_map_i_2;
 DROP INDEX public.purchase_order_i_user;
 DROP INDEX public.purchase_order_i_notif;
 DROP INDEX public.promotion_user_map_i_2;
+DROP INDEX public.price_model_strategy_type_i;
+DROP INDEX public.price_model_plan_item_i;
+DROP INDEX public.price_model_is_default_i;
 DROP INDEX public.permission_user_map_i_2;
 DROP INDEX public.permission_role_map_i_2;
 DROP INDEX public.payment_i_3;
@@ -212,6 +215,8 @@ ALTER TABLE ONLY public.process_run_user DROP CONSTRAINT process_run_user_pkey;
 ALTER TABLE ONLY public.process_run_total_pm DROP CONSTRAINT process_run_total_pm_pkey;
 ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_pkey;
 ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_pkey;
+ALTER TABLE ONLY public.price_model DROP CONSTRAINT price_model_pkey;
+ALTER TABLE ONLY public.price_model_attribute DROP CONSTRAINT price_model_attribute_pkey;
 ALTER TABLE ONLY public.preference_type DROP CONSTRAINT preference_type_pkey;
 ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_pkey;
 ALTER TABLE ONLY public.pluggable_task_type DROP CONSTRAINT pluggable_task_type_pkey;
@@ -279,7 +284,6 @@ ALTER TABLE ONLY public.contact DROP CONSTRAINT contact_pkey;
 ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_pkey;
 ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_pkey;
 ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_pkey;
-ALTER TABLE ONLY public.cdrentries DROP CONSTRAINT cdrentries_pkey;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_pkey;
 ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_pkey;
 ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_pkey;
@@ -302,6 +306,8 @@ DROP TABLE public.process_run_user;
 DROP TABLE public.process_run_total_pm;
 DROP TABLE public.process_run_total;
 DROP TABLE public.process_run;
+DROP TABLE public.price_model_attribute;
+DROP TABLE public.price_model;
 DROP TABLE public.preference_type;
 DROP TABLE public.preference;
 DROP TABLE public.pluggable_task_type_category;
@@ -376,7 +382,6 @@ DROP TABLE public.contact_map;
 DROP TABLE public.contact_field_type;
 DROP TABLE public.contact_field;
 DROP TABLE public.contact;
-DROP TABLE public.cdrentries;
 DROP TABLE public.blacklist;
 DROP TABLE public.billing_process_configuration;
 DROP TABLE public.billing_process;
@@ -540,35 +545,6 @@ CREATE TABLE blacklist (
 
 
 ALTER TABLE public.blacklist OWNER TO jbilling;
-
---
--- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE cdrentries (
-    id integer NOT NULL,
-    accountcode character varying(20),
-    src character varying(20),
-    dst character varying(20),
-    dcontext character varying(20),
-    clid character varying(20),
-    channel character varying(20),
-    dstchannel character varying(20),
-    lastapp character varying(20),
-    lastdatat character varying(20),
-    start timestamp without time zone,
-    answer timestamp without time zone,
-    "end" timestamp without time zone,
-    duration integer,
-    billsec integer,
-    disposition character varying(20),
-    amaflags character varying(20),
-    userfield character varying(100),
-    ts timestamp without time zone
-);
-
-
-ALTER TABLE public.cdrentries OWNER TO jbilling;
 
 --
 -- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -1766,6 +1742,36 @@ CREATE TABLE preference_type (
 
 
 ALTER TABLE public.preference_type OWNER TO jbilling;
+
+--
+-- Name: price_model; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE price_model (
+    id integer NOT NULL,
+    strategy_type character varying(20) NOT NULL,
+    plan_item_id integer,
+    precedence integer NOT NULL,
+    rate numeric(22,10) NOT NULL,
+    included_quantity integer,
+    is_default boolean NOT NULL
+);
+
+
+ALTER TABLE public.price_model OWNER TO jbilling;
+
+--
+-- Name: price_model_attribute; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE price_model_attribute (
+    price_model_id integer NOT NULL,
+    attribute_name character varying(255) NOT NULL,
+    attribute_value character varying(255)
+);
+
+
+ALTER TABLE public.price_model_attribute OWNER TO jbilling;
 
 --
 -- Name: process_run; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -3131,15 +3137,6 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 4	1	2008-09-26 00:00:00	4	2	\N	\N	1126	\N	1
 5	1	2008-09-26 00:00:00	5	2	\N	\N	1128	\N	1
 6	1	2008-09-26 00:00:00	6	2	\N	\N	1127	\N	1
-\.
-
-
---
--- Data for Name: cdrentries; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY cdrentries (id, accountcode, src, dst, dcontext, clid, channel, dstchannel, lastapp, lastdatat, start, answer, "end", duration, billsec, disposition, amaflags, userfield, ts) FROM stdin;
-1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	\N
 \.
 
 
@@ -10340,6 +10337,9 @@ COPY event_log (id, entity_id, user_id, table_id, foreign_id, create_datetime, l
 466022	1	\N	21	107810	2009-12-21 13:21:26.002	2	7	25	\N	\N	\N	0	10780
 466023	1	1	21	107811	2009-12-21 13:21:44.511	2	7	22	\N	\N	\N	0	10781
 466024	1	\N	21	107811	2009-12-21 13:21:44.518	2	7	25	\N	\N	\N	0	10781
+469000	1	1	10	1	2010-08-16 15:15:54.929	2	2	8	\N	46f94c8de14fb36680850768ff1b7f2a	\N	0	1
+469001	1	1	10	1	2010-08-16 15:15:55.011	2	2	9	\N	\N	\N	0	1
+469002	1	1	14	3000	2010-08-16 15:17:28.369	2	3	9	\N	\N	\N	0	\N
 \.
 
 
@@ -11250,6 +11250,7 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 92	1	description	1	Running
 92	2	description	1	Finished: successful
 92	3	description	1	Finished: failed
+14	3000	description	1	Crazy Brian's Discount Plan
 \.
 
 
@@ -11347,6 +11348,7 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 2800	CALL-LD	1	\N	0	0	1	4
 2801	CALL-LD-INCLUDE	1	\N	0	0	1	4
 2900	CALL-LD-GEN	1	\N	0	0	0	2
+3000	PL-02	1	\N	0	0	0	4
 \.
 
 
@@ -11378,6 +11380,8 @@ COPY item_price (id, item_id, currency_id, price, optlock) FROM stdin;
 1802	2801	11	0.0000000000	0
 1803	2801	1	0.0000000000	0
 1900	2900	1	0.0000000000	0
+2000	3000	11	70.0000000000	0
+2001	3000	1	99.9900000000	0
 \.
 
 
@@ -11392,6 +11396,7 @@ COPY item_type (id, entity_id, description, order_line_type_id, optlock) FROM st
 22	1	Fees	3	1
 2200	1	Long Distance Plans	1	0
 2201	1	Calls	1	0
+2300	1	Plans	1	0
 \.
 
 
@@ -11419,6 +11424,7 @@ COPY item_type_map (item_id, type_id) FROM stdin;
 2800	2201
 2801	2201
 2900	2201
+3000	2300
 \.
 
 
@@ -11527,8 +11533,6 @@ notification_message_line	1
 notification_message_line	1
 ageing_entity_step	1
 ageing_entity_step	1
-item_type	23
-item_type	23
 invoice	86
 invoice	86
 invoice_line	87
@@ -11555,20 +11559,14 @@ generic_status	1
 promotion	1
 promotion	1
 mediation_record	1
-event_log	469
-event_log	469
 permission_type	1
 permission_type	1
 invoice_delivery_method	1
 payment_method	1
 notification_message_type	1
 billing_process_configuration	1
-item_price	20
-item_price	20
 payment_info_cheque	17
 notification_message	1
-item	30
-item	30
 purchase_order	1079
 purchase_order	1079
 order_line	2081
@@ -11589,6 +11587,11 @@ payment_authorization	1
 payment_authorization	1
 paper_invoice_batch	1
 paper_invoice_batch	1
+item_type	24
+item	31
+item	31
+item_price	21
+item_price	21
 notification_message_arch	1
 notification_message_arch	1
 notification_message_arch_line	1
@@ -11599,6 +11602,11 @@ mediation_process	1
 mediation_record_line	1
 mediation_record_line	1
 pluggable_task	605
+price_model	1
+price_model_attribute	1
+event_log	470
+event_log	470
+item_type	24
 \.
 
 
@@ -11698,6 +11706,8 @@ COPY jbilling_table (id, name) FROM stdin;
 87	generic_status
 91	mediation_record_status
 92	process_run_status
+93	price_model
+94	price_model_attribute
 \.
 
 
@@ -15202,6 +15212,22 @@ COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM st
 47	0	\N	\N
 48	1	\N	\N
 49	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: price_model; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY price_model (id, strategy_type, plan_item_id, precedence, rate, included_quantity, is_default) FROM stdin;
+\.
+
+
+--
+-- Data for Name: price_model_attribute; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY price_model_attribute (price_model_id, attribute_name, attribute_value) FROM stdin;
 \.
 
 
@@ -19710,14 +19736,6 @@ ALTER TABLE ONLY blacklist
 
 
 --
--- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY cdrentries
-    ADD CONSTRAINT cdrentries_pkey PRIMARY KEY (id);
-
-
---
 -- Name: contact_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -20254,6 +20272,22 @@ ALTER TABLE ONLY preference_type
 
 
 --
+-- Name: price_model_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY price_model_attribute
+    ADD CONSTRAINT price_model_attribute_pkey PRIMARY KEY (price_model_id, attribute_name);
+
+
+--
+-- Name: price_model_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY price_model
+    ADD CONSTRAINT price_model_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: process_run_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -20710,6 +20744,27 @@ CREATE INDEX permission_role_map_i_2 ON permission_role_map USING btree (permiss
 --
 
 CREATE INDEX permission_user_map_i_2 ON permission_user USING btree (permission_id, user_id);
+
+
+--
+-- Name: price_model_is_default_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE INDEX price_model_is_default_i ON price_model USING btree (is_default);
+
+
+--
+-- Name: price_model_plan_item_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE INDEX price_model_plan_item_i ON price_model USING btree (plan_item_id);
+
+
+--
+-- Name: price_model_strategy_type_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE INDEX price_model_strategy_type_i ON price_model USING btree (strategy_type);
 
 
 --

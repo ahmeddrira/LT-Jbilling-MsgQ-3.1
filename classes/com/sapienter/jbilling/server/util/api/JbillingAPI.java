@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.util.api;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
@@ -31,6 +32,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -204,4 +206,30 @@ public interface JbillingAPI {
     void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
 
     public void generateRules(String rulesData) throws JbillingAPIException;
+
+    // special pricing and pricing
+
+    public PriceModelWS getPriceModel(Integer id)
+            throws JbillingAPIException;
+
+    public PriceModelWS[] getPriceModels(Integer planItemId)
+            throws JbillingAPIException;
+
+    public PriceModelWS[] getPriceModelsByType(String type)
+            throws JbillingAPIException;
+
+    public PriceModelWS[] getPriceModelsByItemAndAttributes(Integer[] planItemIds, Map<String, String> attributes)
+            throws JbillingAPIException;
+
+    public PriceModelWS[] getPriceModelsByItemAndWildcardAttributes(Integer[] planItemIds, Map<String, String> attributes)
+            throws JbillingAPIException;
+
+    public Integer[] createPriceModels(PriceModelWS[] models)
+            throws JbillingAPIException;
+
+    public void updatePriceModel(PriceModelWS model)
+            throws JbillingAPIException;
+
+    public void deletePriceModel(Integer modelId)
+            throws JbillingAPIException;
 }

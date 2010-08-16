@@ -1897,6 +1897,8 @@
     <JbillingTable Id="89" Name="balance_type"/>
     <JbillingTable Id="91" Name="mediation_record_status"/>
     <JbillingTable Id="92" Name="process_run_status"/>
+    <JbillingTable Id="93" Name="price_model"/>
+    <JbillingTable Id="94" Name="price_model_attribute"/>
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>
     <JbillingSeqs Name="entity_payment_method_map" NextId="26"/>
@@ -1985,6 +1987,8 @@
     <JbillingSeqs Name="order_line_provisioning_status" NextId="1"/>
     <JbillingSeqs Name="balance_type" NextId="0"/>
     <JbillingSeqs Name="mediation_record" NextId="0"/>
+    <JbillingSeqs Name="price_model" NextId="0"/>
+    <JbillingSeqs Name="price_model_attribute" NextId="0"/>
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
     <List Id="1" LegacyName="customerSimple" TitleKey="list.customers.title" Optlock="1"/>

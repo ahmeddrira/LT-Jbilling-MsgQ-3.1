@@ -650,6 +650,38 @@
             <reference foreign="id" local="type_id"/>
         </foreign-key>
     </table>
+    <table name="price_model">
+        <column name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="strategy_type" required="true" size="20" type="VARCHAR"/>
+        <column name="plan_item_id" required="false" type="INTEGER"/>
+        <column name="precedence" required="true" size="2" type="INTEGER"/>
+        <column name="rate" required="true" size="22" scale="10" type="NUMERIC"/>
+        <column name="included_quantity" required="false" type="INTEGER"/>
+        <column name="is_default" required="true" type="BOOLEAN"/>
+        <!-- ItemDTO does not reference this table, cannot enforce foreign key or cascade on delete via Hibernate -->
+        <!--
+        <foreign-key foreignTable="item">
+            <reference foreign="id" local="plan_item_id"/>
+        </foreign-key>
+        -->
+        <index name="price_model_strategy_type_i">
+            <index-column name="strategy_type"/>
+        </index>
+        <index name="price_model_plan_item_id_i">
+            <index-column name="plan_item_id"/>
+        </index>
+        <index name="price_model_is_default_i">
+            <index-column name="is_default"/>
+        </index>
+    </table>
+    <table name="price_model_attribute">
+        <column name="price_model_id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="attribute_name" primaryKey="true" required="true" size="255" type="VARCHAR"/>
+        <column name="attribute_value" required="false" size="255" type="VARCHAR"/>
+        <foreign-key foreignTable="price_model">
+            <references foreign="id" local="price_model_id"/>
+        </foreign-key>        
+    </table>
     <table name="jbilling_table">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
         <column name="name" required="true" size="50" type="VARCHAR"/>

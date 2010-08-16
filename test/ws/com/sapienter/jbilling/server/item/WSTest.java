@@ -219,7 +219,7 @@ public class WSTest  extends TestCase {
             	}
             });
             assertNotNull("The items were not retrieved", items);
-            assertEquals("Wrong number of items", 19, items.length);
+            assertEquals("Wrong number of items", 20, items.length);
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", items[0].getDescription());
             assertEquals("Price", new BigDecimal("10"), items[0].getPrice());
@@ -357,7 +357,7 @@ public class WSTest  extends TestCase {
 
         ItemTypeWS[] types = api.getAllItemCategories();
 
-        assertEquals("6 item types", 6, types.length);
+        assertEquals("7 item types", 7, types.length);
 
         assertEquals(1, types[0].getId().intValue());
         assertEquals("Drink passes", types[0].getDescription());

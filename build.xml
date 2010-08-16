@@ -357,7 +357,7 @@
 		  </classpath>
 		  -->
         </taskdef>
-        
+
         <jrc destdir="${build.designs.dir}"
             tempdir="${basedir}/tmp"
             keepjava="true"
@@ -380,8 +380,8 @@
 			    </fileset>
 			</classpath>
 			-->
-        </jrc> 
-        
+        </jrc>
+
     </target>
     
     <!-- Wipes out the whole thing -->
@@ -478,6 +478,7 @@
             <test name="com.sapienter.jbilling.server.payment.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.item.WSTest" todir="${build.test-results.dir}/ws/xml"/>
             <test name="com.sapienter.jbilling.server.invoice.WSTest" todir="${build.test-results.dir}/ws/xml"/>
+            <test name="com.sapienter.jbilling.server.pricing.WSTest" todir="${build.test-results.dir}/ws/xml"/>
         </junit>
 
         <!-- generate testing reports -->
@@ -974,6 +975,7 @@ server="upload.sourceforge.net" userid="anonymous">
                  eol="crlf"/>
     </target>
     
+
 </project>
 <!--
   <property name="showme" refid="test.classpath"/>

@@ -34,10 +34,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.jws.WebService;
 
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
@@ -105,7 +110,6 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
@@ -1884,7 +1888,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     PrintWriter pw = new PrintWriter(sw);
                     e.printStackTrace(pw);
                     pw.close();
-                    LOG.error("Validate Purchase error: " + e.getMessage() + 
+                    LOG.error("Validate Purchase error: " + e.getMessage() +
                             "\n" + sw.toString());
 
                     ValidatePurchaseWS result = new ValidatePurchaseWS();
@@ -1979,5 +1983,57 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
+    }
+
+    public PriceModelWS getPriceModel(Integer id) {
+        PriceModelDTO planPrice = new PriceModelBL(id).getEntity();
+        return PriceModelBL.getWS(planPrice);
+    }
+
+    public PriceModelWS[] getPriceModels(Integer planItemId) {
+        List<PriceModelDTO> planPrices = new PriceModelBL().getPriceModels(planItemId);
+        return PriceModelBL.getWS(planPrices).toArray(new PriceModelWS[planPrices.size()]);
+    }
+
+    public PriceModelWS[] getPriceModelsByType(String type) throws SessionInternalError {
+        PriceModelStrategy strategy = PriceModelStrategy.valueOf(type);
+
+        if (strategy != null) {
+            List<PriceModelDTO> planPrices = new PriceModelBL().getPriceModelsByType(strategy);
+            return PriceModelBL.getWS(planPrices).toArray(new PriceModelWS[planPrices.size()]);
+        } else {
+            throw new SessionInternalError("Could not resolve PriceModelStrategy for type string '" + type + "'");
+        }
+    }
+
+    public PriceModelWS[] getPriceModelsByItemAndAttributes(Integer[] planItemIds, Map<String, String> attributes) {
+        List<PriceModelDTO> planPrices = new PriceModelBL().getPriceModelsByItemAndAttributes(planItemIds, attributes);
+        return PriceModelBL.getWS(planPrices).toArray(new PriceModelWS[planPrices.size()]);
+    }
+
+    public PriceModelWS[] getPriceModelsByItemAndWildcardAttributes(Integer[] planItemIds, Map<String, String> attributes) {
+        List<PriceModelDTO> planPrices = new PriceModelBL().getPriceModelsByItemAndWildcardAttributes(planItemIds, attributes);
+        return PriceModelBL.getWS(planPrices).toArray(new PriceModelWS[planPrices.size()]);
+    }
+
+    public Integer[] createPriceModels(PriceModelWS[] models) {
+        PriceModelBL bl = new PriceModelBL();
+        Integer[] ids = new Integer[models.length];
+
+        int i = 0;
+        for (PriceModelWS model : models) {
+            PriceModelDTO dto = PriceModelBL.getDTO(model);
+            ids[i++] = bl.create(dto);
+        }
+
+        return ids;
+    }
+
+    public void updatePriceModel(PriceModelWS model) {
+        new PriceModelBL(model.getId()).update(PriceModelBL.getDTO(model));
+    }
+
+    public void deletePriceModel(Integer modelId) {
+        new PriceModelBL(modelId).delete();
     }
 }

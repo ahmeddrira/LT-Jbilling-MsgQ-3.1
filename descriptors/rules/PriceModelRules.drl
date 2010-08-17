@@ -1,0 +1,109 @@
+package PlanPricingRule
+
+# imports
+import com.sapienter.jbilling.server.user.ContactDTOEx
+import com.sapienter.jbilling.server.item.PricingField
+import com.sapienter.jbilling.server.user.UserDTOEx
+import com.sapienter.jbilling.server.item.tasks.PricingResult
+import com.sapienter.jbilling.server.item.tasks.SubscriptionResult
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO
+import com.sapienter.jbilling.server.pricing.PriceModelBL
+import com.sapienter.jbilling.server.order.db.OrderLineDTO
+import com.sapienter.jbilling.server.order.OrderBL
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.List
+import java.util.Map
+import java.math.BigDecimal
+import org.apache.log4j.Logger
+
+# global
+global org.apache.log4j.Logger LOG
+
+# These rules are designed to be used when pricing mediated items. The idea is to use
+# the mediation PricingFields as attributes to find an appropriate pricing model. Any
+# mediated item that shares the same set of attributes can be priced using these rules,
+# you'll only ever need to add new rules when the attributes change.
+#
+# Author: Brian Cowdery
+# Date: Aug 17, 2010
+
+declare Subscriptions
+        userId: Integer
+        itemIds: List
+end
+
+# get all subscribed plans for the given user id.
+function Subscriptions getSubscriptions(Integer userId) {
+    List<OrderLineDTO> lines = new OrderBL().getRecurringOrderLines(userId);
+    List<Integer> itemIds = new ArrayList<Integer>(lines.size());
+
+    for(OrderLineDTO line : lines)
+        itemIds.add(line.getItemId());
+
+    Subscriptions subscriptions = new Subscriptions();
+    subscriptions.setUserId(userId);
+    subscriptions.setItemIds(itemIds);
+    return subscriptions;
+}
+
+# get the current usage for the given item and user id.
+function BigDecimal getCurrentUsage(Integer userId, Integer itemId) {
+    BigDecimal quantity = BigDecimal.ZERO;
+    for (OrderLineDTO line : new OrderBL().getOnetimeOrderLines(userId, itemId, 1))
+        quantity = quantity.add(line.getQuantity());
+    return quantity;
+}
+
+# find the price model that matches the users subscribed plans, and a set of attributes
+# for this mediated item type. Different mediated items might have different attributes, so they
+# would require a different lookup function (this could also be made more generic).
+function PriceModelDTO getPriceModel(List planItemIds, String lata, String rateCenter, String stateProvince) {
+    Map<String, String> attributes = new HashMap<String, String>(3);
+    attributes.put("lata", lata);
+    attributes.put("rateCenter", rateCenter);
+    attributes.put("stateProvince", stateProvince);
+
+    # drools hates generic types :(
+    Integer[] ids = (Integer[]) planItemIds.toArray(new Integer[planItemIds.size()]);
+
+    List<PriceModelDTO> prices = new PriceModelBL().getPriceModelsByItemAndWildcardAttributes(ids, attributes, 1);
+    return (!prices.isEmpty() ? prices.get(0) : null);
+}
+
+rule "get user subscriptions"
+dialect 'java'
+when
+    $result : PricingResult( price == null )
+    not( exists( Subscriptions( userId == $result.userId ) ) )
+then
+    Subscriptions subscriptions = getSubscriptions($result.getUserId());
+    insert( subscriptions );
+
+    LOG.debug("User " + $result.getUserId() + " subscriptions: " + subscriptions);
+end
+
+rule "set national call price"
+dialect 'java'
+when
+    # pricing a mediated national call item
+    $result : PricingResult( itemId == 108, price == null )
+    PricingField( name == "lata", $lata : strValue != null, resultId == $result.id )
+    PricingField( name == "rateCenter", $rateCenter : strValue != null, resultId == $result.id )
+    PricingField( name == "stateProvince", $stateProvince : strValue != null, resultId == $result.id )
+
+    # all subscriptions for this user
+    $subscriptions : Subscriptions( userId == $result.userId )
+then
+    # use mediation fields as attributes to find matching plan pricing
+    PriceModelDTO price = getPriceModel($subscriptions.getItemIds(), $lata, $rateCenter, $stateProvince);
+
+    # get current usage for the last month
+    BigDecimal usage = getCurrentUsage($result.getUserId(), $result.getItemId());
+
+    # apply pricing
+    if (price != null) {
+        price.applyTo($result, $result.getQuantity(), usage);
+        LOG.debug("Applying price model: " + price);
+    }
+end

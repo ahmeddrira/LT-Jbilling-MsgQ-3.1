@@ -848,7 +848,7 @@ server="upload.sourceforge.net" userid="anonymous">
         <taskdef name="rulebase" 
                  classname="org.drools.contrib.DroolsCompilerAntTask" 
                  classpathref="drools.classpath" />
-        
+
         <rulebase 
             srcdir="${source.rules.dir}" 		
             tofile="${base_dir}/rules/CancelFees.pkg"
@@ -877,7 +877,14 @@ server="upload.sourceforge.net" userid="anonymous">
             binformat="package">
             <include name="PricingRules.drl" />
         </rulebase>
-        <rulebase 
+        <rulebase
+        	srcdir="${source.rules.dir}"
+        	tofile="${base_dir}/rules/PriceModelRules.pkg"
+        	classpathref="drools.run.classpath"
+        	binformat="package">
+        	<include name="PriceModelRules.drl" />
+        </rulebase>
+        <rulebase
         	srcdir="${source.rules.dir}" 		
         	tofile="${base_dir}/rules/provisioning_commands.pkg"
         	classpathref="drools.run.classpath"

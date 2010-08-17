@@ -75,7 +75,13 @@ import java.util.Map;
                     query = "select price from PriceModelDTO price where price.type = :type"),
 
         @NamedQuery(name = "PriceModelDTO.findByPlanItemId",
-                    query = "select price from PriceModelDTO price where price.planItem.id = :plan_item_id")
+                    query = "select price from PriceModelDTO price where price.planItem.id = :plan_item_id"),
+
+        @NamedQuery(name = "PriceModelDTO.findbyPlanItemIds",
+                    query = "select price from PriceModelDTO price " +
+                            "where price.planItem.id in (:plan_item_ids) " +
+                            "or price.defaultPricing = true")
+
 })
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PriceModelDTO implements Serializable {

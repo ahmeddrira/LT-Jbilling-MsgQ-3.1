@@ -56,6 +56,13 @@ public class PriceModelDAS extends AbstractDAS<PriceModelDTO> {
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
+    public List<PriceModelDTO> findByPlanItemIds(Integer[] planItemIds) {
+        Query query = getSession().getNamedQuery("PriceModelDTO.findbyPlanItemIds");
+        query.setParameterList("plan_item_ids", planItemIds);
+        return query.list();
+    }
+
     // it would be nice to do this with hibernate criteria, but unfortunately criteria
     // queries do not support collections of values (attributes['key_name'] = ?), so we
     // need to manually construct the HQL query by hand.

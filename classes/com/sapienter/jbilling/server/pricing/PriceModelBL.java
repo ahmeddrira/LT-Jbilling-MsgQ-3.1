@@ -190,6 +190,16 @@ public class PriceModelBL {
     }
 
     /**
+     * Returns a list of all plan prices for the given plan item id, including default plans.
+     *
+     * @param planItemIds plan item ids
+     * @return list of found plan prices including default prices, empty list if none found.
+     */
+    public List<PriceModelDTO> getPriceModels(Integer[] planItemIds) {
+        return priceModelDas.findByPlanItemIds(planItemIds);
+    }
+
+    /**
      * Return all plan prices for the given list of plan items and attributes.
      *
      * @see com.sapienter.jbilling.server.pricing.db.PriceModelDAS#findByPlanItemAndWildcardAttributes(Integer[], java.util.Map, Integer)

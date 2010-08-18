@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     jBilling - The Enterprise Open Source Billing System
     Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
@@ -18,11 +18,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <!-- Generated content from JspC goes here  -->
     jspc-webxml
@@ -80,6 +76,9 @@
 
 
     <!-- Action Servlet Configuration -->
+    <listener>
+        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>action</servlet-name>
         <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
@@ -148,6 +147,11 @@
 
 
     <!-- Action Servlet Mapping -->
+    <servlet>
+        <servlet-name>WebServicesSessionSpringBean</servlet-name>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -203,7 +207,7 @@
     <!-- No configuration files at this time -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value></param-value>
+        <param-value/>
     </context-param>
 
     <!-- Configuration of parent ApplicationContext -->
@@ -217,6 +221,10 @@
         <param-value>com.sapienter.jbilling</param-value>
     </context-param>
 
+    <servlet-mapping>
+        <servlet-name>WebServicesSessionSpringBean</servlet-name>
+        <url-pattern>/WebServicesSessionSpringBean</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>20</session-timeout>
     </session-config>

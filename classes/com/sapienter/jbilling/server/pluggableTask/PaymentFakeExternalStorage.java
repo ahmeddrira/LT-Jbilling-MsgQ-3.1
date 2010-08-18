@@ -36,11 +36,14 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
 
     private static final String PARAM_RETURN_NULL = "return_null"; // return null if true
     private static final String PARAM_RETURN_VALUE = "return_value"; // explicit return value for testing
+    
+    private static final String DELETE_RETURN_NULL = "delete_return_null"; // to return null, set param value as true
+    private static final String DELETE_RETURN_VALUE = "delete_return_value"; // explicit return value for testing
 
     public static final String DEFAULT_RETURN_VALUE = "stored externaly";
 
     /**
-     * for testing purposes, always returns "stored externaly" as a gateway key.
+     * For testing purposes, always returns "stored externaly" as a gateway key.
      *
      * @param contact contact to process
      * @param creditCard credit card to process
@@ -48,14 +51,15 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
      */
     public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         if (getParameter(PARAM_RETURN_NULL, false))
-            return null;        
+            return null;
         
-        String gatewayKey = (String) parameters.get(PARAM_RETURN_VALUE);
-        return (gatewayKey != null ? gatewayKey : DEFAULT_RETURN_VALUE);
+        return getParameter(PARAM_RETURN_VALUE, DEFAULT_RETURN_VALUE);
     }
     
     public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
-    	//noop
-    	return "deleted externally";
+        if (getParameter(PARAM_RETURN_NULL, false))
+            return null;
+        
+    	return getParameter(PARAM_RETURN_VALUE, "deleted externally");
     }
 }

@@ -42,8 +42,6 @@ public class InternalEventProcessor {
                 IInternalEventsTask myClass = taskManager.getInstance(task.getType().getClassName(),
                                                                       task.getType().getCategory().getInterfaceName(),
                                                                       task);
-	       LOG.debug("Checking task: " + task + ", class: " + myClass);
-
                 if (isProcessable(myClass, event)) {
                     LOG.debug("Processing " + event + " with " + myClass);
                     myClass.process(event);

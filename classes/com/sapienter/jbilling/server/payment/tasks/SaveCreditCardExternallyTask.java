@@ -221,11 +221,15 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
     private void updateAch(AchDTO ach, String gatewayKey) {
 
         if (gatewayKey != null) {
-            LOG.debug("Storing ACH gateway key: " + gatewayKey);
+            LOG.debug("Storing ach gateway key: " + gatewayKey);
             ach.setGatewayKey(gatewayKey);
-            AchDAS achdas = new AchDAS();		    
+            LOG.debug("Obscuring the Bank Account Number for user " + ach.getBaseUser().getId());
+            ach.obscureBankAccount();
+            AchDAS achdas = new AchDAS();
             achdas.makePersistent(ach);
-        } 
+        } else {
+            LOG.warn("gateway key returned from external store is null, failed to store ach information.");
+        }
     }
     /**
      * Delete the ACH Object

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 -- this script will upgrade a database schema from the latest jbilling release
 -- to the code currently at the tip of the trunk.
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
@@ -404,3 +403,10 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 
 -- external ACH storage plug-in
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (84, 17, 'com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask', 1);
+
+-- payment authorization transaction id
+ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40); -- postgresql
+-- alter table payment_authorization modify transaction_id varchar(40); -- mysql
+
+-- ach external storage gateway_key
+alter table ach add column gateway_key varchar(100) default null;

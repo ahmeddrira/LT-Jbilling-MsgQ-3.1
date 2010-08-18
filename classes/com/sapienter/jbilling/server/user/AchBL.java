@@ -74,8 +74,8 @@ public class AchBL {
                 dto.getAccountType(), dto.getBankName(), dto.getAccountName(), dto.getGatewayKey());
 
 	    if (ach.getBaseUser() != null) {
-	        log.debug("create: Generating Update ACH event " + ach.getBaseUser().getCompany().getId());
 	    	EventManager.process(new AchUpdateEvent(ach, ach.getBaseUser().getCompany().getId()));
+	    	log.debug("Save ACH details for the user " + ach.getBaseUser().getId());
 	    }
 
         return ach.getId();

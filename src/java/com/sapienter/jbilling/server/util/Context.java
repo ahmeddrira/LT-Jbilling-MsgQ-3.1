@@ -29,13 +29,17 @@ import org.springframework.context.ApplicationContext;
 public class Context {
 
     // get ApplicationContext configured by jbilling-beansRefFactory.xml
+    /*
     private static final BeanFactoryReference factoryRef = 
             ContextSingletonBeanFactoryLocator.getInstance(
             "jbilling-beansRefFactory.xml").useBeanFactory(
             "com.sapienter.jbilling");
-    private static final ApplicationContext spring = (ApplicationContext)
-            factoryRef.getFactory();
-    
+     */
+    private static ApplicationContext spring = null;
+
+    public static void setApplicationContext(ApplicationContext ctx) {
+        spring = ctx;
+    }
     public enum Name {
         ITEM_SESSION, 
         NOTIFICATION_SESSION,
@@ -139,8 +143,10 @@ public class Context {
         return spring.getBean(springBeans.get(bean));
     }
 
+    /*
     // called at shutdown
     public static void shutdown() {
         factoryRef.release();
     }
+     */
 }

@@ -123,7 +123,7 @@ public class JBillingListener implements ServletContextListener {
     }
 
     public void contextDestroyed(ServletContextEvent event) {
-        Context.shutdown(); // shutdown Spring container
+        //Context.shutdown(); // shutdown Spring container
         JobScheduler.getInstance().shutdown(); // shutdown Quartz scheduler
     }
 }

@@ -55,12 +55,15 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
 import com.sapienter.jbilling.server.user.partner.db.PartnerRange;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.DTOFactory;
 import com.sapienter.jbilling.server.util.PreferenceBL;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDAS;
 import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDAS;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  *
@@ -74,10 +77,14 @@ import com.sapienter.jbilling.server.util.db.LanguageDAS;
  * @author emilc
  */
 @Transactional( propagation = Propagation.REQUIRED )
-public class UserSessionBean implements IUserSessionBean, PartnerSQL {
+public class UserSessionBean implements IUserSessionBean, ApplicationContextAware, PartnerSQL {
 
     private static final Logger LOG = Logger.getLogger(UserSessionBean.class);
-    
+
+    public void setApplicationContext(ApplicationContext ctx) {
+        Context.setApplicationContext(ctx);
+    }
+
 
     // -------------------------------------------------------------------------
     // Methods

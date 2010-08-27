@@ -40,31 +40,23 @@ public class PriceModelWS implements Serializable {
     public static final String PLAN_TYPE_GRADUATED = "GRADUATED";
 
     // convenience constants for WS, copied from PriceModelDTO
-    public static final ItemDTOEx DEFAULT_PLAN_ITEM = null; // default pricing doesn't have an item
-    public static final Integer DEFAULT_PRECEDENCE = -1;   
     public static final String ATTRIBUTE_WILDCARD = "*";
     
     private Integer id;
     private String type;
     private Map<String, String> attributes = new HashMap<String, String>();
-    private ItemDTOEx planItem;
-    private Integer precedence;
     private BigDecimal rate;
     private BigDecimal includedQuantity;
-    private boolean defaultPricing = false;
 
     public PriceModelWS() {
     }
 
-    public PriceModelWS(PriceModelDTO planPrice, ItemDTOEx planItem) {
+    public PriceModelWS(PriceModelDTO planPrice) {
         this.id = planPrice.getId();
         this.type = planPrice.getType().name();
         this.attributes = new HashMap<String,String>(planPrice.getAttributes());
-        this.planItem = planItem;
-        this.precedence = planPrice.getPrecedence();
         this.rate = planPrice.getRate();
         this.includedQuantity = planPrice.getIncludedQuantity();
-        this.defaultPricing = planPrice.isDefaultPricing();
     }
 
     public Integer getId() {
@@ -95,22 +87,6 @@ public class PriceModelWS implements Serializable {
         this.attributes.put(name, value);
     }
 
-    public ItemDTOEx getPlanItem() {
-        return planItem;
-    }
-
-    public void setPlanItem(ItemDTOEx planItem) {
-        this.planItem = planItem;
-    }
-
-    public Integer getPrecedence() {
-        return precedence;
-    }
-
-    public void setPrecedence(Integer precedence) {
-        this.precedence = precedence;
-    }
-
     public BigDecimal getRate() {
         return rate;
     }
@@ -127,25 +103,14 @@ public class PriceModelWS implements Serializable {
         this.includedQuantity = includedQuantity;
     }
 
-    public boolean isDefaultPricing() {
-        return defaultPricing;
-    }
-
-    public void setDefaultPricing(boolean defaultPricing) {
-        this.defaultPricing = defaultPricing;
-    }
-
     @Override
     public String toString() {
         return "PriceModelWS{"
                 + "id=" + id
                 + ", type='" + type + '\''
                 + ", attributes=" + attributes
-                + ", planItemId=" + (planItem != null ? planItem.getId() : null)
-                + ", precedence=" + precedence
                 + ", rate=" + rate
                 + ", includedQuantity=" + includedQuantity
-                + ", defaultPricing=" + defaultPricing
                 + '}';
     }
 }

@@ -1,0 +1,119 @@
+/*
+ jBilling - The Enterprise Open Source Billing System
+ Copyright (C) 2003-2010 Enterprise jBilling Software Ltd. and Emiliano Conde
+
+ This file is part of jbilling.
+
+ jbilling is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ jbilling is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.sapienter.jbilling.server.item.db;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * @author Brian Cowdery
+ * @since 26-08-2010
+ */
+@Entity
+@Table(name = "plan")
+@TableGenerator(
+        name = "plan_GEN",
+        table = "jbilling_seqs",
+        pkColumnName = "name",
+        valueColumnName = "next_id",
+        pkColumnValue = "plan",
+        allocationSize = 100
+)
+public class PlanDTO implements Serializable {
+
+    private Integer id;
+    private ItemDTO item;
+    private String description;
+    private List<PlanItemDTO> planItems;
+
+    public PlanDTO() {
+    }
+
+    @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "plan_GEN")
+    @Column(name = "id", nullable = false, unique = true)
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    public ItemDTO getItem() {
+        return item;
+    }
+
+    public void setItem(ItemDTO item) {
+        this.item = item;
+    }
+
+    /**
+     * Returns the plan subscription item.
+     * Syntax sugar, alias for {@link #getItem()}
+     * @return plan subscription item
+     */
+    @Transient
+    public ItemDTO getPlanSubscriptionItem() {
+        return getItem();
+    }
+
+    @Column(name = "description", nullable = true, length = 255)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan")
+    public List<PlanItemDTO> getPlanItems() {
+        return planItems;
+    }
+
+    public void setPlanItems(List<PlanItemDTO> planItems) {
+        this.planItems = planItems;
+    }
+
+    @Override
+    public String toString() {
+        return "PlanDTO{"
+               + "id=" + id
+               + ", item=" + item
+               + ", description='" + description + '\''
+               + ", planItems=" + planItems
+               + '}';
+    }
+}

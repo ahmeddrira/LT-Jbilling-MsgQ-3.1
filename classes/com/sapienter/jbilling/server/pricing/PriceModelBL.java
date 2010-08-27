@@ -80,14 +80,7 @@ public class PriceModelBL {
      * @return plan price as a WS object, null if dto is null
      */
     public static PriceModelWS getWS(PriceModelDTO dto) {
-        if (dto != null) {
-            ItemDTOEx planItem = dto.isDefaultPricing() || dto.getPlanItem() == null
-                                 ? PriceModelWS.DEFAULT_PLAN_ITEM
-                                 : new ItemBL().getWS(dto.getPlanItem());
-
-            return new PriceModelWS(dto, planItem);
-        }
-        return null;
+        return dto != null ? new PriceModelWS(dto) : null;
     }
 
     /**
@@ -115,14 +108,7 @@ public class PriceModelBL {
      * @return PriceModelDTO entity, null if ws is null
      */
     public static PriceModelDTO getDTO(PriceModelWS ws) {
-        if (ws != null) {
-            ItemDTO planItem = ws.isDefaultPricing() || ws.getPlanItem() == null
-                               ? PriceModelDTO.DEFAULT_PLAN_ITEM :
-                               new ItemBL(ws.getPlanItem().getId()).getEntity();
-
-            return new PriceModelDTO(ws, planItem);
-        }
-        return null;
+        return ws != null ? new PriceModelDTO(ws) : null;
     }
 
     // todo: Add event logger for pricing models.
@@ -134,16 +120,10 @@ public class PriceModelBL {
 
     public void update(PriceModelDTO dto) {
         if (model != null) {
-
-            if (model.getPlanItem().getId() != dto.getPlanItem().getId())
-                model.setPlanItem(dto.getPlanItem());
-
             model.setType(dto.getType());
             model.setAttributes(dto.getAttributes());
-            model.setPrecedence(dto.getPrecedence());
             model.setRate(dto.getRate());
             model.setIncludedQuantity(dto.getIncludedQuantity());
-            model.setDefaultPricing(dto.isDefaultPricing());
         } else {
             LOG.error("Cannot update, PriceModelDTO not found or not set!");
         }

@@ -28,6 +28,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -49,6 +51,15 @@ import java.util.List;
         pkColumnValue = "plan",
         allocationSize = 100
 )
+@NamedQueries({
+        @NamedQuery(name = "PlanDTO.findByPlanItem",
+                    query = "select plan from PlanDTO plan where plan.item.id = :plan_item_id"),
+
+        // todo: include bundled items as "affected"
+        @NamedQuery(name = "PlanDTO.findByAffectedItem",
+                    query = "select plan from PlanDTO plan where plan.planItems.item.id = :affected_item_id")
+})
+// todo: configure caching
 public class PlanDTO implements Serializable {
 
     private Integer id;
@@ -105,6 +116,10 @@ public class PlanDTO implements Serializable {
 
     public void setPlanItems(List<PlanItemDTO> planItems) {
         this.planItems = planItems;
+    }
+
+    public void addPlanItem(PlanItemDTO planItem) {
+        this.planItems.add(planItem);
     }
 
     @Override

@@ -18,14 +18,14 @@
  along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sapienter.jbilling.server.pricing.db;
+package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 
 /**
  * @author Brian Cowdery
- * @since 05-08-2010
+ * @since 30-08-2010
  */
-public class PriceModelDAS extends AbstractDAS<PriceModelDTO> {
+public class PlanItemDAS extends AbstractDAS<PlanItemDTO> {
 
 }

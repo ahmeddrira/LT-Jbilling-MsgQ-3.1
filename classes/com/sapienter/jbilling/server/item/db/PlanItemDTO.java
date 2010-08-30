@@ -50,6 +50,7 @@ import java.io.Serializable;
         pkColumnValue = "plan_item",
         allocationSize = 100
 )
+// todo: configure caching
 public class PlanItemDTO implements Serializable {
 
     public static final Integer DEFAULT_PRECEDENCE = -1;
@@ -58,7 +59,7 @@ public class PlanItemDTO implements Serializable {
     private PlanDTO plan;
     private ItemDTO item; // affected item
     private PriceModelDTO model;
-    private Integer precedence;
+    private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
     }

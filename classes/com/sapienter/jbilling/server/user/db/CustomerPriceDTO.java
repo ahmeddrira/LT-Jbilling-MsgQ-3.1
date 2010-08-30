@@ -22,44 +22,114 @@ package com.sapienter.jbilling.server.user.db;
 
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
+ * Customer pricing mapping class. Provides a list of prices for each customer. New prices
+ * are inserted when a customer subscribes to a configured plan.
+ *
  * @author Brian Cowdery
  * @since 26-08-2010
  */
 @Entity
 @Table(name = "customer_price_dto")
+@NamedQueries({
+        @NamedQuery(name = "PlanItemDTO.findAllCustomerSpecificPrices",
+                    query = "select price.planItem"
+                            + " from CustomerPriceDTO price "
+                            + " where price.planItem.plan is null "
+                            + " and price.customer.baseUser.id = :user_id"),
+
+        @NamedQuery(name = "CustomerDTO.findCustomersByPlan",
+                    query = "select user.customer"
+                            + " from OrderLineDTO line "
+                            + " inner join line.item.plans as plan "
+                            + " inner join line.purchaseOrder.user as user"
+                            + " where plan.id = :plan_id"
+                            + " and line.purchaseOrder.orderPeriod.id != 1 " // Constants.ORDER_PERIOD_ONCE
+                            + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
+                            + " and line.purchaseOrder.deleted = 0"),
+
+        @NamedQuery(name = "CustomerPriceDTO.deletePrice",
+                    query = "delete price "
+                            + " from CustomerPriceDTO price "
+                            + " where price.planItem.id = :plan_item_id "
+                            + " and price.customer.baseUser.id = :user_id"),
+
+        @NamedQuery(name = "CustomerPriceDTO.deletePriceByPlan",
+                    query = "delete price "
+                            + " from CustomerPriceDTO price "
+                            + " where price.planItem.plan.id = :plan_id"
+                            + " and price.customer.baseUser.id = :user_id")
+})
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "PlanItemDTO.findCustomerPrice",
+                          query = "select p.*"
+                                  + " from plan_item p "
+                                  + " join customer_price cp on cp.plan_item_id = p.id "
+                                  + " where p.item_id = :item_id "
+                                  + " and cp.user_id = :user_id "
+                                  + " order by p.precedence, cp.create_datetime desc",
+                          resultSetMapping = "PlanItemDTOResultSetMapping")
+})
+@SqlResultSetMapping(name = "PlanItemDTOResultSetMapping",
+                     entities = @EntityResult(entityClass = PlanItemDTO.class))
 public class CustomerPriceDTO implements Serializable {
 
-    private PlanItemDTO item;
+    private PlanItemDTO planItem;
     private CustomerDTO customer;
+    private Date createDatetime = new Date();
 
     public CustomerPriceDTO() {
     }
 
+    /**
+     * Returns the affected item and price
+     *
+     * @return affected item and price
+     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plan_item_id")
-    public PlanItemDTO getItem() {
-        return item;
+    public PlanItemDTO getPlanItem() {
+        return planItem;
     }
 
-    public void setItem(PlanItemDTO item) {
-        this.item = item;
+    public void setPlanItem(PlanItemDTO planItem) {
+        this.planItem = planItem;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id")
-    public CustomerDTO getCustomer() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id") // join through user instead of customer id
+    public CustomerDTO getCustomer() {                              // as all pricing is performed by user
         return customer;
     }
 
     public void setCustomer(CustomerDTO customer) {
         this.customer = customer;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_datetime")
+    public Date getCreateDatetime() {
+        return createDatetime;
+    }
+
+    public void setCreateDatetime(Date createDatetime) {
+        this.createDatetime = createDatetime;
     }
 }

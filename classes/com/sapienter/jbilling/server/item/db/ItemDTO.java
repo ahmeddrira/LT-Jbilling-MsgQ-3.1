@@ -75,6 +75,7 @@ public class ItemDTO extends AbstractDescription {
     private Set<OrderLineDTO> orderLineDTOs = new HashSet<OrderLineDTO>(0);
     private Set<ItemTypeDTO> itemTypes = new HashSet<ItemTypeDTO>(0);
     private Set<InvoiceLineDTO> invoiceLines = new HashSet<InvoiceLineDTO>(0);
+    private Set<PlanDTO> plans = new HashSet<PlanDTO>(0);
 
     private int versionNum;
 
@@ -266,6 +267,20 @@ public class ItemDTO extends AbstractDescription {
         this.invoiceLines = invoiceLines;
     }
 
+    /**
+     * List of all plans that use this item as the "plan subscription" item.
+     *
+     * @return plans
+     */
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "item")
+    public Set<PlanDTO> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(Set<PlanDTO> plans) {
+        this.plans = plans;
+    }
+
     @Version
     @Column(name = "OPTLOCK")
     public int getVersionNum() {
@@ -296,10 +311,8 @@ public class ItemDTO extends AbstractDescription {
     }
 
     @Transient
-    public void setTypes(Integer[] vector) {
-        types = vector;
-
-        strTypes = new ArrayList<String>(types.length);
+    public void setTypes(Integer[] typeIds) {
+        strTypes = new ArrayList<String>(typeIds.length);
         for (Integer i : types) {
             strTypes.add(i.toString());
         }
@@ -354,6 +367,16 @@ public class ItemDTO extends AbstractDescription {
     @Transient
     public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
+    }
+
+    @Transient
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    @Transient
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     @Override

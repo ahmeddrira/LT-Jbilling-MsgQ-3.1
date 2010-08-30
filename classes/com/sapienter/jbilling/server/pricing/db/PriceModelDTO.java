@@ -71,22 +71,6 @@ import java.util.Map;
         pkColumnValue = "price_model",
         allocationSize = 100
 )
-@NamedQueries({
-        @NamedQuery(name = "PriceModelDTO.findDefaultPricing",
-                    query = "select price from PriceModelDTO price where price.defaultPricing = true"),
-
-        @NamedQuery(name = "PriceModelDTO.findByType",
-                    query = "select price from PriceModelDTO price where price.type = :type"),
-
-        @NamedQuery(name = "PriceModelDTO.findByPlanItemId",
-                    query = "select price from PriceModelDTO price where price.planItem.id = :plan_item_id"),
-
-        @NamedQuery(name = "PriceModelDTO.findbyPlanItemIds",
-                    query = "select price from PriceModelDTO price " +
-                            "where price.planItem.id in (:plan_item_ids) " +
-                            "or price.defaultPricing = true")
-
-})
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PriceModelDTO implements Serializable {
 
@@ -98,8 +82,6 @@ public class PriceModelDTO implements Serializable {
     private BigDecimal rate;
     private BigDecimal includedQuantity;
     private CurrencyDTO currency;
-
-    // todo: convert currency when applying price.
 
     public PriceModelDTO() {
     }

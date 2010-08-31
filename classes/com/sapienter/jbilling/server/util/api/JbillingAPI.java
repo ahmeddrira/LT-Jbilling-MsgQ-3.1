@@ -209,27 +209,4 @@ public interface JbillingAPI {
 
     // special pricing and pricing
 
-    public PriceModelWS getPriceModel(Integer id)
-            throws JbillingAPIException;
-
-    public PriceModelWS[] getPriceModels(Integer planItemId)
-            throws JbillingAPIException;
-
-    public PriceModelWS[] getPriceModelsByType(String type)
-            throws JbillingAPIException;
-
-    public PriceModelWS[] getPriceModelsByItemAndAttributes(Integer[] planItemIds, Map<String, String> attributes)
-            throws JbillingAPIException;
-
-    public PriceModelWS[] getPriceModelsByItemAndWildcardAttributes(Integer[] planItemIds, Map<String, String> attributes)
-            throws JbillingAPIException;
-
-    public Integer[] createPriceModels(PriceModelWS[] models)
-            throws JbillingAPIException;
-
-    public void updatePriceModel(PriceModelWS model)
-            throws JbillingAPIException;
-
-    public void deletePriceModel(Integer modelId)
-            throws JbillingAPIException;
 }

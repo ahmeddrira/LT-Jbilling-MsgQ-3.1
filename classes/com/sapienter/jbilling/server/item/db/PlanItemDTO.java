@@ -75,7 +75,7 @@ public class PlanItemDTO implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id")
+    @JoinColumn(name = "plan_id", nullable = true)
     public PlanDTO getPlan() {
         return plan;
     }
@@ -85,7 +85,7 @@ public class PlanItemDTO implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
     public ItemDTO getItem() {
         return item;
     }
@@ -105,7 +105,7 @@ public class PlanItemDTO implements Serializable {
     }
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id")
+    @JoinColumn(name = "price_model_id", nullable = false)
     public PriceModelDTO getModel() {
         return model;
     }

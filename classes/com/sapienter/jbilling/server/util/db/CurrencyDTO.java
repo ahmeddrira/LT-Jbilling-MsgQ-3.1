@@ -40,7 +40,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
 import com.sapienter.jbilling.server.payment.db.PaymentDTO;
 import com.sapienter.jbilling.server.process.db.ProcessRunTotalDTO;
@@ -66,7 +65,6 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
     private Set<CurrencyExchangeDTO> currencyExchanges = new HashSet<CurrencyExchangeDTO>(0);
     private Set<CompanyDTO> entities_1 = new HashSet<CompanyDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
-    private Set<ItemPriceDTO> itemPrices = new HashSet<ItemPriceDTO>(0);
     private Set<ProcessRunTotalDTO> processRunTotals = new HashSet<ProcessRunTotalDTO>(0);
 
     // from EX
@@ -94,7 +92,7 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
     public CurrencyDTO(int id, String symbol, String code, String countryCode, Set<CompanyDTO> entities,
                        Set<UserDTO> baseUsers, Set<OrderDTO> orderDTOs, Set<Partner> partners, Set<PaymentDTO> payments,
                        Set<CurrencyExchangeDTO> currencyExchanges, Set<CompanyDTO> entities_1, Set<InvoiceDTO> invoices,
-                       Set<ItemPriceDTO> itemPrices, Set<ProcessRunTotalDTO> processRunTotals) {
+                       Set<ProcessRunTotalDTO> processRunTotals) {
         this.id = id;
         this.symbol = symbol;
         this.code = code;
@@ -107,7 +105,6 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
         this.currencyExchanges = currencyExchanges;
         this.entities_1 = entities_1;
         this.invoices = invoices;
-        this.itemPrices = itemPrices;
         this.processRunTotals = processRunTotals;
     }
 
@@ -226,15 +223,6 @@ public class CurrencyDTO extends AbstractDescription  implements java.io.Seriali
 
     public void setInvoices(Set<InvoiceDTO> invoices) {
         this.invoices = invoices;
-    }
-
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")
-    public Set<ItemPriceDTO> getItemPrices() {
-        return this.itemPrices;
-    }
-
-    public void setItemPrices(Set<ItemPriceDTO> itemPrices) {
-        this.itemPrices = itemPrices;
     }
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="currency")

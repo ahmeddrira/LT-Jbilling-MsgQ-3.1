@@ -57,7 +57,10 @@ import java.util.List;
 
         // todo: include bundled items as "affected"
         @NamedQuery(name = "PlanDTO.findByAffectedItem",
-                    query = "select plan from PlanDTO plan where plan.planItems.item.id = :affected_item_id")
+                    query = "select plan "
+                            + " from PlanDTO plan "
+                            + " inner join plan.planItems planItems "
+                            + " where planItems.item.id = :affected_item_id")
 })
 // todo: configure caching
 public class PlanDTO implements Serializable {
@@ -81,7 +84,7 @@ public class PlanDTO implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
     public ItemDTO getItem() {
         return item;
     }

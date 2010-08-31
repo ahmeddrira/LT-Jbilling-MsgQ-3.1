@@ -877,6 +877,7 @@ server="upload.sourceforge.net" userid="anonymous">
             binformat="package">
             <include name="PricingRules.drl" />
         </rulebase>
+<!--
         <rulebase
         	srcdir="${source.rules.dir}"
         	tofile="${base_dir}/rules/PriceModelRules.pkg"
@@ -884,6 +885,7 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="PriceModelRules.drl" />
         </rulebase>
+-->
         <rulebase
         	srcdir="${source.rules.dir}" 		
         	tofile="${base_dir}/rules/provisioning_commands.pkg"

@@ -15,14 +15,12 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.sapienter.jbilling.client.item;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.util.CrudActionBase;
+import com.sapienter.jbilling.server.item.IItemSessionBean;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.Context;
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
@@ -30,14 +28,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.Resources;
 
-import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.client.util.CrudActionBase;
-import com.sapienter.jbilling.server.item.IItemSessionBean;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.util.Context;
-import java.math.BigDecimal;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class MaintainAction extends CrudActionBase<ItemDTO> {
 
@@ -83,6 +80,9 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
             errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("errors.required", field));
         }
 
+
+        // todo: convert default price rate to a METERED PriceModelWS
+        /*
         // get the prices. At least one has to be present
         dto.setPrices((List) myForm.get(FIELD_PRICES));
         boolean atLeastOnePriceFound = false;
@@ -103,11 +103,12 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
                 nextPrice.setPrice(price);
             }
         }
-
+        
         // either is a percentage or a price is required.
         if (!atLeastOnePriceFound && dto.getPercentage() == null) {
             errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("item.error.price"));
         }
+        */
 
         // If the item has an ID (aka it is not being created)
         //  Validate the change on "Allow decimal quantity" flag and block it if there is an
@@ -151,18 +152,22 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
         // to be overwritten by the user's input
         // in this case the currency doesn't matter, it
         ItemDTO dto = myItemSession.get(selectedId, languageId, null, null, entityId, null);
+
+        /*
         // the prices have to be localized
         for (int f = 0; f < dto.getPrices().size(); f++) {
             ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);
             if (pr.getPrice() != null)
                 pr.setPriceForm(decimal2string(pr.getPrice()));
         }
+        */
+
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());
         myForm.set(FIELD_DESCRIPTION, dto.getDescription());
         myForm.set(FIELD_MANUAL_PRICE, dto.getPriceManual().intValue() > 0);
         myForm.set(FIELD_TYPES, dto.getTypes());
         myForm.set(FIELD_ID, dto.getId());
-        myForm.set(FIELD_PRICES, dto.getPrices());
+        myForm.set(FIELD_PRICES, new ArrayList()); // todo: default price field instead of prices
         myForm.set(FIELD_LANGUAGE, languageId);
         myForm.set(FIELD_HAS_DECIMALS, dto.getHasDecimals().intValue() > 0);
         if (dto.getPercentage() != null) {

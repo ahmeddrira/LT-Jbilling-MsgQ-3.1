@@ -32,7 +32,7 @@ import java.util.List;
 public class PlanDAS extends AbstractDAS<PlanDTO> {
 
     /**
-     * Finds all plans for the given plan subscription item id.
+     * Fetch all plans for the given plan subscription item id.
      *
      * @param planItemId plan subscription item id
      * @return list of plans, empty if none found
@@ -46,7 +46,7 @@ public class PlanDAS extends AbstractDAS<PlanDTO> {
     }
 
     /**
-     * Finds all plans that affect the pricing of the given item id, or include
+     * Fetch all plans that affect the pricing of the given item id, or include
      * the item in a bundle.
      *
      * @param affectedItemId affected item id

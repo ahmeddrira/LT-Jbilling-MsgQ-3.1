@@ -174,7 +174,7 @@ public class ItemDTO extends AbstractDescription {
     }
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "price_model_id")
+    @JoinColumn(name = "price_model_id", nullable = true)
     public PriceModelDTO getDefaultPrice() {
         return defaultPrice;
     }
@@ -311,8 +311,10 @@ public class ItemDTO extends AbstractDescription {
     }
 
     @Transient
-    public void setTypes(Integer[] typeIds) {
-        strTypes = new ArrayList<String>(typeIds.length);
+    public void setTypes(Integer[] types) {
+        this.types = types;
+
+        strTypes = new ArrayList<String>(types.length);
         for (Integer i : types) {
             strTypes.add(i.toString());
         }

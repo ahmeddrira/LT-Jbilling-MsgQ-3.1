@@ -276,7 +276,7 @@ public class OrderLineBL {
         }
         if (line.getPrice() == null) {
             line.setPrice((item.getPercentage() == null) ? 
-                itemBl.getPriceByCurrency(currencyId, entityId) :
+                itemBl.getPriceByCurrency(item, currencyId) :
                 item.getPercentage());
         }
         if (line.getAmount() == null) {

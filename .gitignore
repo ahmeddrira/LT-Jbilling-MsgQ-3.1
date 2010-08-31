@@ -1,8 +1,24 @@
+# build artifacts and temp files
 build/
 tmp/
+libs/
 activemq-data/
-build.properties
+.ant-targets-*.xml
 TEST*.xml
 *~
+velocity.log
+
+# external resources
 libs/
 nbproject/
+
+# project files
+build.properties
+.project
+.classpath
+.idea
+*.iml
+
+# local git configuration
+.gitattributes
+

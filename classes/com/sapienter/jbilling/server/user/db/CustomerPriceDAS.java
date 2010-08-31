@@ -58,7 +58,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     }
 
     /**
-     * Returns a list of all customer specific prices.
+     * Fetch a list of all customer specific prices.
      *
      * @param userId user id of the customer
      * @return list of customer specific prices, empty list if none found
@@ -72,7 +72,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     }
 
     /**
-     * Returns a list of all customers that have subscribed (added the plan item to
+     * Fetch a list of all customers that have subscribed (added the plan item to
      * a recurring order) to the given plan.
      *
      * @param planId id of plan
@@ -146,7 +146,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
             " order by price.planItem.precedence, price.createDatetime desc";
 
     /**
-     * Returns all pricing and default pricing in order of precedence (highest first), where
+     * Fetch all customer pricing in order of precedence (highest first), where
      * all plan attributes <strong>must</strong> match the given map of attributes.
      *
      * @param userId user id of the customer
@@ -188,9 +188,9 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     }
 
     /**
-     * Returns all pricing and default pricing in order of precedence (highest first), where
+     * Fetch all customer pricing in order of precedence (highest first), where
      * attributes matched are equal or saved in the database as a wildcard ('*'). Allows partial
-     * matches of attributes to find the "best fit" pricing plan.
+     * matches of attributes to find the "best fit" pricing.
      *
      * Attributes may be persisted as a wildcard ('*') which will match any attribute value
      * passed into this method. This is useful for defining pricing that only need to match
@@ -198,7 +198,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      *
      * Eg.
      *
-     * Plan with saved attributes:
+     * Item price with saved attributes:
      * <code>
      *      lata = '*'
      *      rateCenter = '*'

@@ -81,7 +81,6 @@ public class CustomerDTO implements java.io.Serializable {
     private BigDecimal dynamicBalance;
     private BigDecimal autoRecharge;
     private BigDecimal creditLimit;
-    private Set<CustomerPriceDTO> prices;
     private int versionNum;
 
     public CustomerDTO() {
@@ -334,13 +333,13 @@ public class CustomerDTO implements java.io.Serializable {
         this.creditLimit = creditLimit;
     }
 
-    @OneToMany(fetch =  FetchType.LAZY, mappedBy = "customer")
+    @Transient
     public Set<CustomerPriceDTO> getPrices() {
-        return prices;
+        return getBaseUser().getPrices();
     }
 
     public void setPrices(Set<CustomerPriceDTO> prices) {
-        this.prices = prices;
+        this.getBaseUser().setPrices(prices);
     }
 
     @Column(name = "dynamic_balance")

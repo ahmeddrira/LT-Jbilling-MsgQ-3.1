@@ -48,10 +48,7 @@
           </logic:present>                
   	      <logic:notPresent parameter="promotion">                
                <html:hidden property="create" value="item"/>
-          </logic:notPresent>                
-          <!-- the prices this entity operates have to be initialized -->
-          <jbilling:getOptions currencies="true"/>
-          <jbilling:populateCurrencies/>
+          </logic:notPresent>
       </logic:present>
 	
 	  <table class="form">
@@ -177,12 +174,14 @@
 	      	<td class="form_prompt">
 	      		<bean:write name="itemPrice" property="name"/>
 	      	</td>
+	      	<!--
 	      <jbilling:permission permission='<%=Constants.P_ITEM_EDIT%>'>	      
 	          <td><html:text property='<%= "prices[" + index + "].priceForm" %>' size="10"/></td>
 	      </jbilling:permission>	      
 	      <jbilling:permission permission='<%=Constants.P_ITEM_EDIT%>' negative="true">	      
 	          <td><bean:write name="item" property='<%= "prices[" + index + "].priceForm" %>'/></td>
-	      </jbilling:permission>	      
+	      </jbilling:permission>
+              -->
 	      </tr>
         </logic:iterate>
     	

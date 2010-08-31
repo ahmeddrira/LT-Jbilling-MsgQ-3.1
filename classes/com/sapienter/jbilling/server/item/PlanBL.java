@@ -27,6 +27,8 @@ import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 /**
  * @author Brian Cowdery
  * @since 30-08-2010
@@ -118,5 +120,26 @@ public class PlanBL {
         } else {
             LOG.error("Cannot update customer prices, PlanDTO not found or not set!");
         }
+    }
+
+    /**
+     * Returns all plans that use the given item as the "plan subscription" item.
+     *
+     * @param planItemId item id
+     * @return list of plans, empty list if none found
+     */
+    public List<PlanDTO> getPlansByPlanItem(Integer planItemId) {
+        return planDas.findByPlanSubscriptionItem(planItemId);
+    }
+
+    /**
+     * Returns all plans that affect the pricing of the given item, or that include
+     * the item in a bundle.
+     *
+     * @param itemId item id
+     * @return list of plans, empty list if none found
+     */
+    public List<PlanDTO> getPlansByAffectedItem(Integer itemId) {
+        return planDas.findByAffectedItem(itemId);
     }
 }

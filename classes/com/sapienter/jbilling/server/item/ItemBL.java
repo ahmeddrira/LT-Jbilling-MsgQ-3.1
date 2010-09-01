@@ -30,6 +30,7 @@ import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -101,6 +102,12 @@ public class ItemBL {
             dto.setHasDecimals(0);
         }
 
+        // Backwards compatible with the old ItemDTOEx Web Service API, use the
+        // transient price field as the rate for a default pricing model.
+        if (dto.getPrice() != null) {    
+            dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+        }
+
         if (dto.getDefaultPrice() != null) {
             dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
         }
@@ -116,7 +123,6 @@ public class ItemBL {
     }
     
     public void update(Integer executorId, ItemDTO dto, Integer languageId)  {
-
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, null);
@@ -127,26 +133,63 @@ public class ItemBL {
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
 
-        if (dto.getDefaultPrice() != null) {
-            if (item.getDefaultPrice() != null) {
+        updateDefaultPrice(dto);
+        updateTypes(dto);
+    }
+
+    /**
+     * Constructs a METERED PriceModelDTO with the given rate to be used as
+     * the default price for items. This type of price model matches the old
+     * "$ per unit" style pricing for basic items.
+     *
+     * @param rate rate per unit
+     * @return price model
+     */
+    private PriceModelDTO getDefaultPrice(BigDecimal rate) {
+        PriceModelDTO model = new PriceModelDTO();
+        model.setRate(rate);
+        model.setType(PriceModelStrategy.METERED);
+
+        return model;
+    }
+
+    /**
+     * Updates the price of this item to that of the given ItemDTO. This method
+     * handles updates to the price using both the items default price model, and
+     * the transient price attribute.
+     *
+     * If the given dto has a price through {@link ItemDTO#getPrice()}, then the
+     * default price model rate will be set to the price. Otherwise the given dto's
+     * price model is used to update. 
+     *
+     * @param dto item holding the updates to apply to this item
+     */
+    private void updateDefaultPrice(ItemDTO dto) {
+        if (item.getDefaultPrice() == null) {
+            // new default price
+            if (dto.getDefaultPrice() != null) {
+                item.setDefaultPrice(dto.getDefaultPrice());
+            } else if (dto.getPrice() != null) {
+                item.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+            }
+        } else {
+            // update existing default price
+            if (dto.getDefaultPrice() != null) {
                 item.getDefaultPrice().setType(dto.getDefaultPrice().getType());
                 item.getDefaultPrice().setAttributes(dto.getDefaultPrice().getAttributes());
                 item.getDefaultPrice().setRate(dto.getDefaultPrice().getRate());
                 item.getDefaultPrice().setIncludedQuantity(dto.getDefaultPrice().getIncludedQuantity());
-
-            } else {
-                item.setDefaultPrice(dto.getDefaultPrice());
-            }
-
-            // default price currency should always be the entity currency
-            if (item.getDefaultPrice().getCurrency() == null) {
-                item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
+            } else if (dto.getPrice() != null) {
+                item.getDefaultPrice().setRate(dto.getPrice());
             }
         }
 
-        updateTypes(dto);
+        // default price currency should always be the entity currency
+        if (item.getDefaultPrice() != null && item.getDefaultPrice().getCurrency() == null) {
+            item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
+        }
     }
-    
+
     private void updateTypes(ItemDTO dto) 
             {
         // update the types relationship        
@@ -170,15 +213,15 @@ public class ItemBL {
     }
 
     public static boolean validate(ItemDTO dto) {
-        boolean retValue = true;
-        
-        if (dto.getDescription() == null || dto.getPrice() == null ||
-                dto.getPriceManual() == null || 
-                dto.getTypes() == null) {
-            retValue = false;
+        if ((dto.getPrice() == null && dto.getDefaultPrice() == null && dto.getPercentage() == null)
+            || dto.getDescription() == null 
+            || dto.getPriceManual() == null
+            || dto.getTypes() == null) {
+
+            return false;
         }
         
-        return retValue;
+        return true;
     }
     
     public boolean validateDecimals( Integer hasDecimals ){

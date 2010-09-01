@@ -1,3 +1,5 @@
+import org.apache.log4j.*
+
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -58,4 +60,26 @@ environments {
 
 }
 
+def catalinaHome = System.properties.getProperty('catalina.home')
+if (!catalinaHome) {
+    catalinaHome = '..\\'   // just in case
+}
 
+log4j = {
+    
+    appenders {
+        console name:"CONSOLE", threshold:Level.INFO, layout:pattern(conversionPattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n")
+        rollingFile name:"FILE", threshold:Level.INFO, datepattern: "'.'yyyy-MM-dd", maxFileSize:1048576,  file:catalinaHome + "/logs/server.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n"), append: false
+        rollingFile name:"jbillingAppender", threshold:Level.DEBUG, datepattern: "'.'yyyy-MM-dd", maxFileSize:1048576,  file:catalinaHome + "/logs/jbilling.log", layout:pattern(conversionPattern: "%d %-5p [%c] %m%n"), append: false
+        rollingFile name:"SQL-FILE", threshold:Level.DEBUG, datepattern: "'.'yyyy-MM-dd", maxFileSize:1048576,  file:catalinaHome + "/logs/sql.log", layout:pattern(conversionPattern: "%d %-5r %-5p [%c] (%t:%x) %m%n"), append: false
+    }
+    
+    debug jbillingAppender:'com.sapienter.jbilling'
+    
+    info FILE:'com.mchange'
+    
+    root {
+        info 'CONSOLE','FILE'
+        additivity = true
+    }
+}

@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -56,11 +57,6 @@ public class ItemBL {
     private String priceCurrencySymbol = null;
     private List<PricingField> pricingFields = null;
 
-    // item price cache for getPrice()
-    private CacheProviderFacade cache;
-    private CachingModel cacheModel;
-    private FlushingModel flushModel;
-
     public ItemBL(Integer itemId) 
             throws SessionInternalError {
         try {
@@ -87,28 +83,28 @@ public class ItemBL {
     private void init() {
         eLogger = EventLogger.getInstance();        
         itemDas = new ItemDAS();
-        cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
-        cacheModel = (CachingModel) Context.getBean(
-                Context.Name.CACHE_MODEL_ITEM_PRICE);
-        flushModel = (FlushingModel) Context.getBean(
-                Context.Name.CACHE_FLUSH_MODEL_ITEM_PRICE);
     }
     
     public ItemDTO getEntity() {
         return item;
     }
 
-    public Integer create(ItemDTO dto, Integer languageId) 
-             {
+    public Integer create(ItemDTO dto, Integer languageId) {
         EntityBL entity = new EntityBL(dto.getEntityId());
         if (languageId == null) {
             languageId = entity.getEntity().getLanguageId();
         }
+
         if (dto.getHasDecimals() != null) {
             dto.setHasDecimals(dto.getHasDecimals());
         } else {
             dto.setHasDecimals(0);
         }
+
+        if (dto.getDefaultPrice() != null) {
+            dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
+        }
+                 
         dto.setDeleted(0);
 
         item = itemDas.save(dto);
@@ -119,8 +115,7 @@ public class ItemBL {
         return item.getId();
     }
     
-    public void update(Integer executorId, ItemDTO dto, 
-            Integer languageId)  {
+    public void update(Integer executorId, ItemDTO dto, Integer languageId)  {
 
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
@@ -131,11 +126,25 @@ public class ItemBL {
         item.setDescription(dto.getDescription(), languageId);
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
-        
-        updateTypes(dto);
 
-        // invalidate item/price cache
-        invalidateCache();
+        if (dto.getDefaultPrice() != null) {
+            if (item.getDefaultPrice() != null) {
+                item.getDefaultPrice().setType(dto.getDefaultPrice().getType());
+                item.getDefaultPrice().setAttributes(dto.getDefaultPrice().getAttributes());
+                item.getDefaultPrice().setRate(dto.getDefaultPrice().getRate());
+                item.getDefaultPrice().setIncludedQuantity(dto.getDefaultPrice().getIncludedQuantity());
+
+            } else {
+                item.setDefaultPrice(dto.getDefaultPrice());
+            }
+
+            // default price currency should always be the entity currency
+            if (item.getDefaultPrice().getCurrency() == null) {
+                item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
+            }
+        }
+
+        updateTypes(dto);
     }
     
     private void updateTypes(ItemDTO dto) 
@@ -190,11 +199,14 @@ public class ItemBL {
      * @return The price in the requested currency
      */
     public BigDecimal getPriceByCurrency(ItemDTO item, Integer currencyId)  {
-        PricingResult result = new PricingResult(item.getId(), null, currencyId);
-        item.getDefaultPrice().applyTo(result, null, null);
-        
-        return result.getPrice();
+        if (item.getDefaultPrice() != null) {
+            PricingResult result = new PricingResult(item.getId(), null, currencyId);
+            item.getDefaultPrice().applyTo(result, null, null);
+            return result.getPrice();
+        }
+        return BigDecimal.ZERO;
     }
+
     
     /**
      * It will call the main getPrice, with the currency of the userId passed
@@ -268,7 +280,9 @@ public class ItemBL {
             item.getPercentage(),
             null, // to be set right after
             item.getHasDecimals() );  
-        
+
+        dto.setDefaultPrice(item.getDefaultPrice());
+
         if (currencyId != null && dto.getPercentage() == null) {
             // it wants one price in particular
             dto.setPrice(getPrice(userId, currencyId, entityId));
@@ -397,9 +411,5 @@ public class ItemBL {
 
     public void setPricingFields(List<PricingField> fields) {
         pricingFields = fields;
-    }
-
-    public void invalidateCache() {
-        cache.flushCache(flushModel);
     }
 }

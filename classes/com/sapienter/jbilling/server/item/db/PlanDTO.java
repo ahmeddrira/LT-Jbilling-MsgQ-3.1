@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.item.db;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -112,7 +113,7 @@ public class PlanDTO implements Serializable {
         this.description = description;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "plan")
     public List<PlanItemDTO> getPlanItems() {
         return planItems;
     }

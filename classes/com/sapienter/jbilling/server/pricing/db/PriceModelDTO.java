@@ -236,7 +236,7 @@ public class PriceModelDTO implements Serializable {
                + ", attributes=" + attributes
                + ", rate=" + rate
                + ", includedQuantity=" + includedQuantity
-               + ", currency=" + currency
+               + ", currencyId=" + (currency != null ? currency.getId() : null)
                + '}';
     }
 }

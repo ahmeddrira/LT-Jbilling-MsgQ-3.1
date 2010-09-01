@@ -17,10 +17,14 @@ package com.sapienter.jbilling.client.item;
 
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.client.util.CrudActionBase;
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Context;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
@@ -32,14 +36,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class MaintainAction extends CrudActionBase<ItemDTO> {
 
     private static final String FORM = "item";
-    private static final String FIELD_PRICES = "prices";
+    private static final String FIELD_PRICE = "price";
     private static final String FIELD_PERCENTAGE = "percentage";
     private static final String FIELD_TYPES = "types";
     private static final String FIELD_MANUAL_PRICE = "chbx_priceManual";
@@ -65,8 +68,7 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
     protected ItemDTO doEditFormToDTO() throws RemoteException {
         ItemDTO dto = new ItemDTO();
         dto.setDescription((String) myForm.get(FIELD_DESCRIPTION));
-        dto.setEntity(new CompanyDTO((Integer) session.getAttribute(
-                Constants.SESSION_ENTITY_ID_KEY)));
+        dto.setEntity(new CompanyDTO((Integer) session.getAttribute(Constants.SESSION_ENTITY_ID_KEY)));
         dto.setNumber((String) myForm.get(FIELD_INTERNAL_NUMBER));
         dto.setPriceManual((Boolean) myForm.get(FIELD_MANUAL_PRICE) ? 1 : 0);
         dto.setTypes((Integer[]) myForm.get(FIELD_TYPES));                
@@ -80,35 +82,25 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
             errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("errors.required", field));
         }
 
+        LOG.debug("Incoming item default price: " + myForm.get(FIELD_PRICE));
 
-        // todo: convert default price rate to a METERED PriceModelWS
-        /*
-        // get the prices. At least one has to be present
-        dto.setPrices((List) myForm.get(FIELD_PRICES));
-        boolean atLeastOnePriceFound = false;
-        for (int f = 0; f < dto.getPrices().size(); f++) {
-            ItemPriceDTO nextPrice = (ItemPriceDTO) dto.getPrices().get(f);
-            LOG.debug("Now processing item price " + f + " data:" + nextPrice);
-            String priceStr = nextPrice.getPriceForm();
-            if (priceStr != null && priceStr.trim().length() > 0) {
-                BigDecimal price = string2decimal(priceStr);
-                if (price == null) {
-                    String field = Resources.getMessage(request, "item.prompt.price");
-                    errors.add(ActionErrors.GLOBAL_ERROR,
-                            new ActionError("errors.float", field));
-                    break;
-                } else {
-                    atLeastOnePriceFound = true;
-                }
-                nextPrice.setPrice(price);
+        // item must have a default price, or be a percentage item
+        if (myForm.get(FIELD_PRICE) == null && dto.getPercentage() == null) {
+            errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("item.error.price"));
+        } else {
+            BigDecimal price = string2decimal((String) myForm.get(FIELD_PRICE));                                                
+            if (price != null) {
+                PriceModelDTO model = new PriceModelDTO();
+                model.setType(PriceModelStrategy.METERED);
+                model.setRate(price);
+
+                dto.setDefaultPrice(model);
+                LOG.debug("Item default price: " + dto.getDefaultPrice());
+            } else {
+                String field = Resources.getMessage(request, "item.prompt.price");
+                errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("errors.float", field));
             }
         }
-        
-        // either is a percentage or a price is required.
-        if (!atLeastOnePriceFound && dto.getPercentage() == null) {
-            errors.add(ActionErrors.GLOBAL_ERROR, new ActionError("item.error.price"));
-        }
-        */
 
         // If the item has an ID (aka it is not being created)
         //  Validate the change on "Allow decimal quantity" flag and block it if there is an
@@ -150,26 +142,17 @@ public class MaintainAction extends CrudActionBase<ItemDTO> {
     protected ForwardAndMessage doSetup() throws RemoteException {
         // the price is actually irrelevant in this call, since it's going
         // to be overwritten by the user's input
-        // in this case the currency doesn't matter, it
         ItemDTO dto = myItemSession.get(selectedId, languageId, null, null, entityId, null);
-
-        /*
-        // the prices have to be localized
-        for (int f = 0; f < dto.getPrices().size(); f++) {
-            ItemPriceDTO pr = (ItemPriceDTO) dto.getPrices().get(f);
-            if (pr.getPrice() != null)
-                pr.setPriceForm(decimal2string(pr.getPrice()));
-        }
-        */
 
         myForm.set(FIELD_INTERNAL_NUMBER, dto.getNumber());
         myForm.set(FIELD_DESCRIPTION, dto.getDescription());
         myForm.set(FIELD_MANUAL_PRICE, dto.getPriceManual().intValue() > 0);
         myForm.set(FIELD_TYPES, dto.getTypes());
         myForm.set(FIELD_ID, dto.getId());
-        myForm.set(FIELD_PRICES, new ArrayList()); // todo: default price field instead of prices
         myForm.set(FIELD_LANGUAGE, languageId);
+        myForm.set(FIELD_PRICE, (dto.getDefaultPrice() != null ? decimal2string(dto.getDefaultPrice().getRate()) : null));
         myForm.set(FIELD_HAS_DECIMALS, dto.getHasDecimals().intValue() > 0);
+
         if (dto.getPercentage() != null) {
             myForm.set(FIELD_PERCENTAGE, decimal2string(dto.getPercentage()));
         } else {

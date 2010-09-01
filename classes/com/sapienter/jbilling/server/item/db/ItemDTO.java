@@ -173,7 +173,7 @@ public class ItemDTO extends AbstractDescription {
         this.internalNumber = internalNumber;
     }
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_model_id", nullable = true)
     public PriceModelDTO getDefaultPrice() {
         return defaultPrice;

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.item.db;
 
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -104,7 +105,7 @@ public class PlanItemDTO implements Serializable {
         return getItem();
     }
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "price_model_id", nullable = false)
     public PriceModelDTO getModel() {
         return model;

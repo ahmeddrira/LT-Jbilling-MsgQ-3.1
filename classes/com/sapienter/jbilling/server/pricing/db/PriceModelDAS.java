@@ -27,5 +27,5 @@ import com.sapienter.jbilling.server.util.db.AbstractDAS;
  * @since 05-08-2010
  */
 public class PriceModelDAS extends AbstractDAS<PriceModelDTO> {
-
+    // todo: das class may be obsolete after refactoring. remove!
 }

@@ -116,7 +116,7 @@ public class PlanBL {
      */
     public void refreshCustomerPrices() {
         if (plan != null) {
-            for (CustomerDTO customer : new CustomerPriceBL().getCustomersByPlan(plan.getId())) {
+            for (CustomerDTO customer : getCustomersByPlan(plan.getId())) {
                 CustomerPriceBL bl = new CustomerPriceBL(customer);
                 bl.removePrices(plan.getId());
                 bl.addPrices(plan.getPlanItems());
@@ -206,6 +206,17 @@ public class PlanBL {
      */
     public boolean isSubscribed(Integer userId) {
         return planDas.isSubscribed(userId, plan.getId());
+    }
+
+    /**
+     * Returns a list of all customers that have subscribed to the given plan. A customer
+     * subscribes to a plan by adding the plan subscription item to a recurring order.
+     *
+     * @param planId id of plan
+     * @return list of customers subscribed to the plan, empty if none found
+     */
+    public List<CustomerDTO> getCustomersByPlan(Integer planId) {
+        return planDas.findCustomersByPlan(planId);
     }
 
     /**

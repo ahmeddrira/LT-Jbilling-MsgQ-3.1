@@ -54,16 +54,6 @@ import java.util.Date;
                             + " where price.id.planItem.plan is null "
                             + " and price.id.baseUser.id = :user_id"),
 
-        @NamedQuery(name = "CustomerDTO.findCustomersByPlan",
-                    query = "select user.customer"
-                            + " from OrderLineDTO line "
-                            + " inner join line.item.plans as plan "
-                            + " inner join line.purchaseOrder.baseUserByUserId as user"
-                            + " where plan.id = :plan_id"
-                            + " and line.purchaseOrder.orderPeriod.id != 1 " // Constants.ORDER_PERIOD_ONCE
-                            + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
-                            + " and line.purchaseOrder.deleted = 0"),
-
         @NamedQuery(name = "CustomerPriceDTO.deletePrice",
                     query = "delete CustomerPriceDTO "
                             + " where id.planItem.id = :plan_item_id "

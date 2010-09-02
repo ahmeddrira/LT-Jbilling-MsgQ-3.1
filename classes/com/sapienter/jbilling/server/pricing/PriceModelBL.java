@@ -111,6 +111,7 @@ public class PriceModelBL {
         return ws != null ? new PriceModelDTO(ws) : null;
     }
 
+    // todo: crud methods may be obsolete after refactoring. remove!
     // todo: Add event logger for pricing models.
 
     public Integer create(PriceModelDTO planPrice) {

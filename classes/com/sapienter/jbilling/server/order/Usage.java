@@ -27,6 +27,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Usage represents a single customers usage of an item, or an item type over a
+ * set date range (usually aligned with the customer's billing period).
+ * 
  * @author Brian Cowdery
  * @since 16-08-2010
  */
@@ -86,6 +89,12 @@ public class Usage {
         this.itemTypeId = itemTypeId;
     }
 
+    /**
+     * The total quantity, or "number of units" purchased
+     * over the period.
+     *
+     * @return number of units purchased
+     */
     public BigDecimal getQuantity() {
         return quantity;
     }
@@ -94,6 +103,11 @@ public class Usage {
         this.quantity = quantity;
     }
 
+    /**
+     * The total dollar amount of usage purchased over the period.
+     *
+     * @return total amount of usage in dollars
+     */
     public BigDecimal getAmount() {
         return amount;
     }

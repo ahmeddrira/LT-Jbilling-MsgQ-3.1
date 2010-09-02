@@ -56,6 +56,16 @@ import java.util.List;
         @NamedQuery(name = "PlanDTO.findByPlanItem",
                     query = "select plan from PlanDTO plan where plan.item.id = :plan_item_id"),
 
+        @NamedQuery(name = "CustomerDTO.findCustomersByPlan",
+                    query = "select user.customer"
+                            + " from OrderLineDTO line "
+                            + " inner join line.item.plans as plan "
+                            + " inner join line.purchaseOrder.baseUserByUserId as user"
+                            + " where plan.id = :plan_id"
+                            + " and line.purchaseOrder.orderPeriod.id != 1 " // Constants.ORDER_PERIOD_ONCE
+                            + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
+                            + " and line.purchaseOrder.deleted = 0"),
+
         @NamedQuery(name = "PlanDTO.isSubscribed",
                     query = "select line.id"
                             + " from OrderLineDTO line "

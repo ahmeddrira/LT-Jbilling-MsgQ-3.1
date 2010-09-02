@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.item.db;
 
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.hibernate.Query;
 
@@ -30,6 +31,21 @@ import java.util.List;
  * @since 30-08-2010
  */
 public class PlanDAS extends AbstractDAS<PlanDTO> {
+
+    /**
+     * Fetch a list of all customers that have subscribed to the given plan
+     * by adding the "plan subscription" item to a recurring order.
+     *
+     * @param planId id of plan
+     * @return list of customers subscribed to the plan, empty if none
+     */
+    @SuppressWarnings("unchecked")
+    public List<CustomerDTO> findCustomersByPlan(Integer planId) {
+        Query query = getSession().getNamedQuery("CustomerDTO.findCustomersByPlan");
+        query.setParameter("plan_id", planId);
+
+        return query.list();
+    }
 
     /**
      * Returns true if the customer is subscribed to to the given plan id.

@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.user.db;
 
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.util.db.AbstractDAS;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -67,21 +66,6 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     public List<PlanItemDTO> findAllCustomerSpecificPrices(Integer userId) {
         Query query = getSession().getNamedQuery("PlanItemDTO.findAllCustomerSpecificPrices");
         query.setParameter("user_id", userId);
-
-        return query.list();
-    }
-
-    /**
-     * Fetch a list of all customers that have subscribed (added the plan item to
-     * a recurring order) to the given plan.
-     *
-     * @param planId id of plan
-     * @return list of customers subscribed to the plan, empty if none
-     */
-    @SuppressWarnings("unchecked")
-    public List<CustomerDTO> findCustomersByPlan(Integer planId) {
-        Query query = getSession().getNamedQuery("CustomerDTO.findCustomersByPlan");
-        query.setParameter("plan_id", planId);
 
         return query.list();
     }
@@ -136,13 +120,13 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     // queries do not support collections of values (attributes['key_name'] = ?), so we
     // need to manually construct the HQL query by hand.
 
-    private static final String PLAN_PRICE_INCL_DEFAULT_QUERY_HQL =
+    private static final String PRICE_ATTRIBUTE_QUERY_HQL =
             "select price.planItem "
             + " from CustomerPriceDTO price "
             + " where price.planItem.item.id = :item_id "
             + " and price.customer.baseUser.id = :user_id " ;
     
-    private static final String PLAN_PRICE_INCL_DEFAULT_ORDER_HQL =
+    private static final String PRICE_ATTRIBUTE_ORDER_HQL =
             " order by price.planItem.precedence, price.createDatetime desc";
 
     /**
@@ -160,7 +144,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
                                                      Integer maxResults) {
 
         StringBuffer hql = new StringBuffer();
-        hql.append(PLAN_PRICE_INCL_DEFAULT_QUERY_HQL);
+        hql.append(PRICE_ATTRIBUTE_QUERY_HQL);
 
         // build collection of values query from attributes
         // clause - "and price.attributes['key'] = :key"
@@ -170,7 +154,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
                     .append(" = ")
                     .append(getAttributeNamedParameter(key));
 
-        hql.append(PLAN_PRICE_INCL_DEFAULT_ORDER_HQL);
+        hql.append(PRICE_ATTRIBUTE_ORDER_HQL);
         LOG.debug("Constructed HQL query with attributes: \n " + hql.toString());
 
         Query query = getSession().createQuery(hql.toString());
@@ -224,7 +208,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
                                                              Integer maxResults) {
 
         StringBuffer hql = new StringBuffer();
-        hql.append(PLAN_PRICE_INCL_DEFAULT_QUERY_HQL);
+        hql.append(PRICE_ATTRIBUTE_QUERY_HQL);
 
         // build collection of values query from attributes
         // clause - "and (price.attributes['key'] = :key or price.attributes['key'] = '*')"
@@ -237,7 +221,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
                     .append(getAttributeClause(key))
                     .append(" = '*')");
 
-        hql.append(PLAN_PRICE_INCL_DEFAULT_ORDER_HQL);
+        hql.append(PRICE_ATTRIBUTE_ORDER_HQL);
         LOG.debug("Constructed HQL query with wildcard attributes: \n " + hql.toString());
 
         Query query = getSession().createQuery(hql.toString());

@@ -20,10 +20,7 @@
 
 package com.sapienter.jbilling.server.user;
 
-import com.sapienter.jbilling.server.item.PlanBL;
-import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDAS;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
@@ -42,6 +39,8 @@ import java.util.Map;
  *
  * Customer specific pricing can be added by saving a {@link PlanItemDTO} that has no
  * association to a plan. 
+ *
+ * @see com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask
  *
  * @author Brian Cowdery
  * @since 30-08-2010
@@ -154,18 +153,7 @@ public class CustomerPriceBL {
     public void removePrice(PlanItemDTO planItem) {
         int deleted = customerPriceDas.deletePrice(userId, planItem.getId());
         LOG.debug("Removed " + deleted + " customer price entries for plan item: " + planItem);
-    }
-    
-    /**
-     * Returns a list of all customers that have subscribed to the given plan. A customer
-     * subscribes to a plan by adding the plan subscription item to a recurring order.
-     *
-     * @param planId id of plan
-     * @return list of customers subscribed to the plan, empty if none found
-     */
-    public List<CustomerDTO> getCustomersByPlan(Integer planId) { // todo: should be part of PlanBL
-        return customerPriceDas.findCustomersByPlan(planId);
-    }
+    }   
 
     /**
      * Returns the customer's price for the given item. This method returns null

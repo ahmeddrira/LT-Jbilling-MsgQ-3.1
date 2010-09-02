@@ -25,8 +25,10 @@ import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +39,6 @@ public class PlanBL {
     private static final Logger LOG = Logger.getLogger(PlanBL.class);
 
     private PlanDAS planDas;
-    private CustomerPriceBL customerPriceBl;
 
     private PlanDTO plan;
 
@@ -50,13 +51,17 @@ public class PlanBL {
         set(planId);
     }
 
+    public PlanBL(PlanDTO plan) {
+        _init();
+        this.plan = plan;
+    }
+
     public void set(Integer planId) {
         this.plan = planDas.find(planId); 
     }
 
     private void _init() {
         this.planDas = new PlanDAS();
-        this.customerPriceBl = new CustomerPriceBL();
     }
 
     public PlanDTO getEntity() {
@@ -102,17 +107,16 @@ public class PlanBL {
         } else {
             LOG.error("Cannot delete, PlanDTO not found or not set!");
         }
-    }
-
+    }   
 
     /**
      * Refreshes the customer plan item price mappings for all customers that have
      * subscribed to this plan. This method will remove all existing prices for the plan
-     * and insert the current list of plan items. 
+     * and insert the current list of plan items into the customer price map.
      */
     public void refreshCustomerPrices() {
         if (plan != null) {
-            for (CustomerDTO customer : customerPriceBl.getCustomersByPlan(plan.getId())) {
+            for (CustomerDTO customer : new CustomerPriceBL().getCustomersByPlan(plan.getId())) {
                 CustomerPriceBL bl = new CustomerPriceBL(customer);
                 bl.removePrices(plan.getId());
                 bl.addPrices(plan.getPlanItems());
@@ -120,16 +124,98 @@ public class PlanBL {
         } else {
             LOG.error("Cannot update customer prices, PlanDTO not found or not set!");
         }
+    }    
+
+    /**
+     * Subscribes a customer to all plans held by the given "plan subscription" item, adding all
+     * plan item prices to a customer price map. 
+     *
+     * @param userId user id of the customer to subscribe
+     * @param itemId item representing the subscription to a plan
+     * @return list of saved customer price entries, empty if no prices applied to customer.
+     */
+    public static List<CustomerPriceDTO> subscribe(Integer userId, Integer itemId) {
+        List<CustomerPriceDTO> saved = new ArrayList<CustomerPriceDTO>();
+
+        CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
+        for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(itemId))
+            saved.addAll(customerPriceBl.addPrices(plan.getPlanItems()));
+
+        return saved;
+    }
+
+    /**
+     * Subscribes a customer to this plan, adding all plan item prices to the customer price map.
+     *
+     * @param userId user id of the customer to subscribe
+     * @return list of saved customer price entries, empty if no prices applied to customer.
+     */
+    public List<CustomerPriceDTO> subscribe(Integer userId) {
+        List<CustomerPriceDTO> saved = new ArrayList<CustomerPriceDTO>();
+
+        CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
+            saved.addAll(customerPriceBl.addPrices(plan.getPlanItems()));
+
+        return saved;
+    }
+
+    /**
+     * Un-subscribes a customer from all plans held by the given "plan subscription" item,
+     * removing all plan item prices from the customer price map.
+     *
+     * @param userId user id of the customer to un-subscribe
+     * @param itemId item representing the subscription to a plan
+     */
+    public static void unsubscribe(Integer userId, Integer itemId) {
+        CustomerPriceBL customerPriceBl = new CustomerPriceBL(userId);
+        for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(itemId))
+            customerPriceBl.removePrices(plan.getId());
+    }
+
+    /**
+     * Un-subscribes a customer from this plan, removing all plan item prices from the customer price map.
+     *
+     * @param userId user id of the customer to un-subscribe
+     */
+    public void unsubscribe(Integer userId) {
+        new CustomerPriceBL(userId).removePrices(plan.getId());
+    }
+
+    /**
+     * Returns true if the customer is subscribed to a plan held by the given "plan subscription" item.
+     *
+     * @param userId user id of the customer to check
+     * @param itemId plan subscription item id
+     * @return true if customer is subscribed, false if not
+     */
+    public static boolean isSubscribed(Integer userId, Integer itemId) {
+        // items can have multiple plans, but it's possible that a customer may only
+        // be subscribed to 1 plan depending on where we are in the workflow
+        for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(itemId))
+               if (new PlanDAS().isSubscribed(userId, plan.getId()))
+                   return true; 
+
+        return false;
+    }
+
+    /**
+     * Returns true if the customer is subscribed to this plan.
+     *
+     * @param userId user id of the customer to check
+     * @return true if customer is subscribed, false if not
+     */
+    public boolean isSubscribed(Integer userId) {
+        return planDas.isSubscribed(userId, plan.getId());
     }
 
     /**
      * Returns all plans that use the given item as the "plan subscription" item.
      *
-     * @param planItemId item id
+     * @param itemId item id
      * @return list of plans, empty list if none found
      */
-    public List<PlanDTO> getPlansByPlanItem(Integer planItemId) {
-        return planDas.findByPlanSubscriptionItem(planItemId);
+    public List<PlanDTO> getPlansBySubscriptionItem(Integer itemId) {
+        return planDas.findByPlanSubscriptionItem(itemId);
     }
 
     /**

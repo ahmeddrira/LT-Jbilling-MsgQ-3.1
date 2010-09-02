@@ -366,7 +366,7 @@ DROP TABLE IF EXISTS customer_price;
 CREATE TABLE customer_price (
     plan_item_id integer NOT NULL,
     user_id integer NOT NULL,
-    created_datetime timestamp NOT NULL DEFAULT NULL,
+    create_datetime timestamp NOT NULL DEFAULT NULL,
     PRIMARY KEY (plan_item_id, user_id)
 );
 ALTER TABLE customer_price ADD CONSTRAINT customer_price_plan_item_id_FK FOREIGN KEY (plan_item_id) REFERENCES plan_item (id);

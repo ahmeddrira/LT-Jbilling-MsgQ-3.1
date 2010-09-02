@@ -22,15 +22,10 @@ package com.sapienter.jbilling.server.user.db;
 
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.EntityResult;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
@@ -53,10 +48,6 @@ import java.util.Date;
 @Entity
 @Table(name = "customer_price")
 @NamedQueries({
-
-        // todo: hard to say if this will generate a needles join
-        // price.id.customer.baseUser.id is mapped to a local column user_id, but does hibernate know that?
-        // check generated SQL for joins! Not such a big deal for this query, but should be fixed for "delete" queries
         @NamedQuery(name = "PlanItemDTO.findAllCustomerSpecificPrices",
                     query = "select price.id.planItem"
                             + " from CustomerPriceDTO price "
@@ -79,9 +70,13 @@ import java.util.Date;
                             + " and id.baseUser.id = :user_id"),
 
         @NamedQuery(name = "CustomerPriceDTO.deletePriceByPlan",
-                    query = "delete from CustomerPriceDTO "
-                            + " where id.planItem.plan.id = :plan_id"
-                            + " and id.baseUser.id = :user_id")
+                    query = "delete CustomerPriceDTO "
+                            + " where id.baseUser.id = :user_id"
+                            + " and id.planItem.id in ("                // postgresql has a strange syntax for delete
+                            + "     select planItem.id "                // with join that is not supported by hibernate.
+                            + "     from PlanItemDTO planItem "         // delete where id in (...) as a workaround
+                            + "     where planItem.plan.id = :plan_id"
+                            + ")")
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "PlanItemDTO.findCustomerPrice",
@@ -94,63 +89,17 @@ import java.util.Date;
                           resultSetMapping = "PlanItemDTOResultSetMapping")
 })
 @SqlResultSetMapping(name = "PlanItemDTOResultSetMapping", entities = @EntityResult(entityClass = PlanItemDTO.class))
-// no cache - customer price is often written, rarely read
+// todo: cache config
 public class CustomerPriceDTO implements Serializable {
-
-
-    // todo: resolve notes with Emiliano and refactor accordingly.
-    /*
-        Notes:
-            This class is supposed to represent a simple lookup mapping table for customer prices. When a customer
-            subscibes to a plan, the mapping table is populated to reduce the effort in determining a customers
-            price for an item.
-
-            99% of the time we have the user_id of the customer making the purchase, not the customer_id!
-
-            This mapping table is designed to use user_id, and so the primary key association is to
-            the UserDTO class and "base_user" table. I tried mapping to the base user THROUGH the customer.baseUser
-            association but hibernate would not allow the JoinColumn.
-
-            Perhaps we should re-name the class "UserPriceDTO" ??    
-     */
-
-
-    /**
-     * CustomerPriceDTO composite primary key
-     */
-    @Embeddable
-    private class CustomerPricePK implements Serializable {
-        private PlanItemDTO planItem;
-        private UserDTO baseUser;
-
-        public CustomerPricePK() {            
-        }
-
-        @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-        @JoinColumn(name = "plan_item_id", nullable = false)
-        public PlanItemDTO getPlanItem() {
-            return planItem;
-        }
-
-        public void setPlanItem(PlanItemDTO planItem) {
-            this.planItem = planItem;
-        }
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id", nullable = false)                
-        public UserDTO getBaseUser() {
-            return baseUser;
-        }
-
-        public void setBaseUser(UserDTO baseUser) {
-            this.baseUser = baseUser;
-        }
-    }
 
     private CustomerPricePK id = new CustomerPricePK();
     private Date createDatetime = new Date();
 
     public CustomerPriceDTO() {
+    }
+
+    public CustomerPriceDTO(CustomerPricePK id) {
+        this.id = id;
     }
 
     @Id

@@ -32,6 +32,21 @@ import java.util.List;
 public class PlanDAS extends AbstractDAS<PlanDTO> {
 
     /**
+     * Returns true if the customer is subscribed to to the given plan id.
+     *
+     * @param userId user id of the customer
+     * @param planId plan id
+     * @return true if customer is subscribed to the plan, false if not.
+     */
+    public boolean isSubscribed(Integer userId, Integer planId) {
+        Query query = getSession().getNamedQuery("PlanDTO.isSubscribed");
+        query.setParameter("user_id", userId);
+        query.setParameter("plan_id", planId);
+        
+        return query.iterate().hasNext();
+    }
+
+    /**
      * Fetch all plans for the given plan subscription item id.
      *
      * @param planItemId plan subscription item id

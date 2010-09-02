@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
@@ -88,124 +90,6 @@ public class CustomerPriceBL {
     }
 
     /**
-     * Returns the customer's price for the given item. This method returns null
-     * If the customer does not have any special pricing for the given item (customer
-     * is not subscribed to a plan affecting the items price, or no customer-specific
-     * price found).
-     *
-     * @param itemId item to price
-     * @return customer price, null if no special price found
-     */
-    public PlanItemDTO getPrice(Integer itemId) {
-        return customerPriceDas.findPrice(userId, itemId);
-    }
-
-    /**
-     * Returns a list of all customer-specific prices that apply only to this customer.
-     * @return list of prices, empty list if none
-     */
-    public List<PlanItemDTO> getCustomerSpecificPrices() {
-        return customerPriceDas.findAllCustomerSpecificPrices(userId);
-    }
-
-    /**
-     * Returns the customer's price for the given item and pricing attributes.
-     *
-     * @see CustomerPriceDAS#findPriceByAttributes(Integer, Integer, java.util.Map, Integer)
-     *
-     * @param itemId id of item being priced
-     * @param attributes attributes of plan pricing to match
-     * @return list of found plan prices, empty list if none found.
-     */
-    public List<PriceModelDTO> getPricesByAttributes(Integer itemId, Map<String, String> attributes) {
-        return customerPriceDas.findPriceByAttributes(userId, itemId, attributes, null);
-    }
-
-    /**
-     * Returns the customer's price for the given item and pricing attributes, limiting the number
-     * of results returned (queried from database).
-     *
-     * @see CustomerPriceDAS#findPriceByAttributes(Integer, Integer, java.util.Map, Integer)
-     *
-     * @param itemId id of item being priced
-     * @param attributes attributes of plan pricing to match
-     * @param maxResults limit database query return results
-     * @return list of found plan prices, empty list if none found.
-     */
-    public List<PriceModelDTO> getPricesByAttributes(Integer itemId, Map<String, String> attributes, Integer maxResults) {
-        return customerPriceDas.findPriceByAttributes(userId, itemId, attributes, maxResults);
-    }
-
-    /**
-     * Returns the customer's price for the given item and pricing attributes, allowing for wildcard
-     * matches of pricing attributes.
-     *
-     * @see CustomerPriceDAS#findPriceByWildcardAttributes(Integer, Integer, java.util.Map, Integer)
-     *
-     * @param itemId id of item being priced
-     * @param attributes attributes of plan pricing to match
-     * @return list of found plan prices, empty list if none found.
-     */
-    public List<PriceModelDTO> getPricesByWildcardAttributes(Integer itemId, Map<String, String> attributes) {
-        return customerPriceDas.findPriceByWildcardAttributes(userId, itemId, attributes, null);
-    }
-
-    /**
-     * Returns the customer's price for the given item and pricing attributes, allowing for wildcard
-     * matches of plan attributes and limiting the number of results returned (queried from database).
-     *
-     * @see CustomerPriceDAS#findPriceByWildcardAttributes(Integer, Integer, java.util.Map, Integer)
-     *
-     * @param itemId id of item being priced
-     * @param attributes attributes of plan pricing to match
-     * @param maxResults limit database query return results
-     * @return list of found plan prices, empty list if none found.
-     */
-    public List<PriceModelDTO> getPricesByWildcardAttributes(Integer itemId, Map<String, String> attributes, Integer maxResults) {
-        return customerPriceDas.findPriceByWildcardAttributes(userId, itemId, attributes, maxResults);
-    }
-
-    /**
-     * Returns a list of all customers that have subscribed to the given plan. A customer
-     * subscribes to a plan by adding the plan subscription item to a recurring order.
-     *
-     * @param planId id of plan
-     * @return list of customers subscribed to the plan, empty if none found
-     */
-    public List<CustomerDTO> getCustomersByPlan(Integer planId) {
-        return customerPriceDas.findCustomersByPlan(planId);
-    }
-
-    /**
-     * Removes all plan item prices from this customer for the given plan id.
-     *
-     * @param planId id of plan
-     */
-    public void removePrices(Integer planId) {
-        customerPriceDas.deletePrices(userId, planId);        
-    }
-
-    /**
-     * Removes the given list of plan item prices from this customer, effectively
-     * un-subscribing the customer from a plan and revoking the special item pricing.
-     *
-     * @param planItems plan items to remove
-     */
-    public void removePrices(List<PlanItemDTO> planItems) {
-        int deleted = customerPriceDas.deletePrices(userId, planItems);
-        LOG.debug("Deleted " + deleted + " customer price entries.");        
-    }
-
-    /**
-     * Removes a plan item price from this customer, revoking the special price for an item.
-     *
-     * @param planItem plan item to remove
-     */
-    public void removePrice(PlanItemDTO planItem) {
-        customerPriceDas.deletePrice(userId, planItem.getId());
-    }
-
-    /**
      * Adds the given list of plan item prices to this customer, effectively
      * subscribing the customer to a plan and applying special item pricing.
      *
@@ -237,5 +121,127 @@ public class CustomerPriceBL {
         dto.setPlanItem(planItem);
 
         return customerPriceDas.save(dto);
+    }
+
+    /**
+     * Removes all plan item prices from this customer for the given plan id.
+     *
+     * @param planId id of plan
+     */
+    public void removePrices(Integer planId) {
+        // batch delete by plan id, only executes 1 query
+        int deleted = customerPriceDas.deletePrices(userId, planId);
+        LOG.debug("Removed " + deleted + " customer price entries for plan " + planId);
+    }
+
+    /**
+     * Removes the given list of plan item prices from this customer, effectively
+     * un-subscribing the customer from a plan and revoking the special item pricing.
+     *
+     * @param planItems plan items to remove
+     */
+    public void removePrices(List<PlanItemDTO> planItems) {
+        // executes multiple queries to delete each plan item from the customer price map
+        int deleted = customerPriceDas.deletePrices(userId, planItems);
+        LOG.debug("Removed " + deleted + " customer price entries for " + planItems.size() + " plan items.");
+    }
+
+    /**
+     * Removes a plan item price from this customer, revoking the special price for an item.
+     *
+     * @param planItem plan item to remove
+     */
+    public void removePrice(PlanItemDTO planItem) {
+        int deleted = customerPriceDas.deletePrice(userId, planItem.getId());
+        LOG.debug("Removed " + deleted + " customer price entries for plan item: " + planItem);
+    }
+    
+    /**
+     * Returns a list of all customers that have subscribed to the given plan. A customer
+     * subscribes to a plan by adding the plan subscription item to a recurring order.
+     *
+     * @param planId id of plan
+     * @return list of customers subscribed to the plan, empty if none found
+     */
+    public List<CustomerDTO> getCustomersByPlan(Integer planId) { // todo: should be part of PlanBL
+        return customerPriceDas.findCustomersByPlan(planId);
+    }
+
+    /**
+     * Returns the customer's price for the given item. This method returns null
+     * If the customer does not have any special pricing for the given item (customer
+     * is not subscribed to a plan affecting the items price, or no customer-specific
+     * price found).
+     *
+     * @param itemId item to price
+     * @return customer price, null if no special price found
+     */
+    public PlanItemDTO getPrice(Integer itemId) {
+        return customerPriceDas.findPrice(userId, itemId);
+    }
+
+    /**
+     * Returns a list of all customer-specific prices that apply only to this customer.
+     * @return list of prices, empty list if none
+     */
+    public List<PlanItemDTO> getCustomerSpecificPrices() {
+        return customerPriceDas.findAllCustomerSpecificPrices(userId);
+    }
+
+    /**
+     * Returns the customer's price for the given item and pricing attributes.
+     *
+     * @see CustomerPriceDAS#findPriceByAttributes(Integer, Integer, java.util.Map, Integer)
+     *
+     * @param itemId id of item being priced
+     * @param attributes attributes of pricing to match
+     * @return list of found customer prices, empty list if none found.
+     */
+    public List<PlanItemDTO> getPricesByAttributes(Integer itemId, Map<String, String> attributes) {
+        return customerPriceDas.findPriceByAttributes(userId, itemId, attributes, null);
+    }
+
+    /**
+     * Returns the customer's price for the given item and pricing attributes, limiting the number
+     * of results returned (queried from database).
+     *
+     * @see CustomerPriceDAS#findPriceByAttributes(Integer, Integer, java.util.Map, Integer)
+     *
+     * @param itemId id of item being priced
+     * @param attributes attributes of pricing to match
+     * @param maxResults limit database query return results
+     * @return list of found customer prices, empty list if none found.
+     */
+    public List<PlanItemDTO> getPricesByAttributes(Integer itemId, Map<String, String> attributes, Integer maxResults) {
+        return customerPriceDas.findPriceByAttributes(userId, itemId, attributes, maxResults);
+    }
+
+    /**
+     * Returns the customer's price for the given item and pricing attributes, allowing for wildcard
+     * matches of pricing attributes.
+     *
+     * @see CustomerPriceDAS#findPriceByWildcardAttributes(Integer, Integer, java.util.Map, Integer)
+     *
+     * @param itemId id of item being priced
+     * @param attributes attributes of pricing to match
+     * @return list of found customer prices, empty list if none found.
+     */
+    public List<PlanItemDTO> getPricesByWildcardAttributes(Integer itemId, Map<String, String> attributes) {
+        return customerPriceDas.findPriceByWildcardAttributes(userId, itemId, attributes, null);
+    }
+
+    /**
+     * Returns the customer's price for the given item and pricing attributes, allowing for wildcard
+     * matches of plan attributes and limiting the number of results returned (queried from database).
+     *
+     * @see CustomerPriceDAS#findPriceByWildcardAttributes(Integer, Integer, java.util.Map, Integer)
+     *
+     * @param itemId id of item being priced
+     * @param attributes attributes of plan pricing to match
+     * @param maxResults limit database query return results
+     * @return list of found customer prices, empty list if none found.
+     */
+    public List<PlanItemDTO> getPricesByWildcardAttributes(Integer itemId, Map<String, String> attributes, Integer maxResults) {
+        return customerPriceDas.findPriceByWildcardAttributes(userId, itemId, attributes, maxResults);
     }
 }

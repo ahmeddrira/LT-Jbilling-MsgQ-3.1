@@ -297,7 +297,8 @@ public class ItemBL {
             IPricing myTask = taskManager.getNextClass();
             
             while(myTask != null) {
-                retValue = myTask.getPrice(item.getId(), userId, currencyId, pricingFields, retValue);
+                // todo: refactor getPrice() to accept the quantity being purchased
+                retValue = myTask.getPrice(item.getId(), BigDecimal.ONE, userId, currencyId, pricingFields, retValue);
                 myTask = taskManager.getNextClass();
             }
         } catch (Exception e) {

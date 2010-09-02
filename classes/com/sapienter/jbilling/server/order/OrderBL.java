@@ -32,6 +32,8 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
 import org.apache.log4j.Logger;
 
 import org.joda.time.DateMidnight;
@@ -198,6 +200,15 @@ public class OrderBL extends ResultList
                 myTask.addItem(itemID, quantity, language, userId, entityId, currencyId, order, records);
                 myTask = taskManager.getNextClass();
             }
+
+            // If customer is adding a plan item to the recurring order, and the customer does not
+            // already hold a subscription to the plan, subscribe the customer and add all the plan
+            // prices to the customer price map
+            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                if (!PlanBL.isSubscribed(userId, itemID))
+                    PlanBL.subscribe(userId, itemID);                
+            }
+
         } catch (PluggableTaskException e) {
             throw new SessionInternalError("Item Manager task error", OrderBL.class, e);
         } catch (TaskException e) {
@@ -246,7 +257,10 @@ public class OrderBL extends ResultList
                 EventLogger.ROW_DELETED, null,
                 null, null);
 
-
+        // remove customer plan subscriptions for this order
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            removeCustomerPlans(order.getLines(), order.getUserId());
+        }
     }
 
     /**
@@ -339,6 +353,11 @@ public class OrderBL extends ResultList
             eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
                     Constants.TABLE_PUCHASE_ORDER, order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
+
+            // subscribe customer to plan items
+            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                addCustomerPlans(order.getLines(), order.getUserId());
+            }
 
             EventManager.process(new NewOrderEvent(entityId, order));
         } catch (Exception e) {
@@ -471,6 +490,8 @@ public class OrderBL extends ResultList
     }
 
     public void update(Integer executorId, OrderDTO dto) {
+
+
         // update first the order own fields
         if (!Util.equal(order.getActiveUntil(), dto.getActiveUntil())) {
             updateActiveUntil(executorId, dto.getActiveUntil(), dto);
@@ -527,14 +548,14 @@ public class OrderBL extends ResultList
                 order.getBaseUserByUserId().getCompany().getId(), 
                 order.getId(), false); // do not send them now, it will be done later when the order is saved
 
-        OrderLineDTO oldLine = null;
-        int nonDeletedLines = 0;
+
         // Determine if the item of the order changes and, if it is,
         // LOG a subscription change event.
-        LOG.info("Order lines: " + order.getLines().size() + "  --> new Order: " +
-                dto.getLines().size());
-        if (dto.getLines().size() == 1 &&
-                order.getLines().size() >= 1) {
+        LOG.info("Order lines: " + order.getLines().size() + "  --> new Order: " + dto.getLines().size());
+
+        OrderLineDTO oldLine = null;
+        int nonDeletedLines = 0;
+        if (dto.getLines().size() == 1 && order.getLines().size() >= 1) {
             // This event needs to LOG the old item id and description, so
             // it can only happen when updating orders with only one line.
 
@@ -549,6 +570,7 @@ public class OrderBL extends ResultList
         }
 
         // now update this order's lines
+        List<OrderLineDTO> oldLines = new ArrayList<OrderLineDTO>(order.getLines());
         order.getLines().clear();
         order.getLines().addAll(dto.getLines());
         for (OrderLineDTO line : order.getLines()) {
@@ -557,7 +579,12 @@ public class OrderBL extends ResultList
             // new lines need createDatetime set
             line.setDefaults();
         }
+
         order = orderDas.save(order);
+
+        // update customer plan subscriptions
+        removeCustomerPlans(oldLines, order.getUserId());
+        addCustomerPlans(order.getLines(), order.getUserId());
 
         if (oldLine != null && nonDeletedLines == 1) {
             OrderLineDTO newLine = null;
@@ -611,6 +638,49 @@ public class OrderBL extends ResultList
             EventManager.process(event);
         }
 
+    }
+
+    /**
+     * Subscribes the given user to any plans held by the given list of order lines,
+     * if the user does not already have a subscription.
+     *
+     * @param lines lines to process
+     * @param userId user id of customer to subscribe
+     */
+    public void addCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
+        LOG.debug("Processing " + lines.size() + " order line(s), adding plans to user " + userId);
+        for (OrderLineDTO line : lines) {
+            // subscribe customer to plan if they haven't already been subscribed.
+            if (!line.getItem().getPlans().isEmpty()) {
+                if (!PlanBL.isSubscribed(userId, line.getItemId())) {
+                    LOG.debug("Subscribing user " + userId + " to plan item " + line.getItemId());
+                    PlanBL.subscribe(userId, line.getItemId());
+                }
+            }
+        }
+    }
+
+    
+    /**
+     * Un-subscribes the given user to any plans held by the list of order lines. The customer
+     * is un-subscribed only if there are no other orders subscribing the user to the plan.
+     * 
+     * @param lines lines to process
+     * @param userId user id of customer to subscribe
+     */
+    public void removeCustomerPlans(List<OrderLineDTO> lines, Integer userId) {
+        LOG.debug("Processing " + lines.size() + " order line(s), removing plans from user " + userId);
+        for (OrderLineDTO line : lines) {
+            // make sure the customer is not subscribed to the plan after deleting the order. If the customer
+            // is still subscribed it means another order has a subscription item for this plan, so we should
+            // leave the prices in place.
+            if (!line.getItem().getPlans().isEmpty()) {
+                if (!PlanBL.isSubscribed(userId, line.getItemId())) {
+                    LOG.debug("Un-subscribing user " + userId + " from plan item " + line.getItemId());
+                    PlanBL.unsubscribe(userId, line.getItemId());
+                }
+            }
+        }
     }
 
     private void updateEndOfOrderProcess(Date newDate) {

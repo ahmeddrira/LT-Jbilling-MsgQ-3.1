@@ -45,12 +45,12 @@ public class RulesPricingTask2 extends RulesBaseTask implements IPricing {
         return Logger.getLogger(RulesPricingTask2.class);
     }
     
-    public BigDecimal getPrice(Integer itemId, Integer userId, Integer currencyId,
+    public BigDecimal getPrice(Integer itemId, BigDecimal quantity, Integer userId, Integer currencyId,
             List<PricingField> fields, BigDecimal defaultPrice)
             throws TaskException {
 
         // the result goes in the memory context
-        PricingResult result = new PricingResult(itemId, userId, currencyId);
+        PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
         rulesMemoryContext.add(result);
 
         if (fields != null && !fields.isEmpty()) {

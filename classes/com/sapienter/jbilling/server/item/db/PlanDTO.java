@@ -56,6 +56,17 @@ import java.util.List;
         @NamedQuery(name = "PlanDTO.findByPlanItem",
                     query = "select plan from PlanDTO plan where plan.item.id = :plan_item_id"),
 
+        @NamedQuery(name = "PlanDTO.isSubscribed",
+                    query = "select line.id"
+                            + " from OrderLineDTO line "
+                            + " inner join line.item.plans as plan "
+                            + " inner join line.purchaseOrder.baseUserByUserId as user "
+                            + " where plan.id = :plan_id "
+                            + " and user.id = :user_id "
+                            + " and line.purchaseOrder.orderPeriod.id != 1 " // Constants.ORDER_PERIOD_ONCE
+                            + " and line.purchaseOrder.orderStatus.id = 1 "  // Constants.ORDER_STATUS_ACTIVE
+                            + " and line.purchaseOrder.deleted = 0"),
+
         // todo: include bundled items as "affected"
         @NamedQuery(name = "PlanDTO.findByAffectedItem",
                     query = "select plan "
@@ -63,7 +74,7 @@ import java.util.List;
                             + " inner join plan.planItems planItems "
                             + " where planItems.item.id = :affected_item_id")
 })
-// todo: configure caching
+// todo: cache config
 public class PlanDTO implements Serializable {
 
     private Integer id;

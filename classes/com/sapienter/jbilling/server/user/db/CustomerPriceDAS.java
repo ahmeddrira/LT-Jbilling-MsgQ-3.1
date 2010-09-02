@@ -156,7 +156,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * @return list of found plan prices, empty list if none found.
      */
     @SuppressWarnings("unchecked")
-    public List<PriceModelDTO> findPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attributes,
+    public List<PlanItemDTO> findPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attributes,
                                                      Integer maxResults) {
 
         StringBuffer hql = new StringBuffer();
@@ -219,7 +219,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
      * @return list of found prices, empty list if none found.
      */
     @SuppressWarnings("unchecked")
-    public List<PriceModelDTO> findPriceByWildcardAttributes(Integer userId, Integer itemId,
+    public List<PlanItemDTO> findPriceByWildcardAttributes(Integer userId, Integer itemId,
                                                              Map<String, String> attributes,
                                                              Integer maxResults) {
 

@@ -47,7 +47,14 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "customer_price")
-@NamedQueries({
+@NamedQueries({       
+        @NamedQuery(name = "PlanItemDTO.findCustomerPrice",
+                    query = "select price.id.planItem "
+                            + " from CustomerPriceDTO price "
+                            + " where price.id.planItem.item.id = :item_id "
+                            + " and price.id.baseUser.id = :user_id "
+                            + " order by price.id.planItem.precedence, price.createDatetime desc"),
+
         @NamedQuery(name = "PlanItemDTO.findAllCustomerSpecificPrices",
                     query = "select price.id.planItem"
                             + " from CustomerPriceDTO price "
@@ -68,17 +75,6 @@ import java.util.Date;
                             + "     where planItem.plan.id = :plan_id"
                             + ")")
 })
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "PlanItemDTO.findCustomerPrice",
-                          query = "select p.*"
-                                  + " from plan_item p "
-                                  + " join customer_price cp on cp.plan_item_id = p.id "
-                                  + " where p.item_id = :item_id "
-                                  + " and cp.user_id = :user_id "
-                                  + " order by p.precedence, cp.create_datetime desc",
-                          resultSetMapping = "PlanItemDTOResultSetMapping")
-})
-@SqlResultSetMapping(name = "PlanItemDTOResultSetMapping", entities = @EntityResult(entityClass = PlanItemDTO.class))
 // todo: cache config
 public class CustomerPriceDTO implements Serializable {
 

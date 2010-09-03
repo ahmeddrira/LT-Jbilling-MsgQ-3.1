@@ -354,7 +354,8 @@ CREATE TABLE plan_item (
     precedence integer NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE INDEX plan_item_precedence_i ON plan_item (precedence);
+CREATE INDEX plan_item_precedence_i ON plan_item (item_id);
+CREATE INDEX plan_item_item_id_i ON plan_item (precedence);
 ALTER TABLE plan_item ADD CONSTRAINT plan_item_item_id_FK FOREIGN KEY (item_id) REFERENCES item (id);
 ALTER TABLE plan_item ADD CONSTRAINT plan_item_plan_id_FK FOREIGN KEY (plan_id) REFERENCES plan (id);
 ALTER TABLE plan_item ADD CONSTRAINT plan_item_price_model_id_FK FOREIGN KEY (price_model_id) REFERENCES price_model (id);
@@ -371,6 +372,8 @@ CREATE TABLE customer_price (
 );
 ALTER TABLE customer_price ADD CONSTRAINT customer_price_plan_item_id_FK FOREIGN KEY (plan_item_id) REFERENCES plan_item (id);
 ALTER TABLE customer_price ADD CONSTRAINT customer_price_user_id_FK FOREIGN KEY (user_id) REFERENCES base_user (id);
+
+insert into jbilling_table (id, name) values (97, 'customer_price');
 
 -- migrate item price to default item price_model
 -- change insert sub-query "where currency_id = 1" to your primary currency id
@@ -394,3 +397,6 @@ update jbilling_seqs set next_id = (select round(max(id)/100)+1 from price_model
 DROP TABLE IF EXISTS item_price;
 delete from jbilling_table where name = 'item_price';
 delete from jbilling_seqs where name = 'item_price';
+
+-- price model pricing plug-in
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (79, 14, 'com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask', 0);

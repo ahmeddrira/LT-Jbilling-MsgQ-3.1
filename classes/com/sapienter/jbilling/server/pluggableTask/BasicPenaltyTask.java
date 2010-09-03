@@ -236,8 +236,10 @@ public class BasicPenaltyTask extends PluggableTask implements IInternalEventsTa
             return base;
             
         } else if (base.compareTo(BigDecimal.ZERO) > 0) {
+            // price for a single penalty item.
             return item.getPrice(invoice.getBaseUser().getId(),
                                           invoice.getCurrency().getId(),
+                                          BigDecimal.ONE,
                                           invoice.getBaseUser().getEntity().getId());
         } else {
             return BigDecimal.ZERO;

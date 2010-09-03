@@ -868,29 +868,27 @@ public class OrderBL extends ResultList
     /**
      * To be called from the http api, this simply looks for lines
      * in the order that lack some fields, it finds that info based
-     * in the item. 
-     * @param dto
+     * in the item.
+     *
+     * @param dto order with lines to pricess
+     * @param entityId entity id
      */
-    public void fillInLines(OrderDTO dto, Integer entityId)
-            throws NamingException, SessionInternalError {
-        /*
-         * now go over the order lines
-         */
+    public void fillInLines(OrderDTO dto, Integer entityId) throws NamingException, SessionInternalError {
         ItemBL itemBl = new ItemBL();
+
+        // iterate over order lines
         for (OrderLineDTO line : dto.getLines()) {
             itemBl.set(line.getItemId());
-            Integer languageId = itemBl.getEntity().getEntity().
-                    getLanguageId();
-            // this is needed for the basic pluggable task to work
+            Integer languageId = itemBl.getEntity().getEntity().getLanguageId();
+
+            // populate the basic item price and item description
             ItemDAS itemDas = new ItemDAS();
             line.setItem(itemDas.find(line.getItemId()));
             if (line.getPrice() == null) {
-                line.setPrice(itemBl.getPrice(dto.getUserId(),
-                        dto.getCurrencyId(), entityId));
+                line.setPrice(itemBl.getPrice(dto.getUserId(), dto.getCurrencyId(), line.getQuantity(), entityId));
             }
             if (line.getDescription() == null) {
-                line.setDescription(itemBl.getEntity().getDescription(
-                        languageId));
+                line.setDescription(itemBl.getEntity().getDescription(languageId));
             }
         }
     }

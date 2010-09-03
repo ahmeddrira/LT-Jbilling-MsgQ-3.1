@@ -237,6 +237,9 @@ public class ItemBL {
      * Returns the basic price for an item and currency, without including purchase quantity or
      * the users current usage in the pricing calculation.
      *
+     * This method does not execute any pricing plug-ins and does not use quantity or usage
+     * values for PriceModelDTO price calculations. 
+     *
      * @param item item to price
      * @param currencyId currency id of requested price
      * @return The price in the requested currency
@@ -244,7 +247,7 @@ public class ItemBL {
     public BigDecimal getPriceByCurrency(ItemDTO item, Integer currencyId)  {
         if (item.getDefaultPrice() != null) {
             PricingResult result = new PricingResult(item.getId(), null, currencyId);
-            item.getDefaultPrice().applyTo(result, null, null);
+            item.getDefaultPrice().applyTo(result, BigDecimal.ONE, BigDecimal.ZERO);
             return result.getPrice();
         }
         return BigDecimal.ZERO;
@@ -258,10 +261,11 @@ public class ItemBL {
      * @return
      * @throws SessionInternalError
      */
-    public BigDecimal getPrice(Integer userId, Integer entityId) throws SessionInternalError {
+    public BigDecimal getPrice(Integer userId, BigDecimal quantity, Integer entityId) throws SessionInternalError {
         UserBL user = new UserBL(userId);
-        return getPrice(userId, user.getCurrencyId(), entityId);
-    }    
+        return getPrice(userId, user.getCurrencyId(), quantity, entityId);
+    }
+
     /**
      * Will find the right price considering the user's special prices and which
      * currencies had been entered in the prices table.
@@ -271,16 +275,16 @@ public class ItemBL {
      * @return The price in the requested currency. It always returns a price,
      * otherwise an exception for lack of pricing for an item
      */
-    public BigDecimal getPrice(Integer userId, Integer currencyId, Integer entityId) throws SessionInternalError {
-        BigDecimal retValue = null;
-        CurrencyBL currencyBL;
-        
+    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId)
+            throws SessionInternalError {
+
         if (currencyId == null || entityId == null) {
             throw new SessionInternalError("Can't get a price with null parameters. "
                                            + "currencyId = " + currencyId
                                            + " entityId = " + entityId);
         }
-        
+
+        CurrencyBL currencyBL;
         try {
             currencyBL = new CurrencyBL(currencyId);
             priceCurrencySymbol = currencyBL.getEntity().getSymbol();
@@ -288,30 +292,58 @@ public class ItemBL {
             throw new SessionInternalError(e);
         }
 
-        retValue = getPriceByCurrency(item, currencyId);
-        
+        // default price
+        BigDecimal price = getPriceByCurrency(item, currencyId);
+
         // run a plug-in with external logic (rules), if available
         try {
             PluggableTaskManager<IPricing> taskManager
                     = new PluggableTaskManager<IPricing>(entityId, Constants.PLUGGABLE_TASK_ITEM_PRICING);
             IPricing myTask = taskManager.getNextClass();
-            
+
             while(myTask != null) {
-                // todo: refactor getPrice() to accept the quantity being purchased
-                retValue = myTask.getPrice(item.getId(), BigDecimal.ONE, userId, currencyId, pricingFields, retValue);
+                price = myTask.getPrice(item.getId(), quantity, userId, currencyId, pricingFields, price);
                 myTask = taskManager.getNextClass();
             }
         } catch (Exception e) {
             throw new SessionInternalError("Item pricing task error", ItemBL.class, e);
         }
-        
-        return retValue;
+
+        return price;
     }
-    
-    public ItemDTO getDTO(Integer languageId, Integer userId, 
-            Integer entityId, Integer currencyId) 
-            throws SessionInternalError {
-        
+
+    /**
+     * Returns an ItemDTO constructed for the given language and entity, priced for the
+     * given user and currency.
+     *
+     * @param languageId id of the users language
+     * @param userId id of the user purchasing the item
+     * @param entityId id of the entity
+     * @param currencyId id of the currency
+     * @return item dto
+     * @throws SessionInternalError if an internal exception occurs processing request
+     */
+    public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId)
+        throws SessionInternalError {
+
+        return getDTO(languageId, userId, entityId, currencyId, BigDecimal.ONE);
+    }
+
+    /**
+     * Returns an ItemDTO constructed for the given language and entity, priced for the
+     * given user, currency and the amount being purchased. 
+     *
+     * @param languageId id of the users language
+     * @param userId id of the user purchasing the item
+     * @param entityId id of the entity
+     * @param currencyId id of the currency
+     * @param quantity quantity being purchased
+     * @return item dto
+     * @throws SessionInternalError if an internal exception occurs processing request
+     */
+    public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId, BigDecimal quantity)
+        throws SessionInternalError {
+
         ItemDTO dto = new ItemDTO(
             item.getId(),
             item.getInternalNumber(),
@@ -327,9 +359,10 @@ public class ItemBL {
 
         dto.setDefaultPrice(item.getDefaultPrice());
 
+        // calculate a true price using the pricing plug-in, pricing takes into
+        // account plans, special prices and the quantity of the item being purchased.
         if (currencyId != null && dto.getPercentage() == null) {
-            // it wants one price in particular
-            dto.setPrice(getPrice(userId, currencyId, entityId));
+            dto.setPrice(getPrice(userId, currencyId, quantity, entityId));
         }
         
         // set the types

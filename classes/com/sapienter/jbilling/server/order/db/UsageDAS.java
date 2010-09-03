@@ -27,13 +27,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.transform.Transformers;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
 import java.util.Date;
 
 /**
@@ -48,21 +41,29 @@ public class UsageDAS extends HibernateDaoSupport {
 
     private static final String USAGE_BY_ITEM_ID_SQL =
             "select "
-            + " sum(amount) as amount, "
-            + " sum(quantity) as quantity "
-            + "from order_line "
+            + " sum(ol.amount) as amount, "
+            + " sum(ol.quantity) as quantity "
+            + "from "
+            + " order_line ol"
+            + " join purchase_order o on o.id = ol.order_id "
             + "where "
-            + " deleted = 0 "
-            + " and item_id = :item_id "
-            + " and create_datetime between :start_date and :end_date";
+            + " o.deleted = 0 "
+            + " and ol.deleted = 0 "
+            + " and o.status_id = 16 "
+            + " and o.user_id = :user_id "
+            + " and ol.item_id = :item_id "
+            + " and ol.create_datetime between :start_date and :end_date";
 
-    public Usage findUsageByItem(Integer itemId, Date startDate, Date endDate) {
-        Query query = getSession().createSQLQuery(USAGE_BY_ITEM_ID_SQL);
+    public Usage findUsageByItem(Integer itemId, Integer userId, Date startDate, Date endDate) {
+        Query query = getSession().createSQLQuery(USAGE_BY_ITEM_ID_SQL)
+                .addScalar("amount")
+                .addScalar("quantity")
+                .setResultTransformer(Transformers.aliasToBean(Usage.class));
+
+        query.setParameter("user_id", userId);
         query.setParameter("item_id", itemId);
         query.setParameter("start_date", startDate);
-        query.setParameter("end_date", endDate);
-
-        query.setResultTransformer(Transformers.aliasToBean(Usage.class));
+        query.setParameter("end_date", endDate);       
 
         Usage usage = (Usage) query.uniqueResult();
         usage.setItemId(itemId);
@@ -78,19 +79,26 @@ public class UsageDAS extends HibernateDaoSupport {
             + " sum(ol.quantity) as quantity "
             + "from "
             + " order_line ol "
+            + " join purchase_order o on o.id = ol.order_id "
             + " join item_type_map tm on tm.item_id = ol.item_id "
             + "where "
-            + " ol.deleted = 0 "
+            + " o.deleted = 0 "
+            + " and ol.deleted = 0 "
+            + " and o.status_id = 16 "
+            + " and o.user_id = :user_id "
             + " and tm.type_id = :item_type_id"
             + " and create_datetime between :start_date and :end_date";
 
-    public Usage findUsageByItemType(Integer itemTypeId, Date startDate, Date endDate) {
-        Query query = getSession().createSQLQuery(USAGE_BY_ITEM_TYPE_SQL);
+    public Usage findUsageByItemType(Integer itemTypeId, Integer userId, Date startDate, Date endDate) {
+        Query query = getSession().createSQLQuery(USAGE_BY_ITEM_TYPE_SQL)
+                .addScalar("amount")
+                .addScalar("quantity")
+                .setResultTransformer(Transformers.aliasToBean(Usage.class));
+
+        query.setParameter("user_id", userId);
         query.setParameter("item_type_id", itemTypeId);
         query.setParameter("start_date", startDate);
         query.setParameter("end_date", endDate);
-
-        query.setResultTransformer(Transformers.aliasToBean(Usage.class));
 
         Usage usage = (Usage) query.uniqueResult();
         usage.setItemId(itemTypeId);

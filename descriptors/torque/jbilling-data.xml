@@ -553,6 +553,7 @@
     <InternationalDescription TableId="64" ForeignId="138" PsudoColumn="description" LanguageId="1" Content="Micronesia"/>
     <InternationalDescription TableId="64" ForeignId="139" PsudoColumn="description" LanguageId="1" Content="Moldova"/>
     <InternationalDescription TableId="64" ForeignId="140" PsudoColumn="description" LanguageId="1" Content="Monaco"/>
+
     <InternationalDescription TableId="64" ForeignId="141" PsudoColumn="description" LanguageId="1" Content="Mongolia"/>
     <InternationalDescription TableId="64" ForeignId="142" PsudoColumn="description" LanguageId="1" Content="Montserrat"/>
     <InternationalDescription TableId="64" ForeignId="143" PsudoColumn="description" LanguageId="1" Content="Morocco"/>
@@ -1847,7 +1848,6 @@
     <JbillingTable Id="17" Name="order_period"/>
     <JbillingTable Id="0" Name="report"/>
     <JbillingTable Id="79" Name="partner_range"/>
-    <JbillingTable Id="15" Name="item_price"/>
     <JbillingTable Id="11" Name="partner"/>
     <JbillingTable Id="5" Name="entity"/>
     <JbillingTable Id="28" Name="contact_type"/>
@@ -1899,6 +1899,9 @@
     <JbillingTable Id="92" Name="process_run_status"/>
     <JbillingTable Id="93" Name="price_model"/>
     <JbillingTable Id="94" Name="price_model_attribute"/>
+    <JbillingTable Id="95" Name="plan"/>
+    <JbillingTable Id="96" Name="plan_item"/>
+    <JbillingTable Id="97" Name="customer_price"/>
     <JbillingSeqs Name="entity_delivery_method_map" NextId="4"/>
     <JbillingSeqs Name="user_role_map" NextId="13"/>
     <JbillingSeqs Name="entity_payment_method_map" NextId="26"/>
@@ -1938,7 +1941,6 @@
     <JbillingSeqs Name="order_period" NextId="2"/>
     <JbillingSeqs Name="report" NextId="20"/>
     <JbillingSeqs Name="partner_range" NextId="1"/>
-    <JbillingSeqs Name="item_price" NextId="1"/>
     <JbillingSeqs Name="partner" NextId="1"/>
     <JbillingSeqs Name="entity" NextId="1"/>
     <JbillingSeqs Name="contact_type" NextId="2"/>
@@ -1989,6 +1991,8 @@
     <JbillingSeqs Name="mediation_record" NextId="0"/>
     <JbillingSeqs Name="price_model" NextId="0"/>
     <JbillingSeqs Name="price_model_attribute" NextId="0"/>
+    <JbillingSeqs Name="plan" NextId="0"/>
+    <JbillingSeqs Name="plan_item" NextId="0"/>
     <Language Id="1" Code="en" Description="English"/>
     <Language Id="2" Code="pt" Description="Português"/>
     <List Id="1" LegacyName="customerSimple" TitleKey="list.customers.title" Optlock="1"/>
@@ -2722,6 +2726,7 @@
     <PluggableTaskType Id="76" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentAuthorizeNetCIMTask" MinParameters="2"/>
     <PluggableTaskType Id="77" CategoryId="6" ClassName="com.sapienter.jbilling.server.payment.tasks.PaymentMethodRouterTask" MinParameters="4"/>
     <PluggableTaskType Id="78" CategoryId="23" ClassName="com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask" MinParameters="2"/>
+    <PluggableTaskType Id="79" CategoryId="14" ClassName="com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask" MinParameters="0"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>
@@ -2745,7 +2750,7 @@
     <PluggableTaskTypeCategory Id="20" Description="BillingProcessFilterTask" InterfaceName="com.sapienter.jbilling.server.process.task.IBillingProcessFilterTask"/>
     <PluggableTaskTypeCategory Id="21" Description="Mediation Error Handler" InterfaceName="com.sapienter.jbilling.server.mediation.task.IMediationErrorHandler"/>
     <PluggableTaskTypeCategory Id="22" Description="Scheduled Tasks" InterfaceName="com.sapienter.jbilling.server.process.task.IScheduledTask"/>
-    <PluggableTaskTypeCategory Id="23" Description="Rules Generator" InterfaceName="com.sapienter.jbilling.server.rule.task.IRulesGenerator"/
+    <PluggableTaskTypeCategory Id="23" Description="Rules Generator" InterfaceName="com.sapienter.jbilling.server.rule.task.IRulesGenerator"/>
 
     <PreferenceType Id="1"/>
     <PreferenceType Id="25" IntDefValue="0"/>

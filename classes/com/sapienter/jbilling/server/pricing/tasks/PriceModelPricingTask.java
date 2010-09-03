@@ -39,11 +39,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Pricing plug-in that calculates prices using the customer price map and PriceModelDTO
+ * pricing strategies. This plug-in allows for complex pricing strategies to be applied
+ * based on a customer's subscribed plans, quantity purchased and the current usage.
+ *
  * @author Brian Cowdery
  * @since 16-08-2010
  */
 public class PriceModelPricingTask extends PluggableTask implements IPricing {
     private static final Logger LOG = Logger.getLogger(PriceModelPricingTask.class);
+
+    private static final Integer MAX_RESULTS = 1;
 
     private static final String PARAM_USE_ATTRIBUTES = "use_attributes";
     private static final String PARAM_USE_WILDCARDS = "use_wildcards";
@@ -67,6 +73,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
         // no customer price, this means the customer has not subscribed to a plan affecting this
         // item, or does not have a customer specific price set. Use the item default price.
         if (model == null) {
+            LOG.debug("No customer price found, using item default price model.");
             model = new ItemBL(itemId).getEntity().getDefaultPrice();
         }
 
@@ -74,7 +81,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
             LOG.debug("Applying price model " + model);
 
             // get usage for the current period
-            Usage usage = new UsageBL(userId).getItemUsage(itemId, 0);
+            Usage usage = new UsageBL(userId).getItemUsage(itemId);
             LOG.debug("Current usage of item " + itemId + ": " + usage);
 
             PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
@@ -108,11 +115,11 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
         if (getParameter(PARAM_USE_ATTRIBUTES, DEFAULT_USE_ATTRIBUTES) && !attributes.isEmpty()) {
             if (getParameter(PARAM_USE_WILDCARDS, DEFAULT_USE_WILDCARDS)) {
                 LOG.debug("Fetching customer price using wildcard attributes: " + attributes);
-                List<PlanItemDTO> items = customerPriceBl.getPricesByWildcardAttributes(itemId, attributes, 1);
+                List<PlanItemDTO> items = customerPriceBl.getPricesByWildcardAttributes(itemId, attributes, MAX_RESULTS);
                 return !items.isEmpty() ? items.get(0).getModel() : null;
             } else {
                 LOG.debug("Fetching customer price using attributes: " + attributes);
-                List<PlanItemDTO> items = customerPriceBl.getPricesByAttributes(itemId, attributes, 1);
+                List<PlanItemDTO> items = customerPriceBl.getPricesByAttributes(itemId, attributes, MAX_RESULTS);
                 return !items.isEmpty() ? items.get(0).getModel() : null;
             }
 
@@ -133,8 +140,10 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
      */
     public Map<String, String> getAttributes(List<PricingField> fields) {
         Map<String, String> attributes = new HashMap<String, String>();
-        for (PricingField field : fields)
-            attributes.put(field.getName(), field.getStrValue());
+        if (fields != null) {
+            for (PricingField field : fields)
+                attributes.put(field.getName(), field.getStrValue());
+        }
         return attributes;
     }
 }

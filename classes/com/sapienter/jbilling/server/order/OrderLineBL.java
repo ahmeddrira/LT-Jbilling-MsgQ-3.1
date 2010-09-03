@@ -257,8 +257,8 @@ public class OrderLineBL {
      * @param precision
      * @return
      */
-    public static void populateWithSimplePrice(Integer language, Integer userId,
-            Integer entityId, Integer currencyId, Integer itemId, OrderLineDTO line, Integer precision) {
+    public static void populateWithSimplePrice(Integer language, Integer userId, Integer entityId, Integer currencyId,
+                                               Integer itemId, OrderLineDTO line, Integer precision) {
 
         ItemBL itemBl = new ItemBL(itemId);
         ItemDTO item = itemBl.getEntity();
@@ -271,18 +271,21 @@ public class OrderLineBL {
         if (line.getDescription() == null) {
             line.setDescription(item.getDescription(language));
         }
+
         if (line.getQuantity() == null) {
             line.setQuantity(new BigDecimal(1));
         }
+
         if (line.getPrice() == null) {
-            line.setPrice((item.getPercentage() == null) ? 
-                itemBl.getPriceByCurrency(item, currencyId) :
-                item.getPercentage());
+            line.setPrice((item.getPercentage() == null)
+                          ? itemBl.getPriceByCurrency(item, currencyId) // basic price, ignoring current usage and
+                          : item.getPercentage());                      // and quantity purchased for price calculations
         }
+
         if (line.getAmount() == null) {
-            BigDecimal additionAmount = null;
-            // normal price, multiply by quantity
+            BigDecimal additionAmount = null;               
             if (item.getPercentage() == null) {
+                // normal price, multiply by quantity
                 additionAmount = line.getPrice();
                 additionAmount = additionAmount.multiply(line.getQuantity());
             } else {
@@ -291,6 +294,7 @@ public class OrderLineBL {
             }
             line.setAmount(additionAmount.setScale(precision, CommonConstants.BIGDECIMAL_ROUND));
         }
+
         line.setCreateDatetime(null);
         line.setDeleted(0);
         line.setTypeId(type);

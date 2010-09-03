@@ -96,24 +96,40 @@ public class Usage {
      * @return number of units purchased
      */
     public BigDecimal getQuantity() {
-        return quantity;
+        return (quantity != null ? amount : BigDecimal.ZERO);
     }
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
+    public void addQuantity(BigDecimal quantity) {
+        setQuantity(getQuantity().add(quantity));
+    }
+
+    public void subtractQuantity(BigDecimal quantity) {
+        setQuantity(getQuantity().subtract(quantity));
+    }
+            
     /**
      * The total dollar amount of usage purchased over the period.
      *
      * @return total amount of usage in dollars
      */
     public BigDecimal getAmount() {
-        return amount;
+        return (amount != null ? amount : BigDecimal.ZERO);
     }
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public void addAmount(BigDecimal quantity) {
+        setAmount(getAmount().add(quantity));
+    }
+
+    public void subractAmount(BigDecimal quantity) {
+        setAmount(getAmount().subtract(quantity));
     }
 
     public Date getStartDate() {
@@ -137,8 +153,8 @@ public class Usage {
         return "Usage{"
                 + "itemId=" + itemId
                 + ", itemTypeId=" + itemTypeId
-                + ", quantity=" + quantity
-                + ", amount=" + amount
+                + ", quantity=" + getQuantity()
+                + ", amount=" + getAmount()
                 + ", startDate=" + startDate
                 + ", endDate=" + endDate
                 + '}';

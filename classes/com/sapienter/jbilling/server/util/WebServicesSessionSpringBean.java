@@ -1825,9 +1825,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return doValidatePurchase(userId, itemIds, fields);
     }
 
-    private ValidatePurchaseWS doValidatePurchase(Integer userId, 
-            Integer[] itemIds, String[] fields) {
-
+    private ValidatePurchaseWS doValidatePurchase(Integer userId, Integer[] itemIds, String[] fields) {
         if (userId == null || (itemIds == null && fields == null)) {
             return null;
         }
@@ -1836,8 +1834,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         if (fields != null) {
             fieldsList = new ArrayList<List<PricingField>>(fields.length);
             for (int i = 0; i < fields.length; i++) {
-                fieldsList.add(new ArrayList(Arrays.asList(
-                        PricingField.getPricingFieldsValue(fields[i]))));
+                fieldsList.add(new ArrayList(Arrays.asList(PricingField.getPricingFieldsValue(fields[i]))));
             }
         }
 
@@ -1864,10 +1861,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     List<Record> records = new ArrayList<Record>(1);
                     records.add(record);
 
-                    PluggableTaskManager<IMediationProcess> tm =
-                            new PluggableTaskManager<IMediationProcess>(
-                            getCallerCompanyId(),
-                            Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
+                    PluggableTaskManager<IMediationProcess> tm
+                            = new PluggableTaskManager<IMediationProcess>(getCallerCompanyId(),
+                                                                          Constants.PLUGGABLE_TASK_MEDIATION_PROCESS);
+
                     IMediationProcess processTask = tm.getNextClass();
 
                     MediationResult result = new MediationResult("WS", false);
@@ -1882,21 +1879,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                         items.add(new ItemBL(line.getItemId()).getEntity());
                         prices.add(line.getAmount());
                     }
+
                 } catch (Exception e) {
                     // log stacktrace
                     StringWriter sw = new StringWriter();
                     PrintWriter pw = new PrintWriter(sw);
                     e.printStackTrace(pw);
                     pw.close();
-                    LOG.error("Validate Purchase error: " + e.getMessage() +
-                            "\n" + sw.toString());
+                    LOG.error("Validate Purchase error: " + e.getMessage() + "\n" + sw.toString());
 
                     ValidatePurchaseWS result = new ValidatePurchaseWS();
                     result.setSuccess(false);
                     result.setAuthorized(false);
                     result.setQuantity(BigDecimal.ZERO);
-                    result.setMessage(new String[] { "Error: " + 
-                            e.getMessage() } );
+                    result.setMessage(new String[] { "Error: " + e.getMessage() } );
 
                     return result;
                 }
@@ -1906,8 +1902,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         // find the prices first
-    // this will do nothing if the mediation process was uses. In that case
-    // the itemIdsList will be empty
+        // this will do nothing if the mediation process was uses. In that case
+        // the itemIdsList will be empty
         int itemNum = 0;
         for (Integer itemId : itemIdsList) {
             ItemBL item = new ItemBL(itemId);
@@ -1922,14 +1918,13 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 item.setPricingFields(fieldsList.get(fieldsIndex));
             }
 
-            prices.add(item.getPrice(userId, 
-                    getCallerCompanyId()));
+            // todo: validate purchase should include the quantity purchased for validations
+            prices.add(item.getPrice(userId, BigDecimal.ONE, getCallerCompanyId()));
             items.add(item.getEntity());
             itemNum++;
         }
 
-        ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(items, 
-                prices, fieldsList);
+        ValidatePurchaseWS ret = new UserBL(userId).validatePurchase(items, prices, fieldsList);
         return ret;
     }
 

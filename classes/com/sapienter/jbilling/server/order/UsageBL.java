@@ -21,21 +21,24 @@
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.order.db.OrderDAS;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.order.db.OrderPeriodDTO;
 import com.sapienter.jbilling.server.order.db.UsageDAS;
 import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
+import com.sapienter.jbilling.server.process.PeriodOfTime;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.Context;
 import org.apache.log4j.Logger;
 import org.joda.time.DateMidnight;
+import org.springmodules.cache.CachingModel;
+import org.springmodules.cache.FlushingModel;
+import org.springmodules.cache.provider.CacheProviderFacade;
 
-import java.util.Calendar;
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Provides easy access to usage information over the customers natural billing period.
@@ -46,34 +49,138 @@ import java.util.GregorianCalendar;
 public class UsageBL {
     private static final Logger LOG = Logger.getLogger(UsageBL.class);
 
+    private static final Integer CURRENT_PERIOD = 1;
+
     private UsageDAS usageDas;
-
     private Integer userId;
-    private OrderDTO mainOrder;
+    private Integer periods;
+    private UsagePeriod usagePeriod = null;
 
+    // cache calculated periods to avoid expensive calculations
+    private CacheProviderFacade cache;
+    private CachingModel cacheModel;
+    private FlushingModel flushModel;
+
+    /**
+     * Construct a UsageBL object to calculate usage for the customers most recent/current
+     * period.
+     *
+     * @param userId user id
+     */
     public UsageBL(Integer userId) {
         _init();
-        set(userId);
+        set(userId, CURRENT_PERIOD);
+    }
+
+    /**
+     * Construct a UsageBL object to calculate usage over the given number of
+     * periods in the past, where 1 period back is the current period.
+     *
+     * @param userId user id
+     * @param periods number of periods in the past to calculate usage for
+     */
+    public UsageBL(Integer userId, Integer periods) {
+        _init();
+        set(userId, periods);
     }
 
     private void _init() {
         usageDas = new UsageDAS();
+
+        cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
+        cacheModel = (CachingModel) Context.getBean(Context.Name.CACHE_MODEL_RW);
+        flushModel = (FlushingModel) Context.getBean(Context.Name.CACHE_FLUSH_MODEL_RW);
     }
 
-    public void set(Integer userId) {
+    public void set(Integer userId, Integer periods) {
         this.userId = userId;
+        this.periods = periods;
 
-        // get main subscription order
-        Integer orderId = new OrderBL().getMainOrderId(userId);
-        if (orderId != null)
-            mainOrder = new OrderBL(orderId).getEntity();
+        usagePeriod = (UsagePeriod) cache.getFromCache(getCacheKey(), cacheModel);
 
-        if (mainOrder == null)
-            throw new SessionInternalError("Customer " + userId + " does not have main subscription order!");
+        // could not load period from cache
+        if (usagePeriod == null) {
+
+            // get main subscription order
+            OrderDTO mainOrder = null;
+            Integer orderId = new OrderBL().getMainOrderId(userId);
+            if (orderId != null)
+                mainOrder = new OrderBL(orderId).getEntity();
+
+            if (mainOrder == null)
+                LOG.warn("Customer " + userId + " does not have main subscription order - all usage will be 0!");
+
+            // get billing cycle dates and billing periods for main order.
+            if (mainOrder != null) {
+                try {
+                    Integer entityId = mainOrder.getBaseUserByUserId().getCompany().getId();
+                    PluggableTaskManager manager = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_ORDER_PERIODS);
+                    OrderPeriodTask periodTask = (OrderPeriodTask) manager.getNextClass();
+
+                    if (periodTask == null)
+                        throw new SessionInternalError("OrderPeriodTask not configured!");
+
+                    Date cycleStartDate = periodTask.calculateStart(mainOrder);
+                    Date cycleEndDate = periodTask.calculateEnd(mainOrder,
+                                                                new Date(),
+                                                                periods,
+                                                                cycleStartDate);
+
+                    List<PeriodOfTime> billingPeriods = periodTask.getPeriods();
+
+                    if (billingPeriods.isEmpty())
+                        throw new SessionInternalError("Could not determine customer's billing period!");
+
+                    // populate usage period object for cache
+                    usagePeriod = new UsagePeriod();
+                    usagePeriod.setMainOrder(mainOrder);
+                    usagePeriod.setCycleStartDate(cycleStartDate);
+                    usagePeriod.setCycleEndDate(cycleEndDate);
+                    usagePeriod.setBillingPeriods(billingPeriods);
+
+                    LOG.debug("Caching with key '" + getCacheKey() + "', usage period: " + usagePeriod);
+                    cache.putInCache(getCacheKey(), cacheModel, usagePeriod);
+
+                } catch (PluggableTaskException e) {
+                    throw new SessionInternalError("Exception occurred retrieving the configured OrderPeriodTask.", e);
+                } catch (TaskException e) {
+                    throw new SessionInternalError("Exception occurred calculating the customers billing periods.", e);
+                }
+            }
+        } else {
+            LOG.debug("Cache hit for '" + getCacheKey() + "', usage period: " + usagePeriod);
+        }
+    }
+
+    private String getCacheKey() {
+        return "user " + userId + " periods " + periods;
+    }
+
+    public void invalidateCache() {
+        cache.flushCache(flushModel);
     }
 
     public Integer getUserId() {
         return userId;
+    }
+
+    /**
+     * Returns the number of periods spanned by this usage calculation inclusive, where 1
+     * denotes the current period, 2 is the current period + 1 etc.
+     *
+     * Example:
+     *      1 period:
+     *      June 1st -> July 1st
+     *
+     *      2 periods:
+     *      May 1st -> July 1st
+     *
+     *  where July is the current period
+     *
+     * @return number of periods spanned by this usage calculation 
+     */
+    public Integer getPeriods() {
+        return periods;
     }
 
     /**
@@ -83,103 +190,144 @@ public class UsageBL {
      * @return customers main subscription order.
      */
     public OrderDTO getMainOrder() {
-        return mainOrder;
+        return usagePeriod.getMainOrder();
     }
 
     /**
-     * Returns the cycle start date of the customers main subscription order. If the order
-     * does not have a set cycle start date, the active since date will be returned. If the
-     * order does not have an active since date, the creation date will be returned.
+     * Returns the billing cycle start date for this customer. This is the start date of the very
+     * first billing period for this customer, effectively the date the main subscription order
+     * became active.
      *
-     * @return order cycle start date
+     * @return cycle start date
      */
     public Date getCycleStartDate() {
-        return mainOrder.getCycleStarts() != null ? mainOrder.getCycleStarts()
-                                                  : (mainOrder.getActiveSince() != null ? mainOrder.getActiveSince()
-                                                                                        : mainOrder.getCreateDate());
+        return usagePeriod.getCycleStartDate();
     }
 
     /**
-     * Returns the period start date for N periods in the past, where 1 would
-     * be the previous period (effectively the current period start date minus 1 cycle)
-     * and 0 would be the current period only.
+     * Returns the billing cycle end date for this customer. This is the end of of the customers
+     * current billing period, effectively the date the main subscription order will become in-active.
      *
-     * @param periods number of periods in the past
-     * @return calculated past period start date
+     * @return cycle end date
      */
-    public Date getPeriodStart(Integer periods) {        
-        DateMidnight start;
-        try {
-            Integer entityId = mainOrder.getBaseUserByUserId().getCompany().getId(); 
-            PluggableTaskManager manager = new PluggableTaskManager(entityId, Constants.PLUGGABLE_TASK_ORDER_PERIODS);
-            OrderPeriodTask periodTask = (OrderPeriodTask) manager.getNextClass();
-
-            if (periodTask == null)
-                throw new SessionInternalError("OrderPeriodTask not configured!");
-
-            start = new DateMidnight(periodTask.calculateStart(mainOrder).getTime());
-            
-        } catch (PluggableTaskException e) {
-            throw new SessionInternalError("Exception occurred retrieving the configured OrderPeriodTask.", e);
-        } catch (TaskException e) {
-            throw new SessionInternalError("Exception occurred calculating the customers current period start date.", e);
-        }
-
-        LOG.debug("Main order period start date: " + start);
-        
-        OrderPeriodDTO period = mainOrder.getOrderPeriod();
-        periods = periods * period.getValue();
-
-        if (period.getUnitId().equals(Constants.PERIOD_UNIT_DAY)) {
-            return start.minusDays(periods).toDate();
-        } else if (period.getUnitId().equals(Constants.PERIOD_UNIT_WEEK)) {
-            return start.minusWeeks(periods).toDate();
-        } else if (period.getUnitId().equals(Constants.PERIOD_UNIT_MONTH)) {
-            return start.minusMonths(periods).toDate();
-        } else if (period.getUnitId().equals(Constants.PERIOD_UNIT_YEAR)) {
-            return start.minusYears(periods).toDate();
-        } else {
-            throw new IllegalStateException("Period unit " + period.getUnitId() + " is not supported!");
-        }
+    public Date getCycleEndDate() {
+        return usagePeriod.getCycleEndDate();
     }
 
     /**
-     * Returns the current period end date for this customer, always the end of day today.
+     * Returns a list of billing periods of the main subscription order, spanning
+     * back N number of periods ({@link #getPeriods()}.
+     *
+     * @return billing periods
+     */
+    public List<PeriodOfTime> getBillingPeriods() {
+        return usagePeriod.getBillingPeriods();
+    }
+
+    /**
+     * Returns the start date for the defined period of usage (period of time spanning
+     * back N number of periods; {@link #getPeriods()}).
+     *
+     * @return usage period start date.
+     */
+    public Date getPeriodStart() {
+        // get the first period entry in the list - will be N number of periods in the past
+        PeriodOfTime start = usagePeriod.getBillingPeriods().get(0);
+        return start.getStart();
+    }
+
+    /**
+     * Returns the current period end date for this customer. This customer will return
+     * end of day today as the end date if the period end date is in the past (can occur
+     * if we're processing before the customer's first billing run).
      *
      * @return current period end date
      */
     public Date getPeriodEnd() {
-        // todo: should calculate using the OrderPeriodTask, using EOD today excludes charges created with future dates
-        return new DateMidnight().plusDays(1).toDate();
+        // get the last period entry in the list - will be the most recent period
+        PeriodOfTime end = usagePeriod.getBillingPeriods().get(usagePeriod.getBillingPeriods().size() - 1);
+
+        // end of day today
+        DateMidnight today = new DateMidnight().plusDays(1);
+
+        if (new DateMidnight(end.getEnd().getTime()).isBefore(today)) {
+            return today.toDate();
+        } else {
+            return end.getEnd();
+        }
     }
 
     /**
-     * Returns the total usage of the given itemId for the past N periods. Zero periods
-     * in the past will include only usage for the current billing period.
+     * Returns the total usage for an item including the given known order quantity and order amount. This
+     * method is used to include an un-persisted order's total in a usage calculation.
+     *
+     * @see #getItemUsage(Integer)
      *
      * @param itemId item id
-     * @param periods number of past periods to include
+     * @param orderQuantity total order quantity of this item to include
+     * @param orderAmount total order dollar amount of this item to include
      * @return usage
      */
-    public Usage getItemUsage(Integer itemId, Integer periods) {
-        Date startDate = getPeriodStart(periods);
-        Date endDate = getPeriodEnd();
-        LOG.debug("Fetching usage of item for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
-        return usageDas.findUsageByItem(itemId, startDate, endDate);
+    public Usage getItemUsage(Integer itemId, BigDecimal orderQuantity, BigDecimal orderAmount) {
+        Usage usage = getItemUsage(itemId);
+        usage.addQuantity(orderQuantity);
+        usage.addAmount(orderAmount);
+
+        return usage;
     }
 
     /**
-     * Returns the total usage of the given item type for the past N periods. Zero periods
-     * in the past will include only usage for the current billing period.
-     * 
-     * @param itemTypeId item type id
-     * @param periods number of past periods to include
+     * Returns the total usage over the set number of periods.
+     *
+     * @param itemId item id
      * @return usage
      */
-    public Usage getItemTypeUsage(Integer itemTypeId, Integer periods) {
-        Date startDate = getPeriodStart(periods);
-        Date endDate = getPeriodEnd();
-        LOG.debug("Fetching usage of item type for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
-        return usageDas.findUsageByItemType(itemTypeId, startDate, endDate);
+    public Usage getItemUsage(Integer itemId) {
+        if (getMainOrder() != null) {
+            Date startDate = getPeriodStart();
+            Date endDate = getPeriodEnd();
+            LOG.debug("Fetching usage of item for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+            return usageDas.findUsageByItem(itemId, userId, startDate, endDate);
+        }
+
+        LOG.warn("Customer has no main subscription order billing period, item " + itemId + " usage set to 0");
+        return new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+    }
+
+    /**
+     * Returns the total usage for an item type including the given known order quantity and order amount. This
+     * method is used to include an un-persisted order's total in a usage calculation.
+     *
+     * @see #getItemTypeUsage(Integer)
+     *
+     * @param itemId item id
+     * @param orderQuantity total order quantity of this item to include
+     * @param orderAmount total order dollar amount of this item to include
+     * @return usage
+     */
+    public Usage getItemTypeUsage(Integer itemId, BigDecimal orderQuantity, BigDecimal orderAmount) {
+        Usage usage = getItemTypeUsage(itemId);
+        usage.addQuantity(orderQuantity);
+        usage.addAmount(orderAmount);
+
+        return usage;
+    }
+
+    /**
+     * Returns the total usage over the set number of periods.
+     * 
+     * @param itemTypeId item type id
+     * @return usage
+     */
+    public Usage getItemTypeUsage(Integer itemTypeId) {
+        if (getMainOrder() != null) {
+            Date startDate = getPeriodStart();
+            Date endDate = getPeriodEnd();
+            LOG.debug("Fetching usage of item type for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+            return usageDas.findUsageByItemType(itemTypeId, userId, startDate, endDate);
+        }
+
+        LOG.warn("Customer has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
+        return new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
     }
 }

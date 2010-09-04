@@ -77,6 +77,7 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
             model = new ItemBL(itemId).getEntity().getDefaultPrice();
         }
 
+        // apply price model
         if (model != null) {
             LOG.debug("Applying price model " + model);
 

@@ -27,8 +27,18 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * UsagePeriod represents a period of time for a customer's usage calculations. This
+ * class holds the customer's main subscription order, the cycle start and end dates,
+ * and a list of periods for the {@link UsageBL} usage period.
+ *
+ * @author Brian Cowdery
+ * @since 03-09-2010
+ */
 public class UsagePeriod implements Serializable {
-    
+
+    // extracted from UsageBL fields to provide an object that could be cached
+
     private OrderDTO mainOrder;
     private Date cycleStartDate;
     private Date cycleEndDate;

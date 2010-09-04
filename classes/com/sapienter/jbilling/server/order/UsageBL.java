@@ -56,7 +56,7 @@ public class UsageBL {
     private Integer periods;
     private UsagePeriod usagePeriod = null;
 
-    // cache calculated periods to avoid expensive calculations
+    // cache of calculated usage periods
     private CacheProviderFacade cache;
     private CachingModel cacheModel;
     private FlushingModel flushModel;
@@ -108,7 +108,7 @@ public class UsageBL {
                 mainOrder = new OrderBL(orderId).getEntity();
 
             if (mainOrder == null)
-                LOG.warn("Customer " + userId + " does not have main subscription order - all usage will be 0!");
+                LOG.warn("User " + userId + " does not have main subscription order - all usage will be 0!");
 
             // get billing cycle dates and billing periods for main order.
             if (mainOrder != null) {
@@ -129,7 +129,7 @@ public class UsageBL {
                     List<PeriodOfTime> billingPeriods = periodTask.getPeriods();
 
                     if (billingPeriods.isEmpty())
-                        throw new SessionInternalError("Could not determine customer's billing period!");
+                        throw new SessionInternalError("Could not determine user's billing period!");
 
                     // populate usage period object for cache
                     usagePeriod = new UsagePeriod();
@@ -169,13 +169,15 @@ public class UsageBL {
      * denotes the current period, 2 is the current period + 1 etc.
      *
      * Example:
+     * <lieral>
      *      1 period:
-     *      June 1st -> July 1st
+     *      July 1st -> July 30th
      *
      *      2 periods:
-     *      May 1st -> July 1st
+     *      June 1st -> July 30th
      *
-     *  where July is the current period
+     *  where July is the current month
+     * </literal>
      *
      * @return number of periods spanned by this usage calculation 
      */
@@ -286,11 +288,14 @@ public class UsageBL {
         if (getMainOrder() != null) {
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
-            LOG.debug("Fetching usage of item for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+
+            LOG.debug("Fetching usage of item " + itemId
+                      + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+
             return usageDas.findUsageByItem(itemId, userId, startDate, endDate);
         }
 
-        LOG.warn("Customer has no main subscription order billing period, item " + itemId + " usage set to 0");
+        LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
         return new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
     }
 
@@ -323,11 +328,14 @@ public class UsageBL {
         if (getMainOrder() != null) {
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
-            LOG.debug("Fetching usage of item type for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+
+            LOG.debug("Fetching usage of item type " + itemTypeId
+                      + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+
             return usageDas.findUsageByItemType(itemTypeId, userId, startDate, endDate);
         }
 
-        LOG.warn("Customer has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
+        LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
         return new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
     }
 }

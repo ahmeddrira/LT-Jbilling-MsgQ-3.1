@@ -63,7 +63,7 @@ public class UsageDAS extends HibernateDaoSupport {
         query.setParameter("user_id", userId);
         query.setParameter("item_id", itemId);
         query.setParameter("start_date", startDate);
-        query.setParameter("end_date", endDate);       
+        query.setParameter("end_date", endDate);
 
         Usage usage = (Usage) query.uniqueResult();
         usage.setItemId(itemId);

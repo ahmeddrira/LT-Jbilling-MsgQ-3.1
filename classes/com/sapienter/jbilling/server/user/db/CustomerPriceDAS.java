@@ -121,13 +121,14 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     // need to manually construct the HQL query by hand.
 
     private static final String PRICE_ATTRIBUTE_QUERY_HQL =
-            "select price.planItem "
+            "select price.id.planItem "
             + " from CustomerPriceDTO price "
-            + " where price.planItem.item.id = :item_id "
-            + " and price.customer.baseUser.id = :user_id " ;
+            + "  join price.id.planItem.model as model "
+            + " where price.id.planItem.item.id = :item_id "
+            + "  and price.id.baseUser.id = :user_id " ;
     
     private static final String PRICE_ATTRIBUTE_ORDER_HQL =
-            " order by price.planItem.precedence, price.createDatetime desc";
+            " order by price.id.planItem.precedence, price.createDatetime desc";
 
     /**
      * Fetch all customer pricing in order of precedence (highest first), where
@@ -239,7 +240,7 @@ public class CustomerPriceDAS extends AbstractDAS<CustomerPriceDTO> {
     }
 
     private String getAttributeClause(String key) {
-        return "price.attributes['" + key + "']";
+        return "model.attributes['" + key + "']";
     }
 
     private String getAttributeNamedParameter(String key) {

@@ -262,25 +262,6 @@ public class UsageBL {
     }
 
     /**
-     * Returns the total usage for an item including the given known order quantity and order amount. This
-     * method is used to include an un-persisted order's total in a usage calculation.
-     *
-     * @see #getItemUsage(Integer)
-     *
-     * @param itemId item id
-     * @param orderQuantity total order quantity of this item to include
-     * @param orderAmount total order dollar amount of this item to include
-     * @return usage
-     */
-    public Usage getItemUsage(Integer itemId, BigDecimal orderQuantity, BigDecimal orderAmount) {
-        Usage usage = getItemUsage(itemId);
-        usage.addQuantity(orderQuantity);
-        usage.addAmount(orderAmount);
-
-        return usage;
-    }
-
-    /**
      * Returns the total usage over the set number of periods.
      *
      * @param itemId item id
@@ -302,22 +283,25 @@ public class UsageBL {
     }
 
     /**
-     * Returns the total usage for an item type including the given known order quantity and order amount. This
-     * method is used to include an un-persisted order's total in a usage calculation.
-     *
-     * @see #getItemTypeUsage(Integer)
+     * Returns the total usage over the set number of periods for this customer and
+     * all direct sub-accounts.
      *
      * @param itemId item id
-     * @param orderQuantity total order quantity of this item to include
-     * @param orderAmount total order dollar amount of this item to include
      * @return usage
      */
-    public Usage getItemTypeUsage(Integer itemId, BigDecimal orderQuantity, BigDecimal orderAmount) {
-        Usage usage = getItemTypeUsage(itemId);
-        usage.addQuantity(orderQuantity);
-        usage.addAmount(orderAmount);
+    public Usage getSubAccountItemUsage(Integer itemId) {
+        if (getMainOrder() != null) {
+            Date startDate = getPeriodStart();
+            Date endDate = getPeriodEnd();
 
-        return usage;
+            LOG.debug("Fetching usage (including sub-accounts) of item " + itemId
+                      + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+
+            return usageDas.findSubAccountUsageByItem(itemId, userId, startDate, endDate);
+        }
+
+        LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
+        return new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
     }
 
     /**
@@ -335,6 +319,28 @@ public class UsageBL {
                       + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
 
             return usageDas.findUsageByItemType(itemTypeId, userId, startDate, endDate);
+        }
+
+        LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
+        return new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+    }
+
+    /**
+     * Returns the total usage over the set number of periods for this customer and
+     * all direct sub-accounts.
+     *
+     * @param itemTypeId item type id
+     * @return usage
+     */
+    public Usage getSubAccountItemTypeUsage(Integer itemTypeId) {
+        if (getMainOrder() != null) {
+            Date startDate = getPeriodStart();
+            Date endDate = getPeriodEnd();
+
+            LOG.debug("Fetching usage (including sub-accounts) of item type " + itemTypeId
+                      + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
+
+            return usageDas.findSubAccountUsageByItemType(itemTypeId, userId, startDate, endDate);
         }
 
         LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");

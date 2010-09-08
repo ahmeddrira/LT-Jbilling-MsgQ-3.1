@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * Pricing plug-in that calculates prices using the customer price map and PriceModelDTO
  * pricing strategies. This plug-in allows for complex pricing strategies to be applied
- * based on a customer's subscribed plans, quantity purchased and the current usage.
+ * based on a customers subscribed plans, quantity purchased and the current usage.
  *
  * @author Brian Cowdery
  * @since 16-08-2010

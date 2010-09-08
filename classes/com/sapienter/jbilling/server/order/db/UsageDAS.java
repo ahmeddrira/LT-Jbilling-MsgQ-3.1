@@ -48,14 +48,56 @@ public class UsageDAS extends HibernateDaoSupport {
             + " join purchase_order o on o.id = ol.order_id "
             + "where "
             + " o.deleted = 0 "
-            + " and ol.deleted = 0 "
-            + " and o.status_id = 16 "
+            + " and ol.deleted = 0 "          // order and line not deleted
+            + " and o.status_id in (16, 17) " // active or finished
             + " and o.user_id = :user_id "
             + " and ol.item_id = :item_id "
             + " and ol.create_datetime between :start_date and :end_date";
 
     public Usage findUsageByItem(Integer itemId, Integer userId, Date startDate, Date endDate) {
         Query query = getSession().createSQLQuery(USAGE_BY_ITEM_ID_SQL)
+                .addScalar("amount")
+                .addScalar("quantity")
+                .setResultTransformer(Transformers.aliasToBean(Usage.class));
+
+        query.setParameter("user_id", userId);
+        query.setParameter("item_id", itemId);
+        query.setParameter("start_date", startDate);
+        query.setParameter("end_date", endDate);
+
+        Usage usage = (Usage) query.uniqueResult();
+        usage.setItemId(itemId);
+        usage.setStartDate(startDate);
+        usage.setEndDate(endDate);
+
+        return usage;
+    }
+
+    private static final String SUBACCOUNT_USAGE_BY_ITEM_ID_SQL =
+            "select "
+            + " sum(ol.amount) as amount, "
+            + " sum(ol.quantity) as quantity "
+            + "from "
+            + "  order_line ol "
+            + "  join purchase_order o on o.id = ol.order_id "
+            + "where "
+            + " o.deleted = 0 "
+            + " and ol.deleted = 0 "          // order and line not deleted
+            + " and o.status_id in (16, 17) " // active or finished
+            + " and ol.item_id = :item_id "
+            + " and ( "
+            + "  o.user_id = :user_id "
+            + "  or o.user_id in ( "
+            + "   select subaccount.user_id "
+            + "   from customer parent "
+            + "    left join customer subaccount on subaccount.parent_id = parent.id "
+            + "   where parent.user_id = :user_id "
+            + "  ) "
+            + " ) "
+            + " and ol.create_datetime between :start_date and :end_date";
+
+    public Usage findSubAccountUsageByItem(Integer itemId, Integer userId, Date startDate, Date endDate) {
+        Query query = getSession().createSQLQuery(SUBACCOUNT_USAGE_BY_ITEM_ID_SQL)
                 .addScalar("amount")
                 .addScalar("quantity")
                 .setResultTransformer(Transformers.aliasToBean(Usage.class));
@@ -83,14 +125,57 @@ public class UsageDAS extends HibernateDaoSupport {
             + " join item_type_map tm on tm.item_id = ol.item_id "
             + "where "
             + " o.deleted = 0 "
-            + " and ol.deleted = 0 "
-            + " and o.status_id = 16 "
+            + " and ol.deleted = 0 "          // order and line not deleted
+            + " and o.status_id in (16, 17) " // active or finished
             + " and o.user_id = :user_id "
             + " and tm.type_id = :item_type_id"
             + " and create_datetime between :start_date and :end_date";
 
     public Usage findUsageByItemType(Integer itemTypeId, Integer userId, Date startDate, Date endDate) {
         Query query = getSession().createSQLQuery(USAGE_BY_ITEM_TYPE_SQL)
+                .addScalar("amount")
+                .addScalar("quantity")
+                .setResultTransformer(Transformers.aliasToBean(Usage.class));
+
+        query.setParameter("user_id", userId);
+        query.setParameter("item_type_id", itemTypeId);
+        query.setParameter("start_date", startDate);
+        query.setParameter("end_date", endDate);
+
+        Usage usage = (Usage) query.uniqueResult();
+        usage.setItemId(itemTypeId);
+        usage.setStartDate(startDate);
+        usage.setEndDate(endDate);
+
+        return usage;
+    }
+
+    private static final String SUBACCOUNT_USAGE_BY_ITEM_TYPE_SQL =
+            "select "
+            + " sum(ol.amount) as amount, "
+            + " sum(ol.quantity) as quantity "
+            + "from "
+            + " order_line ol "
+            + " join purchase_order o on o.id = ol.order_id "
+            + " join item_type_map tm on tm.item_id = ol.item_id "
+            + "where "
+            + " o.deleted = 0 "
+            + " and ol.deleted = 0 "          // order and line not deleted
+            + " and o.status_id in (16, 17) " // active or finished
+            + " and tm.type_id = :item_type_id "
+            + " and ( "
+            + "  o.user_id = :user_id "
+            + "  or o.user_id in ( "
+            + "   select subaccount.user_id "
+            + "   from customer parent "
+            + "    left join customer subaccount on subaccount.parent_id = parent.id "
+            + "   where parent.user_id = :user_id "
+            + "  ) "
+            + " ) "
+            + " and ol.create_datetime between :start_date and :end_date";
+
+    public Usage findSubAccountUsageByItemType(Integer itemTypeId, Integer userId, Date startDate, Date endDate) {
+        Query query = getSession().createSQLQuery(SUBACCOUNT_USAGE_BY_ITEM_TYPE_SQL)
                 .addScalar("amount")
                 .addScalar("quantity")
                 .setResultTransformer(Transformers.aliasToBean(Usage.class));

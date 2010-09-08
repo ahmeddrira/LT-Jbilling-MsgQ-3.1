@@ -397,5 +397,6 @@ DROP TABLE IF EXISTS item_price;
 delete from jbilling_table where name = 'item_price';
 delete from jbilling_seqs where name = 'item_price';
 
--- price model pricing plug-in
+-- price model pricing plug-ins
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (79, 14, 'com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask', 0);
+insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (80, 14, 'com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask', 0);

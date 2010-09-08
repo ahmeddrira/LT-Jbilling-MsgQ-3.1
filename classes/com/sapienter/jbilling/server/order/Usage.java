@@ -96,7 +96,7 @@ public class Usage {
      * @return number of units purchased
      */
     public BigDecimal getQuantity() {
-        return (quantity != null ? amount : BigDecimal.ZERO);
+        return (quantity != null ? quantity : BigDecimal.ZERO);
     }
 
     public void setQuantity(BigDecimal quantity) {

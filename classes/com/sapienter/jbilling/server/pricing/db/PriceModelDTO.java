@@ -221,6 +221,7 @@ public class PriceModelDTO implements Serializable {
         // convert to PricingResult currency
         if (result.getCurrencyId() != null
             && result.getUserId() != null
+            && currency != null
             && currency.getId() != result.getCurrencyId()) {
 
             Integer entityId = new UserBL().getEntityId(result.getUserId());

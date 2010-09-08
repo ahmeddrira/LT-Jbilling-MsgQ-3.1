@@ -101,6 +101,9 @@ public class UsageBL {
         // could not load period from cache
         if (usagePeriod == null) {
 
+            // new usage period details
+            usagePeriod = new UsagePeriod();
+
             // get main subscription order
             OrderDTO mainOrder = null;
             Integer orderId = new OrderBL().getMainOrderId(userId);
@@ -132,7 +135,6 @@ public class UsageBL {
                         throw new SessionInternalError("Could not determine user's billing period!");
 
                     // populate usage period object for cache
-                    usagePeriod = new UsagePeriod();
                     usagePeriod.setMainOrder(mainOrder);
                     usagePeriod.setCycleStartDate(cycleStartDate);
                     usagePeriod.setCycleEndDate(cycleEndDate);

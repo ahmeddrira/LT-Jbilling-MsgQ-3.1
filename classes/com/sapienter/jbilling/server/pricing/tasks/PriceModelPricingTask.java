@@ -66,34 +66,39 @@ public class PriceModelPricingTask extends PluggableTask implements IPricing {
 
         LOG.debug("Pricing item " + itemId + ", quantity " + quantity + " - for user " + userId);
 
-        // get customer pricing model, use fields as attributes
-        Map<String, String> attributes = getAttributes(fields);
-        PriceModelDTO model = getCustomerPriceModel(userId, itemId, attributes);
+        if (userId != null) {
+            // get customer pricing model, use fields as attributes
+            Map<String, String> attributes = getAttributes(fields);
+            PriceModelDTO model = getCustomerPriceModel(userId, itemId, attributes);
 
-        // no customer price, this means the customer has not subscribed to a plan affecting this
-        // item, or does not have a customer specific price set. Use the item default price.
-        if (model == null) {
-            LOG.debug("No customer price found, using item default price model.");
-            model = new ItemBL(itemId).getEntity().getDefaultPrice();
-        }
+            // no customer price, this means the customer has not subscribed to a plan affecting this
+            // item, or does not have a customer specific price set. Use the item default price.
+            if (model == null) {
+                LOG.debug("No customer price found, using item default price model.");
+                model = new ItemBL(itemId).getEntity().getDefaultPrice();
+            }
 
-        // apply price model
-        if (model != null) {
-            LOG.debug("Applying price model " + model);
+            // apply price model
+            if (model != null) {
+                LOG.debug("Applying price model " + model);
 
-            // get usage for the current period
-            Usage usage = new UsageBL(userId).getItemUsage(itemId);
-            LOG.debug("Current usage of item " + itemId + ": " + usage);
+                // fetch current usage of the item if the pricing strategy requires it
+                Usage usage = null;
+                if (model.getStrategy().requiresUsage()) {
+                    usage = new UsageBL(userId).getItemUsage(itemId);
+                    LOG.debug("Current usage of item " + itemId + ": " + usage);
+                } else {
+                    LOG.debug("Pricing strategy " + model.getType() + " does not require usage.");
+                }
+                                
+                PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
+                model.applyTo(result, result.getQuantity(), (usage != null ? usage.getQuantity() : null));
+                return result.getPrice();
+            }
+        }        
 
-            PricingResult result = new PricingResult(itemId, quantity, userId, currencyId);
-            model.applyTo(result, result.getQuantity(), usage.getQuantity());           
-            return result.getPrice();
-
-        } else {
-            // should never happen unless the item doesn't have a default price
-            LOG.debug("No price model found, using default price.");
-            return defaultPrice;
-        }
+        LOG.debug("No price model found, using default price.");
+        return defaultPrice;
     }
 
     /**

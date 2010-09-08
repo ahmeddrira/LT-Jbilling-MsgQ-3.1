@@ -32,6 +32,8 @@ import java.math.BigDecimal;
 public class FlatPricingStrategy implements PricingStrategy {
 
     public boolean isGraduated() { return false; }
+    public boolean requiresUsage() { return false; }
+
     public boolean hasRate() { return true; }
     public BigDecimal getRate() { return BigDecimal.ZERO; }
 

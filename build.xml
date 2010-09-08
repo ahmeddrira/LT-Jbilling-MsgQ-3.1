@@ -74,7 +74,8 @@
             <include name="*.jar" />
         </fileset>
         <fileset dir="${source.lib.dir}">
-            <include name="log4j*.jar"/>
+            <include name="*.jar"/>
+            <exclude name="drools*.jar"/>
         </fileset>
         <pathelement location="${source.lib.dir}/spring.jar"/>
         <pathelement location="${source.lib.dir}/hibernate3.jar"/>
@@ -877,7 +878,6 @@ server="upload.sourceforge.net" userid="anonymous">
             binformat="package">
             <include name="PricingRules.drl" />
         </rulebase>
-<!--
         <rulebase
         	srcdir="${source.rules.dir}"
         	tofile="${base_dir}/rules/PriceModelRules.pkg"
@@ -885,7 +885,6 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="PriceModelRules.drl" />
         </rulebase>
--->
         <rulebase
         	srcdir="${source.rules.dir}" 		
         	tofile="${base_dir}/rules/provisioning_commands.pkg"

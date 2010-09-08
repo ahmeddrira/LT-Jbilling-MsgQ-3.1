@@ -238,7 +238,8 @@ public class ItemBL {
      * the users current usage in the pricing calculation.
      *
      * This method does not execute any pricing plug-ins and does not use quantity or usage
-     * values for PriceModelDTO price calculations. 
+     * values for {@link PriceModelDTO#applyTo(PricingResult, BigDecimal, BigDecimal)}
+     * price calculations.
      *
      * @param item item to price
      * @param currencyId currency id of requested price
@@ -292,7 +293,7 @@ public class ItemBL {
             throw new SessionInternalError(e);
         }
 
-        // default price
+        // default "simple" price
         BigDecimal price = getPriceByCurrency(item, currencyId);
 
         // run a plug-in with external logic (rules), if available

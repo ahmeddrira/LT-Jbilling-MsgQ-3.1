@@ -331,7 +331,6 @@ CREATE TABLE price_model_attribute (
 ALTER TABLE price_model_attribute ADD CONSTRAINT price_model_attr_model_id_FK FOREIGN KEY (price_model_id) REFERENCES price_model (id);
 
 insert into jbilling_table (id, name) values (94, 'price_model_attribute');
-insert into jbilling_seqs (name, next_id) values ('price_model_attribute', 1);
 
 DROP TABLE IF EXISTS plan;
 CREATE TABLE plan (
@@ -367,7 +366,7 @@ DROP TABLE IF EXISTS customer_price;
 CREATE TABLE customer_price (
     plan_item_id integer NOT NULL,
     user_id integer NOT NULL,
-    create_datetime timestamp NOT NULL DEFAULT NULL,
+    create_datetime timestamp NOT NULL DEFAULT 0,
     PRIMARY KEY (plan_item_id, user_id)
 );
 ALTER TABLE customer_price ADD CONSTRAINT customer_price_plan_item_id_FK FOREIGN KEY (plan_item_id) REFERENCES plan_item (id);

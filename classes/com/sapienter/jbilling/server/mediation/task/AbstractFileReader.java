@@ -188,7 +188,7 @@ public abstract class AbstractFileReader extends AbstractReader {
             if (reader == null) {
                 return false;
             }
-            
+
             records.clear();
             String line = readLine();
             int startedAt = 0;
@@ -213,9 +213,12 @@ public abstract class AbstractFileReader extends AbstractReader {
         private String readLine() {
             try {
                 String line = reader.readLine();
-                if (line == null) {
+
+                // end of file or blank string at end of file
+                if (line == null || (line.trim().length() == 0 && !reader.ready())) {
                     // we are done with this file
                     reader.close();
+
                     // rename it to avoid re-processing, if configured
                     if (rename) {
                         if (!files[fileIndex].renameTo(
@@ -223,6 +226,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                             LOG.warn("Could not rename file " + files[fileIndex].getName());
                         }
                     }
+
                     // reached the last line, go to the next file
                     if (!nextReader()) {
                         return null; // all done then

@@ -45,7 +45,7 @@ import com.sapienter.jbilling.server.entity.AchDTO;
  */
 @WebService
 public interface IWebServicesSessionBean {
-
+	
     /*
      * INVOICES
      */
@@ -156,7 +156,7 @@ public interface IWebServicesSessionBean {
     /**
      * Retrieves an array of users in the required status 
      */
-    public Integer[] getUsersByStatus(Integer statusId, Integer entityId,
+    public Integer[] getUsersByStatus(Integer statusId,
         boolean in) throws SessionInternalError;
 
     /**

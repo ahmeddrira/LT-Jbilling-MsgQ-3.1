@@ -22,22 +22,18 @@
           ***************************************************
     -->
     <!-- Session Facade beans -->
-    <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
-    <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
-    <bean id="customerSession" class="com.sapienter.jbilling.server.customer.CustomerSessionBean"/>
-    <bean id="listSession" class="com.sapienter.jbilling.server.list.ListSessionBean"/>
+    <!-- For the login page of the GUI -->
     <bean id="userSession" class="com.sapienter.jbilling.server.user.UserSessionBean"/>
-    <bean id="invoiceSession" class="com.sapienter.jbilling.server.invoice.InvoiceSessionBean"/>
-    <bean id="orderSession" class="com.sapienter.jbilling.server.order.OrderSessionBean"/>
-    <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean"/>
-    <bean id="paymentSession" class="com.sapienter.jbilling.server.payment.PaymentSessionBean"/>
-    <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
-    <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
-    <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
-    <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
-    <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean"/>
+    <!-- The web services API, which is used as main service in the GUI -->
+    <bean id="webServicesSession" scope="session" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
+    	<property name="caller" ref="webCaller"/>
+    </bean>
+    <!-- This is populated by the Login action in the GUI, or the authentication filter for a web services call
+         If deploying a web services only node, and in a secure environment, simply remove the filter and inject the
+         caller attributes directly to enhance performance -->
+    <bean id="webCaller" scope="session" class="com.sapienter.jbilling.server.util.WebServicesCaller" />
 
-    <!-- Data Acess Service beans -->
+    <!-- Data Access Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"
         factory-method="getInstance" scope="prototype">
         <property name="jbDAS" ref="jbillingTableDAS"/>

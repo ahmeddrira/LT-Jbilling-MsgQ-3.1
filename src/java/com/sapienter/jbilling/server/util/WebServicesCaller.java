@@ -16,102 +16,66 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.sapienter.jbilling.server.util;
 
-import org.apache.log4j.Logger;
-
-import com.sapienter.jbilling.server.user.IUserSessionBean;
-import com.sapienter.jbilling.server.user.db.UserDTO;
 
 /**
- * Provides thread local storage of web services caller info. The 
- * authentication mechanism must make available the caller info here,
- * which is then used by the WebServicesSessionBean and the security 
- * proxy. 
+ * Provides session storage of web services caller info. The authentication
+ * mechanism must make available the caller info here, which is then used by the
+ * WebServicesSessionBean and the security proxy.
  */
-public class WebServicesCaller {
+public class WebServicesCaller implements IWebServicesCaller {
+	private int callerId;
+	private int callerCompanyId;
+	private String callerUserName;
 
-    /**
-     * Class used to hold default username/password for 
-     * unauthenticated calls. 
-     */
-    public static class Defaults {
-        String username = null;
-        String password = null;
+	/* (non-Javadoc)
+	 * @see com.sapienter.jbilling.server.util.IWebServicesCaller#setCallerId(int)
+	 */
+	public void setCallerId(int callerId) {
+		this.callerId = callerId;
+	}
 
-        public void setUsername(String username) {
-            this.username = username;
-        }
+	/* (non-Javadoc)
+	 * @see com.sapienter.jbilling.server.util.IWebServicesCaller#setCallerCompanyId(int)
+	 */
+	public void setCallerCompanyId(int callerCompanyId) {
+		this.callerCompanyId = callerCompanyId;
+	}
 
-        public String getUsername() {
-            return username;
-        }
+	/* (non-Javadoc)
+	 * @see com.sapienter.jbilling.server.util.IWebServicesCaller#setCallerUserName(java.lang.String)
+	 */
+	public void setCallerUserName(String callerUserName) {
+		this.callerUserName = callerUserName;
+	}
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+	/* (non-Javadoc)
+	 * @see com.sapienter.jbilling.server.util.IWebServicesCaller#getCallerUserName()
+	 */
+	public String getCallerUserName() {
+		return callerUserName;
+	}
 
-        public String getPassword() {
-            return password;
-        }
-    }
+	/* (non-Javadoc)
+	 * @see com.sapienter.jbilling.server.util.IWebServicesCaller#getCallerId()
+	 */
+	public int getCallerId() {
+		return callerId;
+	}
 
-    private static final Logger LOG = Logger.getLogger(WebServicesCaller.class);
-
-    private static final ThreadLocal<UserDTO> caller = 
-            new ThreadLocal<UserDTO>();
-
-    // non-instantiable 
-    private WebServicesCaller() {
-    }
-
-    /**
-     * Returns the caller UserDTO. If the caller is not set, the 
-     * default for unauthenticated calls is returned instead. 
-     */
-    public static UserDTO get() {
-        if (caller.get() == null) {
-            // no caller set, try to get default username and password
-            Defaults defaults = (Defaults) Context.getBean(
-                    Context.Name.WEB_SERVICES_CALLER_DEFAULTS);
-
-            if (defaults.getUsername() != null && 
-                    defaults.getPassword() != null) {
-                IUserSessionBean userSession = (IUserSessionBean) 
-                        Context.getBean(Context.Name.USER_SESSION);
-                UserDTO user = userSession.webServicesAuthenticate(
-                        defaults.getUsername(), defaults.getPassword());
-
-                if (user != null) {
-                    LOG.info("Using default username and password for " +
-                            "unauthenticated API call/s.");
-                    set(user);
-                } else {
-                    throw new SecurityException("Invalid default " +
-                            "username/password");
-                }
-            } else {
-                throw new SecurityException("No caller set.");
-            }
-        }
-        return caller.get();
-    }
-
-    public static void set(UserDTO user) {
-        caller.set(user);
-    }
-
-    public static Integer getUserId() {
-        return get().getId();
-    }
-
-    public static String getUserName() {
-        return get().getUserName();
-    }
-
-    public static Integer getCompanyId() {
-        return get().getCompany().getId();
-    }
+	/* (non-Javadoc)
+	 * @see com.sapienter.jbilling.server.util.IWebServicesCaller#getCallerCompanyId()
+	 */
+	public int getCallerCompanyId() {
+		return callerCompanyId;
+	}
+	
+	public void reset() {
+		setCallerCompanyId(0);
+		setCallerId(0);
+		setCallerUserName(null);
+	}
 }

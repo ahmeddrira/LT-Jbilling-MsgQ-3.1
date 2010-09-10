@@ -121,8 +121,17 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     private static final Logger LOG = Logger.getLogger(WebServicesSessionSpringBean.class);
+    private IWebServicesCaller caller;
 
-    /*
+	public IWebServicesCaller getCaller() {
+		return caller;
+	}
+
+	public void setCaller(IWebServicesCaller caller) {
+		this.caller = caller;
+	}
+
+	/*
      * INVOICES
      */
     public InvoiceWS getInvoiceWS(Integer invoiceId)
@@ -475,8 +484,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Retrieves an array of users in the required status 
      */
     public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError {
-        Integer entityId = getCallerCompanyId();
-        return getUsersByStatus(statusId, entityId, true);
+        return getUsersByStatus(statusId, true);
     }
 
     /**
@@ -484,8 +492,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      */
     public Integer[] getUsersNotInStatus(Integer statusId)
             throws SessionInternalError {
-        Integer entityId = getCallerCompanyId();
-        return getUsersByStatus(statusId, entityId, false);
+        return getUsersByStatus(statusId, false);
     }
 
     /**
@@ -534,10 +541,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     /**
      * Retrieves an array of users in the required status 
      */
-    public Integer[] getUsersByStatus(Integer statusId, Integer entityId,
+    public Integer[] getUsersByStatus(Integer statusId, 
             boolean in)
             throws SessionInternalError {
         try {
+        	Integer entityId = getCallerCompanyId();
             UserBL bl = new UserBL();
             CachedRowSet users = bl.getByStatus(entityId, statusId, in);
             LOG.debug("got collection. Now converting");
@@ -1482,7 +1490,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     private void validateCaller() {
-        String root = WebServicesCaller.getUserName();
+        String root = caller.getCallerUserName();
         UserBL bl = new UserBL();
         bl.setRoot(root);
         bl.getEntityId(bl.getEntity().getUserId());
@@ -1726,11 +1734,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     private Integer getCallerId() {
-        return WebServicesCaller.getUserId();
+        return caller.getCallerId();
     }
 
     private Integer getCallerCompanyId() {
-        return WebServicesCaller.getCompanyId();
+        return caller.getCallerCompanyId();
     }
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {

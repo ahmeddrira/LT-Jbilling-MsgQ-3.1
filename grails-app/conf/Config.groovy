@@ -65,7 +65,7 @@ if (!catalinaHome) {
     catalinaHome = '..\\'   // just in case
 }
 
-log4j = {
+log4j = {q
     
     appenders {
         console name:"CONSOLE", threshold:Level.INFO, layout:pattern(conversionPattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n")

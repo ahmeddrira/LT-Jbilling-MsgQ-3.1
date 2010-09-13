@@ -20,59 +20,20 @@
 
 package com.sapienter.jbilling.server.pricing;
 
-import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.pricing.db.PriceModelDAS;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
-import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Brian Cowdery
  * @since 06-08-2010
  */
 public class PriceModelBL {
-    private static final Logger LOG = Logger.getLogger(PriceModelBL.class);
-
-    private PriceModelDAS priceModelDas;
-    private PriceModelDTO model;
-
-    public PriceModelBL() {
-        _init();
-    }
-
-    public PriceModelBL(Integer id) {
-        _init();
-        set(id);
-    }
-
-    private void _init() {
-        priceModelDas = new PriceModelDAS();
-    }
-
-    public void set(Integer id) {
-        model = priceModelDas.find(id);
-    }
-
-    public PriceModelDTO getEntity() {
-        return model;
-    }
-
-    /**
-     * Returns the loaded PriceModelDTO entity as a WS object.
-     *
-     * @return plan price as a WS object
-     */
-    public PriceModelWS getWS() {
-        return getWS(model);
-    }
-
+    
     /**
      * Returns the given PriceModelDTO entity as a WS object
      *
@@ -108,33 +69,12 @@ public class PriceModelBL {
      * @return PriceModelDTO entity, null if ws is null
      */
     public static PriceModelDTO getDTO(PriceModelWS ws) {
-        return ws != null ? new PriceModelDTO(ws) : null;
-    }
+        if (ws != null) {
+            if (ws.getCurrencyId() == null)
+                throw new SessionInternalError("PriceModelWS must have a currency.");
 
-    // todo: crud methods may be obsolete after refactoring. remove!
-    // todo: Add event logger for pricing models.
-
-    public Integer create(PriceModelDTO planPrice) {
-        planPrice = priceModelDas.save(planPrice);
-        return planPrice.getId();
-    }
-
-    public void update(PriceModelDTO dto) {
-        if (model != null) {
-            model.setType(dto.getType());
-            model.setAttributes(dto.getAttributes());
-            model.setRate(dto.getRate());
-            model.setIncludedQuantity(dto.getIncludedQuantity());
-        } else {
-            LOG.error("Cannot update, PriceModelDTO not found or not set!");
+            return new PriceModelDTO(ws,  new CurrencyBL(ws.getCurrencyId()).getEntity());
         }
-    }
-
-    public void delete() {
-        if (model != null) {
-            priceModelDas.delete(model);
-        } else {
-            LOG.error("Cannot delete, PriceModelDTO not found or not set!");
-        }
+        return null;
     }
 }

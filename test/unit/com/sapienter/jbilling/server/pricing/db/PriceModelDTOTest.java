@@ -44,20 +44,6 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         super(name);
     }
 
-    public void testSetDefaultPricing() {
-        PriceModelDTO planPrice = new PriceModelDTO();
-        planPrice.setPlanItem(new ItemDTO());
-        planPrice.setPrecedence(10);
-
-        planPrice.setDefaultPricing(false); // no change
-        assertNotNull(planPrice.getPlanItem());
-        assertEquals(10, planPrice.getPrecedence().intValue());
-
-        planPrice.setDefaultPricing(true); // change plan to default
-        assertNull(planPrice.getPlanItem());
-        assertEquals(PriceModelDTO.DEFAULT_PRECEDENCE, planPrice.getPrecedence());
-    }
-
     public void testAddAttributeWildcards() {
         PriceModelDTO planPrice = new PriceModelDTO();
         planPrice.addAttribute("null_attr", null);
@@ -146,31 +132,19 @@ public class PriceModelDTOTest extends BigDecimalTestCase {
         ws.setId(1);
         ws.setType(PriceModelWS.PLAN_TYPE_METERED);
         ws.setAttributes(attributes);
-        ws.setPrecedence(3);
         ws.setRate(new BigDecimal("0.7"));
         ws.setIncludedQuantity(BigDecimal.ZERO);
-        ws.setDefaultPricing(false);
 
         // convert to PriceModelDTO
         PriceModelDTO dto = new PriceModelDTO(ws, null);
 
         assertEquals(ws.getId(), dto.getId());
         assertEquals(PriceModelStrategy.METERED, dto.getType());
-        assertEquals(ws.getPrecedence(), dto.getPrecedence());
         assertEquals(ws.getRate(), dto.getRate());
         assertEquals(ws.getIncludedQuantity(), dto.getIncludedQuantity());
-        assertEquals(ws.isDefaultPricing(), dto.isDefaultPricing());
 
         assertNotSame(ws.getAttributes(), dto.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, dto.getAttributes().get("null_attr"));
-        assertEquals("some value", dto.getAttributes().get("attr"));
-
-        // convert to PriceModelDTO with default pricing = true
-        ws.setDefaultPricing(true);
-
-        PriceModelDTO dto2 = new PriceModelDTO(ws, null);
-
-        assertEquals(PriceModelDTO.DEFAULT_PRECEDENCE, dto2.getPrecedence());
-        assertTrue(!ws.getPrecedence().equals(dto2.getPrecedence()));        
+        assertEquals("some value", dto.getAttributes().get("attr"));   
     }
 }

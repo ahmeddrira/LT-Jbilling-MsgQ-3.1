@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.pricing;
 
-import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.io.Serializable;

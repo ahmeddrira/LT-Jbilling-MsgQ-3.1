@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Business Logic for PlanDTO CRUD operations and for subscribing and un-subscribing a
+ * customer to a given plan. This class should be used for all Plan/Customer interactions.
+ *
  * @author Brian Cowdery
  * @since 30-08-2010
  */

@@ -48,7 +48,8 @@ public class WSTest extends TestCase {
     public WSTest(String name) {
         super(name);
     }
-
+    
+/*
     public ItemDTOEx getPlanItem() throws Exception {
         if (planItem == null) {
             JbillingAPI api = JbillingAPIFactory.getAPI();
@@ -362,6 +363,7 @@ public class WSTest extends TestCase {
         api.deletePriceModel(planPriceIds[0]);
         api.deletePriceModel(planPriceIds[1]);
     }
+*/
 
     /*
         Convenience assertions for BigDecimal comparisons. 

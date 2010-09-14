@@ -60,7 +60,7 @@ public class Usage {
         this.itemTypeId = itemTypeId;
         this.startDate = startDate;
         this.endDate = endDate;
-        
+
         calculateUsage(lines);
     }
 

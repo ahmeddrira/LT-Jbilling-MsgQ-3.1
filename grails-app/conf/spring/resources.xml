@@ -22,8 +22,19 @@
           ***************************************************
     -->
     <!-- Session Facade beans -->
-    <!-- For the login page of the GUI -->
+    <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
+    <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
+    <bean id="customerSession" class="com.sapienter.jbilling.server.customer.CustomerSessionBean"/>
+    <bean id="listSession" class="com.sapienter.jbilling.server.list.ListSessionBean"/>
     <bean id="userSession" class="com.sapienter.jbilling.server.user.UserSessionBean"/>
+    <bean id="invoiceSession" class="com.sapienter.jbilling.server.invoice.InvoiceSessionBean"/>
+    <bean id="orderSession" class="com.sapienter.jbilling.server.order.OrderSessionBean"/>
+    <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean" />
+    <bean id="paymentSession" class="com.sapienter.jbilling.server.payment.PaymentSessionBean"/>
+    <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
+    <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
+    <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
+    <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean" />
     <!-- The web services API, which is used as main service in the GUI -->
     <bean id="webServicesSession" scope="session" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
     	<property name="caller" ref="webCaller"/>

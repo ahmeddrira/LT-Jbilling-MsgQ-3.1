@@ -123,13 +123,17 @@ public final class WebServicesAuthenticationFilter implements Filter {
         } else {
             // save caller in thread-local variable to make it 
             // available for web services code
-            WebServicesCaller.set(caller);
+            //WebServicesCaller.set(caller);
  
             chain.doFilter(request, response);
 
             // a precaution
-            WebServicesCaller.set(null);
+            //WebServicesCaller.set(null);
         }
+        
+        /*
+         * To do: Get webServciesCaller injected and initialized once the authentication is done
+         */
     }
 
     public void destroy() {

@@ -39,7 +39,7 @@ public abstract class WSMethodBaseSecurityProxy extends MethodBaseSecurityProxy 
             throws SecurityException, SessionInternalError, NamingException {
         // get the user. Since this is called only by root users, the username
         // is unique and the entity is that of the user
-        String user = WebServicesCaller.getUserName();
+        String user = null; // TODO: Fix this WebServicesCaller.getCallerUserName();
         UserBL bl = new UserBL();
         if (callerId == null || !bl.validateUserBelongs(user, callerId)) {
             throw new SecurityException("Unauthorize access by" + user + " to user " + 

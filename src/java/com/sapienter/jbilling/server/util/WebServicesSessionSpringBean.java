@@ -484,6 +484,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * Retrieves an array of users in the required status 
      */
     public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError {
+    	LOG.debug("test");
         return getUsersByStatus(statusId, true);
     }
 

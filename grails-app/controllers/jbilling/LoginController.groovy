@@ -42,6 +42,7 @@ class LoginController {
 			webCaller.setCallerCompanyId(params.entityId as int);
 			webCaller.setCallerId(user.getId());
 			
+			log.debug "Login is successful";
 			redirect(controller:"user", action: "list")
             
         } else {

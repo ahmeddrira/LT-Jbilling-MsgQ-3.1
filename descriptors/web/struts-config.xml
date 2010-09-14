@@ -141,7 +141,7 @@
             <form-property name="chbx_priceManual" type="java.lang.Boolean" />
             <form-property name="create" type="java.lang.String" />
             <form-property name="percentage" type="java.lang.String" />
-            <form-property name="prices" type="java.util.ArrayList" />
+            <form-property name="price" type="java.lang.String" />
             <form-property name="language" type="java.lang.Integer" />
             <form-property name="chbx_hasDecimals" type="java.lang.Boolean" />
         </form-bean>

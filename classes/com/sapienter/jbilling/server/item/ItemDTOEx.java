@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class ItemDTOEx implements Serializable {
     private Integer hasDecimals;
     private Integer deleted;
     private Integer entityId;
+    private PriceModelWS defaultPrice;
 
     // *** ItemDTOEx ***
     private String description = null;
@@ -45,7 +48,8 @@ public class ItemDTOEx implements Serializable {
     private BigDecimal price = null;
     private Integer orderLineTypeId = null;
 
-    private List<ItemPriceDTOEx> prices = null;
+    public ItemDTOEx() {
+    }
 
     public ItemDTOEx(Integer id,String number, Integer entity, String description, Integer manualPrice,
                      Integer deleted, Integer currencyId, BigDecimal price, BigDecimal percentage,
@@ -56,9 +60,6 @@ public class ItemDTOEx implements Serializable {
         setCurrencyId(currencyId);
         setPrice(price);
         setOrderLineTypeId(orderLineTypeId);
-    }
-
-    public ItemDTOEx() {
     }
 
     public ItemDTOEx(Integer id, String number, BigDecimal percentage, Integer priceManual, Integer hasDecimals,
@@ -205,12 +206,12 @@ public class ItemDTOEx implements Serializable {
         this.price = price;
     }
 
-    public List<ItemPriceDTOEx> getPrices() {
-        return prices;
+    public PriceModelWS getDefaultPrice() {
+        return defaultPrice;
     }
 
-    public void setPrices(List<ItemPriceDTOEx> prices) {
-        this.prices = prices;
+    public void setDefaultPrice(PriceModelWS defaultPrice) {
+        this.defaultPrice = defaultPrice;
     }
 
     public boolean isIdentical(Object other) {

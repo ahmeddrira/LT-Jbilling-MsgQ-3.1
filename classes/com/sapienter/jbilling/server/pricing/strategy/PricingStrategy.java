@@ -43,6 +43,14 @@ public interface PricingStrategy {
     public boolean isGraduated();
 
     /**
+     * Returns true if this strategy requires the current usage of the item
+     * to properly calculate the the price.
+     *
+     * @return true if this strategy requires the current usage of the item being priced.
+     */
+    public boolean requiresUsage();
+
+    /**
      * Returns true if this strategy defines a rate that overrides the
      * PlanPriceDTO rate.
      *
@@ -66,6 +74,7 @@ public interface PricingStrategy {
      * @param planPrice the plan price to apply
      * @param quantity quantity of item being priced
      * @param usage total item usage for this billing period
+     * @throws IllegalArgumentException if strategy requires usage, and usage was given as null
      */
     public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, BigDecimal usage);
 }

@@ -22,6 +22,7 @@ package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import junit.framework.TestCase;
 
 import java.math.BigDecimal;
@@ -50,23 +51,30 @@ public class PriceModelWSTest extends TestCase {
         dto.setId(1);
         dto.setType(PriceModelStrategy.METERED);
         dto.setAttributes(attributes);
-        dto.setPrecedence(3);
         dto.setRate(new BigDecimal("0.7"));
         dto.setIncludedQuantity(BigDecimal.ZERO);
-        dto.setDefaultPricing(false);
+        dto.setCurrency(new CurrencyDTO(1));
 
         // convert to PriceModelWS
-        PriceModelWS ws = new PriceModelWS(dto, null);
+        PriceModelWS ws = new PriceModelWS(dto);
 
         assertEquals(dto.getId(), ws.getId());
         assertEquals(PriceModelWS.PLAN_TYPE_METERED, ws.getType());
-        assertEquals(dto.getPrecedence(), ws.getPrecedence());
         assertEquals(dto.getRate(), ws.getRate());
         assertEquals(dto.getIncludedQuantity(), ws.getIncludedQuantity());
-        assertEquals(dto.isDefaultPricing(), ws.isDefaultPricing());
+        assertEquals(dto.getCurrency().getId(), ws.getCurrencyId().intValue());
 
         assertNotSame(dto.getAttributes(), ws.getAttributes());
         assertEquals(PriceModelDTO.ATTRIBUTE_WILDCARD, ws.getAttributes().get("null_attr"));
         assertEquals("some value", ws.getAttributes().get("attr"));
+
+        // convert to PriceModelWS with null currency & type (should be safe, won't throw an exception)
+        dto.setType(null);
+        dto.setCurrency(null);
+
+        ws = new PriceModelWS(dto);
+
+        assertNull(ws.getType());
+        assertNull(ws.getCurrencyId());
     }
 }

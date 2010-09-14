@@ -33,6 +33,8 @@ import java.math.RoundingMode;
 public class GraduatedPricingStrategy implements PricingStrategy {
 
     public boolean isGraduated() { return true; }
+    public boolean requiresUsage() { return true; }
+
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
 
@@ -57,6 +59,10 @@ public class GraduatedPricingStrategy implements PricingStrategy {
      * @param usage total item usage for this billing period
      */
     public void applyTo(PricingResult result, PriceModelDTO planPrice, BigDecimal quantity, BigDecimal usage) {
+        if (usage == null)
+            throw new IllegalArgumentException("Usage cannot be null for GraduatedPricingStrategy.");
+
+
         BigDecimal total = quantity.add(usage);
 
         if (usage.compareTo(planPrice.getIncludedQuantity()) >= 0) {

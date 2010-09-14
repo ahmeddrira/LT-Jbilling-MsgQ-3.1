@@ -35,12 +35,18 @@ ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_fk_2
 ALTER TABLE ONLY public.process_run_total DROP CONSTRAINT process_run_total_fk_1;
 ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_fk_2;
 ALTER TABLE ONLY public.process_run DROP CONSTRAINT process_run_fk_1;
+ALTER TABLE ONLY public.price_model DROP CONSTRAINT price_model_currency_id_fk;
+ALTER TABLE ONLY public.price_model_attribute DROP CONSTRAINT price_model_attr_model_id_fk;
 ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_fk_2;
 ALTER TABLE ONLY public.preference DROP CONSTRAINT preference_fk_1;
 ALTER TABLE ONLY public.pluggable_task_type DROP CONSTRAINT pluggable_task_type_fk_1;
 ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_fk_1;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_2;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_fk_1;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_price_model_id_fk;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_plan_id_fk;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_item_id_fk;
+ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_item_id_fk;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_2;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_fk_1;
 ALTER TABLE ONLY public.permission_role_map DROP CONSTRAINT permission_role_map_fk_2;
@@ -90,8 +96,6 @@ ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_fk_1;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_2;
 ALTER TABLE ONLY public.item_type_map DROP CONSTRAINT item_type_map_fk_1;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_fk_1;
-ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_fk_2;
-ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_fk_1;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_fk_1;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_3;
 ALTER TABLE ONLY public.invoice_line DROP CONSTRAINT invoice_line_fk_2;
@@ -115,6 +119,8 @@ ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_fk_2;
 ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_fk_1;
 ALTER TABLE ONLY public.entity_delivery_method_map DROP CONSTRAINT entity_delivery_method_map_fk_2;
 ALTER TABLE ONLY public.entity_delivery_method_map DROP CONSTRAINT entity_delivery_method_map_fk_1;
+ALTER TABLE ONLY public.customer_price DROP CONSTRAINT customer_price_user_id_fk;
+ALTER TABLE ONLY public.customer_price DROP CONSTRAINT customer_price_plan_item_id_fk;
 ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_fk_3;
 ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_fk_2;
 ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_fk_1;
@@ -148,9 +154,7 @@ DROP INDEX public.report_entity_map_i_2;
 DROP INDEX public.purchase_order_i_user;
 DROP INDEX public.purchase_order_i_notif;
 DROP INDEX public.promotion_user_map_i_2;
-DROP INDEX public.price_model_strategy_type_i;
-DROP INDEX public.price_model_plan_item_i;
-DROP INDEX public.price_model_is_default_i;
+DROP INDEX public.plan_item_precedence_i;
 DROP INDEX public.permission_user_map_i_2;
 DROP INDEX public.permission_role_map_i_2;
 DROP INDEX public.payment_i_3;
@@ -223,6 +227,8 @@ ALTER TABLE ONLY public.pluggable_task_type DROP CONSTRAINT pluggable_task_type_
 ALTER TABLE ONLY public.pluggable_task_type_category DROP CONSTRAINT pluggable_task_type_category_pkey;
 ALTER TABLE ONLY public.pluggable_task DROP CONSTRAINT pluggable_task_pkey;
 ALTER TABLE ONLY public.pluggable_task_parameter DROP CONSTRAINT pluggable_task_parameter_pkey;
+ALTER TABLE ONLY public.plan DROP CONSTRAINT plan_pkey;
+ALTER TABLE ONLY public.plan_item DROP CONSTRAINT plan_item_pkey;
 ALTER TABLE ONLY public.permission_user DROP CONSTRAINT permission_user_pkey;
 ALTER TABLE ONLY public.permission_type DROP CONSTRAINT permission_type_pkey;
 ALTER TABLE ONLY public.permission DROP CONSTRAINT permission_pkey;
@@ -261,7 +267,6 @@ ALTER TABLE ONLY public.list_entity DROP CONSTRAINT list_entity_pkey;
 ALTER TABLE ONLY public.language DROP CONSTRAINT language_pkey;
 ALTER TABLE ONLY public.jbilling_table DROP CONSTRAINT jbilling_table_pkey;
 ALTER TABLE ONLY public.item_type DROP CONSTRAINT item_type_pkey;
-ALTER TABLE ONLY public.item_price DROP CONSTRAINT item_price_pkey;
 ALTER TABLE ONLY public.item DROP CONSTRAINT item_pkey;
 ALTER TABLE ONLY public.invoice DROP CONSTRAINT invoice_pkey;
 ALTER TABLE ONLY public.invoice_line_type DROP CONSTRAINT invoice_line_type_pkey;
@@ -274,6 +279,7 @@ ALTER TABLE ONLY public.event_log DROP CONSTRAINT event_log_pkey;
 ALTER TABLE ONLY public.event_log_module DROP CONSTRAINT event_log_module_pkey;
 ALTER TABLE ONLY public.event_log_message DROP CONSTRAINT event_log_message_pkey;
 ALTER TABLE ONLY public.entity DROP CONSTRAINT entity_pkey;
+ALTER TABLE ONLY public.customer_price DROP CONSTRAINT customer_price_pkey;
 ALTER TABLE ONLY public.customer DROP CONSTRAINT customer_pkey;
 ALTER TABLE ONLY public.currency DROP CONSTRAINT currency_pkey;
 ALTER TABLE ONLY public.currency_exchange DROP CONSTRAINT currency_exchange_pkey;
@@ -314,6 +320,8 @@ DROP TABLE public.pluggable_task_type_category;
 DROP TABLE public.pluggable_task_type;
 DROP TABLE public.pluggable_task_parameter;
 DROP TABLE public.pluggable_task;
+DROP TABLE public.plan_item;
+DROP TABLE public.plan;
 DROP TABLE public.permission_user;
 DROP TABLE public.permission_type;
 DROP TABLE public.permission_role_map;
@@ -356,7 +364,6 @@ DROP TABLE public.jbilling_table;
 DROP TABLE public.jbilling_seqs;
 DROP TABLE public.item_type_map;
 DROP TABLE public.item_type;
-DROP TABLE public.item_price;
 DROP TABLE public.item;
 DROP TABLE public.invoice_line_type;
 DROP TABLE public.invoice_line;
@@ -371,6 +378,7 @@ DROP TABLE public.event_log;
 DROP TABLE public.entity_payment_method_map;
 DROP TABLE public.entity_delivery_method_map;
 DROP TABLE public.entity;
+DROP TABLE public.customer_price;
 DROP TABLE public.customer;
 DROP TABLE public.currency_exchange;
 DROP TABLE public.currency_entity_map;
@@ -743,6 +751,19 @@ CREATE TABLE customer (
 ALTER TABLE public.customer OWNER TO jbilling;
 
 --
+-- Name: customer_price; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE customer_price (
+    plan_item_id integer NOT NULL,
+    user_id integer NOT NULL,
+    created_datetime timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.customer_price OWNER TO jbilling;
+
+--
 -- Name: entity; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -959,26 +980,12 @@ CREATE TABLE item (
     price_manual smallint NOT NULL,
     deleted smallint DEFAULT 0 NOT NULL,
     has_decimals smallint DEFAULT 0 NOT NULL,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    price_model_id integer
 );
 
 
 ALTER TABLE public.item OWNER TO jbilling;
-
---
--- Name: item_price; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE TABLE item_price (
-    id integer NOT NULL,
-    item_id integer,
-    currency_id integer,
-    price numeric(22,10) NOT NULL,
-    optlock integer NOT NULL
-);
-
-
-ALTER TABLE public.item_price OWNER TO jbilling;
 
 --
 -- Name: item_type; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
@@ -1654,6 +1661,34 @@ CREATE TABLE permission_user (
 ALTER TABLE public.permission_user OWNER TO jbilling;
 
 --
+-- Name: plan; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE plan (
+    id integer NOT NULL,
+    item_id integer NOT NULL,
+    description character varying(255)
+);
+
+
+ALTER TABLE public.plan OWNER TO jbilling;
+
+--
+-- Name: plan_item; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE plan_item (
+    id integer NOT NULL,
+    plan_id integer,
+    item_id integer NOT NULL,
+    price_model_id integer NOT NULL,
+    precedence integer NOT NULL
+);
+
+
+ALTER TABLE public.plan_item OWNER TO jbilling;
+
+--
 -- Name: pluggable_task; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -1750,11 +1785,9 @@ ALTER TABLE public.preference_type OWNER TO jbilling;
 CREATE TABLE price_model (
     id integer NOT NULL,
     strategy_type character varying(20) NOT NULL,
-    plan_item_id integer,
-    precedence integer NOT NULL,
     rate numeric(22,10) NOT NULL,
     included_quantity integer,
-    is_default boolean NOT NULL
+    currency_id integer NOT NULL
 );
 
 
@@ -9659,6 +9692,14 @@ COPY customer (id, user_id, partner_id, referral_fee_paid, invoice_delivery_meth
 
 
 --
+-- Data for Name: customer_price; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY customer_price (plan_item_id, user_id, created_datetime) FROM stdin;
+\.
+
+
+--
 -- Data for Name: entity; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -11328,60 +11369,27 @@ COPY invoice_line_type (id, description, order_position) FROM stdin;
 -- Data for Name: item; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, has_decimals, optlock) FROM stdin;
-1	DP-1	1	\N	0	0	0	3
-2	DP-2	1	\N	0	0	0	1
-3	DP-3	1	\N	0	0	0	1
-4	01	2	\N	0	0	0	1
-14	J-01	1	-10.0000000000	0	0	0	1
-24	F-1	1	\N	0	0	0	1
-240	DP-4	1	\N	0	0	0	2
-250	PL-01	1	\N	0	0	0	2
-251	ST-01	1	\N	0	0	0	2
-270	FE-01	1	\N	0	0	0	2
-2600	DR-01	1	\N	0	0	0	2
-2601	DR--02	1	\N	0	0	0	2
-2602	DR-03	1	\N	0	0	0	2
-2701	LD-B	1	\N	0	0	0	4
-2700	LD-A	1	\N	0	0	0	5
-2702	LD-1000	1	\N	0	0	0	4
-2800	CALL-LD	1	\N	0	0	1	4
-2801	CALL-LD-INCLUDE	1	\N	0	0	1	4
-2900	CALL-LD-GEN	1	\N	0	0	0	2
-3000	PL-02	1	\N	0	0	0	4
-\.
-
-
---
--- Data for Name: item_price; Type: TABLE DATA; Schema: public; Owner: jbilling
---
-
-COPY item_price (id, item_id, currency_id, price, optlock) FROM stdin;
-1	1	1	10.0000000000	1
-2	2	1	20.0000000000	1
-3	3	1	15.0000000000	1
-4	4	1	12.9899997711	1
-14	24	1	5.0000000000	1
-140	240	11	15.0000000000	0
-150	250	1	0.0000000000	0
-151	251	1	15.0000000000	0
-152	270	1	10.0000000000	0
-1600	2600	1	0.0000000000	0
-1601	2601	1	0.0000000000	0
-1602	2602	1	3.5000000000	0
-1705	2702	1	30.0000000000	0
-1701	2700	1	25.0000000000	1
-1703	2701	1	40.0000000000	1
-1702	2701	11	44.3699989319	1
-1700	2700	11	27.7299995422	2
-1704	2702	11	32.9799995422	1
-1800	2800	11	0.0000000000	0
-1801	2800	1	0.0000000000	0
-1802	2801	11	0.0000000000	0
-1803	2801	1	0.0000000000	0
-1900	2900	1	0.0000000000	0
-2000	3000	11	70.0000000000	0
-2001	3000	1	99.9900000000	0
+COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, has_decimals, optlock, price_model_id) FROM stdin;
+14	J-01	1	-10.0000000000	0	0	0	1	\N
+1	DP-1	1	\N	0	0	0	3	1
+2	DP-2	1	\N	0	0	0	1	2
+3	DP-3	1	\N	0	0	0	1	3
+4	01	2	\N	0	0	0	1	4
+24	F-1	1	\N	0	0	0	1	14
+250	PL-01	1	\N	0	0	0	2	150
+251	ST-01	1	\N	0	0	0	2	151
+270	FE-01	1	\N	0	0	0	2	152
+2600	DR-01	1	\N	0	0	0	2	1600
+2601	DR--02	1	\N	0	0	0	2	1601
+2602	DR-03	1	\N	0	0	0	2	1602
+2700	LD-A	1	\N	0	0	0	5	1701
+2701	LD-B	1	\N	0	0	0	4	1703
+2702	LD-1000	1	\N	0	0	0	4	1705
+2800	CALL-LD	1	\N	0	0	1	4	1801
+2801	CALL-LD-INCLUDE	1	\N	0	0	1	4	1803
+2900	CALL-LD-GEN	1	\N	0	0	0	2	1900
+3000	PL-02	1	\N	0	0	0	4	2001
+240	DP-4	1	\N	0	0	0	2	2003
 \.
 
 
@@ -11590,8 +11598,6 @@ paper_invoice_batch	1
 item_type	24
 item	31
 item	31
-item_price	21
-item_price	21
 notification_message_arch	1
 notification_message_arch	1
 notification_message_arch_line	1
@@ -11602,11 +11608,13 @@ mediation_process	1
 mediation_record_line	1
 mediation_record_line	1
 pluggable_task	605
-price_model	1
 price_model_attribute	1
 event_log	470
 event_log	470
 item_type	24
+plan	1
+plan_item	1
+price_model	21
 \.
 
 
@@ -11700,7 +11708,6 @@ COPY jbilling_table (id, name) FROM stdin;
 29	contact_map
 27	contact
 14	item
-15	item_price
 21	purchase_order
 22	order_line
 87	generic_status
@@ -11708,6 +11715,8 @@ COPY jbilling_table (id, name) FROM stdin;
 92	process_run_status
 93	price_model
 94	price_model_attribute
+95	plan
+96	plan_item
 \.
 
 
@@ -14856,6 +14865,22 @@ COPY permission_user (permission_id, user_id, is_grant, id) FROM stdin;
 
 
 --
+-- Data for Name: plan; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY plan (id, item_id, description) FROM stdin;
+\.
+
+
+--
+-- Data for Name: plan_item; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY plan_item (id, plan_id, item_id, price_model_id, precedence) FROM stdin;
+\.
+
+
+--
 -- Data for Name: pluggable_task; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -15219,7 +15244,26 @@ COPY preference_type (id, int_def_value, str_def_value, float_def_value) FROM st
 -- Data for Name: price_model; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY price_model (id, strategy_type, plan_item_id, precedence, rate, included_quantity, is_default) FROM stdin;
+COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM stdin;
+1	METERED	10.0000000000	\N	1
+2	METERED	20.0000000000	\N	1
+3	METERED	15.0000000000	\N	1
+4	METERED	12.9899997711	\N	1
+14	METERED	5.0000000000	\N	1
+150	METERED	0.0000000000	\N	1
+151	METERED	15.0000000000	\N	1
+152	METERED	10.0000000000	\N	1
+1600	METERED	0.0000000000	\N	1
+1601	METERED	0.0000000000	\N	1
+1602	METERED	3.5000000000	\N	1
+1701	METERED	25.0000000000	\N	1
+1703	METERED	40.0000000000	\N	1
+1705	METERED	30.0000000000	\N	1
+1801	METERED	0.0000000000	\N	1
+1803	METERED	0.0000000000	\N	1
+1900	METERED	0.0000000000	\N	1
+2001	METERED	99.9900000000	\N	1
+2003	METERED	15.0000000000	\N	11
 \.
 
 
@@ -19816,6 +19860,14 @@ ALTER TABLE ONLY customer
 
 
 --
+-- Name: customer_price_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY customer_price
+    ADD CONSTRAINT customer_price_pkey PRIMARY KEY (plan_item_id, user_id);
+
+
+--
 -- Name: entity_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -19909,14 +19961,6 @@ ALTER TABLE ONLY invoice
 
 ALTER TABLE ONLY item
     ADD CONSTRAINT item_pkey PRIMARY KEY (id);
-
-
---
--- Name: item_price_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
---
-
-ALTER TABLE ONLY item_price
-    ADD CONSTRAINT item_price_pkey PRIMARY KEY (id);
 
 
 --
@@ -20221,6 +20265,22 @@ ALTER TABLE ONLY permission_type
 
 ALTER TABLE ONLY permission_user
     ADD CONSTRAINT permission_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plan_item_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plan_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY plan
+    ADD CONSTRAINT plan_pkey PRIMARY KEY (id);
 
 
 --
@@ -20747,24 +20807,10 @@ CREATE INDEX permission_user_map_i_2 ON permission_user USING btree (permission_
 
 
 --
--- Name: price_model_is_default_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
+-- Name: plan_item_precedence_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
 --
 
-CREATE INDEX price_model_is_default_i ON price_model USING btree (is_default);
-
-
---
--- Name: price_model_plan_item_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE INDEX price_model_plan_item_i ON price_model USING btree (plan_item_id);
-
-
---
--- Name: price_model_strategy_type_i; Type: INDEX; Schema: public; Owner: jbilling; Tablespace: 
---
-
-CREATE INDEX price_model_strategy_type_i ON price_model USING btree (strategy_type);
+CREATE INDEX plan_item_precedence_i ON plan_item USING btree (precedence);
 
 
 --
@@ -21024,6 +21070,22 @@ ALTER TABLE ONLY customer
 
 
 --
+-- Name: customer_price_plan_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY customer_price
+    ADD CONSTRAINT customer_price_plan_item_id_fk FOREIGN KEY (plan_item_id) REFERENCES plan_item(id);
+
+
+--
+-- Name: customer_price_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY customer_price
+    ADD CONSTRAINT customer_price_user_id_fk FOREIGN KEY (user_id) REFERENCES base_user(id);
+
+
+--
 -- Name: entity_delivery_method_map_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -21205,22 +21267,6 @@ ALTER TABLE ONLY invoice_line
 
 ALTER TABLE ONLY item
     ADD CONSTRAINT item_fk_1 FOREIGN KEY (entity_id) REFERENCES entity(id);
-
-
---
--- Name: item_price_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_price
-    ADD CONSTRAINT item_price_fk_1 FOREIGN KEY (currency_id) REFERENCES currency(id);
-
-
---
--- Name: item_price_fk_2; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
---
-
-ALTER TABLE ONLY item_price
-    ADD CONSTRAINT item_price_fk_2 FOREIGN KEY (item_id) REFERENCES item(id);
 
 
 --
@@ -21616,6 +21662,38 @@ ALTER TABLE ONLY permission_user
 
 
 --
+-- Name: plan_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan
+    ADD CONSTRAINT plan_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id);
+
+
+--
+-- Name: plan_item_item_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id);
+
+
+--
+-- Name: plan_item_plan_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_plan_id_fk FOREIGN KEY (plan_id) REFERENCES plan(id);
+
+
+--
+-- Name: plan_item_price_model_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY plan_item
+    ADD CONSTRAINT plan_item_price_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
+
+
+--
 -- Name: pluggable_task_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
 --
 
@@ -21661,6 +21739,22 @@ ALTER TABLE ONLY preference
 
 ALTER TABLE ONLY preference
     ADD CONSTRAINT preference_fk_2 FOREIGN KEY (table_id) REFERENCES jbilling_table(id);
+
+
+--
+-- Name: price_model_attr_model_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY price_model_attribute
+    ADD CONSTRAINT price_model_attr_model_id_fk FOREIGN KEY (price_model_id) REFERENCES price_model(id);
+
+
+--
+-- Name: price_model_currency_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY price_model
+    ADD CONSTRAINT price_model_currency_id_fk FOREIGN KEY (currency_id) REFERENCES currency(id);
 
 
 --

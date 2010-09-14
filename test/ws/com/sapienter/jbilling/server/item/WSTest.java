@@ -210,7 +210,7 @@ public class WSTest  extends TestCase {
         
             /*
              * Get all items
-             */             
+             */
             System.out.println("Getting all items");
             ItemDTOEx[] items =  api.getAllItems();
             Arrays.sort(items, new Comparator<ItemDTOEx>() {
@@ -223,21 +223,21 @@ public class WSTest  extends TestCase {
 
             assertEquals("Description", "Lemonade - 1 per day monthly pass", items[0].getDescription());
             assertEquals("Price", new BigDecimal("10"), items[0].getPrice());
-            assertEquals("Price List", new BigDecimal("10"), (getCurrencyPrice(items[0].getPrices(), 1).getPrice()));
+            assertEquals("Price List", new BigDecimal("10"), items[0].getDefaultPrice().getRate());
             assertEquals("ID", new Integer(1), items[0].getId());
             assertEquals("Number", "DP-1", items[0].getNumber());
             assertEquals("Type 1", new Integer(1), items[0].getTypes()[0]);
 
             assertEquals("Description", "Lemonade - all you can drink monthly", items[1].getDescription());
             assertEquals("Price", new BigDecimal("20"), items[1].getPrice());
-            assertEquals("Price List", new BigDecimal("20"), (getCurrencyPrice(items[1].getPrices(), 1).getPrice()));
+            assertEquals("Price List", new BigDecimal("20"), items[1].getDefaultPrice().getRate());
             assertEquals("ID", new Integer(2), items[1].getId());
             assertEquals("Number", "DP-2", items[1].getNumber());
             assertEquals("Type 1", new Integer(1), items[1].getTypes()[0]);
 
             assertEquals("Description", "Coffee - one per day - Monthly", items[2].getDescription());
             assertEquals("Price", new BigDecimal("15"), items[2].getPrice());
-            assertEquals("Price List", new BigDecimal("15"), (getCurrencyPrice(items[2].getPrices(), 1).getPrice()));
+            assertEquals("Price List", new BigDecimal("15"), items[2].getDefaultPrice().getRate());
             assertEquals("ID", new Integer(3), items[2].getId());
             assertEquals("Number", "DP-3", items[2].getNumber());
             assertEquals("Type 1", new Integer(1), items[2].getTypes()[0]);
@@ -260,7 +260,7 @@ public class WSTest  extends TestCase {
             int lastItem = items.length - 1;
             assertEquals("Description", "an item from ws", items[lastItem].getDescription());
             assertEquals("Price", new BigDecimal("29.5"), items[lastItem].getPrice());
-            assertEquals("Price List", new BigDecimal("29.5"), (getCurrencyPrice(items[lastItem].getPrices(), 1).getPrice()));
+            assertEquals("Price List", new BigDecimal("29.5"), items[lastItem].getDefaultPrice().getRate());
             assertEquals("Type 1", new Integer(1), items[lastItem].getTypes()[0]);
 
             System.out.println("Done!");
@@ -321,19 +321,16 @@ public class WSTest  extends TestCase {
     	try {
     		JbillingAPI api = JbillingAPIFactory.getAPI();
 
+            // item 240 "DP-4" has price in AUD - fetch item using a USD customer
             ItemDTOEx item = api.getItem(new Integer(240), new Integer(2), new PricingField[] {} );
 
+            // price automatically converted to user currency when item is fetched
             assertEquals("Price in USD", 1, item.getCurrencyId().intValue());
             assertEquals("Converted price AUD->USD", new BigDecimal("10.0"), item.getPrice());
-            assertEquals("Price List size", 2, item.getPrices().size());
 
-            ItemPriceDTOEx priceUSD = getCurrencyPrice(item.getPrices(), 1);
-            assertEquals("USD currency", priceUSD.getCurrencyId().intValue(), 1);
-            assertEquals("USD price", priceUSD.getPrice(), null);
-
-            ItemPriceDTOEx priceAUD = getCurrencyPrice(item.getPrices(), 11);
-            assertEquals("AUD currency", priceAUD.getCurrencyId().intValue(), 11);
-            assertEquals("AUD price", priceAUD.getPrice(), new BigDecimal("15.0"));
+            // verify that default item price is in AUD
+            assertEquals("Default price in AUD", 11, item.getDefaultPrice().getCurrencyId().intValue());
+            assertEquals("Default price in AUD", new BigDecimal("15.00"), item.getDefaultPrice().getRate());
 
     	} catch (Exception e) {
     		e.printStackTrace();
@@ -341,16 +338,6 @@ public class WSTest  extends TestCase {
     	}
     }
 
-    private ItemPriceDTOEx getCurrencyPrice(List prices, int currencyId) {
-        Iterator iter = prices.iterator();
-        while (iter.hasNext()) {
-            ItemPriceDTOEx itemPrice = (ItemPriceDTOEx) iter.next();
-            if (itemPrice.getCurrencyId().intValue() == currencyId) {
-                return itemPrice;
-            }
-        }
-        return null;
-    }
 
     public void testGetAllItemCategories() throws Exception {
         JbillingAPI api = JbillingAPIFactory.getAPI();

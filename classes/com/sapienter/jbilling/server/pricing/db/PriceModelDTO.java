@@ -20,11 +20,14 @@
 
 package com.sapienter.jbilling.server.pricing.db;
 
+import com.sapienter.jbilling.server.item.CurrencyBL;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.pricing.strategy.PricingStrategy;
+import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CollectionOfElements;
@@ -45,11 +48,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,51 +72,28 @@ import java.util.Map;
         pkColumnValue = "price_model",
         allocationSize = 100
 )
-@NamedQueries({
-        @NamedQuery(name = "PriceModelDTO.findDefaultPricing",
-                    query = "select price from PriceModelDTO price where price.defaultPricing = true"),
-
-        @NamedQuery(name = "PriceModelDTO.findByType",
-                    query = "select price from PriceModelDTO price where price.type = :type"),
-
-        @NamedQuery(name = "PriceModelDTO.findByPlanItemId",
-                    query = "select price from PriceModelDTO price where price.planItem.id = :plan_item_id"),
-
-        @NamedQuery(name = "PriceModelDTO.findbyPlanItemIds",
-                    query = "select price from PriceModelDTO price " +
-                            "where price.planItem.id in (:plan_item_ids) " +
-                            "or price.defaultPricing = true")
-
-})
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class PriceModelDTO implements Serializable {
 
-    public static final ItemDTO DEFAULT_PLAN_ITEM = null; // default pricing doesn't have an item
-    public static final Integer DEFAULT_PRECEDENCE = -1;
     public static final String ATTRIBUTE_WILDCARD = "*";
 
     private Integer id;
     private PriceModelStrategy type;
     private Map<String, String> attributes = new HashMap<String, String>();
-    private ItemDTO planItem;
-    private Integer planItemId; // read only field, doesn't use lazy-loaded planItem
-    private Integer precedence;
     private BigDecimal rate;
     private BigDecimal includedQuantity;
-    private boolean defaultPricing = false;
+    private CurrencyDTO currency;
 
     public PriceModelDTO() {
     }
 
-    public PriceModelDTO(PriceModelWS ws, ItemDTO planItem) {
+    public PriceModelDTO(PriceModelWS ws, CurrencyDTO currency) {
         setId(ws.getId());
         setType(PriceModelStrategy.valueOf(ws.getType()));
         setAttributes(new HashMap<String,String>(ws.getAttributes()));
-        setPlanItem(planItem);
-        setPrecedence(ws.getPrecedence());
         setRate(ws.getRate());
         setIncludedQuantity(ws.getIncludedQuantity());
-        setDefaultPricing(ws.isDefaultPricing());
+        setCurrency(currency);
     }
 
     @Id
@@ -176,43 +158,6 @@ public class PriceModelDTO implements Serializable {
         }
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_item_id")
-    public ItemDTO getPlanItem() {
-        return planItem;
-    }
-
-    public void setPlanItem(ItemDTO planItem) {
-        this.planItem = planItem;
-    }
-
-    /**
-     * Returns the plan item id. This is a read-only field cannot be updated.
-     * Use {@link #getPlanItem()} and {@link #setPlanItem(com.sapienter.jbilling.server.item.db.ItemDTO)}
-     * to update.
-     *
-     * Use to retrieve the plan item id without lazy-loading the ItemDTO association.
-     *
-     * @return plan item id.
-     */
-    @Column(name = "plan_item_id", updatable = false, insertable = false)
-    public Integer getPlanItemId() {
-        return planItemId;
-    }
-
-    public void setPlanItemId(Integer planItemId) {
-        this.planItemId = planItemId;
-    }
-
-    @Column(name = "precedence", nullable = false, length = 1)
-    public Integer getPrecedence() {
-        return precedence;
-    }
-
-    public void setPrecedence(Integer precedence) {
-        this.precedence = precedence;
-    }
-
     /**
      * Returns the pricing rate. If the strategy type defines an overriding rate, the
      * strategy rate will be returned.
@@ -248,36 +193,21 @@ public class PriceModelDTO implements Serializable {
         this.includedQuantity = includedQuantity;
     }
 
-    /**
-     * Returns true if this is a default pricing model.
-     *
-     * @return true if default pricing model.
-     */
-    @Column(name = "is_default", nullable = false)
-    public boolean isDefaultPricing() {
-        return defaultPricing;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id", nullable = false)
+    public CurrencyDTO getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(CurrencyDTO currency) {
+        this.currency = currency;
     }
 
     /**
-     * Set this price to be the default for this type of purchase.
+     * Applies this pricing to the given PricingResult.
      *
-     * Default pricing will be used when the customer is not subscribed
-     * to any other plan. Default pricing has a precedence of zero and no
-     * plan item.
-     *
-     * @param defaultPricing true if this plan price should be the default
-     */
-    public void setDefaultPricing(boolean defaultPricing) {
-        this.defaultPricing = defaultPricing;
-        if (defaultPricing) {
-            setPlanItem(DEFAULT_PLAN_ITEM);
-            setPrecedence(DEFAULT_PRECEDENCE);
-        }
-    }
-
-    /**
-     * Applies this pricing to the given PricingResult. This method is intended to be invoked
-     * by the rules engine to apply pricing.
+     * This method will automatically convert the calculated price to the currency of the given
+     * PricingResult if the set currencies differ.
      *
      * @see com.sapienter.jbilling.server.pricing.strategy.PricingStrategy
      *
@@ -288,19 +218,27 @@ public class PriceModelDTO implements Serializable {
     @Transient
     public void applyTo(PricingResult result, BigDecimal quantity, BigDecimal usage) {
         getType().getStrategy().applyTo(result, this, quantity, usage);
+
+        // convert to PricingResult currency
+        if (result.getCurrencyId() != null
+            && result.getUserId() != null
+            && currency != null
+            && currency.getId() != result.getCurrencyId()) {
+
+            Integer entityId = new UserBL().getEntityId(result.getUserId());
+            result.setPrice(new CurrencyBL().convert(currency.getId(), result.getCurrencyId(), result.getPrice(), entityId));
+        }
     }
 
     @Override
     public String toString() {
         return "PriceModelDTO{"
-                + "id=" + id
-                + ", type=" + type
-                + ", attributes=" + attributes
-                + ", planItemId=" + planItemId
-                + ", precedence=" + precedence
-                + ", rate=" + rate
-                + ", includedQuantity=" + includedQuantity
-                + ", defaultPricing=" + defaultPricing
-                + '}';
+               + "id=" + id
+               + ", type=" + type
+               + ", attributes=" + attributes
+               + ", rate=" + rate
+               + ", includedQuantity=" + includedQuantity
+               + ", currencyId=" + (currency != null ? currency.getId() : null)
+               + '}';
     }
 }

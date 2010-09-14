@@ -83,6 +83,7 @@ public class UserDTO implements java.io.Serializable {
     private CustomerDTO customer;
     private Partner partnersForUserId;
     private int versionNum;
+
     // now the collections
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<AchDTO> achs = new HashSet<AchDTO>(0);
@@ -96,6 +97,7 @@ public class UserDTO implements java.io.Serializable {
     private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
+    private Set<CustomerPriceDTO> prices = new HashSet<CustomerPriceDTO>(0);
 
     public UserDTO() {
     }
@@ -432,6 +434,15 @@ public class UserDTO implements java.io.Serializable {
 
     public void setInvoices(Set<InvoiceDTO> invoices) {
         this.invoices = invoices;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.baseUser")    
+    public Set<CustomerPriceDTO> getPrices() {
+        return prices;
+    }
+
+    public void setPrices(Set<CustomerPriceDTO> prices) {
+        this.prices = prices;
     }
 
     @Version

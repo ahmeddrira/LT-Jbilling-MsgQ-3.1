@@ -20,13 +20,14 @@
 package com.sapienter.jbilling.server.process;
 
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import org.joda.time.DateMidnight;
 import org.joda.time.Days;
 
-public class PeriodOfTime {
+public class PeriodOfTime implements Serializable {
     
     private final DateMidnight start;
     private final DateMidnight end;

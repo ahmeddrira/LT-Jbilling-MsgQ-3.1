@@ -363,15 +363,5 @@ public interface IWebServicesSessionBean {
     public void generateRules(String rulesData) throws SessionInternalError;
     
     // special plans and pricing
-
-    public PriceModelWS getPriceModel(Integer id);
-    public PriceModelWS[] getPriceModels(Integer planItemId);
-    public PriceModelWS[] getPriceModelsByType(String type) throws SessionInternalError;
-    public PriceModelWS[] getPriceModelsByItemAndAttributes(Integer[] planItemIds, Map<String, String> attributes);
-    public PriceModelWS[] getPriceModelsByItemAndWildcardAttributes(Integer[] planItemIds, Map<String, String> attributes);
-
-    public Integer[] createPriceModels(PriceModelWS[] models);
-    public void updatePriceModel(PriceModelWS model);
-    public void deletePriceModel(Integer modelId);
-
+    
 }

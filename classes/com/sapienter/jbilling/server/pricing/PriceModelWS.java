@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.server.pricing;
 
-import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import java.io.Serializable;
@@ -40,31 +39,26 @@ public class PriceModelWS implements Serializable {
     public static final String PLAN_TYPE_GRADUATED = "GRADUATED";
 
     // convenience constants for WS, copied from PriceModelDTO
-    public static final ItemDTOEx DEFAULT_PLAN_ITEM = null; // default pricing doesn't have an item
-    public static final Integer DEFAULT_PRECEDENCE = -1;   
     public static final String ATTRIBUTE_WILDCARD = "*";
     
     private Integer id;
     private String type;
     private Map<String, String> attributes = new HashMap<String, String>();
-    private ItemDTOEx planItem;
-    private Integer precedence;
     private BigDecimal rate;
     private BigDecimal includedQuantity;
-    private boolean defaultPricing = false;
+    private Integer currencyId;
 
     public PriceModelWS() {
     }
 
-    public PriceModelWS(PriceModelDTO planPrice, ItemDTOEx planItem) {
-        this.id = planPrice.getId();
-        this.type = planPrice.getType().name();
-        this.attributes = new HashMap<String,String>(planPrice.getAttributes());
-        this.planItem = planItem;
-        this.precedence = planPrice.getPrecedence();
-        this.rate = planPrice.getRate();
-        this.includedQuantity = planPrice.getIncludedQuantity();
-        this.defaultPricing = planPrice.isDefaultPricing();
+    public PriceModelWS(PriceModelDTO model) {
+        this.id = model.getId();
+        this.attributes = new HashMap<String,String>(model.getAttributes());
+        this.rate = model.getRate();
+        this.includedQuantity = model.getIncludedQuantity();
+
+        if (model.getType() != null ) this.type = model.getType().name();
+        if (model.getCurrency() != null) this.currencyId = model.getCurrency().getId();
     }
 
     public Integer getId() {
@@ -95,22 +89,6 @@ public class PriceModelWS implements Serializable {
         this.attributes.put(name, value);
     }
 
-    public ItemDTOEx getPlanItem() {
-        return planItem;
-    }
-
-    public void setPlanItem(ItemDTOEx planItem) {
-        this.planItem = planItem;
-    }
-
-    public Integer getPrecedence() {
-        return precedence;
-    }
-
-    public void setPrecedence(Integer precedence) {
-        this.precedence = precedence;
-    }
-
     public BigDecimal getRate() {
         return rate;
     }
@@ -127,12 +105,12 @@ public class PriceModelWS implements Serializable {
         this.includedQuantity = includedQuantity;
     }
 
-    public boolean isDefaultPricing() {
-        return defaultPricing;
+    public Integer getCurrencyId() {
+        return currencyId;
     }
 
-    public void setDefaultPricing(boolean defaultPricing) {
-        this.defaultPricing = defaultPricing;
+    public void setCurrencyId(Integer currencyId) {
+        this.currencyId = currencyId;
     }
 
     @Override
@@ -141,11 +119,8 @@ public class PriceModelWS implements Serializable {
                 + "id=" + id
                 + ", type='" + type + '\''
                 + ", attributes=" + attributes
-                + ", planItemId=" + (planItem != null ? planItem.getId() : null)
-                + ", precedence=" + precedence
                 + ", rate=" + rate
                 + ", includedQuantity=" + includedQuantity
-                + ", defaultPricing=" + defaultPricing
                 + '}';
     }
 }

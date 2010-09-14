@@ -32,6 +32,8 @@ import java.math.BigDecimal;
 public class MeteredPricingStrategy implements PricingStrategy {
 
     public boolean isGraduated() { return false; }
+    public boolean requiresUsage() { return false; }
+
     public boolean hasRate() { return false; }
     public BigDecimal getRate() { return null; }
 

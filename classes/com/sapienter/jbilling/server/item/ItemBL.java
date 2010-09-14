@@ -20,25 +20,17 @@
 
 package com.sapienter.jbilling.server.item;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import org.springmodules.cache.provider.CacheProviderFacade;
-import org.springmodules.cache.CachingModel;
-import org.springmodules.cache.FlushingModel;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
-import com.sapienter.jbilling.server.item.db.ItemPriceDAS;
-import com.sapienter.jbilling.server.item.db.ItemPriceDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.item.tasks.IPricing;
+import com.sapienter.jbilling.server.item.tasks.PricingResult;
 import com.sapienter.jbilling.server.order.db.OrderLineDAS;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
+import com.sapienter.jbilling.server.pricing.PriceModelBL;
+import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
+import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
@@ -47,9 +39,16 @@ import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import org.apache.log4j.Logger;
+import org.springmodules.cache.CachingModel;
+import org.springmodules.cache.FlushingModel;
+import org.springmodules.cache.provider.CacheProviderFacade;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class ItemBL {
     private ItemDAS itemDas = null;
@@ -58,11 +57,6 @@ public class ItemBL {
     private EventLogger eLogger = null;
     private String priceCurrencySymbol = null;
     private List<PricingField> pricingFields = null;
-
-    // item price cache for getPrice()
-    private CacheProviderFacade cache;
-    private CachingModel cacheModel;
-    private FlushingModel flushModel;
 
     public ItemBL(Integer itemId) 
             throws SessionInternalError {
@@ -90,42 +84,45 @@ public class ItemBL {
     private void init() {
         eLogger = EventLogger.getInstance();        
         itemDas = new ItemDAS();
-        cache = (CacheProviderFacade) Context.getBean(Context.Name.CACHE);
-        cacheModel = (CachingModel) Context.getBean(
-                Context.Name.CACHE_MODEL_ITEM_PRICE);
-        flushModel = (FlushingModel) Context.getBean(
-                Context.Name.CACHE_FLUSH_MODEL_ITEM_PRICE);
     }
     
     public ItemDTO getEntity() {
         return item;
     }
 
-    public Integer create(ItemDTO dto, Integer languageId) 
-             {
+    public Integer create(ItemDTO dto, Integer languageId) {
         EntityBL entity = new EntityBL(dto.getEntityId());
         if (languageId == null) {
             languageId = entity.getEntity().getLanguageId();
         }
+
         if (dto.getHasDecimals() != null) {
             dto.setHasDecimals(dto.getHasDecimals());
         } else {
             dto.setHasDecimals(0);
         }
+
+        // Backwards compatible with the old ItemDTOEx Web Service API, use the
+        // transient price field as the rate for a default pricing model.
+        if (dto.getPrice() != null) {    
+            dto.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+        }
+
+        if (dto.getDefaultPrice() != null) {
+            dto.getDefaultPrice().setCurrency(entity.getEntity().getCurrency());
+        }
+                 
         dto.setDeleted(0);
 
         item = itemDas.save(dto);
 
         item.setDescription(dto.getDescription(), languageId);
         updateTypes(dto);
-        updateCurrencies(dto);
         
         return item.getId();
     }
     
-    public void update(Integer executorId, ItemDTO dto, 
-            Integer languageId)  {
-
+    public void update(Integer executorId, ItemDTO dto, Integer languageId)  {
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
                 EventLogger.MODULE_ITEM_MAINTENANCE, 
                 EventLogger.ROW_UPDATED, null, null, null);
@@ -135,14 +132,64 @@ public class ItemBL {
         item.setDescription(dto.getDescription(), languageId);
         item.setPercentage(dto.getPercentage());
         item.setHasDecimals(dto.getHasDecimals());
-        
-        updateTypes(dto);
-        updateCurrencies(dto);
 
-        // invalidate item/price cache
-        invalidateCache();
+        updateDefaultPrice(dto);
+        updateTypes(dto);
     }
-    
+
+    /**
+     * Constructs a METERED PriceModelDTO with the given rate to be used as
+     * the default price for items. This type of price model matches the old
+     * "$ per unit" style pricing for basic items.
+     *
+     * @param rate rate per unit
+     * @return price model
+     */
+    private PriceModelDTO getDefaultPrice(BigDecimal rate) {
+        PriceModelDTO model = new PriceModelDTO();
+        model.setRate(rate);
+        model.setType(PriceModelStrategy.METERED);
+
+        return model;
+    }
+
+    /**
+     * Updates the price of this item to that of the given ItemDTO. This method
+     * handles updates to the price using both the items default price model, and
+     * the transient price attribute.
+     *
+     * If the given dto has a price through {@link ItemDTO#getPrice()}, then the
+     * default price model rate will be set to the price. Otherwise the given dto's
+     * price model is used to update. 
+     *
+     * @param dto item holding the updates to apply to this item
+     */
+    private void updateDefaultPrice(ItemDTO dto) {
+        if (item.getDefaultPrice() == null) {
+            // new default price
+            if (dto.getDefaultPrice() != null) {
+                item.setDefaultPrice(dto.getDefaultPrice());
+            } else if (dto.getPrice() != null) {
+                item.setDefaultPrice(getDefaultPrice(dto.getPrice()));
+            }
+        } else {
+            // update existing default price
+            if (dto.getDefaultPrice() != null) {
+                item.getDefaultPrice().setType(dto.getDefaultPrice().getType());
+                item.getDefaultPrice().setAttributes(dto.getDefaultPrice().getAttributes());
+                item.getDefaultPrice().setRate(dto.getDefaultPrice().getRate());
+                item.getDefaultPrice().setIncludedQuantity(dto.getDefaultPrice().getIncludedQuantity());
+            } else if (dto.getPrice() != null) {
+                item.getDefaultPrice().setRate(dto.getPrice());
+            }
+        }
+
+        // default price currency should always be the entity currency
+        if (item.getDefaultPrice() != null && item.getDefaultPrice().getCurrency() == null) {
+            item.getDefaultPrice().setCurrency(item.getEntity().getCurrency());
+        }
+    }
+
     private void updateTypes(ItemDTO dto) 
             {
         // update the types relationship        
@@ -156,64 +203,7 @@ public class ItemBL {
             types.add(typeBl.getEntity());
         }
     }
-    
-    private void updateCurrencies(ItemDTO dto) {
-        LOG.debug("updating prices. prices " + (dto.getPrices() != null) + 
-                " price = " + dto.getPrice());
-        ItemPriceDAS itemPriceDas = new ItemPriceDAS();
-        // may be there's just one simple price
-        if (dto.getPrices() == null) {
-            if (dto.getPrice() != null) {
-                List prices = new ArrayList();
-                // get the defualt currency of the entity
-                CurrencyDTO currency = new CurrencyDAS().findNow(
-                        dto.getCurrencyId());
-                if (currency == null) {
-                    EntityBL entity = new EntityBL(dto.getEntityId());
-                    currency = entity.getEntity().getCurrency();
-                }
-                ItemPriceDTO price = new ItemPriceDTO(null, dto, dto.getPrice(),
-                        currency);
-                prices.add(price);
-                dto.setPrices(prices);
-            } else {
-                LOG.warn("updatedCurrencies was called, but this " +
-                        "item has no price");
-                return;
-            }
-        }
         
-        // a call to clear() would simply set item_price.entity_id = null
-        // instead of removing the row
-        for (int f = 0; f < dto.getPrices().size(); f++) {
-            ItemPriceDTO price = (ItemPriceDTO) dto.getPrices().get(f);
-            ItemPriceDTO priceRow = null;
-
-            priceRow = itemPriceDas.find(dto.getId(), 
-                        price.getCurrencyId());
-                    
-            if (price.getPrice() != null) {
-                if (priceRow != null) {
-                    // if there one there already, update it
-                    priceRow.setPrice(price.getPrice());
-                    
-                } else {
-                    // nothing there, create one
-                    ItemPriceDTO itemPrice= new ItemPriceDTO(null, item, 
-                            price.getPrice(), price.getCurrency());
-                    item.getItemPrices().add(itemPrice);
-                }
-            } else {
-                // this price should be removed if it is there
-                if (priceRow != null) {
-                    itemPriceDas.delete(priceRow);
-                }
-            }
-        }    
-        // invalidate item/price cache
-        invalidateCache();
-    }
-    
     public void delete(Integer executorId) {
         item.setDeleted(new Integer(1));
         eLogger.audit(executorId, null, Constants.TABLE_ITEM, item.getId(),
@@ -223,15 +213,15 @@ public class ItemBL {
     }
 
     public static boolean validate(ItemDTO dto) {
-        boolean retValue = true;
-        
-        if (dto.getDescription() == null || dto.getPrice() == null ||
-                dto.getPriceManual() == null || 
-                dto.getTypes() == null) {
-            retValue = false;
+        if ((dto.getPrice() == null && dto.getDefaultPrice() == null && dto.getPercentage() == null)
+            || dto.getDescription() == null 
+            || dto.getPriceManual() == null
+            || dto.getTypes() == null) {
+
+            return false;
         }
         
-        return retValue;
+        return true;
     }
     
     public boolean validateDecimals( Integer hasDecimals ){
@@ -244,66 +234,26 @@ public class ItemBL {
     }
     
     /**
-     * This is the basic price, without any plug-ins applied.
-     * It only takes into account the currency and makes the necessary
-     * conversions.
-     * It uses a cache to avoid repeating this look-up too often
+     * Returns the basic price for an item and currency, without including purchase quantity or
+     * the users current usage in the pricing calculation.
+     *
+     * This method does not execute any pricing plug-ins and does not use quantity or usage
+     * values for {@link PriceModelDTO#applyTo(PricingResult, BigDecimal, BigDecimal)}
+     * price calculations.
+     *
+     * @param item item to price
+     * @param currencyId currency id of requested price
      * @return The price in the requested currency
      */
-    public BigDecimal getPriceByCurrency(Integer currencyId, Integer entityId)
-            throws SessionInternalError {
-        BigDecimal retValue = null;
-
-        // try to get cached item price for this currency
-        retValue = (BigDecimal) cache.getFromCache(item.getId() +
-                currencyId.toString(), cacheModel);
-
-        if (retValue != null) {
-            return retValue;
+    public BigDecimal getPriceByCurrency(ItemDTO item, Integer userId, Integer currencyId)  {
+        if (item.getDefaultPrice() != null) {
+            PricingResult result = new PricingResult(item.getId(), userId, currencyId);
+            item.getDefaultPrice().applyTo(result, BigDecimal.ONE, BigDecimal.ZERO);
+            return result.getPrice();
         }
-
-        // get the item's defualt price
-        int prices = 0;
-        BigDecimal aPrice = null;
-        Integer aCurrency = null;
-        // may be the item has a price in this currency
-        for (Iterator it = item.getItemPrices().iterator(); it.hasNext(); ) {
-            prices++;
-            ItemPriceDTO price = (ItemPriceDTO) it.next();
-            if (price.getCurrencyId().equals(currencyId)) {
-                // it is there!
-                retValue = price.getPrice();
-                break;
-            } else {
-                // the pivot has priority, for a more accurate conversion
-                if (aCurrency == null || aCurrency.intValue() != 1) { 
-                    aPrice = price.getPrice();
-                    aCurrency = price.getCurrencyId();
-                }
-            }
-        }
-        
-        if (prices > 0 && retValue == null) {
-            // there are prices defined, but not for the currency required
-            try {
-                CurrencyBL currencyBL = new CurrencyBL();
-                retValue = currencyBL.convert(aCurrency, currencyId, aPrice, 
-                        entityId);
-            } catch (Exception e) {
-                throw new SessionInternalError(e);
-            }
-        } else {
-            if (retValue == null) {
-                throw new SessionInternalError("No price defined for item " + 
-                        item.getId());
-            }
-        }
-
-        cache.putInCache(item.getId() + currencyId.toString(), cacheModel,
-                retValue);
-
-        return retValue;
+        return BigDecimal.ZERO;
     }
+
     
     /**
      * It will call the main getPrice, with the currency of the userId passed
@@ -312,11 +262,11 @@ public class ItemBL {
      * @return
      * @throws SessionInternalError
      */
-    public BigDecimal getPrice(Integer userId, Integer entityId)
-            throws SessionInternalError {
+    public BigDecimal getPrice(Integer userId, BigDecimal quantity, Integer entityId) throws SessionInternalError {
         UserBL user = new UserBL(userId);
-        return getPrice(userId, user.getCurrencyId(), entityId);
-    }    
+        return getPrice(userId, user.getCurrencyId(), quantity, entityId);
+    }
+
     /**
      * Will find the right price considering the user's special prices and which
      * currencies had been entered in the prices table.
@@ -326,17 +276,16 @@ public class ItemBL {
      * @return The price in the requested currency. It always returns a price,
      * otherwise an exception for lack of pricing for an item
      */
-    public BigDecimal getPrice(Integer userId, Integer currencyId, Integer entityId)
+    public BigDecimal getPrice(Integer userId, Integer currencyId, BigDecimal quantity, Integer entityId)
             throws SessionInternalError {
-        BigDecimal retValue = null;
-        CurrencyBL currencyBL;
-        
+
         if (currencyId == null || entityId == null) {
-            throw new SessionInternalError("Can't get a price with null " +
-                    "paramteres. currencyId = " + currencyId + " entityId = " +
-                    entityId);
+            throw new SessionInternalError("Can't get a price with null parameters. "
+                                           + "currencyId = " + currencyId
+                                           + " entityId = " + entityId);
         }
-        
+
+        CurrencyBL currencyBL;
         try {
             currencyBL = new CurrencyBL(currencyId);
             priceCurrencySymbol = currencyBL.getEntity().getSymbol();
@@ -344,30 +293,58 @@ public class ItemBL {
             throw new SessionInternalError(e);
         }
 
-        retValue = getPriceByCurrency(currencyId, entityId);
-        
+        // default "simple" price
+        BigDecimal price = getPriceByCurrency(item, userId, currencyId);
+
         // run a plug-in with external logic (rules), if available
         try {
-            PluggableTaskManager<IPricing> taskManager =
-                new PluggableTaskManager<IPricing>(entityId,
-                Constants.PLUGGABLE_TASK_ITEM_PRICING);
+            PluggableTaskManager<IPricing> taskManager
+                    = new PluggableTaskManager<IPricing>(entityId, Constants.PLUGGABLE_TASK_ITEM_PRICING);
             IPricing myTask = taskManager.getNextClass();
-            
+
             while(myTask != null) {
-                retValue = myTask.getPrice(item.getId(), userId, currencyId, pricingFields, retValue);
+                price = myTask.getPrice(item.getId(), quantity, userId, currencyId, pricingFields, price);
                 myTask = taskManager.getNextClass();
             }
         } catch (Exception e) {
             throw new SessionInternalError("Item pricing task error", ItemBL.class, e);
         }
-        
-        return retValue;
+
+        return price;
     }
-    
-    public ItemDTO getDTO(Integer languageId, Integer userId, 
-            Integer entityId, Integer currencyId) 
-            throws SessionInternalError {
-        
+
+    /**
+     * Returns an ItemDTO constructed for the given language and entity, priced for the
+     * given user and currency.
+     *
+     * @param languageId id of the users language
+     * @param userId id of the user purchasing the item
+     * @param entityId id of the entity
+     * @param currencyId id of the currency
+     * @return item dto
+     * @throws SessionInternalError if an internal exception occurs processing request
+     */
+    public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId)
+        throws SessionInternalError {
+
+        return getDTO(languageId, userId, entityId, currencyId, BigDecimal.ONE);
+    }
+
+    /**
+     * Returns an ItemDTO constructed for the given language and entity, priced for the
+     * given user, currency and the amount being purchased. 
+     *
+     * @param languageId id of the users language
+     * @param userId id of the user purchasing the item
+     * @param entityId id of the entity
+     * @param currencyId id of the currency
+     * @param quantity quantity being purchased
+     * @return item dto
+     * @throws SessionInternalError if an internal exception occurs processing request
+     */
+    public ItemDTO getDTO(Integer languageId, Integer userId, Integer entityId, Integer currencyId, BigDecimal quantity)
+        throws SessionInternalError {
+
         ItemDTO dto = new ItemDTO(
             item.getId(),
             item.getInternalNumber(),
@@ -381,13 +358,12 @@ public class ItemBL {
             null, // to be set right after
             item.getHasDecimals() );  
 
-        // add all the prices for each currency
-        // if this is a percenteage, we still need an array with empty prices
-        dto.setPrices(findPrices(entityId, languageId));
-        
+        dto.setDefaultPrice(item.getDefaultPrice());
+
+        // calculate a true price using the pricing plug-in, pricing takes into
+        // account plans, special prices and the quantity of the item being purchased.
         if (currencyId != null && dto.getPercentage() == null) {
-            // it wants one price in particular
-            dto.setPrice(getPrice(userId, currencyId, entityId));
+            dto.setPrice(getPrice(userId, currencyId, quantity, entityId));
         }
         
         // set the types
@@ -410,6 +386,7 @@ public class ItemBL {
 
     public ItemDTO getDTO(ItemDTOEx other) {
         ItemDTO retValue = new ItemDTO();
+
         if (other.getId() != null) {
             retValue.setId(other.getId());
         }
@@ -427,24 +404,9 @@ public class ItemBL {
         retValue.setPrice(other.getPrice());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
 
-        // convert prices between DTO and DTOEx (WS)
-        List otherPrices = other.getPrices();
-        if (otherPrices != null) {
-            List prices = new ArrayList(otherPrices.size());
-            for (int i = 0; i < otherPrices.size(); i++) {
-                ItemPriceDTO itemPrice = new ItemPriceDTO();
-                ItemPriceDTOEx otherPrice = (ItemPriceDTOEx) otherPrices.get(i);
-                itemPrice.setId(otherPrice.getId());
-                itemPrice.setCurrency(new CurrencyDAS().find(
-                        otherPrice.getCurrencyId()));
-                itemPrice.setPrice(otherPrice.getPrice());
-                itemPrice.setName(otherPrice.getName());
-                itemPrice.setPriceForm(otherPrice.getPriceForm());
-                prices.add(itemPrice);
-            }
-            retValue.setPrices(prices);
-        }
-
+        // convert PriceModelWS to PriceModelDTO
+        retValue.setDefaultPrice(PriceModelBL.getDTO(other.getDefaultPrice()));
+        
         return retValue;
     }
 
@@ -468,55 +430,13 @@ public class ItemBL {
         retValue.setCurrencyId(other.getCurrencyId());
         retValue.setPrice(other.getPrice());
         retValue.setOrderLineTypeId(other.getOrderLineTypeId());
-        retValue.setPrices(other.getPrices());
 
-        // convert prices between DTOEx (WS) and DTO
-        List otherPrices = other.getPrices();
-        if (otherPrices != null) {
-            List prices = new ArrayList(otherPrices.size());
-            for (int i = 0; i < otherPrices.size(); i++) {
-                ItemPriceDTOEx itemPrice = new ItemPriceDTOEx();
-                ItemPriceDTO otherPrice = (ItemPriceDTO) otherPrices.get(i);
-                itemPrice.setId(otherPrice.getId());
-                itemPrice.setCurrencyId(otherPrice.getCurrency().getId());
-                itemPrice.setPrice(otherPrice.getPrice());
-                itemPrice.setName(otherPrice.getName());
-                itemPrice.setPriceForm(otherPrice.getPriceForm());
-                prices.add(itemPrice);
-            }
-            retValue.setPrices(prices);
-        }
+        // convert PriceModelDTO to PriceModelWS
+        retValue.setDefaultPrice(PriceModelBL.getWS(other.getDefaultPrice()));
 
         return retValue;
     }
-    
-    /**
-     * This method will try to find a currency id for this item. It will
-     * give priority to the entity's default currency, otherwise anyone
-     * will do.
-     * @return
-     */
-    private List findPrices(Integer entityId, Integer languageId) {
-        List retValue = new ArrayList();
-
-        // go over all the curencies of this entity
-        for (CurrencyDTO currency: item.getEntity().getCurrencies()) {
-            ItemPriceDTO price = new ItemPriceDTO();
-            price.setCurrency(currency);
-            price.setName(currency.getDescription(languageId));
-            // se if there's a price in this currency
-
-            ItemPriceDTO priceRow = new ItemPriceDAS().find(
-                item.getId(),currency.getId());
-            if (priceRow != null) {
-                price.setPrice(priceRow.getPrice());
-                price.setPriceForm(price.getPrice().toString());
-            }
-            retValue.add(price);
-        }
-        
-        return retValue;
-    }
+       
     /**
      * @return
      */
@@ -569,9 +489,5 @@ public class ItemBL {
 
     public void setPricingFields(List<PricingField> fields) {
         pricingFields = fields;
-    }
-
-    public void invalidateCache() {
-        cache.flushCache(flushModel);
     }
 }

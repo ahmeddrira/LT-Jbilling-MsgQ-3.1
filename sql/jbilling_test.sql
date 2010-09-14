@@ -11371,7 +11371,6 @@ COPY invoice_line_type (id, description, order_position) FROM stdin;
 
 COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, has_decimals, optlock, price_model_id) FROM stdin;
 14	J-01	1	-10.0000000000	0	0	0	1	\N
-240	DP-4	1	\N	0	0	0	2	140
 1	DP-1	1	\N	0	0	0	3	1
 2	DP-2	1	\N	0	0	0	1	2
 3	DP-3	1	\N	0	0	0	1	3
@@ -11390,6 +11389,7 @@ COPY item (id, internal_number, entity_id, percentage, price_manual, deleted, ha
 2801	CALL-LD-INCLUDE	1	\N	0	0	1	4	1803
 2900	CALL-LD-GEN	1	\N	0	0	0	2	1900
 3000	PL-02	1	\N	0	0	0	4	2001
+240	DP-4	1	\N	0	0	0	2	2003
 \.
 
 
@@ -15263,6 +15263,7 @@ COPY price_model (id, strategy_type, rate, included_quantity, currency_id) FROM 
 1803	METERED	0.0000000000	\N	1
 1900	METERED	0.0000000000	\N	1
 2001	METERED	99.9900000000	\N	1
+2003	METERED	15.0000000000	\N	11
 \.
 
 

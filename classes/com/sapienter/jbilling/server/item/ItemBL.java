@@ -245,9 +245,9 @@ public class ItemBL {
      * @param currencyId currency id of requested price
      * @return The price in the requested currency
      */
-    public BigDecimal getPriceByCurrency(ItemDTO item, Integer currencyId)  {
+    public BigDecimal getPriceByCurrency(ItemDTO item, Integer userId, Integer currencyId)  {
         if (item.getDefaultPrice() != null) {
-            PricingResult result = new PricingResult(item.getId(), null, currencyId);
+            PricingResult result = new PricingResult(item.getId(), userId, currencyId);
             item.getDefaultPrice().applyTo(result, BigDecimal.ONE, BigDecimal.ZERO);
             return result.getPrice();
         }
@@ -294,7 +294,7 @@ public class ItemBL {
         }
 
         // default "simple" price
-        BigDecimal price = getPriceByCurrency(item, currencyId);
+        BigDecimal price = getPriceByCurrency(item, userId, currencyId);
 
         // run a plug-in with external logic (rules), if available
         try {

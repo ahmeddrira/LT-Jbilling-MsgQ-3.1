@@ -278,8 +278,8 @@ public class OrderLineBL {
 
         if (line.getPrice() == null) {
             line.setPrice((item.getPercentage() == null)
-                          ? itemBl.getPriceByCurrency(item, currencyId) // basic price, ignoring current usage and
-                          : item.getPercentage());                      // and quantity purchased for price calculations
+                          ? itemBl.getPriceByCurrency(item, userId, currencyId) // basic price, ignoring current usage and
+                          : item.getPercentage());                              // and quantity purchased for price calculations
         }
 
         if (line.getAmount() == null) {

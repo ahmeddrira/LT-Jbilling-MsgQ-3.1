@@ -48,7 +48,13 @@ public class WSTest extends TestCase {
     public WSTest(String name) {
         super(name);
     }
-    
+
+    // dummy test to allow WSTests to run.
+    // remove when WS API is complete and proper tests have been written.
+    public void testNoop() throws Exception {
+        assertTrue(true);
+    }
+
 /*
     public ItemDTOEx getPlanItem() throws Exception {
         if (planItem == null) {

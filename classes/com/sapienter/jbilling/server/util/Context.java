@@ -72,7 +72,8 @@ public class Context {
         PROCESSORS_DESTINATION,
         PROVISIONING_COMMANDS_DESTINATION,
         PROVISIONING_COMMANDS_REPLY_DESTINATION,
-        INTERNAL_EVENTS_RULES_TASK_CONFIG
+        INTERNAL_EVENTS_RULES_TASK_CONFIG,
+        HSQL_DATASOURCE
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -129,6 +130,7 @@ public class Context {
                 "provisioningCommandsDestination");
         springBeans.put(Name.PROVISIONING_COMMANDS_REPLY_DESTINATION,
                 "provisioningCommandsReplyDestination");
+        springBeans.put(Name.HSQL_DATASOURCE, "hsqlDataSource");
     };
     
     // should not be instantiated

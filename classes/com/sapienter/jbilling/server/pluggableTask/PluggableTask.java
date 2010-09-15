@@ -321,4 +321,20 @@ public abstract class PluggableTask {
             ResourceFactory.getResourceChangeScannerService().start();
         }
     }
+    
+    /**
+     * The getter and setter methods for the class field parameters 
+     * is provided only for the sole purpose of injecting a pluggable 
+     * task via spring configuration for tests that run without the 
+     * jbilling running. 
+     * @return
+     */
+    public HashMap<String, Object> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(HashMap<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+    
 }

@@ -54,7 +54,7 @@
 		<property name="parameters">
 			 <map>
 			 	<entry key="format_file" value="RateCard.xml"/>
-			 	<entry key="suffix" value="csv"/>
+			 	<entry key="suffix" value="cvs"/>
 			 </map>
 		</property>
 	</bean>

@@ -290,6 +290,7 @@ ALTER TABLE ONLY public.contact DROP CONSTRAINT contact_pkey;
 ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_pkey;
 ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_pkey;
 ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_pkey;
+ALTER TABLE ONLY public.cdrentries DROP CONSTRAINT cdrentries_pkey;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_pkey;
 ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_pkey;
 ALTER TABLE ONLY public.billing_process_configuration DROP CONSTRAINT billing_process_configuration_pkey;
@@ -555,7 +556,36 @@ CREATE TABLE blacklist (
 ALTER TABLE public.blacklist OWNER TO jbilling;
 
 --
--- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+-- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+--
+
+CREATE TABLE cdrentries (
+    id integer NOT NULL,
+    accountcode character varying(20),
+    src character varying(20),
+    dst character varying(20),
+    dcontext character varying(20),
+    clid character varying(20),
+    channel character varying(20),
+    dstchannel character varying(20),
+    lastapp character varying(20),
+    lastdatat character varying(20),
+    start timestamp without time zone,
+    answer timestamp without time zone,
+    "end" timestamp without time zone,
+    duration integer,
+    billsec integer,
+    disposition character varying(20),
+    amaflags character varying(20),
+    userfield character varying(100),
+    ts timestamp without time zone
+);
+
+
+ALTER TABLE public.cdrentries OWNER TO jbilling;
+
+--
+-- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
 --
 
 CREATE TABLE contact (
@@ -3170,6 +3200,15 @@ COPY blacklist (id, entity_id, create_datetime, type, source, credit_card, credi
 4	1	2008-09-26 00:00:00	4	2	\N	\N	1126	\N	1
 5	1	2008-09-26 00:00:00	5	2	\N	\N	1128	\N	1
 6	1	2008-09-26 00:00:00	6	2	\N	\N	1127	\N	1
+\.
+
+
+--
+-- Data for Name: cdrentries; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY cdrentries (id, accountcode, src, dst, dcontext, clid, channel, dstchannel, lastapp, lastdatat, start, answer, "end", duration, billsec, disposition, amaflags, userfield, ts) FROM stdin;
+1	20121	4033211001	4501231533	jb-test-ctx	Filler Events <1234>	IAX2/0282119604-13	SIP/8315-b791bcc0	Dial	dial data	2007-11-17 11:09:01	2007-11-17 11:09:59	2007-11-17 11:27:31	200	12000	ANSWERED	3	mediation-batch-test-13	\N
 \.
 
 
@@ -19780,7 +19819,15 @@ ALTER TABLE ONLY blacklist
 
 
 --
--- Name: contact_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+-- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+--
+
+ALTER TABLE ONLY cdrentries
+    ADD CONSTRAINT cdrentries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contact_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
 --
 
 ALTER TABLE ONLY contact_field

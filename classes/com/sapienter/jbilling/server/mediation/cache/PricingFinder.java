@@ -31,11 +31,11 @@ public class PricingFinder extends AbstractFinder {
         LOG.debug("PricingFinder: Watch: " + watch.toString());
     }
 
-    public double getPriceForDestination(String digits) {
+    public BigDecimal getPriceForDestination(String digits) {
         String query = "Select TOP 1 price from " + loader.getTableName()
-                + " Where " + digits + " like CONCAT(dgts, '%') order by dgts desc;";
+                + " Where '" + digits + "' like CONCAT(dgts, '%') order by dgts desc;";
         
-        return (Double) this.jdbcTemplate.queryForObject(query, Double.class);
+        return (BigDecimal) this.jdbcTemplate.queryForObject(query, BigDecimal.class);
         
     }
 
@@ -47,7 +47,7 @@ public class PricingFinder extends AbstractFinder {
         PricingResult result = null;
         String strSql = null;
         if ("dst".equalsIgnoreCase(pricingField.getName())) {
-            String query = "Select limit 1 <price> from "
+            String query = "Select TOP 1 price from "
                     + loader.getTableName() + " Where "
                     + pricingField.getStrValue()
                     + " like CONCAT(dgts, '%') order by dgts desc;";

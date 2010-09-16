@@ -192,7 +192,7 @@ public class BasicLoaderImpl implements ILoader {
             retVal = " INTEGER ";
             break;
         case DECIMAL:
-            retVal = " DECIMAL ";
+            retVal = " NUMERIC(22,10) ";
             break;
         case DATE:
             retVal = " TIMESTAMP ";

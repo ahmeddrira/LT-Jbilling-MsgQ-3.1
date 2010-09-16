@@ -80,7 +80,7 @@ public class MediationPerformanceTest extends TestCase {
             assertTrue(
                     "Loader successfully populated records in the database..",
                     recordsCount > 0);
-            assertEquals("Loaded correct number of records", new Long(1764l),
+            assertEquals("Loaded correct number of records", new Long(1769),
                     new Long(recordsCount));
             result.close();
             statement.close();
@@ -94,10 +94,24 @@ public class MediationPerformanceTest extends TestCase {
 
     public void testFinder() {
         PricingFinder finder = (PricingFinder) spring.getBean("pricingFinder");
-        double val = finder.getPriceForDestination("5215588888");
+        BigDecimal val = finder.getPriceForDestination("5215585888");
         System.out.println("Value returnd as best match= " + val);
-        assertTrue("Finder returned a value greater than zero", val > 0);
-        assertEquals("Found the right value", 0.180, val, 0.20);
+        assertTrue("Finder returned a value greater than zero", val
+                .compareTo(new BigDecimal("0")) > 0);
+        assertEquals("Found the right value", new BigDecimal("0.175"), val);
+
+        val = finder.getPriceForDestination("9699999888");
+        System.out.println("Value returnd as best match= " + val);
+        assertTrue("Finder returned a value greater than zero", val
+                .compareTo(new BigDecimal("0")) > 0);
+        assertEquals("Found the right value", new BigDecimal("0.990"), val);
+
+        val = finder.getPriceForDestination("7400000000");
+        System.out.println("Value returnd as best match= " + val);
+        assertTrue("Finder returned a value greater than zero", val
+                .compareTo(new BigDecimal("0")) > 0);
+        assertEquals("Found the right value", new BigDecimal("0.093"), val);
+
         System.out.println("Ending finder tests.");
     }
 
@@ -109,7 +123,7 @@ public class MediationPerformanceTest extends TestCase {
         // String password = "";
         // create connection
         // Class.forName(driver); // load driver
-        DataSource ds = (DataSource) spring.getBean("hsqlDataSource");
+        DataSource ds = (DataSource) spring.getBean("memoryDataSource");
         return ds.getConnection();
         // return DriverManager.getConnection(url, username, password);
     }

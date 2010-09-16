@@ -344,6 +344,10 @@
         </copy>
         <copy file="${source.resources.descriptor.dir}/log4j.xml" 
               todir="${jbilling.conf.dir}"/>
+        <copy todir="${base_dir}/mediation">
+            <fileset dir="${source.mediation.descriptor.dir}" includes="mediation.dtd, RateCard.*"/>
+        	<!-- <fileset dir="${source.rules.dir}" includes="RateCard.csv"/> -->
+        </copy>
     </target>
     
     <!-- compile the Jasper design reports -->
@@ -551,7 +555,7 @@
     </target>
 
     <target name="test-mediation">
-        <property name="test.class" value="com.sapienter.jbilling.server.mediation.MediationPerformanceTest"/>
+        <property name="test.class" value="com.sapienter.jbilling.server.mediation.MediationTest"/>
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
@@ -907,6 +911,7 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="ValidatePurchaseRules.drl" />
         </rulebase>
+    	<!-- Not required after switching to mediation caching
         <rulebase 
         	srcdir="${source.rules.dir}" 		
         	tofile="${base_dir}/rules/RateCard.pkg"
@@ -914,7 +919,7 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="RateCard.xls" />
         </rulebase>
-
+-->
         <!-- Copy test Digester config and Velocity templates for 
              generateRules API method. -->
         <copy todir="${base_dir}/rules">

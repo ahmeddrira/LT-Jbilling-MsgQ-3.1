@@ -8,6 +8,7 @@ import org.springframework.util.StopWatch;
 
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.tasks.PricingResult;
+import com.sapienter.jbilling.server.util.Context;
 
 public class PricingFinder extends AbstractFinder {
 
@@ -16,6 +17,10 @@ public class PricingFinder extends AbstractFinder {
     private static final String SPACE = " ";
     private static final String COMMA = ", ";
 
+    public static final PricingFinder getInstance() {
+        return (PricingFinder) Context.getBean(Context.Name.PRICING_FINDER);    
+    }
+    
     PricingFinder(JdbcTemplate template, ILoader loader) {
         super(template, loader);
     }

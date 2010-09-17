@@ -2728,6 +2728,10 @@
     <PluggableTaskType Id="78" CategoryId="23" ClassName="com.sapienter.jbilling.server.rule.task.VelocityRulesGeneratorTask" MinParameters="2"/>
     <PluggableTaskType Id="79" CategoryId="14" ClassName="com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask" MinParameters="0"/>
     <PluggableTaskType Id="80" CategoryId="14" ClassName="com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask" MinParameters="0"/>
+    <PluggableTaskType Id="81" CategoryId="22" ClassName="com.sapienter.jbilling.server.mediation.task.MediationProcessTask" MinParameters="0"/>
+    <PluggableTaskType Id="82" CategoryId="22" ClassName="com.sapienter.jbilling.server.billing.task.BillingProcessTask" MinParameters="0"/>
+    <PluggableTaskType Id="83" CategoryId="22" ClassName="com.sapienter.jbilling.server.process.task.ScpUploadTask" MinParameters="4"/>
+    <PluggableTaskType Id="84" CategoryId="17" ClassName="com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask" MinParameters="1"/>
 
     <PluggableTaskTypeCategory Id="1" Description="order processing task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderProcessingTask"/>
     <PluggableTaskTypeCategory Id="2" Description="order_filter task" InterfaceName="com.sapienter.jbilling.server.pluggableTask.OrderFilterTask"/>

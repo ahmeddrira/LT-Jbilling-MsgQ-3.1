@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- this script will upgrade a database schema from the latest jbilling release
 -- to the code currently at the tip of the trunk.
 -- It is tested on postgreSQL, but it is meant to be ANSI SQL
@@ -400,3 +401,6 @@ delete from jbilling_seqs where name = 'item_price';
 -- price model pricing plug-ins
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (79, 14, 'com.sapienter.jbilling.server.pricing.tasks.PriceModelPricingTask', 0);
 insert into pluggable_task_type (id, category_id, class_name, min_parameters) values (80, 14, 'com.sapienter.jbilling.server.pricing.tasks.TieredPriceModelPricingTask', 0);
+
+-- external ACH storage plug-in
+insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (84, 17, 'com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask', 1);

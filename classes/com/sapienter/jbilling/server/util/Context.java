@@ -61,6 +61,7 @@ public class Context {
         JBILLING_TABLE_DAS,
         PLUGGABLE_TASK_DAS,
         CACHE,
+        CACHE_MODEL_READONLY,
         CACHE_MODEL_ITEM_PRICE,
         CACHE_FLUSH_MODEL_ITEM_PRICE,
         CACHE_MODEL_RW,
@@ -111,12 +112,11 @@ public class Context {
         springBeans.put(Name.HIBERNATE_SESSION, "sessionFactory");
         springBeans.put(Name.JDBC_TEMPLATE, "jdbcTemplate");
         springBeans.put(Name.CACHE, "cacheProviderFacade");
+        springBeans.put(Name.CACHE_MODEL_READONLY, "cacheModelReadOnly");
         springBeans.put(Name.CACHE_MODEL_ITEM_PRICE, "cacheModelItemPrice");
-        springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE, 
-                "flushModelItemPrice");
+        springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE,  "flushModelItemPrice");
         springBeans.put(Name.CACHE_MODEL_RW, "cacheModelPTDTO");
-        springBeans.put(Name.CACHE_FLUSH_MODEL_RW,
-                "flushModelPTDTO");
+        springBeans.put(Name.CACHE_FLUSH_MODEL_RW,"flushModelPTDTO");
         springBeans.put(Name.CAI, "cai");
         springBeans.put(Name.MMSC, "mmsc");
         springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 

@@ -15046,7 +15046,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 8302	570	ageing_step	6	\N	\N	1
 8303	580	contactType	2	\N	\N	1
 8304	580	externalSavingPluginId	590	\N	\N	1
-590	410	file	\N	PricingRules.pkg	\N	2
+590	410	file	\N	PricingRules.pkg RateCard.pkg	\N	2
 580	420	file	\N	Mediation.pkg ItemsRules.pkg PricingRules.pkg	\N	1
 8305	572	url	\N	jdbc:postgresql://localhost:5432/jbilling_test	\N	1
 8306	572	username	\N	jbilling	\N	1

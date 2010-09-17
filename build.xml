@@ -46,6 +46,7 @@
         <pathelement location="${build.test.dir}"/>
         <pathelement location="${source.lib.dir}/commons-logging.jar"/>
         <pathelement location="${source.lib.dir}/log4j.jar"/>
+        <pathelement location="${jbilling.conf.dir}"/> 
         
         <fileset dir="${easymock.dir}">
             <include name="*.jar"/>
@@ -85,8 +86,7 @@
         <path refid="compile.classpath"/>
         <pathelement location="${build.deploy.dir}/jbilling.jar"/>
         <pathelement location="${junit.dir}/junit.jar"/>
-        <pathelement location="${build.test.dir}"/>
-    	<pathelement location="${jbilling.conf.dir}"/>
+        <pathelement location="${build.test.dir}"/>    	
     </path>
     
     <path id="xdoclet.classpath">
@@ -558,7 +558,7 @@
         <property name="test.class" value="com.sapienter.jbilling.server.mediation.MediationTest"/>
         <antcall target="test-integration" inheritall="true"/>
     </target>
-
+	
     <target name="test-provisioning">
         <property name="test.class" value="com.sapienter.jbilling.server.provisioning.ProvisioningTest"/>
         <antcall target="test-integration" inheritall="true"/>
@@ -911,7 +911,6 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="ValidatePurchaseRules.drl" />
         </rulebase>
-    	<!-- Not required after switching to mediation caching
         <rulebase 
         	srcdir="${source.rules.dir}" 		
         	tofile="${base_dir}/rules/RateCard.pkg"
@@ -919,7 +918,6 @@ server="upload.sourceforge.net" userid="anonymous">
         	binformat="package">
         	<include name="RateCard.xls" />
         </rulebase>
--->
         <!-- Copy test Digester config and Velocity templates for 
              generateRules API method. -->
         <copy todir="${base_dir}/rules">

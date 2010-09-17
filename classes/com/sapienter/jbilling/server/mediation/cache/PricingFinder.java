@@ -18,11 +18,11 @@ public class PricingFinder extends AbstractFinder {
     private static final String COMMA = ", ";
 
     public static final PricingFinder getInstance() {
-        Object bean= Context.getBean(Context.Name.PRICING_FINDER);
-        LOG.debug("Method: getInstance() found: " +  bean);
+        Object bean = Context.getBean(Context.Name.PRICING_FINDER);
+        LOG.debug("Method: getInstance() found: " + bean);
         return (PricingFinder) bean;
     }
-    
+
     PricingFinder(JdbcTemplate template, ILoader loader) {
         super(template, loader);
     }
@@ -39,12 +39,22 @@ public class PricingFinder extends AbstractFinder {
     }
 
     public BigDecimal getPriceForDestination(String digits) {
-        LOG.debug("Method: getPriceForDestination - Number called: " + digits);
-        String query = "Select TOP 1 price from " + loader.getTableName()
-                + " Where '" + digits + "' like CONCAT(dgts, '%') order by dgts desc;";
-        LOG.debug("Method: getPriceForDestination - Select query:\n" + query);
-        return (BigDecimal) this.jdbcTemplate.queryForObject(query, BigDecimal.class);
-        
+        BigDecimal retVal = null;
+        try {
+            String query = "Select TOP 1 price from " + loader.getTableName()
+                    + " Where '" + digits
+                    + "' like CONCAT(dgts, '%') order by dgts desc;";
+            LOG.debug("Method: getPriceForDestination - Select query:\n"
+                    + query);
+            retVal = (BigDecimal) this.jdbcTemplate.queryForObject(query,
+                    BigDecimal.class);
+            LOG.debug("Method: getPriceForDestination - Best Match: " + retVal);
+        } catch (Exception e) {
+            LOG
+                    .error("ERROR occurred in PricingFinder.getPriceForDestination. "
+                            + digits + " output " + retVal);
+        }
+        return retVal;
     }
 
     public BigDecimal getPriceForItemAndNumber(PricingField pricingField) {
@@ -55,9 +65,8 @@ public class PricingFinder extends AbstractFinder {
         PricingResult result = null;
         String strSql = null;
         if ("dst".equalsIgnoreCase(pricingField.getName())) {
-            String query = "Select TOP 1 price from "
-                    + loader.getTableName() + " Where "
-                    + pricingField.getStrValue()
+            String query = "Select TOP 1 price from " + loader.getTableName()
+                    + " Where " + pricingField.getStrValue()
                     + " like CONCAT(dgts, '%') order by dgts desc;";
         }
 

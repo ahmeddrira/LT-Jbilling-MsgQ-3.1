@@ -1,24 +1,4 @@
-/*
-    jBilling - The Enterprise Open Source Billing System
-    Copyright (C) 2003-2009 Enterprise jBilling Software Ltd. and Emiliano Conde
-
-    This file is part of jbilling.
-
-    jbilling is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    jbilling is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-package com.sapienter.jbilling.server.mediation;
+package com.sapienter.jbilling.server.mediation.cache;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -46,7 +26,7 @@ public class MediationPerformanceTest extends TestCase {
             new String[] { "/jbilling-caching.xml" });
 
     private ILoader loader = null;
-    private IFinder finder = null;
+    private IFinder ifinder = null;
 
     public MediationPerformanceTest() {
     }
@@ -59,7 +39,7 @@ public class MediationPerformanceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         loader = (ILoader) spring.getBean("basicLoader");
-        finder = (IFinder) spring.getBean("pricingFinder");
+        ifinder = (IFinder) spring.getBean("pricingFinder");
         System.out.println("JUnit setUp() complete.");
     }
 
@@ -93,7 +73,7 @@ public class MediationPerformanceTest extends TestCase {
     }
 
     public void testFinder() {
-        PricingFinder finder = (PricingFinder) spring.getBean("pricingFinder");
+        PricingFinder finder = (PricingFinder) ifinder;
         BigDecimal val = finder.getPriceForDestination("5215585888");
         System.out.println("Value returnd as best match= " + val);
         assertTrue("Finder returned a value greater than zero", val

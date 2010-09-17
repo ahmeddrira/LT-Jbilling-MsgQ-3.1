@@ -29,12 +29,12 @@ public class BasicLoaderImpl implements ILoader {
 
     @Override
     public String getTableName() {
-        LOG.debug("BasicLoaderImpl.getTableName called.");
+        LOG.debug("Method:getTableName called.");
         return tableName;
     }
 
     BasicLoaderImpl() {
-        LOG.debug("BasicLoaderImpl() Constructor Called");
+        LOG.debug("() Constructor Called");
     }
 
     public void init() {
@@ -49,7 +49,7 @@ public class BasicLoaderImpl implements ILoader {
      * 
      */
     private void initDB() {
-        LOG.debug("BasicLoaderImpl: init() called - readerId="
+        LOG.debug("Method: init() called - readerId="
                 + readerId);
         LOG.debug("Reader ID=" + readerId + ", jdbcTemplate="
                 + jdbcTemplate + ", indexColumnNames=" + indexColumnNames
@@ -92,7 +92,7 @@ public class BasicLoaderImpl implements ILoader {
                         batchSqls[i] = computeInsertSql(thisGroup.get(i));
                     }
                     System.out
-                            .println("BasicLoaderImpl: BaNow inserting records in mem db");
+                            .println("BaNow inserting records in mem db");
                     // insert record using jdbcTemplate
                     this.jdbcTemplate.batchUpdate(batchSqls);
                 }
@@ -103,13 +103,13 @@ public class BasicLoaderImpl implements ILoader {
 
         // mark end
         watch.stop();
-        LOG.debug("BasicLoaderImpl: Finished loader. Watch (secs): "
+        LOG.debug("Finished loader. Watch (secs): "
                 + watch.getTotalTimeSeconds());
 
     }
 
     private boolean createIndexes() {
-        LOG.debug("BasicLoaderInpl.createIndexes()");
+        LOG.debug("Method:createIndexes()");
         String[] cols = indexColumnNames.split(",");
         StringBuffer indexSql = new StringBuffer("CREATE INDEX ").append(
                 indexName).append(" ON ");
@@ -120,7 +120,7 @@ public class BasicLoaderImpl implements ILoader {
         int lastIdxOfComma = indexSql.lastIndexOf(COMMA);
         indexSql
                 .replace(lastIdxOfComma, (indexSql.lastIndexOf(COMMA) + 2), ")");
-        LOG.debug("BasicLoaderInpl: indexQuery= " + indexSql);
+        LOG.debug(": indexQuery= " + indexSql);
         this.jdbcTemplate.execute(indexSql.toString());
         return true;
     }
@@ -131,7 +131,7 @@ public class BasicLoaderImpl implements ILoader {
      * @return
      */
     private String computeInsertSql(Record record) {
-        LOG.debug("BasicLoaderInpl.computeInsertSql()");
+        LOG.debug("Method:computeInsertSql()");
         StringBuffer values = new StringBuffer("");
         StringBuffer retVal = new StringBuffer("INSERT INTO ").append(
                 getTableName()).append(SPACE).append("(");
@@ -147,7 +147,7 @@ public class BasicLoaderImpl implements ILoader {
         lastIdxOfComma = values.lastIndexOf(COMMA);
         values.replace(lastIdxOfComma, (values.lastIndexOf(COMMA) + 2), ")");
         retVal.append(values);
-        LOG.debug("BasicLoaderImpl: Insert SQL=" + retVal);
+        LOG.debug("Insert SQL=" + retVal);
         return retVal.toString();
     }
 
@@ -157,7 +157,7 @@ public class BasicLoaderImpl implements ILoader {
      * @return
      */
     private boolean createTable(Record record) {
-        LOG.debug("BasicLoaderImpl: createTable()");
+        LOG.debug("Method: createTable()");
         StringBuffer createTable = new StringBuffer("CREATE CACHED TABLE ")
                 .append(getTableName()).append(SPACE);
         List<PricingField> fields = record.getFields();
@@ -171,7 +171,7 @@ public class BasicLoaderImpl implements ILoader {
         int lastIdxOfComma = createTable.lastIndexOf(COMMA);
         createTable.replace(lastIdxOfComma,
                 (createTable.lastIndexOf(COMMA) + 2), ")");
-        LOG.debug("BasicLoaderImpl: Create Table Query= "
+        LOG.debug("Create Table Query= "
                 + createTable);
         this.jdbcTemplate.execute(createTable.toString());
         return true;

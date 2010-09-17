@@ -18,7 +18,9 @@ public class PricingFinder extends AbstractFinder {
     private static final String COMMA = ", ";
 
     public static final PricingFinder getInstance() {
-        return (PricingFinder) Context.getBean(Context.Name.PRICING_FINDER);    
+        Object bean= Context.getBean(Context.Name.PRICING_FINDER);
+        LOG.debug("Method: getInstance() found: " +  bean);
+        return (PricingFinder) bean;
     }
     
     PricingFinder(JdbcTemplate template, ILoader loader) {
@@ -33,13 +35,14 @@ public class PricingFinder extends AbstractFinder {
         watch.start();
         LOG.debug("Finder Initialized successfully.");
         watch.stop();
-        LOG.debug("PricingFinder: Watch: " + watch.toString());
+        LOG.debug("Watch: " + watch.toString());
     }
 
     public BigDecimal getPriceForDestination(String digits) {
+        LOG.debug("Method: getPriceForDestination - Number called: " + digits);
         String query = "Select TOP 1 price from " + loader.getTableName()
                 + " Where '" + digits + "' like CONCAT(dgts, '%') order by dgts desc;";
-        
+        LOG.debug("Method: getPriceForDestination - Select query:\n" + query);
         return (BigDecimal) this.jdbcTemplate.queryForObject(query, BigDecimal.class);
         
     }

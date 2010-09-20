@@ -404,6 +404,12 @@ insert into pluggable_task_type (id, category_id, class_name, min_parameters) va
 -- external ACH storage plug-in
 insert into pluggable_task_type  (id, category_id, class_name, min_parameters) values (84, 17, 'com.sapienter.jbilling.server.payment.tasks.SaveACHExternallyTask', 1);
 
+-- Modified size of ACH records to allow encryption
+alter table ach alter column aba_routing type character varying(40); -- postgresql
+alter table ach alter column bank_account type character varying(60); -- postgresql
+-- alter table ach modify aba_routing varchar(40); -- mysql
+-- alter table ach modify bank_account varchar(60); -- mysql
+
 -- payment authorization transaction id
 ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40); -- postgresql
 -- alter table payment_authorization modify transaction_id varchar(40); -- mysql

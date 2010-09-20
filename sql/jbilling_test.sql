@@ -391,6 +391,7 @@ DROP TABLE public.contact_map;
 DROP TABLE public.contact_field_type;
 DROP TABLE public.contact_field;
 DROP TABLE public.contact;
+DROP TABLE public.cdrentries;
 DROP TABLE public.blacklist;
 DROP TABLE public.billing_process_configuration;
 DROP TABLE public.billing_process;
@@ -442,7 +443,8 @@ CREATE TABLE ach (
     account_type integer NOT NULL,
     bank_name character varying(50) NOT NULL,
     account_name character varying(100) NOT NULL,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    gateway_key character varying(100) DEFAULT NULL::character varying
 );
 
 
@@ -556,7 +558,7 @@ CREATE TABLE blacklist (
 ALTER TABLE public.blacklist OWNER TO jbilling;
 
 --
--- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: cdrentries; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE cdrentries (
@@ -585,7 +587,7 @@ CREATE TABLE cdrentries (
 ALTER TABLE public.cdrentries OWNER TO jbilling;
 
 --
--- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 CREATE TABLE contact (
@@ -2107,7 +2109,7 @@ ALTER TABLE public.user_role_map OWNER TO jbilling;
 -- Data for Name: ach; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY ach (id, user_id, aba_routing, bank_account, account_type, bank_name, account_name, optlock) FROM stdin;
+COPY ach (id, user_id, aba_routing, bank_account, account_type, bank_name, account_name, optlock, gateway_key) FROM stdin;
 \.
 
 
@@ -19819,7 +19821,7 @@ ALTER TABLE ONLY blacklist
 
 
 --
--- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: cdrentries_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY cdrentries
@@ -19827,7 +19829,7 @@ ALTER TABLE ONLY cdrentries
 
 
 --
--- Name: contact_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace:
+-- Name: contact_field_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
 ALTER TABLE ONLY contact_field

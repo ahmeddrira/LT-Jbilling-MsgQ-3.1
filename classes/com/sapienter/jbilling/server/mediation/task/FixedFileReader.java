@@ -20,38 +20,41 @@
 
 package com.sapienter.jbilling.server.mediation.task;
 
-import java.util.List;
-
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.mediation.FormatField;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class FixedFileReader extends AbstractFileReader {
 
+    private static final String BLANK = "";
+
     @Override
     protected String[] splitFields(String line) {
-        List<String> fields = new ArrayList<String>();
-        
-        for(FormatField formatField: format.getFields()) {
-            if (formatField.getStartPosition() == null || formatField.getLength() == null ||
-                    formatField.getStartPosition() <= 0 || formatField.getLength() <= 0) {
-                throw new SessionInternalError("position and length are required and have to " +
-                        "be positive integers: " + formatField);
-            }
-            int startIndex = formatField.getStartPosition() - 1;
-            String field;
-            try {
-                field = line.substring(startIndex, startIndex + formatField.getLength());
-            } catch (Exception e) {
-                throw new SessionInternalError("Error with field " + formatField + 
-                        " on line " + line, FixedFileReader.class, e);
-            }
-            fields.add(field);
-        }
-        
-        String retValue[] = new String[fields.size()];
-        retValue = fields.toArray(retValue);
-        return retValue;
-    }
 
+        List<String> fields = new ArrayList<String>();
+
+        for (FormatField formatField : format.getFields()) {
+            if (formatField.getStartPosition() == null
+                || formatField.getLength() == null
+                || formatField.getStartPosition() <= 0
+                || formatField.getLength() <= 0) {
+
+                throw new SessionInternalError("Position and length must be positive integers: '" + formatField + "'");
+            }
+
+            int start = formatField.getStartPosition() - 1;
+            int end = start + formatField.getLength();
+
+            // field end exceeds line length
+            if (end > line.length())
+                end = line.length();
+                                    
+            // parse field, or return a blank string if field start exceeds line length
+            fields.add(start > line.length() ? BLANK : line.substring(start, end));
+        }
+
+        return fields.toArray(new String[fields.size()]);        
+    }
 }

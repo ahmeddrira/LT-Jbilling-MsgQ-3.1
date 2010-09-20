@@ -20,21 +20,20 @@
 
 package com.sapienter.jbilling.server.payment.tasks;
 
-import com.sapienter.jbilling.server.user.CreditCardBL;
-import com.sapienter.jbilling.server.user.db.UserDTO;
-import org.apache.log4j.Logger;
-
+import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
 import com.sapienter.jbilling.server.pluggableTask.PluggableTask;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskBL;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.system.event.Event;
 import com.sapienter.jbilling.server.system.event.task.IInternalEventsTask;
-import com.sapienter.jbilling.server.payment.IExternalCreditCardStorage;
+import com.sapienter.jbilling.server.user.CreditCardBL;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.event.NewContactEvent;
 import com.sapienter.jbilling.server.user.event.NewCreditCardEvent;
+import org.apache.log4j.Logger;
 
 /**
  * Internal Event Plugin designed to save a unique "gateway key" returned by the configured IExternalCreditCardStorage
@@ -113,7 +112,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
      * @throws PluggableTaskException
      */
     public void process(Event event) throws PluggableTaskException {
-        PluggableTaskBL<IExternalCreditCardStorage> ptbl = new PluggableTaskBL<IExternalCreditCardStorage>(getExternalSavingPluginId());
+		PluggableTaskBL<IExternalCreditCardStorage> ptbl = new PluggableTaskBL<IExternalCreditCardStorage>(getExternalSavingPluginId());
         IExternalCreditCardStorage externalCCStorage = ptbl.instantiateTask();
 
         if (event instanceof NewCreditCardEvent) {
@@ -122,7 +121,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
             // only save credit cards associated with users
             if (!ev.getCreditCard().getBaseUsers().isEmpty()) {
-                String gateWayKey = externalCCStorage.storeCreditCard(null, ev.getCreditCard());
+                String gateWayKey = externalCCStorage.storeCreditCard(null, ev.getCreditCard(), null);
                 updateCreditCard(ev.getCreditCard(), gateWayKey);
             } else {
                 LOG.debug("Credit card is not associated with a user (card for payment) - can't save through gateway.");
@@ -142,7 +141,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
 
                 if (creditCard != null) {
                     // credit card has changed or was not previously obscured
-                    String gateWayKey = externalCCStorage.storeCreditCard(contact, creditCard);
+                    String gateWayKey = externalCCStorage.storeCreditCard(contact, creditCard, null);
                     updateCreditCard(creditCard, gateWayKey);
                 } else {
                     /*  call the external store without a credit card. It's possible the payment gateway
@@ -150,11 +149,11 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                         data? We'll leave it open ended so we don't restrict possible client implementations.
                      */
                     LOG.warn("Cannot determine credit card for storage, invoking external store with contact only");
-                    String gateWayKey = externalCCStorage.storeCreditCard(contact, null);
+                    String gateWayKey = externalCCStorage.storeCreditCard(contact, null, null);
                     updateCreditCard(creditCard, gateWayKey);
                 }
             }
-        } else {
+		} else {
             throw new PluggableTaskException("Cant not process event " + event);
         }
     }
@@ -194,5 +193,5 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                 LOG.warn("gateway key returned from external store is null, deleting card and removing from user map");
             }
         }
-    }
+    }    
 }

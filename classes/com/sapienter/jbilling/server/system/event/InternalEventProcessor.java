@@ -32,6 +32,7 @@ public class InternalEventProcessor {
     private static final Logger LOG = Logger.getLogger(InternalEventProcessor.class);
 
     public void process(Event event) {
+	LOG.debug("In InternalEventProcessor::process()");
         try {
             PluggableTaskManager<IInternalEventsTask> taskManager
                     = new PluggableTaskManager<IInternalEventsTask>(event.getEntityId(),
@@ -41,7 +42,6 @@ public class InternalEventProcessor {
                 IInternalEventsTask myClass = taskManager.getInstance(task.getType().getClassName(),
                                                                       task.getType().getCategory().getInterfaceName(),
                                                                       task);
-
                 if (isProcessable(myClass, event)) {
                     LOG.debug("Processing " + event + " with " + myClass);
                     myClass.process(event);

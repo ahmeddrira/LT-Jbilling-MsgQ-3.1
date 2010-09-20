@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
  * task instead of the complete credit card number.
  *
  * This plugin subscribes to both NewCreditCardEvent and NewContactEvent. For NewContactEvent, this plugin
- * will only invoke the external save logic for new contacts matching the configured "contactType" id. 
+ * will only invoke the external save logic for new contacts matching the configured "contactType" id.
  */
 public class SaveCreditCardExternallyTask extends PluggableTask implements IInternalEventsTask {
     private static final Logger LOG = Logger.getLogger(SaveCreditCardExternallyTask.class);
@@ -193,5 +193,5 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                 LOG.warn("gateway key returned from external store is null, deleting card and removing from user map");
             }
         }
-    }    
+    }
 }

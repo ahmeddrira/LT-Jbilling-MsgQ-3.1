@@ -630,8 +630,9 @@ public class UserSessionBean implements IUserSessionBean, PartnerSQL {
             UserBL user = new UserBL(userId);
             Set<AchDTO> ach = user.getEntity().getAchs();
             if (ach.size() > 0) {
-                AchBL bl = new AchBL(((AchDTO)ach.toArray()[0]).getId());
-                bl.delete(executorId);
+                AchDTO _achDTO= (AchDTO)ach.toArray()[0];
+                AchBL bl = new AchBL((_achDTO).getId());
+                bl.delete(executorId);                
             }
         } catch (Exception e) {
             throw new SessionInternalError(e);

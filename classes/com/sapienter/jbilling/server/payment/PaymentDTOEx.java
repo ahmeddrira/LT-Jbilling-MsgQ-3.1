@@ -134,10 +134,11 @@ public class PaymentDTOEx extends PaymentDTO {
             achDTO.setAccountType(dto.getAch().getAccountType());
             achDTO.setBankAccount(dto.getAch().getBankAccount());
             achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setGatewayKey(dto.getAch().getGatewayKey());
             achDTO.setId(dto.getAch().getId());
-            ach = achDTO;
+            this.ach = achDTO;
         } else {
-            ach = null;
+            this.ach = null;
         }
 
         invoiceIds = new ArrayList<Integer>();

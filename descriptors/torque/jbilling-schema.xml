@@ -10,6 +10,7 @@
         <column name="account_type" required="true" type="INTEGER"/>
         <column name="bank_name" required="true" size="50" type="VARCHAR"/>
         <column name="account_name" required="true" size="100" type="VARCHAR"/>
+        <column name="gateway_key" size="100" type="VARCHAR"/>
         <column name="OPTLOCK" required="true" type="INTEGER"/>
         
         <index name="ach_i_2">

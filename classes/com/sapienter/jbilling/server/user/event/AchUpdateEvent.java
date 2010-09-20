@@ -16,25 +16,36 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
-*/
-package com.sapienter.jbilling.server.user.db;
+ */
 
-import com.sapienter.jbilling.server.util.db.AbstractDAS;
+package com.sapienter.jbilling.server.user.event;
 
-public class AchDAS extends AbstractDAS<AchDTO> {
+import com.sapienter.jbilling.server.user.db.AchDTO;
+import com.sapienter.jbilling.server.system.event.Event;
 
-    public AchDTO create(UserDTO baseUser, String abaRouting, String bankAccount,
-            Integer accountType, String bankName, String accountName, String gatewayKey) {
-        
-        AchDTO ach = new AchDTO();
-        ach.setBaseUser(baseUser);
-        ach.setAbaRouting(abaRouting);
-        ach.setBankAccount(bankAccount);
-        ach.setAccountType(accountType);
-        ach.setBankName(bankName);
-        ach.setAccountName(accountName);
-        ach.setGatewayKey(gatewayKey);
-        return save(ach);
+/**
+ *
+ * @author vikasb
+ */
+public class AchUpdateEvent implements Event {
+
+	private final AchDTO ach;
+    private final Integer entityId;
+
+    public AchDTO getAch() {
+		return ach;
+	}
+
+    public AchUpdateEvent(AchDTO ach, Integer entityId) {
+        this.ach = ach;
+        this.entityId = entityId;
     }
 
+    public String getName() {
+        return "Update ACH event";
+    }
+
+    public final Integer getEntityId() {
+        return entityId;
+    }
 }

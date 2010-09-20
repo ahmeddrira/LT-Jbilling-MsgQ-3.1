@@ -171,6 +171,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getAch() != null) {
+            dto.getAch().getPayments().add(payment); // back reference to payment
             AchBL achBl = new AchBL();
             achBl.create(dto.getAch());
             payment.setAch(achBl.getEntity());
@@ -516,6 +517,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
             achDTO.setAccountType(dto.getAch().getAccountType());
             achDTO.setBankAccount(dto.getAch().getBankAccount());
             achDTO.setBankName(dto.getAch().getBankName());
+            achDTO.setGatewayKey(dto.getAch().getGatewayKey());
             achDTO.setId(dto.getAch().getId());
             ws.setAch(achDTO);
         } else {

@@ -330,7 +330,14 @@ public class OrderBL extends ResultList
                 }
             }
             orderDto.setDefaults();
+
+            // subscribe customer to plan items
+            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                addCustomerPlans(order.getLines(), order.getUserId());
+            }
+
             order = orderDas.save(orderDto);
+
             // link the lines to the new order
             for (OrderLineDTO line : order.getLines()) {
                 line.setPurchaseOrder(order);
@@ -353,11 +360,6 @@ public class OrderBL extends ResultList
             eLogger.auditBySystem(entityId, order.getBaseUserByUserId().getId(),
                     Constants.TABLE_PUCHASE_ORDER, order.getId(),
                     EventLogger.MODULE_ORDER_MAINTENANCE, EventLogger.ROW_CREATED, null, null, null);
-
-            // subscribe customer to plan items
-            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
-                addCustomerPlans(order.getLines(), order.getUserId());
-            }
 
             EventManager.process(new NewOrderEvent(entityId, order));
         } catch (Exception e) {
@@ -569,6 +571,11 @@ public class OrderBL extends ResultList
             }
         }
 
+        // add new customer plan subscriptions
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            addCustomerPlans(dto.getLines(), order.getUserId());
+        }
+            
         // now update this order's lines
         List<OrderLineDTO> oldLines = new ArrayList<OrderLineDTO>(order.getLines());
         order.getLines().clear();
@@ -582,9 +589,10 @@ public class OrderBL extends ResultList
 
         order = orderDas.save(order);
 
-        // update customer plan subscriptions
-        removeCustomerPlans(oldLines, order.getUserId());
-        addCustomerPlans(order.getLines(), order.getUserId());
+        // remove old customer plan subscriptions
+        if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+            removeCustomerPlans(oldLines, order.getUserId());
+        }
 
         if (oldLine != null && nonDeletedLines == 1) {
             OrderLineDTO newLine = null;
@@ -644,6 +652,8 @@ public class OrderBL extends ResultList
      * Subscribes the given user to any plans held by the given list of order lines,
      * if the user does not already have a subscription.
      *
+     * should be called before an order is modified in the persistence context.
+     *
      * @param lines lines to process
      * @param userId user id of customer to subscribe
      */
@@ -652,7 +662,7 @@ public class OrderBL extends ResultList
         for (OrderLineDTO line : lines) {
             // subscribe customer to plan if they haven't already been subscribed.
             if (!line.getItem().getPlans().isEmpty()) {
-                if (!PlanBL.isSubscribed(userId, line.getItemId())) {
+                if (!PlanBL.isSubscribed(userId, line.getItemId())) {                    
                     LOG.debug("Subscribing user " + userId + " to plan item " + line.getItemId());
                     PlanBL.subscribe(userId, line.getItemId());
                 }
@@ -664,7 +674,9 @@ public class OrderBL extends ResultList
     /**
      * Un-subscribes the given user to any plans held by the list of order lines. The customer
      * is un-subscribed only if there are no other orders subscribing the user to the plan.
-     * 
+     *
+     * should be called after an order is modified in the persistence context.
+     *
      * @param lines lines to process
      * @param userId user id of customer to subscribe
      */

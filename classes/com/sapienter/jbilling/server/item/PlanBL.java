@@ -193,10 +193,10 @@ public class PlanBL {
      */
     public static boolean isSubscribed(Integer userId, Integer itemId) {
         // items can have multiple plans, but it's possible that a customer may only
-        // be subscribed to 1 plan depending on where we are in the workflow
+        // be subscribed to 1 of the plans depending on where we are in the workflow
         for (PlanDTO plan : new PlanBL().getPlansBySubscriptionItem(itemId))
-               if (new PlanDAS().isSubscribed(userId, plan.getId()))
-                   return true; 
+            if (new PlanDAS().isSubscribed(userId, plan.getId()))
+                return true; // only return true if subscribed to one of the plans, otherwise keep checking.
 
         return false;
     }

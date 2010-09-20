@@ -21,6 +21,12 @@
 package com.sapienter.jbilling.server.pricing;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.UserDTOEx;
+import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
@@ -29,7 +35,12 @@ import org.hibernate.ObjectNotFoundException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,9 +49,7 @@ import java.util.Map;
  */
 public class WSTest extends TestCase {
 
-    private static final Integer PLAN_ITEM_ID = 3000;
-
-    private ItemDTOEx planItem;
+    private static final Integer PLAN_ITEM_ID = 1800;
 
     public WSTest() {
     }
@@ -55,6 +64,174 @@ public class WSTest extends TestCase {
         assertTrue(true);
     }
 
+    // todo: support new tests with Plan/Price WS calls
+    // note: beginnings of a new WS test. results verified manually.
+/*
+    public void testCreateDeleteOrder() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-01-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Create Order (subscribe)");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        // subscribe to plan item
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(PLAN_ITEM_ID);
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+
+        // todo verify customer price creation with API calls.
+
+        api.deleteOrder(order.getId());
+
+        // todo: verify customer price removal with API calls.
+
+        // cleanup
+        api.deleteUser(user.getUserId());
+    }
+
+    public void testUpdateOrderSubscribe() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // create user
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-03-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Update Order (subscribe)");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+
+        // create order
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        // non-plan junk item
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(1443);
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+        
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+
+        // todo: verify customer prices still empty with API calls.
+
+        // subscribe to plan item
+        OrderLineWS planLine = new OrderLineWS();
+        planLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        planLine.setItemId(PLAN_ITEM_ID);
+        planLine.setUseItem(true);
+        planLine.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line, planLine });
+
+        api.updateOrder(order); // update order
+
+        // todo: verify price creation with API calls.
+
+        // cleanup
+        api.deleteOrder(order.getId());                
+        api.deleteUser(user.getUserId());
+    }
+
+    public void testUpdateOrderUnsubscribe() throws Exception {
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        // create user
+        UserWS user = new UserWS();
+        user.setUserName("plan-test-04-" + new Date().getTime());
+        user.setPassword("password");
+        user.setLanguageId(1);
+        user.setCurrencyId(1);
+        user.setMainRoleId(5);
+        user.setStatusId(UserDTOEx.STATUS_ACTIVE);
+        user.setBalanceType(Constants.BALANCE_NO_DYNAMIC);
+
+        ContactWS contact = new ContactWS();
+        contact.setEmail("test@test.com");
+        contact.setFirstName("Plan Test");
+        contact.setLastName("Update Order (un-subscribe)");
+        user.setContact(contact);
+
+        user.setUserId(api.createUser(user)); // create user
+
+        // create order
+        OrderWS order = new OrderWS();
+    	order.setUserId(user.getUserId());
+        order.setBillingTypeId(Constants.ORDER_BILLING_PRE_PAID);
+        order.setPeriod(2);
+        order.setCurrencyId(1);
+        order.setActiveSince(new Date());
+
+        // subscribe to plan item
+        OrderLineWS planLine = new OrderLineWS();
+        planLine.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        planLine.setItemId(PLAN_ITEM_ID);
+        planLine.setUseItem(true);
+        planLine.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { planLine });
+
+        order.setId(api.createOrder(order)); // create order
+        order = api.getOrder(order.getId());
+
+        // remove plan item, replace with non-plan junk item
+        OrderLineWS line = new OrderLineWS();
+        line.setTypeId(Constants.ORDER_LINE_TYPE_ITEM);
+        line.setItemId(1443);
+        line.setUseItem(true);
+        line.setQuantity(1);
+        order.setOrderLines(new OrderLineWS[] { line });
+
+        api.updateOrder(order); // update order
+
+        // cleanup
+        api.deleteOrder(order.getId());
+        api.deleteUser(user.getUserId());        
+    }
+*/
+
+
+    // note: old tests from original version, use as a basis for new WS tests
 /*
     public ItemDTOEx getPlanItem() throws Exception {
         if (planItem == null) {

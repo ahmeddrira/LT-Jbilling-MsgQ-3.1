@@ -85,6 +85,12 @@ public class PlanItemDTO implements Serializable {
         this.plan = plan;
     }
 
+    /**
+     * The item affected by this price. The item will be priced according
+     * to the {@link PriceModelDTO} if the customer has subscribed to the plan.
+     * 
+     * @return affected item
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     public ItemDTO getItem() {
@@ -128,7 +134,7 @@ public class PlanItemDTO implements Serializable {
     public String toString() {
         return "PlanItemDTO{"
                + "id=" + id
-               + ", plan=" + plan
+               + ", planId=" + (plan != null ? plan.getId() : null)
                + ", item=" + item
                + ", model=" + model
                + ", precedence=" + precedence

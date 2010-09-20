@@ -88,7 +88,7 @@ import java.util.List;
 public class PlanDTO implements Serializable {
 
     private Integer id;
-    private ItemDTO item;
+    private ItemDTO item; // plan subscription item
     private String description;
     private List<PlanItemDTO> planItems;
 
@@ -105,6 +105,12 @@ public class PlanDTO implements Serializable {
         this.id = id;
     }
 
+    /**
+     * Item holding this plan. When the customer subscribes to this item the
+     * plan prices will be added for the customer.
+     *
+     * @return plan subscription item
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     public ItemDTO getItem() {

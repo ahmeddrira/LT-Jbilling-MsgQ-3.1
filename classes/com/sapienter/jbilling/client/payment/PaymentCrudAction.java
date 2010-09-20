@@ -321,18 +321,13 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
         } else if ("ach".equals(payMethod)) {
 
             String bankAcNum = (String) myForm.get(FIELD_ACH_ACCOUNT_NUMBER);
-            AchDTO ach = null;
-            if (isMaskedBankAccountNumber(bankAcNum)) {
-                UserDTOEx user = getSessionUser();
-                ach = user.getAch();
-            } else {
-                ach = new AchDTO();
-                ach.setBankAccount(bankAcNum);
-                ach.setAbaRouting((String) myForm.get(FIELD_ACH_ABA_CODE));
-                ach.setAccountType((Integer) myForm.get(FIELD_ACH_ACCOUNT_TYPE));
-                ach.setBankName((String) myForm.get(FIELD_ACH_BANK_NAME));
-                ach.setAccountName((String) myForm.get(FIELD_ACH_ACCOUNT_NAME));
-            }
+            AchDTO ach = new AchDTO();
+            ach.setBankAccount(bankAcNum);
+            ach.setAbaRouting((String) myForm.get(FIELD_ACH_ABA_CODE));
+            ach.setAccountType((Integer) myForm.get(FIELD_ACH_ACCOUNT_TYPE));
+            ach.setBankName((String) myForm.get(FIELD_ACH_BANK_NAME));
+            ach.setAccountName((String) myForm.get(FIELD_ACH_ACCOUNT_NAME));
+
             dto.setAch(ach);
             //this will be checked when the payment is sent
             session.setAttribute("tmp_process_now",  new Boolean(true));
@@ -494,10 +489,6 @@ public class PaymentCrudAction extends CrudActionBase<PaymentDTOEx> {
                 ccNumber.length() - 4);
     }
 
-    private boolean isMaskedBankAccountNumber(String accNumber) {
-        return null != accNumber && accNumber.contains("*");
-    }
-    
     private boolean isMaskedCreditCard(String ccNumber) {
         return ccNumber != null && ccNumber.length() >= 16
                 && ccNumber.startsWith(CREDIT_CARD_MASK);

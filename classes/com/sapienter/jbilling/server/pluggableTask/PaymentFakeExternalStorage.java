@@ -40,13 +40,16 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
     private static final String DELETE_RETURN_NULL = "delete_return_null"; // to return null, set param value as true
     private static final String DELETE_RETURN_VALUE = "delete_return_value"; // explicit return value for testing
 
-    public static final String DEFAULT_RETURN_VALUE = "stored externaly";
+    public static final String DEFAULT_RETURN_VALUE = "stored externaly"; // note: typo maybe used in existing tests, leave as-is
+    public static final String DEFAULT_DELETE_VALUE = "deleted externally";
 
     /**
-     * For testing purposes, always returns "stored externaly" as a gateway key.
+     * Always returns "stored externaly" as a gateway key. Explicit keys can be set using the
+     * "return_value" parameter for testing.
      *
      * @param contact contact to process
      * @param creditCard credit card to process
+     * @param ach ach to process
      * @return resulting unique gateway key for the credit card/contact
      */
     public String storeCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
@@ -55,11 +58,20 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
         
         return getParameter(PARAM_RETURN_VALUE, DEFAULT_RETURN_VALUE);
     }
-    
+
+    /**
+     * Always returns "deleted externally" as a gateway key. Explicit keys can be set using the
+     * "delete_return_value" parameter for testing.
+     *
+     * @param contact contact to process
+     * @param creditCard credit card to process
+     * @param ach ach to process
+     * @return resulting unique gateway key for the credit card/contact
+     */
     public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
         if (getParameter(PARAM_RETURN_NULL, false))
             return null;
         
-    	return getParameter(PARAM_RETURN_VALUE, "deleted externally");
+    	return getParameter(PARAM_RETURN_VALUE, DEFAULT_DELETE_VALUE);
     }
 }

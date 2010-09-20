@@ -212,6 +212,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
             }
         }
     }
+
     /**
      * Update the ACH object with the given gateway key. 
      *
@@ -219,18 +220,22 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
      * @param gatewayKey gateway key from external storage, null if storage failed.
      */
     private void updateAch(AchDTO ach, String gatewayKey) {
-
         if (gatewayKey != null) {
             LOG.debug("Storing ach gateway key: " + gatewayKey);
             ach.setGatewayKey(gatewayKey);
-            LOG.debug("Obscuring the Bank Account Number for user " + ach.getBaseUser().getId());
             ach.obscureBankAccount();
-            AchDAS achdas = new AchDAS();
-            achdas.makePersistent(ach);
+            new AchDAS().makePersistent(ach);
         } else {
-            LOG.warn("gateway key returned from external store is null, failed to store ach information.");
+            if (getParameter(PARAM_OBSCURE_ON_FAIL, DEFAULT_OBSCURE_ON_FAIL)) {
+                ach.obscureBankAccount();
+                new AchDAS().makePersistent(ach);
+                LOG.warn("gateway key returned from external store is null, obscuring ach with no key");
+            } else {
+                LOG.warn("gateway key returned from external store is null, ach will not be obscured!");
+            }
         }
     }
+
     /**
      * Delete the ACH Object
      * @param ach
@@ -239,10 +244,6 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
     private void deleteAch(AchDTO ach, String gatewayKey) {
         if (gatewayKey == null) {
             LOG.debug("Failed to delete the ACH Record - gateway key returned null." ); 
-            return;
         }
-//        LOG.debug("Deleting ACH record - gateway key: " + gatewayKey);
-//        AchDAS achdas = new AchDAS();          
-//        achdas.delete(ach);
     }
 }

@@ -171,6 +171,7 @@ public class PaymentBL extends ResultList implements PaymentSQL {
         }
 
         if (dto.getAch() != null) {
+            dto.getAch().getPayments().add(payment); // back reference to payment
             AchBL achBl = new AchBL();
             achBl.create(dto.getAch());
             payment.setAch(achBl.getEntity());

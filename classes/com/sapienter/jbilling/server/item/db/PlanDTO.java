@@ -20,6 +20,8 @@
 
 package com.sapienter.jbilling.server.item.db;
 
+import com.sapienter.jbilling.server.item.PlanWS;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,6 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -90,9 +93,16 @@ public class PlanDTO implements Serializable {
     private Integer id;
     private ItemDTO item; // plan subscription item
     private String description;
-    private List<PlanItemDTO> planItems;
+    private List<PlanItemDTO> planItems = new ArrayList<PlanItemDTO>();
 
     public PlanDTO() {
+    }
+
+    public PlanDTO(PlanWS ws, ItemDTO item, List<PlanItemDTO> planItems) {
+        this.id = ws.getId();
+        this.item = item;
+        this.description = ws.getDescription();        
+        this.planItems = planItems;
     }
 
     @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "plan_GEN")

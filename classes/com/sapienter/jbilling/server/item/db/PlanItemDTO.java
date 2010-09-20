@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.item.db;
 
+import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 
 import javax.persistence.CascadeType;
@@ -63,6 +64,13 @@ public class PlanItemDTO implements Serializable {
     private Integer precedence = DEFAULT_PRECEDENCE;
 
     public PlanItemDTO() {
+    }
+
+    public PlanItemDTO(PlanItemWS ws, ItemDTO item, PriceModelDTO model) {
+        this.id = ws.getId();
+        this.item = item;
+        this.model = model;
+        this.precedence = ws.getPrecedence();                
     }
 
     @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "plan_item_GEN")

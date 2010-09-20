@@ -332,8 +332,14 @@ public class OrderBL extends ResultList
             orderDto.setDefaults();
 
             // subscribe customer to plan items
-            if (order.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
-                addCustomerPlans(order.getLines(), order.getUserId());
+            if (orderDto.getOrderPeriod().getId() != Constants.ORDER_PERIOD_ONCE) {
+                // copy lines to a temp list and populate item from DB so that we can process
+                // plans and avoid a LIE exception since we don't know where the DTO has come from.
+                List<OrderLineDTO> lines = new ArrayList<OrderLineDTO>(orderDto.getLines());
+                for (OrderLineDTO line : lines)
+                    line.setItem(new ItemBL(line.getItemId()).getEntity());
+
+                addCustomerPlans(lines, orderDto.getUserId());
             }
 
             order = orderDas.save(orderDto);

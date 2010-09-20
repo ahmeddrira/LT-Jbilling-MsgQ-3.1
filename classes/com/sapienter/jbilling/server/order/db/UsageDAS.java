@@ -129,7 +129,7 @@ public class UsageDAS extends HibernateDaoSupport {
             + " and o.status_id in (16, 17) " // active or finished
             + " and o.user_id = :user_id "
             + " and tm.type_id = :item_type_id"
-            + " and create_datetime between :start_date and :end_date";
+            + " and ol.create_datetime between :start_date and :end_date";
 
     public Usage findUsageByItemType(Integer itemTypeId, Integer userId, Date startDate, Date endDate) {
         Query query = getSession().createSQLQuery(USAGE_BY_ITEM_TYPE_SQL)

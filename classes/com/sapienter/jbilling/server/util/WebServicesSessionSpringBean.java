@@ -39,6 +39,8 @@ import java.util.Map;
 import javax.jws.WebService;
 
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
@@ -1978,5 +1980,54 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
+    }
+
+    // plans and special pricing
+
+
+    public PlanWS getPlanWS(Integer planId) {
+        return null;
+    }
+
+    public Integer createPlan(PlanWS plan) {
+        return null;
+    }
+
+    public void updatePlan(PlanWS plan) {
+    }
+
+    public void deletePlan(Integer planId) {
+    }
+
+    public Integer addPlanPrice(Integer planId, PlanItemWS price) {
+        return null;
+    }
+
+    public boolean isCustomerSubscribed(Integer planId) {
+        return false;
+    }
+
+    public Integer[] getSubscribedCustomers(Integer planId) {
+        return new Integer[0];
+    }
+
+    public Integer[] getPlansBySubscriptionItem(Integer itemId) {
+        return new Integer[0];
+    }
+
+    public Integer[] getPlansByAffectedItem(Integer itemId) {
+        return new Integer[0];
+    }
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
+        return null;
+    }
+
+    public Integer[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        return new Integer[0];
+    }
+
+    public Integer[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        return new Integer[0];
     }
 }

@@ -25,6 +25,8 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -35,6 +37,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.util.api.JbillingAPIException;
 
 import javax.jws.WebService;
 import java.math.BigDecimal;
@@ -362,6 +365,20 @@ public interface IWebServicesSessionBean {
 
     public void generateRules(String rulesData) throws SessionInternalError;
     
-    // special plans and pricing
-    
+    // plans and special pricing
+
+    public PlanWS getPlanWS(Integer planId);
+    public Integer createPlan(PlanWS plan);
+    public void updatePlan(PlanWS plan);
+    public void deletePlan(Integer planId);
+    public Integer addPlanPrice(Integer planId, PlanItemWS price);
+
+    public boolean isCustomerSubscribed(Integer planId);
+    public Integer[] getSubscribedCustomers(Integer planId);
+    public Integer[] getPlansBySubscriptionItem(Integer itemId);
+    public Integer[] getPlansByAffectedItem(Integer itemId);
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
+    public Integer[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
+    public Integer[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
 }

@@ -28,6 +28,8 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -644,6 +646,53 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    // special plans and pricing
+    // plans and special pricing
 
+    public PlanWS getPlanWS(Integer planId) throws JbillingAPIException {
+        return null;
+    }
+
+    public Integer createPlan(PlanWS plan) throws JbillingAPIException {
+        return null;
+    }
+
+    public void updatePlan(PlanWS plan) throws JbillingAPIException {
+    }
+
+    public void deletePlan(Integer planId) throws JbillingAPIException {
+    }
+
+    public Integer addPlanPrice(Integer planId, PlanItemWS price) throws JbillingAPIException {
+        return null;
+    }
+
+    public boolean isCustomerSubscribed(Integer planId) throws JbillingAPIException {
+        return false;
+    }
+
+    public Integer[] getSubscribedCustomers(Integer planId) throws JbillingAPIException {
+        return new Integer[0];
+    }
+
+    public Integer[] getPlansBySubscriptionItem(Integer itemId) throws JbillingAPIException {
+        return new Integer[0];
+    }
+
+    public Integer[] getPlansByAffectedItem(Integer itemId) throws JbillingAPIException {
+        return new Integer[0];
+    }
+
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) throws JbillingAPIException {
+        return null;
+    }
+
+    public Integer[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs)
+            throws JbillingAPIException {
+        return new Integer[0];
+    }
+
+    public Integer[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs)
+            throws JbillingAPIException {
+        return new Integer[0];
+    }
 }

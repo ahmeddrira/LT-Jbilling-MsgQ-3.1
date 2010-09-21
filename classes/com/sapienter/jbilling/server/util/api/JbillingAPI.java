@@ -26,6 +26,8 @@ import java.util.Map;
 
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.PlanItemWS;
+import com.sapienter.jbilling.server.item.PlanWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -207,6 +209,41 @@ public interface JbillingAPI {
 
     public void generateRules(String rulesData) throws JbillingAPIException;
 
-    // special pricing and pricing
+    // plans and special pricing
 
+    public PlanWS getPlanWS(Integer planId)
+            throws JbillingAPIException;
+
+    public Integer createPlan(PlanWS plan)
+            throws JbillingAPIException;
+
+    public void updatePlan(PlanWS plan)
+            throws JbillingAPIException;
+
+    public void deletePlan(Integer planId)
+            throws JbillingAPIException;
+
+    public Integer addPlanPrice(Integer planId, PlanItemWS price)
+            throws JbillingAPIException;
+
+    public boolean isCustomerSubscribed(Integer planId)
+            throws JbillingAPIException;
+
+    public Integer[] getSubscribedCustomers(Integer planId)
+            throws JbillingAPIException;
+
+    public Integer[] getPlansBySubscriptionItem(Integer itemId)
+            throws JbillingAPIException;
+
+    public Integer[] getPlansByAffectedItem(Integer itemId)
+            throws JbillingAPIException;
+    
+    public PlanItemWS getCustomerPrice(Integer userId, Integer itemId)
+            throws JbillingAPIException;
+
+    public Integer[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs)
+            throws JbillingAPIException;
+
+    public Integer[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs)
+            throws JbillingAPIException;
 }

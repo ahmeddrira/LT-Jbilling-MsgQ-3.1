@@ -21,7 +21,10 @@
 package com.sapienter.jbilling.server.order;
 
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.server.order.db.UsageDAS;
 import com.sapienter.jbilling.server.pluggableTask.OrderPeriodTask;
 import com.sapienter.jbilling.server.pluggableTask.TaskException;
@@ -37,6 +40,8 @@ import org.springmodules.cache.FlushingModel;
 import org.springmodules.cache.provider.CacheProviderFacade;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +60,9 @@ public class UsageBL {
     private Integer userId;
     private Integer periods;
     private UsagePeriod usagePeriod = null;
+
+    // working order, order in-memory that contains lines applicable to the usage count
+    private OrderDTO workingOrder;
 
     // cache of calculated usage periods
     private CacheProviderFacade cache;
@@ -261,6 +269,23 @@ public class UsageBL {
         }
     }
 
+    public OrderDTO getWorkingOrder() {
+        return workingOrder;
+    }
+
+    /**
+     * Sets an OrderDTO as the current working order for this usage calculation. The working order's
+     * lines will be rolled into the usage calculation.
+     *
+     * If persisted (has an ID) this order will be excluded from the usage SQL query to prevent
+     * the order from being counted twice.
+     *
+     * @param workingOrder working order to include in usage calculations
+     */
+    public void setWorkingOrder(OrderDTO workingOrder) {
+        this.workingOrder = workingOrder;
+    }
+
     /**
      * Returns the total usage over the set number of periods.
      *
@@ -268,18 +293,22 @@ public class UsageBL {
      * @return usage
      */
     public Usage getItemUsage(Integer itemId) {
+        Usage usage;
         if (getMainOrder() != null) {
+            Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
 
             LOG.debug("Fetching usage of item " + itemId
                       + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
-
-            return usageDas.findUsageByItem(itemId, userId, startDate, endDate);
+            usage = usageDas.findUsageByItem(workingOrderId, itemId, userId, startDate, endDate);
+        } else {
+            LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
+            usage = new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
-        LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
-        return new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+        addWorkingOrder(usage);
+        return usage;
     }
 
     /**
@@ -290,18 +319,22 @@ public class UsageBL {
      * @return usage
      */
     public Usage getSubAccountItemUsage(Integer itemId) {
+        Usage usage;
         if (getMainOrder() != null) {
+            Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
 
             LOG.debug("Fetching usage (including sub-accounts) of item " + itemId
                       + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
-
-            return usageDas.findSubAccountUsageByItem(itemId, userId, startDate, endDate);
+            usage = usageDas.findSubAccountUsageByItem(workingOrderId, itemId, userId, startDate, endDate);
+        } else {
+            LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
+            usage = new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
-        LOG.warn("User has no main subscription order billing period, item " + itemId + " usage set to 0");
-        return new Usage(itemId, null, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+        addWorkingOrder(usage);
+        return usage;
     }
 
     /**
@@ -311,18 +344,22 @@ public class UsageBL {
      * @return usage
      */
     public Usage getItemTypeUsage(Integer itemTypeId) {
+        Usage usage;
         if (getMainOrder() != null) {
+            Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
 
             LOG.debug("Fetching usage of item type " + itemTypeId
                       + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
-
-            return usageDas.findUsageByItemType(itemTypeId, userId, startDate, endDate);
+            usage = usageDas.findUsageByItemType(workingOrderId, itemTypeId, userId, startDate, endDate);
+        } else {
+            LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
+            usage = new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
-        LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
-        return new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+        addWorkingOrder(usage);
+        return usage;        
     }
 
     /**
@@ -333,17 +370,39 @@ public class UsageBL {
      * @return usage
      */
     public Usage getSubAccountItemTypeUsage(Integer itemTypeId) {
+        Usage usage;
         if (getMainOrder() != null) {
+            Integer workingOrderId = getWorkingOrder() != null ? getWorkingOrder().getId() : null;
             Date startDate = getPeriodStart();
             Date endDate = getPeriodEnd();
 
             LOG.debug("Fetching usage (including sub-accounts) of item type " + itemTypeId
                       + " for " + periods + " period(s), start: " + startDate + ", end: " + endDate);
-
-            return usageDas.findSubAccountUsageByItemType(itemTypeId, userId, startDate, endDate);
+            usage = usageDas.findSubAccountUsageByItemType(workingOrderId, itemTypeId, userId, startDate, endDate);
+        } else {
+            LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
+            usage = new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
         }
 
-        LOG.warn("User has no main subscription order billing period, item type " + itemTypeId + " usage set to 0");
-        return new Usage(null, itemTypeId, BigDecimal.ZERO, BigDecimal.ZERO, null, null);
+        addWorkingOrder(usage);
+        return usage; 
+    }
+
+    private void addWorkingOrder(Usage usage) {
+        if (getWorkingOrder() != null) {
+            for (OrderLineDTO line : getWorkingOrder().getLines()) {
+
+                // add matching line items
+                if (usage.getItemId() != null && usage.getItemId().equals(line.getItemId())) 
+                    usage.addLine(line);
+
+                // add matching line items of type
+                if (usage.getItemTypeId() != null) {
+                    ItemDTO item = new ItemBL(line.getItemId()).getEntity();
+                    if (item.hasType(usage.getItemTypeId()))
+                        usage.addLine(line);
+                }
+            }
+        }
     }
 }

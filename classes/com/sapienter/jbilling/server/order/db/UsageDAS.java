@@ -39,6 +39,8 @@ public class UsageDAS extends HibernateDaoSupport {
         setSessionFactory((SessionFactory) Context.getBean(Context.Name.HIBERNATE_SESSION));
     }
 
+    private static final String EXCLUDE_ORDER_ID_CLAUSE = " and ol.order_id != :excluded_order_id ";
+    
     private static final String USAGE_BY_ITEM_ID_SQL =
             "select "
             + " sum(ol.amount) as amount, "
@@ -54,8 +56,12 @@ public class UsageDAS extends HibernateDaoSupport {
             + " and ol.item_id = :item_id "
             + " and ol.create_datetime between :start_date and :end_date";
 
-    public Usage findUsageByItem(Integer itemId, Integer userId, Date startDate, Date endDate) {
-        Query query = getSession().createSQLQuery(USAGE_BY_ITEM_ID_SQL)
+    public Usage findUsageByItem(Integer excludedOrderId, Integer itemId, Integer userId, Date startDate, Date endDate) {
+        String sql = excludedOrderId != null
+                     ? USAGE_BY_ITEM_ID_SQL + EXCLUDE_ORDER_ID_CLAUSE
+                     : USAGE_BY_ITEM_ID_SQL;
+
+        Query query = getSession().createSQLQuery(sql)
                 .addScalar("amount")
                 .addScalar("quantity")
                 .setResultTransformer(Transformers.aliasToBean(Usage.class));
@@ -64,6 +70,9 @@ public class UsageDAS extends HibernateDaoSupport {
         query.setParameter("item_id", itemId);
         query.setParameter("start_date", startDate);
         query.setParameter("end_date", endDate);
+
+        if (excludedOrderId != null)
+            query.setParameter("excluded_order_id", excludedOrderId);
 
         Usage usage = (Usage) query.uniqueResult();
         usage.setItemId(itemId);
@@ -96,8 +105,14 @@ public class UsageDAS extends HibernateDaoSupport {
             + " ) "
             + " and ol.create_datetime between :start_date and :end_date";
 
-    public Usage findSubAccountUsageByItem(Integer itemId, Integer userId, Date startDate, Date endDate) {
-        Query query = getSession().createSQLQuery(SUBACCOUNT_USAGE_BY_ITEM_ID_SQL)
+    public Usage findSubAccountUsageByItem(Integer excludedOrderId, Integer itemId, Integer userId, Date startDate,
+                                           Date endDate) {
+
+        String sql = excludedOrderId != null
+                     ? SUBACCOUNT_USAGE_BY_ITEM_ID_SQL + EXCLUDE_ORDER_ID_CLAUSE
+                     : SUBACCOUNT_USAGE_BY_ITEM_ID_SQL;
+
+        Query query = getSession().createSQLQuery(sql)
                 .addScalar("amount")
                 .addScalar("quantity")
                 .setResultTransformer(Transformers.aliasToBean(Usage.class));
@@ -106,6 +121,9 @@ public class UsageDAS extends HibernateDaoSupport {
         query.setParameter("item_id", itemId);
         query.setParameter("start_date", startDate);
         query.setParameter("end_date", endDate);
+
+        if (excludedOrderId != null)
+            query.setParameter("excluded_order_id", excludedOrderId);
 
         Usage usage = (Usage) query.uniqueResult();
         usage.setItemId(itemId);
@@ -131,8 +149,14 @@ public class UsageDAS extends HibernateDaoSupport {
             + " and tm.type_id = :item_type_id"
             + " and ol.create_datetime between :start_date and :end_date";
 
-    public Usage findUsageByItemType(Integer itemTypeId, Integer userId, Date startDate, Date endDate) {
-        Query query = getSession().createSQLQuery(USAGE_BY_ITEM_TYPE_SQL)
+    public Usage findUsageByItemType(Integer excludedOrderId, Integer itemTypeId, Integer userId, Date startDate,
+                                     Date endDate) {
+
+        String sql = excludedOrderId != null
+                     ? USAGE_BY_ITEM_TYPE_SQL + EXCLUDE_ORDER_ID_CLAUSE
+                     : USAGE_BY_ITEM_TYPE_SQL;
+
+        Query query = getSession().createSQLQuery(sql)
                 .addScalar("amount")
                 .addScalar("quantity")
                 .setResultTransformer(Transformers.aliasToBean(Usage.class));
@@ -142,8 +166,11 @@ public class UsageDAS extends HibernateDaoSupport {
         query.setParameter("start_date", startDate);
         query.setParameter("end_date", endDate);
 
+        if (excludedOrderId != null)
+            query.setParameter("excluded_order_id", excludedOrderId);
+
         Usage usage = (Usage) query.uniqueResult();
-        usage.setItemId(itemTypeId);
+        usage.setItemTypeId(itemTypeId);
         usage.setStartDate(startDate);
         usage.setEndDate(endDate);
 
@@ -174,8 +201,15 @@ public class UsageDAS extends HibernateDaoSupport {
             + " ) "
             + " and ol.create_datetime between :start_date and :end_date";
 
-    public Usage findSubAccountUsageByItemType(Integer itemTypeId, Integer userId, Date startDate, Date endDate) {
-        Query query = getSession().createSQLQuery(SUBACCOUNT_USAGE_BY_ITEM_TYPE_SQL)
+    public Usage findSubAccountUsageByItemType(Integer excludedOrderId, Integer itemTypeId, Integer userId,
+                                               Date startDate, Date endDate) {
+
+        String sql = excludedOrderId != null
+                     ? SUBACCOUNT_USAGE_BY_ITEM_TYPE_SQL + EXCLUDE_ORDER_ID_CLAUSE
+                     : SUBACCOUNT_USAGE_BY_ITEM_TYPE_SQL;
+
+
+        Query query = getSession().createSQLQuery(sql)
                 .addScalar("amount")
                 .addScalar("quantity")
                 .setResultTransformer(Transformers.aliasToBean(Usage.class));
@@ -185,8 +219,11 @@ public class UsageDAS extends HibernateDaoSupport {
         query.setParameter("start_date", startDate);
         query.setParameter("end_date", endDate);
 
+        if (excludedOrderId != null)
+            query.setParameter("excluded_order_id", excludedOrderId);
+
         Usage usage = (Usage) query.uniqueResult();
-        usage.setItemId(itemTypeId);
+        usage.setItemTypeId(itemTypeId);
         usage.setStartDate(startDate);
         usage.setEndDate(endDate);
 

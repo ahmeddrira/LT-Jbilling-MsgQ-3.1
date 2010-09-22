@@ -47,6 +47,7 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -307,6 +308,14 @@ public class ItemDTO extends AbstractDescription {
 
     @Transient
     public Integer[] getTypes() {
+        if (this.types == null && itemTypes != null) {
+            Integer[] types = new Integer[itemTypes.size()];
+            int i = 0;
+            for (ItemTypeDTO type : itemTypes) {
+                types[i++] = type.getId();
+            }
+            setTypes(types);
+        }
         return types;
     }
 
@@ -318,6 +327,10 @@ public class ItemDTO extends AbstractDescription {
         for (Integer i : types) {
             strTypes.add(i.toString());
         }
+    }
+
+    public boolean hasType(Integer typeId) {
+        return Arrays.asList(getTypes()).contains(typeId);
     }
 
     /**

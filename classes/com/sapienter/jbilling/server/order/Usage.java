@@ -132,6 +132,27 @@ public class Usage {
         setAmount(getAmount().subtract(quantity));
     }
 
+    /**
+     * Add the quantity and amount from a given order line.
+     * 
+     * @param line order line to add
+     */
+    public void addLine(OrderLineDTO line) {
+        addAmount(line.getAmount());
+        addQuantity(line.getQuantity());
+    }
+
+    /**
+     * Subtract the quantity and amount from a given order line.
+     *
+     * @param line order line to subtract
+     */
+    public void subtractLine(OrderLineDTO line) {
+        subractAmount(line.getAmount());
+        subtractQuantity(line.getQuantity());
+
+    }
+
     public Date getStartDate() {
         return startDate;
     }

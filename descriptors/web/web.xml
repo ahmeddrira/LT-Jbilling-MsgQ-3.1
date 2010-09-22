@@ -193,12 +193,6 @@
         <url-pattern>/cxf/*</url-pattern>
     </servlet-mapping>
 
-
-    <!-- jBilling Servlet Context Listener -->
-    <listener>
-        <listener-class>com.sapienter.jbilling.client.util.JBillingListener</listener-class>
-    </listener>
-
     <!-- Spring MVC ContextLoaderListener configuration -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

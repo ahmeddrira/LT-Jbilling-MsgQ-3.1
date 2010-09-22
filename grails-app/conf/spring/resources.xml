@@ -21,6 +21,14 @@
           *         MAIN BEAN DEFINITIONS               *
           ***************************************************
     -->
+
+    <!-- bootstrap jBilling services on startup -->
+    <bean id="jBillingBootstrap"
+          class="com.sapienter.jbilling.server.util.Bootstrap"
+          scope="singleton"
+          init-method="init"
+          destroy-method="destroy"/>
+
     <!-- Session Facade beans -->
     <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
     <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>

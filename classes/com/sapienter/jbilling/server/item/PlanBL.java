@@ -20,9 +20,12 @@
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.PlanDAS;
 import com.sapienter.jbilling.server.item.db.PlanDTO;
 import com.sapienter.jbilling.server.item.db.PlanItemDTO;
+import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.user.CustomerPriceBL;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.CustomerPriceDTO;
@@ -71,7 +74,46 @@ public class PlanBL {
         return plan;
     }
 
+    /**
+     * Convert this plan into a PlanWS web-service object
+     * @return this plan as a web-service object
+     */
+    public PlanWS getWS() {
+        return PlanBL.getWS(plan);
+    }
+
+    /**
+     * Convert a given PlanDTO into a PlanWS web-service object
+     * @param dto dto to convert
+     * @return converted web-service object
+     */
+    public static PlanWS getWS(PlanDTO dto) {
+        if (dto != null) {
+            return new PlanWS(dto, PlanItemBL.getWS(dto.getPlanItems()));
+        }
+        return null;
+    }
+
+    /**
+     * Convert a given PlanWS web-service object into a PlanDTO
+     * @param ws ws object to convert
+     * @return converted DTO object
+     */
+    public static PlanDTO getDTO(PlanWS ws) {
+        if (ws != null) {
+            if (ws.getItemId() == null)
+                throw new SessionInternalError("PlanDTO must have a plan subscription item.");
+
+            // subscription plan item
+            ItemDTO item = new ItemBL(ws.getItemId()).getEntity();
+
+            return new PlanDTO(ws, item, PlanItemBL.getDTO(ws.getPlanItems()));
+        }
+        return null;
+    }
+
     // todo: add event logging for plans
+    // todo: add useful internal events for customer subscription/unsubscription, and refresh prices
 
     public Integer create(PlanDTO plan) {
         this.plan = planDas.save(plan);

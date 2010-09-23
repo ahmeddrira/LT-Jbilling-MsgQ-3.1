@@ -371,14 +371,14 @@ public interface IWebServicesSessionBean {
     public Integer createPlan(PlanWS plan);
     public void updatePlan(PlanWS plan);
     public void deletePlan(Integer planId);
-    public Integer addPlanPrice(Integer planId, PlanItemWS price);
+    public void addPlanPrice(Integer planId, PlanItemWS price);
 
-    public boolean isCustomerSubscribed(Integer planId);
+    public boolean isCustomerSubscribed(Integer planId, Integer userId);
     public Integer[] getSubscribedCustomers(Integer planId);
     public Integer[] getPlansBySubscriptionItem(Integer itemId);
     public Integer[] getPlansByAffectedItem(Integer itemId);
 
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId);
-    public Integer[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
-    public Integer[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
+    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
+    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs);
 }

@@ -39,13 +39,19 @@ import java.util.Map;
 import javax.jws.WebService;
 
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
+import com.sapienter.jbilling.server.item.PlanBL;
+import com.sapienter.jbilling.server.item.PlanItemBL;
 import com.sapienter.jbilling.server.item.PlanItemWS;
 import com.sapienter.jbilling.server.item.PlanWS;
+import com.sapienter.jbilling.server.item.db.PlanDTO;
+import com.sapienter.jbilling.server.item.db.PlanItemDTO;
 import com.sapienter.jbilling.server.pricing.PriceModelBL;
 import com.sapienter.jbilling.server.pricing.PriceModelWS;
 import com.sapienter.jbilling.server.pricing.db.PriceModelDTO;
 import com.sapienter.jbilling.server.pricing.strategy.PriceModelStrategy;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
+import com.sapienter.jbilling.server.user.CustomerPriceBL;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -1986,48 +1992,80 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
 
     public PlanWS getPlanWS(Integer planId) {
-        return null;
+        PlanBL bl = new PlanBL(planId);
+        return PlanBL.getWS(bl.getEntity());
     }
 
     public Integer createPlan(PlanWS plan) {
-        return null;
+        return new PlanBL().create(PlanBL.getDTO(plan));
     }
 
     public void updatePlan(PlanWS plan) {
+        PlanBL bl = new PlanBL(plan.getId());
+        bl.update(PlanBL.getDTO(plan));
     }
 
     public void deletePlan(Integer planId) {
+        new PlanBL(planId).delete();
     }
 
-    public Integer addPlanPrice(Integer planId, PlanItemWS price) {
-        return null;
+    public void addPlanPrice(Integer planId, PlanItemWS price) {
+        PlanBL bl = new PlanBL(planId);
+        bl.addPrice(PlanItemBL.getDTO(price));
     }
 
-    public boolean isCustomerSubscribed(Integer planId) {
-        return false;
+    public boolean isCustomerSubscribed(Integer planId, Integer userId) {
+        PlanBL bl = new PlanBL(planId);
+        return bl.isSubscribed(userId);
     }
 
     public Integer[] getSubscribedCustomers(Integer planId) {
-        return new Integer[0];
+        List<CustomerDTO> customers = new PlanBL().getCustomersByPlan(planId);
+
+        int i = 0;
+        Integer[] customerIds = new Integer[customers.size()];
+        for (CustomerDTO customer : customers) {
+            customerIds[i++] = customer.getId();
+        }
+        return customerIds;
     }
 
     public Integer[] getPlansBySubscriptionItem(Integer itemId) {
-        return new Integer[0];
+        List<PlanDTO> plans = new PlanBL().getPlansBySubscriptionItem(itemId);
+
+        int i = 0;
+        Integer[] planIds = new Integer[plans.size()];
+        for (PlanDTO plan : plans) {
+            planIds[i++] = plan.getId();
+        }
+        return planIds;
     }
 
     public Integer[] getPlansByAffectedItem(Integer itemId) {
-        return new Integer[0];
+        List<PlanDTO> plans = new PlanBL().getPlansByAffectedItem(itemId);
+
+        int i = 0;
+        Integer[] planIds = new Integer[plans.size()];
+        for (PlanDTO plan : plans) {
+            planIds[i++] = plan.getId();
+        }
+        return planIds;
     }
 
     public PlanItemWS getCustomerPrice(Integer userId, Integer itemId) {
-        return null;
+        CustomerPriceBL bl = new CustomerPriceBL(userId);
+        return PlanItemBL.getWS(bl.getPrice(itemId));
     }
 
-    public Integer[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        return new Integer[0];
+    public PlanItemWS[] getCustomerPriceByAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getPricesByAttributes(itemId, attrs);
+        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
+        return ws.toArray(new PlanItemWS[ws.size()]);
     }
 
-    public Integer[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
-        return new Integer[0];
+    public PlanItemWS[] getCustomerPriceByWildcardAttributes(Integer userId, Integer itemId, Map<String, String> attrs) {
+        List<PlanItemDTO> prices = new CustomerPriceBL(userId).getPricesByWildcardAttributes(itemId, attrs);
+        List<PlanItemWS> ws = PlanItemBL.getWS(prices);
+        return ws.toArray(new PlanItemWS[ws.size()]);
     }
 }

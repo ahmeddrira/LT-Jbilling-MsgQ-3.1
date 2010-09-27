@@ -1,184 +1,270 @@
 package com.sapienter.jbilling.server.mediation.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.util.StopWatch;
-
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.task.IMediationReader;
+import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StopWatch;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasicLoaderImpl implements ILoader {
-
     private static final Logger LOG = Logger.getLogger(BasicLoaderImpl.class);
-
-    private JdbcTemplate jdbcTemplate = null;
-    private String indexColumnNames = null;
-    private Integer readerId = null;
-    private IMediationReader reader = null;
 
     private static final String SPACE = " ";
     private static final String COMMA = ", ";
 
-    private String tableName = "rules_table";
-    private String indexName = "rules_index";
+    protected JdbcTemplate jdbcTemplate = null;
+    protected TransactionTemplate transactionTemplate = null;
+    protected IMediationReader reader = null;
+    protected String indexColumnNames = null;
+
     private boolean tableCreated = false;
 
-    @Override
+    public BasicLoaderImpl() {
+    }
+
+    /**
+     * To be overridden by sub-classes.
+     *
+     * Sets the table name of the in-memory table to store data.
+     *
+     * todo: this should be a spring configured value! there's no reason to require a sub-class to define this value.
+     *
+     * @return loader table name
+     */
     public String getTableName() {
-        LOG.debug("Method:getTableName called.");
-        return tableName;
+        return "rules_table";
     }
 
-    BasicLoaderImpl() {
-        LOG.debug("() Constructor Called");
+    /**
+     * To be overridden by sub-classes.
+     *
+     * Sets the name of the primary index for this table.
+     *
+     * todo: this should be a spring configured value! there's no reason to require a sub-class to define this value.
+     *
+     * @return index name
+     */
+    public String getIndexName() {
+        return "rules_index";
     }
 
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public TransactionTemplate getTransactionTemplate() {
+        return transactionTemplate;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
+
+    public IMediationReader getReader() {
+        return reader;
+    }
+
+    public void setReader(IMediationReader reader) {
+        this.reader = reader;
+    }
+
+    public String getIndexColumnNames() {
+        return indexColumnNames;
+    }
+
+    public void setIndexColumnNames(String indexColumnNames) {
+        this.indexColumnNames = indexColumnNames;
+    }
+
+    /**
+     * Initializes the loader, creating the in-memory database and inserting
+     * all relevant data for future retrieval.
+     */
     public void init() {
         initDB();
-        if (tableCreated) {
-            createIndexes();
-        }
+        if (tableCreated) this.createIndexes();
         LOG.debug("Loader initialized successfully.");
     }
 
     /**
-     * 
+     * Method removes the in-memory table and prepares the external data
+     * source to be read again. The loader is destroyed when the Spring container is
+     * shut down.
+     *
+     * In the case of JDBC readers, this method will rollback the last read ID preference, or
+     * set the marker timestamp column to null depending on the configured marker type.
      */
-    private void initDB() {
-        LOG.debug("Method: init() called - readerId="
-                + readerId);
-        LOG.debug("Reader ID=" + readerId + ", jdbcTemplate="
-                + jdbcTemplate + ", indexColumnNames=" + indexColumnNames
-                + ", Reader=" + reader);
+    public void destroy() {
+//        jdbcTemplate.execute("drop table " + getTableName());
+    }
+
+    protected void initDB() {
+        LOG.debug("Initializing cached memory table '" + getTableName() + "'");
+        LOG.debug("Index columns: " + indexColumnNames);
+
         StopWatch watch = new StopWatch();
         watch.start();
 
-        // try {
-        // PluggableTaskBL<IMediationReader> readerTask = new
-        // PluggableTaskBL<IMediationReader>();
-        // LOG.debug("Reader ID=" + readerId);
-        // readerTask.set(readerId);
-        // reader = readerTask.instantiateTask();
-        // } catch (PluggableTaskException e) {
-        // throw new SessionInternalError(
-        // "Could not instantiate reader plug-in.", e);
-        // }
-        List<String> errorMessages = new ArrayList<String>();
-        // read records and normalize using the MediationProcess plug-in
-        if (reader.validate(errorMessages)) {
-            /*
-             * Catch exceptions and log errors instead of re-throwing as
-             * SessionInternalError
-             */
+        if (reader.validate(new ArrayList<String>())) {
             try {
                 // /check if transactions can be begun here
-                for (List<Record> thisGroup : reader) {
-                    LOG.debug("Now processing " + thisGroup.size()
-                            + " records.");
+                for (List<Record> group : reader) {
+                    LOG.debug("Loading " + group.size()+ " records.");
 
-                    if (thisGroup.size() < 1) {
+                    if (group.size() < 1)
                         return;
-                    }
 
-                    if (!tableCreated) {
-                        tableCreated = this.createTable(thisGroup.get(0));
-                    }
-                    String[] batchSqls = new String[thisGroup.size()];
-                    for (int i = 0; i < batchSqls.length; i++) {
-                        batchSqls[i] = computeInsertSql(thisGroup.get(i));
-                    }
-                    System.out
-                            .println("BaNow inserting records in mem db");
+                    if (!tableCreated)
+                        tableCreated = createTable(group.get(0));
+
                     // insert record using jdbcTemplate
-                    this.jdbcTemplate.batchUpdate(batchSqls);
+                    final List<Record> batch = new ArrayList<Record>(group);
+                    transactionTemplate.execute(new TransactionCallback() {
+                        public Object doInTransaction(TransactionStatus ts) {
+                            return jdbcTemplate.batchUpdate(computeInsertSql(batch));
+                        }
+                    });
                 }
             } catch (Throwable t) {
                 LOG.error("Unhandled exception occurred during loading.", t);
             }
         }
 
-        // mark end
         watch.stop();
-        LOG.debug("Finished loader. Watch (secs): "
-                + watch.getTotalTimeSeconds());
-
+        LOG.debug("Finished loading cached memory table in (secs): " + watch.getTotalTimeSeconds());
+        reader = null; // discard reader, not used after initalization.
     }
 
     private boolean createIndexes() {
-        LOG.debug("Method:createIndexes()");
+        if (null == indexColumnNames || indexColumnNames.length() == 0) {
+            indexColumnNames = CACHE_PRIMARY_KEY;
+        }
+
         String[] cols = indexColumnNames.split(",");
-        StringBuffer indexSql = new StringBuffer("CREATE INDEX ").append(
-                indexName).append(" ON ");
-        indexSql.append(tableName).append("(");
+        StringBuffer indexSql = new StringBuffer()
+                .append("CREATE INDEX ")
+                .append(getIndexName())
+                .append(" ON ");
+
+        indexSql.append(getTableName()).append("(");
         for (String col : cols) {
             indexSql.append(col).append(COMMA);
         }
+
         int lastIdxOfComma = indexSql.lastIndexOf(COMMA);
-        indexSql
-                .replace(lastIdxOfComma, (indexSql.lastIndexOf(COMMA) + 2), ")");
-        LOG.debug(": indexQuery= " + indexSql);
+        indexSql.replace(lastIdxOfComma, (indexSql.lastIndexOf(COMMA) + 2), ")");
+
+        LOG.debug("Schema Index: '" + indexSql + "'");
         this.jdbcTemplate.execute(indexSql.toString());
         return true;
     }
 
-    /**
-     * 
-     * @param record
-     * @return
-     */
-    private String computeInsertSql(Record record) {
-        LOG.debug("Method:computeInsertSql()");
-        StringBuffer values = new StringBuffer("");
-        StringBuffer retVal = new StringBuffer("INSERT INTO ").append(
-                getTableName()).append(SPACE).append("(");
-        List<PricingField> fields = record.getFields();
-        for (PricingField field : fields) {
-            retVal.append(field.getName()).append(COMMA);
-            values.append(field.getValue()).append(COMMA);
-        }
-        int lastIdxOfComma = retVal.lastIndexOf(COMMA);
-        retVal.replace(lastIdxOfComma, (retVal.lastIndexOf(COMMA) + 2),
-                ") VALUES (");
+    private String[] computeInsertSql(List<Record> records) {
+        int totalRecords = records.size();
+        String[] batch = new String[totalRecords--];
+        StringBuffer retVal = new StringBuffer("INSERT INTO ").append(getTableName()).append(SPACE).append("(");
 
-        lastIdxOfComma = values.lastIndexOf(COMMA);
-        values.replace(lastIdxOfComma, (values.lastIndexOf(COMMA) + 2), ")");
-        retVal.append(values);
-        LOG.debug("Insert SQL=" + retVal);
-        return retVal.toString();
+        int outer = 0;
+        for (Record record : records) {
+
+            StringBuffer values = new StringBuffer("");
+            List<PricingField> fields = record.getFields();
+
+            int listSize= fields.size();
+            values.append("(");
+
+            for (int iter = 1; iter <= listSize; iter++) {
+
+                PricingField field = (PricingField) fields.get(iter-1);
+                if ( 0 == outer) {
+                    retVal.append(field.getName());
+                }
+
+                // setting value with appropriate markers into the sql string
+                switch (field.getType()) {
+                    case STRING:
+                        values.append("'")
+                                .append(escapeSpecialChars((String) field.getValue()))
+                                .append("'");
+                        break;
+
+                    default:
+                        values.append(field.getValue());
+                        break;
+                }
+                if ( 0 == outer ) {
+                    if ( iter < listSize ) {
+                        retVal.append(COMMA);
+                    } else {
+                        retVal.append(") VALUES ");
+                    }
+                }
+
+                if (iter < listSize) {
+                    values.append(COMMA);
+                }
+            }
+
+            values.append(");");
+            batch[outer]= (retVal.toString().concat(values.toString()));
+            outer++;
+        }
+
+        return batch;
+    }
+
+    private static String escapeSpecialChars(String value) {
+        if (value.indexOf("'") > -1) {
+            value= value.replaceAll("'", "''");
+        }
+        return value;
     }
 
     /**
-     * 
+     *
      * @param record
      * @return
      */
     private boolean createTable(Record record) {
-        LOG.debug("Method: createTable()");
-        StringBuffer createTable = new StringBuffer("CREATE CACHED TABLE ")
-                .append(getTableName()).append(SPACE);
+        StringBuffer createTable = new StringBuffer()
+                .append("CREATE CACHED TABLE ")
+                .append(getTableName())
+                .append(SPACE);
+
+        // indexes
+        createTable
+                .append("(")
+                .append(CACHE_PRIMARY_KEY)
+                .append(" identity NOT NULL PRIMARY KEY,");
+
         List<PricingField> fields = record.getFields();
-        // String key = record.getKey();
-        createTable.append("(");
         for (PricingField field : fields) {
-            createTable.append(field.getName()).append(SPACE).append(
-                    mapDBType(field));
+            createTable.append(field.getName()).append(SPACE).append(mapDBType(field));
             createTable.append(COMMA);
         }
+
         int lastIdxOfComma = createTable.lastIndexOf(COMMA);
-        createTable.replace(lastIdxOfComma,
-                (createTable.lastIndexOf(COMMA) + 2), ")");
-        LOG.debug("Create Table Query= "
-                + createTable);
+        createTable.replace(lastIdxOfComma, (createTable.lastIndexOf(COMMA) + 2), ")");
+
+        // execute create table SQL
+        LOG.debug("Schema DDL: '" + createTable + "'");
         this.jdbcTemplate.execute(createTable.toString());
         return true;
     }
 
     /**
-     * 
+     *
      * @param field
      * @return
      */
@@ -203,43 +289,4 @@ public class BasicLoaderImpl implements ILoader {
         }
         return retVal;
     }
-
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public String getIndexColumnNames() {
-        return indexColumnNames;
-    }
-
-    public void setIndexColumnNames(String indexColumnNames) {
-        this.indexColumnNames = indexColumnNames;
-    }
-
-    public Integer getReaderId() {
-        return readerId;
-    }
-
-    public void setReaderId(Integer readerId) {
-        this.readerId = readerId;
-    }
-
-    public IMediationReader getReader() {
-        return reader;
-    }
-
-    public void setReader(IMediationReader reader) {
-        this.reader = reader;
-    }
-
-    @Override
-    public void flush() {
-        // TODO Auto-generated method stub
-        // jdbcTemplate.execute("drop table " + getTableName());
-    }
-
 }

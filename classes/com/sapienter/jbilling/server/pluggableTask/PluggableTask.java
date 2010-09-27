@@ -58,15 +58,15 @@ public abstract class PluggableTask {
     private static HashMap<Integer, KnowledgeAgent> knowledgeBasesCache = new HashMap<Integer, KnowledgeAgent>();
     private static AtomicBoolean isRulesChangeScanerStarted = new AtomicBoolean(false);
 
-    protected Integer getEntityId() {
+    public Integer getEntityId() {
         return entityId;
     }
 
-    protected void setEntityId(Integer entityId) {
+    public void setEntityId(Integer entityId) {
         this.entityId = entityId;
     }
 
-    protected Integer getTaskId() {
+    public Integer getTaskId() {
         return task.getId();
     }
 

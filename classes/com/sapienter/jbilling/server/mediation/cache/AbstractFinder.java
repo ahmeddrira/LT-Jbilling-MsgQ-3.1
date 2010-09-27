@@ -7,7 +7,7 @@ public abstract class AbstractFinder implements IFinder {
     protected final JdbcTemplate jdbcTemplate;
     protected final ILoader loader;
 
-    AbstractFinder(JdbcTemplate template, ILoader loader) {
+    public AbstractFinder(JdbcTemplate template, ILoader loader) {
         this.jdbcTemplate = template;
         this.loader = loader;
     }

@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class PluggableTask {
     public static final SimpleDateFormat PARAMETER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmm");
 
-    protected HashMap<String, Object> parameters = null;
+    protected Map<String, Object> parameters = null;
     private Integer entityId = null;
     private PluggableTaskDTO task = null;
     protected Hashtable<Object, FactHandle> handlers = null;
@@ -329,11 +329,11 @@ public abstract class PluggableTask {
      * jbilling running. 
      * @return
      */
-    public HashMap<String, Object> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 
-    public void setParameters(HashMap<String, Object> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
     

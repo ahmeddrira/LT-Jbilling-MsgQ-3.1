@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.mediation.task;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
 import java.sql.PreparedStatement;
@@ -32,16 +33,30 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Standard non-volatile JDBC reader.
+ *
+ * This reader records it's progress and attempts to ensure that records are not read again
+ * on subsequent executions.
+ *
+ * The reader attempts to detect the marking method (used to mark a record as "read") by
+ * inspecting the database table to be read from. If the table contains the configured time stamp
+ * column then the TIMESTAMP marking method will be used. The reader will fall back upon LAST_ID
+ * marking if no time stamp column exists.
+ *
+ * LAST_ID marking will store the "last read ID" in as a mediation preference in the jBilling database. This
+ * ID will be queried for each subsequent execution and the reader will start from the last read ID.
+ *
+ * TIMESTAMP marking updates a configured time stamp column in the source database. Every record that is
+ * read is marked by setting the time stamp column to the current time. Records to be read must have a
+ * null time stamp.
  *
  * @author Brian Cowdery
  * @since 27-09-2010
  */
 public class JDBCReader extends AbstractJDBCReader {
+    private static final Logger LOG = Logger.getLogger(JDBCReader.class);
 
     private String timestampUpdateSql = null;
-
-    public JDBCReader() {
-    }
 
     /**
      * Returns an SQL query to read records that have not previously been read.
@@ -81,10 +96,12 @@ public class JDBCReader extends AbstractJDBCReader {
 
         // append optional user-defined order, or build one by using defined key columns
         String order = getParameter(PARAM_ORDER_BY, (String) null);
+        query.append("ORDER BY ");
+
         if (order != null) {
             query.append(order);
 
-        } else {
+        } else {            
             for (Iterator<String> it = getKeyColumns().iterator(); it.hasNext();) {
                 query.append(it.next());
                 if (it.hasNext())
@@ -92,6 +109,7 @@ public class JDBCReader extends AbstractJDBCReader {
             }
         }
 
+        LOG.debug("SQL query: '" + query + "'");
         return query.toString();
     }
 
@@ -110,27 +128,8 @@ public class JDBCReader extends AbstractJDBCReader {
     @Override
     protected void recordRead(final Record record, final int[] keyColumnIndexes) {
         if (getMarkMethod() == MarkMethod.TIMESTAMP) {
-            if (timestampUpdateSql == null) {
-                // build update query to mark timestamps
-                StringBuilder query = new StringBuilder()
-                        .append("UPDATE ")
-                        .append(getTableName())
-                        .append(" SET ")
-                        .append(getTimestampColumnName())
-                        .append(" = ? ")
-                        .append(" WHERE ");
-
-                // add primary key constraint using key columns
-                for (int key = 0; key < keyColumnIndexes.length; key++) {
-                    PricingField field = record.getFields().get(key);
-                    query.append(field.getName()).append(" = ? ");
-                    
-                     if (key < keyColumnIndexes.length-1)
-                         query.append(" AND ");
-                }
-
-                timestampUpdateSql = query.toString();
-            }
+            if (timestampUpdateSql == null)
+                timestampUpdateSql = buildTimestampUpdateSql(record, keyColumnIndexes);
         }
 
         if (getMarkMethod() == MarkMethod.LAST_ID) {
@@ -148,47 +147,75 @@ public class JDBCReader extends AbstractJDBCReader {
     @Override
     protected void batchRead(final List<Record> records, final int[] keyColumnIndexes) {
         if (getMarkMethod() == MarkMethod.TIMESTAMP) {
-            // execute batch update for all read records
-            final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            getJdbcTemplate().batchUpdate(
-                    timestampUpdateSql,
-                    new BatchPreparedStatementSetter() {
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            ps.setTimestamp(1, timestamp);
-
-                            // query parameters for primary key SQL
-                            int j = 1; // prepared statement parameter index
-                            Record record = records.get(i);
-                            for (int key : keyColumnIndexes) {
-                                PricingField field = record.getFields().get(key);
-                                switch (field.getType()) {
-                                    case STRING:
-                                        ps.setString(j++, field.getStrValue());
-                                        break;
-                                    case INTEGER:
-                                        ps.setInt(j++, field.getIntValue());
-                                        break;
-                                    case DECIMAL:
-                                        ps.setBigDecimal(j++, field.getDecimalValue());
-                                        break;
-                                    case DATE:
-                                        ps.setTimestamp(j++, new Timestamp(field.getDateValue().getTime()));
-                                        break;
-                                    case BOOLEAN:
-                                        ps.setBoolean(j++, field.getBooleanValue());
-                                        break;
-                                }
-                            }
-                        }
-
-                        public int getBatchSize() {
-                            return records.size();
-                        }
-                    });
+            if (timestampUpdateSql != null && !records.isEmpty())
+                executeTimestampUpdateSql(records, keyColumnIndexes);
         }
 
         if (getMarkMethod() == MarkMethod.LAST_ID) {
             flushLastId();
         }
+    }
+
+    private String buildTimestampUpdateSql(Record record, int[] keyColumnIndexes) {
+        // build update query to mark timestamps
+        StringBuilder query = new StringBuilder()
+                .append("UPDATE ")
+                .append(getTableName())
+                .append(" SET ")
+                .append(getTimestampColumnName())
+                .append(" = ? ")
+                .append(" WHERE ");
+
+        // add primary key constraint using key columns
+        for (int key = 0; key < keyColumnIndexes.length; key++) {
+            PricingField field = record.getFields().get(key);
+            query.append(field.getName()).append(" = ? ");
+
+            if (key < keyColumnIndexes.length-1)
+                query.append(" AND ");
+        }
+
+        return query.toString();
+    }
+
+    private void executeTimestampUpdateSql(final List<Record> records, final int[] keyColumnIndexes) {
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        // execute batch update for all read records
+        getJdbcTemplate().batchUpdate(
+                timestampUpdateSql,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setTimestamp(1, timestamp);
+
+                        // query parameters for primary key SQL
+                        int j = 2; // prepared statement parameter index
+                        Record record = records.get(i);
+                        for (int key : keyColumnIndexes) {
+                            PricingField field = record.getFields().get(key);
+                            switch (field.getType()) {
+                                case STRING:
+                                    ps.setString(j++, field.getStrValue());
+                                    break;
+                                case INTEGER:
+                                    ps.setInt(j++, field.getIntValue());
+                                    break;
+                                case DECIMAL:
+                                    ps.setBigDecimal(j++, field.getDecimalValue());
+                                    break;
+                                case DATE:
+                                    ps.setTimestamp(j++, new Timestamp(field.getDateValue().getTime()));
+                                    break;
+                                case BOOLEAN:
+                                    ps.setBoolean(j++, field.getBooleanValue());
+                                    break;
+                            }
+                        }
+                    }
+
+                    public int getBatchSize() {
+                        return records.size();
+                    }
+                });
     }
 }

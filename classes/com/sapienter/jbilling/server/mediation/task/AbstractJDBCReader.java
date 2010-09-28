@@ -60,7 +60,7 @@ public abstract class AbstractJDBCReader extends AbstractReader {
     protected static final String TIMESTAMP_COLUMN_DEFAULT = "jbilling_timestamp";
     protected static final Boolean LOWERCASE_COLUMN_NAME_DEFAULT = true;
 
-    protected enum MarkMethod { LAST_ID, TIMESTAMP }
+    public enum MarkMethod { LAST_ID, TIMESTAMP }
 
     private JdbcTemplate jdbcTemplate;
 
@@ -103,15 +103,15 @@ public abstract class AbstractJDBCReader extends AbstractReader {
         
         try {
             this.tableName = JDBCUtils.correctTableName(connection, getParameter(PARAM_TABLE_NAME, TABLE_NAME_DEFAULT));                       
-            LOG.debug("Table name: '" + this.tableName + "'");
+            LOG.debug("Table name: '" + getTableName() + "'");
 
             String[] keyColumns = getParameter(PARAM_KEY_COLUMN_NAME, KEY_COLUMN_NAME_DEFAULT).split(",");
             this.keyColumns = JDBCUtils.correctColumnNames(connection, this.tableName, keyColumns);
-            LOG.debug("Key column names: '" + this.keyColumns + "'");
+            LOG.debug("Key column names: '" + getKeyColumns() + "'");
 
             String timestampColumnName = getParameter(PARAM_TIMESTAMP_COLUMN_NAME, TIMESTAMP_COLUMN_DEFAULT);
             this.timestampColumnName = JDBCUtils.correctColumnName(connection, this.tableName, timestampColumnName);
-            LOG.debug("Timestamp marker column name: '" + this.timestampColumnName + "'");
+            LOG.debug("Timestamp marker column name: '" + getTimestampColumnName() + "'");
 
         } catch (SQLException e) {
             throw new SessionInternalError("Could not validate table or column names against the database.", e);
@@ -121,7 +121,7 @@ public abstract class AbstractJDBCReader extends AbstractReader {
 
         // determine marking method for this reader
         this.markMethod = getTimestampColumnName() != null ? MarkMethod.TIMESTAMP : MarkMethod.LAST_ID;
-        LOG.debug("Using marking method " + this.markMethod);
+        LOG.debug("Using marking method " + getMarkMethod());
 
         // force lowercase PricingField names ?
         this.useLowercaseNames = getParameter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
@@ -179,6 +179,10 @@ public abstract class AbstractJDBCReader extends AbstractReader {
 
     public MarkMethod getMarkMethod() {
         return markMethod;
+    }
+
+    public void setMarkMethod(MarkMethod markMethod) {
+        this.markMethod = markMethod;
     }
 
     public String getTimestampColumnName() {
@@ -251,8 +255,6 @@ public abstract class AbstractJDBCReader extends AbstractReader {
      */
     public class Reader implements Iterator<List<Record>> {
         private JdbcTemplate jdbcTemplate;
-
-        private boolean isResultSetClosed = false;
         private PricingField.Type[] columnTypes;
         private String[] columnNames;
         private int[] keyColumnIndexes;
@@ -260,89 +262,67 @@ public abstract class AbstractJDBCReader extends AbstractReader {
 
         protected Reader(JdbcTemplate jdbcTemplate) {
             this.jdbcTemplate = jdbcTemplate;
-            records = new ArrayList<Record>(getBatchSize());
         }
 
         public boolean hasNext() {
-            try {
-                records.clear();
-                records = getNextBatch();
-                return records.size() > 0;
-            } catch (SQLException sqle) {
-                throw new SessionInternalError(sqle);
-            }
+            records = getNextBatch();
+            return !records.isEmpty();
         }
 
         public List<Record> next() {
-            if (records.size() == 0) {
-                throw new NoSuchElementException("No more records.");
-            } else {
-                return records;
-            }
+            if (records.isEmpty())
+                throw new NoSuchElementException();
+
+            // return a defensive copy
+            return new ArrayList<Record>(records);
         }
 
-        private List<Record> getNextBatch() throws SQLException {
-            if (isResultSetClosed)
-                return new ArrayList<Record>();
-
+        private List<Record> getNextBatch() {            
             // fetch records
             String query = getSqlQueryString();
-            LOG.debug("SQL Query: " + query);
-            SqlRowSet dbRecords = jdbcTemplate.queryForRowSet(query);
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(query);
 
             // fill metadata info in first time
             if (columnNames == null)
-                parseColumnNames(dbRecords);
+                parseMetaData(rs);
 
-            List<Record> resultList = new ArrayList<Record>();
-            while (dbRecords.next()) {
-                Record currentRecord = new Record();
+            List<Record> records = new ArrayList<Record>(getBatchSize());
+            while (rs.next()) {
+                Record record = new Record();
+
                 for (int i = 0; i < columnTypes.length; i++) {
+                    String name = columnNames[i];
+                    boolean index = isKeyIndex(i);
+
                     switch (columnTypes[i]) {
                         case STRING:
-                            currentRecord.addField(new PricingField(columnNames[i],
-                                                                    dbRecords.getString(i + 1)), isKeyIndex(i));
+                            record.addField(new PricingField(name, rs.getString(i + 1)), index);
                             break;
 
                         case INTEGER:
-                            currentRecord.addField(new PricingField(columnNames[i],
-                                                                    dbRecords.getInt(i + 1)), isKeyIndex(i));
+                            record.addField(new PricingField(name, rs.getInt(i + 1)), index);
                             break;
 
                         case DECIMAL:
-                            currentRecord.addField(new PricingField(columnNames[i],
-                                                                    dbRecords.getBigDecimal(i + 1)), isKeyIndex(i));
+                            record.addField(new PricingField(name, rs.getBigDecimal(i + 1)), index);
                             break;
 
                         case DATE:
-                            currentRecord.addField(new PricingField(columnNames[i],
-                                                                    dbRecords.getTimestamp(i + 1)), isKeyIndex(i));
+                            record.addField(new PricingField(name, rs.getTimestamp(i + 1)), index);
                             break;
+
                         case BOOLEAN:
-                            currentRecord.addField(new PricingField(columnNames[i],
-                                                                    dbRecords.getBoolean(i + 1)), isKeyIndex(i));
+                            record.addField(new PricingField(name, rs.getBoolean(i + 1)), index);
                             break;
                     }
                 }
 
-                // primary key can't be grouped?
-                currentRecord.setPosition(1);
-
-                // current record read
-                recordRead(currentRecord, keyColumnIndexes);
-
-                // add created record to results
-                resultList.add(currentRecord);
+                recordRead(record, keyColumnIndexes);
+                records.add(record);
             }
 
-            // mark batch as read
-            batchRead(resultList, keyColumnIndexes);
-
-            // no more records for read
-            if (resultList.isEmpty()) {
-                isResultSetClosed = true;
-            }
-            return resultList;
+            batchRead(records, keyColumnIndexes);
+            return records;
         }
 
         /**
@@ -350,7 +330,7 @@ public abstract class AbstractJDBCReader extends AbstractReader {
          *
          * @param records database rows to read
          */
-        private void parseColumnNames(SqlRowSet records) {
+        private void parseMetaData(SqlRowSet records) {
             SqlRowSetMetaData metaData = records.getMetaData();
             columnTypes = new PricingField.Type[metaData.getColumnCount()];
             columnNames = new String[metaData.getColumnCount()];

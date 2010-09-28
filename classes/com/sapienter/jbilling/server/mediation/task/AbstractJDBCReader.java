@@ -1,0 +1,486 @@
+package com.sapienter.jbilling.server.mediation.task;
+
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.util.PreferenceBL;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/**
+ * AbstractJDBCReader provides a generic base for all JDBC {@link IMediationReader} classes.
+ *
+ * @see JDBCUtils
+ * 
+ * @author Brian Cowdery
+ * @since 27-09-2010
+ */
+public abstract class AbstractJDBCReader extends AbstractReader {
+    private static final Logger LOG = Logger.getLogger(AbstractJDBCReader.class);
+
+    private static final String MEDIATION_DIR = Util.getSysProp("base_dir") + "mediation/";
+
+    // plug-in parameters
+    protected static final String PARAM_DATABASE_NAME = "database_name";
+    protected static final String PARAM_TABLE_NAME = "table_name";
+    protected static final String PARAM_KEY_COLUMN_NAME = "key_column_name";
+    protected static final String PARAM_WHERE_APPEND = "where_append";
+    protected static final String PARAM_ORDER_BY = "order_by";
+    protected static final String PARAM_DRIVER = "driver";
+    protected static final String PARAM_URL = "url";
+    protected static final String PARAM_USERNAME = "username";
+    protected static final String PARAM_PASSWORD = "password";
+    protected static final String PARAM_TIMESTAMP_COLUMN_NAME = "timestamp_column_name";
+    protected static final String PARAM_LOWERCASE_COLUMN_NAME = "lc_column_names";
+
+    // parameter defaults
+    protected static final String DATABASE_NAME_DEFAULT = "jbilling_cdr";
+    protected static final String TABLE_NAME_DEFAULT = "cdr";
+    protected static final String KEY_COLUMN_NAME_DEFAULT = "id";
+    protected static final String DRIVER_DEFAULT = "org.hsqldb.jdbcDriver";
+    protected static final String USERNAME_DEFAULT = "SA";
+    protected static final String PASSWORD_DEFAULT = "";
+    protected static final String TIMESTAMP_COLUMN_DEFAULT = "jbilling_timestamp";
+    protected static final Boolean LOWERCASE_COLUMN_NAME_DEFAULT = true;
+
+    protected enum MarkMethod { LAST_ID, TIMESTAMP }
+
+    private JdbcTemplate jdbcTemplate;
+
+    private String databaseName;
+    private String url;
+    private String username;
+    private String password;
+    private String driverClassName;
+
+    private String tableName;
+    private List<String> keyColumns;
+    private MarkMethod markMethod;
+    private String timestampColumnName; // if MarkMethod.TIMESTAMP
+    private Integer lastId;             // if MarkMethod.LAST_ID
+
+    private boolean useLowercaseNames;
+
+    public boolean validate(List<String> messages) {
+        super.validate(messages);
+        init();
+        return true;
+    }
+
+    /**
+     * Initializes the reader with plug-in parameters, validating the database table and column names
+     * and ensuring that the reader is in a ready state.
+     */
+    private void init() {
+        // data source
+        this.databaseName = getParameter(PARAM_DATABASE_NAME, DATABASE_NAME_DEFAULT);
+        this.url = getParameter(PARAM_URL, "jdbc:hsqldb:" + MEDIATION_DIR + this.databaseName + ";shutdown=true");
+        this.username = getParameter(PARAM_USERNAME, USERNAME_DEFAULT);
+        this.password = getParameter(PARAM_PASSWORD, PASSWORD_DEFAULT);
+        this.driverClassName = getParameter(PARAM_DRIVER, DRIVER_DEFAULT);
+
+        // briefly create a connection to determine case-corrected table and column names
+        // then terminate and discard connection as soon as it's not needed.
+        DataSource dataSource = getDataSource();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        
+        try {
+            this.tableName = JDBCUtils.correctTableName(connection, getParameter(PARAM_TABLE_NAME, TABLE_NAME_DEFAULT));                       
+            LOG.debug("Table name: '" + this.tableName + "'");
+
+            String[] keyColumns = getParameter(PARAM_KEY_COLUMN_NAME, KEY_COLUMN_NAME_DEFAULT).split(",");
+            this.keyColumns = JDBCUtils.correctColumnNames(connection, this.tableName, keyColumns);
+            LOG.debug("Key column names: '" + this.keyColumns + "'");
+
+            String timestampColumnName = getParameter(PARAM_TIMESTAMP_COLUMN_NAME, TIMESTAMP_COLUMN_DEFAULT);
+            this.timestampColumnName = JDBCUtils.correctColumnName(connection, this.tableName, timestampColumnName);
+            LOG.debug("Timestamp marker column name: '" + this.timestampColumnName + "'");
+
+        } catch (SQLException e) {
+            throw new SessionInternalError("Could not validate table or column names against the database.", e);
+        } finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
+        }
+
+        // determine marking method for this reader
+        this.markMethod = getTimestampColumnName() != null ? MarkMethod.TIMESTAMP : MarkMethod.LAST_ID;
+        LOG.debug("Using marking method " + this.markMethod);
+
+        // force lowercase PricingField names ?
+        this.useLowercaseNames = getParameter(PARAM_LOWERCASE_COLUMN_NAME, LOWERCASE_COLUMN_NAME_DEFAULT);
+
+        // build a Spring JdbcTemplate
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcTemplate.setMaxRows(getBatchSize());
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public DataSource getDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(getDriverClassName());
+        dataSource.setUrl(getUrl());
+        dataSource.setUsername(getUsername());
+        dataSource.setPassword(getPassword());
+
+        return dataSource;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }    
+
+    public List<String> getKeyColumns() {
+        return keyColumns;
+    }
+
+    public MarkMethod getMarkMethod() {
+        return markMethod;
+    }
+
+    public String getTimestampColumnName() {
+        return timestampColumnName;
+    }
+
+    public Integer getLastId() {
+        if (lastId == null) readLastId();
+        return lastId;
+    }
+
+    public void setLastId(Integer lastId) {
+        this.lastId = lastId;
+    }
+
+    /**
+     * Reads the "last read ID" preference for this entity and sets the lastId field value. 
+     */
+    protected Integer readLastId() {
+        PreferenceBL preference = new PreferenceBL();
+        try {
+            preference.set(getEntityId(), Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID);
+        } catch (EmptyResultDataAccessException fe) {
+            /* use default */
+        }
+
+        lastId = preference.getInt();
+        LOG.debug("Fetched 'last read ID' preference: " + lastId);
+        return lastId;
+    }
+
+    /**
+     * Updates the mediation "last read ID" preference with the current lastId field value.
+     */
+    protected void flushLastId() {
+        LOG.debug("Updating 'last read ID' preference to: " + getLastId());
+        PreferenceBL preferenceBL = new PreferenceBL();
+        preferenceBL.createUpdateForEntity(getEntityId(),
+                                           Constants.PREFERENCE_MEDIATION_JDBC_READER_LAST_ID,
+                                           getLastId(),
+                                           null,
+                                           null);
+    }
+
+    /**
+     * Returns true if read {@link com.sapienter.jbilling.server.item.PricingField} names should be
+     * in lower case. If false, column names can be used as-is with no case-shifting.
+     * 
+     * @return true if PricingField names should be in lowercase
+     */
+    public boolean useLowercaseNames() {
+        return useLowercaseNames;
+    }
+
+    /**
+     * Returns a JDBC record iterator that reads batches of records from the database.
+     *
+     * @return record iterator
+     */
+    public Iterator<List<Record>> iterator() {
+        try {
+            return new Reader(getJdbcTemplate());
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    /**
+     * Internal Record iterator class. 
+     */
+    public class Reader implements Iterator<List<Record>> {
+        private JdbcTemplate jdbcTemplate;
+
+        private boolean isResultSetClosed = false;
+        private PricingField.Type[] columnTypes;
+        private String[] columnNames;
+        private int[] keyColumnIndexes;
+        private List<Record> records;
+
+        protected Reader(JdbcTemplate jdbcTemplate) {
+            this.jdbcTemplate = jdbcTemplate;
+            records = new ArrayList<Record>(getBatchSize());
+        }
+
+        public boolean hasNext() {
+            try {
+                records.clear();
+                records = getNextBatch();
+                return records.size() > 0;
+            } catch (SQLException sqle) {
+                throw new SessionInternalError(sqle);
+            }
+        }
+
+        public List<Record> next() {
+            if (records.size() == 0) {
+                throw new NoSuchElementException("No more records.");
+            } else {
+                return records;
+            }
+        }
+
+        private List<Record> getNextBatch() throws SQLException {
+            if (isResultSetClosed)
+                return new ArrayList<Record>();
+
+            // fetch records
+            String query = getSqlQueryString();
+            LOG.debug("SQL Query: " + query);
+            SqlRowSet dbRecords = jdbcTemplate.queryForRowSet(query);
+
+            // fill metadata info in first time
+            if (columnNames == null)
+                parseColumnNames(dbRecords);
+
+            List<Record> resultList = new ArrayList<Record>();
+            while (dbRecords.next()) {
+                Record currentRecord = new Record();
+                for (int i = 0; i < columnTypes.length; i++) {
+                    switch (columnTypes[i]) {
+                        case STRING:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getString(i + 1)), isKeyIndex(i));
+                            break;
+
+                        case INTEGER:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getInt(i + 1)), isKeyIndex(i));
+                            break;
+
+                        case DECIMAL:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getBigDecimal(i + 1)), isKeyIndex(i));
+                            break;
+
+                        case DATE:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getTimestamp(i + 1)), isKeyIndex(i));
+                            break;
+                        case BOOLEAN:
+                            currentRecord.addField(new PricingField(columnNames[i],
+                                                                    dbRecords.getBoolean(i + 1)), isKeyIndex(i));
+                            break;
+                    }
+                }
+
+                // primary key can't be grouped?
+                currentRecord.setPosition(1);
+
+                // current record read
+                recordRead(currentRecord, keyColumnIndexes);
+
+                // add created record to results
+                resultList.add(currentRecord);
+            }
+
+            // mark batch as read
+            batchRead(resultList, keyColumnIndexes);
+
+            // no more records for read
+            if (resultList.isEmpty()) {
+                isResultSetClosed = true;
+            }
+            return resultList;
+        }
+
+        /**
+         * Sets the column info (names, types, key) from the database meta-data.
+         *
+         * @param records database rows to read
+         */
+        private void parseColumnNames(SqlRowSet records) {
+            SqlRowSetMetaData metaData = records.getMetaData();
+            columnTypes = new PricingField.Type[metaData.getColumnCount()];
+            columnNames = new String[metaData.getColumnCount()];
+            List<Integer> keyColumns = new LinkedList<Integer>();
+
+            for (int i = 0; i < columnTypes.length; i++) {
+                // set column types of the result set
+                switch (metaData.getColumnType(i + 1)) {
+                    case Types.CHAR:
+                    case Types.LONGNVARCHAR:
+                    case Types.LONGVARCHAR:
+                    case Types.NCHAR:
+                    case Types.NVARCHAR:
+                    case Types.VARCHAR:
+                        columnTypes[i] = PricingField.Type.STRING;
+                        break;
+
+                    case Types.BIGINT:
+                    case Types.INTEGER:
+                    case Types.SMALLINT:
+                    case Types.TINYINT:
+                        columnTypes[i] = PricingField.Type.INTEGER;
+                        break;
+
+                    case Types.DECIMAL:
+                    case Types.DOUBLE:
+                    case Types.FLOAT:
+                    case Types.NUMERIC:
+                    case Types.REAL:
+                        columnTypes[i] = PricingField.Type.DECIMAL;
+                        break;
+
+                    case Types.DATE:
+                    case Types.TIME:
+                    case Types.TIMESTAMP:
+                        columnTypes[i] = PricingField.Type.DATE;
+                        break;
+
+                    case Types.BIT:
+                    case Types.BOOLEAN:
+                        columnTypes[i] = PricingField.Type.BOOLEAN;
+                        break;
+
+                    default:
+                        throw new SessionInternalError("Unsupported java.sql.type " + metaData.getColumnTypeName(i + 1)
+                                                       + " for column '" + metaData.getColumnName(i + 1) + "'.");
+                }
+
+                // set column names
+                if (useLowercaseNames()) {
+                    columnNames[i] = metaData.getColumnName(i + 1).toLowerCase();
+                } else {
+                    columnNames[i] = metaData.getColumnName(i + 1);
+                }
+
+                // check if primary key
+                for (String name : getKeyColumns()) {
+                    if (columnNames[i].equalsIgnoreCase(name)) {
+                        keyColumns.add(i);
+                    }
+                }
+            }
+
+            if (keyColumns.isEmpty()) {
+                throw new SessionInternalError("No primary key column(s) found in result set.");
+            } else {
+                keyColumnIndexes = new int[keyColumns.size()];
+                int i = 0;
+                for (Integer index : keyColumns) {
+                    keyColumnIndexes[i] = index;
+                    i++;
+                }
+            }
+        }
+
+        /**
+         * Returns if the column at this index is a key column.
+         * 
+         * @return true if the value at the given index represents a key column
+         */
+        private boolean isKeyIndex(int index) {
+            for (int i : keyColumnIndexes)
+                if (i == index)
+                    return true;
+            return false;
+        }
+
+        /**
+         * {@link Iterator#remove()} is not supported by this implementation.
+         */
+        public void remove() {
+            throw new UnsupportedOperationException("remove() operation not supported.");
+        }
+    }
+
+
+    /*
+        Implementation hooks
+     */
+
+    /**
+     * Returns an SQL query to read records from the database. This query may optionally use
+     * the reader {@link MarkMethod} ({@link #getMarkMethod()} to limit records to those that
+     * have not been previously read.
+     *
+     * @return SQL query string
+     */
+    protected abstract String getSqlQueryString();
+
+    /**
+     * Called after each record is read.
+     *
+     * Can be used to perform an action after each record is read from the database, this
+     * is commonly used to mark that a record has been read before hitting the database for the
+     * next read operation.
+     *
+     * @param record record that was read
+     * @param keyColumnIndexes index of record PricingFields that represent key columns.
+     */
+    protected abstract void recordRead(final Record record, final int[] keyColumnIndexes);
+
+    /**
+     * Called after each complete batch of records is read.
+     *
+     * Can be used to perform an action after each batch of records is read from the database,
+     * commonly used to persist a list of changes marking records as read in the database.
+     *
+     * @param records list of records that were read
+     * @param keyColumnIndexes index of record PricingFields that represent key columns.
+     */
+    protected abstract void batchRead(final List<Record> records, final int[] keyColumnIndexes);
+
+}

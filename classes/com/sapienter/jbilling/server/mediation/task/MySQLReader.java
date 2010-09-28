@@ -25,15 +25,15 @@ package com.sapienter.jbilling.server.mediation.task;
  * from plug-in parameters for use by JDBCReader.
  */
 public class MySQLReader extends JDBCReader {
+
     public static final String PARAM_HOST = "host";
     public static final String PARAM_PORT = "port";
 
     public MySQLReader() {
-        super();
     }
 
     @Override
-    public String getDriver() {
+    public String getDriverClassName() {
         return "com.mysql.jdbc.Driver";
     }
 
@@ -42,17 +42,14 @@ public class MySQLReader extends JDBCReader {
         String host = (String) parameters.get(PARAM_HOST);
         String port = (String) parameters.get(PARAM_PORT);
 
-        String url = "jdbc:mysql://";
+        StringBuilder url = new StringBuilder();
+        url.append("jdbc:mysql://");
 
-        if (host != null) {
-            url += host;
-        }
-        if (port != null) {
-            url += ":" + port;
-        }
+        if (host != null) url.append(host);
+        if (port != null) url.append(":").append(port);
 
-        url += "/" + getDatabaseName();
+        url.append("/").append(getDatabaseName());
 
-        return url;
+        return url.toString();
     }
 }

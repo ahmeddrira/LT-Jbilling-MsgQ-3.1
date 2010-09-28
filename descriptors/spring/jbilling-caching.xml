@@ -41,7 +41,7 @@
 	<!-- The jdbcReader configuration is only for testing	--> 
 	<!-- 
 	<bean id="jdbcReader"
-		class="com.sapienter.jbilling.server.mediation.task.JDBCReader">
+		class="com.sapienter.jbilling.server.mediation.task.StatelessJDBCReader">
 		<property name="parameters">
 			<map>
 				<entry key="table_name" value="cdr" />
@@ -70,7 +70,7 @@
 	<bean id="basicLoader"
 		class="com.sapienter.jbilling.server.mediation.cache.BasicLoaderImpl" lazy-init="true" init-method="init">
 		<property name="jdbcTemplate" ref="memcacheJdbcTemplate" />
-		<property name="reader" ref="fileReader" />
+		<property name="reader" ref="fileReader" /> 
 		<property name="indexColumnNames" value="dgts" />
 	</bean>
 	

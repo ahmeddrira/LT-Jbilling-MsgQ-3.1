@@ -19,40 +19,16 @@ public class BasicLoaderImpl implements ILoader {
     private static final String SPACE = " ";
     private static final String COMMA = ", ";
 
-    protected JdbcTemplate jdbcTemplate = null;
-    protected TransactionTemplate transactionTemplate = null;
-    protected IMediationReader reader = null;
-    protected String indexColumnNames = null;
+    private JdbcTemplate jdbcTemplate = null;
+    private TransactionTemplate transactionTemplate = null;
+    private IMediationReader reader = null;
+    private String tableName = "rules_table";
+    private String indexName = "rules_table_idx";
+    private String indexColumnNames = null;
 
     private boolean tableCreated = false;
 
     public BasicLoaderImpl() {
-    }
-
-    /**
-     * To be overridden by sub-classes.
-     *
-     * Sets the table name of the in-memory table to store data.
-     *
-     * todo: this should be a spring configured value! there's no reason to require a sub-class to define this value.
-     *
-     * @return loader table name
-     */
-    public String getTableName() {
-        return "rules_table";
-    }
-
-    /**
-     * To be overridden by sub-classes.
-     *
-     * Sets the name of the primary index for this table.
-     *
-     * todo: this should be a spring configured value! there's no reason to require a sub-class to define this value.
-     *
-     * @return index name
-     */
-    public String getIndexName() {
-        return "rules_index";
     }
 
     public JdbcTemplate getJdbcTemplate() {
@@ -79,6 +55,22 @@ public class BasicLoaderImpl implements ILoader {
         this.reader = reader;
     }
 
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getIndexName() {
+        return indexName;
+    }
+
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
+    }
+
     public String getIndexColumnNames() {
         return indexColumnNames;
     }
@@ -101,12 +93,9 @@ public class BasicLoaderImpl implements ILoader {
      * Method removes the in-memory table and prepares the external data
      * source to be read again. The loader is destroyed when the Spring container is
      * shut down.
-     *
-     * In the case of JDBC readers, this method will rollback the last read ID preference, or
-     * set the marker timestamp column to null depending on the configured marker type.
      */
     public void destroy() {
-//        jdbcTemplate.execute("drop table " + getTableName());
+        jdbcTemplate.execute("DROP TABLE IF EXISTS " + getTableName() + ";");
     }
 
     protected void initDB() {

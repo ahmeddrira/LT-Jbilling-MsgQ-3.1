@@ -57,7 +57,7 @@ public class StatelessJDBCReader extends AbstractJDBCReader {
         if (getMarkMethod() == MarkMethod.LAST_ID) {
             if (getKeyColumns().size() > 1)
                 throw new SessionInternalError("LAST_ID marking method only allows for one key column.");
-            query.append(getKeyColumns().get(0)).append(" > ").append(getLastId());
+            query.append(getKeyColumns().get(0)).append(" > ").append(getLastId()).append(" ");
         }
 
         // append optional user-defined where clause
@@ -80,6 +80,7 @@ public class StatelessJDBCReader extends AbstractJDBCReader {
             }
         }
 
+        LOG.debug("SQL query: '" + query + "'");        
         return query.toString();
     }
 

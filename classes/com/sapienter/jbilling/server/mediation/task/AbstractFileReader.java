@@ -188,7 +188,7 @@ public abstract class AbstractFileReader extends AbstractReader {
             if (reader == null) {
                 return false;
             }
-
+            
             records.clear();
             String line = readLine();
             int startedAt = 0;
@@ -213,12 +213,9 @@ public abstract class AbstractFileReader extends AbstractReader {
         private String readLine() {
             try {
                 String line = reader.readLine();
-
-                // end of file or blank string at end of file
-                if (line == null || (line.trim().length() == 0 && !reader.ready())) {
+                if (line == null) {
                     // we are done with this file
                     reader.close();
-
                     // rename it to avoid re-processing, if configured
                     if (rename) {
                         if (!files[fileIndex].renameTo(
@@ -226,7 +223,6 @@ public abstract class AbstractFileReader extends AbstractReader {
                             LOG.warn("Could not rename file " + files[fileIndex].getName());
                         }
                     }
-
                     // reached the last line, go to the next file
                     if (!nextReader()) {
                         return null; // all done then
@@ -289,7 +285,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                 
                 switch (PricingField.mapType(field.getType())) {
                     case STRING:
-                        record.addField(new PricingField(field.getName(), 
+                        record.addField(new PricingField(field.getName(),
                                 tokens[tkIdx++]), field.getIsKey());
                         break;
                     case INTEGER:
@@ -298,7 +294,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                             // requires hour/minute conversion
                             record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
                                     convertDuration(intStr, field.getDurationFormat()) : null),
-                                        field.getIsKey());
+                                    	field.getIsKey());
                         } else {
                             try {
                                 record.addField(new PricingField(field.getName(), intStr.length() > 0 ?
@@ -324,6 +320,10 @@ public abstract class AbstractFileReader extends AbstractReader {
                         String floatStr = tokens[tkIdx++].trim();
                         record.addField(new PricingField(field.getName(), floatStr.length() > 0 ?
                                 new BigDecimal(floatStr) : null), field.getIsKey());
+                        break;
+                    case BOOLEAN:
+                        boolean value = "true".equalsIgnoreCase(tokens[tkIdx++].trim());
+                        record.addField(new PricingField(field.getName(), value), field.getIsKey());
                         break;
                 }
             }

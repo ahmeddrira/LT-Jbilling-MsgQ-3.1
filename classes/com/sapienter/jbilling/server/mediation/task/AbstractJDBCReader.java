@@ -107,7 +107,7 @@ public abstract class AbstractJDBCReader extends AbstractReader {
 
             String[] keyColumns = getParameter(PARAM_KEY_COLUMN_NAME, KEY_COLUMN_NAME_DEFAULT).split(",");
             this.keyColumns = JDBCUtils.correctColumnNames(connection, this.tableName, keyColumns);
-            LOG.debug("Key column names: '" + getKeyColumns() + "'");
+            LOG.debug("Key column names: " + getKeyColumns());
 
             String timestampColumnName = getParameter(PARAM_TIMESTAMP_COLUMN_NAME, TIMESTAMP_COLUMN_DEFAULT);
             this.timestampColumnName = JDBCUtils.correctColumnName(connection, this.tableName, timestampColumnName);

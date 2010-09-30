@@ -75,10 +75,12 @@ public class UploadInvoices {
     
             // open the file
             BufferedReader file = new BufferedReader(new FileReader(fileName));
-            IInvoiceSessionBean remoteSession = (IInvoiceSessionBean) 
+            // TODO: use standard API
+/*            IInvoiceSessionBean remoteSession = (IInvoiceSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.INVOICE_REMOTE_SESSION);
-
+*/
+            IInvoiceSessionBean remoteSession = null;
             String header = file.readLine();
             String columns[] = header.split("\t");
             for (int f = 0; f < columns.length; f++) {

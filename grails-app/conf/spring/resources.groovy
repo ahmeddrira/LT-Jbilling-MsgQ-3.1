@@ -28,5 +28,7 @@ beans = {
     // unreturnedConnectionTimeout" 10"/>
     // debugUnreturnedConnectionStackTraces" true"/>
    }
+	
+	httpRequestAdapter org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
 }

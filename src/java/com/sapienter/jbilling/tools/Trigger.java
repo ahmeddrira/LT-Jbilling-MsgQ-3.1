@@ -49,8 +49,9 @@ public class Trigger {
         
         
         try {
+        	// TODO, change this to use the standard API
             // get a session for the remote interfaces
-            remoteBillingProcess = (IBillingProcessSessionBean) 
+ /*           remoteBillingProcess = (IBillingProcessSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.BILLING_PROCESS_REMOTE_SESSION);
             IUserSessionBean remoteUser = (IUserSessionBean) 
@@ -65,7 +66,12 @@ public class Trigger {
             IListSessionBean remoteList = (IListSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.LIST_REMOTE_SESSION);
-            
+ */           
+        	remoteBillingProcess = null;
+        	IUserSessionBean remoteUser = null;
+        	IOrderSessionBean remoteOrder = null;
+        	IInvoiceSessionBean remoteInvoice = null;
+        	IListSessionBean remoteList = null;
             // determine the date for this run
             Date today = Calendar.getInstance().getTime();
             Integer step = null; //means all

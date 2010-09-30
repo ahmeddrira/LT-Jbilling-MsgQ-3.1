@@ -124,10 +124,12 @@ public class UploadData {
             // open the file
             BufferedReader file = new BufferedReader(new FileReader(fileName));
 
-            IUserSessionBean remoteSession = (IUserSessionBean) 
+            // TODO: use the standard API
+/*            IUserSessionBean remoteSession = (IUserSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.USER_REMOTE_SESSION);
-
+*/
+            IUserSessionBean remoteSession = null;
             String header = file.readLine();
             String columns[] = header.split("\t");
             for (int f = 0; f < columns.length; f++) {
@@ -384,10 +386,12 @@ public class UploadData {
                     }
                     // this makes it prepaid (2 is pospaid)
                     //summary.setBillingTypeId(new Integer(1));
-                    IOrderSessionBean remoteOrder = (IOrderSessionBean) 
+/*                    TODO: use the standard API
+ *                  IOrderSessionBean remoteOrder = (IOrderSessionBean) 
                             RemoteContext.getBean(
                             RemoteContext.Name.ORDER_REMOTE_SESSION);
-                    // add the item (quantity = 1)
+ */                   // add the item (quantity = 1)
+                    IOrderSessionBean remoteOrder = null;
                     Integer itemId = Integer.valueOf((String) prop.getProperty(
                             "item_id"));
                     OrderDTO thisOrder = remoteOrder.addItem(itemId, Constants.BIGDECIMAL_ONE, summary, languageId,
@@ -430,11 +434,12 @@ public class UploadData {
             }
             System.out.println("Now loading types " + fileName);
             file = new BufferedReader(new FileReader(fileName));
-            // get the remote interfaces
-            IItemSessionBean itemSession = (IItemSessionBean) 
+            // get the remote interfaces TODO use the standard API
+/*            IItemSessionBean itemSession = (IItemSessionBean) 
                     RemoteContext.getBean(
                     RemoteContext.Name.ITEM_REMOTE_SESSION);
-            
+*/            
+            IItemSessionBean itemSession = null;
             header = file.readLine();
             // the types file has only one field with the description
             Integer newType;

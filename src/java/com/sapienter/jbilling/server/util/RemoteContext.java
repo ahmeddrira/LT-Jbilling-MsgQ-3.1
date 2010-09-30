@@ -33,17 +33,9 @@ public class RemoteContext {
             "/jbilling-remote-beans.xml" });
     
     public enum Name {
-        ITEM_REMOTE_SESSION,
-        LIST_REMOTE_SESSION,
-        USER_REMOTE_SESSION,
-        INVOICE_REMOTE_SESSION,
-        ORDER_REMOTE_SESSION,
-        PAYMENT_REMOTE_SESSION,
-        MEDIATION_REMOTE_SESSION,
-        BILLING_PROCESS_REMOTE_SESSION,
-        PROVISIONING_PROCESS_REMOTE_SESSION,
         API_CLIENT,
-        API_CLIENT_2
+        API_CLIENT_2,
+        API_CLIENT_3
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -51,20 +43,9 @@ public class RemoteContext {
     // all the managed beans
     static {
         // remote session beans
-        springBeans.put(Name.ITEM_REMOTE_SESSION, "itemRemoteSession");
-        springBeans.put(Name.LIST_REMOTE_SESSION, "listRemoteSession");
-        springBeans.put(Name.USER_REMOTE_SESSION, "userRemoteSession");
-        springBeans.put(Name.INVOICE_REMOTE_SESSION, "invoiceRemoteSession");
-        springBeans.put(Name.ORDER_REMOTE_SESSION, "orderRemoteSession");
-        springBeans.put(Name.PAYMENT_REMOTE_SESSION, "paymentRemoteSession");
-        springBeans.put(Name.MEDIATION_REMOTE_SESSION, 
-                "mediationRemoteSession");
-        springBeans.put(Name.BILLING_PROCESS_REMOTE_SESSION, 
-                "billingProcessRemoteSession");
-        springBeans.put(Name.PROVISIONING_PROCESS_REMOTE_SESSION,
-                "provisioningProcessRemoteSession");
         springBeans.put(Name.API_CLIENT, "apiClient");
         springBeans.put(Name.API_CLIENT_2, "apiClient2");
+        springBeans.put(Name.API_CLIENT_3, "apiClient3");
     };
     
     // should not be instantiated

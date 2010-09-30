@@ -29,7 +29,7 @@
           init-method="init"
           destroy-method="destroy"/>
 
-    <!-- Session Facade beans -->
+    <!-- Session Facade beans, used mostly for transaction control and other AOP -->
     <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
     <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
     <bean id="customerSession" class="com.sapienter.jbilling.server.customer.CustomerSessionBean"/>

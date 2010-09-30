@@ -147,7 +147,7 @@ public class SpringAPI implements JbillingAPI {
 
     public ItemDTOEx[] getAllItems() throws JbillingAPIException {
         try {
-            return session.getAllItems();
+            return null; // session.getAllItems();
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
@@ -542,7 +542,7 @@ public class SpringAPI implements JbillingAPI {
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException {
         try {
-            return session.getItemByCategory(itemTypeId);
+            return null; //session.getItemByCategory(itemTypeId);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
@@ -550,7 +550,7 @@ public class SpringAPI implements JbillingAPI {
 
     public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException {
         try {
-            return session.getAllItemCategories();
+            return null; //session.getAllItemCategories();
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

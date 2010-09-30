@@ -111,47 +111,6 @@
         </fileset>
     </path>
 
-  <!-- Configure the Tomcat tasks for the Manager application -->
-  <taskdef name="tc-deploy"    classname="org.apache.catalina.ant.DeployTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-list"      classname="org.apache.catalina.ant.ListTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-reload"    classname="org.apache.catalina.ant.ReloadTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-resources" classname="org.apache.catalina.ant.ResourcesTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-roles"     classname="org.apache.catalina.ant.RolesTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-start"     classname="org.apache.catalina.ant.StartTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-stop"      classname="org.apache.catalina.ant.StopTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-  <taskdef name="tc-undeploy"  classname="org.apache.catalina.ant.UndeployTask">
-    <classpath refid="tomcat.classpath"/>
-  </taskdef>
-
-  <target name="tc-deploy" description="Install web application"
-          depends="compile">
-    <deploy url="${url}" username="${username}" password="${password}"
-            path="${path}" war="file:${build}${path}.war"/>
-  </target>
-
-  <target name="tc-reload" description="Reload web application">
-    <tc-reload  url="${url}" username="${username}" password="${password}"
-            path="${path}"/>
-  </target>
-
-  <target name="tc-undeploy" description="Remove web application">
-    <undeploy url="${url}" username="${username}" password="${password}"
-            path="${path}"/>
-  </target>
     
     <target name="init">
         <delete dir="${build.test-results.dir}"/>
@@ -198,27 +157,7 @@
     </target>
     
     
-    <!-- =================================================================== -->
-    <!-- Generates the tld descriptors for the custom tags                   -->
-    <!-- =================================================================== -->
-   
-    <target name="xdoclet-webgenerate" depends="init">
-        <taskdef
-            name="webdoclet"
-            classname="xdoclet.modules.web.WebDocletTask"
-            classpathref="xdoclet.classpath"
-        />
-        
-        <webdoclet  destdir="${build.view.dir}/WEB-INF" verbose="true">
-            <fileset dir="${source.classes.dir}">
-                <include name="**/*Tag.java"/>
-            </fileset>
-            <jsptaglib jspversion="1.2" shortname="bettyTags"/>
-        </webdoclet>
-    </target>
-    
-    
-    
+     
     <!-- =================================================================== -->
     <!-- Complies the source code                                            -->
     <!-- =================================================================== -->
@@ -292,7 +231,7 @@
     <!-- Create the WAR file for the web-client, to be run by tomcat -->
     <!-- =================================================================== -->
  
-    <target name="war" depends="jspc, jar">
+    <target name="war" depends="jar">
         <copy todir="${build.classes.dir}">
             <fileset dir="${source.web.descriptor.dir}">
                 <include name="*.properties"/>
@@ -453,6 +392,40 @@
         <fail if="test.failed" message="Unit tests failed! See log's for details."/>
     </target>
 
+	<target name="test-remoting" depends="jar_api">
+	        <javac srcdir="${source.test.dir}/ws" includes="RemotingTest.java" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+                <classpath path="${basedir}/target/classes"/>
+	            <classpath refid="test.classpath"/>
+	        </javac>
+
+	        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+
+	        <!-- run web service tests -->
+	        <mkdir dir="${build.test-results.dir}/ws/xml"/>
+	        <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
+	            <jvmarg value="-Djava.security.manager" />
+	            <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
+	            <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
+
+	            <classpath refid="test.classpath"/>
+                <classpath path="${basedir}/target/classes"/>
+
+	            <formatter type="brief" usefile="false"/>
+	            <formatter type="xml"/>            
+
+	            <test name="RemotingTest" todir="${build.test-results.dir}/ws/xml"/>
+	        </junit>
+
+	        <!-- generate testing reports -->
+	        <mkdir dir="${build.test-results.dir}/ws/html"/>
+	        <junitreport>
+	            <fileset dir="${build.test-results.dir}/ws/xml" includes="TEST-*.xml"/>
+	            <report format="frames" todir="${build.test-results.dir}/ws/html"/>
+	        </junitreport>
+
+	        <fail if="test.failed" message="Remoting test failed! See log's for details."/>
+	</target>
+	
     <target name="test-ws" depends="jar_api" description="Run all web service tests and generate testing reports.">
         <javac srcdir="${source.test.dir}/ws" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
             <classpath refid="test.classpath"/>
@@ -567,7 +540,7 @@
         <antcall target="test-integration" inheritall="true"/>
     </target>
 
-    <target name="test" depends="prepare-test, tc-reload, test-unit, test-ws, test-integration">
+    <target name="test" depends="prepare-test, test-unit, test-ws, test-integration">
     </target>
     
     <!--
@@ -645,7 +618,7 @@
     
     
     <!-- Creates the full downloadable package -->
-    <target name="packageImage" depends="jspc">
+    <target name="packageImage" >
         <!-- make sure it'll get the latest binaries -->
         <copy todir="${image.source.dir}/jbilling/webapps">
             <fileset dir="${build.deploy.dir}">
@@ -718,82 +691,7 @@ server="upload.sourceforge.net" userid="anonymous">
     </target>
     
     
-    <!-- JSPC target to precompile JSP's 
-	     This is only used to generate the binary image for a release,
-	     to avoid having the Java SDK as a requirement. -->
-    <target name="jspc" depends="compile, xdoclet-webgenerate">
-        
-        <taskdef classname="org.apache.jasper.JspC" name="jasper2"> 
-            <classpath id="jspc.classpath">
-                <!-- Classpath for extra jars -->
-                <fileset dir="${tools.dir}/lib">
-                    <include name="*.jar" />
-                </fileset>
-                <fileset dir="${tools.dir}/bin">
-                    <include name="*.jar" />
-                </fileset>
-                <fileset dir="${libs.dir}">
-                    <include name="**/*.jar" />
-                </fileset>
-                <fileset dir="${source.lib.dir}">
-                    <include name="**/*.jar" />
-                </fileset>
-
-                <pathelement location="${source.lib.dir}/rowset.jar"/>
-                
-                <!-- Directory for taglibs -->
-                <dirset dir="${source.dir}\build\classes">
-                </dirset>
-                
-            </classpath>
-        </taskdef>
-        
-        <!-- Copy the view to the build directory -->
-        <copy todir="${build.view.dir}">
-            <fileset dir="${source.dir}/view">
-                <include name="**/*.jsp"/>
-            </fileset>
-        </copy>
-
-        <copy todir="${build.view.dir}/WEB-INF">
-            <fileset dir="${source.web.descriptor.dir}">
-                <include name="*.xml"/>
-            </fileset>
-            <fileset dir="${taglib.home.dir}">
-                <include name="*.tld"/>
-            </fileset>
-            <fileset dir="${struts.home.tag.dir}">
-                <include name="*.tld"/>
-            </fileset>
-        </copy>
-
-        <!-- Create the directory to hold compiled jsp-->
-        <mkdir dir="${source.dir}/build/jsp-classes"/>
-        
-        <!-- Compile the jsp to .java files -->
-        <jasper2 
-            package="com.sapienter.jbilling.client.jspc"
-            uriroot = "${build.view.dir}"
-            outputDir = "${source.dir}/build/jsp-classes"
-            webXmlFragment="${build.dir}/jspc-web.xml"/>
-
-        <loadfile property="jpc-code" srcfile="${build.dir}/jspc-web.xml" />
-        <replace file="${build.view.dir}/WEB-INF/web.xml"
-                 token="jspc-webxml"
-                 value="${jpc-code}" />
-
-        <!-- Create the directory to hold compiled jsp-->
-        <mkdir dir="${build.view.dir}/WEB-INF/classes"/>
-        
-        <!-- Compile the intermediate jsp's-->
-        <javac srcdir="${source.dir}/build/jsp-classes"
-              destdir="${build.classes.dir}" >
-            <classpath refid="jspc.classpath" /> 
-            <classpath refid="compile.classpath" />
-        </javac> 
-        
-    </target>
-    
+   
     <!-- Hibernate tools tasks -->
 
     <!-- Create the entity classes for the JPA migration -->

@@ -65,8 +65,8 @@ public class AchDTO
       bankNameHasBeenSet = true;
       this.accountName = accountName;
       accountNameHasBeenSet = true;
-	  this.gatewayKey = gatewayKey;
-	  gatewayKeyHasBeenSet = true;
+      this.gatewayKey = gatewayKey;
+      gatewayKeyHasBeenSet = true;
       pk = this.getId();
    }
 
@@ -85,8 +85,8 @@ public class AchDTO
       bankNameHasBeenSet = true;
       this.accountName = otherValue.accountName;
       accountNameHasBeenSet = true;
-	  this.gatewayKey = otherValue.gatewayKey;
-	  gatewayKeyHasBeenSet = true;
+      this.gatewayKey = otherValue.gatewayKey;
+      gatewayKeyHasBeenSet = true;
 
       pk = this.getId();
    }
@@ -197,20 +197,20 @@ public class AchDTO
    }
 
    public String getGatewayKey() {
-   	return this.gatewayKey;
+    return this.gatewayKey;
    }
 
    public void setGatewayKey(String gatewayKey) {
-	this.gatewayKey = gatewayKey;
-	gatewayKeyHasBeenSet = true;
+    this.gatewayKey = gatewayKey;
+    gatewayKeyHasBeenSet = true;
    }
 
    public boolean gatewayKeyHasBeenSet() {
-	return gatewayKeyHasBeenSet;
+    return gatewayKeyHasBeenSet;
    }
    
    public boolean useGatewayKey() {
-	return (getGatewayKey() != null);
+    return (getGatewayKey() != null);
    }
 
    public String toString()

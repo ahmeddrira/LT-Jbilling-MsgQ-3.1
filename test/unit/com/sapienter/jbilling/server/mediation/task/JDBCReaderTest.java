@@ -182,7 +182,7 @@ public class JDBCReaderTest extends TestCase {
         int rowcount = 0;
 
         // read 100 records
-        fillTestDatabase(100);
+        fillTestDatabase(100, 0);
         for (List<Record> records : reader) {
             rowcount = rowcount + records.size();
         }
@@ -193,6 +193,13 @@ public class JDBCReaderTest extends TestCase {
             rowcount = rowcount + records.size();
         }
         assertEquals("100 rows read, no new rows", 100, rowcount);
+
+        // read another 100 records
+        fillTestDatabase(100, 100);
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("200 rows read", 200, rowcount);
     }
 
     public void testPartialBatchRead() throws Exception {

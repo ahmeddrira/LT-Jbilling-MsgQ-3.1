@@ -29,15 +29,14 @@ import org.springframework.context.ApplicationContext;
 public class Context {
 
     // get ApplicationContext configured by jbilling-beansRefFactory.xml
-    private static final BeanFactoryReference factoryRef = 
-            ContextSingletonBeanFactoryLocator.getInstance(
-            "jbilling-beansRefFactory.xml").useBeanFactory(
-            "com.sapienter.jbilling");
-    private static final ApplicationContext spring = (ApplicationContext)
-            factoryRef.getFactory();
-    
+    private static final BeanFactoryReference factoryRef = ContextSingletonBeanFactoryLocator
+            .getInstance("jbilling-beansRefFactory.xml")
+            .useBeanFactory("com.sapienter.jbilling");
+
+    private static final ApplicationContext spring = (ApplicationContext) factoryRef.getFactory();
+
     public enum Name {
-        ITEM_SESSION, 
+        ITEM_SESSION,
         NOTIFICATION_SESSION,
         CUSTOMER_SESSION,
         LIST_SESSION,
@@ -77,10 +76,8 @@ public class Context {
         MEMCACHE_DATASOURCE,
         PRICING_FINDER,
     }
-    
+
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
-    
-    // all the managed beans
     static {
         // those that act as session facade, mostly for transaction demarcation
         springBeans.put(Name.ITEM_SESSION, "itemSession");
@@ -95,15 +92,14 @@ public class Context {
         springBeans.put(Name.MEDIATION_SESSION, "mediationSession");
         springBeans.put(Name.REPORT_SESSION, "reportSession");
         springBeans.put(Name.BILLING_PROCESS_SESSION, "billingProcessSession");
-        springBeans.put(Name.PROVISIONING_PROCESS_SESSION, 
-                "provisioningProcessSession");
+        springBeans.put(Name.PROVISIONING_PROCESS_SESSION, "provisioningProcessSession");
         springBeans.put(Name.WEB_SERVICES_SESSION, "webServicesSession");
 
         // data access service
         springBeans.put(Name.DESCRIPTION_DAS, "internationalDescriptionDAS");
         springBeans.put(Name.JBILLING_TABLE_DAS, "jbillingTableDAS");
         springBeans.put(Name.PLUGGABLE_TASK_DAS, "pluggableTaskDAS");
-        
+
         // other simple beans
         springBeans.put(Name.PROVISIONING, "provisioning");
         springBeans.put(Name.VELOCITY, "velocityEngine");
@@ -114,31 +110,27 @@ public class Context {
         springBeans.put(Name.CACHE, "cacheProviderFacade");
         springBeans.put(Name.CACHE_MODEL_READONLY, "cacheModelReadOnly");
         springBeans.put(Name.CACHE_MODEL_ITEM_PRICE, "cacheModelItemPrice");
-        springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE,  "flushModelItemPrice");
+        springBeans.put(Name.CACHE_FLUSH_MODEL_ITEM_PRICE, "flushModelItemPrice");
         springBeans.put(Name.CACHE_MODEL_RW, "cacheModelPTDTO");
-        springBeans.put(Name.CACHE_FLUSH_MODEL_RW,"flushModelPTDTO");
+        springBeans.put(Name.CACHE_FLUSH_MODEL_RW, "flushModelPTDTO");
         springBeans.put(Name.CAI, "cai");
         springBeans.put(Name.MMSC, "mmsc");
-        springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, 
-                "webServicesCallerDefaults");
-        springBeans.put(Name.INTERNAL_EVENTS_RULES_TASK_CONFIG, 
-                "internalEventsRulesTaskConfig");
+        springBeans.put(Name.WEB_SERVICES_CALLER_DEFAULTS, "webServicesCallerDefaults");
+        springBeans.put(Name.INTERNAL_EVENTS_RULES_TASK_CONFIG, "internalEventsRulesTaskConfig");
 
         // JMS related beans
         springBeans.put(Name.JMS_TEMPLATE, "jmsTemplate");
         springBeans.put(Name.PROCESSORS_DESTINATION, "processorsDestination");
-        springBeans.put(Name.PROVISIONING_COMMANDS_DESTINATION, 
-                "provisioningCommandsDestination");
-        springBeans.put(Name.PROVISIONING_COMMANDS_REPLY_DESTINATION,
-                "provisioningCommandsReplyDestination");
+        springBeans.put(Name.PROVISIONING_COMMANDS_DESTINATION, "provisioningCommandsDestination");
+        springBeans.put(Name.PROVISIONING_COMMANDS_REPLY_DESTINATION, "provisioningCommandsReplyDestination");
         springBeans.put(Name.MEMCACHE_DATASOURCE, "memcacheDataSource");
         springBeans.put(Name.PRICING_FINDER, "pricingFinder");
-    };
-    
-    // should not be instantiated
-    private Context() {
     }
-    
+
+    private Context() {
+        // Context should not be instantiated
+    }
+
     public static Object getBean(Name bean) {
         return spring.getBean(springBeans.get(bean));
     }

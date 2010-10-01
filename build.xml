@@ -46,7 +46,6 @@
         <pathelement location="${build.test.dir}"/>
         <pathelement location="${source.lib.dir}/commons-logging.jar"/>
         <pathelement location="${source.lib.dir}/log4j.jar"/>
-        <pathelement location="${jbilling.conf.dir}"/> 
         
         <fileset dir="${easymock.dir}">
             <include name="*.jar"/>
@@ -430,6 +429,7 @@
         </javac>
         
         <copy file="${base_dir}/../conf/jbilling.properties" todir="${build.test.dir}"/>
+        <copy file="${source.spring.descriptor.dir}/jbilling-caching.xml" todir="${build.test.dir}"/>
 
         <!-- run unit tests -->
         <mkdir dir="${build.test-results.dir}/unit/xml"/>

@@ -78,16 +78,16 @@ public class JDBCReaderTest extends TestCase {
     }
 
     /*
-        Database setup
+        Testing database setup
      */
 
     private void createTestSchema() {
         String sql =
                 "DROP TABLE IF EXISTS " + TABLE_NAME + ";"
                 + " CREATE TABLE " + TABLE_NAME + "("
-                + "    id integer NOT NULL, "
-                + "    content varchar(255) NOT NULL, "
-                + "    jbilling_timestamp timestamp NULL, "
+                + "    id INTEGER NOT NULL, "
+                + "    content VARCHAR(255) NOT NULL, "
+                + "    jbilling_timestamp TIMESTAMP NULL, "
                 + "    PRIMARY KEY (id) "
                 + " );";
 
@@ -95,9 +95,13 @@ public class JDBCReaderTest extends TestCase {
     }
 
     private void fillTestDatabase(int rows) {
+        fillTestDatabase(rows, 0);
+    }
+
+    private void fillTestDatabase(int rows, int startingId) {
         for (int i = 0; i < rows; i++) {
-            jdbcTemplate.update("INSERT INTO " + TABLE_NAME + " (id, content) values (?, ?);",
-                                new Object[] { i, "row number " + i});
+            jdbcTemplate.update("INSERT INTO " + TABLE_NAME + " (id, content) VALUES (?, ?);",
+                                new Object[] { startingId + i, "row number " + i});
         }
     }
 
@@ -113,11 +117,13 @@ public class JDBCReaderTest extends TestCase {
         assertEquals(PASSWORD, reader.getPassword());
 
         // case corrected table/column names
-        assertEquals(TABLE_NAME.toUpperCase(), reader.getTableName());
+        // table/column names are configured in lowercase, HSQLDB uses uppercase internally
+        assertEquals("RECORDS", reader.getTableName());
         assertEquals("ID", reader.getKeyColumns().get(0));
         assertEquals("JBILLING_TIMESTAMP", reader.getTimestampColumnName());
 
-        // mark method set to TIMESTAMP as "jbilling_timestamp" column exsits
+        // the "jbilling_timestamp" column exits in our test db
+        // record marking method set to TIMESTAMP
         assertEquals(AbstractJDBCReader.MarkMethod.TIMESTAMP, reader.getMarkMethod());
 
         // generated query string
@@ -125,16 +131,33 @@ public class JDBCReaderTest extends TestCase {
     }
 
     public void testBatchRead() throws Exception {
-        fillTestDatabase(200); // 2 batches (100 per batch)
+        fillTestDatabase(500); // 5 batches (100 per batch)
+
+        StopWatch read = new StopWatch("read 500 rows from HSQLDB");
+        read.start();
 
         int rowcount = 0;
+        int iterations = 0;
         for (List<Record> records : reader) {
             rowcount = rowcount + records.size();
+            iterations++;
         }
-        
-        assertEquals("200 rows read", 200, rowcount);
+
+        read.stop();
+        System.out.println(read.shortSummary());        
+
+        assertEquals("500 rows read", 500, rowcount);
+        assertEquals("5 iterations to read", 5, iterations);
     }
 
+    // NOTE: this test takes approximately 3.5 minutes, comment out to improve testing performance
+    
+    /**
+     * Reader stress test. Reads a large volume of records to ensure that there are no memory
+     * leaks adverse effects of reading in large volumes of data.
+     *
+     * @throws Exception jUnit thinks crazy things can happen
+     */
     public void testLargeRead() throws Exception {
         fillTestDatabase(150000); // 1500 batches (100 per batch)
 
@@ -142,14 +165,86 @@ public class JDBCReaderTest extends TestCase {
         read.start();
         
         int rowcount = 0;
+        int iterations = 0;
         for (List<Record> records : reader) {
             rowcount = rowcount + records.size();
+            iterations++;
         }
 
         read.stop();
         System.out.println(read.shortSummary());
         
         assertEquals("150000 rows read", 150000, rowcount);
+        assertEquals("1500 iterations to read", 1500, iterations);
     }
 
+    public void testMultipleReads() throws Exception {
+        int rowcount = 0;
+
+        // read 100 records
+        fillTestDatabase(100);
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("100 rows read", 100, rowcount);
+
+        // read again, no new records inserted
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("100 rows read, no new rows", 100, rowcount);
+    }
+
+    public void testPartialBatchRead() throws Exception {
+        int rowcount = 0;
+        int iterations = 0;
+
+        // read 133 records
+        fillTestDatabase(133);
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+            iterations++;
+        }
+        assertEquals("133 rows read", 133, rowcount);
+        assertEquals("2 iterations to read", 2, iterations);
+
+        // read again, no new records inserted
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("133 rows read, no new rows", 133, rowcount);
+    }
+
+    public void testTimestampMarking() throws Exception {
+        int rowcount = 0;
+
+        // read 100 records, verify timestamps are set
+        fillTestDatabase(100, 0);
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("100 rows read", 100, rowcount);
+        assertAllTimestampsSet();
+
+        // read another 100 records, verify timestamps are set
+        fillTestDatabase(100, 100);
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("200 rows, 100 new rows", 200, rowcount);
+        assertAllTimestampsSet();
+
+        // read a partial batch, verify timestamps are set
+        fillTestDatabase(73, 200);
+        for (List<Record> records : reader) {
+            rowcount = rowcount + records.size();
+        }
+        assertEquals("273 rows, 73 new rows", 273, rowcount);
+        assertAllTimestampsSet();
+    }
+
+    public void assertAllTimestampsSet() {
+        int rows = jdbcTemplate.queryForInt("SELECT count(*) from " + TABLE_NAME + " WHERE jbilling_timestamp is null");
+        assertEquals("all rows should be timestamped", 0, rows);
+    }
 }

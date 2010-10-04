@@ -72,6 +72,6 @@ public class PaymentFakeExternalStorage extends PaymentFakeTask implements IExte
         if (getParameter(PARAM_RETURN_NULL, false))
             return null;
         
-    	return getParameter(PARAM_RETURN_VALUE, DEFAULT_DELETE_VALUE);
+        return getParameter(PARAM_RETURN_VALUE, DEFAULT_DELETE_VALUE);
     }
 }

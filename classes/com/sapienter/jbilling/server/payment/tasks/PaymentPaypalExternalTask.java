@@ -459,7 +459,7 @@ public class PaymentPaypalExternalTask extends PaymentTaskWithTimeout implements
      * 
      */
     public String deleteCreditCard(ContactDTO contact, CreditCardDTO creditCard, AchDTO ach) {
-    	//noop
-    	return null;
+        //noop
+        return null;
     }
 }

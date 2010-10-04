@@ -24,7 +24,6 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
 import org.apache.log4j.Logger;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
 import java.sql.PreparedStatement;
@@ -102,7 +101,7 @@ public class JDBCReader extends AbstractJDBCReader {
         if (order != null) {
             query.append(order);
 
-        } else {            
+        } else {
             for (Iterator<String> it = getKeyColumns().iterator(); it.hasNext();) {
                 query.append(it.next());
                 if (it.hasNext())

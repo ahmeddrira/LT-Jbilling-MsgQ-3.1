@@ -32,7 +32,7 @@ public class InternalEventProcessor {
     private static final Logger LOG = Logger.getLogger(InternalEventProcessor.class);
 
     public void process(Event event) {
-	LOG.debug("In InternalEventProcessor::process()");
+    LOG.debug("In InternalEventProcessor::process()");
         try {
             PluggableTaskManager<IInternalEventsTask> taskManager
                     = new PluggableTaskManager<IInternalEventsTask>(event.getEntityId(),

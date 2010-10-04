@@ -112,7 +112,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
      * @throws PluggableTaskException
      */
     public void process(Event event) throws PluggableTaskException {
-		PluggableTaskBL<IExternalCreditCardStorage> ptbl = new PluggableTaskBL<IExternalCreditCardStorage>(getExternalSavingPluginId());
+        PluggableTaskBL<IExternalCreditCardStorage> ptbl = new PluggableTaskBL<IExternalCreditCardStorage>(getExternalSavingPluginId());
         IExternalCreditCardStorage externalCCStorage = ptbl.instantiateTask();
 
         if (event instanceof NewCreditCardEvent) {
@@ -153,7 +153,7 @@ public class SaveCreditCardExternallyTask extends PluggableTask implements IInte
                     updateCreditCard(creditCard, gateWayKey);
                 }
             }
-		} else {
+        } else {
             throw new PluggableTaskException("Cant not process event " + event);
         }
     }

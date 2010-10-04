@@ -24,6 +24,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.Record;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
 import java.sql.PreparedStatement;
@@ -114,8 +115,8 @@ public class JDBCReader extends AbstractJDBCReader {
     }
 
     /**
-     * If MarkMethod.TIMESTAMP, this method will update the time stamp column of the
-     * database row after it has been read.
+     * If MarkMethod.TIMESTAMP, this method will generate the SQL necessary to update the timestamps
+     * of the read records, to be executed when the batch has been completely processed.
      *
      * If MarkMethod.LAST_ID, this method will increment the "last read ID" (see {@link #getLastId()}
      * field value with the id of the record that was read. This does not write the property out to the
@@ -128,8 +129,10 @@ public class JDBCReader extends AbstractJDBCReader {
     @Override
     protected void recordRead(final Record record, final int[] keyColumnIndexes) {
         if (getMarkMethod() == MarkMethod.TIMESTAMP) {
-            if (timestampUpdateSql == null)
+            if (timestampUpdateSql == null) {
                 timestampUpdateSql = buildTimestampUpdateSql(record, keyColumnIndexes);
+                LOG.debug("Timestamp update SQL: '" + timestampUpdateSql + "'");
+            }
         }
 
         if (getMarkMethod() == MarkMethod.LAST_ID) {
@@ -138,6 +141,9 @@ public class JDBCReader extends AbstractJDBCReader {
     }
 
     /**
+     * If MarkMethod.TIMESTAMP, this method will execute a batch update and set the
+     * time stamp column of the database row for each record read.
+     *
      * If MarkMethod.LAST_ID, this method will flush out the "last read ID" preference to the
      * jBilling database after the entire batch has been read.
      *
@@ -167,11 +173,11 @@ public class JDBCReader extends AbstractJDBCReader {
                 .append(" WHERE ");
 
         // add primary key constraint using key columns
-        for (int key = 0; key < keyColumnIndexes.length; key++) {
-            PricingField field = record.getFields().get(key);
+        for (int i = 0; i < keyColumnIndexes.length; i++) {
+            PricingField field = record.getFields().get(keyColumnIndexes[i]);
             query.append(field.getName()).append(" = ? ");
 
-            if (key < keyColumnIndexes.length-1)
+            if (i < keyColumnIndexes.length-1)
                 query.append(" AND ");
         }
 

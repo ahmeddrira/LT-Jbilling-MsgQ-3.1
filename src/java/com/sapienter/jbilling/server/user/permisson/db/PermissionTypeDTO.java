@@ -20,6 +20,7 @@
 package com.sapienter.jbilling.server.user.permisson.db;
 
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,58 +39,73 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name="permission_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PermissionTypeDTO  implements java.io.Serializable {
+public class PermissionTypeDTO  implements Serializable {
 
-
-     private int id;
-     private String description;
-     private Set<PermissionDTO> permissions = new HashSet<PermissionDTO>(0);
+    private int id;
+    private String description;
+    private Set<PermissionDTO> permissions = new HashSet<PermissionDTO>(0);
 
     public PermissionTypeDTO() {
     }
 
-    
     public PermissionTypeDTO(int id, String description) {
         this.id = id;
         this.description = description;
     }
+
     public PermissionTypeDTO(int id, String description, Set<PermissionDTO> permissions) {
-       this.id = id;
-       this.description = description;
-       this.permissions = permissions;
+        this.id = id;
+        this.description = description;
+        this.permissions = permissions;
     }
-   
-     @Id 
-    
+
+    @Id
     @Column(name="id", unique=true, nullable=false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     @Column(name="description", nullable=false, length=30)
     public String getDescription() {
         return this.description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
-@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="permissionType")
+
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="permissionType")
     public Set<PermissionDTO> getPermissions() {
         return this.permissions;
     }
-    
+
     public void setPermissions(Set<PermissionDTO> permissions) {
         this.permissions = permissions;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        PermissionTypeDTO that = (PermissionTypeDTO) o;
 
+        if (id != that.id) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
 
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
 }
 
 

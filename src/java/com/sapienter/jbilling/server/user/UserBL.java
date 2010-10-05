@@ -487,7 +487,7 @@ public class UserBL extends ResultList
          // now add / remove those privileges that were granted / revoked
          // to this particular user
          for(PermissionUserDTO permission : user.getPermissions()) {
-             if (permission.getIsGrant() == 1) {
+             if (permission.isGranted()) {
                  // see that this guy has it
                  if (!ret.contains(permission.getPermission())) {
                      // not there, add it

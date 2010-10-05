@@ -1,8 +1,19 @@
+# build artifacts
+target/
 build/
-tmp/
-activemq-data/
 build.properties
 TEST*.xml
+
+# temp files
+activemq-data/
+tmp/
+logs/
 *~
+
+# external libraries
 libs/
-nbproject/
+
+# project files
+.idea/
+*.iml
+

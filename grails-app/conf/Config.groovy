@@ -60,7 +60,6 @@ environments {
 
 }
 
-
 log4j = {
     
     appenders {
@@ -79,3 +78,9 @@ log4j = {
         additivity = true
     }
 }
+
+// Spring Security
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.sapienter.jbilling.server.user.db.UserDTO'
+grails.plugins.springsecurity.userLookup.usernamePropertyName = 'userName'
+grails.plugins.springsecurity.authority.className = 'com.sapienter.jbilling.server.user.permisson.db.PermissionDTO'
+grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', 'permissionVoter', 'webExpressionVoter']

@@ -1,34 +1,57 @@
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
 
-// Place your Spring DSL code here
 beans = {
-    dataSource(ComboPooledDataSource) { bean ->
+  dataSource(ComboPooledDataSource) { bean ->
     bean.destroyMethod = 'close'
-    // use grails' datasource configuration for connection user, password, driver and JDBC url
+
+    // database connection properties from DataSource.groovy
     user = CH.config.dataSource.username
     password = CH.config.dataSource.password
     driverClass = CH.config.dataSource.driverClassName
     jdbcUrl = CH.config.dataSource.url
-    // Pool settings
+
+    // Connection pooling using c3p0
     acquireIncrement = 2
     initialPoolSize = 5
     maxPoolSize = 20
     maxIdleTime = 300
     minPoolSize = 2
     checkoutTimeout = 10000
-    // The next three properties deal with potential time outs by the DB server of idle connections. If this
-    // happens regardless you can either reduce the seconds of testing (30 is the default)
-    // or activate the property testConnectionOnCheckout
+
+    /*
+      Periodically test the state of idle connections and validate connections on checkout. Handles 
+      potential timeouts by the database server. Increase the connection idle test period if you
+      have intermittent database connection issues.
+     */
     preferredTestQuery = "select id from jbilling_table where id = 1"
     testConnectionOnCheckin = true
     idleConnectionTestPeriod = 30
-    // for debug of leaks only: after ten seconds, throw an exception that tells who is holding
-    //    a connection
-    // unreturnedConnectionTimeout" 10"/>
-    // debugUnreturnedConnectionStackTraces" true"/>
-   }
-	
-	httpRequestAdapter org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
+    /*
+      Destroy un-returned connections after a period of time (in seconds) and throw an exception
+      that shows who is still holding the un-returned connection. Useful for debugging connection
+      leaks.
+     */
+    // unreturnedConnectionTimeout = 10
+    // debugUnreturnedConnectionStackTraces = true
+  }
+
+  // Spring Security
+  authenticationProcessingFilter(com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter) {
+    authenticationManager = ref("authenticationManager")
+  }
+  
+  userDetailsService(com.sapienter.jbilling.client.authentication.CompanyUserDetailsService) {
+    springSecurityService = ref("springSecurityService")
+  }
+
+  permissionVoter(com.sapienter.jbilling.client.authentication.PermissionVoter)
+
+  webExpressionVoter(com.sapienter.jbilling.client.authentication.SafeWebExpressionVoter) {
+    expressionHandler = ref("webExpressionHandler")
+  }
+
+  // HTTP request handler
+  httpRequestAdapter org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 }

@@ -27,79 +27,91 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.sapienter.jbilling.client.authentication.InitializingGrantedAuthority;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.io.Serializable;
 
 @Entity
-@Table(name="permission_user")
+@Table(name = "permission_user")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PermissionUserDTO  implements java.io.Serializable {
+public class PermissionUserDTO implements Serializable {
 
+    private int id;
+    private UserDTO baseUser;
+    private PermissionDTO permission;
+    private short isGrant;
 
-     private int id;
-     private UserDTO baseUser;
-     private PermissionDTO permission;
-     private short isGrant;
+    private String authority;
 
     public PermissionUserDTO() {
     }
 
-    
     public PermissionUserDTO(int id, short isGrant) {
         this.id = id;
         this.isGrant = isGrant;
     }
+
     public PermissionUserDTO(int id, UserDTO baseUser, PermissionDTO permission, short isGrant) {
-       this.id = id;
-       this.baseUser = baseUser;
-       this.permission = permission;
-       this.isGrant = isGrant;
+        this.id = id;
+        this.baseUser = baseUser;
+        this.permission = permission;
+        this.isGrant = isGrant;
     }
-   
-     @Id 
-    
-    @Column(name="id", unique=true, nullable=false)
+
+    @Id
+    @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="user_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     public UserDTO getBaseUser() {
         return this.baseUser;
     }
-    
+
     public void setBaseUser(UserDTO baseUser) {
         this.baseUser = baseUser;
     }
-@ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="permission_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "permission_id")
     public PermissionDTO getPermission() {
         return this.permission;
     }
-    
+
     public void setPermission(PermissionDTO permission) {
         this.permission = permission;
     }
-    
-    @Column(name="is_grant", nullable=false)
+
+    @Column(name = "is_grant", nullable = false)
     public short getIsGrant() {
         return this.isGrant;
     }
-    
+
     public void setIsGrant(short isGrant) {
         this.isGrant = isGrant;
     }
 
+    @Transient
+    public boolean isGranted() {
+        return getIsGrant() == (short) 1;
+    }
 
-
-
+    public void setIsGranted(boolean granted) {
+        setIsGrant((short) (granted ?  1 : 0));
+    }
 }
 
 

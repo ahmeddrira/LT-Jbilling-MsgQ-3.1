@@ -19,10 +19,17 @@
 */
 package com.sapienter.jbilling.server.user.db;
 
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
+import com.sapienter.jbilling.server.order.db.OrderDTO;
+import com.sapienter.jbilling.server.payment.db.PaymentDTO;
+import com.sapienter.jbilling.server.report.db.ReportUserDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
+import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
+import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
+import com.sapienter.jbilling.server.util.db.CurrencyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,18 +48,10 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageArchDTO;
-import com.sapienter.jbilling.server.order.db.OrderDTO;
-import com.sapienter.jbilling.server.payment.db.PaymentDTO;
-import com.sapienter.jbilling.server.report.db.ReportUserDTO;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
-import com.sapienter.jbilling.server.user.permisson.db.PermissionUserDTO;
-import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
-import com.sapienter.jbilling.server.util.audit.db.EventLogDTO;
-import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @TableGenerator(
@@ -62,42 +61,97 @@ import com.sapienter.jbilling.server.util.db.LanguageDTO;
         valueColumnName = "next_id",
         pkColumnValue="base_user",
         allocationSize = 10
-        )
-// No cache, mutable and critical
+)
 @Table(name = "base_user")
-public class UserDTO implements java.io.Serializable {
+// No cache, mutable and critical
+public class UserDTO implements Serializable {
 
     private int id;
+    private String userName;
+    private String password;
+    private int deleted;
+    boolean enabled = true;
+    boolean accountExpired = false;
+    boolean accountLocked = false;
+    boolean passwordExpired = false;
+
+    private Date createDatetime;
+    private Date lastStatusChange;
+    private Date lastLogin;
+    private int failedAttempts;
+
+    private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
+    private Set<PermissionUserDTO> permissions = new HashSet<PermissionUserDTO>(0);
+
     private CurrencyDTO currencyDTO;
     private CompanyDTO company;
     private SubscriberStatusDTO subscriberStatus;
     private UserStatusDTO userStatus;
     private LanguageDTO language;
-    private String password;
-    private int deleted;
-    private Date createDatetime;
-    private Date lastStatusChange;
-    private Date lastLogin;
-    private String userName;
-    private int failedAttempts;
     private CustomerDTO customer;
     private Partner partnersForUserId;
     private int versionNum;
-    // now the collections
+
     private Set<PaymentDTO> payments = new HashSet<PaymentDTO>(0);
     private Set<AchDTO> achs = new HashSet<AchDTO>(0);
-    private Set<PermissionUserDTO> permissions = new HashSet<PermissionUserDTO>(0);
     private Set<ReportUserDTO> reports = new HashSet<ReportUserDTO>(0);
     private Set<Partner> partnersForRelatedClerk = new HashSet<Partner>(0);
     private Set<OrderDTO> purchaseOrdersForCreatedBy = new HashSet<OrderDTO>(0);
     private Set<OrderDTO> orders = new HashSet<OrderDTO>(0);
     private Set<CreditCardDTO> creditCards = new HashSet<CreditCardDTO>(0);
     private Set<NotificationMessageArchDTO> notificationMessageArchs = new HashSet<NotificationMessageArchDTO>(0);
-    private Set<RoleDTO> roles = new HashSet<RoleDTO>(0);
     private Set<EventLogDTO> eventLogs = new HashSet<EventLogDTO>(0);
     private Set<InvoiceDTO> invoices = new HashSet<InvoiceDTO>(0);
 
     public UserDTO() {
+    }
+
+    public UserDTO(int id) {
+        this.id = id;
+    }
+
+    public UserDTO(int id, short deleted, Date createDatetime, int failedAttempts) {
+        this.id = id;
+        this.deleted = deleted;
+        this.createDatetime = createDatetime;
+        this.failedAttempts = failedAttempts;
+    }
+
+    public UserDTO(int id, CurrencyDTO currencyDTO, CompanyDTO entity, SubscriberStatusDTO subscriberStatus,
+                   UserStatusDTO userStatus, LanguageDTO language, String password, short deleted, Date createDatetime,
+                   Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<PaymentDTO> payments,
+                   Set<AchDTO> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUserDTO> reportUsers,
+                   Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
+                   Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId,
+                   Set<CreditCardDTO> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles,
+                   Set<EventLogDTO> eventLogs, Set<InvoiceDTO> invoices) {
+        this.id = id;
+        this.currencyDTO = currencyDTO;
+        this.company = entity;
+        this.subscriberStatus = subscriberStatus;
+        this.userStatus = userStatus;
+        this.language = language;
+        this.password = password;
+        this.deleted = deleted;
+        this.createDatetime = createDatetime;
+        this.lastStatusChange = lastStatusChange;
+        this.lastLogin = lastLogin;
+        this.userName = userName;
+        this.failedAttempts = failedAttempts;
+        this.payments = payments;
+        this.achs = achs;
+        this.permissions = permissionUsers;
+        this.reports = reportUsers;
+        this.partnersForRelatedClerk = partnersForRelatedClerk;
+        this.customer = customer;
+        this.partnersForUserId = partnersForUserId;
+        this.purchaseOrdersForCreatedBy = purchaseOrdersForCreatedBy;
+        this.orders = purchaseOrdersForUserId;
+        this.creditCards = creditCards;
+        this.notificationMessageArchs = notificationMessageArchs;
+        this.roles = roles;
+        this.eventLogs = eventLogs;
+        this.invoices = invoices;
     }
 
     public UserDTO(UserDTO another) {
@@ -130,53 +184,6 @@ public class UserDTO implements java.io.Serializable {
         setInvoices(another.getInvoices());
     }
 
-    public UserDTO(int id) {
-        this.id = id;
-    }
-
-    public UserDTO(int id, short deleted, Date createDatetime, int failedAttempts) {
-        this.id = id;
-        this.deleted = deleted;
-        this.createDatetime = createDatetime;
-        this.failedAttempts = failedAttempts;
-    }
-
-    public UserDTO(int id, CurrencyDTO currencyDTO, CompanyDTO entity, SubscriberStatusDTO subscriberStatus,
-            UserStatusDTO userStatus, LanguageDTO language, String password, short deleted, Date createDatetime,
-            Date lastStatusChange, Date lastLogin, String userName, int failedAttempts, Set<PaymentDTO> payments,
-            Set<AchDTO> achs, Set<PermissionUserDTO> permissionUsers, Set<ReportUserDTO> reportUsers,
-            Set<Partner> partnersForRelatedClerk, CustomerDTO customer, Partner partnersForUserId,
-            Set<OrderDTO> purchaseOrdersForCreatedBy, Set<OrderDTO> purchaseOrdersForUserId,
-            Set<CreditCardDTO> creditCards, Set<NotificationMessageArchDTO> notificationMessageArchs, Set<RoleDTO> roles,
-            Set<EventLogDTO> eventLogs, Set<InvoiceDTO> invoices) {
-        this.id = id;
-        this.currencyDTO = currencyDTO;
-        this.company = entity;
-        this.subscriberStatus = subscriberStatus;
-        this.userStatus = userStatus;
-        this.language = language;
-        this.password = password;
-        this.deleted = deleted;
-        this.createDatetime = createDatetime;
-        this.lastStatusChange = lastStatusChange;
-        this.lastLogin = lastLogin;
-        this.userName = userName;
-        this.failedAttempts = failedAttempts;
-        this.payments = payments;
-        this.achs = achs;
-        this.permissions = permissionUsers;
-        this.reports = reportUsers;
-        this.partnersForRelatedClerk = partnersForRelatedClerk;
-        this.customer = customer;
-        this.partnersForUserId = partnersForUserId;
-        this.purchaseOrdersForCreatedBy = purchaseOrdersForCreatedBy;
-        this.orders = purchaseOrdersForUserId;
-        this.creditCards = creditCards;
-        this.notificationMessageArchs = notificationMessageArchs;
-        this.roles = roles;
-        this.eventLogs = eventLogs;
-        this.invoices = invoices;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "base_user_GEN")
@@ -189,54 +196,18 @@ public class UserDTO implements java.io.Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "currency_id")
-    public CurrencyDTO getCurrency() {
-        return this.currencyDTO;
+    @Transient
+    public Integer getUserId() {
+        return id;
     }
 
-    public void setCurrency(CurrencyDTO currencyDTO) {
-        this.currencyDTO = currencyDTO;
+    @Column(name = "user_name", length = 50)
+    public String getUserName() {
+        return this.userName;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "entity_id")
-    public CompanyDTO getCompany() {
-        return this.company;
-    }
-
-    public void setCompany(CompanyDTO entity) {
-        this.company = entity;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscriber_status")
-    public SubscriberStatusDTO getSubscriberStatus() {
-        return this.subscriberStatus;
-    }
-
-    public void setSubscriberStatus(SubscriberStatusDTO subscriberStatus) {
-        this.subscriberStatus = subscriberStatus;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
-    public UserStatusDTO getUserStatus() {
-        return this.userStatus;
-    }
-
-    public void setUserStatus(UserStatusDTO userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_id")
-    public LanguageDTO getLanguage() {
-        return this.language;
-    }
-
-    public void setLanguage(LanguageDTO language) {
-        this.language = language;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     @Column(name = "password", length = 40)
@@ -248,6 +219,10 @@ public class UserDTO implements java.io.Serializable {
         this.password = password;
     }
 
+    /**
+     * Returns 1 if this user is deleted, 0 if they are active.
+     * @return is user deleted
+     */
     @Column(name = "deleted", nullable = false)
     public int getDeleted() {
         return this.deleted;
@@ -255,6 +230,71 @@ public class UserDTO implements java.io.Serializable {
 
     public void setDeleted(int deleted) {
         this.deleted = deleted;
+    }
+
+    /**
+     * Returns true if this user is enabled and not deleted.
+     *
+     * todo: enabled flag is transient, field currently only exists for Spring Security integration
+     *
+     * @return true if user enabled
+     */
+    @Transient
+    public boolean isEnabled() {
+        return enabled && deleted == 0;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    /**
+     * Returns true if this user's account is expired.
+     *
+     * todo: expired flag is transient, field currently only exists for Spring Security integration
+     *
+     * @return true if user expired
+     */
+    @Transient
+    public boolean isAccountExpired() {
+        return accountExpired;
+    }
+
+    public void setAccountExpired(boolean accountExpired) {
+        this.accountExpired = accountExpired;
+    }
+
+    /**
+     * Returns true if this user's account has been locked, either by a system administrator
+     * or by too many failed log-in attempts.
+     *
+     * todo: locked flag is transient, field currently only exists for Spring Security integration
+     *
+     * @return true if user is locked
+     */
+    @Transient
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
+    }
+
+    /**
+     * Returns true if the users password has expired.
+     *
+     * todo: expired flag is transient, field currently only exists for Spring Security integration
+     *
+     * @return true if password has expired
+     */
+    @Transient
+    public boolean isPasswordExpired() {
+        return passwordExpired;
+    }
+
+    public void setPasswordExpired(boolean passwordExpired) {
+        this.passwordExpired = passwordExpired;
     }
 
     @Column(name = "create_datetime", nullable = false, length = 29)
@@ -284,15 +324,6 @@ public class UserDTO implements java.io.Serializable {
         this.lastLogin = lastLogin;
     }
 
-    @Column(name = "user_name", length = 50)
-    public String getUserName() {
-        return this.userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     @Column(name = "failed_attempts", nullable = false)
     public int getFailedAttempts() {
         return this.failedAttempts;
@@ -300,6 +331,104 @@ public class UserDTO implements java.io.Serializable {
 
     public void setFailedAttempts(int failedAttempts) {
         this.failedAttempts = failedAttempts;
+    }
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "user_role_map", joinColumns = {
+            @JoinColumn(name = "user_id", updatable = false)}, inverseJoinColumns = {
+            @JoinColumn(name = "role_id", updatable = false)})
+    public Set<RoleDTO> getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(Set<RoleDTO> roles) {
+        this.roles = roles;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
+    public Set<PermissionUserDTO> getPermissions() {
+        return this.permissions;
+    }
+
+    public void setPermissions(Set<PermissionUserDTO> permissionUsers) {
+        this.permissions = permissionUsers;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id")
+    public CurrencyDTO getCurrency() {
+        return this.currencyDTO;
+    }
+
+    public void setCurrency(CurrencyDTO currencyDTO) {
+        this.currencyDTO = currencyDTO;
+    }
+
+    @Transient
+    public Integer getCurrencyId() {
+        if (getCurrency() == null) {
+            return null;
+        }
+        return getCurrency().getId();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id")
+    public CompanyDTO getCompany() {
+        return this.company;
+    }
+
+    public void setCompany(CompanyDTO entity) {
+        this.company = entity;
+    }
+
+    @Transient
+    public CompanyDTO getEntity() {
+        return getCompany();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscriber_status")
+    public SubscriberStatusDTO getSubscriberStatus() {
+        return this.subscriberStatus;
+    }
+
+    public void setSubscriberStatus(SubscriberStatusDTO subscriberStatus) {
+        this.subscriberStatus = subscriberStatus;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
+    public UserStatusDTO getUserStatus() {
+        return this.userStatus;
+    }
+
+    public void setUserStatus(UserStatusDTO userStatus) {
+        this.userStatus = userStatus;
+    }
+
+    @Transient
+    public UserStatusDTO getStatus() {
+        return getUserStatus();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_id")
+    public LanguageDTO getLanguage() {
+        return this.language;
+    }
+
+    public void setLanguage(LanguageDTO language) {
+        this.language = language;
+    }
+
+    @Transient
+    public Integer getLanguageIdField() {
+        if (getLanguage() == null) {
+            return getEntity().getLanguageId();
+        }
+
+        return getLanguage().getId();
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
@@ -320,14 +449,6 @@ public class UserDTO implements java.io.Serializable {
         this.achs = achs;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
-    public Set<PermissionUserDTO> getPermissions() {
-        return this.permissions;
-    }
-
-    public void setPermissions(Set<PermissionUserDTO> permissionUsers) {
-        this.permissions = permissionUsers;
-    }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
     public Set<ReportUserDTO> getReports() {
@@ -385,8 +506,8 @@ public class UserDTO implements java.io.Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "user_credit_card_map", joinColumns = {
-        @JoinColumn(name = "user_id", updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "credit_card_id", updatable = false)})
+            @JoinColumn(name = "user_id", updatable = false)}, inverseJoinColumns = {
+            @JoinColumn(name = "credit_card_id", updatable = false)})
     public Set<CreditCardDTO> getCreditCards() {
         return this.creditCards;
     }
@@ -402,18 +523,6 @@ public class UserDTO implements java.io.Serializable {
 
     public void setNotificationMessageArchs(Set<NotificationMessageArchDTO> notificationMessageArchs) {
         this.notificationMessageArchs = notificationMessageArchs;
-    }
-
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "user_role_map", joinColumns = {
-        @JoinColumn(name = "user_id", updatable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "role_id", updatable = false)})
-    public Set<RoleDTO> getRoles() {
-        return this.roles;
-    }
-
-    public void setRoles(Set<RoleDTO> roles) {
-        this.roles = roles;
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "baseUser")
@@ -444,49 +553,14 @@ public class UserDTO implements java.io.Serializable {
         this.versionNum = versionNum;
     }
 
-    /*
-     * Conveniant methods to ease migration from entity beans
-     */
-    @Transient
-    public CompanyDTO getEntity() {
-        return getCompany();
-    }
-
-    @Transient
-    public Integer getUserId() {
-        return id;
-    }
-
-    @Transient
-    public Integer getLanguageIdField() {
-        if (getLanguage() == null) {
-            return getEntity().getLanguageId();
-        }
-
-        return getLanguage().getId();
-    }
-
-    @Transient
-    public UserStatusDTO getStatus() {
-        return getUserStatus();
-    }
-
-    @Transient
-    public Integer getCurrencyId() {
-        if (getCurrency() == null) {
-            return null;
-        }
-        return getCurrency().getId();
-    }
-
     @Override
     public String toString() {
         /*  Avoid lazy loaded fields to prevent a LazyInitializationException
             when printing users outside of the initial transaction. */
-        return "UserDTO{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                '}';
+        return "UserDTO{"
+               + "id=" + id
+               + ", userName='" + userName + '\''
+               + '}';
     }
 
     public void touch() {

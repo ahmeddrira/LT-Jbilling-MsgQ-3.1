@@ -331,7 +331,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer createUser(UserWS newUser)
             throws SessionInternalError {
 
-        validateUser(newUser);
+//        validateUser(newUser);
         newUser.setUserId(0);
 
         Integer entityId = getCallerCompanyId();

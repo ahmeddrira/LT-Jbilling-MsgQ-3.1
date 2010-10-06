@@ -48,7 +48,7 @@
         </sec:access>
         super user!
       </sec:access>
-      <sec:access expression="hasRole('ROLE_CLERK')">
+      <sec:access expression="hasRole('ROLE_INTERNAL')">
         Your logged in as an internal user.
       </sec:access>
       <sec:access expression="hasRole('ROLE_CLERK')">

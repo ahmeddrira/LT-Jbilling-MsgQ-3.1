@@ -117,14 +117,19 @@ import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 @Transactional( propagation = Propagation.REQUIRED )
-@WebService( endpointInterface = "com.sapienter.jbilling.server.util.IWebServicesSessionBean" )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
     private static final Logger LOG = Logger.getLogger(WebServicesSessionSpringBean.class);
     private IWebServicesCaller caller;
 
 	public IWebServicesCaller getCaller() {
-		return caller;
+        // TODO: stub until security not implemented for WS
+        IWebServicesCaller stub = new WebServicesCaller();
+        stub.setCallerCompanyId(1);
+        stub.setCallerUserName("admin");
+        stub.setCallerId(1);
+        return stub;
+//        return caller;
 	}
 
 	public void setCaller(IWebServicesCaller caller) {
@@ -1735,11 +1740,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     }
 
     private Integer getCallerId() {
-        return caller.getCallerId();
+        return getCaller().getCallerId();
     }
 
     private Integer getCallerCompanyId() {
-        return caller.getCallerCompanyId();
+        return getCaller().getCallerCompanyId();
     }
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {
@@ -1938,7 +1943,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ret;
     }
 
-    @Override
     public void updateAch(Integer userId, com.sapienter.jbilling.server.entity.AchDTO ach)
             throws SessionInternalError {
         
@@ -1956,7 +1960,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         sess.updateACH(userId, executorId, ac);
     }
 
-    @Override
     public Integer getAuthPaymentType(Integer userId)
             throws SessionInternalError {
         
@@ -1965,7 +1968,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return sess.getAuthPaymentType(userId);
     }
 
-    @Override
     public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
             throws SessionInternalError {
         

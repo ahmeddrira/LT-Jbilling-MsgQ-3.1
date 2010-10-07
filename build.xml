@@ -30,8 +30,17 @@
         </sequential>
     </macrodef>
 
+    <!-- for accessing GRAILS_HOME -->
+    <property environment="env"/>
+
     <path id="compile.classpath">
         <fileset dir="${source.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${env.GRAILS_HOME}/lib/">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${grails.plugins.lib.dir}">
             <include name="*.jar"/>
         </fileset>
         <fileset dir="${basedir}/../lib">
@@ -52,14 +61,17 @@
         </fileset>
 
         <!-- classes for webservices -->
-        <pathelement location="${source.lib.dir}/spring.jar"/>
+        <fileset dir="${env.GRAILS_HOME}/lib/">
+            <include name="*spring*.jar"/>
+            <include name="aopalliance*.jar"/>
+        </fileset>
         <pathelement location="${source.lib.dir}/hibernate3.jar"/>
         <pathelement location="${source.lib.dir}/cxf.jar"/>
         <pathelement location="${source.lib.dir}/XmlSchema.jar"/>
         <pathelement location="${source.lib.dir}/wsdl4j.jar"/>
         <pathelement location="${source.lib.dir}/FastInfoset.jar"/>
         <pathelement location="${source.lib.dir}/neethi.jar"/>
-        <pathelement location="${source.lib.dir}/hessian.jar"/>
+        <pathelement location="${source.lib.dir}/hessian-4.0.7.jar"/>
         <pathelement location="${source.lib.dir}/joda-time.jar"/>
     </path>
     
@@ -205,8 +217,8 @@
         -->
         <tstamp/>
     </target>
-    
-    
+
+
     <target name="compile_api" depends="init">
         <javac debug="on" destdir="${build.api.dir}" target="1.5" source="1.5">
             <classpath refid="compile.classpath"/>

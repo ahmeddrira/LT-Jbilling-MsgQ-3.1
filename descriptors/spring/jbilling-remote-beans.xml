@@ -15,14 +15,14 @@
     <jaxws:client id="apiClient2"
             serviceClass="com.sapienter.jbilling.server.util.IWebServicesSessionBean"
             address="http://localhost:8080/jbilling/services/api"
-            username="admin" password="123qwe"/>
+            username="admin;1" password="123qwe"/>
             
             
      <bean id="apiClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/hessian/ApiService"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
         <property name="hessian2" value="true"/>
-        <property name="username" value="admin"/>
+        <property name="username" value="admin;1"/>
         <property name="password" value="123qwe"/>
     </bean>
 
@@ -30,7 +30,7 @@
     <bean id="apiClient3" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/httpinvoker/ApiService"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
-        <!--<property name="username" value="mordor"/>-->
+        <!--<property name="username" value="mordor;2"/>-->
         <!--<property name="password" value="123qwe"/>-->
     </bean>    
 

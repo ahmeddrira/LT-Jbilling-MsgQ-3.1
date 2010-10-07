@@ -79,8 +79,28 @@ log4j = {
     }
 }
 
-// Spring Security
-grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.sapienter.jbilling.server.user.db.UserDTO'
-grails.plugins.springsecurity.userLookup.usernamePropertyName = 'userName'
-grails.plugins.springsecurity.authority.className = 'com.sapienter.jbilling.server.user.permisson.db.PermissionDTO'
+/*
+    Spring Security
+ */
+// require authentication on all URL's
+grails.plugins.springsecurity.rejectIfNoRule = false
+
+// static security rules 
+grails.plugins.springsecurity.controllerAnnotations.staticRules = [
+        '/services/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120'],
+        '/hessian/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120'],
+        '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120']
+]
+
+// basic HTTP authentication filter for web-services
+grails.plugins.springsecurity.useBasicAuth = true
+grails.plugins.springsecurity.basic.realmName = "jBilling Web Services"
+grails.plugins.springsecurity.filterChain.chainMap = [
+        '/services/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+        '/hessian/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+        '/httpinvoker/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+        '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
+]
+
+// voter configuration
 grails.plugins.springsecurity.voterNames = ['authenticatedVoter', 'roleVoter', 'permissionVoter', 'webExpressionVoter']

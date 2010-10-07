@@ -92,15 +92,8 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
             authorities.add(role);
         }
 
-        /*
-           spring compares passwords encoded using it's own hash service, so we need to "trick" the
-           authentication routine by ensuring that the password coming from the db has been encoded
-           using the same facility. 
-         */
-        String password = getSpringSecurityService().encodePassword(user.getPassword(), null);
-
         // return user details for the retrieved account
-        return new CompanyUserDetails(user.getUserName(), password, user.isEnabled(),
+        return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
                                       user.getId(), user.getEntity().getId());

@@ -42,25 +42,11 @@ import javax.servlet.http.HttpServletRequest;
  * @since 04-10-2010
  */
 public class CompanyUserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    
+
     public static final String FORM_CLIENT_ID_KEY = "j_client_id";
-    public static final String VALUE_SEPARATOR = ":";
+    public static final String VALUE_SEPARATOR = ";";
 
     private String clientIdParameter;
-    
-    /**
-     * Returns the form submitted password as an encrypted string using jBillings
-     * own crypto services. This encrypted password will be compared to the users
-     * stored encrypted password for account authentication.
-     *
-     * @param request HTTP servlet request
-     * @return encrypted password
-     */
-    @Override
-    protected String obtainPassword(HttpServletRequest request) {
-        JBCrypto cipher = JBCrypto.getPasswordCrypto(Constants.TYPE_ROOT);
-        return cipher.encrypt(super.obtainPassword(request));        
-    }
 
     /**
      * Returns the form submitted user name as colon delimited string containing

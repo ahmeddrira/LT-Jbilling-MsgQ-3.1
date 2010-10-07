@@ -16,7 +16,8 @@ source.client.package.dir=com/sapienter/jbilling/client
 source.common.package.dir=com/sapienter/jbilling/common
 source.test.dir=${source.dir}/test
 source.rules.dir=${source.descriptor.dir}/rules
-source.lib.dir=${source.dir}/jars
+source.lib.dir=${source.dir}/lib
+grails.plugins.lib.dir=${source.dir}/jars
 
 # 
 # Tools, APIs related properties

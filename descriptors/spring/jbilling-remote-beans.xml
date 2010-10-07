@@ -30,8 +30,8 @@
     <bean id="apiClient3" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/httpinvoker/ApiService"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
-        <property name="username" value="mordor"/>
-        <property name="password" value="123qwe"/>
+        <!--<property name="username" value="mordor"/>-->
+        <!--<property name="password" value="123qwe"/>-->
     </bean>    
 
 </beans>

@@ -10,11 +10,11 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jms="http://www.springframework.org/schema/jms"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       xmlns:jms="http://www.springframework.org/schema/jms" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
     <!--
           ***************************************************
@@ -37,53 +37,56 @@
     <bean id="userSession" class="com.sapienter.jbilling.server.user.UserSessionBean"/>
     <bean id="invoiceSession" class="com.sapienter.jbilling.server.invoice.InvoiceSessionBean"/>
     <bean id="orderSession" class="com.sapienter.jbilling.server.order.OrderSessionBean"/>
-    <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean" />
+    <bean id="pluggableTaskSession" class="com.sapienter.jbilling.server.pluggableTask.PluggableTaskSessionBean"/>
     <bean id="paymentSession" class="com.sapienter.jbilling.server.payment.PaymentSessionBean"/>
     <bean id="mediationSession" class="com.sapienter.jbilling.server.mediation.MediationSessionBean"/>
     <bean id="reportSession" class="com.sapienter.jbilling.server.report.ReportSessionBean"/>
     <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
-    <bean id="provisioningProcessSession" class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean" />
+    <bean id="provisioningProcessSession"
+          class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
     <!-- The web services API, which is used as main service in the GUI -->
-    <bean id="webServicesSession" scope="session" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
-    	<property name="caller" ref="webCaller"/>
+    <bean id="webServicesSession" scope="session"
+          class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
+        <property name="caller" ref="webCaller"/>
+        <aop:scoped-proxy/>
     </bean>
     <!-- This is populated by the Login action in the GUI, or the authentication filter for a web services call
          If deploying a web services only node, and in a secure environment, simply remove the filter and inject the
          caller attributes directly to enhance performance -->
-    <bean id="webCaller" scope="session" class="com.sapienter.jbilling.server.util.WebServicesCaller" />
+    <bean id="webCaller" scope="session" class="com.sapienter.jbilling.server.util.WebServicesCaller"/>
 
     <!-- Data Access Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"
-        factory-method="getInstance" scope="prototype">
+          factory-method="getInstance" scope="prototype">
         <property name="jbDAS" ref="jbillingTableDAS"/>
     </bean>
 
-   <bean id="jbillingTableDAS" class="com.sapienter.jbilling.server.util.db.JbillingTableDAS"
-        factory-method="getInstance" scope="prototype">
+    <bean id="jbillingTableDAS" class="com.sapienter.jbilling.server.util.db.JbillingTableDAS"
+          factory-method="getInstance" scope="prototype">
         <property name="cache" ref="cacheProviderFacade"/>
         <property name="cacheModel" ref="cacheModelReadOnly"/>
-   </bean>
+    </bean>
 
-   <bean id="pluggableTaskDAS" class="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS"
-        factory-method="getInstance" scope="prototype">
+    <bean id="pluggableTaskDAS" class="com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDAS"
+          factory-method="getInstance" scope="prototype">
         <property name="cache" ref="cacheProviderFacade"/>
         <property name="cacheModel" ref="cacheModelPTDTO"/>
         <property name="flushModel" ref="flushModelPTDTO"/>
-   </bean>
+    </bean>
 
-    
+
     <!-- Utility beans -->
     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean"/>
-    
+
 
     <!-- Thrid level cache configuration. Annotations and proxies do not work, other proxies get confussed  -->
     <bean id="cacheManager"
-        class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+          class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
     </bean>
 
     <bean id="cacheProviderFacade"
-        class="org.springmodules.cache.provider.ehcache.EhCacheFacade">
-        <property name="cacheManager" ref="cacheManager" />
+          class="org.springmodules.cache.provider.ehcache.EhCacheFacade">
+        <property name="cacheManager" ref="cacheManager"/>
     </bean>
 
     <bean id="cacheModelReadOnly" class="org.springmodules.cache.provider.ehcache.EhCacheCachingModel">
@@ -108,8 +111,8 @@
         <property name="cacheNames" value="itemPriceCache"/>
         <property name="flushBeforeMethodExecution" value="true"/>
     </bean>
-    
-     <!--
+
+    <!--
           ***************************************************
           *         AOP: Security / Logging                 *
           ***************************************************
@@ -122,7 +125,7 @@
         <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
     </bean>
     -->
-    
+
     <!-- Exception Advice for WebServicesSessionBean -->
     <!-- Re-throws all exceptions as SessionInternalErrors. -->
     <bean id="webServicesExceptionAdvice" class="com.sapienter.jbilling.server.util.WSExceptionAdvice"/>
@@ -138,5 +141,16 @@
         <property name="advice" ref="webServicesLogAdvice"/>
         <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
     </bean>
-    
+
+    <!-- Configuration for InternalEventsRulesTasks -->
+    <!-- List of internal events that a task subscribes to. -->
+    <util:list id="invoiceEvents">
+        <value>com.sapienter.jbilling.server.order.event.OrderToInvoiceEvent</value>
+    </util:list>
+
+    <!-- Map linking pluggable task ids to an event list defined above. -->
+    <util:map id="internalEventsRulesTaskConfig">
+        <entry key="540" value-ref="invoiceEvents"/>
+    </util:map>
+
 </beans>

@@ -1,13 +1,11 @@
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
-import com.sapienter.jbilling.server.user.ContactWS;
-import com.sapienter.jbilling.server.user.CreateResponseWS;
-import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.server.user.*;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
@@ -89,9 +87,8 @@ public class RemotingTest extends TestCase {
             assertTrue(invoicesIds.length > 0);
 
             service.createInvoice(USER_ID, false);
-
-            service.deleteInvoice(invoicesIds[0]);
             try {
+                service.deleteInvoice(invoicesIds[0]);
                 invoice = service.getInvoiceWS(invoicesIds[0]);
                 fail("invoice should be deleted");
             } catch (Exception ex) {
@@ -228,6 +225,26 @@ public class RemotingTest extends TestCase {
 //            newUser = service.getUserWS(newUserId);
 //            assertNull(newUser);
 
+//            ItemDTOEx[] itemDtos =  service.getAllItems();
+//            assertNotNull(itemDtos);
+//            assertTrue(itemDtos.length > 0);
+
+//            UserTransitionResponseWS[] transactions = service.getUserTransitions(null, null);
+//            assertNotNull(transactions);
+//            assertTrue(transactions.length > 0);
+
+//            transactions =  service.getUserTransitionsAfterId(0);
+//            assertNotNull(transactions);
+//            assertTrue(transactions.length > 0);
+
+//            ItemDTOEx item = service.getItem(240, 2, "");
+//            assertNotNull(item);
+//            assertEquals(new Integer(240), item.getId());
+
+            invoice = service.getLatestInvoiceByItemType(USER_ID, 1);
+            assertNotNull(invoice);
+
+            // not covered by tests methods
 //    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
 //    public Integer applyPayment(PaymentWS payment, Integer invoiceId)
 //    public PaymentWS getPayment(Integer paymentId)
@@ -239,11 +256,7 @@ public class RemotingTest extends TestCase {
 
 //    public void updateItem(ItemDTOEx item);
 //    public Integer createItem(ItemDTOEx  item)
-//    public ItemDTOEx[] getAllItems()
-//    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
-//    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
-//    public ItemDTOEx getItem(Integer itemId, Integer userId, String pricing);
-//    public InvoiceWS getLatestInvoiceByItemType(Integer userId,  Integer itemTypeId)
+
 //    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
 //    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId)
 //    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
@@ -257,12 +270,6 @@ public class RemotingTest extends TestCase {
 //    public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
 //    public Integer getAuthPaymentType(Integer userId)
 //    public void generateRules(String rulesData)
-
-
-            // test getLatestInvoice
-            //...
-
-            // the rest of the tests to include every method of IWebServicesSessionBean
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -419,8 +419,8 @@
 	            <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
 	            <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
 
-	            <classpath refid="test.classpath"/>
                 <classpath path="${basedir}/target/classes"/>
+	            <classpath refid="test.classpath"/>
 
 	            <formatter type="brief" usefile="false"/>
 	            <formatter type="xml"/>            

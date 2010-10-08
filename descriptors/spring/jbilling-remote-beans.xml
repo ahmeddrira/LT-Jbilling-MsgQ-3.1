@@ -11,14 +11,23 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
-    <!-- SOAP Web Service -->
+    <!--
+        Remote method calls are authenticated and must be made using a valid username and password.
+
+        Usernames should be in the format "username;companyId", where the resulting remote bean will be scoped
+        to the given user and company. Using the API for multiple clients requires defining multiple remote beans.
+    -->
+
+    <!-- SOAP remote web-service bean -->
     <jaxws:client id="apiClient2"
-            serviceClass="com.sapienter.jbilling.server.util.IWebServicesSessionBean"
-            address="http://localhost:8080/jbilling/services/api"
-            username="admin;1" password="123qwe"/>
-            
-            
-     <bean id="apiClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" lazy-init="true">
+                  serviceClass="com.sapienter.jbilling.server.util.IWebServicesSessionBean"
+                  address="http://localhost:8080/jbilling/services/api"
+                  username="admin;1"
+                  password="123qwe"/>
+
+
+    <!-- Hessian remote web-service bean -->
+    <bean id="apiClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/hessian/ApiService"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
         <property name="hessian2" value="true"/>
@@ -26,7 +35,8 @@
         <property name="password" value="123qwe"/>
     </bean>
 
-    
+
+    <!-- Spring HTTP Invoker remote web-service bean -->
     <bean id="apiClient3" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/httpinvoker/ApiService"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>

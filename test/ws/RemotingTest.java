@@ -25,6 +25,10 @@ public class RemotingTest extends TestCase {
 
         service = (IWebServicesSessionBean) RemoteContext.getBean(RemoteContext.Name.API_CLIENT);
 
+        // Hessian API Client for user 'admin' company 1
+        assertEquals(1, service.getCallerId().intValue());
+        assertEquals(1, service.getCallerCompanyId().intValue());
+
         System.out.println("Hessian tests");
         makeCalls();
         System.out.println("Hessian tests done");
@@ -33,6 +37,10 @@ public class RemotingTest extends TestCase {
     public void testWebServices() {
 
         service = (IWebServicesSessionBean) RemoteContext.getBean(RemoteContext.Name.API_CLIENT_2);
+
+        // SOAP API for user 'admin' company 1
+        assertEquals(1, service.getCallerId().intValue());
+        assertEquals(1, service.getCallerCompanyId().intValue());
 
         System.out.println("Web Services tests");
         makeCalls();
@@ -43,11 +51,14 @@ public class RemotingTest extends TestCase {
 
         service = (IWebServicesSessionBean) RemoteContext.getBean(RemoteContext.Name.API_CLIENT_3);
 
+        // SOAP API for user 'mordor' company 2
+        assertEquals(12, service.getCallerId().intValue());
+        assertEquals(2, service.getCallerCompanyId().intValue());
+
         System.out.println("HTTP Invoker tests");
         makeCalls();
         System.out.println("HTTP Invoker tests done");
     }
-
 
     private void makeCalls() {
         try {

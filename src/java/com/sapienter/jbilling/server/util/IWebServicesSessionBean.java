@@ -45,7 +45,10 @@ import com.sapienter.jbilling.server.entity.AchDTO;
  */
 @WebService
 public interface IWebServicesSessionBean {
-	
+
+    public Integer getCallerId();
+    public Integer getCallerCompanyId();
+
     /*
      * INVOICES
      */

@@ -11,14 +11,25 @@ import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.user.*
+import grails.plugins.springsecurity.SpringSecurityService
+import org.springframework.security.core.userdetails.UserDetails
+import com.sapienter.jbilling.client.authentication.CompanyUserDetails
 
 class ApiService implements IWebServicesSessionBean {
 
-    IWebServicesSessionBean webServicesSession
+    def IWebServicesSessionBean webServicesSession
 
     static transactional = true
 
     static expose = ['hessian', 'cxfjax', 'httpinvoker']
+
+    public Integer getCallerId() {
+        return webServicesSession.getCallerId();
+    }
+
+    public Integer getCallerCompanyId() {
+        return webServicesSession.getCallerCompanyId();
+    }
 
     public InvoiceWS getInvoiceWS(Integer invoiceId) {
         return webServicesSession.getInvoiceWS(invoiceId)

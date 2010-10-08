@@ -35,13 +35,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.jws.WebService;
-
+import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
+import grails.plugins.springsecurity.SpringSecurityService;
 import org.apache.commons.validator.ValidatorException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,7 +107,6 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.db.AchDAS;
 import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
@@ -118,25 +119,51 @@ import com.sapienter.jbilling.server.util.db.CurrencyDAS;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
-
     private static final Logger LOG = Logger.getLogger(WebServicesSessionSpringBean.class);
-    private IWebServicesCaller caller;
 
-	public IWebServicesCaller getCaller() {
-        // TODO: stub until security not implemented for WS
-        IWebServicesCaller stub = new WebServicesCaller();
-        stub.setCallerCompanyId(1);
-        stub.setCallerUserName("admin");
-        stub.setCallerId(1);
-        return stub;
-//        return caller;
-	}
+    private SpringSecurityService springSecurityService;
 
-	public void setCaller(IWebServicesCaller caller) {
-		this.caller = caller;
-	}
+    public SpringSecurityService getSpringSecurityService() {
+        return springSecurityService;
+    }
 
-	/*
+    public void setSpringSecurityService(SpringSecurityService springSecurityService) {
+        this.springSecurityService = springSecurityService;
+    }
+
+    /**
+     * Validates that the caller is a root user. If the user is not found this method will
+     * throw the standard Hibernate ObjectNotFoundException.
+     */
+    private void validateCaller() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        
+        UserBL bl = new UserBL();
+        bl.setRoot(details.getUsername());
+        bl.getEntityId(bl.getEntity().getUserId());
+    }
+
+    /**
+     * Returns the user ID of the authenticated user account making the web service call.
+     *
+     * @return caller user ID
+     */
+    public Integer getCallerId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        return details.getUserId();
+    }
+
+    /**
+     * Returns the company ID of the authenticated user account making the web service call.
+     *
+     * @return caller company ID
+     */
+    public Integer getCallerCompanyId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        return details.getCompanyId();
+    }  
+
+    /*
      * INVOICES
      */
     public InvoiceWS getInvoiceWS(Integer invoiceId)
@@ -1495,13 +1522,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
-    private void validateCaller() {
-        String root = caller.getCallerUserName();
-        UserBL bl = new UserBL();
-        bl.setRoot(root);
-        bl.getEntityId(bl.getEntity().getUserId());
-    }
-
     private PaymentDTOEx doPayInvoice(InvoiceDTO invoice, CreditCardDTO creditCard)
             throws SessionInternalError {
 
@@ -1737,14 +1757,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
         OrderBL order = new OrderBL();
         return order.getListIdsByItemType(userId, itemTypeId, number);
-    }
-
-    private Integer getCallerId() {
-        return getCaller().getCallerId();
-    }
-
-    private Integer getCallerCompanyId() {
-        return getCaller().getCallerCompanyId();
     }
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {

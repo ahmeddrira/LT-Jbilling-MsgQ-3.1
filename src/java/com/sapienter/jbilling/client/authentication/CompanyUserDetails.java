@@ -33,16 +33,44 @@ import java.util.Collection;
  */
 public class CompanyUserDetails extends GrailsUser {
 
-    private final Integer entityId;
+    private final Integer companyId;
 
     public CompanyUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
                               boolean credentialsNonExpired, boolean accountNonLocked,
-                              Collection<GrantedAuthority> authorities, Integer id, Integer entityId) {
+                              Collection<GrantedAuthority> authorities, Integer id, Integer companyId) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities, id);
-        this.entityId = entityId;
+        this.companyId = companyId;
     }
 
-    public Integer getEntityId() {
-        return entityId;
+    /**
+     * Returns the user ID as an Integer. This is the same as calling {@link #getId()}.
+     * 
+     * @return user ID
+     */
+    public Integer getUserId() {
+        return (Integer) getId();
+    }
+
+    /**
+     * Returns the users company ID.
+     *
+     * @return user company ID
+     */
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    @Override public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("CompanyUserDetails");
+        sb.append("{id=").append(getId());
+        sb.append(", username=").append("'").append(getUsername()).append("'");
+        sb.append(", companyId=").append(getCompanyId());
+        sb.append(", enabled=").append(isEnabled());
+        sb.append(", accountExpired=").append(!isAccountNonExpired());  
+        sb.append(", credentialsExpired=").append(!isCredentialsNonExpired());
+        sb.append(", accountLocked=").append(!isAccountNonLocked());
+        sb.append('}');
+        return sb.toString();
     }
 }

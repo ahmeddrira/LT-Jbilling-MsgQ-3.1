@@ -35,7 +35,8 @@ public class RemoteContext {
     public enum Name {
         API_CLIENT,
         API_CLIENT_2,
-        API_CLIENT_3
+        API_CLIENT_3,
+        SPRING_SECURITY_SERVICE
     }
     
     private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
@@ -46,7 +47,8 @@ public class RemoteContext {
         springBeans.put(Name.API_CLIENT, "apiClient");
         springBeans.put(Name.API_CLIENT_2, "apiClient2");
         springBeans.put(Name.API_CLIENT_3, "apiClient3");
-    };
+        springBeans.put(Name.SPRING_SECURITY_SERVICE, "springSecurityService");
+    }
     
     // should not be instantiated
     private RemoteContext() {

@@ -44,16 +44,12 @@
     <bean id="billingProcessSession" class="com.sapienter.jbilling.server.process.BillingProcessSessionBean"/>
     <bean id="provisioningProcessSession"
           class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
+
     <!-- The web services API, which is used as main service in the GUI -->
-    <bean id="webServicesSession" scope="session"
-          class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
-        <property name="caller" ref="webCaller"/>
+    <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean" scope="session">
+        <property name="springSecurityService" ref="springSecurityService"/> <!-- grails security core plug-in -->
         <aop:scoped-proxy/>
     </bean>
-    <!-- This is populated by the Login action in the GUI, or the authentication filter for a web services call
-         If deploying a web services only node, and in a secure environment, simply remove the filter and inject the
-         caller attributes directly to enhance performance -->
-    <bean id="webCaller" scope="session" class="com.sapienter.jbilling.server.util.WebServicesCaller"/>
 
     <!-- Data Access Service beans -->
     <bean id="internationalDescriptionDAS" class="com.sapienter.jbilling.server.util.db.InternationalDescriptionDAS"
@@ -79,7 +75,7 @@
     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean"/>
 
 
-    <!-- Thrid level cache configuration. Annotations and proxies do not work, other proxies get confussed  -->
+    <!-- Thrid level cache configuration. Annotations and proxies do not work, other proxies get confused  -->
     <bean id="cacheManager"
           class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
     </bean>

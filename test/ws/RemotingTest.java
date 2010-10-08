@@ -23,7 +23,7 @@ public class RemotingTest extends TestCase {
 
     public void testHessian() {
 
-        service = (IWebServicesSessionBean) RemoteContext.getBean(RemoteContext.Name.API_CLIENT);
+        service = RemoteContext.getBean(RemoteContext.Name.API_CLIENT);
 
         // Hessian API Client for user 'admin' company 1
         assertEquals(1, service.getCallerId().intValue());
@@ -36,7 +36,7 @@ public class RemotingTest extends TestCase {
 
     public void testWebServices() {
 
-        service = (IWebServicesSessionBean) RemoteContext.getBean(RemoteContext.Name.API_CLIENT_2);
+        service = RemoteContext.getBean("apiClient2");
 
         // SOAP API for user 'admin' company 1
         assertEquals(1, service.getCallerId().intValue());
@@ -49,7 +49,7 @@ public class RemotingTest extends TestCase {
 
     public void testInvoker() {
 
-        service = (IWebServicesSessionBean) RemoteContext.getBean(RemoteContext.Name.API_CLIENT_3);
+        service = RemoteContext.getBean("apiClient3");
 
         // SOAP API for user 'mordor' company 2
         assertEquals(12, service.getCallerId().intValue());

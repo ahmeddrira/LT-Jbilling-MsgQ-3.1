@@ -20,41 +20,56 @@
 
 package com.sapienter.jbilling.server.util;
 
-import java.util.EnumMap;
-import java.util.Map;
 import org.springframework.context.ApplicationContext;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * Static factory for accessing remote Spring beans.
+ */
 public class RemoteContext {
 
-    private static final ApplicationContext spring = 
-            new ClassPathXmlApplicationContext( new String[] {
-            "/jbilling-remote-beans.xml" });
-    
+    // spring application context for remote beans
+    private static final ApplicationContext spring
+            = new ClassPathXmlApplicationContext( new String[] { "/jbilling-remote-beans.xml" });
+
+    // defined bean names
     public enum Name {
-        API_CLIENT,
-        API_CLIENT_2,
-        API_CLIENT_3,
-        SPRING_SECURITY_SERVICE
+        API_CLIENT                  ("apiClient");
+
+        private String name;
+        Name(String name) { this.name = name; }
+        public String getName() { return name; }
     }
-    
-    private static final Map<Name, String> springBeans = new EnumMap<Name, String>(Name.class);
-    
-    // all the managed beans
-    static {
-        // remote session beans
-        springBeans.put(Name.API_CLIENT, "apiClient");
-        springBeans.put(Name.API_CLIENT_2, "apiClient2");
-        springBeans.put(Name.API_CLIENT_3, "apiClient3");
-        springBeans.put(Name.SPRING_SECURITY_SERVICE, "springSecurityService");
-    }
-    
-    // should not be instantiated
+
+    // static factory cannot be instantiated
     private RemoteContext() {
     }
-    
-    public static Object getBean(Name bean) {
-        return spring.getBean(springBeans.get(bean));
+
+    public static ApplicationContext getApplicationContext() {
+        return spring;
+    }
+
+    /**
+     * Returns a Spring Bean of type T for the given RemoteContext.Name
+     *
+     * @param bean remote context name
+     * @param <T> bean type
+     * @return bean from remote context
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(Name bean) {
+        return (T) getApplicationContext().getBean(bean.getName());
+    }
+
+    /**
+     * Returns a Spring Bean of type T for the given name
+     *
+     * @param beanName bean name
+     * @param <T> bean type
+     * @return bean from remote context
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getBean(String beanName) {
+        return (T)  getApplicationContext().getBean(beanName);
     }
 }

@@ -18,14 +18,6 @@
         to the given user and company. Using the API for multiple clients requires defining multiple remote beans.
     -->
 
-    <!-- SOAP remote web-service bean -->
-    <jaxws:client id="apiClient2"
-                  serviceClass="com.sapienter.jbilling.server.util.IWebServicesSessionBean"
-                  address="http://localhost:8080/jbilling/services/api"
-                  username="admin;1"
-                  password="123qwe"/>
-
-
     <!-- Hessian remote web-service bean -->
     <bean id="apiClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/hessian/ApiService"/>
@@ -35,6 +27,12 @@
         <property name="password" value="123qwe"/>
     </bean>
 
+    <!-- SOAP remote web-service bean -->
+    <jaxws:client id="apiClient2"
+                  serviceClass="com.sapienter.jbilling.server.util.IWebServicesSessionBean"
+                  address="http://localhost:8080/jbilling/services/api"
+                  username="admin;1"
+                  password="123qwe"/>
 
     <!-- Spring HTTP Invoker remote web-service bean -->
     <bean id="apiClient3" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">

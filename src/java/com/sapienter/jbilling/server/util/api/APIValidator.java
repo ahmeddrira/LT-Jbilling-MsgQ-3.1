@@ -59,12 +59,12 @@ public class APIValidator implements MethodBeforeAdvice {
         	String objectname = arg.getClass().getName();
         	if (objectname.endsWith("WS")) {
         		LOG.debug("Call to " + method.getName() + " Validating " + objectname);
-        		Set<ConstraintViolation<UserWS>> constraintViolations =	validator.validate(newUser);
+        		Set<ConstraintViolation<Object>> constraintViolations =	validator.validate(arg);
         		if (constraintViolations.size() > 0) {
-        			log.warn "The user has errors" + constraintViolations.iterator().next().getMessage()
-        			render(view:"user");
+        			LOG.debug("The user has errors" + constraintViolations.iterator().next().getMessage());
+        			
         		} else {
-        			log.warn "The user does not have errors"
+        			LOG.debug("The user does not have errors");
         		}
         	}
         }

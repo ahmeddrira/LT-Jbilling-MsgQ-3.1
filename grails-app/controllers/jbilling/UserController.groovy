@@ -119,7 +119,7 @@ class UserController {
 			flash.message = message(code: 'user.create.failed')
 		}
 		flash.args= [params.userName]
-		flash.user = newUser;
+		//flash.user = newUser;
 		render( view:"user")
 		//		}	
 		//		render "form posted successfully." 

@@ -390,7 +390,7 @@ public class UserBL extends ResultList
         return user.getUserId();
     }
 
-
+    @Deprecated
     public boolean validateUserNamePassword(UserDTOEx loggingUser,
            UserDTOEx db) {
 
@@ -421,6 +421,7 @@ public class UserBL extends ResultList
      * The user must be an administrator and have permission 120 set.
      * Returns the user's UserDTO if successful, otherwise null.
      */
+    @Deprecated
     public UserDTO webServicesAuthenticate(String username, String password) {
         // try to get root user for this username that has web
         // services permission
@@ -509,6 +510,8 @@ public class UserBL extends ResultList
          return ret;
      }
 
+    // todo: remove all menu permissions from the DB, a new set will be needed for the new UI anyways...
+    @Deprecated
     public Menu getMenu(List<PermissionDTO> permissions)
             throws NamingException, SessionInternalError {
 
@@ -540,6 +543,7 @@ public class UserBL extends ResultList
      * @param menuOptionId
      * @return
      */
+    @Deprecated
     private boolean specialMenuFilter(Integer menuOptionId) {
         boolean retValue = true;
 
@@ -1055,6 +1059,7 @@ public class UserBL extends ResultList
         LOG.debug("Subscription status updated to " + id);
     }
 
+    @Deprecated
     public boolean validatePassword(String password) {
         boolean result = true;
         try {
@@ -1082,6 +1087,8 @@ public class UserBL extends ResultList
         return result;
     }
 
+    // todo: should be moved into a scheduled task that expires passwords and sets a flag on the user
+    @Deprecated
     public boolean isPasswordExpired() {
         boolean retValue = false;
         try {

@@ -94,6 +94,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
     * @return the populated userDTO if ok, or null if fails.
     * @param clientUser The userDTO with the username and password to authenticate
     */
+    @Deprecated
     public Integer authenticate(UserDTOEx clientUser) 
             throws SessionInternalError {
         Integer result = Constants.AUTH_WRONG_CREDENTIALS;
@@ -131,6 +132,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
     /**
      * Returns UserDTO if authentication successful, otherwise null.
      */
+    @Deprecated
     public UserDTO webServicesAuthenticate(String username, String password)
             throws SessionInternalError{
         try {
@@ -148,6 +150,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
      * @param entityId entity id
      * @return DTO for GUI
      */
+    @Deprecated
     public UserDTOEx getGUIDTO(String username, Integer entityId) {
         UserDTOEx retValue;
         try {
@@ -1026,6 +1029,7 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
      * @throws NotificationNotFoundException 
      * @throws SessionInternalError 
      */
+    @Deprecated
     public void sendLostPassword(String entityId, String username) 
             throws NumberFormatException, SessionInternalError, 
             NotificationNotFoundException {
@@ -1033,7 +1037,8 @@ public class UserSessionBean implements IUserSessionBean, ApplicationContextAwar
 
         user.sendLostPassword(Integer.valueOf(entityId), user.getEntity().getUserId(),  user.getEntity().getLanguageIdField()); 
     }
-    
+
+    @Deprecated
    public boolean isPasswordExpired(Integer userId) {
         UserBL user;
         user = new UserBL(userId);

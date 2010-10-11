@@ -10,6 +10,7 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 
+
 class UserController {
 	
 	def webServicesSession
@@ -50,17 +51,16 @@ class UserController {
 		//TODO get language id from the current logged in users id.
 		//((UserDTOEx)session[Constants.SESSION_USER_DTO])?.getLanguageId()
 		languageId = "1"
+		UserWS user = null;
 		
-		// get the order session bean
-		IUserSessionBean remoteUser = (IUserSessionBean) Context.getBean(
-		Context.Name.USER_SESSION);
-		UserDTOEx dto  = session.getAttribute(Constants.SESSION_CUSTOMER_DTO);
-		//remoteUser.getUserDTOEx((Integer) session.getAttribute(Constants.SESSION_USER_ID));
-		if (dto != null)
-		{
-			[user: dto]
+		if (params.id) {			
+			int id= Integer.parseInt(params.id)
+			user = webServicesSession.getUserWS(id)
+			println user.getUserName()
 		}
-		render (view: "edit")
+		session["editUser"]= user
+		return [user:user, languageId:languageId]
+//		render (view: "edit", model: user)
 	}
 	
 	def cancel ={
@@ -68,16 +68,27 @@ class UserController {
 	}
 	
 	def postEdit = { 
-		def user = new UserWS();
-		//		if (ccc.hasErrors()) {
-		//			println "Errors found."
-		//			[ user : ccc ]
-		//			//render  (view: "edit")	
-		//		} else {
-		println "No errors."
+		
+		UserWS user= session["editUser"]
+		def userExists= true;
+		if ( user == null ) {
+			userExists=false;
+			user= new UserWS()
+		}
+		println "No errors. User exists=" + userExists
+
+//		if (ccc.hasErrors()) {
+//			println "Errors found."
+//			[ user : ccc ]
+//			//render  (view: "edit")	
+//		} else {
 		
 		//set type Customer - Create/Edit Customer
 		user.setMainRoleId(5);		
+
+		println "processing contact info..."
+		ContactWS contact= new ContactWS();
+		user.setContact(contact);
 		
 		if (params.ach?.abaRouting)
 		{
@@ -85,14 +96,7 @@ class UserController {
 			AchDTO ach=new AchDTO();
 			user.setAch(ach);
 		}
-
-		if (params.contact?.firstName) 
-		{
-			println "processing contact info..."
-			ContactWS contact= new ContactWS();
-			user.setContact(contact);
-		}		
-		
+				
 		if (params.creditCard?.number)
 		{
 			println "processing credit card info..."
@@ -112,8 +116,13 @@ class UserController {
 		bindData(user, params)
 		
 		try {
-			int id = webServicesSession.createUser(user);
-			flash.message = message(code: 'user.create.success')
+			if (userExists) {
+				webServicesSession.updateUser(user)
+				flash.message = message(code: 'user.update.success')
+			} else {
+				int id = webServicesSession.createUser(user);
+				flash.message = message(code: 'user.create.success')
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			flash.message = message(code: 'user.create.failed')
@@ -121,21 +130,6 @@ class UserController {
 		flash.args= [params.userName]
 		//flash.user = newUser;
 		render( view:"user")
-		//		}	
-		//		render "form posted successfully." 
-		//		
-		//		CreditCardDTO dto= new CreditCardDTO();
-		//		AchDTO ach=new AchDTO();
-		//		ContactWS contact= new ContactWS();
-		//		user.setContact(contact);
-		//		user.setCreditCard(dto);
-		//		user.setAch(ach);
-		//		
-		//		bindData (user, params);
-		//		println user.password
-		//		println user.creditCard.number
-		//		println user.ach.abaRouting
-		//		println user.contact.address1
 		
 	}
 }

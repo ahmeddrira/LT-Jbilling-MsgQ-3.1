@@ -31,30 +31,30 @@ class SelectionTagLib {
 		
 		def langId= Integer.parseInt(attrs.languageId);
 		def name= attrs.name;
-		def value = attrs.value ? Integer.parseInt(attrs.value): -1		
+		def value = attrs.value ? (attrs.value instanceof String ? Integer.parseInt(attrs.value): attrs.value) : -1		
 
-		StringBuffer sb= new StringBuffer("");
+		List list= new ArrayList();
+		String[] sarr= null;
+		boolean selected= false;
 		for (UserStatusDTO status: UserStatusDTO.list()) {
-			String title= status.getDescription(Integer.valueOf(langId));
-			sb.append("<option ")
-			if ( value == status.getId()) {
-				sb.append("selected")
+			String title= status.getDescription(Integer.valueOf(langId));			
+			sarr=new String[2]
+			sarr[0]= status.getId()
+			sarr[1]= title
+			list.add(sarr)
+			if (!selected) {
+				selected= (value==sarr[0]) ? true:false
 			}
-			sb.append(" value=\"").append(status.getId())
-			.append("\" >").append(title).append("</option> ");
 		}
+		out << render(template:"/selectTag", model:[name:name, list:list, selected:selected])
 		
-		out << "<select name=\"" + name + "\" id=\"" + name + "\" >"
-		out << "	<option value=\"null\">-</option> "
-		out << sb.toString()
-		out << "</select>"
 	}
 	
 	def subscriberStatus = { attrs, body ->
 		
 		def langId= Integer.parseInt(attrs.languageId);
 		def name= attrs.name;
-		def value = attrs.value ? Integer.parseInt(attrs.value): -1
+		def value = attrs.value ? (attrs.value instanceof String ? Integer.parseInt(attrs.value): attrs.value) : -1
 
 		StringBuffer sb= new StringBuffer("");
 		for (SubscriberStatusDTO status: SubscriberStatusDTO.list()) {

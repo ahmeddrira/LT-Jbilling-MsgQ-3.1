@@ -2,8 +2,7 @@ package jbilling
 
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.common.GatewayBL;
-import com.sapienter.jbilling.common.SessionInternalError;
+
 
 class UserController {
 	
@@ -29,13 +28,13 @@ class UserController {
 	def create = {
         UserWS newUser = new UserWS();
 		bindData (newUser, params);
-        
+		
 		//TODO We need to: Use the internationalization bundle to display those 
 		//messages error/success messages
 		//TODO Add Currency and User Type as drop down 
         newUser.setLanguageId(new Integer(1));
 		newUser.setCurrencyId(1);
-		newUser.setStatusId(1);//
+		newUser.setStatusId(1); //
         //set email
 		try {			
 			int id = webServicesSession.createUser(newUser);
@@ -45,6 +44,7 @@ class UserController {
 			flash.message = message(code: 'user.create.failed')			
 		}
 		flash.args= [params.userName]
+		flash.user = newUser;
 		render( view:"user")
 	}
 }

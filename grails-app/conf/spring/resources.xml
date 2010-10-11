@@ -28,7 +28,7 @@
           scope="singleton"
           init-method="init"
           destroy-method="destroy"/>
-
+    
     <!-- Session Facade beans, used mostly for transaction control and other AOP -->
     <bean id="itemSession" class="com.sapienter.jbilling.server.item.ItemSessionBean"/>
     <bean id="notificationSession" class="com.sapienter.jbilling.server.notification.NotificationSessionBean"/>
@@ -46,6 +46,7 @@
           class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
 
     <!-- The web services API, which is used as main service in the GUI -->
+    <!--  TODO: this does not seem to need to be in the session scope. It does not hold the caller information in it any longer -->
     <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean" scope="session">
         <property name="springSecurityService" ref="springSecurityService"/> <!-- grails security core plug-in -->
         <aop:scoped-proxy/>
@@ -113,21 +114,13 @@
           *         AOP: Security / Logging                 *
           ***************************************************
     -->
-    <!-- Security Advice for WebServicesSessionBean -->
-    <!-- Comment out if this jBilling installation is only used by one company.
-    <bean id="webServicesSecurityAdvice" class="com.sapienter.jbilling.server.util.WSMethodSecurityProxy"/>
-    <bean id="webServicesSecurityAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
-        <property name="advice" ref="webServicesSecurityAdvice"/>
-        <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
-    </bean>
-    -->
-
+    
     <!-- Exception Advice for WebServicesSessionBean -->
     <!-- Re-throws all exceptions as SessionInternalErrors. -->
     <bean id="webServicesExceptionAdvice" class="com.sapienter.jbilling.server.util.WSExceptionAdvice"/>
     <bean id="webServicesExceptionAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice" ref="webServicesExceptionAdvice"/>
-        <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
+        <property name="pattern" value="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean.*"/>
     </bean>
 
     <!-- Log Advice for WebServicesSessionBean -->
@@ -135,8 +128,28 @@
     <bean id="webServicesLogAdvice" class="com.sapienter.jbilling.server.util.api.APILogger"/>
     <bean id="webServicesLogAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice" ref="webServicesLogAdvice"/>
-        <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
+        <property name="pattern" value="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean.*"/>
     </bean>
+    
+    <!--
+          ***************************************************
+          *         AOP: Validation                         *
+          ***************************************************
+    -->
+    
+    <bean id="validator"
+      class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <!-- Validation for WebServicesSessionBean -->
+    <!-- Validates any parameter that ends with *WS -->
+    <bean id="webServicesValidationAdvice" class="com.sapienter.jbilling.server.util.api.APIValidator">
+        <property name="validator" ref="validator"/>
+    </bean>
+    <bean id="webServicesValidationAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice" ref="webServicesValidationAdvice"/>
+        <property name="pattern" value="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean.*"/>
+    </bean>
+    
 
     <!-- Configuration for InternalEventsRulesTasks -->
     <!-- List of internal events that a task subscribes to. -->

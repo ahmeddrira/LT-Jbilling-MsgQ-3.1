@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
@@ -44,6 +46,7 @@ public class UserWS implements Serializable {
     private Date createDatetime;
     private Date lastStatusChange;
     private Date lastLogin;
+    @Size(min=5, max=50)
     private String userName;
     private int failedAttempts;
     private Integer languageId;

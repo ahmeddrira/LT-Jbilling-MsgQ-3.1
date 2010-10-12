@@ -1,7 +1,7 @@
 package jbilling
 
-import java.util.Calendar;
-
+import com.sapienter.jbilling.common.Constants;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
@@ -11,13 +11,14 @@ import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.user.db.UserDTO;
 
 class UserController {
 	
 	def webServicesSession
 	def languageId= "1"
-	
+	def isAutoCC= false
+	def isAutoAch= false
 	
 	def list = {
 		// now find the list of users
@@ -70,23 +71,30 @@ class UserController {
 				redirect ( action:index)
 			}
 			if (user) {
-				CustomerDTO dto= new CustomerDTO(user);
+				CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));
 				notes= dto.getNotes();
-				println "retrieved notes "  + dto.getNotes()
+				if ( Constants.AUTO_PAYMENT_TYPE_CC == dto.getAutoPaymentType())
+				{
+					isAutoCC=true;
+				} 
+				if ( Constants.AUTO_PAYMENT_TYPE_ACH == dto.getAutoPaymentType() )
+				{
+					isAutoAch= true;
+				}
+				log.info  "retrieved notes "  + dto.getNotes()
 				if (null != user.getCreditCard() && null != user.getCreditCard().getNumber()) {
 					Calendar cal= Calendar.getInstance();
 					cal.setTime(user.getCreditCard().getExpiry())
 					expMnth= 1 + cal.get(Calendar.MONTH)
 					expYr= cal.get(Calendar.YEAR)
 				}
-				println "Displaying user " + user.getUserId()
-				println "accountType of retrieved user=" + user?.getAch()?.getAccountType()
+				log.info  "Displaying user " + user.getUserId()				
 			}
 		}
 		
-		if (session["editUser"]) println "User exists...."
+		if (session["editUser"]) log.info  "User exists...."
 				
-		return [user:user, languageId:languageId, notes:notes, expiryMonth:expMnth, expiryYear:expYr ]
+		return [user:user, isAutoCC:isAutoCC, isAutoAch:isAutoAch, languageId:languageId, notes:notes, expiryMonth:expMnth, expiryYear:expYr ]
 	}
 	
 	def cancel ={ render ('Cancelled action') }
@@ -99,10 +107,10 @@ class UserController {
 			userExists=false;
 			user= new UserWS()
 		}
-		println "No errors. User exists=" + userExists
+		log.info  "No errors. User exists=" + userExists
 		
 		//		if (ccc.hasErrors()) {
-		//			println "Errors found."
+		//			log.info  "Errors found."
 		//			[ user : ccc ]
 		//			//render  (view: "edit")	
 		//		} else {
@@ -110,19 +118,19 @@ class UserController {
 		//set type Customer - Create/Edit Customer
 		user.setMainRoleId(5);		
 		
-		println "processing contact info..."
+		log.info  "processing contact info..."
 		ContactWS contact= new ContactWS();
 		user.setContact(contact);
 		
 		if (params.ach?.abaRouting)
 		{
-			println "processing ach info..."
+			log.info  "processing ach info..."
 			AchDTO ach=new AchDTO();
 			user.setAch(ach);
 		}
 		
 		if (params.creditCard?.number) {
-			println "processing credit card info..."
+			log.info  "processing credit card info..."
 			CreditCardDTO dto= new CreditCardDTO();
 			user.setCreditCard(dto);
 			user.setPassword(params.newPassword);
@@ -137,19 +145,29 @@ class UserController {
 		
 		bindData(user, params)
 		
-		println "Saving ach accountType as " + user?.getAch()?.getAccountType()
-		println "or " + params.ach.accountType
+		log.info  "Saving ach accountType as " + user?.getAch()?.getAccountType()
+//		log.info  "or " + params.ach.accountType
 		
 		try {
 			if (userExists) {
 				webServicesSession.updateUser(user)
-				println "Updating ach info separately..."
+				log.info  "Updating ach info separately..."
 				webServicesSession.updateAch(user.getUserId(), user.getAch());
 				flash.message = message(code: 'user.update.success')
 			} else {
 				int id = webServicesSession.createUser(user);
 				flash.message = message(code: 'user.create.success')
 			}
+			log.info  params.isAutomaticPaymentCC
+			log.info  params.isAutomaticPaymentAch
+			CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));			
+			dto.setNotes(params.notes)
+			if (params.isAutomaticPaymentCC == "on") {
+				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)				
+			} else if (params.isAutomaticPaymentAch == "on") {
+				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
+			}
+			dto.save()
 		} catch (Exception e) {
 			e.printStackTrace();
 			flash.message = message(code: 'user.create.failed')

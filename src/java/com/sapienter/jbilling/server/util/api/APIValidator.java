@@ -21,7 +21,7 @@
 package com.sapienter.jbilling.server.util.api;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -29,8 +29,9 @@ import javax.validation.Validator;
 
 import org.apache.log4j.Logger;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import com.sapienter.jbilling.server.user.UserWS;
+import com.sapienter.jbilling.common.SessionInternalError;
 
 /**
  *
@@ -40,7 +41,8 @@ public class APIValidator implements MethodBeforeAdvice {
 
     private static final Logger LOG = Logger.getLogger(APIValidator.class);
     
-    Validator validator;
+    private Validator validator;
+    private ReloadableResourceBundleMessageSource messageSource;
 
     public Validator getValidator() {
 		return validator;
@@ -55,39 +57,42 @@ public class APIValidator implements MethodBeforeAdvice {
 	}
 
 	public void before(Method method, Object[] args, Object target) throws Throwable {
+		ArrayList<String> errors = new ArrayList<String>();
+		
         for (Object arg: args) {
         	String objectname = arg.getClass().getName();
         	if (objectname.endsWith("WS")) {
-        		LOG.debug("Call to " + method.getName() + " Validating " + objectname);
         		Set<ConstraintViolation<Object>> constraintViolations =	validator.validate(arg);
         		if (constraintViolations.size() > 0) {
-        			LOG.debug("The user has errors" + constraintViolations.iterator().next().getMessage());
+        			for (ConstraintViolation<Object> violation: constraintViolations) {
+        				// compose the error message
+        				String shortObjectName = objectname.substring(objectname.lastIndexOf('.'));
+        				Object messageArgs[] = {shortObjectName, violation.getPropertyPath().toString(), 
+        						violation.getMessage()};
+        				messageSource.getMessage("validation.message", messageArgs, locale);
+        				errors.add(violation.getMessage());
+        				LOG.debug("violation = " + violation);
+        			}
+        			LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
         			
-        		} else {
-        			LOG.debug("The user does not have errors");
-        		}
+        		} 
         	}
+        }
+        
+        if (errors.size() > 0) {
+        	SessionInternalError exception = new SessionInternalError();
+        	exception.setErrorMessages(new String[errors.size()]);
+        	errors.toArray(exception.getErrorMessages());
+        	throw exception;
         }
     }
 
-    /*
-    public void afterReturning(Object ret, Method method, Object[] args, Object target) throws Throwable {
-        StringBuffer retStr = new StringBuffer();
-        if (ret != null) {
-            if (ret.getClass().isArray()) {
-                for (int f = 0; f < Array.getLength(ret); f++) {
-                    Object val = Array.get(ret, f);
-                    retStr.append("[");
-                    retStr.append(val == null ? "null" : Array.get(ret, f).toString());
-                    retStr.append("]");
-                }
-            } else {
-                retStr.append(ret.toString());
-            }
-        } else {
-            retStr.append("null");
-        }
-        LOG.debug("Done call to " + method.getName() + " returning: " + retStr);
-    }
-    */
+	public void setMessageSource(ReloadableResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public ReloadableResourceBundleMessageSource getMessageSource() {
+		return messageSource;
+	}
+
 }

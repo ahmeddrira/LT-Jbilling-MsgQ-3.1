@@ -138,12 +138,16 @@
     -->
     
     <bean id="validator"
-      class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+         class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="validationMessageSource" ref="messageSource"/>
+    </bean>
 
     <!-- Validation for WebServicesSessionBean -->
     <!-- Validates any parameter that ends with *WS -->
     <bean id="webServicesValidationAdvice" class="com.sapienter.jbilling.server.util.api.APIValidator">
         <property name="validator" ref="validator"/>
+        <property name="messageSource" ref="messageSource"/>
+        <property name="servletContext" ref="servletContext"/>
     </bean>
     <bean id="webServicesValidationAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice" ref="webServicesValidationAdvice"/>

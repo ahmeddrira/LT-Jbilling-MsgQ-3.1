@@ -5,6 +5,7 @@ import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.AchDTO;
@@ -14,6 +15,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 class UserController {
 	
 	def webServicesSession
+	def viewUtilsService
 	def languageId= "1"
 	
 	
@@ -123,8 +125,9 @@ class UserController {
 				int id = webServicesSession.createUser(user);
 				flash.message = message(code: 'user.create.success')
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (SessionInternalError e) {
+			log.warn "error messages=" + Arrays.toString(e.getErrorMessages())
+			session.errorMessages = e.getErrorMessages();
 			flash.message = message(code: 'user.create.failed')
 		}
 		flash.args= [params.userName]

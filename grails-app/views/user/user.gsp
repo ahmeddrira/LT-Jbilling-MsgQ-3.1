@@ -9,7 +9,9 @@
 	<tr>
 		<td valign="top">
 		    <g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
-		    <g:renderErrors bean="${user}" />
+		    <g:each in="${session.errorMessages}">
+		       <p>Error: ${it}</p>
+		    </g:each>
 		</td>
 
 		<p class="title"><g:message code"prompt.create.user"/></p>

@@ -1,5 +1,7 @@
 package jbilling
 
+import java.util.Calendar;
+
 import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.util.Context;
@@ -10,7 +12,7 @@ import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
-
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 
 class UserController {
 	
@@ -54,20 +56,42 @@ class UserController {
 		//((UserDTOEx)session[Constants.SESSION_USER_DTO])?.getLanguageId()
 		languageId = "1"
 		UserWS user = null;
+		def notes= null;
+		def expMnth, expYr;
 		
-		if (params.id) {			
-			int id= Integer.parseInt(params.id)
-			user = webServicesSession.getUserWS(id)
-			println user.getUserName()
+		if (params["id"] && params["id"].matches("^[0-9]+")) {			
+			
+			int id= Integer.parseInt(params["id"])
+			
+			try {
+				user = webServicesSession.getUserWS(id)
+				session["editUser"]= user
+			} catch (Exception e) {
+				flash.message = message(code: 'user.not.found')
+				flash.args= [params["id"]]
+				redirect ( action:index)
+			}
+			if (user) {
+				CustomerDTO dto= new CustomerDTO(user);
+				notes= dto.getNotes();
+				println "retrieved notes "  + dto.getNotes()
+				if (null != user.getCreditCard() && null != user.getCreditCard().getNumber()) {
+					Calendar cal= Calendar.getInstance();
+					cal.setTime(user.getCreditCard().getExpiry())
+					expMnth= 1 + cal.get(Calendar.MONTH)
+					expYr= cal.get(Calendar.YEAR)
+				}
+				println "Displaying user " + user.getUserId()
+				println "accountType of retrieved user=" + user?.getAch()?.getAccountType()
+			}
 		}
-		session["editUser"]= user
-		return [user:user, languageId:languageId]
-//		render (view: "edit", model: user)
+		
+		if (session["editUser"]) println "User exists...."
+				
+		return [user:user, languageId:languageId, notes:notes, expiryMonth:expMnth, expiryYear:expYr ]
 	}
 	
-	def cancel ={
-		render ('Cancelled action')
-	}
+	def cancel ={ render ('Cancelled action') }
 	
 	def postEdit = { 
 		
@@ -78,16 +102,16 @@ class UserController {
 			user= new UserWS()
 		}
 		println "No errors. User exists=" + userExists
-
-//		if (ccc.hasErrors()) {
-//			println "Errors found."
-//			[ user : ccc ]
-//			//render  (view: "edit")	
-//		} else {
+		
+		//		if (ccc.hasErrors()) {
+		//			println "Errors found."
+		//			[ user : ccc ]
+		//			//render  (view: "edit")	
+		//		} else {
 		
 		//set type Customer - Create/Edit Customer
 		user.setMainRoleId(5);		
-
+		
 		println "processing contact info..."
 		ContactWS contact= new ContactWS();
 		user.setContact(contact);
@@ -98,9 +122,8 @@ class UserController {
 			AchDTO ach=new AchDTO();
 			user.setAch(ach);
 		}
-				
-		if (params.creditCard?.number)
-		{
+		
+		if (params.creditCard?.number) {
 			println "processing credit card info..."
 			CreditCardDTO dto= new CreditCardDTO();
 			user.setCreditCard(dto);
@@ -112,14 +135,18 @@ class UserController {
 			int lastDate = cal.getActualMaximum(Calendar.DATE);
 			cal.set(Calendar.DATE, lastDate);
 			user.creditCard.setExpiry(cal.getTime());
-			
 		}
 		
 		bindData(user, params)
 		
+		println "Saving ach accountType as " + user?.getAch()?.getAccountType()
+		println "or " + params.ach.accountType
+		
 		try {
 			if (userExists) {
 				webServicesSession.updateUser(user)
+				println "Updating ach info separately..."
+				webServicesSession.updateAch(user.getUserId(), user.getAch());
 				flash.message = message(code: 'user.update.success')
 			} else {
 				int id = webServicesSession.createUser(user);
@@ -130,9 +157,9 @@ class UserController {
 			session.errorMessages = e.getErrorMessages();
 			flash.message = message(code: 'user.create.failed')
 		}
+		session["editUser"]= null;
 		flash.args= [params.userName]
 		//flash.user = newUser;
 		render( view:"user")
-		
 	}
 }

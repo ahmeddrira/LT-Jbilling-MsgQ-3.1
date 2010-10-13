@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import org.hibernate.collection.PersistentSet;
 
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import sun.jdbc.rowset.CachedRowSet;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -865,9 +866,12 @@ public class NotificationBL extends ResultList implements NotificationSQL {
             // at last, generate the report
             JasperPrint report = null;
             if (useSqlQuery) {
-                Connection conn = ((DataSource) Context.getBean(
-                        Context.Name.DATA_SOURCE)).getConnection();
-                report = JasperFillManager.fillReport(stream, parameters, conn);
+                DataSource dataSource = (DataSource) Context.getBean(Context.Name.DATA_SOURCE);
+                Connection connection = DataSourceUtils.getConnection(dataSource);
+
+                report = JasperFillManager.fillReport(stream, parameters, connection);
+
+                DataSourceUtils.releaseConnection(connection, dataSource);
             } else {
                 JRBeanCollectionDataSource data = 
                         new JRBeanCollectionDataSource(lines);

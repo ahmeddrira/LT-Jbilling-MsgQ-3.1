@@ -95,7 +95,7 @@ function toggle(obj) {
 									<td><g:select name="languageId"
 										from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
 										optionKey="id" optionValue="description"
-										noSelection="${['null':'-']}" /></td>
+										value="${user?.languageId}"  /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><g:message

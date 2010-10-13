@@ -58,7 +58,7 @@ class UserController {
 		def notes= null;
 		def expMnth, expYr;
 		
-		if (params["id"] && params["id"].matches("^[0-9]+")) {			
+		if (params["id"] && params["id"].matches("^[0-9]+")) {
 			
 			int id= Integer.parseInt(params["id"])
 			
@@ -75,10 +75,12 @@ class UserController {
 				notes= dto.getNotes();
 				if ( Constants.AUTO_PAYMENT_TYPE_CC == dto.getAutoPaymentType())
 				{
+					log.info "Auto CC true"
 					isAutoCC=true;
 				} 
 				if ( Constants.AUTO_PAYMENT_TYPE_ACH == dto.getAutoPaymentType() )
 				{
+					log.info "Auto Ach True"
 					isAutoAch= true;
 				}
 				log.info  "retrieved notes "  + dto.getNotes()

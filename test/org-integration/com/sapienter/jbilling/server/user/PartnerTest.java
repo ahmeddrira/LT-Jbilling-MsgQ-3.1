@@ -48,8 +48,7 @@ public class PartnerTest extends TestCase {
 
     public void testPartnerGeneral() {
         try {
-            IUserSessionBean session = (IUserSessionBean) RemoteContext.getBean(
-                    RemoteContext.Name.USER_REMOTE_SESSION);
+            IUserSessionBean session = RemoteContext.getBean("userRemoteSession");
             Partner partner = null;
 
             Calendar cal = Calendar.getInstance();

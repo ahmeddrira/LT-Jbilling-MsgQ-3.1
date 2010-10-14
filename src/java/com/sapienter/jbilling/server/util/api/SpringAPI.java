@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.util.api;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -40,6 +41,8 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
+
+import javax.jms.Message;
 
 public class SpringAPI implements JbillingAPI {
 
@@ -530,7 +533,6 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    @Override
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId)
             throws JbillingAPIException {
         try {
@@ -559,7 +561,6 @@ public class SpringAPI implements JbillingAPI {
     /*
      * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
      */
-    @Override
     public PaymentAuthorizationDTOEx processPayment(PaymentWS payment)
             throws JbillingAPIException {
         try {
@@ -614,7 +615,6 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    @Override
     public Integer getAutoPaymentType(Integer userId)
             throws JbillingAPIException {
         try {
@@ -624,7 +624,6 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    @Override
     public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
             throws JbillingAPIException {
         try {
@@ -637,6 +636,44 @@ public class SpringAPI implements JbillingAPI {
     public void generateRules(String rulesData) throws JbillingAPIException {
         try {
             session.generateRules(rulesData);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+
+    /*
+        Provisioning
+     */
+
+    public void triggerProvisioning() throws JbillingAPIException {
+        try {
+            session.triggerProvisioning();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result)
+            throws JbillingAPIException {
+        try {
+            session.updateOrderAndLineProvisioningStatus(inOrderId, inLineId, result);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws JbillingAPIException {
+        try {
+            session.updateLineProvisioningStatus(orderLineId, provisioningStatus);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void externalProvisioning(Message message) throws JbillingAPIException {
+        try {
+            session.externalProvisioning(message);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

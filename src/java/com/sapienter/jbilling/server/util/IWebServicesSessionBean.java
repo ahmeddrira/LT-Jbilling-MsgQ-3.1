@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.util;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.jms.Message;
 import javax.jws.WebService;
 
 import com.sapienter.jbilling.common.SessionInternalError;
@@ -363,4 +364,14 @@ public interface IWebServicesSessionBean {
     public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
 
     public void generateRules(String rulesData) throws SessionInternalError;
+
+
+    /*
+        Provisioning
+     */
+
+    public void triggerProvisioning() throws SessionInternalError;
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) throws SessionInternalError;
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws SessionInternalError;
+    public void externalProvisioning(Message message) throws SessionInternalError;
 }

@@ -9,6 +9,7 @@ activemq-data/
 tmp/
 logs/
 *~
+.ant-targets*.xml
 
 # external libraries
 libs/

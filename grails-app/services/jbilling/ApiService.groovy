@@ -14,7 +14,12 @@ import com.sapienter.jbilling.server.user.*
 import grails.plugins.springsecurity.SpringSecurityService
 import org.springframework.security.core.userdetails.UserDetails
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails
+import javax.jms.Message
 
+/**
+ * Grails managed remote service bean for exported web-services. This bean delegates to
+ * the WebServicesSessionBean just like the core JbillingAPI.
+ */
 class ApiService implements IWebServicesSessionBean {
 
     def IWebServicesSessionBean webServicesSession
@@ -297,5 +302,26 @@ class ApiService implements IWebServicesSessionBean {
 
     public void generateRules(String rulesData) {
         webServicesSession.generateRules(rulesData)
+    }
+
+
+    /*
+        Provisioning
+     */
+
+    void triggerProvisioning() {
+        webServicesSession.triggerProvisioning()
+    }
+
+    void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) {
+        webServicesSession.updateOrderAndLineProvisioningStatus(inOrderId, inLineId, result)
+    }
+
+    void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) {
+        webServicesSession.updateLineProvisioningStatus(orderLineId, provisioningStatus)
+    }
+
+    void externalProvisioning(Message message) {
+        webServicesSession.externalProvisioning(message)
     }
 }

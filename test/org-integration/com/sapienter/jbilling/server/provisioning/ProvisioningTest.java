@@ -45,7 +45,6 @@ public class ProvisioningTest extends TestCase {
         1, 2, 3, 24, 240, 14
     };
     private static Integer[]           provisioningStatus = new Integer[6];
-    private IProvisioningProcessSessionBean remoteProvisioning = null;
     JbillingAPI                        api;
 
     /**
@@ -56,10 +55,6 @@ public class ProvisioningTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         api = JbillingAPIFactory.getAPI();
-
-        remoteProvisioning = (IProvisioningProcessSessionBean) 
-                RemoteContext.getBean(
-                RemoteContext.Name.PROVISIONING_PROCESS_REMOTE_SESSION);
     }
 
     private void pause(long t) {
@@ -93,7 +88,7 @@ public class ProvisioningTest extends TestCase {
             assertNotNull("The order was not created", ret);
             System.out.println("running provisioning batch process..");
             //pause(2000);
-            remoteProvisioning.trigger();
+            api.triggerProvisioning();
             pause(2000);
             System.out.println("Getting back order " + ret);
 
@@ -169,7 +164,7 @@ public class ProvisioningTest extends TestCase {
             assertNotNull("The order was not created", ret);
             System.out.println("running provisioning batch process..");
             //pause(2000);
-            remoteProvisioning.trigger();
+            api.triggerProvisioning();
             pause(2000);
             System.out.println("Getting back order " + ret);
 
@@ -244,7 +239,7 @@ public class ProvisioningTest extends TestCase {
             assertNotNull("The order was not created", ret);
             System.out.println("running provisioning batch process..");
             //pause(2000);
-            remoteProvisioning.trigger();
+            api.triggerProvisioning();
             pause(2000);
             System.out.println("Getting back order " + ret);
 

@@ -419,7 +419,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void updateUser(UserWS user)
             throws SessionInternalError {
 
-        validateUser(user);
+    	//TODO commenting validate user for create/edit customer grails impl. - vikasb
+        //validateUser(user);
 
         UserBL bl = new UserBL(user.getUserId());
 

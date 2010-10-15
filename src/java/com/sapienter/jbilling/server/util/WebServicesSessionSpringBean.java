@@ -25,10 +25,12 @@
 package com.sapienter.jbilling.server.util;
 
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
+import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -42,12 +44,16 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -67,6 +73,7 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
@@ -91,6 +98,7 @@ import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
@@ -108,10 +116,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -157,11 +168,26 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer getCallerCompanyId() {
         CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         return details.getCompanyId();
-    }  
+    }
+
+    /**
+     * Returns the language ID of the authenticated user account making the web service call. 
+     *
+     * @return caller language ID
+     */
+    public Integer getCallerLanguageId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
+        return details.getLanguageId();
+    }
+
+
+    // todo: reorganize methods and reformat code. should match the structure of the interface to make things readable.
+
 
     /*
-     * INVOICES
+        Invoices
      */
+
     public InvoiceWS getInvoiceWS(Integer invoiceId)
             throws SessionInternalError {
         if (invoiceId == null) {
@@ -174,6 +200,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         return InvoiceBL.getWS(invoice);
+    }
+
+    public Integer[] getAllInvoices(Integer userId) {
+        IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
+        Set<InvoiceDTO> invoices = invoiceBean.getAllInvoices(userId);
+
+        List<Integer> ids = new ArrayList<Integer>(invoices.size());
+        for (InvoiceDTO invoice : invoices)
+            ids.add(invoice.getId());        
+        return ids.toArray(new Integer[ids.size()]);
     }
 
     public InvoiceWS getLatestInvoice(Integer userId)
@@ -550,6 +586,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
+    @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
         
@@ -650,6 +687,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * See the constants in WebServicesConstants (AUTH*) for details.
      * @throws SessionInternalError
      */
+    @Deprecated
     public Integer authenticate(String username, String password)
             throws SessionInternalError {
         Integer retValue = null;
@@ -676,6 +714,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         return retValue;
+    }
+
+    public void processPartnerPayouts(Date runDate) {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.processPayouts(runDate);
+    }
+
+    public Partner getPartner(Integer partnerId) throws SessionInternalError {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        return userSession.getPartnerDTO(partnerId);        
     }
 
     /**
@@ -771,6 +819,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         Integer orderId = doCreateOrder(order, true).getId();
         return orderId;
+    }
+
+    /**
+     * Update the given order, or create it if it doesn't already exist.
+     *
+     * @param order order to update or create
+     * @return order id 
+     * @throws SessionInternalError
+     */
+    public Integer createUpdateOrder(OrderWS order) throws SessionInternalError {
+        IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
+
+        OrderDTO dto = new OrderBL().getDTO(order);
+        return orderSession.createUpdate(getCallerCompanyId(), getCallerId(), dto, getCallerLanguageId());
     }
 
     public OrderWS rateOrder(OrderWS order)
@@ -1928,28 +1990,126 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         sess.setAuthPaymentType(userId, autoPaymentType, use);
     }
 
-    public void generateRules(String rulesData) throws SessionInternalError {
+
+    /*
+        Billing process
+     */
+
+    public void triggerBilling(Date runDate) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        processBean.trigger(runDate);        
+    }
+
+    public void triggerAgeing(Date runDate) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        processBean.reviewUsersStatus(runDate);
+    }
+
+    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getConfigurationDto(getCallerCompanyId());
+    }
+
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto)
+            throws SessionInternalError {
+        
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.createUpdateConfiguration(getCallerId(), dto);
+    }
+
+    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getDto(processId, getCallerLanguageId());
+    }
+
+    public Integer getLastBillingProcess() throws SessionInternalError {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getLast(getCallerCompanyId());
+    }
+
+    public BillingProcessDTOEx getReviewBillingProcess() {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
+    }
+
+    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.setReviewApproval(getCallerId(), getCallerCompanyId(), flag);
+    }
+
+    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getGeneratedInvoices(processId);
+    }
+
+    
+    /*
+       Mediation process
+    */
+
+    public void triggerMediation() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        mediationBean.trigger(getCallerCompanyId());
+    }
+
+    public boolean isMediationProcessing() throws SessionInternalError {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.isProcessing(getCallerCompanyId());
+    }
+
+
+    public List<MediationProcess> getAllMediationProcesses() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getAll(getCallerCompanyId());
+    }
+
+    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getEventsForOrder(orderId);
+    }
+
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getMediationRecordsByMediationProcess(mediationProcessId);
+    }
+
+    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
+    }
+
+    public List<MediationConfiguration> getAllMediationConfigurations() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getAllConfigurations(getCallerCompanyId());
+    }
+
+    public void createMediationConfiguration(MediationConfiguration cfg) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        mediationBean.createConfiguration(cfg);
+    }
+
+    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations)
+            throws SessionInternalError {
+        
         try {
-            PluggableTaskManager<IRulesGenerator> tm =
-                    new PluggableTaskManager<IRulesGenerator>(
-                    getCallerCompanyId(),
-                    Constants.PLUGGABLE_TASK_RULES_GENERATOR);
-            IRulesGenerator rulesGenerator = tm.getNextClass();
-
-            rulesGenerator.unmarshal(rulesData);
-            rulesGenerator.process();
-
-        } catch (Exception e) {
+            IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+            return mediationBean.updateAllConfiguration(getCallerId(), configurations);
+        } catch (InvalidArgumentException e) {
             throw new SessionInternalError(e);
         }
     }
 
+    public void deleteMediationConfiguration(Integer cfgId) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        mediationBean.delete(getCallerId(), cfgId);
+    }
 
+    
     /*
         Provisioning
      */
 
-    public void triggerProvisioning() throws SessionInternalError {
+    public void triggerProvisioning() {
         IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
         provisioningBean.trigger();
     }
@@ -1968,5 +2128,26 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void externalProvisioning(Message message) throws SessionInternalError {
         IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
         provisioningBean.externalProvisioning(message);
+    }
+
+
+    /*
+        Utilities
+     */
+
+    public void generateRules(String rulesData) throws SessionInternalError {
+        try {
+            PluggableTaskManager<IRulesGenerator> tm =
+                    new PluggableTaskManager<IRulesGenerator>(
+                    getCallerCompanyId(),
+                    Constants.PLUGGABLE_TASK_RULES_GENERATOR);
+            IRulesGenerator rulesGenerator = tm.getNextClass();
+
+            rulesGenerator.unmarshal(rulesData);
+            rulesGenerator.process();
+
+        } catch (Exception e) {
+            throw new SessionInternalError(e);
+        }
     }
 }

@@ -34,12 +34,15 @@ import java.util.Collection;
 public class CompanyUserDetails extends GrailsUser {
 
     private final Integer companyId;
+    private final Integer languageId;
 
     public CompanyUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
                               boolean credentialsNonExpired, boolean accountNonLocked,
-                              Collection<GrantedAuthority> authorities, Integer id, Integer companyId) {
+                              Collection<GrantedAuthority> authorities,
+                              Integer id, Integer companyId, Integer languageId) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities, id);
         this.companyId = companyId;
+        this.languageId = languageId;
     }
 
     /**
@@ -60,12 +63,22 @@ public class CompanyUserDetails extends GrailsUser {
         return companyId;
     }
 
+    /**
+     * Returns the users language ID.
+     *
+     * @return user language ID
+     */
+    public Integer getLanguageId() {
+        return languageId;
+    }
+
     @Override public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("CompanyUserDetails");
         sb.append("{id=").append(getId());
         sb.append(", username=").append("'").append(getUsername()).append("'");
         sb.append(", companyId=").append(getCompanyId());
+        sb.append(", languageId=").append(getLanguageId());
         sb.append(", enabled=").append(isEnabled());
         sb.append(", accountExpired=").append(!isAccountNonExpired());  
         sb.append(", credentialsExpired=").append(!isCredentialsNonExpired());

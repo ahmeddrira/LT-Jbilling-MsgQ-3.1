@@ -20,358 +20,228 @@
 
 package com.sapienter.jbilling.server.util;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.jms.Message;
-import javax.jws.WebService;
-
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.entity.AchDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
+
+import javax.jms.Message;
+import javax.jws.WebService;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Interface for WebServicesSessionBean
+ * Web service bean interface. 
+ * {@see com.sapienter.jbilling.server.util.WebServicesSessionSpringBean} for documentation.
  */
 @WebService
 public interface IWebServicesSessionBean {
 
     public Integer getCallerId();
     public Integer getCallerCompanyId();
+    public Integer getCallerLanguageId();
+
 
     /*
-     * INVOICES
+        Users
      */
-    public InvoiceWS getInvoiceWS(Integer invoiceId)
-            throws SessionInternalError;
 
-    public InvoiceWS getLatestInvoice(Integer userId)
-            throws SessionInternalError;
-
-    public Integer[] getLastInvoices(Integer userId, Integer number)
-            throws SessionInternalError;
-
-    public Integer[] getInvoicesByDate(String since, String until)
-            throws SessionInternalError;
-
-    public Integer[] getUserInvoicesByDate(Integer userId, String since, 
-            String until) throws SessionInternalError;
-
-    public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
-
-    /**
-     * Deletes an invoice 
-     * @param invoiceId
-     * The id of the invoice to delete
-     */
-    public void deleteInvoice(Integer invoiceId);
-
-    /**
-     * Generates invoices for orders not yet invoiced for this user.
-     * Optionally only allow recurring orders to generate invoices. 
-     * Returns the ids of the invoices generated. 
-     */
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
-            throws SessionInternalError;
-
-    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
-
-    /*
-     * USERS
-     */
-    /**
-     * Creates a new user. The user to be created has to be of the roles customer
-     * or partner.
-     * The username has to be unique, otherwise the creating won't go through. If 
-     * that is the case, the return value will be null.
-     * @param newUser 
-     * The user object with all the information of the new user. If contact or 
-     * credit card information are present, they will be included in the creation
-     * although they are not mandatory.
-     * @return The id of the new user, or null if non was created
-     */
+    public UserWS getUserWS(Integer userId) throws SessionInternalError;
     public Integer createUser(UserWS newUser) throws SessionInternalError;
-
+    public void updateUser(UserWS user) throws SessionInternalError;
     public void deleteUser(Integer userId) throws SessionInternalError;
 
-    public void updateUserContact(Integer userId, Integer typeId,
-            ContactWS contact) throws SessionInternalError;
+    public ContactWS[] getUserContactsWS(Integer userId) throws SessionInternalError;
+    public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws SessionInternalError;
 
-    /**
-     * @param user 
-     */
-    public void updateUser(UserWS user) throws SessionInternalError;
+    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard) throws SessionInternalError;
+    public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
 
-    /**
-     * Retrieves a user with its contact and credit card information. 
-     * @param userId
-     * The id of the user to be returned
-     */
-    public UserWS getUserWS(Integer userId) throws SessionInternalError;
+    public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use) throws SessionInternalError;
+    public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
 
-    /**
-     * Retrieves aall the contacts of a user 
-     * @param userId
-     * The id of the user to be returned
-     */
-    public ContactWS[] getUserContactsWS(Integer userId)
-            throws SessionInternalError;
+    public Integer[] getUsersByStatus(Integer statusId, boolean in) throws SessionInternalError;
+    public Integer[] getUsersInStatus(Integer statusId) throws SessionInternalError;
+    public Integer[] getUsersNotInStatus(Integer statusId) throws SessionInternalError;
+    public Integer[] getUsersByCustomField(Integer typeId, String value) throws SessionInternalError;
+    public Integer[] getUsersByCreditCard(String number) throws SessionInternalError;
 
-    /**
-     * Retrieves the user id for the given username 
-     */
     public Integer getUserId(String username) throws SessionInternalError;
 
-    /**
-     * Retrieves an array of users in the required status 
-     */
-    public Integer[] getUsersInStatus(Integer statusId)
-            throws SessionInternalError;
+    @Deprecated
+    public Integer authenticate(String username, String password) throws SessionInternalError;
 
-    /**
-     * Retrieves an array of users in the required status 
-     */
-    public Integer[] getUsersNotInStatus(Integer statusId)
-            throws SessionInternalError;
+    public void processPartnerPayouts(Date runDate);
+    public Partner getPartner(Integer partnerId) throws SessionInternalError;
 
-    /**
-     * Retrieves an array of users in the required status 
-     */
-    public Integer[] getUsersByCustomField(Integer typeId, String value)
-            throws SessionInternalError;
-    
-    /**
-     * Retrieves an array of users in the required status 
-     */
-    public Integer[] getUsersByCreditCard(String number)
-            throws SessionInternalError;
+    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws SessionInternalError;
 
-    /**
-     * Retrieves an array of users in the required status 
-     */
-    public Integer[] getUsersByStatus(Integer statusId,
-        boolean in) throws SessionInternalError;
+    public CreateResponseWS create(UserWS user, OrderWS order) throws SessionInternalError;
 
-    /**
-     * Creates a user, then an order for it, an invoice out the order
-     * and tries the invoice to be paid by an online payment
-     * This is ... the mega call !!! 
-     */
-    public CreateResponseWS create(UserWS user, OrderWS order)
-            throws SessionInternalError;
-
-    /**
-     * Validates the credentials and returns if the user can login or not
-     * @param username
-     * @param password
-     * @return
-     * 0 if the user can login (success), or grater than 0 if the user can not login.
-     * See the constants in WebServicesConstants (AUTH*) for details.
-     * @throws SessionInternalError
-     */
-    public Integer authenticate(String username, String password)
-            throws SessionInternalError;
-
-
-    /**
-     * Updates a user's credit card.
-     * @param userId
-     * The id of the user updating credit card data.
-     * @param creditCard
-     * The credit card data to be updated. 
-     */
-    public void updateCreditCard(Integer userId, 
-            com.sapienter.jbilling.server.entity.CreditCardDTO creditCard)
-            throws SessionInternalError;
 
     /*
-     * ORDERS
+        Items
      */
-    /**
-     * @return the information of the payment aurhotization, or NULL if the 
-     * user does not have a credit card
-     */
-    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
-            throws SessionInternalError;
-
-    public Integer createOrder(OrderWS order) throws SessionInternalError;
-
-    public OrderWS rateOrder(OrderWS order) throws SessionInternalError;
-
-    public OrderWS[] rateOrders(OrderWS orders[]) throws SessionInternalError;
-
-    public void updateItem(ItemDTOEx item);
-
-    public Integer createOrderAndInvoice(OrderWS order)
-            throws SessionInternalError;
-
-    public void updateOrder(OrderWS order) throws SessionInternalError;
-
-    public OrderWS getOrder(Integer orderId) throws SessionInternalError;
-
-    public Integer[] getOrderByPeriod(Integer userId, Integer periodId)
-            throws SessionInternalError;
-
-    public OrderLineWS getOrderLine(Integer orderLineId)
-            throws SessionInternalError;
-
-    public void updateOrderLine(OrderLineWS line) throws SessionInternalError;
-
-    public OrderWS getLatestOrder(Integer userId) throws SessionInternalError;
-
-    public Integer[] getLastOrders(Integer userId, Integer number)
-            throws SessionInternalError;
-
-    public void deleteOrder(Integer id) throws SessionInternalError;
-
-    public OrderWS getCurrentOrder(Integer userId, Date date) 
-            throws SessionInternalError;
-
-    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
-            String pricing, Date date, String eventDescription) 
-            throws SessionInternalError;
-
-    /*
-     * PAYMENT
-     */
-    /**
-     * Pays given invoice, using the first credit card available for invoice'd
-     * user.
-     *
-     * @return <code>null</code> if invoice has not positive balance, or if
-     *         user does not have credit card
-     * @return resulting authorization record. The payment itself can be found by
-     * calling getLatestPayment
-     */
-    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
-            throws SessionInternalError;
-
-    public Integer applyPayment(PaymentWS payment, Integer invoiceId)
-            throws SessionInternalError;
-
-    public PaymentWS getPayment(Integer paymentId) throws SessionInternalError;
-
-    public PaymentWS getLatestPayment(Integer userId)
-            throws SessionInternalError;
-
-    public Integer[] getLastPayments(Integer userId, Integer number)
-            throws SessionInternalError;
-
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
-
-    /**
-     * Validate if the user can buy this. This depends on the balance type:
-     *   - none: can always buy
-     *   - pre paid: if there is enough dynamic balance
-     *   - credit limit: only if credit limie - dynamix balance is enough
-     * @param userId
-     * @param itemId
-     * @param fields
-     * @return 0, if she can not. >o the number of quantities that she can buy
-     */
-    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, 
-            String fields);
-
-    public ValidatePurchaseWS validateMultiPurchase(Integer userId, 
-            Integer[] itemId, String[] fields);
-
-    /*
-     * ITEM
-     */
-    public Integer createItem(ItemDTOEx item) throws SessionInternalError;
-
-    /**
-     * Retrieves an array of items for the caller's entity. 
-     * @return an array of items from the caller's entity
-     */
-    public ItemDTOEx[] getAllItems() throws SessionInternalError;
-
-    /**
-     * Implementation of the User Transitions List webservice. This accepts a
-     * start and end date as arguments, and produces an array of data containing
-     * the user transitions logged in the requested time range.
-     * @param from Date indicating the lower limit for the extraction of transition
-     * logs. It can be <code>null</code>, in such a case, the extraction will start
-     * where the last extraction left off. If no extractions have been done so far and
-     * this parameter is null, the function will extract from the oldest transition
-     * logged.
-     * @param to Date indicatin the upper limit for the extraction of transition logs.
-     * It can be <code>null</code>, in which case the extraction will have no upper
-     * limit. 
-     * @return UserTransitionResponseWS[] an array of objects containing the result
-     * of the extraction, or <code>null</code> if there is no data thas satisfies
-     * the extraction parameters.
-     */
-    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
-            throws SessionInternalError;
-
-    /**
-     * @return UserTransitionResponseWS[] an array of objects containing the result
-     * of the extraction, or <code>null</code> if there is no data thas satisfies
-     * the extraction parameters.
-     */
-    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
-            throws SessionInternalError;
 
     public ItemDTOEx getItem(Integer itemId, Integer userId, String pricing);
+    public ItemDTOEx[] getAllItems() throws SessionInternalError;
+    public Integer createItem(ItemDTOEx item) throws SessionInternalError;
+    public void updateItem(ItemDTOEx item);
 
-    public InvoiceWS getLatestInvoiceByItemType(Integer userId, 
-        Integer itemTypeId) throws SessionInternalError;
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
 
-    /**
-     * Return 'number' most recent invoices that contain a line item with an
-     * item of the given item type.
-     */
-    public Integer[] getLastInvoicesByItemType(Integer userId, 
-            Integer itemTypeId, Integer number) throws SessionInternalError;
-
-    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId)
-            throws SessionInternalError;
-
-    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId,
-            Integer number) throws SessionInternalError;
+    public ItemTypeWS[] getAllItemCategories();
+    public Integer createItemCategory(ItemTypeWS itemType) throws SessionInternalError;
+    public void updateItemCategory(ItemTypeWS itemType) throws SessionInternalError;
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId);
 
-    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws SessionInternalError;
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) throws SessionInternalError;
 
-    public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) throws SessionInternalError;
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) throws SessionInternalError;
 
-    public ItemTypeWS[] getAllItemCategories();
-
-    public Integer createItemCategory(ItemTypeWS itemType)
-            throws SessionInternalError;
-
-    public void updateItemCategory(ItemTypeWS itemType)
-            throws SessionInternalError;
-
-    public void updateAch(Integer userId, AchDTO ach) throws SessionInternalError;
-
-    public void setAuthPaymentType(Integer userId, Integer autoPaymentType, boolean use)
-            throws SessionInternalError;
-
-    public Integer getAuthPaymentType(Integer userId) throws SessionInternalError;
-
-    public void generateRules(String rulesData) throws SessionInternalError;
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, String fields);
+    public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemId, String[] fields);
 
 
     /*
-        Provisioning
+        Orders
      */
 
-    public void triggerProvisioning() throws SessionInternalError;
-    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) throws SessionInternalError;
-    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws SessionInternalError;
-    public void externalProvisioning(Message message) throws SessionInternalError;
+    public OrderWS getOrder(Integer orderId) throws SessionInternalError;
+    public Integer createOrder(OrderWS order) throws SessionInternalError;
+    public void updateOrder(OrderWS order) throws SessionInternalError;
+    public Integer createUpdateOrder(OrderWS order) throws SessionInternalError;
+    public void deleteOrder(Integer id) throws SessionInternalError;
+
+    public Integer createOrderAndInvoice(OrderWS order) throws SessionInternalError;
+
+    public OrderWS getCurrentOrder(Integer userId, Date date) throws SessionInternalError;
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, String pricing, Date date, String eventDescription) throws SessionInternalError;
+
+    public OrderLineWS getOrderLine(Integer orderLineId) throws SessionInternalError;
+    public void updateOrderLine(OrderLineWS line) throws SessionInternalError;
+
+    public Integer[] getOrderByPeriod(Integer userId, Integer periodId) throws SessionInternalError;
+    public OrderWS getLatestOrder(Integer userId) throws SessionInternalError;
+    public Integer[] getLastOrders(Integer userId, Integer number) throws SessionInternalError;
+
+    public OrderWS rateOrder(OrderWS order) throws SessionInternalError;
+    public OrderWS[] rateOrders(OrderWS orders[]) throws SessionInternalError;
+
+    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) throws SessionInternalError;
+
+
+    /*
+        Invoices
+     */
+
+    public InvoiceWS getInvoiceWS(Integer invoiceId) throws SessionInternalError;
+
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) throws SessionInternalError;
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
+    public void deleteInvoice(Integer invoiceId);
+
+    public Integer[] getAllInvoices(Integer userId);
+    public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;
+    public Integer[] getLastInvoices(Integer userId, Integer number) throws SessionInternalError;
+
+    public Integer[] getInvoicesByDate(String since, String until) throws SessionInternalError;
+    public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) throws SessionInternalError;
+
+    public byte[] getPaperInvoicePDF(Integer invoiceId) throws SessionInternalError;
+
+
+    /*
+        Payments
+     */
+
+    public PaymentWS getPayment(Integer paymentId) throws SessionInternalError;
+    public PaymentWS getLatestPayment(Integer userId) throws SessionInternalError;
+    public Integer[] getLastPayments(Integer userId, Integer number) throws SessionInternalError;
+
+    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws SessionInternalError;
+    public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws SessionInternalError;
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment);
+
+
+    /*
+        Billing process
+     */
+
+    public void triggerBilling(Date runDate);
+    public void triggerAgeing(Date runDate);
+
+    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError;
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) throws SessionInternalError;
+
+    public BillingProcessDTOEx getBillingProcess(Integer processId);
+    public Integer getLastBillingProcess() throws SessionInternalError;
+
+    public BillingProcessDTOEx getReviewBillingProcess();
+    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError;
+
+    public Collection getBillingProcessGeneratedInvoices(Integer processId);
+
+
+    /*
+        Mediation process
+     */
+
+    public void triggerMediation();
+    public boolean isMediationProcessing();
+
+    public List<MediationProcess> getAllMediationProcesses();
+    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId);
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
+    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses();
+
+    public List<MediationConfiguration> getAllMediationConfigurations();
+    public void createMediationConfiguration(MediationConfiguration cfg);
+    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) throws SessionInternalError;
+    public void deleteMediationConfiguration(Integer cfgId);
+
+
+    /*
+        Provisioning process
+     */
+
+    public void triggerProvisioning();
+
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result);
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus);
+
+    public void externalProvisioning(Message message);
+
+
+    /*
+        Utilities
+     */
+
+    public void generateRules(String rulesData) throws SessionInternalError;
 }

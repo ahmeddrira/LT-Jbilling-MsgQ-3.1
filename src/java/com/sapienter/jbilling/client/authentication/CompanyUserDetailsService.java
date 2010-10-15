@@ -96,7 +96,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
-                                      user.getId(), user.getEntity().getId());
+                                      user.getId(), user.getEntity().getId(), user.getLanguage().getId());
     }
 
     public SpringSecurityService getSpringSecurityService() {

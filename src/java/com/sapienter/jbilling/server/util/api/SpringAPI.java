@@ -21,7 +21,10 @@
 package com.sapienter.jbilling.server.util.api;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
@@ -30,15 +33,23 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
 
@@ -69,6 +80,22 @@ public class SpringAPI implements JbillingAPI {
             throws JbillingAPIException {
         try {
             return session.authenticate(username, password);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void processPartnerPayouts(Date runDate) throws JbillingAPIException {
+        try {
+            session.processPartnerPayouts(runDate);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Partner getPartner(Integer partnerId) throws JbillingAPIException {
+        try {
+            return session.getPartner(partnerId);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
@@ -258,6 +285,14 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
+    public Integer[] getAllInvoices(Integer userId) throws JbillingAPIException {
+        try {
+            return session.getAllInvoices(userId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public InvoiceWS getLatestInvoice(Integer userId)
             throws JbillingAPIException {
         try {
@@ -387,6 +422,14 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
+    public Integer[] getUsersByStatus(Integer statusId, boolean in) throws JbillingAPIException {
+        try {
+            return session.getUsersByStatus(statusId, in);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public Integer[] getUsersInStatus(Integer statusId)
             throws JbillingAPIException {
         try {
@@ -426,7 +469,6 @@ public class SpringAPI implements JbillingAPI {
     public void updateAch(Integer userId, AchDTO ach) throws JbillingAPIException {
         try {
             session.updateAch(userId, ach);
-                    //new com.sapienter.jbilling.server.user.db.AchDTO(ach));
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
@@ -435,6 +477,14 @@ public class SpringAPI implements JbillingAPI {
     public void updateOrder(OrderWS order) throws JbillingAPIException {
         try {
             session.updateOrder(order);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Integer createUpdateOrder(OrderWS order) throws JbillingAPIException {
+        try {
+            return session.createUpdateOrder(order);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
@@ -633,17 +683,175 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public void generateRules(String rulesData) throws JbillingAPIException {
+    /*
+        Billing process
+     */
+
+    public void triggerBilling(Date runDate) throws JbillingAPIException {
         try {
-            session.generateRules(rulesData);
+            session.triggerBilling(runDate);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }
     }
 
+    public void triggerAgeing(Date runDate) throws JbillingAPIException {
+        try {
+            session.triggerAgeing(runDate);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
 
+    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws JbillingAPIException {
+        try {
+            return session.getBillingProcessConfiguration();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto)
+            throws JbillingAPIException {
+        try {
+            return session.createUpdateBillingProcessConfiguration(dto);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public BillingProcessDTOEx getBillingProcess(Integer processId) throws JbillingAPIException {
+        try {
+            return session.getBillingProcess(processId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Integer getLastBillingProcess() throws JbillingAPIException {
+        try {
+            return session.getLastBillingProcess();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public BillingProcessDTOEx getReviewBillingProcess() throws JbillingAPIException {
+        try {
+            return session.getReviewBillingProcess();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws JbillingAPIException {
+        try {
+            return session.setReviewApproval(flag);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Collection getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException {
+        try {
+            return session.getBillingProcessGeneratedInvoices(processId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    
     /*
-        Provisioning
+        Mediation process
+     */
+
+    public void triggerMediation() throws JbillingAPIException {
+        try {
+            session.triggerMediation();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public boolean isMediationProcessing() throws JbillingAPIException {
+        try {
+            return session.isMediationProcessing();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public List<MediationProcess> getAllMediationProcesses() throws JbillingAPIException {
+        try {
+            return session.getAllMediationProcesses();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException {
+        try {
+            return session.getMediationEventsForOrder(orderId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId)
+            throws JbillingAPIException {
+        try {
+            return session.getMediationRecordsByMediationProcess(mediationProcessId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException {
+        try {
+            return session.getNumberOfMediationRecordsByStatuses();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public List<MediationConfiguration> getAllMediationConfigurations() throws JbillingAPIException {
+        try {
+            return session.getAllMediationConfigurations();
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void createMediationConfiguration(MediationConfiguration cfg) throws JbillingAPIException {
+        try {
+            session.createMediationConfiguration(cfg);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+
+    }
+
+    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations)
+            throws JbillingAPIException {
+
+        try {
+            return session.updateAllMediationConfigurations(configurations);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void deleteMediationConfiguration(Integer cfgId) throws JbillingAPIException {
+        try {
+            session.deleteMediationConfiguration(cfgId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    
+    /*
+        Provisioning process
      */
 
     public void triggerProvisioning() throws JbillingAPIException {
@@ -674,6 +882,19 @@ public class SpringAPI implements JbillingAPI {
     public void externalProvisioning(Message message) throws JbillingAPIException {
         try {
             session.externalProvisioning(message);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    
+    /*
+        Utilities
+     */
+
+    public void generateRules(String rulesData) throws JbillingAPIException {
+        try {
+            session.generateRules(rulesData);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

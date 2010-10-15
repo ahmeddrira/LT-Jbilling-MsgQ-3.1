@@ -5,18 +5,22 @@ ${title}
 </title>
 </head>
 <script language="javascript">
-function toggle() {
-	
+function toggle(obj) {
+	if (obj.checked) {
+		if (obj.name == 'isAutomaticPaymentCC') {
+			document.forms[0].isAutomaticPaymentAch.checked=false;
+		} else if (obj.name == 'isAutomaticPaymentAch' ) {
+			document.forms[0].isAutomaticPaymentCC.checked=false;
+		}
+	}
 }
 </script>
 <body>
 <!-- TODO -use internationalization for all the text/prompts -->
-<p>
-<g:hasErrors>
+<p><g:hasErrors>
 	<div class="errors"><g:renderErrors bean="${user}" as="list" />
 	</div>
-</g:hasErrors>
-</p>
+</g:hasErrors></p>
 <table class="body">
 	<tr>
 		<td valign="top"><g:message code="${flash.message}"
@@ -54,8 +58,7 @@ function toggle() {
 								<tr>
 									<td class="form_prompt"><label for="userName"> <g:message
 										code="prompt.login.name" /></label></td>
-									<td><g:textField name="userName"
-										value="${user?.userName}" /></td>
+									<td><g:textField name="userName" value="${user?.userName}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="password"> <g:message
@@ -92,7 +95,7 @@ function toggle() {
 									<td><g:select name="languageId"
 										from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
 										optionKey="id" optionValue="description"
-										noSelection="${['null':'-']}" /></td>
+										value="${user?.languageId}"  /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><g:message
@@ -105,8 +108,7 @@ function toggle() {
 								<tr>
 									<td class="form_prompt"><g:message
 										code="prompt.exclude.ageing" /></td>
-									<td><g:checkBox name="excludeFromAgeing"
-										checked="true" /></td>
+									<td><g:checkBox name="excludeFromAgeing" checked="true" /></td>
 								</tr>
 							</table>
 							</td>
@@ -123,60 +125,72 @@ function toggle() {
 								<tr>
 									<td class="form_prompt"><label for="organizationName">
 									<g:message code="prompt.organization.name" /></label></td>
-									<td><g:textField name="contact.organizationName" value="${user?.contact?.organizationName}" /></td>
+									<td><g:textField name="contact.organizationName"
+										value="${user?.contact?.organizationName}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="firstName"> <g:message
 										code="prompt.first.name" /></label></td>
-									<td><g:textField name="contact.firstName" value="${user?.contact?.firstName}" /></td>
+									<td><g:textField name="contact.firstName"
+										value="${user?.contact?.firstName}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="lastName"> <g:message
 										code="prompt.last.name" /></label></td>
-									<td><g:textField name="contact.lastName" value="${user?.contact?.lastName}" /></td>
+									<td><g:textField name="contact.lastName"
+										value="${user?.contact?.lastName}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="phoneNumber">
 									<g:message code="prompt.phone.number" /></label></td>
-									<td><g:textField name="contact.phoneCountryCode"  value="${user?.contact?.phoneCountryCode}"
-										size="5" /> -<g:textField name="contact.phoneAreaCode"  value="${user?.contact?.phoneAreaCode}"
-										size="5" /> -<g:textField name="contact.phoneNumber"  value="${user?.contact?.phoneNumber}"
-										size="12" /></td>
+									<td><g:textField name="contact.phoneCountryCode"
+										value="${user?.contact?.phoneCountryCode}" size="5" /> -<g:textField
+										name="contact.phoneAreaCode"
+										value="${user?.contact?.phoneAreaCode}" size="5" /> -<g:textField
+										name="contact.phoneNumber"
+										value="${user?.contact?.phoneNumber}" size="12" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="email"> <g:message
 										code="prompt.email.address" /></label></td>
-									<td><g:textField name="contact.email" value="${user?.contact?.email}" /></td>
+									<td><g:textField name="contact.email"
+										value="${user?.contact?.email}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="address1"> <g:message
 										code="prompt.address1" /></label></td>
-									<td><g:textField name="contact.address1" value="${user?.contact?.address1}" /></td>
+									<td><g:textField name="contact.address1"
+										value="${user?.contact?.address1}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="address2"> <g:message
 										code="prompt.address2" /></label></td>
-									<td><g:textField name="contact.address2" value="${user?.contact?.address2}" /></td>
+									<td><g:textField name="contact.address2"
+										value="${user?.contact?.address2}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="city"> <g:message
 										code="prompt.city" /></label></td>
-									<td><g:textField name="contact.city" value="${user?.contact?.city}" /></td>
+									<td><g:textField name="contact.city"
+										value="${user?.contact?.city}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="stateProvince">
 									<g:message code="prompt.state" /></label></td>
-									<td><g:textField name="contact.stateProvince" value="${user?.contact?.stateProvince}" /></td>
+									<td><g:textField name="contact.stateProvince"
+										value="${user?.contact?.stateProvince}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="postalCode"> <g:message
 										code="prompt.zip" /></label></td>
-									<td><g:textField name="contact.postalCode" value="${user?.contact?.postalCode}" /></td>
+									<td><g:textField name="contact.postalCode"
+										value="${user?.contact?.postalCode}" /></td>
 								</tr>
 								<tr>
 									<td class="form_prompt"><label for="countryCode">
 									<g:message code="prompt.country" /></label></td>
-									<td><g:textField name="contact.countryCode" value="${user?.contact?.countryCode}" /></td>
+									<td><g:textField name="contact.countryCode"
+										value="${user?.contact?.countryCode}" /></td>
 								</tr>
 								<tr>
 									<td colspan="2"><g:checkBox name="excludeFromAgeing"
@@ -205,21 +219,24 @@ function toggle() {
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message code="prompt.credit.card" />:</td>
-							<td><g:textField name="creditCard.number" value="${user?.creditCard?.number}" /></td>
+							<td><g:textField name="creditCard.number"
+								value="${user?.creditCard?.number}" /></td>
 							<td></td>
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message
 								code="prompt.name.on.card" />:</td>
-							<td><g:textField name="creditCard.name"  value="${user?.creditCard?.name}"/></td>
-							<td class="form_prompt"><g:checkBox name="isAutomaticPayment"
-										checked="true" /><g:message
+							<td><g:textField name="creditCard.name"
+								value="${user?.creditCard?.name}" /></td>
+							<td class="form_prompt"><g:checkBox
+								name="isAutomaticPaymentCC"  checked=${isAutoCC} onclick="toggle(this)"/> <g:message
 								code="prompt.preferred.auto.payment" /></td>
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message code="prompt.expiry.date" />:</td>
-							<td><g:textField name="creditCard.month" size="2"  value="${expiryMonth}"/>-<g:textField
-								name="creditCard.year" size="4"  value="${expiryYear}"/> mm-yyyy</td>
+							<td><g:textField name="creditCard.month" size="2"
+								value="${expiryMonth}" />-<g:textField name="creditCard.year"
+								size="4" value="${expiryYear}" /> mm-yyyy</td>
 							<td></td>
 						</tr>
 					</table>
@@ -238,37 +255,41 @@ function toggle() {
 						<tr>
 							<td class="form_prompt"><g:message
 								code="prompt.aba.routing.num" />:</td>
-							<td><g:textField name="ach.abaRouting" value="${user?.ach?.abaRouting}"/></td>
+							<td><g:textField name="ach.abaRouting"
+								value="${user?.ach?.abaRouting}" /></td>
 							<td></td>
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message
 								code="prompt.bank.acc.num" />:</td>
-							<td><g:textField name="ach.bankAccount" value="${user?.ach?.bankAccount}"/></td>
-							<td class="form_prompt"><g:checkBox name="isAutomaticPayment2"
-										checked="true" /><g:message
+							<td><g:textField name="ach.bankAccount"
+								value="${user?.ach?.bankAccount}" /></td>
+							<td class="form_prompt"><g:checkBox
+								name="isAutomaticPaymentAch" checked=${isAutoAch} onclick="toggle(this)"/> <g:message
 								code="prompt.preferred.auto.payment" /></td>
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message code="prompt.bank.name" />:</td>
-							<td><g:textField name="ach.bankName" value="${user?.ach?.bankName}"/></td>
+							<td><g:textField name="ach.bankName"
+								value="${user?.ach?.bankName}" /></td>
 							<td></td>
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message
 								code="prompt.name.customer.account" />:</td>
-							<td><g:textField name="ach.accountName" value="${user?.ach?.accountName}"/></td>
+							<td><g:textField name="ach.accountName"
+								value="${user?.ach?.accountName}" /></td>
 							<td></td>
 						</tr>
 						<tr>
 							<td class="form_prompt"><g:message
 								code="prompt.account.type" />:</td>
-							<td>
-								<g:radioGroup name="ach.accountType"  value="${user?.ach?.accountType}" labels="['Checking','Savings']" values="[1,2]" >
-								${it.label} ${it.radio}
-								</g:radioGroup>
-								<!-- g:accountType name="ach.accountType"/-->
-							</td>
+							<td><g:radioGroup name="ach.accountType"
+								value="${user?.ach?.accountType}"
+								labels="['Checking','Savings']" values="[1,2]">
+								${it.label}
+								${it.radio}
+							</g:radioGroup> <!-- g:accountType name="ach.accountType"/--></td>
 							<td></td>
 						</tr>
 					</table>
@@ -281,9 +302,9 @@ function toggle() {
 					<div id="notes">
 					<table style="border: 2px solid black; padding: 5px;">
 						<tr>
-							<td><g:textArea id='notes' value="${notes}" name="notes" rows="3" cols="50">Lorem Ipsum</g:textArea></td>
-							<td valign="top"><input type="button" name="editNote"
-								value="Edit Note" /></td>
+							<td><g:textArea id='notes' value="${notes}" name="notes"
+								rows="3" cols="50">Lorem Ipsum</g:textArea></td>
+							<td valign="top"></td>
 						</tr>
 					</table>
 					</div>

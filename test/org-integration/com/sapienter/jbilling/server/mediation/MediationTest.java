@@ -69,7 +69,7 @@ public class MediationTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        remoteMediation = (IMediationSessionBean) RemoteContext.getBean(RemoteContext.Name.MEDIATION_REMOTE_SESSION);
+        remoteMediation = RemoteContext.getBean("mediationRemoteSession");
     }
 
     public void test01Trigger() {

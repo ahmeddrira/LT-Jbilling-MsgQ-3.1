@@ -39,6 +39,8 @@ import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 
+import javax.jms.Message;
+
 public interface JbillingAPI {
     public InvoiceWS getInvoiceWS(Integer invoiceId)
             throws JbillingAPIException;
@@ -204,4 +206,14 @@ public interface JbillingAPI {
     void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
 
     public void generateRules(String rulesData) throws JbillingAPIException;
+
+
+    /*
+        Provisioning
+     */
+    
+    public void triggerProvisioning() throws JbillingAPIException;
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) throws JbillingAPIException;
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws JbillingAPIException;
+    public void externalProvisioning(Message message) throws JbillingAPIException;
 }

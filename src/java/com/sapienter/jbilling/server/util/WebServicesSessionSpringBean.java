@@ -24,34 +24,10 @@
  */
 package com.sapienter.jbilling.server.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
-import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
-import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
-import grails.plugins.springsecurity.SpringSecurityService;
-import org.apache.commons.validator.ValidatorException;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.common.GatewayBL;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
@@ -91,11 +67,13 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.user.AchBL;
+import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
+import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -116,6 +94,24 @@ import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import grails.plugins.springsecurity.SpringSecurityService;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import sun.jdbc.rowset.CachedRowSet;
+
+import javax.jms.Message;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -136,7 +132,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * throw the standard Hibernate ObjectNotFoundException.
      */
     private void validateCaller() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         
         UserBL bl = new UserBL();
         bl.setRoot(details.getUsername());
@@ -149,7 +145,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return caller user ID
      */
     public Integer getCallerId() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         return details.getUserId();
     }
 
@@ -159,7 +155,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return caller company ID
      */
     public Integer getCallerCompanyId() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         return details.getCompanyId();
     }  
 
@@ -1366,38 +1362,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     newUser.getCreditCard().getNumber()));
         }
 
-        try {
-            GatewayBL valid = new GatewayBL();
-            // the user
-            if (!valid.validate("UserWS", newUser)) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // the contact
-            if (!valid.validate("ContactDTO", newUser.getContact())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // the credit card (optional)
-            if (newUser.getCreditCard() != null && !valid.validate("CreditCardDTO",
-                    newUser.getCreditCard())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // additional validation
-            if (newUser.getMainRoleId().equals(Constants.TYPE_CUSTOMER) ||
-                    newUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
-            } else {
-                throw new SessionInternalError("Valid user roles are customer (5) " +
-                        "and partner (4)");
-            }
-            if (newUser.getCurrencyId() != null &&
-                    newUser.getCurrencyId().intValue() <= 0) {
-                throw new SessionInternalError("Invalid currency code");
-            }
-            if (newUser.getStatusId().intValue() <= 0) {
-                throw new SessionInternalError("Invalid status code");
-            }
-        } catch (ValidatorException e) {
-            LOG.error("validating ws", e);
-            throw new SessionInternalError("Invalid parameter");
+        // todo: additional hibernate validations
+        // additional validation
+        if (newUser.getMainRoleId().equals(Constants.TYPE_CUSTOMER) ||
+                newUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
+        } else {
+            throw new SessionInternalError("Valid user roles are customer (5) " +
+                    "and partner (4)");
+        }
+        if (newUser.getCurrencyId() != null &&
+                newUser.getCurrencyId().intValue() <= 0) {
+            throw new SessionInternalError("Invalid currency code");
+        }
+        if (newUser.getStatusId().intValue() <= 0) {
+            throw new SessionInternalError("Invalid status code");
         }
     }
 
@@ -1425,53 +1403,38 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             order.setOrderLines(new OrderLineWS[0]);
         }
 
-        try {
-            GatewayBL valid = new GatewayBL();
-            // the order
-            if (!valid.validate("OrderWS", order)) {
-                throw new SessionInternalError(valid.getText());
+        // todo: additional hibernate validations
+                // the lines
+        for (int f = 0; f < order.getOrderLines().length; f++) {
+            OrderLineWS line = order.getOrderLines()[f];
+            if (line.getUseItem() == null) {
+                line.setUseItem(false);
             }
-            // the lines
-            for (int f = 0; f < order.getOrderLines().length; f++) {
-                OrderLineWS line = order.getOrderLines()[f];
-                if (!valid.validate("OrderLineWS", line)) {
-                    throw new SessionInternalError(valid.getText());
+            line.setItemId(zero2null(line.getItemId()));
+            String error = "";
+            // if use the item, I need the item id
+            if (line.getUseItem()) {
+                if (line.getItemId() == 0) {
+                    error += "OrderLineWS: if useItem == true the itemId is required - ";
                 }
-                if (line.getUseItem() == null) {
-                    line.setUseItem(new Boolean(false));
+                if (line.getQuantityAsDecimal() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
+                    error += "OrderLineWS: if useItem == true the quantity is required - ";
                 }
-                line.setItemId(zero2null(line.getItemId()));
-                String error = "";
-                // if use the item, I need the item id
-                if (line.getUseItem().booleanValue()) {
-                    if (line.getItemId() == null ||
-                            line.getItemId().intValue() == 0) {
-                        error += "OrderLineWS: if useItem == true the itemId " +
-                                "is required - ";
-                    }
-                    if (line.getQuantityAsDecimal() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
-                        error += "OrderLineWS: if useItem == true the quantity " +
-                                "is required - ";
-                    }
-                } else {
-                    // I need the amount and description
-                    if (line.getAmount() == null) {
-                        error += "OrderLineWS: if useItem == false the item amount " +
-                                "is required - ";
-                    }
-                    if (line.getDescription() == null ||
-                            line.getDescription().length() == 0) {
-                        error += "OrderLineWS: if useItem == false the description " +
-                                "is required - ";
-                    }
+            } else {
+                // I need the amount and description
+                if (line.getAmount() == null) {
+                    error += "OrderLineWS: if useItem == false the item amount " +
+                             "is required - ";
                 }
-                if (error.length() > 0) {
-                    throw new SessionInternalError(error);
+                if (line.getDescription() == null ||
+                    line.getDescription().length() == 0) {
+                    error += "OrderLineWS: if useItem == false the description " +
+                             "is required - ";
                 }
             }
-        } catch (ValidatorException e) {
-            LOG.error("validating ws", e);
-            throw new SessionInternalError("Invalid parameter");
+            if (error.length() > 0) {
+                throw new SessionInternalError(error);
+            }
         }
     }
 
@@ -1485,31 +1448,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         payment.setCurrencyId(payment.getCurrencyId());
         payment.setPaymentId(payment.getPaymentId());
 
-        try {
-            GatewayBL valid = new GatewayBL();
-            // the payment
-            if (!valid.validate("PaymentWS", payment)) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // may be there is a cc
-            if (payment.getCreditCard() != null && !valid.validate(
-                    "CreditCardDTO", payment.getCreditCard())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // may be there is a cheque
-            if (payment.getCheque() != null && !valid.validate(
-                    "PaymentInfoChequeDTO", payment.getCheque())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // may be there is a ach
-            if (payment.getAch() != null && !valid.validate(
-                    "AchDTO", payment.getAch())) {
-                throw new SessionInternalError(valid.getText());
-            }
-        } catch (ValidatorException e) {
-            LOG.error("validating ws", e);
-            throw new SessionInternalError("Invalid parameter");
-        }
+        // todo: additional hibernate validations
     }
 
     private InvoiceDTO doCreateInvoice(Integer orderId) {
@@ -2003,5 +1942,31 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         } catch (Exception e) {
             throw new SessionInternalError(e);
         }
+    }
+
+
+    /*
+        Provisioning
+     */
+
+    public void triggerProvisioning() throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.trigger();
+    }
+
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result)
+            throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.updateProvisioningStatus(inOrderId, inLineId, result);
+    }
+
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.updateProvisioningStatus(orderLineId, provisioningStatus);
+    }
+
+    public void externalProvisioning(Message message) throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.externalProvisioning(message);
     }
 }

@@ -30,15 +30,19 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
 
 
 @Entity
 @Table(name="order_line_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class OrderLineTypeDTO  implements java.io.Serializable {
+public class OrderLineTypeDTO extends AbstractDescription implements java.io.Serializable {
 
 
      private int id;
@@ -87,7 +91,15 @@ public class OrderLineTypeDTO  implements java.io.Serializable {
         this.orderLineDTOs = orderLineDTOs;
     }
 
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_ORDER_LINE_TYPE;
+    }
 
+    @Transient
+    public String getTitle(Integer languageId) {
+        return getDescription(languageId, "description");
+    }
 
 
 }

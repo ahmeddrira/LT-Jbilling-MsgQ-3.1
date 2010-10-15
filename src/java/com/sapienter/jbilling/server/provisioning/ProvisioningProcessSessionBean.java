@@ -61,12 +61,13 @@ public class ProvisioningProcessSessionBean
         }
     }
 
-    public void updateProvisioningStatus(Integer in_order_id,
-            Integer in_order_line_id, String result) 
+    public void updateProvisioningStatus(Integer in_order_id, Integer in_order_line_id, String result)
             throws EmptyResultDataAccessException {
+
         OrderDAS orderDb = new OrderDAS();
         OrderDTO order = orderDb.find(in_order_id);
         OrderBL order_bl = new OrderBL(order);
+
         OrderLineDAS lineDAS = new OrderLineDAS();
         OrderLineDTO order_line =  lineDAS.findForUpdate(in_order_line_id);//lineDb.findNow(in_order_line_id);
 

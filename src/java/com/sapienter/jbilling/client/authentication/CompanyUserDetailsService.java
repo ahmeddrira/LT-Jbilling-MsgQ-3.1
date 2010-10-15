@@ -36,6 +36,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * An implementation of the GrailsUserDetailsService for use with the default DaoAuthenticationProvider. This
@@ -50,8 +51,6 @@ import java.util.List;
  */
 public class CompanyUserDetailsService implements GrailsUserDetailsService {
 
-    private SpringSecurityService springSecurityService;
-
     // empty list of roles for use if the given credentials don't resolve to a
     // usable UserDetails. Contains a single entry that does not grant any permissions.
     private static final List<GrantedAuthority> NO_AUTHORITIES;
@@ -60,13 +59,23 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         NO_AUTHORITIES.add(new GrantedAuthorityImpl(SpringSecurityUtils.NO_ROLE));
     }
 
+    private SpringSecurityService springSecurityService;
+
+    public SpringSecurityService getSpringSecurityService() {
+        return springSecurityService;
+    }
+
+    public void setSpringSecurityService(SpringSecurityService springSecurityService) {
+        this.springSecurityService = springSecurityService;
+    }    
+
     public UserDetails loadUserByUsername(String s, boolean loadRoles)
             throws UsernameNotFoundException, DataAccessException {
         return loadUserByUsername(s);
     }
 
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException, DataAccessException {
-        // get the user for the given principal name
+        // get the user for the given name
         // CompanyUserAuthenticationFilter concatenates the user name with the entity id
         String[] tokens = s.split(CompanyUserAuthenticationFilter.VALUE_SEPARATOR);
         String username = tokens[0];
@@ -96,14 +105,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
+                                      user, bl.getLocale(),
                                       user.getId(), user.getEntity().getId(), user.getLanguage().getId());
-    }
-
-    public SpringSecurityService getSpringSecurityService() {
-        return springSecurityService;
-    }
-
-    public void setSpringSecurityService(SpringSecurityService springSecurityService) {
-        this.springSecurityService = springSecurityService;
     }
 }

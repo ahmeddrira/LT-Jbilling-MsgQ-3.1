@@ -20,10 +20,12 @@
 
 package com.sapienter.jbilling.client.authentication;
 
+import com.sapienter.jbilling.server.user.db.UserDTO;
 import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * A spring security UserDetails implementation that includes the users company id.
@@ -33,16 +35,42 @@ import java.util.Collection;
  */
 public class CompanyUserDetails extends GrailsUser {
 
+    private final UserDTO user;
+    private final Locale locale;
     private final Integer companyId;
     private final Integer languageId;
 
     public CompanyUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
                               boolean credentialsNonExpired, boolean accountNonLocked,
                               Collection<GrantedAuthority> authorities,
+                              UserDTO user, Locale locale,
                               Integer id, Integer companyId, Integer languageId) {
+
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities, id);
+
+        this.user = user;
+        this.locale = locale;
         this.companyId = companyId;
         this.languageId = languageId;
+    }
+
+    /**
+     * Returns the user.
+     *
+     * @return user
+     */
+    public UserDTO getUser() {
+        return user;
+    }
+
+    /**
+     * Returns the users {@link Locale} according to their language and/or country code.
+     *
+     * @see com.sapienter.jbilling.server.user.UserBL#getLocale() 
+     * @return user locale
+     */
+    public Locale getLocale() {
+        return locale;
     }
 
     /**

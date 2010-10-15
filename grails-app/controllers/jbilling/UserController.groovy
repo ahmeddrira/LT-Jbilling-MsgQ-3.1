@@ -1,21 +1,24 @@
 package jbilling
 
+import java.util.Calendar;
+
 import com.sapienter.jbilling.common.Constants;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
-import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.client.util.Constants;
-import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
+import com.sapienter.jbilling.client.ViewUtils 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 
 class UserController {
 	
-	def webServicesSession
+	IWebServicesSessionBean webServicesSession
+	ViewUtils viewUtils
 	def languageId= "1"
 	def isAutoCC= false
 	def isAutoAch= false
@@ -42,8 +45,9 @@ class UserController {
 		try {			
 			int id = webServicesSession.createUser(newUser);
 			flash.message = message(code: 'user.create.success')
+		} catch (SessionInternalError e) {
+            boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 		} catch (Exception e) {
-			e.printStackTrace();
 			flash.message = message(code: 'user.create.failed')
 		}
 		flash.args= [params.userName]
@@ -169,13 +173,18 @@ class UserController {
 			} else if (params.isAutomaticPaymentAch == "on") {
 				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
 			}
-			dto.save()
+			dto.save() // TODO remove this direct save, call the API for any changes to data.
+		} catch (SessionInternalError e) {
+		    // TODO: the locale like this is not working, and it is messy. Once we have
+		    // the one resolved by jBilling in the session, add that here.
+			boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 		} catch (Exception e) {
 			e.printStackTrace();
 			flash.message = message(code: 'user.create.failed')
 		}
 		session["editUser"]= null;
 		flash.args= [params.userName]
+		//flash.user = newUser;
 		render( view:"user")
 	}
 }

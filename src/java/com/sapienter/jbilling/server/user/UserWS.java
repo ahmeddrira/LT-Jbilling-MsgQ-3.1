@@ -28,25 +28,33 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
+import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 
 /**
  * @author Emil
  */
 public class UserWS implements Serializable {
+	
+	@Min(value=1, message="validation.error.min,1", groups=UpdateValidationGroup.class)
+	@Max(value=0, message="validation.error.max,0", groups=CreateValidationGroup.class)
     private int id;
     private Integer currencyId;
+    @Size(min=5, max=40, message="validation.error.size,5,40", groups=CreateValidationGroup.class)
     private String password;
     private int deleted;
     private Date createDatetime;
     private Date lastStatusChange;
     private Date lastLogin;
-    @Size(min=5, max=50)
+    @Size(min=5, max=50, message="validation.error.size,5,50")
     private String userName;
     private int failedAttempts;
     private Integer languageId;

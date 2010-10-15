@@ -18,7 +18,7 @@
     along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sapienter.jbilling.server.util.api;
+package com.sapienter.jbilling.server.util.api.validation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ import javax.validation.Validator;
 
 import org.apache.log4j.Logger;
 import org.springframework.aop.MethodBeforeAdvice;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import com.sapienter.jbilling.common.SessionInternalError;
 
@@ -42,7 +41,7 @@ public class APIValidator implements MethodBeforeAdvice {
     private static final Logger LOG = Logger.getLogger(APIValidator.class);
     
     private Validator validator;
-    private ReloadableResourceBundleMessageSource messageSource;
+    private Set<String> objectsToTest = null;
 
     public Validator getValidator() {
 		return validator;
@@ -61,20 +60,32 @@ public class APIValidator implements MethodBeforeAdvice {
 		
         for (Object arg: args) {
         	String objectname = arg.getClass().getName();
-        	if (objectname.endsWith("WS")) {
-        		Set<ConstraintViolation<Object>> constraintViolations =	validator.validate(arg);
+        	boolean testThisObject = false;
+        	for (String test: objectsToTest) {
+        		if (objectname.endsWith(test)) {
+        			testThisObject = true;
+        			break;
+        		}
+        	}
+        	if (testThisObject) {
+        		// it always does the default
+        		Set<ConstraintViolation<Object>> constraintViolations =	
+        			validator.validate(arg);
+
+        		if (method.getName().startsWith("create")) {
+        			constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+        		} else if (method.getName().startsWith("update")) {
+        			constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+        		} 
+        		
         		if (constraintViolations.size() > 0) {
         			for (ConstraintViolation<Object> violation: constraintViolations) {
         				// compose the error message
-        				String shortObjectName = objectname.substring(objectname.lastIndexOf('.'));
-        				Object messageArgs[] = {shortObjectName, violation.getPropertyPath().toString(), 
-        						violation.getMessage()};
-        				messageSource.getMessage("validation.message", messageArgs, locale);
-        				errors.add(violation.getMessage());
-        				LOG.debug("violation = " + violation);
+        				String shortObjectName = objectname.substring(objectname.lastIndexOf('.') + 1);
+        				errors.add(shortObjectName + "," + violation.getPropertyPath().toString() + "," + 
+        						violation.getMessage());
         			}
         			LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
-        			
         		} 
         	}
         }
@@ -87,12 +98,11 @@ public class APIValidator implements MethodBeforeAdvice {
         }
     }
 
-	public void setMessageSource(ReloadableResourceBundleMessageSource messageSource) {
-		this.messageSource = messageSource;
+	public void setObjectsToTest(Set<String> objectsToTest) {
+		this.objectsToTest = objectsToTest;
 	}
 
-	public ReloadableResourceBundleMessageSource getMessageSource() {
-		return messageSource;
+	public Set<String> getObjectsToTest() {
+		return objectsToTest;
 	}
-
 }

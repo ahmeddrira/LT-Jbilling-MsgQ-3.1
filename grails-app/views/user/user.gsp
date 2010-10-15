@@ -9,9 +9,7 @@
 	<tr>
 		<td valign="top">
 		    <g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}" />
-		    <g:each in="${session.errorMessages}">
-		       <p>Error: ${it}</p>
-		    </g:each>
+		    <jB:renderErrorMessages />
 		</td>
 
 		<p class="title"><g:message code"prompt.create.user"/></p>

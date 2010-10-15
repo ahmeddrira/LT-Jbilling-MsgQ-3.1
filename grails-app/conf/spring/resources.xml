@@ -133,21 +133,24 @@
     
     <!--
           ***************************************************
-          *         AOP: Validation                         *
+          *              Validation                         *
           ***************************************************
     -->
     
     <bean id="validator"
          class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-        <property name="validationMessageSource" ref="messageSource"/>
     </bean>
 
     <!-- Validation for WebServicesSessionBean -->
     <!-- Validates any parameter that ends with *WS -->
-    <bean id="webServicesValidationAdvice" class="com.sapienter.jbilling.server.util.api.APIValidator">
+    <bean id="webServicesValidationAdvice" class="com.sapienter.jbilling.server.util.api.validation.APIValidator">
         <property name="validator" ref="validator"/>
-        <property name="messageSource" ref="messageSource"/>
-        <property name="servletContext" ref="servletContext"/>
+        <property name="objectsToTest">
+            <set>
+                <!-- Enter here endings to match. This is not a regex, just a search of suffix -->
+                <value>WS</value>
+            </set>
+        </property>
     </bean>
     <bean id="webServicesValidationAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice" ref="webServicesValidationAdvice"/>

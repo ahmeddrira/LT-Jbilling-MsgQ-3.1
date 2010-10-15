@@ -2,8 +2,8 @@ import com.mchange.v2.c3p0.ComboPooledDataSource
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
 
 beans = {
-
-		/*
+	
+	/*
 	 Database configuration
 	 */
 	dataSource(ComboPooledDataSource) { bean ->
@@ -44,20 +44,34 @@ beans = {
 	/*
 	 Spring security
 	 */
-	authenticationProcessingFilter(com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter) { authenticationManager = ref("authenticationManager") }
+	authenticationProcessingFilter(com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter) {
+		authenticationManager = ref("authenticationManager") 
+	}
 	
-	userDetailsService(com.sapienter.jbilling.client.authentication.CompanyUserDetailsService) { springSecurityService = ref("springSecurityService") }    
+	userDetailsService(com.sapienter.jbilling.client.authentication.CompanyUserDetailsService) { 
+		springSecurityService = ref("springSecurityService") 
+	}    
 	
 	passwordEncoder(com.sapienter.jbilling.client.authentication.JBillingPasswordEncoder)
 	
 	permissionVoter(com.sapienter.jbilling.client.authentication.PermissionVoter)
 	
-	webExpressionVoter(com.sapienter.jbilling.client.authentication.SafeWebExpressionVoter) { expressionHandler = ref("webExpressionHandler") }
+	webExpressionVoter(com.sapienter.jbilling.client.authentication.SafeWebExpressionVoter) { 
+		expressionHandler = ref("webExpressionHandler") 
+	}
 	
 	/*
 	 Remoting
 	 */
 	// HTTP request handler for Spring httpinvoker remote beans
 	httpRequestAdapter org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
+	
+	/*
+	 * Others
+	 */
+	// resolves exceptions into messages for the view
+	viewUtils(com.sapienter.jbilling.client.ViewUtils) {
+		messageSource = ref("messageSource")
+	}
 	
 }

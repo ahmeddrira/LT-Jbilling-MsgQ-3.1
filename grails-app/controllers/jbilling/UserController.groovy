@@ -2,22 +2,21 @@ package jbilling
 
 import java.util.Calendar;
 
-import com.sapienter.jbilling.server.user.IUserSessionBean;
 import com.sapienter.jbilling.server.user.UserDTOEx;
-import com.sapienter.jbilling.server.util.Context;
 import com.sapienter.jbilling.server.user.UserWS;
-import com.sapienter.jbilling.client.util.Constants;
+import com.sapienter.jbilling.client.ViewUtils 
 import com.sapienter.jbilling.common.SessionInternalError;
-import com.sapienter.jbilling.server.user.db.SubscriberStatusDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
+import org.springframework.security.core.context.SecurityContextHolder as SCH
 
 class UserController {
 	
-	def webServicesSession
-	def viewUtilsService
+	IWebServicesSessionBean webServicesSession
+	ViewUtils viewUtils
 	def languageId= "1"
 	
 	
@@ -43,8 +42,9 @@ class UserController {
 		try {			
 			int id = webServicesSession.createUser(newUser);
 			flash.message = message(code: 'user.create.success')
+		} catch (SessionInternalError e) {
+            boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 		} catch (Exception e) {
-			e.printStackTrace();
 			flash.message = message(code: 'user.create.failed')
 		}
 		flash.args= [params.userName]
@@ -153,8 +153,9 @@ class UserController {
 				flash.message = message(code: 'user.create.success')
 			}
 		} catch (SessionInternalError e) {
-			log.warn "error messages=" + Arrays.toString(e.getErrorMessages())
-			session.errorMessages = e.getErrorMessages();
+		    // TODO: the locale like this is not working, and it is messy. Once we have
+		    // the one resolved by jBilling in the session, add that here.
+			boolean retValue = viewUtils.resolveExceptionForValidation(flash, session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE', e);
 			flash.message = message(code: 'user.create.failed')
 		}
 		session["editUser"]= null;

@@ -26,6 +26,9 @@ import java.io.StringWriter;
 import org.apache.log4j.Logger;
 
 public class SessionInternalError extends RuntimeException {
+
+	private String errorMessages[] = null;
+	
     public SessionInternalError() {
     }
 
@@ -67,4 +70,12 @@ public class SessionInternalError extends RuntimeException {
     public SessionInternalError(String message, Throwable e) {
         super(message + " Cause: " + e.getMessage(), e);
     }
+
+	public void setErrorMessages(String errors[]) {
+		this.errorMessages = errors;
+	}
+
+	public String[] getErrorMessages() {
+		return errorMessages;
+	}
 }

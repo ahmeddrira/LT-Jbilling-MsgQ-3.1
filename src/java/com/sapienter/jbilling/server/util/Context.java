@@ -62,6 +62,11 @@ public class Context {
         HIBERNATE_SESSION   ("sessionFactory"),
         JDBC_TEMPLATE       ("jdbcTemplate"),
 
+        // security
+        SPRING_SECURITY_SERVICE ("springSecurityService"),
+        AUTHENTICATION_MANAGER  ("authenticationManager"),
+        PASSWORD_ENCODER        ("passwordEncoder"),
+
         // cache
         CACHE                           ("cacheProviderFacade"),
         CACHE_MODEL_ITEM_PRICE          ("cacheModelItemPrice"),

@@ -14,7 +14,20 @@ import com.sapienter.jbilling.server.user.*
 import grails.plugins.springsecurity.SpringSecurityService
 import org.springframework.security.core.userdetails.UserDetails
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails
+import javax.jms.Message
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx
+import com.sapienter.jbilling.server.mediation.db.MediationProcess
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration
+import com.sapienter.jbilling.server.user.partner.db.Partner
 
+/**
+ * Grails managed remote service bean for exported web-services. This bean delegates to
+ * the WebServicesSessionBean just like the core JbillingAPI.
+ */
 class ApiService implements IWebServicesSessionBean {
 
     def IWebServicesSessionBean webServicesSession
@@ -31,8 +44,16 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getCallerCompanyId();
     }
 
+    public Integer getCallerLanguageId() {
+        return webServicesSession.getCallerLanguageId();
+    }
+
     public InvoiceWS getInvoiceWS(Integer invoiceId) {
         return webServicesSession.getInvoiceWS(invoiceId)
+    }
+
+    public Integer[] getAllInvoices(Integer userId) {
+        return webServicesSession.getAllInvoices(userId)
     }
 
     public InvoiceWS getLatestInvoice(Integer userId) {
@@ -123,6 +144,14 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.authenticate(username, password)
     }
 
+    public void processPartnerPayouts(Date runDate) {
+        webServicesSession.processPartnerPayouts(runDate)
+    }
+
+    public Partner getPartner(Integer partnerId) {
+        return webServicesSession.getPartner(partnerId)
+    }
+
     public void updateCreditCard(Integer userId, CreditCardDTO creditCard) {
         webServicesSession.updateCreditCard(userId, creditCard)
     }
@@ -153,6 +182,10 @@ class ApiService implements IWebServicesSessionBean {
 
     public void updateOrder(OrderWS order) {
         webServicesSession.updateOrder(order)
+    }
+
+    public Integer createUpdateOrder(OrderWS order) {
+        return webServicesSession.createUpdateOrder(order);
     }
 
     public OrderWS getOrder(Integer orderId) {
@@ -297,5 +330,111 @@ class ApiService implements IWebServicesSessionBean {
 
     public void generateRules(String rulesData) {
         webServicesSession.generateRules(rulesData)
+    }
+
+    
+    /*
+        Billing process
+     */
+
+    public void triggerBilling(Date runDate) {
+        webServicesSession.triggerBilling(runDate)
+    }
+
+    public void triggerAgeing(Date runDate) {
+        webServicesSession.triggerAgeing(runDate)
+    }
+
+    public BillingProcessConfigurationDTO getBillingProcessConfiguration() {
+        return webServicesSession.getBillingProcessConfiguration()
+    }
+
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) {
+        return webServicesSession.createUpdateBillingProcessConfiguration(dto)
+    }
+
+    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+        return webServicesSession.getBillingProcess(processId)
+    }
+
+    public Integer getLastBillingProcess() {
+        return webServicesSession.getLastBillingProcess()
+    }
+
+    public BillingProcessDTOEx getReviewBillingProcess() {
+        return webServicesSession.getReviewBillingProcess()
+    }
+
+    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) {
+        return webServicesSession.setReviewApproval(flag)
+    }
+
+    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+        return webServicesSession.getBillingProcessGeneratedInvoices(processId)
+    }
+
+
+    /*
+       Mediation process
+    */
+
+    void triggerMediation() {
+        webServicesSession.triggerMediation()
+    }
+
+    boolean isMediationProcessing() {
+        return webServicesSession.isMediationProcessing()
+    }
+
+    public List<MediationProcess> getAllMediationProcesses() {
+        return webServicesSession.getAllMediationProcesses()
+    }
+
+    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+        return webServicesSession.getMediationEventsForOrder(orderId)
+    }
+
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+        return webServicesSession.getMediationRecordsByMediationProcess(mediationProcessId)
+    }
+
+    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+        return webServicesSession.getNumberOfMediationRecordsByStatuses()
+    }
+
+    public List<MediationConfiguration> getAllMediationConfigurations() {
+        return webServicesSession.getAllMediationConfigurations()
+    }
+
+    public void createMediationConfiguration(MediationConfiguration cfg) {
+        webServicesSession.createMediationConfiguration(cfg)
+    }
+
+    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) {
+        return webServicesSession.updateAllMediationConfigurations(configurations)
+    }
+
+    public void deleteMediationConfiguration(Integer cfgId) {
+        webServicesSession.deleteMediationConfiguration(cfgId)
+    }
+
+    /*
+       Provisioning process
+    */
+
+    public void triggerProvisioning() {
+        webServicesSession.triggerProvisioning()
+    }
+
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) {
+        webServicesSession.updateOrderAndLineProvisioningStatus(inOrderId, inLineId, result)
+    }
+
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) {
+        webServicesSession.updateLineProvisioningStatus(orderLineId, provisioningStatus)
+    }
+
+    public void externalProvisioning(Message message) {
+        webServicesSession.externalProvisioning(message)
     }
 }

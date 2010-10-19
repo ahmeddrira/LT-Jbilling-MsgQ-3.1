@@ -91,21 +91,11 @@ public class BillingProcessTest extends TestCase {
     
     protected void setUp() throws Exception {
         // once it run well ;) let's get the order interface
-        remoteOrder = (IOrderSessionBean) RemoteContext.getBean(
-                RemoteContext.Name.ORDER_REMOTE_SESSION);
-            
-        remoteInvoice = (IInvoiceSessionBean) RemoteContext.getBean(
-                RemoteContext.Name.INVOICE_REMOTE_SESSION);
-
-        remoteBillingProcess = (IBillingProcessSessionBean) 
-                RemoteContext.getBean(
-                RemoteContext.Name.BILLING_PROCESS_REMOTE_SESSION);
-
-        remoteUser = (IUserSessionBean) RemoteContext.getBean(
-                RemoteContext.Name.USER_REMOTE_SESSION);;
-
-        remotePayment= (IPaymentSessionBean) RemoteContext.getBean(
-                RemoteContext.Name.PAYMENT_REMOTE_SESSION);
+        remoteOrder = RemoteContext.getBean("orderRemoteSession");
+        remoteInvoice = RemoteContext.getBean("invoiceRemoteSession");
+        remoteBillingProcess = RemoteContext.getBean("billingProcessRemoteSession");
+        remoteUser = RemoteContext.getBean("userRemoteSession");
+        remotePayment= RemoteContext.getBean("paymentRemoteSession");
 
         languageId = new Integer(1);
         cal = new GregorianCalendar();

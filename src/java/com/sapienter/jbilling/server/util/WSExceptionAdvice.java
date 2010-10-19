@@ -28,6 +28,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Re-throws any exceptions from the API as SessionInternalErrors to
@@ -40,6 +41,14 @@ public class WSExceptionAdvice implements ThrowsAdvice {
     private static final Logger LOG = Logger.getLogger(WSExceptionAdvice.class);
 
     public void afterThrowing(Method method, Object[] args, Object target, Exception throwable) {
+    	// Avoid catching automatic validation exceptions
+    	if (throwable instanceof SessionInternalError) {
+    		String messages[] = ((SessionInternalError)throwable).getErrorMessages();
+    		if (messages != null && messages.length > 0) {
+    			LOG.debug("Validation errors:" + Arrays.toString(messages));
+    			return;
+    		}
+    	}
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);

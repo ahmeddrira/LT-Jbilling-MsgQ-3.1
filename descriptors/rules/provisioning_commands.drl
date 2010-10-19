@@ -1,19 +1,15 @@
 package provisioning_commands
-import com.sapienter.jbilling.server.util.Constants
+
+# imports
 import com.sapienter.jbilling.server.order.db.OrderLineDTO
 import com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager
 
-global com.sapienter.jbilling.server.provisioning.task.ProvisioningCommandsRulesTask.CommandManager command
-
-
-
-
-
+# globals
+global CommandManager command
 
 rule 'provisioning_activate'
 when
-    $orderLine : OrderLineDTO(itemId == 2, provisioningStatusId ==
-        Constants.PROVISIONING_STATUS_INACTIVE)
+    $orderLine : OrderLineDTO(itemId == 2, provisioningStatusId == 2)
     CommandManager(eventType == "activated")
 then
     command.addCommand("activate_user", $orderLine.getId());
@@ -23,8 +19,7 @@ end
 
 rule 'provisioning_deactivate'
 when
-    $orderLine : OrderLineDTO(itemId == 2, provisioningStatusId ==
-        Constants.PROVISIONING_STATUS_ACTIVE)
+    $orderLine : OrderLineDTO(itemId == 2, provisioningStatusId == 1)
     CommandManager(eventType == "deactivated")
 then
     // just use 'activate_user' command again
@@ -34,8 +29,7 @@ end
 
 rule 'external_provisioning_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 1, 
-        provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
+    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 1, provisioningStatusId == 2)
     CommandManager(eventType == "activated")
 then
     command.addCommand("result_test", $orderLine.getId());
@@ -48,8 +42,7 @@ end
 
 rule 'cai_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 2, 
-        provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
+    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 2, provisioningStatusId == 2)
     CommandManager(eventType == "activated")
 then
     command.addCommand("cai_test", $orderLine.getId());
@@ -60,8 +53,7 @@ end
 
 rule 'mmsc_test'
 when
-    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 3, 
-        provisioningStatusId == Constants.PROVISIONING_STATUS_INACTIVE)
+    $orderLine : OrderLineDTO(itemId == 251, quantityInt == 3, provisioningStatusId == 2)
     CommandManager(eventType == "activated")
 then
     command.addCommand("mmsc_test", $orderLine.getId());

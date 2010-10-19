@@ -70,6 +70,7 @@ log4j = {
     }
     
     debug jbillingAppender:'com.sapienter.jbilling'
+	debug jbillingAppender:'jbilling'
     
     info FILE:'com.mchange'
     

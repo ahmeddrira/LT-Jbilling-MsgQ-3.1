@@ -24,35 +24,13 @@
  */
 package com.sapienter.jbilling.server.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
-import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
-import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
-import grails.plugins.springsecurity.SpringSecurityService;
-import org.apache.commons.validator.ValidatorException;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import sun.jdbc.rowset.CachedRowSet;
-
-import com.sapienter.jbilling.common.GatewayBL;
+import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
+import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -66,12 +44,16 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
+import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineBL;
 import com.sapienter.jbilling.server.order.OrderLineWS;
@@ -91,11 +73,14 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
-import com.sapienter.jbilling.server.user.AchBL;
+import com.sapienter.jbilling.server.provisioning.IProvisioningProcessSessionBean;
 import com.sapienter.jbilling.server.rule.task.IRulesGenerator;
+import com.sapienter.jbilling.server.user.AchBL;
 import com.sapienter.jbilling.server.user.ContactBL;
 import com.sapienter.jbilling.server.user.ContactDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -113,9 +98,31 @@ import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import grails.plugins.springsecurity.SpringSecurityService;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import sun.jdbc.rowset.CachedRowSet;
+
+import javax.jms.Message;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -136,7 +143,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * throw the standard Hibernate ObjectNotFoundException.
      */
     private void validateCaller() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         
         UserBL bl = new UserBL();
         bl.setRoot(details.getUsername());
@@ -149,7 +156,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return caller user ID
      */
     public Integer getCallerId() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         return details.getUserId();
     }
 
@@ -159,13 +166,28 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @return caller company ID
      */
     public Integer getCallerCompanyId() {
-        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getAuthentication().getPrincipal();
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
         return details.getCompanyId();
-    }  
+    }
+
+    /**
+     * Returns the language ID of the authenticated user account making the web service call. 
+     *
+     * @return caller language ID
+     */
+    public Integer getCallerLanguageId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
+        return details.getLanguageId();
+    }
+
+
+    // todo: reorganize methods and reformat code. should match the structure of the interface to make things readable.
+
 
     /*
-     * INVOICES
+        Invoices
      */
+
     public InvoiceWS getInvoiceWS(Integer invoiceId)
             throws SessionInternalError {
         if (invoiceId == null) {
@@ -178,6 +200,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         return InvoiceBL.getWS(invoice);
+    }
+
+    public Integer[] getAllInvoices(Integer userId) {
+        IInvoiceSessionBean invoiceBean = Context.getBean(Context.Name.INVOICE_SESSION);
+        Set<InvoiceDTO> invoices = invoiceBean.getAllInvoices(userId);
+
+        List<Integer> ids = new ArrayList<Integer>(invoices.size());
+        for (InvoiceDTO invoice : invoices)
+            ids.add(invoice.getId());        
+        return ids.toArray(new Integer[ids.size()]);
     }
 
     public InvoiceWS getLatestInvoice(Integer userId)
@@ -554,6 +586,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
     }
 
+    @Deprecated
     private Integer[] getByCCNumber(Integer entityId, String number) {
         List<Integer> usersIds = new CreditCardDAS().findByLastDigits(entityId, number);
         
@@ -654,6 +687,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * See the constants in WebServicesConstants (AUTH*) for details.
      * @throws SessionInternalError
      */
+    @Deprecated
     public Integer authenticate(String username, String password)
             throws SessionInternalError {
         Integer retValue = null;
@@ -680,6 +714,16 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         }
 
         return retValue;
+    }
+
+    public void processPartnerPayouts(Date runDate) {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        userSession.processPayouts(runDate);
+    }
+
+    public Partner getPartner(Integer partnerId) throws SessionInternalError {
+        IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
+        return userSession.getPartnerDTO(partnerId);        
     }
 
     /**
@@ -775,6 +819,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
 
         Integer orderId = doCreateOrder(order, true).getId();
         return orderId;
+    }
+
+    /**
+     * Update the given order, or create it if it doesn't already exist.
+     *
+     * @param order order to update or create
+     * @return order id 
+     * @throws SessionInternalError
+     */
+    public Integer createUpdateOrder(OrderWS order) throws SessionInternalError {
+        IOrderSessionBean orderSession = Context.getBean(Context.Name.ORDER_SESSION);
+
+        OrderDTO dto = new OrderBL().getDTO(order);
+        return orderSession.createUpdate(getCallerCompanyId(), getCallerId(), dto, getCallerLanguageId());
     }
 
     public OrderWS rateOrder(OrderWS order)
@@ -1366,38 +1424,20 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                     newUser.getCreditCard().getNumber()));
         }
 
-        try {
-            GatewayBL valid = new GatewayBL();
-            // the user
-            if (!valid.validate("UserWS", newUser)) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // the contact
-            if (!valid.validate("ContactDTO", newUser.getContact())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // the credit card (optional)
-            if (newUser.getCreditCard() != null && !valid.validate("CreditCardDTO",
-                    newUser.getCreditCard())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // additional validation
-            if (newUser.getMainRoleId().equals(Constants.TYPE_CUSTOMER) ||
-                    newUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
-            } else {
-                throw new SessionInternalError("Valid user roles are customer (5) " +
-                        "and partner (4)");
-            }
-            if (newUser.getCurrencyId() != null &&
-                    newUser.getCurrencyId().intValue() <= 0) {
-                throw new SessionInternalError("Invalid currency code");
-            }
-            if (newUser.getStatusId().intValue() <= 0) {
-                throw new SessionInternalError("Invalid status code");
-            }
-        } catch (ValidatorException e) {
-            LOG.error("validating ws", e);
-            throw new SessionInternalError("Invalid parameter");
+        // todo: additional hibernate validations
+        // additional validation
+        if (newUser.getMainRoleId().equals(Constants.TYPE_CUSTOMER) ||
+                newUser.getMainRoleId().equals(Constants.TYPE_PARTNER)) {
+        } else {
+            throw new SessionInternalError("Valid user roles are customer (5) " +
+                    "and partner (4)");
+        }
+        if (newUser.getCurrencyId() != null &&
+                newUser.getCurrencyId().intValue() <= 0) {
+            throw new SessionInternalError("Invalid currency code");
+        }
+        if (newUser.getStatusId().intValue() <= 0) {
+            throw new SessionInternalError("Invalid status code");
         }
     }
 
@@ -1425,53 +1465,38 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             order.setOrderLines(new OrderLineWS[0]);
         }
 
-        try {
-            GatewayBL valid = new GatewayBL();
-            // the order
-            if (!valid.validate("OrderWS", order)) {
-                throw new SessionInternalError(valid.getText());
+        // todo: additional hibernate validations
+                // the lines
+        for (int f = 0; f < order.getOrderLines().length; f++) {
+            OrderLineWS line = order.getOrderLines()[f];
+            if (line.getUseItem() == null) {
+                line.setUseItem(false);
             }
-            // the lines
-            for (int f = 0; f < order.getOrderLines().length; f++) {
-                OrderLineWS line = order.getOrderLines()[f];
-                if (!valid.validate("OrderLineWS", line)) {
-                    throw new SessionInternalError(valid.getText());
+            line.setItemId(zero2null(line.getItemId()));
+            String error = "";
+            // if use the item, I need the item id
+            if (line.getUseItem()) {
+                if (line.getItemId() == 0) {
+                    error += "OrderLineWS: if useItem == true the itemId is required - ";
                 }
-                if (line.getUseItem() == null) {
-                    line.setUseItem(new Boolean(false));
+                if (line.getQuantityAsDecimal() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
+                    error += "OrderLineWS: if useItem == true the quantity is required - ";
                 }
-                line.setItemId(zero2null(line.getItemId()));
-                String error = "";
-                // if use the item, I need the item id
-                if (line.getUseItem().booleanValue()) {
-                    if (line.getItemId() == null ||
-                            line.getItemId().intValue() == 0) {
-                        error += "OrderLineWS: if useItem == true the itemId " +
-                                "is required - ";
-                    }
-                    if (line.getQuantityAsDecimal() == null || BigDecimal.ZERO.compareTo(line.getQuantityAsDecimal()) == 0) {
-                        error += "OrderLineWS: if useItem == true the quantity " +
-                                "is required - ";
-                    }
-                } else {
-                    // I need the amount and description
-                    if (line.getAmount() == null) {
-                        error += "OrderLineWS: if useItem == false the item amount " +
-                                "is required - ";
-                    }
-                    if (line.getDescription() == null ||
-                            line.getDescription().length() == 0) {
-                        error += "OrderLineWS: if useItem == false the description " +
-                                "is required - ";
-                    }
+            } else {
+                // I need the amount and description
+                if (line.getAmount() == null) {
+                    error += "OrderLineWS: if useItem == false the item amount " +
+                             "is required - ";
                 }
-                if (error.length() > 0) {
-                    throw new SessionInternalError(error);
+                if (line.getDescription() == null ||
+                    line.getDescription().length() == 0) {
+                    error += "OrderLineWS: if useItem == false the description " +
+                             "is required - ";
                 }
             }
-        } catch (ValidatorException e) {
-            LOG.error("validating ws", e);
-            throw new SessionInternalError("Invalid parameter");
+            if (error.length() > 0) {
+                throw new SessionInternalError(error);
+            }
         }
     }
 
@@ -1485,31 +1510,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         payment.setCurrencyId(payment.getCurrencyId());
         payment.setPaymentId(payment.getPaymentId());
 
-        try {
-            GatewayBL valid = new GatewayBL();
-            // the payment
-            if (!valid.validate("PaymentWS", payment)) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // may be there is a cc
-            if (payment.getCreditCard() != null && !valid.validate(
-                    "CreditCardDTO", payment.getCreditCard())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // may be there is a cheque
-            if (payment.getCheque() != null && !valid.validate(
-                    "PaymentInfoChequeDTO", payment.getCheque())) {
-                throw new SessionInternalError(valid.getText());
-            }
-            // may be there is a ach
-            if (payment.getAch() != null && !valid.validate(
-                    "AchDTO", payment.getAch())) {
-                throw new SessionInternalError(valid.getText());
-            }
-        } catch (ValidatorException e) {
-            LOG.error("validating ws", e);
-            throw new SessionInternalError("Invalid parameter");
-        }
+        // todo: additional hibernate validations
     }
 
     private InvoiceDTO doCreateInvoice(Integer orderId) {
@@ -1988,6 +1989,151 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
                 Context.Name.USER_SESSION);
         sess.setAuthPaymentType(userId, autoPaymentType, use);
     }
+
+
+    /*
+        Billing process
+     */
+
+    public void triggerBilling(Date runDate) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        processBean.trigger(runDate);        
+    }
+
+    public void triggerAgeing(Date runDate) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        processBean.reviewUsersStatus(runDate);
+    }
+
+    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getConfigurationDto(getCallerCompanyId());
+    }
+
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto)
+            throws SessionInternalError {
+        
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.createUpdateConfiguration(getCallerId(), dto);
+    }
+
+    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getDto(processId, getCallerLanguageId());
+    }
+
+    public Integer getLastBillingProcess() throws SessionInternalError {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getLast(getCallerCompanyId());
+    }
+
+    public BillingProcessDTOEx getReviewBillingProcess() {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
+    }
+
+    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.setReviewApproval(getCallerId(), getCallerCompanyId(), flag);
+    }
+
+    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+        IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
+        return processBean.getGeneratedInvoices(processId);
+    }
+
+    
+    /*
+       Mediation process
+    */
+
+    public void triggerMediation() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        mediationBean.trigger(getCallerCompanyId());
+    }
+
+    public boolean isMediationProcessing() throws SessionInternalError {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.isProcessing(getCallerCompanyId());
+    }
+
+
+    public List<MediationProcess> getAllMediationProcesses() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getAll(getCallerCompanyId());
+    }
+
+    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getEventsForOrder(orderId);
+    }
+
+    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getMediationRecordsByMediationProcess(mediationProcessId);
+    }
+
+    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
+    }
+
+    public List<MediationConfiguration> getAllMediationConfigurations() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        return mediationBean.getAllConfigurations(getCallerCompanyId());
+    }
+
+    public void createMediationConfiguration(MediationConfiguration cfg) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        mediationBean.createConfiguration(cfg);
+    }
+
+    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations)
+            throws SessionInternalError {
+        
+        try {
+            IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+            return mediationBean.updateAllConfiguration(getCallerId(), configurations);
+        } catch (InvalidArgumentException e) {
+            throw new SessionInternalError(e);
+        }
+    }
+
+    public void deleteMediationConfiguration(Integer cfgId) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+        mediationBean.delete(getCallerId(), cfgId);
+    }
+
+    
+    /*
+        Provisioning
+     */
+
+    public void triggerProvisioning() {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.trigger();
+    }
+
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result)
+            throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.updateProvisioningStatus(inOrderId, inLineId, result);
+    }
+
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.updateProvisioningStatus(orderLineId, provisioningStatus);
+    }
+
+    public void externalProvisioning(Message message) throws SessionInternalError {
+        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
+        provisioningBean.externalProvisioning(message);
+    }
+
+
+    /*
+        Utilities
+     */
 
     public void generateRules(String rulesData) throws SessionInternalError {
         try {

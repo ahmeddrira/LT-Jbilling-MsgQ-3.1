@@ -105,7 +105,7 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
-                                      user, bl.getLocale(),
+                                      user, null, //bl.getLocale(),TODO Find a safe way to get locale
                                       user.getId(), user.getEntity().getId(), user.getLanguage().getId());
     }
 }

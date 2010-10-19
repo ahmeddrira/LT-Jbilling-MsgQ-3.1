@@ -22,17 +22,16 @@
       // Hide the first cell for JavaScript enabled browsers.
       //$('.link-table td:first-child').hide();
 
-      // Apply a class on mouse over and remove it on mouse out.
+      // Apply a class on mouse click
       $('.link-table tr').click(function ()
       {
         $(this).toggleClass('Highlight');
       });
   
-      // Assign a click handler that grabs the URL 
-      // from the first cell and redirects the user.
+      // Assign a click handler that grabs item Id from the first cell
       $('.link-table tr').click(function ()
       {
-    	  document.getElementById("deleteItemId").value= $(this).find('td input').attr('value');    	 
+          document.getElementById("deleteItemId").value= $(this).find('td input').attr('value');    	 
     	  //document.getElementById("delOrderTypeId").value= $(this).find('td select').attr('value');
     	  //alert("selected id=" + document.getElementById("deleteItemId").value);
     	  //alert(document.getElementById("delOrderTypeId").value);

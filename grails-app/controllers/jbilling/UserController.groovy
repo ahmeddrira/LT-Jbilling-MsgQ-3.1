@@ -169,7 +169,7 @@ class UserController {
 			} else if (params.isAutomaticPaymentAch == "on") {
 				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
 			}
-			dto.save()
+			//dto.save()
 		} catch (Exception e) {
 			e.printStackTrace();
 			flash.message = message(code: 'user.create.failed')

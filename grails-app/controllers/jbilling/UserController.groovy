@@ -177,7 +177,7 @@ class UserController {
 			} else if (params.isAutomaticPaymentAch == "on") {
 				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
 			}
-			dto.save() // TODO remove this direct save, call the API for any changes to data.
+			dto.save() // // TODO Code review. oh no, another of these. Updating, creating, deleting a row? Use the API.
 		} catch (SessionInternalError e) {
 		    // TODO: the locale like this is not working, and it is messy. Once we have
 		    // the one resolved by jBilling in the session, add that here.

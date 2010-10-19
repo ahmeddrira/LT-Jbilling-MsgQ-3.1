@@ -21,6 +21,8 @@
 package com.sapienter.jbilling.client.authentication;
 
 import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.contact.db.ContactDAS;
+import com.sapienter.jbilling.server.user.contact.db.ContactDTO;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.permisson.db.PermissionDTO;
 import com.sapienter.jbilling.server.user.permisson.db.RoleDTO;
@@ -105,7 +107,16 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
         return new CompanyUserDetails(user.getUserName(), user.getPassword(), user.isEnabled(),
                                       !user.isAccountExpired(), !user.isPasswordExpired(), !user.isAccountLocked(),
                                       authorities.isEmpty() ? NO_AUTHORITIES : authorities,
-                                      user, null, //bl.getLocale(),TODO Find a safe way to get locale
+                                      user, getLocale(user),
                                       user.getId(), user.getEntity().getId(), user.getLanguage().getId());
+    }
+
+    private Locale getLocale(UserDTO user) {
+        String languageCode = user.getLanguage().getCode();
+
+        ContactDTO contact = new ContactDAS().findPrimaryContact(user.getId());
+        String countryCode = contact.getCountryCode();
+
+        return countryCode != null ? new Locale(languageCode, countryCode) : new Locale(languageCode);
     }
 }

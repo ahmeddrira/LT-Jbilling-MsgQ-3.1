@@ -19,9 +19,6 @@
 
     $(function ()
     {
-      // Hide the first cell for JavaScript enabled browsers.
-      //$('.link-table td:first-child').hide();
-
       // Apply a class on mouse click
       $('.link-table tr').click(function ()
       {
@@ -31,10 +28,7 @@
       // Assign a click handler that grabs item Id from the first cell
       $('.link-table tr').click(function ()
       {
-          document.getElementById("deleteItemId").value= $(this).find('td input').attr('value');    	 
-    	  //document.getElementById("delOrderTypeId").value= $(this).find('td select').attr('value');
-    	  //alert("selected id=" + document.getElementById("deleteItemId").value);
-    	  //alert(document.getElementById("delOrderTypeId").value);
+          document.getElementById("deleteItemId").value= $(this).find('td input').attr('value');
       });
 
       $('.link-table tr').dblclick(function()
@@ -42,12 +36,7 @@
           //alert ($(this).find('td input').attr('value'));
           document.forms[0].action='/jbilling/product/type/' + $(this).find('td input').attr('value');
           document.forms[0].submit();
-      });
-
-      //$("#addrow").click(function() {
-   	  //  $('.link-table tbody>tr:last').clone(true).insertAfter('.link-table tbody>tr:last');
-   	  //  return false;
-   	  //});    	      
+      });     
       
     });
   </script>
@@ -65,13 +54,10 @@ function nLoad() {
 function del() {
 	if (0 == parseInt(document.getElementById("deleteItemId").value))
 	{
-		alert('please select a row to delete');
+		alert('Please select a row to delete');
 		return false;
 	}
-	if (confirm("Are you sure you want to delete [" + document.getElementById("deleteItemId").value + "]")){		
-		//document.getElementById("deleteItemId").value= 'selected rows id';
-		//alert("deleting id: " + document.getElementById("deleteItemId").value);
-		//alert("Deleted successfully");
+	if (confirm("Are you sure you want to delete [" + document.getElementById("deleteItemId").value + "]")){
 		return true;
 	}
 	return false;

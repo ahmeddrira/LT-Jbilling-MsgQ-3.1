@@ -227,8 +227,6 @@ public interface JbillingAPI {
     public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) throws JbillingAPIException;
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws JbillingAPIException;
 
-    public void externalProvisioning(Message message) throws JbillingAPIException;
-
 
     /*
         Utilities

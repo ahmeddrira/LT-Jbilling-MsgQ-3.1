@@ -23,9 +23,12 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Value object for PaymentInfoChequeEntity.
  */
+@XmlType(name = "payment-info-cheque")
 public class PaymentInfoChequeDTO
    extends java.lang.Object
    implements java.io.Serializable 

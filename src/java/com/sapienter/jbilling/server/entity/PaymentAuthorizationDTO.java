@@ -23,9 +23,12 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Value object for PaymentAuthorizationEntity.
  */
+@XmlType(name = "payment-authorization")
 public class PaymentAuthorizationDTO
    extends java.lang.Object
    implements java.io.Serializable 

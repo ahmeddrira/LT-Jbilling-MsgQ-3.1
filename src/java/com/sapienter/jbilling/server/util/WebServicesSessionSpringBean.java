@@ -2125,11 +2125,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         provisioningBean.updateProvisioningStatus(orderLineId, provisioningStatus);
     }
 
-    public void externalProvisioning(Message message) throws SessionInternalError {
-        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
-        provisioningBean.externalProvisioning(message);
-    }
-
 
     /*
         Utilities

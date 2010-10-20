@@ -23,9 +23,12 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Value object for InvoiceLineEntity.
  */
+@XmlType(name = "invoice-line")
 public class InvoiceLineDTO
    extends java.lang.Object
    implements java.io.Serializable 

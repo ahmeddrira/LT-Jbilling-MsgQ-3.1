@@ -236,8 +236,6 @@ public interface IWebServicesSessionBean {
     public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result);
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus);
 
-    public void externalProvisioning(Message message);
-
 
     /*
         Utilities

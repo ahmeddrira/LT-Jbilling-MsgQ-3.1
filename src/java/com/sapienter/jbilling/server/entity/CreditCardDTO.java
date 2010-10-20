@@ -19,10 +19,13 @@
 */
 package com.sapienter.jbilling.server.entity;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Only used for web services backward compatibility. 
  * Do not use!
  */
+@XmlType(name = "credit-card")
 public class CreditCardDTO
    extends java.lang.Object
    implements java.io.Serializable 

@@ -879,14 +879,6 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public void externalProvisioning(Message message) throws JbillingAPIException {
-        try {
-            session.externalProvisioning(message);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
     
     /*
         Utilities

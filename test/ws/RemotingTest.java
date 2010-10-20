@@ -51,7 +51,7 @@ public class RemotingTest extends TestCase {
 
         service = RemoteContext.getBean("apiClient3");
 
-        // SOAP API for user 'mordor' company 2
+        // Spring HTTP Invoker API for user 'mordor' company 2
         assertEquals(12, service.getCallerId().intValue());
         assertEquals(2, service.getCallerCompanyId().intValue());
 

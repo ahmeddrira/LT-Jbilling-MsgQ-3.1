@@ -19,6 +19,7 @@
 */
 package com.sapienter.jbilling.server.item;
 
+import javax.xml.bind.annotation.XmlTransient;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,13 +31,16 @@ import java.util.List;
  */
 public class PricingField {
 
-    private final String name;
-    private final Type type;
+    private String name;
+    private Type type;
     private Integer position = 1;
     private String value = null;
     private long resultId; // at the time, only used for mediation of batch
     
     public enum Type { STRING, INTEGER, DECIMAL, DATE, BOOLEAN }
+
+    public PricingField() {
+    }
 
     /**
      * Constructs a new PricingField from a given encoded String.
@@ -139,8 +143,16 @@ public class PricingField {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public void setPosition(Integer position) {
@@ -175,6 +187,7 @@ public class PricingField {
         }        
     }
 
+    @XmlTransient
     public String getStrValue() {
         return value;
     }
@@ -184,6 +197,7 @@ public class PricingField {
     }
 
 
+    @XmlTransient
     public Date getDateValue() {
         if (value == null) return null;
         return new Date(Long.parseLong(value));
@@ -197,6 +211,7 @@ public class PricingField {
         }
     }
 
+    @XmlTransient
     public Calendar getCalendarValue() {
         if (value == null) return null;
 
@@ -205,6 +220,7 @@ public class PricingField {
         return cal;
     }
 
+    @XmlTransient
     public Integer getIntValue() {
         if (value == null) return null;
         return Integer.valueOf(value);
@@ -218,6 +234,7 @@ public class PricingField {
         }
     }
 
+    @XmlTransient
     public BigDecimal getDecimalValue() {
         if (value == null) return null;
         return new BigDecimal(value);
@@ -237,6 +254,7 @@ public class PricingField {
      *
      * @return decimal value as a double
      */
+    @XmlTransient
     public Double getDoubleValue() {
         BigDecimal value = getDecimalValue();
         return (value != null ? value.doubleValue() : null);
@@ -246,6 +264,7 @@ public class PricingField {
      * @see #getDoubleValue()
      * @return decimal value as a float
      */
+    @XmlTransient
     public Double getFloatValue() {
         return getDoubleValue();
     }
@@ -258,6 +277,7 @@ public class PricingField {
         }
     }
 
+    @XmlTransient
     public Boolean getBooleanValue() {
         if (value == null) return null;
         return Boolean.valueOf(this.value);        

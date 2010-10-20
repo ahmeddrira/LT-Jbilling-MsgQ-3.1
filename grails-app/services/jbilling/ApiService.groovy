@@ -418,6 +418,7 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.deleteMediationConfiguration(cfgId)
     }
 
+
     /*
        Provisioning process
     */
@@ -432,9 +433,5 @@ class ApiService implements IWebServicesSessionBean {
 
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) {
         webServicesSession.updateLineProvisioningStatus(orderLineId, provisioningStatus)
-    }
-
-    public void externalProvisioning(Message message) {
-        webServicesSession.externalProvisioning(message)
     }
 }

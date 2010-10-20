@@ -23,9 +23,12 @@
  */
 package com.sapienter.jbilling.server.entity;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Value object for AchEntity.
  */
+@XmlType(name = "ach")
 public class AchDTO
    extends java.lang.Object
    implements java.io.Serializable 

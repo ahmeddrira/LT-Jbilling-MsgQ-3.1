@@ -22,6 +22,8 @@ package com.sapienter.jbilling.server.invoice;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
 import com.sapienter.jbilling.server.util.Constants;
+
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,6 +32,7 @@ import java.util.Date;
 /**
  * @author Emil
  */
+@XmlType(name = "invoice")
 public class InvoiceWS implements Serializable {
 
     private Integer delegatedInvoiceId = null;

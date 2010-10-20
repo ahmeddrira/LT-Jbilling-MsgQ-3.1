@@ -176,6 +176,10 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.updateItem(item)
     }
 
+    void deleteItem(Integer itemId) {
+        webServicesSession.deleteItem(itemId)
+    }
+
     public Integer createOrderAndInvoice(OrderWS order) {
         return webServicesSession.createOrderAndInvoice(order)
     }
@@ -316,6 +320,10 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.updateItemCategory(itemType)
     }
 
+    void deleteItemCategory(Integer itemCategoryId) {
+        webServicesSession.deleteItemCategory(itemCategoryId)
+    }
+
     public void updateAch(Integer userId, AchDTO ach) {
         webServicesSession.updateAch(userId, ach)
     }
@@ -418,6 +426,7 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.deleteMediationConfiguration(cfgId)
     }
 
+
     /*
        Provisioning process
     */
@@ -432,9 +441,5 @@ class ApiService implements IWebServicesSessionBean {
 
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) {
         webServicesSession.updateLineProvisioningStatus(orderLineId, provisioningStatus)
-    }
-
-    public void externalProvisioning(Message message) {
-        webServicesSession.externalProvisioning(message)
     }
 }

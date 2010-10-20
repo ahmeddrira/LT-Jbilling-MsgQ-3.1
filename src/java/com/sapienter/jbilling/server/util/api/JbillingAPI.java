@@ -99,6 +99,7 @@ public interface JbillingAPI {
     public ItemDTOEx[] getAllItems() throws JbillingAPIException;
     public Integer createItem(ItemDTOEx item) throws JbillingAPIException;
     public void updateItem(ItemDTOEx item) throws JbillingAPIException;
+    public void deleteItem(Integer itemId) throws JbillingAPIException;
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException;
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
@@ -106,6 +107,7 @@ public interface JbillingAPI {
     public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException;
     public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
     public void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
+    public void deleteItemCategory(Integer itemCategoryId) throws JbillingAPIException;
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
 

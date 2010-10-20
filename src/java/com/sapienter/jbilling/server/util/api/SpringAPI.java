@@ -557,6 +557,14 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
+    public void deleteItem(Integer itemId) throws JbillingAPIException {
+        try {
+            session.deleteItem(itemId);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
         throws JbillingAPIException {
         try {
@@ -660,6 +668,14 @@ public class SpringAPI implements JbillingAPI {
     public void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException {
         try {
             session.updateItemCategory(itemType);
+        } catch (Exception e) {
+            throw new JbillingAPIException(e);
+        }
+    }
+
+    public void deleteItemCategory(Integer itemCategoryId) throws JbillingAPIException {
+        try {
+            session.deleteItemCategory(itemCategoryId);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

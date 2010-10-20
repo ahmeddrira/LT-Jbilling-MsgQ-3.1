@@ -176,6 +176,10 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.updateItem(item)
     }
 
+    void deleteItem(Integer itemId) {
+        webServicesSession.deleteItem(itemId)
+    }
+
     public Integer createOrderAndInvoice(OrderWS order) {
         return webServicesSession.createOrderAndInvoice(order)
     }
@@ -314,6 +318,10 @@ class ApiService implements IWebServicesSessionBean {
 
     public void updateItemCategory(ItemTypeWS itemType) {
         webServicesSession.updateItemCategory(itemType)
+    }
+
+    void deleteItemCategory(Integer itemCategoryId) {
+        webServicesSession.deleteItemCategory(itemCategoryId)
     }
 
     public void updateAch(Integer userId, AchDTO ach) {

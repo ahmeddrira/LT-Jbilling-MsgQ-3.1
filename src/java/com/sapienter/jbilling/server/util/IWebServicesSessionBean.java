@@ -109,6 +109,7 @@ public interface IWebServicesSessionBean {
     public ItemDTOEx[] getAllItems() throws SessionInternalError;
     public Integer createItem(ItemDTOEx item) throws SessionInternalError;
     public void updateItem(ItemDTOEx item);
+    public void deleteItem(Integer itemId);
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
@@ -116,7 +117,8 @@ public interface IWebServicesSessionBean {
     public ItemTypeWS[] getAllItemCategories();
     public Integer createItemCategory(ItemTypeWS itemType) throws SessionInternalError;
     public void updateItemCategory(ItemTypeWS itemType) throws SessionInternalError;
-
+    public void deleteItemCategory(Integer itemCategoryId);
+    
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId);
 
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws SessionInternalError;
@@ -166,10 +168,6 @@ public interface IWebServicesSessionBean {
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring) throws SessionInternalError;
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
     public void deleteInvoice(Integer invoiceId);
-    
-    public void deleteItem(Integer itemId);
-    
-    public void deleteItemCategory(Integer itemCategoryId);
 
     public Integer[] getAllInvoices(Integer userId);
     public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;

@@ -111,6 +111,12 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
                                       user.getId(), user.getEntity().getId(), user.getLanguage().getId());
     }
 
+    /**
+     * Get the user's locale based on their selected language and set country.
+     *
+     * @param user user
+     * @return users locale
+     */
     private Locale getLocale(UserDTO user) {
         String languageCode = user.getLanguage().getCode();
 

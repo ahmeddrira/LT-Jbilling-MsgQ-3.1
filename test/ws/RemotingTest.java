@@ -1,7 +1,16 @@
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.mediation.db.MediationProcess;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
+import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
@@ -12,8 +21,15 @@ import junit.framework.TestCase;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 
+/**
+ * Smoke tests for the web services api. Ensures that all method calls complete successfully
+ * and that the return value can be serialized using various web service API protocols.
+ */
 public class RemotingTest extends TestCase {
 
     private final static Integer USER_ID = 2;
@@ -46,14 +62,14 @@ public class RemotingTest extends TestCase {
         makeCalls();
         System.out.println("Web Services tests done");
     }
-
+   
     public void testInvoker() {
-
+        
         service = RemoteContext.getBean("apiClient3");
 
-        // Spring HTTP Invoker API for user 'mordor' company 2
-        assertEquals(12, service.getCallerId().intValue());
-        assertEquals(2, service.getCallerCompanyId().intValue());
+        // Spring HTTP Invoker API for user 'admin' company 1
+        assertEquals(1, service.getCallerId().intValue());
+        assertEquals(1, service.getCallerCompanyId().intValue());
 
         System.out.println("HTTP Invoker tests");
         makeCalls();

@@ -96,10 +96,12 @@ grails.plugins.springsecurity.controllerAnnotations.staticRules = [
 // basic HTTP authentication filter for web-services
 grails.plugins.springsecurity.useBasicAuth = true
 grails.plugins.springsecurity.basic.realmName = "jBilling Web Services"
+
+// authentication filter configuration
 grails.plugins.springsecurity.filterChain.chainMap = [
         '/services/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
         '/hessian/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
-        '/httpinvoker/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+        '/httpinvoker/**': 'securityContextPersistenceFilter,staticAuthenticationFilter,securityContextHolderAwareRequestFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
         '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
 ]
 

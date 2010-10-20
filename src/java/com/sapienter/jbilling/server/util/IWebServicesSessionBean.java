@@ -166,6 +166,10 @@ public interface IWebServicesSessionBean {
     public Integer[] createInvoice(Integer userId, boolean onlyRecurring) throws SessionInternalError;
     public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws SessionInternalError;
     public void deleteInvoice(Integer invoiceId);
+    
+    public void deleteItem(Integer itemId);
+    
+    public void deleteItemCategory(Integer itemCategoryId);
 
     public Integer[] getAllInvoices(Integer userId);
     public InvoiceWS getLatestInvoice(Integer userId) throws SessionInternalError;

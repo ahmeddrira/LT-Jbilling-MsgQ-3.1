@@ -96,6 +96,8 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
+import com.sapienter.jbilling.server.user.db.CustomerDAS;
+import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -304,6 +306,26 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         InvoiceBL invoice = new InvoiceBL(invoiceId);
         invoice.delete(executorId);
     }
+    
+    /**
+     * Deletes an Item
+     * @param itemId
+     * The id of the item to delete
+     */
+    public void deleteItem(Integer itemId) {
+    	ItemBL bl= new ItemBL(itemId);
+		bl.delete(getCallerId());
+    }
+    
+    /**
+     * Deletes an Item Category
+     * @param itemCategoryId
+     * The id of the Item Category to delete
+     */
+    public void deleteItemCategory(Integer itemCategoryId) {
+    	ItemTypeBL bl = new ItemTypeBL(itemCategoryId);
+		bl.delete(getCallerId());
+    }
 
     /**
      * Generates invoices for orders not yet invoiced for this user.
@@ -497,6 +519,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             sess.updateCreditCard(executorId, user.getUserId(),
                     new CreditCardDTO(user.getCreditCard()));
         }
+        
+        //udpate customerdto here - notes, automaticPaymentMethod
+        //CustomerDTO customer= new CustomerDTO(user);
+        //new CustomerDAS().save(customer);
     }
 
     /**

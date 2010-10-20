@@ -28,6 +28,12 @@ class ProductController {
 		}		
 	}
 	
+	def showAll = {
+		log.info "ProductController.showAll[" + ItemDTO.findAll().size() + "]"
+		// render the view with the specified model
+		render(view:"type",model:[list:ItemDTO.findAll()])
+	}
+	
 	def show = {
 		log.info params["id"]
 		def prodId= params.productId.toInteger()
@@ -45,4 +51,12 @@ class ProductController {
 	def edit = {
 		log.info params["id"]
 	}
+	
+	def delete = {
+		def itemId= params.selectedId.toInteger()
+		log.info "Deleting item=" + itemId
+		webServicesSession.deleteItem(itemId)
+		redirect (action: type)
+	}
+	
 }

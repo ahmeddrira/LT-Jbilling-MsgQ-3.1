@@ -81,6 +81,51 @@ ${title}
 function nLoad() {
 	document.getElementById("recCnt").value = ${list.size()};
 }
+
+function del() {
+	if (0 == parseInt(document.getElementById("selectedId").value))
+	{
+		alert('Please select a row to delete');
+		return false;
+	}
+	if (confirm("Are you sure you want to delete [" + document.getElementById("selectedId").value + "]")){		
+		return true;
+	}
+	return false;
+}
+function add() {
+	var tblBody = document.getElementById('catTbl').tBodies[0];
+	//alert(tblBody.rows.length);
+	var newNode = tblBody.rows[0].cloneNode(true);
+	tblBody.appendChild(newNode);
+	var count = parseInt(document.getElementById("recCnt").value);
+	//alert("Count Found=" + count);
+	var cells = newNode.cells;
+	//alert("Cells Length=" + cells.length)
+	for (var i=0; i < cells.length ; i ++) {
+	    if (cells[i].firstElementChild.id.indexOf("id") != -1) {
+	        cells[i].firstElementChild.id = "list["+(count)+"].id";
+	        cells[i].firstElementChild.name = "list["+(count)+"].id";
+	        cells[i].firstElementChild.value="";    
+	    } else if (cells[i].firstElementChild.id.indexOf("description") != -1) {
+	        cells[i].firstElementChild.id = "list["+(count)+"].description";
+	        cells[i].firstElementChild.name = "list["+(count)+"].description";	       
+	    } else if (cells[i].firstElementChild.id.indexOf("internalNumber") != -1) {
+	        cells[i].firstElementChild.id = "list["+(count)+"].internalNumber";
+	        cells[i].firstElementChild.name = "list["+(count)+"].internalNumber";
+	    }	   
+	    cells[i].firstElementChild.value="";
+	    //alert(cells[i].firstElementChild.id);
+	    
+	}
+	
+	//document.getElementById('catTbl').tBodies[0].appendChild(newNode);	
+	count++;
+	//alert("New Count Value=" + count);
+	document.getElementById("recCnt").value = count;
+	//alert("New recCnt Value=" + document.getElementById("recCnt").value);
+}
+
 </script>
 <body onload="nLoad()">
 <h2><g:message code="prompt.products" /></h2>
@@ -116,7 +161,18 @@ function nLoad() {
 </div>
 </g:form>
 <div id="newTbl">
-ADSFA
 </div>
+
+<table>
+		<tr>
+			<td>
+				<input type="button" value="Add" onclick="add()"
+				class="form_button" /></td>
+			<td><g:actionSubmit type="button" value="Delete" onclick="javascript: return del()"
+				class="form_button" action="delete" /></td>
+			<td><g:actionSubmit type="button" value="Show All" 
+				class="form_button" action="showAll" /></td>
+		</tr>
+	</table>
 </body>
 </html>

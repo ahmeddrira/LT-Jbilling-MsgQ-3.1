@@ -2,8 +2,12 @@
   "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
+        <!-- connection settings -->
+        <property name="hibernate.connection.release_mode">after_transaction</property>
+
         <!-- This should be equal to Constants.HIBERNATE_BATCH_SIZE -->
         <property name="hibernate.jdbc.batch_size">100</property>
+
         <!--  Debugger helpers -->
         <property name="hibernate.show_sql">false</property>
         <property name="hibernate.format_sql">true</property>

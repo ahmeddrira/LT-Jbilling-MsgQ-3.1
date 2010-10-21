@@ -40,9 +40,7 @@
           class="com.sapienter.jbilling.server.provisioning.ProvisioningProcessSessionBean"/>
 
     <!-- The web services API, which is used as main service in the GUI -->
-    <!--  TODO: this does not seem to need to be in the session scope. It does not hold the caller information in it any longer -->
-    <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean" scope="session">
-        <property name="springSecurityService" ref="springSecurityService"/> <!-- grails security core plug-in -->
+    <bean id="webServicesSession" class="com.sapienter.jbilling.server.util.WebServicesSessionSpringBean">
         <aop:scoped-proxy/>
     </bean>
 

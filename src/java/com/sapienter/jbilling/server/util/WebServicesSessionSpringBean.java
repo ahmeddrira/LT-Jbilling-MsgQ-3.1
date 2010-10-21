@@ -134,6 +134,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     private SpringSecurityService springSecurityService;
 
     public SpringSecurityService getSpringSecurityService() {
+        if (springSecurityService == null)
+            this.springSecurityService = Context.getBean(Context.Name.SPRING_SECURITY_SERVICE);
         return springSecurityService;
     }
 

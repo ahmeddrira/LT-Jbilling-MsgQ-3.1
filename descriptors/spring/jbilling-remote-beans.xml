@@ -34,12 +34,17 @@
                   username="admin;1"
                   password="123qwe"/>
 
+    <!--
+       Spring HTTP Invoker and RMI don't have support for authentication. For these non-authenticated
+       protocols, you must configure an alternate authentication filter that sets the credentials to be used
+       when making non-authenticated API calls.
+
+       see resources.groovy and the "staticAuthenticationFilter"
+    -->
+
     <!-- Spring HTTP Invoker remote web-service bean -->
     <bean id="apiClient3" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="http://localhost:8080/jbilling/httpinvoker/ApiService"/>
         <property name="serviceInterface" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean"/>
-        <!--<property name="username" value="mordor;2"/>-->
-        <!--<property name="password" value="123qwe"/>-->
-    </bean>    
-
+    </bean>
 </beans>

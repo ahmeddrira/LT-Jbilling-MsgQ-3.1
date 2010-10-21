@@ -44,8 +44,21 @@ beans = {
     /*
         Spring security
      */
+    // normal username / password authentication
     authenticationProcessingFilter(com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter) {
         authenticationManager = ref("authenticationManager")
+    }
+
+    /*
+        Automatic authentication using a defined username and password that removes the need for the caller
+        to authenticate themselves. This is used with web-service protocols that don't support authentication,
+        but can also be used to create "pre-authenticated" URLS by updating the filter chain in 'Config.groovy'.
+     */
+    staticAuthenticationFilter(com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter) {
+        authenticationManager = ref("authenticationManager")
+        authenticationDetailsSource = ref('authenticationDetailsSource')        
+        username = "admin;1"
+        password = "123qwe"
     }
 
     userDetailsService(com.sapienter.jbilling.client.authentication.CompanyUserDetailsService) {
@@ -59,6 +72,7 @@ beans = {
     webExpressionVoter(com.sapienter.jbilling.client.authentication.SafeWebExpressionVoter) {
         expressionHandler = ref("webExpressionHandler")
     }
+
 
     /*
         Remoting

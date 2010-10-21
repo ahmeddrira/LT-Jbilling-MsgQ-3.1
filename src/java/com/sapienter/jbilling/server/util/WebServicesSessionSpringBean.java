@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
+import com.sapienter.jbilling.server.item.ItemSQL;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.PricingField;
@@ -321,9 +322,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * The id of the item to delete
      */
     public void deleteItem(Integer itemId) throws SessionInternalError {
-    	LOG.debug("Deleting item " + itemId);
-    	ItemDAS das=new ItemDAS();
-    	das.delete(das.find(itemId));
+    	ItemBL itemBl= new ItemBL(itemId);
+    	itemBl.delete(getCallerId());
+    	LOG.debug("Deleted Item, " + itemBl.getEntity().getDeleted());
     }
     
     /**

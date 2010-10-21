@@ -8,6 +8,7 @@ import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
+import com.sapienter.jbilling.common.SessionInternalError;
 
 class ProductController {
 	
@@ -58,15 +59,23 @@ class ProductController {
 	def del = {
 		def itemId= params.selectedId.toInteger()
 		log.info "Deleting item=" + itemId
-		List lines= OrderLineDTO.findByItem(new ItemDAS().find(itemId))
-		if (lines){
-			log.info "Orders exists for item " + itemId
-		} else {
-			log.info "Orders DO NOT exists for item " + itemId
+		try {
+			List lines= OrderLineDTO.findAllByItem(new ItemDAS().find(itemId))
+			log.info "Lines returned=" + lines?.size()
+			if (lines){
+				log.info "Orders exists for item " + itemId
+				throw new SessionInternalError(lines.size() + "Orders exists for Item.");
+			} else {
+				log.info "Orders DO NOT exists for item " + itemId
+				webServicesSession.deleteItem(itemId)
+			}
+			//[id:typeId]
+		} catch (SessionInternalError e) {
+			log.error "Error delete Item " + itemId
+			flash.message = message(code: 'item.delete.failed')
 		}
-		//webServicesSession.deleteItem(itemId)
-		[id:typeId]
-		redirect (action: type)
+		flash.args= [itemId]
+		redirect (controller: "item")
 	}
 	
 }

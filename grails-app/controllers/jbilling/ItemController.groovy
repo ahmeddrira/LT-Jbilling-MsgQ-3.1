@@ -27,19 +27,22 @@ class ItemController {
 	}
 	
 	def delete = {
-		def itemId= params.deleteItemId.toInteger()
+		Integer itemId= params.deleteItemId.toInteger()
 		log.info "Deleting item type=" + itemId 
 		
 		try {
-			ItemTypeDTO dto= ItemTypeDTO.findById(typeId)
-			List items= dto.getItems()
+			ItemTypeDTO dto= ItemTypeDTO.findById(itemId)
+			Set items= dto.getItems()
+			log.info "Size of items=" + items?.size()
 			if (items) {
 				throw new SessionInternalError("This category has products. Remove those before deleting the category.")
 			}
 			webServicesSession.deleteItemCategory(itemId);
 		} catch (SessionInternalError e) {
-			log.error "Error delete Item Category " + itemId
+			log.error "Error delete Item Category " + itemId			
+			flash.message = message(code: 'item.category.delete.failed')		
 		}
+		flash.args= [itemId]
 		redirect (action: index)
 	}
 	

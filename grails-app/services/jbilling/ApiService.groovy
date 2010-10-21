@@ -24,6 +24,8 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration
 import com.sapienter.jbilling.server.user.partner.db.Partner
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS
+import com.sapienter.jbilling.server.mediation.MediationRecordWS
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -399,15 +401,15 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getAllMediationProcesses()
     }
 
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {
         return webServicesSession.getMediationEventsForOrder(orderId)
     }
 
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         return webServicesSession.getMediationRecordsByMediationProcess(mediationProcessId)
     }
 
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() {
         return webServicesSession.getNumberOfMediationRecordsByStatuses()
     }
 

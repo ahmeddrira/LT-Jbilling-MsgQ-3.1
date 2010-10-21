@@ -30,7 +30,6 @@ import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -44,8 +43,11 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
-import com.sapienter.jbilling.server.mediation.MediationBL;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationBL;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordBL;
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
@@ -99,8 +101,6 @@ import com.sapienter.jbilling.server.user.db.AchDTO;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
-import com.sapienter.jbilling.server.user.db.CustomerDAS;
-import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
@@ -114,7 +114,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import sun.jdbc.rowset.CachedRowSet;
 
-import javax.jms.Message;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -123,6 +122,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -2096,32 +2096,42 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return mediationBean.getAll(getCallerCompanyId());
     }
 
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getEventsForOrder(orderId);
+        List<MediationRecordLineDTO> events = mediationBean.getEventsForOrder(orderId);
+
+        return MediationRecordBL.getWS(events);
     }
 
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getMediationRecordsByMediationProcess(mediationProcessId);
+        List<MediationRecordDTO> records = mediationBean.getMediationRecordsByMediationProcess(mediationProcessId);
+
+        return MediationRecordBL.getWS(records);
     }
 
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
+        Map<MediationRecordStatusDTO, Long> records = mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
+
+        // convert to a map of status ids for web-services
+        Map<Integer, Long> ret = new HashMap<Integer, Long>(records.size());
+        for (Map.Entry<MediationRecordStatusDTO, Long> record : records.entrySet())
+            ret.put(record.getKey().getId(), record.getValue());
+        return ret;
     }
 
     public List<MediationConfigurationWS> getAllMediationConfigurations() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
 
         List<MediationConfiguration> configurations = mediationBean.getAllConfigurations(getCallerCompanyId());
-        return MediationBL.getWS(configurations);              
+        return MediationConfigurationBL.getWS(configurations);
     }
 
     public void createMediationConfiguration(MediationConfigurationWS cfg) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
 
-        MediationConfiguration dto = MediationBL.getDTO(cfg);
+        MediationConfiguration dto = MediationConfigurationBL.getDTO(cfg);
         mediationBean.createConfiguration(dto);
     }
 
@@ -2129,7 +2139,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throws SessionInternalError {
 
         // update all configurations
-        List<MediationConfiguration> dtos = MediationBL.getDTO(configurations);
+        List<MediationConfiguration> dtos = MediationConfigurationBL.getDTO(configurations);
         List<MediationConfiguration> updated;
         try {
             IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);

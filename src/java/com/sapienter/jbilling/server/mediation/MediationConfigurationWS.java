@@ -102,15 +102,13 @@ public class MediationConfigurationWS implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("MediationConfigurationWS");
-        sb.append("{id=").append(id);
-        sb.append(", entityId=").append(entityId);
-        sb.append(", pluggableTaskId=").append(pluggableTaskId);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", orderValue=").append(orderValue);
-        sb.append(", createDatetime=").append(createDatetime);
-        sb.append('}');
-        return sb.toString();
+        return "MediationConfigurationWS{"
+               + "id=" + id
+               + ", entityId=" + entityId
+               + ", pluggableTaskId=" + pluggableTaskId
+               + ", name='" + name + '\''
+               + ", orderValue=" + orderValue
+               + ", createDatetime=" + createDatetime
+               + '}';
     }
 }

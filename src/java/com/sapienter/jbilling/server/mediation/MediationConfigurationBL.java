@@ -35,7 +35,7 @@ import java.util.List;
  * @author Brian Cowdery
  * @since 21-10-2010
  */
-public class MediationBL {
+public class MediationConfigurationBL {
 
     private static PluggableTaskDAS getPluggableTaskDAS() {
         return Context.getBean(Context.Name.PLUGGABLE_TASK_DAS);
@@ -43,6 +43,7 @@ public class MediationBL {
 
     /**
      * Convert a given MediationConfiguration into a MediationConfigurationWS web-service object.
+     *
      * @param dto dto to convert
      * @return converted web-service object
      */
@@ -100,6 +101,4 @@ public class MediationBL {
             dto.add(getDTO(ws));
         return dto;
     }
-
-
 }

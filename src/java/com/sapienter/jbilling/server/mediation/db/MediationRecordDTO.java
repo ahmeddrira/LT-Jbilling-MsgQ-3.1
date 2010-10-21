@@ -15,6 +15,8 @@ along with jbilling.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.sapienter.jbilling.server.mediation.db;
 
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +64,17 @@ public class MediationRecordDTO implements Serializable {
         this.started = started;
         this.process = process;
         this.recordStatus = recordStatus;
+    }
+
+    public MediationRecordDTO(MediationRecordWS ws, MediationProcess process, MediationRecordStatusDTO recordStatus,
+                              Collection<MediationRecordLineDTO> lines) {
+
+        this.id = ws.getId();
+        this.key = ws.getKey();
+        this.started = ws.getStarted();
+        this.process = process;
+        this.recordStatus = recordStatus;
+        this.lines = lines;
     }
 
     @Id

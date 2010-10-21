@@ -32,6 +32,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 
 /**
@@ -71,7 +72,7 @@ public class MediationRecordLineDTO implements Serializable {
     }
 
     public MediationRecordLineDTO(int key, MediationRecordDTO record, OrderLineDTO line, Date date,
-            BigDecimal amount, BigDecimal quantity) {
+                                  BigDecimal amount, BigDecimal quantity) {
         this.id = key;
         this.record = record;
         this.orderLine = line;
@@ -79,7 +80,17 @@ public class MediationRecordLineDTO implements Serializable {
         this.amount = amount;
         this.quantity = quantity;
     }
-    
+
+    public MediationRecordLineDTO(MediationRecordLineWS ws, MediationRecordDTO record, OrderLineDTO orderLine) {
+        this.id = ws.getId();
+        this.record = record;
+        this.orderLine = orderLine;
+        this.eventDate = ws.getEventDate();
+        this.amount = ws.getAmount();
+        this.quantity = ws.getQuantity();
+        this.description = ws.getDescription();        
+    }
+
     @Id @GeneratedValue(strategy=GenerationType.TABLE, generator="mediation_record_line_GEN")
     @Column(name = "id", nullable = false)
     public int  getId() {

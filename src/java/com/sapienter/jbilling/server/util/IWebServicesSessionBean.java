@@ -26,6 +26,8 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
@@ -219,10 +221,10 @@ public interface IWebServicesSessionBean {
     public void triggerMediation();
     public boolean isMediationProcessing();
 
-    public List<MediationProcess> getAllMediationProcesses();
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId);
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses();
+    public List<MediationProcess> getAllMediationProcesses();    
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId);
+    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses();
 
     public List<MediationConfigurationWS> getAllMediationConfigurations();
     public void createMediationConfiguration(MediationConfigurationWS cfg);

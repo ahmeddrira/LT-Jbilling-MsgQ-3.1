@@ -34,6 +34,8 @@ import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
@@ -806,7 +808,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException {
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException {
         try {
             return session.getMediationEventsForOrder(orderId);
         } catch (Exception e) {
@@ -814,7 +816,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId)
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId)
             throws JbillingAPIException {
         try {
             return session.getMediationRecordsByMediationProcess(mediationProcessId);
@@ -823,7 +825,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException {
+    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException {
         try {
             return session.getNumberOfMediationRecordsByStatuses();
         } catch (Exception e) {

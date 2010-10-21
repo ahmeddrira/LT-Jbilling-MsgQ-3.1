@@ -6,6 +6,7 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.common.SessionInternalError;
 
 // TODO Code review. Is this a controller for product categories? Better rename it to something
 // like that rather than 'Item'. 
@@ -26,9 +27,22 @@ class ItemController {
 	}
 	
 	def delete = {
-		def itemId= params.deleteItemId.toInteger()
+		Integer itemId= params.deleteItemId.toInteger()
 		log.info "Deleting item type=" + itemId 
-		webServicesSession.deleteItemCategory(itemId);
+		
+		try {
+			ItemTypeDTO dto= ItemTypeDTO.findById(itemId)
+			Set items= dto.getItems()
+			log.info "Size of items=" + items?.size()
+			if (items) {
+				throw new SessionInternalError("This category has products. Remove those before deleting the category.")
+			}
+			webServicesSession.deleteItemCategory(itemId);
+		} catch (SessionInternalError e) {
+			log.error "Error delete Item Category " + itemId			
+			flash.message = message(code: 'item.category.delete.failed')		
+		}
+		flash.args= [itemId]
 		redirect (action: index)
 	}
 	

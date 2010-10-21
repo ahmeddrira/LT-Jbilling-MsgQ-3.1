@@ -64,12 +64,6 @@
       
     });
 
-    //$.get("/jbilling/product/show/" + document.getElementById("selectedId").value,
-   	//    "{productId:" + document.getElementById("selectedId").value + "}",
-   	//    	function(data) { document.getElementById("newTbl").innerHTML=data; },
-   	//    "html"
-   	//);
-	
   </script>
 
 
@@ -159,20 +153,21 @@ function add() {
 	</tbody>
 </table>
 </div>
-</g:form>
+
 <div id="newTbl">
 </div>
 
 <table>
 		<tr>
 			<td>
-				<input type="button" value="Add" onclick="add()"
+				<input type="button" value="Add Item" onclick="add()"
 				class="form_button" /></td>
-			<td><g:actionSubmit type="button" value="Delete" onclick="javascript: return del()"
-				class="form_button" action="delete" /></td>
-			<td><g:actionSubmit type="button" value="Show All" 
+			<td><g:actionSubmit value="Delete Item" onclick="javascript: return del()"
+				class="form_button" action="del" /></td>
+			<td><g:actionSubmit value="Show All Items" 
 				class="form_button" action="showAll" /></td>
 		</tr>
 	</table>
+	</g:form>
 </body>
 </html>

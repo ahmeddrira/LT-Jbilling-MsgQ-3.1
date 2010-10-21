@@ -8,14 +8,13 @@
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 <style type="text/css">
-    .Highlight
-    {
-      background-color: red;
-      cursor: pointer;
-    }
+.Highlight {
+	background-color: red;
+	cursor: pointer;
+}
 </style>
 
- <script type="text/javascript">
+<script type="text/javascript">
 
     $(function ()
     {
@@ -98,15 +97,19 @@ function add(tblId) {
 </script>
 <body onload="nLoad();">
 <p><g:message code="prompt.product.category" /></p>
+<p>
+	<g:message code="${flash.message}" args="${flash.args}" default="${flash.defaultMsg}"/> 
+	<jB:renderErrorMessages/>
+</p>
 <g:form>
 	<g:hiddenField name="recCnt" value="0" />
-	<g:hiddenField name="deleteItemId" value="0"/>
+	<g:hiddenField name="deleteItemId" value="0" />
 	<!-- g:hiddenField name="delOrderTypeId" value="0"/-->
-	
-	<table id="catTbl" cellspacing='4' class="link-table" >
+
+	<table id="catTbl" cellspacing='4' class="link-table">
 		<thead>
 			<tr>
-				
+
 				<th><g:message code="product.category.id" /></th>
 				<th><g:message code="product.category.name" /></th>
 				<th><g:message code="product.category.type" /></th>
@@ -114,10 +117,10 @@ function add(tblId) {
 		</thead>
 		<tbody>
 			<g:each in="${categories}" status="idx" var="cat">
-				<tr >
-					
-					<td><g:textField readonly="readonly" name="categories[${idx}].id"
-						value="${cat.id}" /></td>
+				<tr>
+
+					<td><g:textField readonly="readonly"
+						name="categories[${idx}].id" value="${cat.id}" /></td>
 					<td><g:textField name="categories[${idx}].description"
 						value="${cat.description}" /></td>
 					<td><g:select name="categories[${idx}].orderLineTypeId"
@@ -130,11 +133,11 @@ function add(tblId) {
 	</table>
 	<table>
 		<tr>
-			<td>
-				<input type="button" value="Add" onclick="add('catTbl')"
+			<td><input type="button" value="Add" onclick="add('catTbl')"
 				class="form_button" /></td>
-			<td><g:actionSubmit type="button" value="Delete" onclick="javascript: return del()"
-				class="form_button" action="delete" /></td>
+			<td><g:actionSubmit type="button" value="Delete"
+				onclick="javascript: return del()" class="form_button"
+				action="delete" /></td>
 		</tr>
 	</table>
 

@@ -20,7 +20,6 @@
 
 package com.sapienter.jbilling.client.authentication;
 
-import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,18 +42,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * StaticAuthenticationFilter uses a bean defined username and password for authentication instead of
- * client provided credentials.
+ * Security authorization filter that uses a bean defined username and password for authentication
+ * instead of client provided credentials.
  *
  * This is mostly used to authenticate web-service beans using protocols that lack the ability to
  * authenticate themselves, but it may also be used statically define the authentication of a particular
  * URL removing the need to pass credentials.
  *
- * E.g.,
+ * It's a good idea to use this authentication filter with an additional IP address filter for security.
+ *
+ * Example configuration:
  *
  * resources.groovy
  * <code>
- *     staticAuthenticationFilter(com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter) {
+ *     staticAuthenticationProcessingFilter(com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter) {
  *         authenticationManager = ref("authenticationManager")
  *         authenticationDetailsSource = ref('authenticationDetailsSource')
  *         username = "admin;1"
@@ -65,7 +66,7 @@ import java.io.IOException;
  * Config.groovy
  * <code>
  *     grails.plugins.springsecurity.filterChain.chainMap = [
- *         '/httpinvoker/**': 'securityContextPersistenceFilter,logoutFilter,staticAuthenticationFilter,securityContextHolderAwareRequestFilter,rememberMeAuthenticationFilter,anonymousAuthenticationFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
+ *         '/httpinvoker/**': 'securityContextPersistenceFilter,staticAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
  *         '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
  *     ]
  * </code>
@@ -75,8 +76,7 @@ import java.io.IOException;
  */
 public class StaticAuthenticationFilter extends GenericFilterBean {
 
-    private static final Logger LOG = Logger.getLogger(StaticAuthenticationFilter.class);
-
+    // dependency injection from spring
     private AuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
     private AuthenticationEntryPoint authenticationEntryPoint = new HttpAuthenticationEntryPoint();
     private AuthenticationManager authenticationManager;
@@ -132,6 +132,19 @@ public class StaticAuthenticationFilter extends GenericFilterBean {
         this.password = password;
     }
 
+    /**
+     * Perform authentication using the configured username and password.
+     *
+     * This filter does not allow anonymous authentication. If a user is already logged in anonymously
+     * (if the filter chain puts anonymous authentication before this filter), the token will be removed
+     * and a real authentication attempt will be made.
+     *
+     * @param req servlet request
+     * @param res servlet response
+     * @param chain filter chain
+     * @throws IOException
+     * @throws ServletException
+     */
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
 
@@ -143,29 +156,39 @@ public class StaticAuthenticationFilter extends GenericFilterBean {
 
         if (isAuthenticationRequired(username)) {
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-            authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+            authRequest.setDetails(getAuthenticationDetailsSource().buildDetails(request));
 
             Authentication authResult;
-
             try {
-                authResult = authenticationManager.authenticate(authRequest);
+                // run authentication using the configured auth manager
+                authResult = getAuthenticationManager().authenticate(authRequest);
+
             } catch (AuthenticationException failed) {
-                // Authentication failed
+                // authentication failed
                 SecurityContextHolder.getContext().setAuthentication(null);
-                rememberMeServices.loginFail(request, response);
-                authenticationEntryPoint.commence(request, response, failed);
+                getRememberMeServices().loginFail(request, response);
+                getAuthenticationEntryPoint().commence(request, response, failed);
 
                 return;
             }
 
-            // Authentication success
+            // authentication successful
             SecurityContextHolder.getContext().setAuthentication(authResult);
-            rememberMeServices.loginSuccess(request, response, authResult);
+            getRememberMeServices().loginSuccess(request, response, authResult);
         }
 
         chain.doFilter(request, response);
     }
 
+    /**
+     * Returns true if the username is not already logged in, and that the existing
+     * authorization (if present) is accepted by this filter.
+     *
+     * This method also returns true if the the user is currently logged in anonymously.
+     *
+     * @param username username to check
+     * @return true if authentication required, false if already logged in or authentication type cannot be handled
+     */
     private boolean isAuthenticationRequired(String username) {
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
 

@@ -28,7 +28,8 @@ import java.util.Collection;
 import java.util.Locale;
 
 /**
- * A spring security UserDetails implementation that includes the users company id.
+ * A spring security {@link org.springframework.security.core.userdetails.UserDetails}
+ * implementation that includes the users company id.
  *
  * @author Brian Cowdery
  * @since 04-10-2010

@@ -19,11 +19,6 @@
 */
 package com.sapienter.jbilling.server.mediation.db;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +33,10 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 @Entity
 @TableGenerator(
@@ -116,7 +115,7 @@ public class MediationProcess implements Serializable {
         return versionNum;
     }
 
-    @XmlTransient // transient, jaxb mistakes this for a duplicate property
+    @XmlTransient
     public Collection<MediationOrderMap> getOrderMap() {
         return orderMap;
     }
@@ -133,7 +132,7 @@ public class MediationProcess implements Serializable {
         this.configuration = configuration;
     }
 
-    @XmlTransient // transient, jaxb mistakes this for a duplicate property
+    @XmlTransient
     public Collection<MediationRecordDTO> getRecords() {
         return records;
     }

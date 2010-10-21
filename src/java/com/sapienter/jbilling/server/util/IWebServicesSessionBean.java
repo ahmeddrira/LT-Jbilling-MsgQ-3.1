@@ -26,13 +26,9 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -46,7 +42,6 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 
-import javax.jms.Message;
 import javax.jws.WebService;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -221,7 +216,7 @@ public interface IWebServicesSessionBean {
     public void triggerMediation();
     public boolean isMediationProcessing();
 
-    public List<MediationProcess> getAllMediationProcesses();    
+    public List<MediationProcessWS> getAllMediationProcesses();
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
     public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId);
     public Map<Integer, Long> getNumberOfMediationRecordsByStatuses();

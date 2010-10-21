@@ -5,27 +5,23 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.item.ItemTypeWS
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS
+import com.sapienter.jbilling.server.mediation.MediationProcessWS
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS
+import com.sapienter.jbilling.server.mediation.MediationRecordWS
 import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
-import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.user.*
-import grails.plugins.springsecurity.SpringSecurityService
-import org.springframework.security.core.userdetails.UserDetails
-import com.sapienter.jbilling.client.authentication.CompanyUserDetails
-import javax.jms.Message
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx
-import com.sapienter.jbilling.server.mediation.db.MediationProcess
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration
+import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.CreateResponseWS
+import com.sapienter.jbilling.server.user.UserTransitionResponseWS
+import com.sapienter.jbilling.server.user.UserWS
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS
 import com.sapienter.jbilling.server.user.partner.db.Partner
-import com.sapienter.jbilling.server.mediation.MediationConfigurationWS
-import com.sapienter.jbilling.server.mediation.MediationRecordLineWS
-import com.sapienter.jbilling.server.mediation.MediationRecordWS
+import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -397,7 +393,7 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.isMediationProcessing()
     }
 
-    public List<MediationProcess> getAllMediationProcesses() {
+    public List<MediationProcessWS> getAllMediationProcesses() {
         return webServicesSession.getAllMediationProcesses()
     }
 

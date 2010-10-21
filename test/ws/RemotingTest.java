@@ -1,17 +1,11 @@
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
-import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
-import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
@@ -22,7 +16,6 @@ import junit.framework.TestCase;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -198,22 +191,17 @@ public class RemotingTest extends TestCase {
 
 
             // mediation calls
-            // todo: needs a WS representation
-//            List<MediationProcess> mediationProcesses = service.getAllMediationProcesses();
-//            assertNotNull(mediationProcesses);
-//            assertFalse(mediationProcesses.isEmpty());
+            List<MediationProcessWS> mediationProcesses = service.getAllMediationProcesses();
+            assertNotNull(mediationProcesses);
+            assertFalse(mediationProcesses.isEmpty());
 
-//            service.getMediationEventsForOrder(1);
+            List<MediationRecordWS> mediationRecords = service.getMediationRecordsByMediationProcess(1);
+            assertNotNull(mediationRecords);
+            assertFalse(mediationRecords.isEmpty());
 
-            // todo: needs a WS representation
-//            List<MediationRecordDTO> mediationRecords = service.getMediationRecordsByMediationProcess(1);
-//            assertNotNull(mediationRecords);
-//            assertFalse(mediationRecords.isEmpty());
-
-            // todo: needs a WS representation
-//            Map<MediationRecordStatusDTO, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
-//            assertNotNull(recordCounts);
-//            assertFalse(recordCounts.isEmpty());
+            Map<Integer, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
+            assertNotNull(recordCounts);
+            assertFalse(recordCounts.isEmpty());
 
             List<MediationConfigurationWS> mediationConfigs = service.getAllMediationConfigurations();
             assertNotNull(mediationConfigs);

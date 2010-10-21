@@ -20,20 +20,15 @@
 
 package com.sapienter.jbilling.server.util.api;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -47,7 +42,6 @@ import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 
-import javax.jms.Message;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
@@ -211,7 +205,7 @@ public interface JbillingAPI {
     public void triggerMediation() throws JbillingAPIException;
     public boolean isMediationProcessing() throws JbillingAPIException;
 
-    public List<MediationProcess> getAllMediationProcesses() throws JbillingAPIException;
+    public List<MediationProcessWS> getAllMediationProcesses() throws JbillingAPIException;
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException;
     public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) throws JbillingAPIException;
     public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;

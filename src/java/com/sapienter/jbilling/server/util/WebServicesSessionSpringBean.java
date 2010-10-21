@@ -35,16 +35,17 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationBL;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordBL;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
@@ -2090,10 +2091,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return mediationBean.isProcessing(getCallerCompanyId());
     }
 
-
-    public List<MediationProcess> getAllMediationProcesses() {
+    public List<MediationProcessWS> getAllMediationProcesses() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getAll(getCallerCompanyId());
+        List<MediationProcess> processes = mediationBean.getAll(getCallerCompanyId());
+
+        // convert to web-service mediation process
+        List<MediationProcessWS> ws = new ArrayList<MediationProcessWS>(processes.size());
+        for (MediationProcess process : processes)
+            ws.add(new MediationProcessWS(process));
+        return ws;
     }
 
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {

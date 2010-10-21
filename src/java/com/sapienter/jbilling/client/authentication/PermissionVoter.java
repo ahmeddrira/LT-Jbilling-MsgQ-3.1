@@ -30,7 +30,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * A spring security AccessDecisionVoter implementation that handles individual user permission
+ * A spring security {@link AccessDecisionVoter} implementation that handles individual user permission
  * access requests. User permission authorities are a lowercase string containing the permission type
  * and individual permission id.
  *

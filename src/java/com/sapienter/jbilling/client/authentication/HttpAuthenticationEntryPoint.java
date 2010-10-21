@@ -29,13 +29,22 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * HttpAuthenticationEntryPoint
+ * Authentication endpoint for HTTP.
  *
  * @author Brian Cowdery
  * @since 20-10-2010
  */
 public class HttpAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    /**
+     * Returns a 401 error code.
+     *
+     * @param request request
+     * @param response response
+     * @param e authorization failure exception
+     * @throws IOException
+     * @throws ServletException
+     */
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
             throws IOException, ServletException {
 

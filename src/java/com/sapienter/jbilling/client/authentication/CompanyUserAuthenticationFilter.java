@@ -20,17 +20,15 @@
 
 package com.sapienter.jbilling.client.authentication;
 
-import com.sapienter.jbilling.common.Constants;
-import com.sapienter.jbilling.common.JBCrypto;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * An extension of the base spring security UsernamePasswordAuthenticationFilter that appends
+ * An extension of the base spring security {@link UsernamePasswordAuthenticationFilter} that appends
  * the user entered company ID to the username for authentication.
  *
- * Similar to the UsernamePasswordAuthenticationFilter, the web form parameter names can be
+ * Similar to the {@link UsernamePasswordAuthenticationFilter}, the web form parameter names can be
  * configured via spring bean properties. 
  *
  * Default configuration:

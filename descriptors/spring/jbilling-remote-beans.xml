@@ -39,7 +39,7 @@
        protocols, you must configure an alternate authentication filter that sets the credentials to be used
        when making non-authenticated API calls.
 
-       see resources.groovy and the "staticAuthenticationFilter"
+       see resources.groovy and the "staticAuthenticationProcessingFilter"
     -->
 
     <!-- Spring HTTP Invoker remote web-service bean -->

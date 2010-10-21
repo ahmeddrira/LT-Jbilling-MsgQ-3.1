@@ -54,9 +54,9 @@ beans = {
         to authenticate themselves. This is used with web-service protocols that don't support authentication,
         but can also be used to create "pre-authenticated" URLS by updating the filter chain in 'Config.groovy'.
      */
-    staticAuthenticationFilter(com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter) {
+    staticAuthenticationProcessingFilter(com.sapienter.jbilling.client.authentication.StaticAuthenticationFilter) {
         authenticationManager = ref("authenticationManager")
-        authenticationDetailsSource = ref('authenticationDetailsSource')        
+        authenticationDetailsSource = ref('authenticationDetailsSource')
         username = "admin;1"
         password = "123qwe"
     }
@@ -77,7 +77,7 @@ beans = {
     /*
         Remoting
      */
-    // HTTP request handler for Spring httpinvoker remote beans
+    // HTTP request handler for remote beans
     httpRequestAdapter org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
     /*

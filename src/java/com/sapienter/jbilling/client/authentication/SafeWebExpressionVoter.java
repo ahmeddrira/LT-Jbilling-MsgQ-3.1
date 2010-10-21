@@ -27,10 +27,10 @@ import org.springframework.security.core.Authentication;
 import java.util.Collection;
 
 /**
- * An extension of the base grails security core WebExpressionVoter that abstains when an
+ * An extension of the base grails security core {@link WebExpressionVoter} that abstains when an
  * expression cannot be evaluated.
  *
- * This is only necessary because all secured path attributes are wrapped as a WebExpressionConfigAttribute
+ * This is only necessary because all secured path attributes are wrapped as a <code>WebExpressionConfigAttribute</code>
  * that will be parsed by the voter, even if the attribute is simply a plain-text permission string and
  * not an expression.
  *

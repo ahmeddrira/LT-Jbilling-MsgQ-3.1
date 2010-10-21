@@ -36,6 +36,7 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
+import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
@@ -312,9 +313,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param itemId
      * The id of the item to delete
      */
-    public void deleteItem(Integer itemId) {
-    	ItemBL bl= new ItemBL(itemId);
-		bl.delete(getCallerId());
+    public void deleteItem(Integer itemId) throws SessionInternalError {
+    	LOG.debug("Deleting item " + itemId);
+    	ItemDAS das=new ItemDAS();
+    	das.delete(das.find(itemId));
     }
     
     /**
@@ -322,7 +324,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
      * @param itemCategoryId
      * The id of the Item Category to delete
      */
-    public void deleteItemCategory(Integer itemCategoryId) {
+    public void deleteItemCategory(Integer itemCategoryId) throws SessionInternalError {
+    	
     	ItemTypeBL bl = new ItemTypeBL(itemCategoryId);
 		bl.delete(getCallerId());
     }

@@ -79,7 +79,9 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
@@ -2039,14 +2041,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         processBean.reviewUsersStatus(runDate);
     }
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError {
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getConfigurationDto(getCallerCompanyId());
+        BillingProcessConfigurationDTO configuration = processBean.getConfigurationDto(getCallerCompanyId());
+        
+        return ConfigurationBL.getWS(configuration);
     }
 
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto)
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws)
             throws SessionInternalError {
-        
+
+        BillingProcessConfigurationDTO dto = ConfigurationBL.getDTO(ws);
+
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         return processBean.createUpdateConfiguration(getCallerId(), dto);
     }

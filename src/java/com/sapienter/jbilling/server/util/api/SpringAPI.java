@@ -34,6 +34,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -715,7 +716,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws JbillingAPIException {
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws JbillingAPIException {
         try {
             return session.getBillingProcessConfiguration();
         } catch (Exception e) {
@@ -723,10 +724,10 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto)
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws)
             throws JbillingAPIException {
         try {
-            return session.createUpdateBillingProcessConfiguration(dto);
+            return session.createUpdateBillingProcessConfiguration(ws);
         } catch (Exception e) {
             throw new JbillingAPIException(e);
         }

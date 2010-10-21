@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
 import com.sapienter.jbilling.server.user.ContactWS;
@@ -197,8 +198,8 @@ public interface IWebServicesSessionBean {
     public void triggerBilling(Date runDate);
     public void triggerAgeing(Date runDate);
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError;
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) throws SessionInternalError;
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError;
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS dto) throws SessionInternalError;
 
     public BillingProcessDTOEx getBillingProcess(Integer processId);
     public Integer getLastBillingProcess() throws SessionInternalError;

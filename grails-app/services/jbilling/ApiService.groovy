@@ -22,6 +22,7 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
 import com.sapienter.jbilling.server.user.partner.db.Partner
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -352,12 +353,12 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.triggerAgeing(runDate)
     }
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() {
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() {
         return webServicesSession.getBillingProcessConfiguration()
     }
 
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) {
-        return webServicesSession.createUpdateBillingProcessConfiguration(dto)
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) {
+        return webServicesSession.createUpdateBillingProcessConfiguration(ws)
     }
 
     public BillingProcessDTOEx getBillingProcess(Integer processId) {

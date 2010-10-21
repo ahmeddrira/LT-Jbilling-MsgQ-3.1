@@ -5,6 +5,7 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
@@ -165,10 +166,9 @@ public class RemotingTest extends TestCase {
 
             
             // billing calls
-            // todo: infinitely deep XML, needs a WS representation
-//            BillingProcessConfigurationDTO billingConfig = service.getBillingProcessConfiguration();
-//            assertNotNull(billingConfig);
-//            assertEquals(1, billingConfig.getId());
+            BillingProcessConfigurationWS billingConfig = service.getBillingProcessConfiguration();
+            assertNotNull(billingConfig);
+            assertEquals(1, billingConfig.getId());
 
             // todo: CurrencyDTO.entities not serializable, or is lazy-loaded, needs a WS representation
 //            BillingProcessDTO billingProcess = service.getBillingProcess(2);

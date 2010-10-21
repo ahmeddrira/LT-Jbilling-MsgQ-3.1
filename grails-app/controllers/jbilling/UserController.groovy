@@ -87,7 +87,7 @@ class UserController {
 			}
 			if (user) {
 				//CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));
-				notes= user.getNotes();
+				notes= user?.getNotes();
 				if ( Constants.AUTO_PAYMENT_TYPE_CC == user.getAutomaticPaymentType())
 				{
 					log.info "Auto CC true"
@@ -98,7 +98,7 @@ class UserController {
 					log.info "Auto Ach True"
 					isAutoAch= true;
 				}
-				log.info  "retrieved notes "  + user.getNotes()
+				log.info  "retrieved notes "  + user?.getNotes()
 				if (null != user.getCreditCard() && null != user.getCreditCard().getNumber()) {
 					Calendar cal= Calendar.getInstance();
 					cal.setTime(user.getCreditCard().getExpiry())

@@ -9,6 +9,7 @@ import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.order.db.OrderLineDTO;
 import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.server.item.ItemDTOEx;
 
 class ProductController {
 	
@@ -53,7 +54,23 @@ class ProductController {
 	}
 	
 	def edit = {
-		log.info params["id"]
+		def itemId= params.selectedId.toInteger()
+		log.info "Editing item=" + itemId
+		ItemDTO dto= ItemDTO.findById(Integer.valueOf(itemId))
+		boolean exists= (dto!=null)
+		render(view:"addEdit", model: [item:dto, exists:exists])
+	}
+	
+	def add = {
+		log.info "Add: " + params["id"]
+		render(view:"addEdit")
+	}
+	
+	def updateOrCreate ={
+		ItemDTOEx dto= new ItemDTOEx();
+		//bindData(dto, params)
+		//webServicesSession.updateItem(dto)
+		redirect (controller: "item")
 	}
 	
 	def del = {

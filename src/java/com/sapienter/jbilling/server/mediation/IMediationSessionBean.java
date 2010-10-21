@@ -51,8 +51,7 @@ public interface IMediationSessionBean {
 
     public void createConfiguration(MediationConfiguration cfg);
 
-    public List updateAllConfiguration(Integer executorId,
-                                       List<MediationConfiguration> configurations) throws InvalidArgumentException;
+    public List<MediationConfiguration> updateAllConfiguration(Integer executorId, List<MediationConfiguration> configurations) throws InvalidArgumentException;
 
     public void delete(Integer executorId, Integer cfgId);
 

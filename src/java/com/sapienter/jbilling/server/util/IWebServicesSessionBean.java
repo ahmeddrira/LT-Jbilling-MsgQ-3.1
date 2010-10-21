@@ -25,6 +25,7 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
@@ -223,9 +224,9 @@ public interface IWebServicesSessionBean {
     public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
     public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses();
 
-    public List<MediationConfiguration> getAllMediationConfigurations();
-    public void createMediationConfiguration(MediationConfiguration cfg);
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) throws SessionInternalError;
+    public List<MediationConfigurationWS> getAllMediationConfigurations();
+    public void createMediationConfiguration(MediationConfigurationWS cfg);
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) throws SessionInternalError;
     public void deleteMediationConfiguration(Integer cfgId);
 
 

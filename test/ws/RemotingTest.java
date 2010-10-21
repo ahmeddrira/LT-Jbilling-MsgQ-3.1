@@ -2,6 +2,7 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
@@ -168,6 +169,55 @@ public class RemotingTest extends TestCase {
 
             invoice = service.getLatestInvoiceByItemType(USER_ID, 1);
             assertNotNull(invoice);
+
+            
+            // billing calls
+            // todo: infinitely deep XML, needs a WS representation
+//            BillingProcessConfigurationDTO billingConfig = service.getBillingProcessConfiguration();
+//            assertNotNull(billingConfig);
+//            assertEquals(1, billingConfig.getId());
+
+            // todo: CurrencyDTO.entities not serializable, or is lazy-loaded, needs a WS representation
+//            BillingProcessDTO billingProcess = service.getBillingProcess(2);
+//            assertNotNull(billingProcess);
+//            assertEquals(2, billingProcess.getId());
+
+            Integer lastBillingProccessID = service.getLastBillingProcess();
+            assertNotNull(lastBillingProccessID);
+            assertEquals(12, lastBillingProccessID.intValue());
+
+            BillingProcessDTOEx reviewProcess = service.getReviewBillingProcess();
+            assertNull(reviewProcess); // no review process yet... i'm happy as long as the call was successful
+
+            // todo: translate Collection to a typed list
+            // todo: use InvoiceDTOEx WS representation
+//            @SuppressWarnings("unchecked")
+//            Collection<InvoiceDTO> invoices = service.getBillingProcessGeneratedInvoices(2);
+//            assertNotNull(invoices);
+//            assertFalse(invoices.isEmpty());
+
+
+            // mediation calls
+            // todo: needs a WS representation
+//            List<MediationProcess> mediationProcesses = service.getAllMediationProcesses();
+//            assertNotNull(mediationProcesses);
+//            assertFalse(mediationProcesses.isEmpty());
+
+//            service.getMediationEventsForOrder(1);
+
+            // todo: needs a WS representation
+//            List<MediationRecordDTO> mediationRecords = service.getMediationRecordsByMediationProcess(1);
+//            assertNotNull(mediationRecords);
+//            assertFalse(mediationRecords.isEmpty());
+
+            // todo: needs a WS representation
+//            Map<MediationRecordStatusDTO, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
+//            assertNotNull(recordCounts);
+//            assertFalse(recordCounts.isEmpty());
+
+            List<MediationConfigurationWS> mediationConfigs = service.getAllMediationConfigurations();
+            assertNotNull(mediationConfigs);
+            assertFalse(mediationConfigs.isEmpty());
 
         } catch (Exception e) {
             e.printStackTrace();

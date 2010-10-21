@@ -33,6 +33,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
@@ -830,7 +831,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public List<MediationConfiguration> getAllMediationConfigurations() throws JbillingAPIException {
+    public List<MediationConfigurationWS> getAllMediationConfigurations() throws JbillingAPIException {
         try {
             return session.getAllMediationConfigurations();
         } catch (Exception e) {
@@ -838,7 +839,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public void createMediationConfiguration(MediationConfiguration cfg) throws JbillingAPIException {
+    public void createMediationConfiguration(MediationConfigurationWS cfg) throws JbillingAPIException {
         try {
             session.createMediationConfiguration(cfg);
         } catch (Exception e) {
@@ -847,7 +848,7 @@ public class SpringAPI implements JbillingAPI {
 
     }
 
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations)
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations)
             throws JbillingAPIException {
 
         try {

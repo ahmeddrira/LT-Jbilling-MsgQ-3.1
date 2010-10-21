@@ -44,6 +44,8 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
+import com.sapienter.jbilling.server.mediation.MediationBL;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.Record;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
@@ -2109,25 +2111,38 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
     }
 
-    public List<MediationConfiguration> getAllMediationConfigurations() {
+    public List<MediationConfigurationWS> getAllMediationConfigurations() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getAllConfigurations(getCallerCompanyId());
+
+        List<MediationConfiguration> configurations = mediationBean.getAllConfigurations(getCallerCompanyId());
+        return MediationBL.getWS(configurations);              
     }
 
-    public void createMediationConfiguration(MediationConfiguration cfg) {
+    public void createMediationConfiguration(MediationConfigurationWS cfg) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        mediationBean.createConfiguration(cfg);
+
+        MediationConfiguration dto = MediationBL.getDTO(cfg);
+        mediationBean.createConfiguration(dto);
     }
 
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations)
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations)
             throws SessionInternalError {
-        
+
+        // update all configurations
+        List<MediationConfiguration> dtos = MediationBL.getDTO(configurations);
+        List<MediationConfiguration> updated;
         try {
             IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-            return mediationBean.updateAllConfiguration(getCallerId(), configurations);
+            updated = mediationBean.updateAllConfiguration(getCallerId(), dtos);
         } catch (InvalidArgumentException e) {
             throw new SessionInternalError(e);
         }
+
+        // return list of updated ids
+        List<Integer> ids = new ArrayList<Integer>(updated.size());
+        for (MediationConfiguration cfg : updated)
+            ids.add(cfg.getId());
+        return ids;
     }
 
     public void deleteMediationConfiguration(Integer cfgId) {

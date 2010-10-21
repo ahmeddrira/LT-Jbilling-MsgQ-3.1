@@ -26,6 +26,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
@@ -213,9 +214,9 @@ public interface JbillingAPI {
     public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) throws JbillingAPIException;
     public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;
 
-    public List<MediationConfiguration> getAllMediationConfigurations() throws JbillingAPIException;
-    public void createMediationConfiguration(MediationConfiguration cfg) throws JbillingAPIException;
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) throws JbillingAPIException;
+    public List<MediationConfigurationWS> getAllMediationConfigurations() throws JbillingAPIException;
+    public void createMediationConfiguration(MediationConfigurationWS cfg) throws JbillingAPIException;
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) throws JbillingAPIException;
     public void deleteMediationConfiguration(Integer cfgId) throws JbillingAPIException;
 
 

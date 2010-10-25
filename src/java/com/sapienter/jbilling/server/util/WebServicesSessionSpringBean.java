@@ -2087,9 +2087,17 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return ConfigurationBL.getWS(dto);
     }
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getGeneratedInvoices(processId);
+
+        // todo: IBillingProcessSessionBean#getGeneratedInvoices() should have a proper generic return type
+        @SuppressWarnings("unchecked")
+        Collection<InvoiceDTO> invoices  = processBean.getGeneratedInvoices(processId);
+
+        List<Integer> ids = new ArrayList<Integer>(invoices.size());
+        for (InvoiceDTO invoice : invoices)
+            ids.add(invoice.getId());
+        return ids;
     }
 
     

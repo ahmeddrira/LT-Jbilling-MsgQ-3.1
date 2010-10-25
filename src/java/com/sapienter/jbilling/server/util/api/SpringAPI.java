@@ -764,7 +764,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException {
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException {
         try {
             return session.getBillingProcessGeneratedInvoices(processId);
         } catch (Exception e) {

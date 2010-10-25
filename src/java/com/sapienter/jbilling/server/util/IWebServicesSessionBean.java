@@ -206,7 +206,7 @@ public interface IWebServicesSessionBean {
     public BillingProcessWS getReviewBillingProcess();
     public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError;
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId);
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId);
 
 
     /*

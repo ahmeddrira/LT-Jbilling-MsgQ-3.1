@@ -182,12 +182,10 @@ public class RemotingTest extends TestCase {
             BillingProcessWS reviewProcess = service.getReviewBillingProcess();
             assertNull(reviewProcess); // no review process yet... i'm happy as long as the call was successful
 
-            // todo: translate Collection to a typed list
-            // todo: use InvoiceDTOEx WS representation
-//            @SuppressWarnings("unchecked")
-//            Collection<InvoiceDTO> invoices = service.getBillingProcessGeneratedInvoices(2);
-//            assertNotNull(invoices);
-//            assertFalse(invoices.isEmpty());
+            List<Integer> generatedInvoices = service.getBillingProcessGeneratedInvoices(2);
+            assertNotNull(generatedInvoices);
+            assertFalse(generatedInvoices.isEmpty());
+
 
             // mediation calls
             List<MediationProcessWS> mediationProcesses = service.getAllMediationProcesses();
@@ -199,9 +197,9 @@ public class RemotingTest extends TestCase {
             assertFalse(mediationRecords.isEmpty());
 
             // todo: apache cfx cannot marshall maps to XML. Requires a web-service representation.
-            Map<Integer, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
-            assertNotNull(recordCounts);
-            assertFalse(recordCounts.isEmpty());
+//            Map<Integer, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
+//            assertNotNull(recordCounts);
+//            assertFalse(recordCounts.isEmpty());
 
             List<MediationConfigurationWS> mediationConfigs = service.getAllMediationConfigurations();
             assertNotNull(mediationConfigs);

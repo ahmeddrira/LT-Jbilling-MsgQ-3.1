@@ -195,7 +195,7 @@ public interface JbillingAPI {
     public BillingProcessWS getReviewBillingProcess() throws JbillingAPIException;
     public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws JbillingAPIException;
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException;
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException;
 
 
     /*

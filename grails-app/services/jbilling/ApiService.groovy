@@ -376,7 +376,7 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.setReviewApproval(flag)
     }
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) {
         return webServicesSession.getBillingProcessGeneratedInvoices(processId)
     }
 

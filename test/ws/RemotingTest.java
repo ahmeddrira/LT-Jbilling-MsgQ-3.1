@@ -3,6 +3,7 @@ import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
@@ -196,10 +197,9 @@ public class RemotingTest extends TestCase {
             assertNotNull(mediationRecords);
             assertFalse(mediationRecords.isEmpty());
 
-            // todo: apache cfx cannot marshall maps to XML. Requires a web-service representation.
-//            Map<Integer, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
-//            assertNotNull(recordCounts);
-//            assertFalse(recordCounts.isEmpty());
+            List<RecordCountWS> recordCounts = service.getNumberOfMediationRecordsByStatuses();
+            assertNotNull(recordCounts);
+            assertFalse(recordCounts.isEmpty());
 
             List<MediationConfigurationWS> mediationConfigs = service.getAllMediationConfigurations();
             assertNotNull(mediationConfigs);

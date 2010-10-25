@@ -30,6 +30,7 @@ import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -46,10 +47,8 @@ import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class SpringAPI implements JbillingAPI {
 
@@ -818,7 +817,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException {
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException {
         try {
             return session.getNumberOfMediationRecordsByStatuses();
         } catch (Exception e) {

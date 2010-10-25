@@ -29,6 +29,7 @@ import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
 import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -43,10 +44,8 @@ import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface JbillingAPI {
     
@@ -208,7 +207,7 @@ public interface JbillingAPI {
     public List<MediationProcessWS> getAllMediationProcesses() throws JbillingAPIException;
     public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException;
     public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) throws JbillingAPIException;
-    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;
 
     public List<MediationConfigurationWS> getAllMediationConfigurations() throws JbillingAPIException;
     public void createMediationConfiguration(MediationConfigurationWS cfg) throws JbillingAPIException;

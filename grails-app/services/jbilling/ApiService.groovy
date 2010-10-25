@@ -22,6 +22,7 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
 import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
+import com.sapienter.jbilling.server.mediation.RecordCountWS
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -405,7 +406,7 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getMediationRecordsByMediationProcess(mediationProcessId)
     }
 
-    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() {
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() {
         return webServicesSession.getNumberOfMediationRecordsByStatuses()
     }
 

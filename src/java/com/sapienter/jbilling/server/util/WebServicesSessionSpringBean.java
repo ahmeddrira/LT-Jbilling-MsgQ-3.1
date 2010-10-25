@@ -49,6 +49,7 @@ import com.sapienter.jbilling.server.mediation.MediationRecordBL;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
@@ -127,7 +128,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -2140,15 +2140,15 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return MediationRecordBL.getWS(records);
     }
 
-    public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() {
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
         Map<MediationRecordStatusDTO, Long> records = mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
         
-        // convert to a map of status ids for web-services
-        Map<Integer, Long> ret = new HashMap<Integer, Long>(records.size());
+        // convert to a simple object for web-services
+        List<RecordCountWS> counts = new ArrayList<RecordCountWS>(records.size());
         for (Map.Entry<MediationRecordStatusDTO, Long> record : records.entrySet())
-            ret.put(record.getKey().getId(), record.getValue());
-        return ret;
+            counts.add(new RecordCountWS(record.getKey().getId(), record.getValue()));
+        return counts;
     }
 
     public List<MediationConfigurationWS> getAllMediationConfigurations() {

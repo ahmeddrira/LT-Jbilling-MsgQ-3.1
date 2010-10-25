@@ -40,7 +40,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
 import javax.jws.WebService;
 import java.math.BigDecimal;
@@ -91,7 +91,7 @@ public interface IWebServicesSessionBean {
     public Integer authenticate(String username, String password) throws SessionInternalError;
 
     public void processPartnerPayouts(Date runDate);
-    public Partner getPartner(Integer partnerId) throws SessionInternalError;
+    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
 
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws SessionInternalError;

@@ -655,4 +655,14 @@ public class PartnerBL extends ResultList implements PartnerSQL {
         }
     }
 
+    /**
+     * Convert a given Partner into a PartnerWS web-service object.
+     *
+     * @param dto dto to convert
+     * @return converted web-service object
+     */
+    public static PartnerWS getWS(Partner dto) {
+        return dto != null ? new PartnerWS(dto) : null;
+    }
+
 }

@@ -20,7 +20,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS
 import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
-import com.sapienter.jbilling.server.user.partner.db.Partner
+import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 
 /**
@@ -147,7 +147,7 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.processPartnerPayouts(runDate)
     }
 
-    public Partner getPartner(Integer partnerId) {
+    public PartnerWS getPartner(Integer partnerId) {
         return webServicesSession.getPartner(partnerId)
     }
 

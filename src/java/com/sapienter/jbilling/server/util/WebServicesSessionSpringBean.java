@@ -106,6 +106,8 @@ import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -757,9 +759,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         userSession.processPayouts(runDate);
     }
 
-    public Partner getPartner(Integer partnerId) throws SessionInternalError {
+    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError {
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
-        return userSession.getPartnerDTO(partnerId);        
+        Partner dto = userSession.getPartnerDTO(partnerId);
+        
+        return PartnerBL.getWS(dto);
     }
 
     /**

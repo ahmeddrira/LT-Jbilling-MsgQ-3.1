@@ -154,10 +154,25 @@ public class ConfigurationBL {
 
     }
 
+    /**
+     * Convert a given BillingProcessConfigurationDTO into a BillingProcessConfigurationWS web-service object.
+     *
+     * @param dto dto to convert
+     * @return converted web-service object
+     */
     public static BillingProcessConfigurationWS getWS(BillingProcessConfigurationDTO dto) {
         return dto != null ? new BillingProcessConfigurationWS(dto) : null;
     }
 
+    /**
+     * Convert a given BillingProcessConfigurationWS web-service object into a BillingProcessConfigurationDTO entity.
+     *
+     * The BillingProcessConfigurationWS must have an entity and period unit ID or an exception will be thrown.
+     *
+     * @param ws ws object to convert
+     * @return converted DTO object
+     * @throws SessionInternalError if required field is missing
+     */
     public static BillingProcessConfigurationDTO getDTO(BillingProcessConfigurationWS ws) {
         if (ws != null) {
 

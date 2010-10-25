@@ -41,7 +41,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
 
@@ -89,7 +89,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public Partner getPartner(Integer partnerId) throws JbillingAPIException {
+    public PartnerWS getPartner(Integer partnerId) throws JbillingAPIException {
         try {
             return session.getPartner(partnerId);
         } catch (Exception e) {

@@ -40,7 +40,7 @@ import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -80,7 +80,7 @@ public interface JbillingAPI {
     public Integer authenticate(String username, String password) throws JbillingAPIException;
 
     public void processPartnerPayouts(Date runDate) throws JbillingAPIException;
-    public Partner getPartner(Integer partnerId) throws JbillingAPIException;
+    public PartnerWS getPartner(Integer partnerId) throws JbillingAPIException;
 
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws JbillingAPIException;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws JbillingAPIException;

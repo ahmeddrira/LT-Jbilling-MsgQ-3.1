@@ -115,7 +115,6 @@ public class MediationProcess implements Serializable {
         return versionNum;
     }
 
-    @XmlTransient
     public Collection<MediationOrderMap> getOrderMap() {
         return orderMap;
     }
@@ -132,7 +131,6 @@ public class MediationProcess implements Serializable {
         this.configuration = configuration;
     }
 
-    @XmlTransient
     public Collection<MediationRecordDTO> getRecords() {
         return records;
     }

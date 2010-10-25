@@ -35,8 +35,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -733,7 +732,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) throws JbillingAPIException {
+    public BillingProcessWS getBillingProcess(Integer processId) throws JbillingAPIException {
         try {
             return session.getBillingProcess(processId);
         } catch (Exception e) {
@@ -749,7 +748,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public BillingProcessDTOEx getReviewBillingProcess() throws JbillingAPIException {
+    public BillingProcessWS getReviewBillingProcess() throws JbillingAPIException {
         try {
             return session.getReviewBillingProcess();
         } catch (Exception e) {
@@ -757,7 +756,7 @@ public class SpringAPI implements JbillingAPI {
         }
     }
 
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws JbillingAPIException {
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws JbillingAPIException {
         try {
             return session.setReviewApproval(flag);
         } catch (Exception e) {

@@ -55,10 +55,12 @@ public class MediationProcessWS implements Serializable {
         this.endDatetime = dto.getEndDatetime();
         this.ordersAffected = dto.getOrdersAffected();
 
+        // order ID's
         this.orderIds = new ArrayList<Integer>(dto.getOrderMap().size());
         for (MediationOrderMap map : dto.getOrderMap())
             this.orderIds.add(map.getOrderId());
 
+        // mediation record ID's
         this.recordIds = new ArrayList<Integer>(dto.getRecords().size());
         for (MediationRecordDTO record : dto.getRecords())
             this.recordIds.add(record.getId());

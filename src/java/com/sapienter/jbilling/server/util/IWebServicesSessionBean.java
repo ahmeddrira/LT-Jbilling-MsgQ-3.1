@@ -34,8 +34,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -199,13 +198,13 @@ public interface IWebServicesSessionBean {
     public void triggerAgeing(Date runDate);
 
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError;
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS dto) throws SessionInternalError;
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) throws SessionInternalError;
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId);
+    public BillingProcessWS getBillingProcess(Integer processId);
     public Integer getLastBillingProcess() throws SessionInternalError;
 
-    public BillingProcessDTOEx getReviewBillingProcess();
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError;
+    public BillingProcessWS getReviewBillingProcess();
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError;
 
     public Collection getBillingProcessGeneratedInvoices(Integer processId);
 

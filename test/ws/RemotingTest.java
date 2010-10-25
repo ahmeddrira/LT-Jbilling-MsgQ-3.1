@@ -7,6 +7,7 @@ import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
@@ -170,16 +171,15 @@ public class RemotingTest extends TestCase {
             assertNotNull(billingConfig);
             assertEquals(1, billingConfig.getId());
 
-            // todo: CurrencyDTO.entities not serializable, or is lazy-loaded, needs a WS representation
-//            BillingProcessDTO billingProcess = service.getBillingProcess(2);
-//            assertNotNull(billingProcess);
-//            assertEquals(2, billingProcess.getId());
+            BillingProcessWS billingProcess = service.getBillingProcess(2);
+            assertNotNull(billingProcess);
+            assertEquals(2, billingProcess.getId().intValue());
 
             Integer lastBillingProccessID = service.getLastBillingProcess();
             assertNotNull(lastBillingProccessID);
             assertEquals(12, lastBillingProccessID.intValue());
 
-            BillingProcessDTOEx reviewProcess = service.getReviewBillingProcess();
+            BillingProcessWS reviewProcess = service.getReviewBillingProcess();
             assertNull(reviewProcess); // no review process yet... i'm happy as long as the call was successful
 
             // todo: translate Collection to a typed list

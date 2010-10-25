@@ -13,8 +13,8 @@ import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
+import com.sapienter.jbilling.server.process.BillingProcessWS
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.CreateResponseWS
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS
@@ -22,7 +22,6 @@ import com.sapienter.jbilling.server.user.UserWS
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS
 import com.sapienter.jbilling.server.user.partner.db.Partner
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -361,7 +360,7 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.createUpdateBillingProcessConfiguration(ws)
     }
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+    public BillingProcessWS getBillingProcess(Integer processId) {
         return webServicesSession.getBillingProcess(processId)
     }
 
@@ -369,11 +368,11 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getLastBillingProcess()
     }
 
-    public BillingProcessDTOEx getReviewBillingProcess() {
+    public BillingProcessWS getReviewBillingProcess() {
         return webServicesSession.getReviewBillingProcess()
     }
 
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) {
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) {
         return webServicesSession.setReviewApproval(flag)
     }
 

@@ -34,8 +34,7 @@ import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
@@ -190,11 +189,11 @@ public interface JbillingAPI {
     public BillingProcessConfigurationWS getBillingProcessConfiguration() throws JbillingAPIException;
     public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) throws JbillingAPIException;
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) throws JbillingAPIException;
+    public BillingProcessWS getBillingProcess(Integer processId) throws JbillingAPIException;
     public Integer getLastBillingProcess() throws JbillingAPIException;
 
-    public BillingProcessDTOEx getReviewBillingProcess() throws JbillingAPIException;
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws JbillingAPIException;
+    public BillingProcessWS getReviewBillingProcess() throws JbillingAPIException;
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws JbillingAPIException;
 
     public Collection getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException;
 

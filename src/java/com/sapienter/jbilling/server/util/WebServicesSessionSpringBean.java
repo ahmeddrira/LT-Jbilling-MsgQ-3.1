@@ -36,11 +36,9 @@ import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.item.IItemSessionBean;
 import com.sapienter.jbilling.server.item.ItemBL;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.item.ItemSQL;
 import com.sapienter.jbilling.server.item.ItemTypeBL;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.item.db.ItemDAS;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
@@ -82,6 +80,7 @@ import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
 import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
@@ -2058,9 +2057,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return processBean.createUpdateConfiguration(getCallerId(), dto);
     }
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+    public BillingProcessWS getBillingProcess(Integer processId) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getDto(processId, getCallerLanguageId());
+        BillingProcessDTOEx dto = processBean.getDto(processId, getCallerLanguageId());
+
+        return new BillingProcessWS(dto);
     }
 
     public Integer getLastBillingProcess() throws SessionInternalError {
@@ -2068,14 +2069,18 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return processBean.getLast(getCallerCompanyId());
     }
 
-    public BillingProcessDTOEx getReviewBillingProcess() {
+    public BillingProcessWS getReviewBillingProcess() {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
+        BillingProcessDTOEx dto = processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
+
+        return new BillingProcessWS(dto);
     }
 
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError {
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.setReviewApproval(getCallerId(), getCallerCompanyId(), flag);
+        BillingProcessConfigurationDTO dto = processBean.setReviewApproval(getCallerId(), getCallerCompanyId(), flag);
+
+        return ConfigurationBL.getWS(dto);
     }
 
     public Collection getBillingProcessGeneratedInvoices(Integer processId) {

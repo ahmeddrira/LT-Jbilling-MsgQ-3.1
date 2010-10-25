@@ -189,7 +189,6 @@ public class RemotingTest extends TestCase {
 //            assertNotNull(invoices);
 //            assertFalse(invoices.isEmpty());
 
-
             // mediation calls
             List<MediationProcessWS> mediationProcesses = service.getAllMediationProcesses();
             assertNotNull(mediationProcesses);
@@ -199,6 +198,7 @@ public class RemotingTest extends TestCase {
             assertNotNull(mediationRecords);
             assertFalse(mediationRecords.isEmpty());
 
+            // todo: apache cfx cannot marshall maps to XML. Requires a web-service representation.
             Map<Integer, Long> recordCounts = service.getNumberOfMediationRecordsByStatuses();
             assertNotNull(recordCounts);
             assertFalse(recordCounts.isEmpty());

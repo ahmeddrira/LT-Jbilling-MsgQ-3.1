@@ -2065,7 +2065,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         BillingProcessDTOEx dto = processBean.getDto(processId, getCallerLanguageId());
 
-        return new BillingProcessWS(dto);
+        return BillingProcessBL.getWS(dto);
     }
 
     public Integer getLastBillingProcess() throws SessionInternalError {
@@ -2077,7 +2077,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         BillingProcessDTOEx dto = processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
 
-        return new BillingProcessWS(dto);
+        return BillingProcessBL.getWS(dto);
     }
 
     public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError {
@@ -2135,7 +2135,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Map<Integer, Long> getNumberOfMediationRecordsByStatuses() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
         Map<MediationRecordStatusDTO, Long> records = mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
-
+        
         // convert to a map of status ids for web-services
         Map<Integer, Long> ret = new HashMap<Integer, Long>(records.size());
         for (Map.Entry<MediationRecordStatusDTO, Long> record : records.entrySet())

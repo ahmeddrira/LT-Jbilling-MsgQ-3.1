@@ -82,7 +82,8 @@ public class MediationRecordLineWS implements Serializable {
     }
 
     public void setAmount(BigDecimal amount) {
-        this.amount = (amount != null ? amount.toString() : null);
+        if (amount != null)
+            this.amount = amount.toString();
     }
 
     public BigDecimal getQuantity() {
@@ -90,7 +91,8 @@ public class MediationRecordLineWS implements Serializable {
     }
 
     public void setQuantity(BigDecimal quantity) {
-        this.quantity = (quantity != null ? quantity.toString() : null);
+        if (quantity != null)
+            this.quantity = quantity.toString();
     }
 
     public String getDescription() {

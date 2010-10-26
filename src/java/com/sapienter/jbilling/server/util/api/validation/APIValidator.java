@@ -59,35 +59,37 @@ public class APIValidator implements MethodBeforeAdvice {
 		ArrayList<String> errors = new ArrayList<String>();
 		
         for (Object arg: args) {
-        	String objectname = arg.getClass().getName();
-        	boolean testThisObject = false;
-        	for (String test: objectsToTest) {
-        		if (objectname.endsWith(test)) {
-        			testThisObject = true;
-        			break;
-        		}
-        	}
-        	if (testThisObject) {
-        		// it always does the default
-        		Set<ConstraintViolation<Object>> constraintViolations =	
-        			validator.validate(arg);
+            if (arg != null) {
+                String objectname = arg.getClass().getName();
+                boolean testThisObject = false;
+                for (String test: objectsToTest) {
+                    if (objectname.endsWith(test)) {
+                        testThisObject = true;
+                        break;
+                    }
+                }
+                if (testThisObject) {
+                    // it always does the default
+                    Set<ConstraintViolation<Object>> constraintViolations =
+                            validator.validate(arg);
 
-        		if (method.getName().startsWith("create")) {
-        			constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
-        		} else if (method.getName().startsWith("update")) {
-        			constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
-        		} 
-        		
-        		if (constraintViolations.size() > 0) {
-        			for (ConstraintViolation<Object> violation: constraintViolations) {
-        				// compose the error message
-        				String shortObjectName = objectname.substring(objectname.lastIndexOf('.') + 1);
-        				errors.add(shortObjectName + "," + violation.getPropertyPath().toString() + "," + 
-        						violation.getMessage());
-        			}
-        			LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
-        		} 
-        	}
+                    if (method.getName().startsWith("create")) {
+                        constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+                    } else if (method.getName().startsWith("update")) {
+                        constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+                    }
+
+                    if (constraintViolations.size() > 0) {
+                        for (ConstraintViolation<Object> violation: constraintViolations) {
+                            // compose the error message
+                            String shortObjectName = objectname.substring(objectname.lastIndexOf('.') + 1);
+                            errors.add(shortObjectName + "," + violation.getPropertyPath().toString() + "," +
+                                       violation.getMessage());
+                        }
+                        LOG.debug("Calling " + method.getName() + " found an error in " + objectname);
+                    }
+                }
+            }
         }
         
         if (errors.size() > 0) {

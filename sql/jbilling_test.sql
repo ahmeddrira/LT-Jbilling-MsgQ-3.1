@@ -14886,6 +14886,7 @@ COPY pluggable_task (id, entity_id, type_id, processing_order, optlock) FROM std
 20	1	21	4	1
 22	1	21	5	1
 530	1	50	3	1
+540	1	53	1	2
 541	1	54	1	1
 550	1	55	1	1
 560	1	56	2	3
@@ -14965,6 +14966,7 @@ COPY pluggable_task_parameter (id, task_id, name, int_value, str_value, float_va
 780	530	portalId	\N	test-portalId	\N	1
 790	530	applicationId	\N	test-applicationId	\N	1
 800	530	bnet	\N	test-bnet	\N	1
+8100	540	file	\N	InternalEventsRulesTask520.pkg	\N	1
 8200	560	file	\N	ValidatePurchaseRules.pkg	\N	1
 8301	570	item	270	\N	\N	1
 8302	570	ageing_step	6	\N	\N	1

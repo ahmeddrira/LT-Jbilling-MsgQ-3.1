@@ -30,8 +30,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sapienter.jbilling.server.item.ItemDTOEx;
-import com.sapienter.jbilling.server.util.Constants;
-import java.math.RoundingMode;
 
 /**
  * @author Emil
@@ -40,7 +38,7 @@ public class OrderLineWS implements Serializable {
 
     private int id;
     private Integer orderId;
-    private String amount;
+    private String amount; // use strings instead of BigDecimal for WS compatibility
     private String quantity;
     private String price;
     private Date createDatetime;
@@ -59,9 +57,6 @@ public class OrderLineWS implements Serializable {
     private Integer typeId = null;
     private Boolean useItem = null;
     private Integer itemId = null;
-    private BigDecimal priceAsDecimal;
-    private BigDecimal quantityAsDecimal;
-    private BigDecimal amountAsDecimal;
 
     public OrderLineWS() {
     }
@@ -104,11 +99,6 @@ public class OrderLineWS implements Serializable {
         this.useItem = useItem;
     }
 
-    public String toString() {
-        return " typeId = " + typeId + " useItem = "
-                + useItem + "itemId = " + itemId;
-    }
-
     public Integer getItemId() {
         return itemId;
     }
@@ -122,9 +112,6 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getAmountAsDecimal() {
-        if(amountAsDecimal != null){
-            return amountAsDecimal;
-        }
         return (amount == null ? null : new BigDecimal(amount));
     }
 
@@ -132,16 +119,8 @@ public class OrderLineWS implements Serializable {
         this.amount = amount;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getAmount returns value rounded to 2 decimals.
-     * Use getAmountAsDecimal if precision is important, i.e. for calculations
-     * @param amount
-     */
     public void setAmount(BigDecimal amount) {
-        this.amountAsDecimal = amount;
-        if (amount != null) {
-            this.amount = amount.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
-        }
+        this.amount = amount.toString();
     }
 
     public Date getCreateDatetime() {
@@ -205,9 +184,6 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getPriceAsDecimal() {
-        if(priceAsDecimal != null){
-            return priceAsDecimal;
-        }
         return (price == null ? null : new BigDecimal(price));
     }
 
@@ -215,16 +191,8 @@ public class OrderLineWS implements Serializable {
         this.price = price;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getPrice returns value rounded to 2 decimals.
-     * Use getPriceAsDecimal if precision is important, i.e. for calculations
-     * @param price
-     */
     public void setPrice(BigDecimal price) {
-        this.priceAsDecimal = price;
-        if (price != null) {
-            this.price = price.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
-        }
+        this.price = price.toString();
     }
 
     public String getPriceStr() {
@@ -236,9 +204,6 @@ public class OrderLineWS implements Serializable {
     }
 
     public BigDecimal getQuantityAsDecimal() {
-        if(quantityAsDecimal != null) {
-            return quantityAsDecimal;
-        }
         return (quantity == null ? null : new BigDecimal(quantity));
     }
 
@@ -250,16 +215,8 @@ public class OrderLineWS implements Serializable {
         setQuantity(new BigDecimal(quantity));
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getQuantity returns value rounded to 2 decimals.
-     * Use getQuantityAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setQuantity(BigDecimal quantity) {
-        this.quantityAsDecimal = quantity;
-        if (quantity != null) {
-            this.quantity = quantity.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
-        }
+        this.quantity = quantity.toString();
     }
 
     public Integer getVersionNum() {
@@ -296,5 +253,18 @@ public class OrderLineWS implements Serializable {
      */
     public void setProvisioningRequestId(String provisioningRequestId) {
         this.provisioningRequestId = provisioningRequestId;
+    }
+
+    @Override public String toString() {
+        return "OrderLineWS{"
+               + "id=" + id
+               + ", amount='" + amount + '\''
+               + ", quantity='" + quantity + '\''
+               + ", price='" + price + '\''
+               + ", deleted=" + deleted
+               + ", description='" + description + '\''
+               + ", itemId=" + itemId
+               + ", typeId=" + typeId
+               + '}';
     }
 }

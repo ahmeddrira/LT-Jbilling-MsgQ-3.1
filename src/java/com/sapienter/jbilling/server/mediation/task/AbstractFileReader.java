@@ -110,6 +110,7 @@ public abstract class AbstractFileReader extends AbstractReader {
         if (format == null) {
             Digester digester = new Digester();
             digester.setValidating(true);
+            digester.setUseContextClassLoader(true);
             digester.addObjectCreate("format", "com.sapienter.jbilling.server.mediation.Format");
             digester.addObjectCreate("format/field", "com.sapienter.jbilling.server.mediation.FormatField");
             digester.addCallMethod("format/field/name","setName",0);

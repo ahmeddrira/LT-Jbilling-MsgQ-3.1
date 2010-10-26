@@ -37,8 +37,8 @@ public class MediationRecordLineWS implements Serializable {
     private int id;
     private Integer orderLineId;
     private Date eventDate;
-    private BigDecimal amount;
-    private BigDecimal quantity;
+    private String amount; // use strings instead of BigDecimal for WS compatibility
+    private String quantity;
     private String description;
 
     public MediationRecordLineWS() {
@@ -48,8 +48,8 @@ public class MediationRecordLineWS implements Serializable {
         this.id = dto.getId();
         this.orderLineId = dto.getOrderLine() != null ? dto.getOrderLine().getId() : null;
         this.eventDate = dto.getEventDate();
-        this.amount = dto.getAmount();
-        this.quantity = dto.getQuantity();
+        setAmount(dto.getAmount());
+        setQuantity(dto.getQuantity());
         this.description = dto.getDescription();
     }
 
@@ -78,19 +78,19 @@ public class MediationRecordLineWS implements Serializable {
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return amount != null ? new BigDecimal(amount) : null;
     }
 
     public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+        this.amount = (amount != null ? amount.toString() : null);
     }
 
     public BigDecimal getQuantity() {
-        return quantity;
+        return quantity != null ? new BigDecimal(quantity) : null;
     }
 
     public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
+        this.quantity = (quantity != null ? quantity.toString() : null);
     }
 
     public String getDescription() {

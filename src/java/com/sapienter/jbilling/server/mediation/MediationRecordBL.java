@@ -42,10 +42,7 @@ public class MediationRecordBL {
      * @return converted web-service object
      */
     public static MediationRecordWS getWS(MediationRecordDTO dto) {
-        if (dto != null) {
-            new MediationRecordWS(dto, getWS(dto.getLines()));
-        }
-        return null;        
+        return dto != null ? new MediationRecordWS(dto, getWS(dto.getLines())) : null;
     }
 
     /**

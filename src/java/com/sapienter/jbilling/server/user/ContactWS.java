@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.hibernate.validator.constraints.Email;
+
 import com.sapienter.jbilling.server.user.contact.db.ContactFieldDTO;
 
 /**
@@ -55,6 +57,7 @@ public class ContactWS implements Serializable {
     private Integer faxCountryCode;
     private Integer faxAreaCode;
     private String faxNumber;
+    @Email(message="validation.error.email")
     private String email;
     private Date createDate;
     private int deleted;

@@ -26,7 +26,10 @@ class ViewUtils {
 				List<String> fields = message.split(",");
 				String type = messageSource.getMessage("bean." + fields[0], null, locale);
 				String property = messageSource.getMessage("bean." + fields[0] + "." + fields[1], null, locale);
-				List restOfFields = fields[3..fields.size()-1];
+				List restOfFields = null;
+				if (fields.size() >= 4) {
+					restOfFields = fields[3..fields.size()-1];
+				}
 				String errorMessage = messageSource.getMessage(fields[2], restOfFields as Object[] , locale);
 				String finalMessage = messageSource.getMessage("validation.message", 
 					[type, property, errorMessage] as Object[], locale);

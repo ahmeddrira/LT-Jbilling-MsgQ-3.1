@@ -1258,9 +1258,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public Integer createItem(ItemDTOEx item) throws SessionInternalError {
         ItemBL itemBL = new ItemBL();
         ItemDTO dto = itemBL.getDTO(item);
-        if (!ItemBL.validate(dto)) {
-            throw new SessionInternalError("invalid argument");
-        }
+        //if (!ItemBL.validate(dto)) {
+        //    throw new SessionInternalError("invalid argument");
+        //}
         // get the info from the caller
         UserBL bl = new UserBL(getCallerId());
         Integer languageId = bl.getEntity().getLanguageIdField();

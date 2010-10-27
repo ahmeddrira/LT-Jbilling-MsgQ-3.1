@@ -13,11 +13,9 @@
 }
 </style>
 
-<script type="text/javascript">	
-
+<script type="text/javascript">
     $(function ()
     {
-
     	// Return a helper with preserved width of cells
     	var fixHelper = function(e, ui) {
     	    ui.children().each(function() {
@@ -58,18 +56,12 @@
       $('.link-table tr').dblclick(function()
       {
     	  //alert(document.getElementById("selectedId").value);
-          document.forms[0].action='/jbilling/product/edit/' + $(this).find("#productId").val();
+          document.forms[0].action='/jbilling/product/edit/' + document.getElementById("selectedId").value;
           document.forms[0].submit();
       });
       
     });
 
-    //$.get("/jbilling/product/show/" + document.getElementById("selectedId").value,
-   	//    "{productId:" + document.getElementById("selectedId").value + "}",
-   	//    	function(data) { document.getElementById("newTbl").innerHTML=data; },
-   	//    "html"
-   	//);
-	
   </script>
 
 
@@ -81,42 +73,69 @@ ${title}
 function nLoad() {
 	document.getElementById("recCnt").value = ${list.size()};
 }
+
+function del() {
+	if (0 == parseInt(document.getElementById("selectedId").value))
+	{
+		alert('Please select a row to delete');
+		return false;
+	}
+	if (confirm("Are you sure you want to delete [" + document.getElementById("selectedId").value + "]")){		
+		return true;
+	}
+	return false;
+}
+function add() {
+}
+
+
 </script>
 <body onload="nLoad()">
 <h2><g:message code="prompt.products" /></h2>
 <g:form>
-<g:hiddenField name="recCnt" value="0" />
-<g:hiddenField name="selectedId" value="0" />
-<div id="replaceTbl">
-<table id="catTbl" cellspacing='4' class="link-table">
-	<thead>
-		<tr>
-
-			<th><g:message code="product.name" /></th>
-			<th><g:message code="product.id" /></th>
-			<th><g:message code="product.internal.number" /></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<g:each in="${list}" status="idx" var="item">
+	<g:hiddenField name="recCnt" value="0" />
+	<g:hiddenField name="selectedId" value="0" />
+	<div id="replaceTbl">
+	<table id="catTbl" cellspacing='4' class="link-table">
+		<thead>
 			<tr>
 
-				<td><g:textField size="40" readonly="readonly"
-					name="item[${idx}].description" value="${item.description}" /></td>
-				<td><g:textField id="productId" readonly="readonly" name="item[${idx}].id"
-					value="${item.id}" /></td>
-				<td><g:textField readonly="readonly"
-					name="item[${idx}].internalNumber" value="${item.internalNumber}" /></td>
-				<td></td>
+				<th><g:message code="product.name" /></th>
+				<th><g:message code="product.id" /></th>
+				<th><g:message code="product.internal.number" /></th>
+				<th></th>
 			</tr>
-		</g:each>
-	</tbody>
-</table>
-</div>
+		</thead>
+		<tbody>
+			<g:each in="${list}" status="idx" var="item">
+				<g:if test="${item.deleted == 0 }">
+					<tr>
+						<td><g:textField size="40" readonly="readonly"
+							name="item[${idx}].description" value="${item.description}" /></td>
+						<td><g:textField id="productId" readonly="readonly"
+							name="item[${idx}].id" value="${item.id}" /></td>
+						<td><g:textField readonly="readonly"
+							name="item[${idx}].internalNumber" value="${item.internalNumber}" /></td>
+						<td></td>
+					</tr>
+				</g:if>
+			</g:each>
+		</tbody>
+	</table>
+	</div>
+
+	<div id="newTbl"></div>
+
+	<table>
+		<tr>
+			<td><g:actionSubmit value="Add Item" action="add"
+				class="form_button" /></td>
+			<td><g:actionSubmit value="Delete Item"
+				onclick="javascript: return del()" class="form_button" action="del" /></td>
+			<td><g:actionSubmit value="Show All Items" class="form_button"
+				action="showAll" /></td>
+		</tr>
+	</table>
 </g:form>
-<div id="newTbl">
-ADSFA
-</div>
 </body>
 </html>

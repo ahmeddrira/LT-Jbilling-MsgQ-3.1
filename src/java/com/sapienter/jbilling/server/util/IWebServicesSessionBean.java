@@ -25,31 +25,28 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
-import javax.jms.Message;
 import javax.jws.WebService;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Web service bean interface. 
@@ -93,7 +90,7 @@ public interface IWebServicesSessionBean {
     public Integer authenticate(String username, String password) throws SessionInternalError;
 
     public void processPartnerPayouts(Date runDate);
-    public Partner getPartner(Integer partnerId) throws SessionInternalError;
+    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError;
 
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws SessionInternalError;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws SessionInternalError;
@@ -109,6 +106,7 @@ public interface IWebServicesSessionBean {
     public ItemDTOEx[] getAllItems() throws SessionInternalError;
     public Integer createItem(ItemDTOEx item) throws SessionInternalError;
     public void updateItem(ItemDTOEx item);
+    public void deleteItem(Integer itemId);
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId);
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId);
@@ -116,7 +114,8 @@ public interface IWebServicesSessionBean {
     public ItemTypeWS[] getAllItemCategories();
     public Integer createItemCategory(ItemTypeWS itemType) throws SessionInternalError;
     public void updateItemCategory(ItemTypeWS itemType) throws SessionInternalError;
-
+    public void deleteItemCategory(Integer itemCategoryId);
+    
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId);
 
     public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws SessionInternalError;
@@ -197,16 +196,16 @@ public interface IWebServicesSessionBean {
     public void triggerBilling(Date runDate);
     public void triggerAgeing(Date runDate);
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError;
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) throws SessionInternalError;
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError;
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) throws SessionInternalError;
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId);
+    public BillingProcessWS getBillingProcess(Integer processId);
     public Integer getLastBillingProcess() throws SessionInternalError;
 
-    public BillingProcessDTOEx getReviewBillingProcess();
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError;
+    public BillingProcessWS getReviewBillingProcess();
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError;
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId);
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId);
 
 
     /*
@@ -216,14 +215,14 @@ public interface IWebServicesSessionBean {
     public void triggerMediation();
     public boolean isMediationProcessing();
 
-    public List<MediationProcess> getAllMediationProcesses();
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId);
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId);
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses();
+    public List<MediationProcessWS> getAllMediationProcesses();
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId);
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId);
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses();
 
-    public List<MediationConfiguration> getAllMediationConfigurations();
-    public void createMediationConfiguration(MediationConfiguration cfg);
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) throws SessionInternalError;
+    public List<MediationConfigurationWS> getAllMediationConfigurations();
+    public void createMediationConfiguration(MediationConfigurationWS cfg);
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) throws SessionInternalError;
     public void deleteMediationConfiguration(Integer cfgId);
 
 
@@ -235,8 +234,6 @@ public interface IWebServicesSessionBean {
 
     public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result);
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus);
-
-    public void externalProvisioning(Message message);
 
 
     /*

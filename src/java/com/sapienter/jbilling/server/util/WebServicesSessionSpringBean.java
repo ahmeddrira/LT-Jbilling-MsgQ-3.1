@@ -30,7 +30,6 @@ import com.sapienter.jbilling.common.JBCrypto;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.invoice.IInvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceBL;
-import com.sapienter.jbilling.server.invoice.InvoiceSessionBean;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDAS;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
@@ -43,7 +42,14 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.item.db.ItemDTO;
 import com.sapienter.jbilling.server.item.db.ItemTypeDTO;
 import com.sapienter.jbilling.server.mediation.IMediationSessionBean;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationBL;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordBL;
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.Record;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
 import com.sapienter.jbilling.server.mediation.db.MediationProcess;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordDAS;
@@ -73,7 +79,10 @@ import com.sapienter.jbilling.server.pluggableTask.TaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
 import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskManager;
 import com.sapienter.jbilling.server.process.BillingProcessBL;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
+import com.sapienter.jbilling.server.process.ConfigurationBL;
 import com.sapienter.jbilling.server.process.IBillingProcessSessionBean;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
@@ -98,6 +107,8 @@ import com.sapienter.jbilling.server.user.db.CreditCardDAS;
 import com.sapienter.jbilling.server.user.db.CreditCardDTO;
 import com.sapienter.jbilling.server.user.db.UserDAS;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.partner.PartnerBL;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
@@ -109,7 +120,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import sun.jdbc.rowset.CachedRowSet;
 
-import javax.jms.Message;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -131,6 +141,8 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     private SpringSecurityService springSecurityService;
 
     public SpringSecurityService getSpringSecurityService() {
+        if (springSecurityService == null)
+            this.springSecurityService = Context.getBean(Context.Name.SPRING_SECURITY_SERVICE);
         return springSecurityService;
     }
 
@@ -303,6 +315,28 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         Integer executorId = getCallerId();
         InvoiceBL invoice = new InvoiceBL(invoiceId);
         invoice.delete(executorId);
+    }
+    
+    /**
+     * Deletes an Item
+     * @param itemId
+     * The id of the item to delete
+     */
+    public void deleteItem(Integer itemId) throws SessionInternalError {
+    	ItemBL itemBl= new ItemBL(itemId);
+    	itemBl.delete(getCallerId());
+    	LOG.debug("Deleted Item, " + itemBl.getEntity().getDeleted());
+    }
+    
+    /**
+     * Deletes an Item Category
+     * @param itemCategoryId
+     * The id of the Item Category to delete
+     */
+    public void deleteItemCategory(Integer itemCategoryId) throws SessionInternalError {
+    	
+    	ItemTypeBL bl = new ItemTypeBL(itemCategoryId);
+		bl.delete(getCallerId());
     }
 
     /**
@@ -497,6 +531,10 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             sess.updateCreditCard(executorId, user.getUserId(),
                     new CreditCardDTO(user.getCreditCard()));
         }
+        
+        //udpate customerdto here - notes, automaticPaymentMethod
+        //CustomerDTO customer= new CustomerDTO(user);
+        //new CustomerDAS().save(customer);
     }
 
     /**
@@ -721,9 +759,11 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         userSession.processPayouts(runDate);
     }
 
-    public Partner getPartner(Integer partnerId) throws SessionInternalError {
+    public PartnerWS getPartner(Integer partnerId) throws SessionInternalError {
         IUserSessionBean userSession = Context.getBean(Context.Name.USER_SESSION);
-        return userSession.getPartnerDTO(partnerId);        
+        Partner dto = userSession.getPartnerDTO(partnerId);
+        
+        return PartnerBL.getWS(dto);
     }
 
     /**
@@ -2005,21 +2045,27 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         processBean.reviewUsersStatus(runDate);
     }
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws SessionInternalError {
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws SessionInternalError {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getConfigurationDto(getCallerCompanyId());
+        BillingProcessConfigurationDTO configuration = processBean.getConfigurationDto(getCallerCompanyId());
+        
+        return ConfigurationBL.getWS(configuration);
     }
 
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto)
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws)
             throws SessionInternalError {
-        
+
+        BillingProcessConfigurationDTO dto = ConfigurationBL.getDTO(ws);
+
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
         return processBean.createUpdateConfiguration(getCallerId(), dto);
     }
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+    public BillingProcessWS getBillingProcess(Integer processId) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getDto(processId, getCallerLanguageId());
+        BillingProcessDTOEx dto = processBean.getDto(processId, getCallerLanguageId());
+
+        return BillingProcessBL.getWS(dto);
     }
 
     public Integer getLastBillingProcess() throws SessionInternalError {
@@ -2027,19 +2073,31 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return processBean.getLast(getCallerCompanyId());
     }
 
-    public BillingProcessDTOEx getReviewBillingProcess() {
+    public BillingProcessWS getReviewBillingProcess() {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
+        BillingProcessDTOEx dto = processBean.getReviewDto(getCallerCompanyId(), getCallerLanguageId());
+
+        return BillingProcessBL.getWS(dto);
     }
 
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws SessionInternalError {
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws SessionInternalError {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.setReviewApproval(getCallerId(), getCallerCompanyId(), flag);
+        BillingProcessConfigurationDTO dto = processBean.setReviewApproval(getCallerId(), getCallerCompanyId(), flag);
+
+        return ConfigurationBL.getWS(dto);
     }
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) {
         IBillingProcessSessionBean processBean = Context.getBean(Context.Name.BILLING_PROCESS_SESSION);
-        return processBean.getGeneratedInvoices(processId);
+
+        // todo: IBillingProcessSessionBean#getGeneratedInvoices() should have a proper generic return type
+        @SuppressWarnings("unchecked")
+        Collection<InvoiceDTO> invoices  = processBean.getGeneratedInvoices(processId);
+
+        List<Integer> ids = new ArrayList<Integer>(invoices.size());
+        for (InvoiceDTO invoice : invoices)
+            ids.add(invoice.getId());
+        return ids;
     }
 
     
@@ -2057,46 +2115,74 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         return mediationBean.isProcessing(getCallerCompanyId());
     }
 
-
-    public List<MediationProcess> getAllMediationProcesses() {
+    public List<MediationProcessWS> getAllMediationProcesses() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getAll(getCallerCompanyId());
+        List<MediationProcess> processes = mediationBean.getAll(getCallerCompanyId());
+
+        // convert to web-service mediation process
+        List<MediationProcessWS> ws = new ArrayList<MediationProcessWS>(processes.size());
+        for (MediationProcess process : processes)
+            ws.add(new MediationProcessWS(process));
+        return ws;
     }
 
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getEventsForOrder(orderId);
+        List<MediationRecordLineDTO> events = mediationBean.getEventsForOrder(orderId);
+
+        return MediationRecordBL.getWS(events);
     }
 
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getMediationRecordsByMediationProcess(mediationProcessId);
+        List<MediationRecordDTO> records = mediationBean.getMediationRecordsByMediationProcess(mediationProcessId);
+
+        return MediationRecordBL.getWS(records);
     }
 
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() {
         IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
-    }
-
-    public List<MediationConfiguration> getAllMediationConfigurations() {
-        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        return mediationBean.getAllConfigurations(getCallerCompanyId());
-    }
-
-    public void createMediationConfiguration(MediationConfiguration cfg) {
-        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-        mediationBean.createConfiguration(cfg);
-    }
-
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations)
-            throws SessionInternalError {
+        Map<MediationRecordStatusDTO, Long> records = mediationBean.getNumberOfRecordsByStatuses(getCallerCompanyId());
         
+        // convert to a simple object for web-services
+        List<RecordCountWS> counts = new ArrayList<RecordCountWS>(records.size());
+        for (Map.Entry<MediationRecordStatusDTO, Long> record : records.entrySet())
+            counts.add(new RecordCountWS(record.getKey().getId(), record.getValue()));
+        return counts;
+    }
+
+    public List<MediationConfigurationWS> getAllMediationConfigurations() {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+
+        List<MediationConfiguration> configurations = mediationBean.getAllConfigurations(getCallerCompanyId());
+        return MediationConfigurationBL.getWS(configurations);
+    }
+
+    public void createMediationConfiguration(MediationConfigurationWS cfg) {
+        IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
+
+        MediationConfiguration dto = MediationConfigurationBL.getDTO(cfg);
+        mediationBean.createConfiguration(dto);
+    }
+
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations)
+            throws SessionInternalError {
+
+        // update all configurations
+        List<MediationConfiguration> dtos = MediationConfigurationBL.getDTO(configurations);
+        List<MediationConfiguration> updated;
         try {
             IMediationSessionBean mediationBean = Context.getBean(Context.Name.MEDIATION_SESSION);
-            return mediationBean.updateAllConfiguration(getCallerId(), configurations);
+            updated = mediationBean.updateAllConfiguration(getCallerId(), dtos);
         } catch (InvalidArgumentException e) {
             throw new SessionInternalError(e);
         }
+
+        // return list of updated ids
+        List<Integer> ids = new ArrayList<Integer>(updated.size());
+        for (MediationConfiguration cfg : updated)
+            ids.add(cfg.getId());
+        return ids;
     }
 
     public void deleteMediationConfiguration(Integer cfgId) {
@@ -2123,11 +2209,6 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws SessionInternalError {
         IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
         provisioningBean.updateProvisioningStatus(orderLineId, provisioningStatus);
-    }
-
-    public void externalProvisioning(Message message) throws SessionInternalError {
-        IProvisioningProcessSessionBean provisioningBean = Context.getBean(Context.Name.PROVISIONING_PROCESS_SESSION);
-        provisioningBean.externalProvisioning(message);
     }
 
 

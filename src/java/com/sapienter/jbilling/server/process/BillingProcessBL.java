@@ -1188,4 +1188,15 @@ public class BillingProcessBL extends ResultList
 
         return user.getUserId();
     }
+
+    /**
+     * Convert a given BillingProcessDTO into a BillingProcessWS web-service object.
+     *
+     * @param dto dto to convert
+     * @return converted web-service object
+     */
+    public static BillingProcessWS getWS(BillingProcessDTO dto) {
+        return dto != null ? new BillingProcessWS(dto) : null;
+    }
+
 }

@@ -20,36 +20,32 @@
 
 package com.sapienter.jbilling.server.util.api;
 
-import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
 import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
 import com.sapienter.jbilling.server.payment.PaymentWS;
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.CreateResponseWS;
 import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
-import com.sapienter.jbilling.server.user.partner.db.Partner;
+import com.sapienter.jbilling.server.user.partner.PartnerWS;
 
-import javax.jms.Message;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface JbillingAPI {
     
@@ -83,7 +79,7 @@ public interface JbillingAPI {
     public Integer authenticate(String username, String password) throws JbillingAPIException;
 
     public void processPartnerPayouts(Date runDate) throws JbillingAPIException;
-    public Partner getPartner(Integer partnerId) throws JbillingAPIException;
+    public PartnerWS getPartner(Integer partnerId) throws JbillingAPIException;
 
     public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws JbillingAPIException;
     public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws JbillingAPIException;
@@ -99,6 +95,7 @@ public interface JbillingAPI {
     public ItemDTOEx[] getAllItems() throws JbillingAPIException;
     public Integer createItem(ItemDTOEx item) throws JbillingAPIException;
     public void updateItem(ItemDTOEx item) throws JbillingAPIException;
+    public void deleteItem(Integer itemId) throws JbillingAPIException;
 
     public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException;
     public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
@@ -106,6 +103,7 @@ public interface JbillingAPI {
     public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException;
     public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
     public void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
+    public void deleteItemCategory(Integer itemCategoryId) throws JbillingAPIException;
 
     public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
 
@@ -187,16 +185,16 @@ public interface JbillingAPI {
     public void triggerBilling(Date runDate) throws JbillingAPIException;
     public void triggerAgeing(Date runDate) throws JbillingAPIException;
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() throws JbillingAPIException;
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) throws JbillingAPIException;
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws JbillingAPIException;
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) throws JbillingAPIException;
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) throws JbillingAPIException;
+    public BillingProcessWS getBillingProcess(Integer processId) throws JbillingAPIException;
     public Integer getLastBillingProcess() throws JbillingAPIException;
 
-    public BillingProcessDTOEx getReviewBillingProcess() throws JbillingAPIException;
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) throws JbillingAPIException;
+    public BillingProcessWS getReviewBillingProcess() throws JbillingAPIException;
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws JbillingAPIException;
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException;
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException;
 
 
     /*
@@ -206,14 +204,14 @@ public interface JbillingAPI {
     public void triggerMediation() throws JbillingAPIException;
     public boolean isMediationProcessing() throws JbillingAPIException;
 
-    public List<MediationProcess> getAllMediationProcesses() throws JbillingAPIException;
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException;
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) throws JbillingAPIException;
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;
+    public List<MediationProcessWS> getAllMediationProcesses() throws JbillingAPIException;
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException;
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) throws JbillingAPIException;
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;
 
-    public List<MediationConfiguration> getAllMediationConfigurations() throws JbillingAPIException;
-    public void createMediationConfiguration(MediationConfiguration cfg) throws JbillingAPIException;
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) throws JbillingAPIException;
+    public List<MediationConfigurationWS> getAllMediationConfigurations() throws JbillingAPIException;
+    public void createMediationConfiguration(MediationConfigurationWS cfg) throws JbillingAPIException;
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) throws JbillingAPIException;
     public void deleteMediationConfiguration(Integer cfgId) throws JbillingAPIException;
 
 
@@ -226,8 +224,6 @@ public interface JbillingAPI {
 
     public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) throws JbillingAPIException;
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws JbillingAPIException;
-
-    public void externalProvisioning(Message message) throws JbillingAPIException;
 
 
     /*

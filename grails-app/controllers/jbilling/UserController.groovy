@@ -18,6 +18,7 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
+import com.sapienter.jbilling.server.user.UserBL;
 
 class UserController {
 	
@@ -35,13 +36,19 @@ class UserController {
 	}
 	
 	def index = {
-		languageId= "1"
+		UserBL userbl = new UserBL(webServicesSession.getCallerId());
+		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());		
+		//languageId= "1"
 		render( view:"user")
 	}
 	
 	def create = {
 		UserWS newUser = new UserWS();
 		bindData (newUser, params);
+		ContactWS contact = new ContactWS()		
+		bindData(contact, params)
+		log.info "Email: " + contact.getEmail()
+		newUser.setContact(contact);
 		newUser.setLanguageId(new Integer(1));
 		newUser.setCurrencyId(1);
 		newUser.setStatusId(1);//
@@ -59,9 +66,9 @@ class UserController {
 	}
 	
 	def edit = {
-		//TODO get language id from the current logged in users id.
-		//((UserDTOEx)session[Constants.SESSION_USER_DTO])?.getLanguageId()
-		languageId = "1"
+		UserBL userbl = new UserBL(webServicesSession.getCallerId());
+		languageId = String.valueOf(userbl.getEntity().getLanguageIdField());		
+//		languageId = "1"
 		UserWS user = null;
 		def notes= null;
 		def expMnth, expYr;
@@ -79,19 +86,19 @@ class UserController {
 				redirect ( action:index)
 			}
 			if (user) {
-				CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));
-				notes= dto.getNotes();
-				if ( Constants.AUTO_PAYMENT_TYPE_CC == dto.getAutoPaymentType())
+				//CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));
+				notes= user?.getNotes();
+				if ( Constants.AUTO_PAYMENT_TYPE_CC == user.getAutomaticPaymentType())
 				{
 					log.info "Auto CC true"
 					isAutoCC=true;
 				} 
-				if ( Constants.AUTO_PAYMENT_TYPE_ACH == dto.getAutoPaymentType() )
+				if ( Constants.AUTO_PAYMENT_TYPE_ACH == user.getAutomaticPaymentType() )
 				{
 					log.info "Auto Ach True"
 					isAutoAch= true;
 				}
-				log.info  "retrieved notes "  + dto.getNotes()
+				log.info  "retrieved notes "  + user?.getNotes()
 				if (null != user.getCreditCard() && null != user.getCreditCard().getNumber()) {
 					Calendar cal= Calendar.getInstance();
 					cal.setTime(user.getCreditCard().getExpiry())
@@ -118,13 +125,7 @@ class UserController {
 			user= new UserWS()
 		}
 		log.info  "No errors. User exists=" + userExists
-		
-		//		if (ccc.hasErrors()) {
-		//			log.info  "Errors found."
-		//			[ user : ccc ]
-		//			//render  (view: "edit")	
-		//		} else {
-		
+			
 		//set type Customer - Create/Edit Customer
 		user.setMainRoleId(5);		
 		
@@ -155,6 +156,12 @@ class UserController {
 		
 		bindData(user, params)
 		
+		user.setNotes(params.notes)
+		if (params.isAutomaticPaymentCC == "on") {
+			user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)
+		} else if (params.isAutomaticPaymentAch == "on") {
+			user.setAutomaticPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
+		}
 		log.info  "Saving ach accountType as " + user?.getAch()?.getAccountType()
 //		log.info  "or " + params.ach.accountType
 		
@@ -170,14 +177,9 @@ class UserController {
 			}
 			log.info  params.isAutomaticPaymentCC
 			log.info  params.isAutomaticPaymentAch
-			CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));			
-			dto.setNotes(params.notes)
-			if (params.isAutomaticPaymentCC == "on") {
-				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_CC)				
-			} else if (params.isAutomaticPaymentAch == "on") {
-				dto.setAutoPaymentType(Constants.AUTO_PAYMENT_TYPE_ACH)
-			}
-			dto.save() // // TODO Code review. oh no, another of these. Updating, creating, deleting a row? Use the API.
+			//CustomerDTO dto= CustomerDTO.findByBaseUser(new UserDTO(user.getUserId()));			
+			//dto.setNotes(params.notes)			
+			//dto.save() // Code review. Updating, creating, deleting a row? Use the API.
 		} catch (SessionInternalError e) {
 		    // TODO: the locale like this is not working, and it is messy. Once we have
 		    // the one resolved by jBilling in the session, add that here.

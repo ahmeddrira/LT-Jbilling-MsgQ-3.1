@@ -27,19 +27,40 @@ package com.sapienter.jbilling.server.util;
 
 import javax.naming.NamingException;
 
+import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.user.UserBL;
+import grails.plugins.springsecurity.SpringSecurityService;
 
 /**
  * @author Emil
  */
 public abstract class WSMethodBaseSecurityProxy extends MethodBaseSecurityProxy {
 
+    protected SpringSecurityService getSpringSecurityService() {
+        return Context.getBean(Context.Name.SPRING_SECURITY_SERVICE);
+    }
+
+    protected Integer getCallerId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
+        return details.getUserId();
+    }
+
+    protected Integer getCallerCompanyId() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
+        return details.getCompanyId();
+    }
+
+    protected String getCallerUserName() {
+        CompanyUserDetails details = (CompanyUserDetails) getSpringSecurityService().getPrincipal();
+        return details.getUsername();
+    }
+    
     protected void validate(Integer callerId) 
             throws SecurityException, SessionInternalError, NamingException {
         // get the user. Since this is called only by root users, the username
         // is unique and the entity is that of the user
-        String user = null; // TODO: Fix this WebServicesCaller.getCallerUserName();
+        String user = getCallerUserName();
         UserBL bl = new UserBL();
         if (callerId == null || !bl.validateUserBelongs(user, callerId)) {
             throw new SecurityException("Unauthorize access by" + user + " to user " + 

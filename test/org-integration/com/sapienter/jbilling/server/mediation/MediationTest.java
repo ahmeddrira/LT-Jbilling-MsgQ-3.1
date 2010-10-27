@@ -20,6 +20,16 @@
 
 package com.sapienter.jbilling.server.mediation;
 
+import com.sapienter.jbilling.common.Util;
+import com.sapienter.jbilling.server.item.PricingField;
+import com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler;
+import com.sapienter.jbilling.server.order.OrderLineWS;
+import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.api.JbillingAPI;
+import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
+import junit.framework.TestCase;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,31 +42,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-
-import com.sapienter.jbilling.server.item.PricingField;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO;
-import com.sapienter.jbilling.server.mediation.task.SaveToJDBCMediationErrorHandler;
-import com.sapienter.jbilling.server.mediation.task.JDBCReader;
-import junit.framework.TestCase;
-
-import com.sapienter.jbilling.common.Util;
-import com.sapienter.jbilling.server.mediation.db.MediationProcess;
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO;
-import com.sapienter.jbilling.server.order.OrderLineWS;
-import com.sapienter.jbilling.server.order.OrderWS;
-import com.sapienter.jbilling.server.util.Constants;
-import com.sapienter.jbilling.server.util.RemoteContext;
-import com.sapienter.jbilling.server.util.api.JbillingAPI;
-import com.sapienter.jbilling.server.util.api.JbillingAPIFactory;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskDTO;
-import com.sapienter.jbilling.server.pluggableTask.admin.PluggableTaskException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public class MediationTest extends TestCase {
 
-    private static final Integer ENTITY_ID = 1;
-
-    private IMediationSessionBean remoteMediation = null;
+    private JbillingAPI api;
 
     public MediationTest() {
     }
@@ -69,111 +62,101 @@ public class MediationTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        remoteMediation = RemoteContext.getBean("mediationRemoteSession");
+        api = JbillingAPIFactory.getAPI();
     }
 
-    public void test01Trigger() {
+    public void test01Trigger() throws Exception {
         System.out.println("testTrigger");
-        try {
-            remoteMediation.trigger(ENTITY_ID);
 
-            // 1 existing process (for duplicate testing), 3 new pricesses from trigger();
-            List<MediationProcess> all = remoteMediation.getAll(1);
-            assertNotNull("process list can't be null", all);
-            assertEquals("There should be four processes after running the mediation process", 4, all.size());
+        api.triggerMediation();
 
-            Collection <MediationRecordDTO> processedRecords = null;
-            for (MediationProcess process : all) {
-                if (process.getConfiguration().getId() == 10 && process.getOrdersAffected() > 0) {
-                    // total orders touched should equal the number of records processed minus errors & non billable
-                    // 10131 events - 2 errors - 1 non billable = 10128
-                    assertEquals("The process touches an order for each event", new Integer(10128), process.getOrdersAffected());
-                    System.out.println("Orders affected: " + process.getOrdersAffected());
-                    processedRecords = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
-                }
+        // 1 existing process (for duplicate testing), 3 new pricesses from trigger();
+        List<MediationProcessWS> all = api.getAllMediationProcesses();
+        assertNotNull("process list can't be null", all);
+        assertEquals("There should be four processes after running the mediation process", 4, all.size());
+
+        Collection <MediationRecordWS> processedRecords = null;
+        for (MediationProcessWS process : all) {
+            if (process.getConfigurationId() == 10 && process.getOrdersAffected() > 0) {
+                // total orders touched should equal the number of records processed minus errors & non billable
+                // 10131 events - 2 errors - 1 non billable = 10128
+                assertEquals("The process touches an order for each event", new Integer(10128), process.getOrdersAffected());
+                System.out.println("Orders affected: " + process.getOrdersAffected());
+                processedRecords = api.getMediationRecordsByMediationProcess(process.getId());
             }
-
-            assertNotNull("Collection of processed records should be presented", processedRecords);
-            assertEquals("Should be processed ten records", 10131, processedRecords.size());
-
-            Integer checkedRecords = 0;
-            for (MediationRecordDTO rec : processedRecords) {
-                if (rec.getKey().equals("07")) {
-                    assertEquals("Record with key 07 should be done and billable",
-                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE);
-                    checkedRecords++;
-                } else if (rec.getKey().equals("08")) {
-                    assertEquals("Record with key 08 should be done and not billable (not answered)",
-                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE);
-                    checkedRecords++;
-                } else if (rec.getKey().equals("09")) {
-                    assertEquals("Record with key 09 should be declared as error (negative duration)",
-                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED);
-                    checkedRecords++;
-                } else if (rec.getKey().equals("10")) {
-                    assertEquals("Record with key 10 should be detected as error (undefined user)",
-                                 (Integer) rec.getRecordStatus().getId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED);
-                    checkedRecords++;
-                }
-            }
-            assertEquals("Records with keys 07, 08, 09 and 10 should be in results of processing", 4, checkedRecords.intValue());
-
-            List allCfg = remoteMediation.getAllConfigurations(1);
-            assertNotNull("config list can't be null", allCfg);
-            assertEquals("There should be three configurations present", 3, allCfg.size());
-
-            System.out.println("Validating one-time orders...");
-            JbillingAPI api = JbillingAPIFactory.getAPI();
-
-            boolean foundFirst = false;
-            boolean foundSecond = false;
-
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.set(2007, GregorianCalendar.OCTOBER, 15);
-            Date d1015 = cal.getTime();
-
-            cal.set(2007, GregorianCalendar.NOVEMBER, 15);
-            Date d1115 = cal.getTime();
-
-            for (Integer orderId : api.getLastOrders(2, 100)) {
-                OrderWS order = api.getOrder(orderId);
-                //System.out.println("testing order " + order + " f1 " + foundFirst +
-                //        " f2 " + foundSecond);
-                if (order.getActiveSince() != null) {
-                    System.out.println(" c1 " +
-                            Util.truncateDate(order.getActiveSince()).equals(d1015) +
-                            " c2 " + Util.truncateDate(order.getActiveSince()).equals(d1115));
-                }
-                if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
-                        Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1015))) {
-                    foundFirst = true;
-                    assertEquals("Quantity of should be the combiend of all events",
-                            new BigDecimal("2600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
-                }
-                if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
-                        Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1115))) {
-                    foundSecond = true;
-                    assertEquals("Quantity of second order should be 600 ",
-                            new BigDecimal("600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
-                }
-            }
-
-            assertTrue("The one time order for 10/15 is missing", foundFirst);
-            assertTrue("The one time order for 11/15 is missing", foundSecond);
-
-            // verify that the two events with different prices add up well
-            OrderWS order = api.getLatestOrder(1055);
-            BigDecimal total = BigDecimal.ZERO;
-            for (OrderLineWS line : order.getOrderLines()) {
-                total = total.add(line.getAmountAsDecimal());
-            }
-
-            // note, only one of the mediated call items is rated, and the default price of the other is zero
-            assertEquals("Total of mixed price order", new BigDecimal("2800"), total);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Exception!" + e.getMessage());
         }
+
+        assertNotNull("Collection of processed records should be presented", processedRecords);
+        assertEquals("Should be processed ten records", 10131, processedRecords.size());
+
+        Integer checkedRecords = 0;
+        for (MediationRecordWS rec : processedRecords) {
+            if (rec.getKey().equals("07")) {
+                assertEquals("Record with key 07 should be done and billable",
+                             (Integer) rec.getRecordStatusId(), Constants.MEDIATION_RECORD_STATUS_DONE_AND_BILLABLE);
+                checkedRecords++;
+            } else if (rec.getKey().equals("08")) {
+                assertEquals("Record with key 08 should be done and not billable (not answered)",
+                             (Integer) rec.getRecordStatusId(), Constants.MEDIATION_RECORD_STATUS_DONE_AND_NOT_BILLABLE);
+                checkedRecords++;
+            } else if (rec.getKey().equals("09")) {
+                assertEquals("Record with key 09 should be declared as error (negative duration)",
+                             (Integer) rec.getRecordStatusId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DECLARED);
+                checkedRecords++;
+            } else if (rec.getKey().equals("10")) {
+                assertEquals("Record with key 10 should be detected as error (undefined user)",
+                             (Integer) rec.getRecordStatusId(), Constants.MEDIATION_RECORD_STATUS_ERROR_DETECTED);
+                checkedRecords++;
+            }
+        }
+        assertEquals("Records with keys 07, 08, 09 and 10 should be in results of processing", 4, checkedRecords.intValue());
+
+        List allCfg = api.getAllMediationConfigurations();
+        assertNotNull("config list can't be null", allCfg);
+        assertEquals("There should be three configurations present", 3, allCfg.size());
+
+        System.out.println("Validating one-time orders...");
+        JbillingAPI api = JbillingAPIFactory.getAPI();
+
+        boolean foundFirst = false;
+        boolean foundSecond = false;
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(2007, GregorianCalendar.OCTOBER, 15);
+        Date d1015 = cal.getTime();
+
+        cal.set(2007, GregorianCalendar.NOVEMBER, 15);
+        Date d1115 = cal.getTime();
+
+        for (Integer orderId : api.getLastOrders(2, 100)) {
+            OrderWS order = api.getOrder(orderId);
+
+            if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
+                Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1015))) {
+                foundFirst = true;
+                assertEquals("Quantity of should be the combiend of all events",
+                             new BigDecimal("2600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+            }
+            if (order.getPeriod().equals(Constants.ORDER_PERIOD_ONCE) &&
+                Util.equal(Util.truncateDate(order.getActiveSince()), Util.truncateDate(d1115))) {
+                foundSecond = true;
+                assertEquals("Quantity of second order should be 600 ",
+                             new BigDecimal("600.0"), order.getOrderLines()[0].getQuantityAsDecimal());
+            }
+        }
+
+        assertTrue("The one time order for 10/15 is missing", foundFirst);
+        assertTrue("The one time order for 11/15 is missing", foundSecond);
+
+        // verify that the two events with different prices add up well
+        OrderWS order = api.getLatestOrder(1055);
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderLineWS line : order.getOrderLines()) {
+            total = total.add(line.getAmountAsDecimal());
+        }
+
+        // note, only one of the mediated call items is rated, and the default price of the other is zero
+        assertEquals("Total of mixed price order", new BigDecimal("2800"), total);
     }
 
     // test that the last 2 orders for gandalf have all the CDRs
@@ -185,11 +168,11 @@ public class MediationTest extends TestCase {
             Integer ids[] = api.getLastOrders(2, 2); // last two orders for user 2
             for (Integer id : ids) {
                 OrderWS order = api.getOrder(id);
-                List<MediationRecordLineDTO> lines = remoteMediation.getEventsForOrder(order.getId());
+                List<MediationRecordLineWS> lines = api.getMediationEventsForOrder(order.getId());
 
                 BigDecimal total = BigDecimal.ZERO;
                 BigDecimal quantity = BigDecimal.ZERO;
-                for (MediationRecordLineDTO line : lines) {
+                for (MediationRecordLineWS line : lines) {
                     total = total.add(line.getAmount());
                     quantity = quantity.add(line.getQuantity());
                 }
@@ -265,8 +248,6 @@ public class MediationTest extends TestCase {
         final Integer MEDIATION_TEST_8_USER = 10774;
         final Integer MEDIATION_TEST_9_USER = 10775;
         final Integer MEDIATION_TEST_10_USER = 10776;
-
-        JbillingAPI api = JbillingAPIFactory.getAPI();
 
         // 150 calls to 1876999* @ 0.470/min - only 150 of the calls for this user are rated!
         Integer[] ids = api.getLastOrders(MEDIATION_TEST_4_USER, 1);
@@ -451,19 +432,19 @@ public class MediationTest extends TestCase {
          }
      }
 
-     public void test10JDBCReader() {
-         List<MediationProcess> all = remoteMediation.getAll(1);
+     public void test10JDBCReader() throws Exception {
+         List<MediationProcessWS> all = api.getAllMediationProcesses();
          assertNotNull("process list can't be null", all);
 
-         Collection <MediationRecordDTO> processedRecordsFromJbillingTest = null;
-         Collection <MediationRecordDTO> processedRecordsFromHipersonic = null;
-         for (MediationProcess process : all) {
-             if (process.getConfiguration().getId() == 30) {
+         Collection <MediationRecordWS> processedRecordsFromJbillingTest = null;
+         Collection <MediationRecordWS> processedRecordsFromHipersonic = null;
+         for (MediationProcessWS process : all) {
+             if (process.getConfigurationId() == 30) {
                  // JDBCReader from jbilliing_test
-                 processedRecordsFromJbillingTest = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
-             } else if (process.getConfiguration().getId() == 20) {
+                 processedRecordsFromJbillingTest = api.getMediationRecordsByMediationProcess(process.getId());
+             } else if (process.getConfigurationId() == 20) {
                  // JDBCReader from hipersonic jbilling_cdr DB
-                 processedRecordsFromHipersonic = remoteMediation.getMediationRecordsByMediationProcess(process.getId());
+                 processedRecordsFromHipersonic = api.getMediationRecordsByMediationProcess(process.getId());
              }
          }
 
@@ -471,7 +452,7 @@ public class MediationTest extends TestCase {
          assertEquals("Records read from HSQL jbilling_cdr ", 7, processedRecordsFromHipersonic.size());
          
          boolean jdbcRecordsProcessed = false;
-         for (MediationRecordDTO rec : processedRecordsFromJbillingTest) {
+         for (MediationRecordWS rec : processedRecordsFromJbillingTest) {
              if (rec.getKey().equals("20121")) {
                  jdbcRecordsProcessed = true;
              }

@@ -146,6 +146,9 @@ public class CustomerDTO  implements java.io.Serializable {
         setDynamicBalance(user.getDynamicBalance() == null ? null : new BigDecimal(user.getDynamicBalance()));        
         setAutoRecharge(user.getAutoRecharge() == null ? null : new BigDecimal(user.getAutoRecharge()));
 
+        setNotes(user.getNotes() == null ? "" : user.getNotes());
+        setAutoPaymentType(user.getAutomaticPaymentType());
+        
         LOG.debug("Customer created with auto-recharge: " + getAutoRecharge() + " incoming var, " + user.getAutoRecharge());
     }
    

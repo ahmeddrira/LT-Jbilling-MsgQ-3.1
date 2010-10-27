@@ -1,7 +1,14 @@
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS;
+import com.sapienter.jbilling.server.mediation.MediationProcessWS;
+import com.sapienter.jbilling.server.mediation.MediationRecordWS;
+import com.sapienter.jbilling.server.mediation.RecordCountWS;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
+import com.sapienter.jbilling.server.process.BillingProcessDTOEx;
+import com.sapienter.jbilling.server.process.BillingProcessWS;
 import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.UserDTOEx;
 import com.sapienter.jbilling.server.user.UserWS;
@@ -12,8 +19,14 @@ import junit.framework.TestCase;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 
+/**
+ * Smoke tests for the web services api. Ensures that all method calls complete successfully
+ * and that the return value can be serialized using various web service API protocols.
+ */
 public class RemotingTest extends TestCase {
 
     private final static Integer USER_ID = 2;
@@ -46,14 +59,14 @@ public class RemotingTest extends TestCase {
         makeCalls();
         System.out.println("Web Services tests done");
     }
-
+   
     public void testInvoker() {
-
+        
         service = RemoteContext.getBean("apiClient3");
 
-        // SOAP API for user 'mordor' company 2
-        assertEquals(12, service.getCallerId().intValue());
-        assertEquals(2, service.getCallerCompanyId().intValue());
+        // Spring HTTP Invoker API for user 'admin' company 1
+        assertEquals(1, service.getCallerId().intValue());
+        assertEquals(1, service.getCallerCompanyId().intValue());
 
         System.out.println("HTTP Invoker tests");
         makeCalls();
@@ -152,6 +165,45 @@ public class RemotingTest extends TestCase {
 
             invoice = service.getLatestInvoiceByItemType(USER_ID, 1);
             assertNotNull(invoice);
+
+            
+            // billing calls
+            BillingProcessConfigurationWS billingConfig = service.getBillingProcessConfiguration();
+            assertNotNull(billingConfig);
+            assertEquals(1, billingConfig.getId());
+
+            BillingProcessWS billingProcess = service.getBillingProcess(2);
+            assertNotNull(billingProcess);
+            assertEquals(2, billingProcess.getId().intValue());
+
+            Integer lastBillingProccessID = service.getLastBillingProcess();
+            assertNotNull(lastBillingProccessID);
+            assertEquals(12, lastBillingProccessID.intValue());
+
+            BillingProcessWS reviewProcess = service.getReviewBillingProcess();
+            assertNull(reviewProcess); // no review process yet... i'm happy as long as the call was successful
+
+            List<Integer> generatedInvoices = service.getBillingProcessGeneratedInvoices(2);
+            assertNotNull(generatedInvoices);
+            assertFalse(generatedInvoices.isEmpty());
+
+
+            // mediation calls
+            List<MediationProcessWS> mediationProcesses = service.getAllMediationProcesses();
+            assertNotNull(mediationProcesses);
+            assertFalse(mediationProcesses.isEmpty());
+
+            List<MediationRecordWS> mediationRecords = service.getMediationRecordsByMediationProcess(1);
+            assertNotNull(mediationRecords);
+            assertFalse(mediationRecords.isEmpty());
+
+            List<RecordCountWS> recordCounts = service.getNumberOfMediationRecordsByStatuses();
+            assertNotNull(recordCounts);
+            assertFalse(recordCounts.isEmpty());
+
+            List<MediationConfigurationWS> mediationConfigs = service.getAllMediationConfigurations();
+            assertNotNull(mediationConfigs);
+            assertFalse(mediationConfigs.isEmpty());
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -22,9 +22,14 @@ package com.sapienter.jbilling.server.process;
 
 
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDAS;
 import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDAS;
+import com.sapienter.jbilling.server.process.db.PeriodUnitDTO;
+import com.sapienter.jbilling.server.user.EntityBL;
 import com.sapienter.jbilling.server.user.db.CompanyDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 
@@ -147,6 +152,45 @@ public class ConfigurationBL {
         configuration.setReviewStatus(flag ? Constants.REVIEW_STATUS_APPROVED
                 : Constants.REVIEW_STATUS_DISAPPROVED);
 
+    }
+
+    /**
+     * Convert a given BillingProcessConfigurationDTO into a BillingProcessConfigurationWS web-service object.
+     *
+     * @param dto dto to convert
+     * @return converted web-service object
+     */
+    public static BillingProcessConfigurationWS getWS(BillingProcessConfigurationDTO dto) {
+        return dto != null ? new BillingProcessConfigurationWS(dto) : null;
+    }
+
+    /**
+     * Convert a given BillingProcessConfigurationWS web-service object into a BillingProcessConfigurationDTO entity.
+     *
+     * The BillingProcessConfigurationWS must have an entity and period unit ID or an exception will be thrown.
+     *
+     * @param ws ws object to convert
+     * @return converted DTO object
+     * @throws SessionInternalError if required field is missing
+     */
+    public static BillingProcessConfigurationDTO getDTO(BillingProcessConfigurationWS ws) {
+        if (ws != null) {
+
+            if (ws.getEntityId() == null)
+                    throw new SessionInternalError("BillingProcessConfigurationDTO must have an entity id.");
+
+            if (ws.getPeriodUnitId() == null)
+                    throw new SessionInternalError("BillingProcessConfigurationDTO must have a period unit id.");
+                        
+            // billing process entity
+            CompanyDTO entity = new EntityBL(ws.getEntityId()).getEntity();
+
+            // billing process period unit
+            PeriodUnitDTO periodUnit = new PeriodUnitDAS().find(ws.getPeriodUnitId());
+
+            return new BillingProcessConfigurationDTO(ws, entity, periodUnit);
+        }
+        return null;
     }
 
 }

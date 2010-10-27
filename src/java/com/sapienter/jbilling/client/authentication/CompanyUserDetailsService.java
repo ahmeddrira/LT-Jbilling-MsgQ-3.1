@@ -69,13 +69,22 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
 
     public void setSpringSecurityService(SpringSecurityService springSecurityService) {
         this.springSecurityService = springSecurityService;
-    }    
+    }
 
     public UserDetails loadUserByUsername(String s, boolean loadRoles)
             throws UsernameNotFoundException, DataAccessException {
         return loadUserByUsername(s);
     }
 
+    /**
+     * Loads the user account and all permissions/roles for the given user name. This method does not perform
+     * authentication, only retrieves the {@link UserDetails} so that authentication can proceed.
+     *
+     * @param s username (principal) to retrieve
+     * @return found user details
+     * @throws UsernameNotFoundException
+     * @throws DataAccessException
+     */
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException, DataAccessException {
         // get the user for the given name
         // CompanyUserAuthenticationFilter concatenates the user name with the entity id
@@ -111,6 +120,12 @@ public class CompanyUserDetailsService implements GrailsUserDetailsService {
                                       user.getId(), user.getEntity().getId(), user.getLanguage().getId());
     }
 
+    /**
+     * Get the user's locale based on their selected language and set country.
+     *
+     * @param user user
+     * @return users locale
+     */
     private Locale getLocale(UserDTO user) {
         String languageCode = user.getLanguage().getCode();
 

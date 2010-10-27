@@ -35,6 +35,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS;
 import com.sapienter.jbilling.server.user.db.CompanyDTO;
 
 @Entity
@@ -116,6 +117,27 @@ public class BillingProcessConfigurationDTO implements Serializable {
         this.autoPayment = autoPayment;
         this.maximumPeriods = maximumPeriods;
         this.autoPaymentApplication = autoPaymentApplication;
+    }
+
+    public BillingProcessConfigurationDTO(BillingProcessConfigurationWS ws, CompanyDTO entity, PeriodUnitDTO unit) {
+        this.id = ws.getId();
+        this.periodUnitDTO = unit;
+        this.entity = entity;
+        this.nextRunDate = ws.getNextRunDate();
+        this.generateReport = ws.getGenerateReport();
+        this.retries = ws.getRetries();
+        this.daysForRetry = ws.getDaysForRetry();
+        this.daysForReport = ws.getDaysForReport();
+        this.reviewStatus = ws.getReviewStatus();
+        this.periodValue = ws.getPeriodValue();
+        this.dueDateUnitId = ws.getDueDateUnitId();
+        this.dueDateValue = ws.getDueDateValue();
+        this.dfFm = ws.getDfFm();
+        this.onlyRecurring = ws.getOnlyRecurring();
+        this.invoiceDateProcess = ws.getInvoiceDateProcess();
+        this.autoPayment = ws.getAutoPayment();
+        this.maximumPeriods = ws.getMaximumPeriods();
+        this.autoPaymentApplication = ws.getAutoPaymentApplication();                        
     }
 
     @Id

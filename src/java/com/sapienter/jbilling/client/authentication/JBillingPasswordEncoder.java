@@ -26,7 +26,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 /**
- * jBillingPasswordEncoder
+ * Implementation of the Spring Security {@link PasswordEncoder} using jBilling's own
+ * cryptology algorithm.
  *
  * @author Brian Cowdery
  * @since 07-10-2010

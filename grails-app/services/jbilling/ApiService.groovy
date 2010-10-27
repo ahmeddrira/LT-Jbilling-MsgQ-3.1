@@ -5,24 +5,24 @@ import com.sapienter.jbilling.server.entity.CreditCardDTO
 import com.sapienter.jbilling.server.invoice.InvoiceWS
 import com.sapienter.jbilling.server.item.ItemDTOEx
 import com.sapienter.jbilling.server.item.ItemTypeWS
+import com.sapienter.jbilling.server.mediation.MediationConfigurationWS
+import com.sapienter.jbilling.server.mediation.MediationProcessWS
+import com.sapienter.jbilling.server.mediation.MediationRecordLineWS
+import com.sapienter.jbilling.server.mediation.MediationRecordWS
 import com.sapienter.jbilling.server.order.OrderLineWS
 import com.sapienter.jbilling.server.order.OrderWS
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx
 import com.sapienter.jbilling.server.payment.PaymentWS
+import com.sapienter.jbilling.server.process.BillingProcessConfigurationWS
+import com.sapienter.jbilling.server.process.BillingProcessWS
+import com.sapienter.jbilling.server.user.ContactWS
+import com.sapienter.jbilling.server.user.CreateResponseWS
+import com.sapienter.jbilling.server.user.UserTransitionResponseWS
+import com.sapienter.jbilling.server.user.UserWS
+import com.sapienter.jbilling.server.user.ValidatePurchaseWS
+import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
-import com.sapienter.jbilling.server.user.*
-import grails.plugins.springsecurity.SpringSecurityService
-import org.springframework.security.core.userdetails.UserDetails
-import com.sapienter.jbilling.client.authentication.CompanyUserDetails
-import javax.jms.Message
-import com.sapienter.jbilling.server.process.db.BillingProcessConfigurationDTO
-import com.sapienter.jbilling.server.process.BillingProcessDTOEx
-import com.sapienter.jbilling.server.mediation.db.MediationProcess
-import com.sapienter.jbilling.server.mediation.db.MediationRecordLineDTO
-import com.sapienter.jbilling.server.mediation.db.MediationRecordDTO
-import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO
-import com.sapienter.jbilling.server.mediation.db.MediationConfiguration
-import com.sapienter.jbilling.server.user.partner.db.Partner
+import com.sapienter.jbilling.server.mediation.RecordCountWS
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -148,7 +148,7 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.processPartnerPayouts(runDate)
     }
 
-    public Partner getPartner(Integer partnerId) {
+    public PartnerWS getPartner(Integer partnerId) {
         return webServicesSession.getPartner(partnerId)
     }
 
@@ -174,6 +174,10 @@ class ApiService implements IWebServicesSessionBean {
 
     public void updateItem(ItemDTOEx item) {
         webServicesSession.updateItem(item)
+    }
+
+    void deleteItem(Integer itemId) {
+        webServicesSession.deleteItem(itemId)
     }
 
     public Integer createOrderAndInvoice(OrderWS order) {
@@ -316,6 +320,10 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.updateItemCategory(itemType)
     }
 
+    void deleteItemCategory(Integer itemCategoryId) {
+        webServicesSession.deleteItemCategory(itemCategoryId)
+    }
+
     public void updateAch(Integer userId, AchDTO ach) {
         webServicesSession.updateAch(userId, ach)
     }
@@ -345,15 +353,15 @@ class ApiService implements IWebServicesSessionBean {
         webServicesSession.triggerAgeing(runDate)
     }
 
-    public BillingProcessConfigurationDTO getBillingProcessConfiguration() {
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() {
         return webServicesSession.getBillingProcessConfiguration()
     }
 
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationDTO dto) {
-        return webServicesSession.createUpdateBillingProcessConfiguration(dto)
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) {
+        return webServicesSession.createUpdateBillingProcessConfiguration(ws)
     }
 
-    public BillingProcessDTOEx getBillingProcess(Integer processId) {
+    public BillingProcessWS getBillingProcess(Integer processId) {
         return webServicesSession.getBillingProcess(processId)
     }
 
@@ -361,15 +369,15 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.getLastBillingProcess()
     }
 
-    public BillingProcessDTOEx getReviewBillingProcess() {
+    public BillingProcessWS getReviewBillingProcess() {
         return webServicesSession.getReviewBillingProcess()
     }
 
-    public BillingProcessConfigurationDTO setReviewApproval(Boolean flag) {
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) {
         return webServicesSession.setReviewApproval(flag)
     }
 
-    public Collection getBillingProcessGeneratedInvoices(Integer processId) {
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) {
         return webServicesSession.getBillingProcessGeneratedInvoices(processId)
     }
 
@@ -386,37 +394,38 @@ class ApiService implements IWebServicesSessionBean {
         return webServicesSession.isMediationProcessing()
     }
 
-    public List<MediationProcess> getAllMediationProcesses() {
+    public List<MediationProcessWS> getAllMediationProcesses() {
         return webServicesSession.getAllMediationProcesses()
     }
 
-    public List<MediationRecordLineDTO> getMediationEventsForOrder(Integer orderId) {
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) {
         return webServicesSession.getMediationEventsForOrder(orderId)
     }
 
-    public List<MediationRecordDTO> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) {
         return webServicesSession.getMediationRecordsByMediationProcess(mediationProcessId)
     }
 
-    public Map<MediationRecordStatusDTO, Long> getNumberOfMediationRecordsByStatuses() {
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() {
         return webServicesSession.getNumberOfMediationRecordsByStatuses()
     }
 
-    public List<MediationConfiguration> getAllMediationConfigurations() {
+    public List<MediationConfigurationWS> getAllMediationConfigurations() {
         return webServicesSession.getAllMediationConfigurations()
     }
 
-    public void createMediationConfiguration(MediationConfiguration cfg) {
+    public void createMediationConfiguration(MediationConfigurationWS cfg) {
         webServicesSession.createMediationConfiguration(cfg)
     }
 
-    public List updateAllMediationConfigurations(List<MediationConfiguration> configurations) {
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) {
         return webServicesSession.updateAllMediationConfigurations(configurations)
     }
 
     public void deleteMediationConfiguration(Integer cfgId) {
         webServicesSession.deleteMediationConfiguration(cfgId)
     }
+
 
     /*
        Provisioning process
@@ -432,9 +441,5 @@ class ApiService implements IWebServicesSessionBean {
 
     public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) {
         webServicesSession.updateLineProvisioningStatus(orderLineId, provisioningStatus)
-    }
-
-    public void externalProvisioning(Message message) {
-        webServicesSession.externalProvisioning(message)
     }
 }

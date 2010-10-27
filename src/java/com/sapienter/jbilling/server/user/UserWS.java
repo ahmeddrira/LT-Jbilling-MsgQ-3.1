@@ -90,8 +90,23 @@ public class UserWS implements Serializable {
     private BigDecimal owingBalanceAsDecimal;
     private BigDecimal creditLimitAsDecimal;
     private BigDecimal dynamicBalanceAsDecimal;
+    
+    private String notes;
+    private Integer automaticPaymentType;
 
-    public Integer getPartnerId() {
+    public String getNotes() {
+		return notes;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	public Integer getAutomaticPaymentType() {
+		return automaticPaymentType;
+	}
+	public void setAutomaticPaymentType(Integer automaticPaymentType) {
+		this.automaticPaymentType = automaticPaymentType;
+	}
+	public Integer getPartnerId() {
         return partnerId;
     }
     public void setPartnerId(Integer partnerId) {
@@ -139,6 +154,9 @@ public class UserWS implements Serializable {
             setDynamicBalance(dto.getCustomer().getDynamicBalance());
             setCreditLimit(dto.getCustomer().getCreditLimit());
             setAutoRecharge(dto.getCustomer().getAutoRecharge());
+            
+            setNotes(dto.getCustomer().getNotes());
+            setAutomaticPaymentType(dto.getCustomer().getAutoPaymentType());
         }
         blacklistMatches = dto.getBlacklistMatches() != null ? dto.getBlacklistMatches().toArray(new String[0]) : null;
         userIdBlacklisted = dto.getUserIdBlacklisted();

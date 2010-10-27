@@ -21,7 +21,6 @@
 package com.sapienter.jbilling.server.invoice;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
-import com.sapienter.jbilling.server.util.Constants;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -57,9 +56,6 @@ public class InvoiceWS implements Serializable {
     private String customerNotes;
     private String number;
     private Integer overdueStep;
-    private BigDecimal totalAsDecimal;
-    private BigDecimal balanceAsDecimal;
-    private BigDecimal carriedBalanceAsDecimal;
 
     public InvoiceWS() {
         super();
@@ -110,9 +106,6 @@ public class InvoiceWS implements Serializable {
     }
 
     public BigDecimal getTotalAsDecimal() {
-        if(totalAsDecimal != null){
-            return totalAsDecimal;
-        }
         return (total == null ? null : new BigDecimal(total));
     }
 
@@ -120,15 +113,9 @@ public class InvoiceWS implements Serializable {
         this.total = total;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getTotal returns value rounded to 2 decimals.
-     * Use getTotalAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setTotal(BigDecimal total) {
-        this.totalAsDecimal = total;
         if (total != null)
-            this.total = total.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+            this.total = total.toString();
     }
 
     public Integer getToProcess() {
@@ -152,9 +139,6 @@ public class InvoiceWS implements Serializable {
     }
 
     public BigDecimal getBalanceAsDecimal() {
-        if(balanceAsDecimal != null) {
-            return balanceAsDecimal;
-        }
         return (balance == null ? null : new BigDecimal(balance));
     }
 
@@ -162,15 +146,9 @@ public class InvoiceWS implements Serializable {
         this.balance = balance;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getBalance returns value rounded to 2 decimals.
-     * Use getBalanceAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setBalance(BigDecimal balance) {
-        this.balanceAsDecimal = balance;
         if (balance != null)
-            this.balance = balance.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+            this.balance = balance.toString();
     }
 
     public String getCarriedBalance() {
@@ -178,8 +156,6 @@ public class InvoiceWS implements Serializable {
     }
 
     public BigDecimal getCarriedBalanceAsDecimal() {
-        if(carriedBalanceAsDecimal != null)
-            return carriedBalanceAsDecimal;
         return (carriedBalance == null ? null : new BigDecimal(carriedBalance));
     }
 
@@ -187,15 +163,9 @@ public class InvoiceWS implements Serializable {
         this.carriedBalance = carriedBalance;
     }
 
-    /**
-     * <strong>Note:</strong> Subsequent call to getCarriedBalance returns value rounded to 2 decimals.
-     * Use getCarriedBalanceAsDecimal if precision is important, i.e. for calculations
-     * @param quantity
-     */
     public void setCarriedBalance(BigDecimal carriedBalance) {
-        this.carriedBalanceAsDecimal = carriedBalance;
         if (carriedBalance != null)
-            this.carriedBalance = carriedBalance.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
+            this.carriedBalance = carriedBalance.toString();
     }
 
     public Integer getInProcessPayment() {

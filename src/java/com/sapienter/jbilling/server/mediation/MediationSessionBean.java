@@ -256,7 +256,7 @@ public class MediationSessionBean implements IMediationSessionBean {
 
     }
 
-    public List updateAllConfiguration(Integer executorId, List<MediationConfiguration> configurations)
+    public List<MediationConfiguration> updateAllConfiguration(Integer executorId, List<MediationConfiguration> configurations)
             throws InvalidArgumentException {
         MediationConfigurationDAS cfgDAS = new MediationConfigurationDAS();
         List<MediationConfiguration> retValue = new ArrayList<MediationConfiguration>();

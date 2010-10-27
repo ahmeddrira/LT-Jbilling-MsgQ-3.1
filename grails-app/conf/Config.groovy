@@ -93,13 +93,24 @@ grails.plugins.springsecurity.controllerAnnotations.staticRules = [
         '/httpinvoker/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120']
 ]
 
+// IP address restrictions to limit access to known systems (always use with web-services in production environments!)
+/*
+grails.plugins.springsecurity.ipRestrictions = [
+        '/services/**': ['192.168.0.110'],
+        '/hessian/**': ['192.168.0.110','192.168.0.111'],
+        '/httpinvoker/**': ['192.168.0.0/24']
+]
+*/
+
 // basic HTTP authentication filter for web-services
 grails.plugins.springsecurity.useBasicAuth = true
 grails.plugins.springsecurity.basic.realmName = "jBilling Web Services"
+
+// authentication filter configuration
 grails.plugins.springsecurity.filterChain.chainMap = [
         '/services/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
         '/hessian/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
-        '/httpinvoker/**': 'JOINED_FILTERS,-exceptionTranslationFilter',
+        '/httpinvoker/**': 'securityContextPersistenceFilter,staticAuthenticationProcessingFilter,securityContextHolderAwareRequestFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
         '/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
 ]
 

@@ -435,40 +435,41 @@
     </target>
 
 	<target name="test-remoting" depends="jar_api">
-        <javac srcdir="${source.test.dir}/ws" includes="RemotingTest.java" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
-            <classpath refid="compile.classpath"/>
-            <classpath refid="test.classpath"/>
-        </javac>
+	        <javac srcdir="${source.test.dir}/ws" includes="RemotingTest.java" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+                <classpath refid="compile.classpath"/>
+                <classpath refid="test.classpath"/>
+	        </javac>
 
-        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
+	        <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
 
-        <!-- run web service tests -->
-        <mkdir dir="${build.test-results.dir}/ws/xml"/>
+	        <!-- run web service tests -->
+	        <mkdir dir="${build.test-results.dir}/ws/xml"/>
 	        <junit errorproperty="test.failed" failureproperty="test.failed" haltonfailure="true">
 	            <jvmarg value="-Djava.security.manager" />
 	            <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
 	            <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
 
-	            <classpath refid="test.classpath"/>
-
+                <classpath refid="compile.classpath"/>
+                <classpath refid="test.classpath"/>
+                
 	            <formatter type="brief" usefile="false"/>
-	            <formatter type="xml"/>            
+	            <formatter type="xml"/>
 
 	            <test name="RemotingTest" todir="${build.test-results.dir}/ws/xml"/>
 	        </junit>
 
-        <!-- generate testing reports -->
-        <mkdir dir="${build.test-results.dir}/ws/html"/>
-        <junitreport>
-            <fileset dir="${build.test-results.dir}/ws/xml" includes="TEST-*.xml"/>
-            <report format="frames" todir="${build.test-results.dir}/ws/html"/>
-        </junitreport>
+	        <!-- generate testing reports -->
+	        <mkdir dir="${build.test-results.dir}/ws/html"/>
+	        <junitreport>
+	            <fileset dir="${build.test-results.dir}/ws/xml" includes="TEST-*.xml"/>
+	            <report format="frames" todir="${build.test-results.dir}/ws/html"/>
+	        </junitreport>
 
-        <fail if="test.failed" message="Remoting test failed! See log's for details."/>
+	        <fail if="test.failed" message="Remoting test failed! See log's for details."/>
 	</target>
-	
+
     <target name="test-ws" depends="jar_api" description="Run all web service tests and generate testing reports.">
-        <javac srcdir="${source.test.dir}/ws" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
+        <javac srcdir="${source.test.ws.dir}" destdir="${build.test.dir}" debug="on" deprecation="no" fork="true">
             <classpath refid="compile.classpath"/>
             <classpath refid="test.classpath"/>
         </javac>
@@ -517,19 +518,16 @@
         <copy file="${source.spring.descriptor.dir}/jbilling-remote-beans.xml" todir="${build.test.dir}"/>
 
         <!-- for mediation tests -->
-        <!-- todo: Where are our mediation dirs for the new Grails app? -->
-        <!--
-        <delete  dir="${base_dir}/mediation"/>
-        <mkdir dir="${base_dir}/mediation"/>
-        <mkdir dir="${base_dir}/mediation/errors"/>
+        <delete  dir="${build.resources.dir}/mediation"/>
+        <mkdir dir="${build.resources.dir}/mediation"/>
+        <mkdir dir="${build.resources.dir}/mediation/errors"/>
 
-        <copy todir="${base_dir}/mediation">
+        <copy todir="${build.resources.dir}/mediation">
             <fileset dir="${source.mediation.descriptor.dir}" includes="mediation.dtd"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk.xml"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="asterisk-sample1.csv, mediation-batch-test.csv"/>
             <fileset dir="${source.mediation.descriptor.dir}" includes="jbilling_cdr.*"/>
         </copy>
-        -->
 
         <!-- run integration tests -->
         <mkdir dir="${build.test-results.dir}/org-integration/xml"/>
@@ -538,10 +536,7 @@
             <jvmarg value="-Djava.security.policy=${source.resources.descriptor.dir}/app.policy" />
             <jvmarg value="-Djava.security.auth.login.config=${source.resources.descriptor.dir}/auth.conf" />
 
-            <!-- todo: Update mediation errors dir for the new Grails app -->
-            <!--
-            <sysproperty key="mediation.errors.dir" value="${base_dir}/mediation/errors"/>
-            -->
+            <sysproperty key="mediation.errors.dir" value="${build.resources.dir}/mediation/errors"/>
 
             <classpath refid="spring.classpath"/>
             <classpath refid="compile.classpath"/>

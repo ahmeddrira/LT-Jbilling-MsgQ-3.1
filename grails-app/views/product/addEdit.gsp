@@ -12,14 +12,7 @@ ${title}
 </title>
 </head>
 <script language="javascript">
-	$(document).ready(function() {
-		$( "#draggable" ).draggable();
-		$( "#droppable" ).droppable({
-			drop: function() {
-				$(this).addClass( "ui-state-highlight" );					
-			}
-		});			
-	});
+
 </script>
 <body>
 
@@ -31,17 +24,7 @@ ${title}
 		<tr>
 			<td><g:message code="product.internal.number" />:</td>
 			<td><g:textField size="40" name="number"
-				value="${item?.internalNumber}" /></td>
-			<td rowspan="6" valign="top">
-			<table cellspacing="2">
-				<tr>
-					<td><g:message code="prompt.category.list" />:<br />
-					<g:select id="draggable" name="allCategories" multiple="true"
-						from="${com.sapienter.jbilling.server.item.db.ItemTypeDTO.findAll()}"
-						optionKey="id" optionValue="description" value="" /></td>
-				</tr>
-			</table>
-			</td>
+				value="${item?.internalNumber}" /></td>			
 		</tr>
 		<tr>
 			<td><g:message code="prompt.product.description" />:</td>

@@ -116,7 +116,15 @@
           *         AOP: Security / Logging                 *
           ***************************************************
     -->
-    
+
+    <!-- Security Advice for WebServicesSessionBean -->
+    <!-- Comment out if this jBilling installation is only used by one company. -->
+    <bean id="webServicesSecurityAdvice" class="com.sapienter.jbilling.server.util.WSMethodSecurityProxy"/>
+    <bean id="webServicesSecurityAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice" ref="webServicesSecurityAdvice"/>
+        <property name="pattern" value="com.sapienter.jbilling.server.util.IWebServicesSessionBean.*"/>
+    </bean>    
+
     <!-- Exception Advice for WebServicesSessionBean -->
     <!-- Re-throws all exceptions as SessionInternalErrors. -->
     <bean id="webServicesExceptionAdvice" class="com.sapienter.jbilling.server.util.WSExceptionAdvice"/>

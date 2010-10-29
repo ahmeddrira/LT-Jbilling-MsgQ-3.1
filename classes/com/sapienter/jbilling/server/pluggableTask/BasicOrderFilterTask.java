@@ -140,30 +140,28 @@ public class BasicOrderFilterTask
                                 Constants.TABLE_PUCHASE_ORDER);
                         
                         retValue = false;
+                        
+                        // may be it's actually billed to the end of its life span
+                        if (activeUntil != null && //may be it's immortal ;)
+                                order.getNextBillableDay().compareTo(activeUntil) >= 0) {
+                            // this situation shouldn't have happened
+                            LOG.warn("Order " + order.getId() + " should've been" +
+                                " flagged out in the previous process");
+                            eLog.warning(process.getEntity().getId(), 
+                                    order.getBaseUserByUserId().getId(), 
+                                    order.getId(), 
+                                    EventLogger.MODULE_BILLING_PROCESS,
+                                    EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
+                                    Constants.TABLE_PUCHASE_ORDER);
+                            OrderBL orderBL = new OrderBL(order);
+                            orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);    
+                            order.setNextBillableDay(null);         
+                        }
                     }
                 }
-
-                // next billable day cannot be after the orders active until date
-                if (activeUntil != null && order.getNextBillableDay().compareTo(activeUntil) >= 0) {
-                    
-                    // this situation shouldn't have happened
-                    LOG.warn("Order " + order.getId() + " should've been flagged out in the previous process");
-                    eLog.warning(process.getEntity().getId(),
-                                 order.getBaseUserByUserId().getId(),
-                                 order.getId(),
-                                 EventLogger.MODULE_BILLING_PROCESS,
-                                 EventLogger.BILLING_PROCESS_WRONG_FLAG_ON,
-                                 Constants.TABLE_PUCHASE_ORDER);
-
-                    retValue = false;
-
-                    OrderBL orderBL = new OrderBL(order);
-                    orderBL.setStatus(null, Constants.ORDER_STATUS_FINISHED);
-                    order.setNextBillableDay(null);
-                }
-
-                // post paid orders can't be too late to process
-
+                
+                // post paid orders can't be too late to process 
+                      
             } else if (order.getBillingTypeId().compareTo(
                     Constants.ORDER_BILLING_PRE_PAID) == 0) {
             

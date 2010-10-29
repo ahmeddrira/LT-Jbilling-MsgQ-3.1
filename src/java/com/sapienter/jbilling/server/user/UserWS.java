@@ -28,8 +28,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.sapienter.jbilling.server.entity.AchDTO;
@@ -61,6 +63,9 @@ public class UserWS implements Serializable {
 
     private CreditCardDTO creditCard = null;
     private AchDTO ach = null;
+    
+    @NotNull(message="validation.error.notnull")
+    @Valid
     private ContactWS contact = null;
     private String role = null;
     private String language = null;

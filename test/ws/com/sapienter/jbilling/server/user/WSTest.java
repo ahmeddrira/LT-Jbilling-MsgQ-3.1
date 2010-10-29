@@ -24,6 +24,7 @@
  */
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.common.Util;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
@@ -33,6 +34,7 @@ import com.sapienter.jbilling.server.item.PricingField;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentWS;
+import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.JbillingAPI;
 import com.sapienter.jbilling.server.util.api.JbillingAPIException;
@@ -93,9 +95,56 @@ public class WSTest extends TestCase {
         try {
         	JbillingAPI api = JbillingAPIFactory.getAPI();
         	
-            /*
+        	// check that the validation works
+        	UserWS badUser = createUser(true, null, null, false);
+        	// create: the user id has to be 0
+        	badUser.setUserId(99);
+        	try {
+        		api.createUser(badUser);
+        	} catch (SessionInternalError e) {
+        		assertEquals("One error", 1, e.getErrorMessages().length);
+        		assertEquals("Error message", "UserWS,id,validation.error.max,0", e.getErrorMessages()[0]);
+        	}
+        	
+        	// now add the wrong user name
+        	badUser.setUserName("123");
+        	try {
+        		api.createUser(badUser);
+        	} catch (SessionInternalError e) {
+        		assertEquals("Two errors", 2, e.getErrorMessages().length);
+        		assertTrue("Error message", 
+        				"UserWS,userName,validation.error.size,5,50".compareTo(e.getErrorMessages()[0]) == 0 ||
+        				"UserWS,userName,validation.error.size,5,50".compareTo(e.getErrorMessages()[1]) == 0);
+        	}
+
+        	// update: the user id has to be more 0
+        	badUser.setUserId(0);
+        	badUser.setUserName("12345"); // bring it back to at least 5 length
+        	try {
+        		api.updateUser(badUser);
+        	} catch (SessionInternalError e) {
+        		assertEquals("One error", 1, e.getErrorMessages().length);
+        		assertEquals("Error message", "UserWS,id,validation.error.min,1", e.getErrorMessages()[0]);
+        	}
+        	
+        	// now add the wrong user name
+        	badUser.setUserName("123");
+        	try {
+        		api.createUser(badUser);
+        	} catch (SessionInternalError e) {
+        		assertEquals("Two errors", 2, e.getErrorMessages().length);
+        		assertTrue("Error message", 
+        				"UserWS,userName,validation.error.size,5,50".compareTo(e.getErrorMessages()[0]) == 0 ||
+        				"UserWS,userName,validation.error.size,5,50".compareTo(e.getErrorMessages()[1]) == 0);
+        	}
+
+        	
+        	System.out.println("Validation tested");
+
+        	/*
              * Create - This passes the password validation routine.
              */
+        	
             UserWS newUser = createUser(true, 43, null);
             Integer newUserId = newUser.getUserId();
             String newUserName = newUser.getUserName();
@@ -859,6 +908,10 @@ Ch8: no applicable orders
     }
     
     public static UserWS createUser(boolean goodCC, Integer parentId, Integer currencyId) throws JbillingAPIException, IOException {
+    	return createUser(goodCC, parentId, currencyId, true);
+    }
+    
+    public static UserWS createUser(boolean goodCC, Integer parentId, Integer currencyId, boolean doCreate) throws JbillingAPIException, IOException {
             JbillingAPI api = JbillingAPIFactory.getAPI();
             
             /*
@@ -901,8 +954,10 @@ Ch8: no applicable orders
 
             newUser.setCreditCard(cc);
             
-            System.out.println("Creating user ...");
-            newUser.setUserId(api.createUser(newUser));
+            if (doCreate) {
+            	System.out.println("Creating user ...");
+            	newUser.setUserId(api.createUser(newUser));
+            }
             
             return newUser;
     }

@@ -20,6 +20,11 @@
 
 package com.sapienter.jbilling.server.util.api;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -46,860 +51,514 @@ import com.sapienter.jbilling.server.user.partner.PartnerWS;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.util.RemoteContext;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
 public class SpringAPI implements JbillingAPI {
 
     private IWebServicesSessionBean session = null;
 
-    public SpringAPI() throws JbillingAPIException {
+    public SpringAPI() {
         this(RemoteContext.Name.API_CLIENT);
     }
 
     public SpringAPI(RemoteContext.Name bean) {
         session = (IWebServicesSessionBean) RemoteContext.getBean(bean);
     }
-
-    public Integer applyPayment(PaymentWS payment, Integer invoiceId)
-            throws JbillingAPIException {
-        try {
-            return session.applyPayment(payment, invoiceId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public Integer authenticate(String username, String password)
-            throws JbillingAPIException {
-        try {
-            return session.authenticate(username, password);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void processPartnerPayouts(Date runDate) throws JbillingAPIException {
-        try {
-            session.processPartnerPayouts(runDate);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public PartnerWS getPartner(Integer partnerId) throws JbillingAPIException {
-        try {
-            return session.getPartner(partnerId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+    
+    
 
     public CreateResponseWS create(UserWS user, OrderWS order)
-            throws JbillingAPIException {
-        try {
-            return session.create(user, order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+			throws SessionInternalError {
+		return session.create(user, order);
+	}
 
-    public Integer createItem(ItemDTOEx dto) throws JbillingAPIException {
-        try {
-            return session.createItem(dto);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
+			throws SessionInternalError {
+		return session.createInvoice(userId, onlyRecurring);
+	}
 
-    public Integer createOrder(OrderWS order) throws JbillingAPIException {
-        try {
-            return session.createOrder(order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId)
+			throws SessionInternalError {
+		return session.createInvoiceFromOrder(orderId, invoiceId);
+	}
 
-    public Integer createOrderAndInvoice(OrderWS order) throws JbillingAPIException {
-        try {
-            return session.createOrderAndInvoice(order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createItem(ItemDTOEx item) throws SessionInternalError {
+		return session.createItem(item);
+	}
 
-    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
-            throws JbillingAPIException {
-        try {
-            return session.createOrderPreAuthorize(order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createItemCategory(ItemTypeWS itemType)
+			throws SessionInternalError {
+		return session.createItemCategory(itemType);
+	}
 
-    public Integer createUser(UserWS newUser) throws JbillingAPIException {
-        try {
-            return session.createUser(newUser);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public void createMediationConfiguration(MediationConfigurationWS cfg) {
+		session.createMediationConfiguration(cfg);
+	}
 
-    public void deleteOrder(Integer id) throws JbillingAPIException {
-        try {
-            session.deleteOrder(id);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createOrder(OrderWS order) throws SessionInternalError {
+		return session.createOrder(order);
+	}
 
-    public void deleteUser(Integer userId) throws JbillingAPIException {
-        try {
-            session.deleteUser(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createOrderAndInvoice(OrderWS order)
+			throws SessionInternalError {
+		return session.createOrderAndInvoice(order);
+	}
 
-    public void deleteInvoice(Integer invoiceId) throws JbillingAPIException {
-        try {
-            session.deleteInvoice(invoiceId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order)
+			throws SessionInternalError {
+		return session.createOrderPreAuthorize(order);
+	}
 
-    public ItemDTOEx[] getAllItems() throws JbillingAPIException {
-        try {
-            return null; // session.getAllItems();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createUpdateBillingProcessConfiguration(
+			BillingProcessConfigurationWS ws) throws SessionInternalError {
+		return session.createUpdateBillingProcessConfiguration(ws);
+	}
 
-    public InvoiceWS getInvoiceWS(Integer invoiceId)
-            throws JbillingAPIException {
-        try {
-            return session.getInvoiceWS(invoiceId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer createUpdateOrder(OrderWS order) throws SessionInternalError {
+		return session.createUpdateOrder(order);
+	}
 
-    public Integer[] getInvoicesByDate(String since, String until)
-            throws JbillingAPIException {
-        try {
-            return session.getInvoicesByDate(since, until);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public void deleteInvoice(Integer invoiceId) {
+		session.deleteInvoice(invoiceId);
+	}
 
-    public byte[] getPaperInvoicePDF(Integer invoiceId) throws JbillingAPIException {
-        try {
-            return session.getPaperInvoicePDF(invoiceId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }    
+	public void deleteItem(Integer itemId) {
+		session.deleteItem(itemId);
+	}
 
-    public Integer[] getLastInvoices(Integer userId, Integer number)
-            throws JbillingAPIException {
-        try {
-            return session.getLastInvoices(userId, number);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public void deleteItemCategory(Integer itemCategoryId) {
+		session.deleteItemCategory(itemCategoryId);
+	}
 
-    public Integer[] getUserInvoicesByDate(Integer userId, String since,
-            String until) throws JbillingAPIException {
-        try {
-            return session.getUserInvoicesByDate(userId, since, until);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public void deleteMediationConfiguration(Integer cfgId) {
+		session.deleteMediationConfiguration(cfgId);
+	}
 
-    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number)
-            throws JbillingAPIException {
-        try {
-            return session.getLastInvoicesByItemType(userId, itemTypeId, number);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public void deleteOrder(Integer id) throws SessionInternalError {
+		session.deleteOrder(id);
+	}
 
-    public Integer[] getLastOrders(Integer userId, Integer number)
-            throws JbillingAPIException {
-        try {
-            return session.getLastOrders(userId, number);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public void deleteUser(Integer userId) throws SessionInternalError {
+		session.deleteUser(userId);
+	}
 
+	public void generateRules(String rulesData) throws SessionInternalError {
+		session.generateRules(rulesData);
+	}
 
-    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number)
-            throws JbillingAPIException {
-        try {
-            return session.getLastOrdersByItemType(userId, itemTypeId, number);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getAllInvoices(Integer userId) {
+		return session.getAllInvoices(userId);
+	}
 
-    public OrderWS getCurrentOrder(Integer userId, Date date) 
-            throws JbillingAPIException {
-        try {
-            return session.getCurrentOrder(userId, date);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public ItemTypeWS[] getAllItemCategories() {
+		return session.getAllItemCategories();
+	}
 
-    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, 
-            PricingField[] fields, Date date, String eventDescription) 
-            throws JbillingAPIException {
-        try {
-            return session.updateCurrentOrder(userId, lines, 
-                    PricingField.setPricingFieldsValue(fields), date, 
-                    eventDescription);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public ItemDTOEx[] getAllItems() throws SessionInternalError {
+		return session.getAllItems();
+	}
 
-    public Integer[] getLastPayments(Integer userId, Integer number)
-            throws JbillingAPIException {
-        try {
-            return session.getLastPayments(userId, number);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public List<MediationConfigurationWS> getAllMediationConfigurations() {
+		return session.getAllMediationConfigurations();
+	}
 
-    public Integer[] getAllInvoices(Integer userId) throws JbillingAPIException {
-        try {
-            return session.getAllInvoices(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public List<MediationProcessWS> getAllMediationProcesses() {
+		return session.getAllMediationProcesses();
+	}
 
-    public InvoiceWS getLatestInvoice(Integer userId)
-            throws JbillingAPIException {
-        try {
-            return session.getLatestInvoice(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer getAuthPaymentType(Integer userId)
+			throws SessionInternalError {
+		return session.getAuthPaymentType(userId);
+	}
 
-    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId)
-            throws JbillingAPIException {
-        try {
-            return session.getLatestInvoiceByItemType(userId, itemTypeId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public BillingProcessWS getBillingProcess(Integer processId) {
+		return session.getBillingProcess(processId);
+	}
 
-    public OrderWS getLatestOrder(Integer userId) throws JbillingAPIException {
-        try {
-            return session.getLatestOrder(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public BillingProcessConfigurationWS getBillingProcessConfiguration()
+			throws SessionInternalError {
+		return session.getBillingProcessConfiguration();
+	}
 
-    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException {
-        try {
-            return session.getLatestOrderByItemType(userId, itemTypeId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) {
+		return session.getBillingProcessGeneratedInvoices(processId);
+	}
 
-    public PaymentWS getLatestPayment(Integer userId)
-            throws JbillingAPIException {
-        try {
-            return session.getLatestPayment(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer getCallerCompanyId() {
+		return session.getCallerCompanyId();
+	}
 
-    public OrderWS getOrder(Integer orderId) throws JbillingAPIException {
-        try {
-            return session.getOrder(orderId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer getCallerId() {
+		return session.getCallerId();
+	}
 
-    public Integer[] getOrderByPeriod(Integer userId, Integer periodId)
-            throws JbillingAPIException {
-        try {
-            return session.getOrderByPeriod(userId, periodId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer getCallerLanguageId() {
+		return session.getCallerLanguageId();
+	}
 
-    public OrderLineWS getOrderLine(Integer orderLineId)
-            throws JbillingAPIException {
-        try {
-            return session.getOrderLine(orderLineId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public OrderWS getCurrentOrder(Integer userId, Date date)
+			throws SessionInternalError {
+		return session.getCurrentOrder(userId, date);
+	}
 
-    public PaymentWS getPayment(Integer paymentId) throws JbillingAPIException {
-        try {
-            return session.getPayment(paymentId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getInvoicesByDate(String since, String until)
+			throws SessionInternalError {
+		return session.getInvoicesByDate(since, until);
+	}
 
-    public ContactWS[] getUserContactsWS(Integer userId)
-            throws JbillingAPIException {
-        try {
-            return session.getUserContactsWS(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public InvoiceWS getInvoiceWS(Integer invoiceId)
+			throws SessionInternalError {
+		return session.getInvoiceWS(invoiceId);
+	}
 
-    public Integer getUserId(String username) throws JbillingAPIException {
-        try {
-            return session.getUserId(username);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public ItemDTOEx getItem(Integer itemId, Integer userId, String pricing) {
+		return session.getItem(itemId, userId, pricing);
+	}
 
-    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
-            throws JbillingAPIException {
-        try {
-            return session.getUserTransitions(from, to);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public ItemDTOEx[] getItemByCategory(Integer itemTypeId) {
+		return session.getItemByCategory(itemTypeId);
+	}
 
-    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
-            throws JbillingAPIException {
-        try {
-            return session.getUserTransitionsAfterId(id);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer getLastBillingProcess() throws SessionInternalError {
+		return session.getLastBillingProcess();
+	}
 
-    public UserWS getUserWS(Integer userId) throws JbillingAPIException {
-        try {
-            return session.getUserWS(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getLastInvoices(Integer userId, Integer number)
+			throws SessionInternalError {
+		return session.getLastInvoices(userId, number);
+	}
 
-    public Integer[] getUsersByCustomField(Integer typeId, String value)
-            throws JbillingAPIException {
-        try {
-            return session.getUsersByCustomField(typeId, value);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getLastInvoicesByItemType(Integer userId,
+			Integer itemTypeId, Integer number) throws SessionInternalError {
+		return session.getLastInvoicesByItemType(userId, itemTypeId, number);
+	}
 
-    public Integer[] getUsersByStatus(Integer statusId, boolean in) throws JbillingAPIException {
-        try {
-            return session.getUsersByStatus(statusId, in);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getLastOrders(Integer userId, Integer number)
+			throws SessionInternalError {
+		return session.getLastOrders(userId, number);
+	}
 
-    public Integer[] getUsersInStatus(Integer statusId)
-            throws JbillingAPIException {
-        try {
-            return session.getUsersInStatus(statusId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getLastOrdersByItemType(Integer userId,
+			Integer itemTypeId, Integer number) throws SessionInternalError {
+		return session.getLastOrdersByItemType(userId, itemTypeId, number);
+	}
 
-    public Integer[] getUsersNotInStatus(Integer statusId)
-            throws JbillingAPIException {
-        try {
-            return session.getUsersNotInStatus(statusId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-    
-    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
-            throws JbillingAPIException {
-        try {
-            return session.payInvoice(invoiceId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getLastPayments(Integer userId, Integer number)
+			throws SessionInternalError {
+		return session.getLastPayments(userId, number);
+	}
 
-    public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
-            throws JbillingAPIException {
-        try {
-            session.updateCreditCard(userId, creditCard);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-    
-    public void updateAch(Integer userId, AchDTO ach) throws JbillingAPIException {
-        try {
-            session.updateAch(userId, ach);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public InvoiceWS getLatestInvoice(Integer userId)
+			throws SessionInternalError {
+		return session.getLatestInvoice(userId);
+	}
 
-    public void updateOrder(OrderWS order) throws JbillingAPIException {
-        try {
-            session.updateOrder(order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public InvoiceWS getLatestInvoiceByItemType(Integer userId,
+			Integer itemTypeId) throws SessionInternalError {
+		return session.getLatestInvoiceByItemType(userId, itemTypeId);
+	}
 
-    public Integer createUpdateOrder(OrderWS order) throws JbillingAPIException {
-        try {
-            return session.createUpdateOrder(order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public OrderWS getLatestOrder(Integer userId) throws SessionInternalError {
+		return session.getLatestOrder(userId);
+	}
 
-    public void updateOrderLine(OrderLineWS line) throws JbillingAPIException {
-        try {
-            session.updateOrderLine(line);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId)
+			throws SessionInternalError {
+		return session.getLatestOrderByItemType(userId, itemTypeId);
+	}
 
-    public void updateUser(UserWS user) throws JbillingAPIException {
-        try {
-            session.updateUser(user);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public PaymentWS getLatestPayment(Integer userId)
+			throws SessionInternalError {
+		return session.getLatestPayment(userId);
+	}
 
-    public void updateUserContact(Integer userId, Integer typeId,
-            ContactWS contact) throws JbillingAPIException {
-        try {
-            session.updateUserContact(userId, typeId, contact);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-    
-    public Integer[] getUsersByCreditCard(String number)
-        throws JbillingAPIException {
-        try {
-            return session.getUsersByCreditCard(number);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-    
-    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) 
-            throws JbillingAPIException {
-        try {
-            return session.getItem(itemId, userId, PricingField.setPricingFieldsValue(fields));
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-    
-    public OrderWS rateOrder(OrderWS order) throws JbillingAPIException {
-        try {
-            return session.rateOrder(order);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public List<MediationRecordLineWS> getMediationEventsForOrder(
+			Integer orderId) {
+		return session.getMediationEventsForOrder(orderId);
+	}
 
-    public OrderWS[] rateOrders(OrderWS orders[]) throws JbillingAPIException {
-        try {
-            return session.rateOrders(orders);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-    
-    public void updateItem(ItemDTOEx item) throws JbillingAPIException {
-        try {
-            session.updateItem(item);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public List<MediationRecordWS> getMediationRecordsByMediationProcess(
+			Integer mediationProcessId) {
+		return session
+				.getMediationRecordsByMediationProcess(mediationProcessId);
+	}
 
-    public void deleteItem(Integer itemId) throws JbillingAPIException {
-        try {
-            session.deleteItem(itemId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() {
+		return session.getNumberOfMediationRecordsByStatuses();
+	}
 
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring)
-        throws JbillingAPIException {
-        try {
-            return session.createInvoice(userId, onlyRecurring);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public OrderWS getOrder(Integer orderId) throws SessionInternalError {
+		return session.getOrder(orderId);
+	}
 
-    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws JbillingAPIException {
-        try {
-            return session.createInvoiceFromOrder(orderId, invoiceId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public Integer[] getOrderByPeriod(Integer userId, Integer periodId)
+			throws SessionInternalError {
+		return session.getOrderByPeriod(userId, periodId);
+	}
 
-    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId)
-            throws JbillingAPIException {
-        try {
-            return session.isUserSubscribedTo(userId, itemId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public OrderLineWS getOrderLine(Integer orderLineId)
+			throws SessionInternalError {
+		return session.getOrderLine(orderLineId);
+	}
 
-    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId)
-            throws JbillingAPIException {
-        try {
-            return session.getUserItemsByCategory(userId, categoryId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public byte[] getPaperInvoicePDF(Integer invoiceId)
+			throws SessionInternalError {
+		return session.getPaperInvoicePDF(invoiceId);
+	}
 
-    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException {
-        try {
-            return null; //session.getItemByCategory(itemTypeId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public PartnerWS getPartner(Integer partnerId) throws SessionInternalError {
+		return session.getPartner(partnerId);
+	}
 
-    public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException {
-        try {
-            return null; //session.getAllItemCategories();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public PaymentWS getPayment(Integer paymentId) throws SessionInternalError {
+		return session.getPayment(paymentId);
+	}
 
-    /*
-     * @see com.sapienter.jbilling.server.util.api.JbillingAPI#processPayment(com.sapienter.jbilling.server.payment.PaymentWS)
-     */
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment)
-            throws JbillingAPIException {
-        try {
-            return session.processPayment(payment);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public BillingProcessWS getReviewBillingProcess() {
+		return session.getReviewBillingProcess();
+	}
 
-    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
-            PricingField[] fields) throws JbillingAPIException {
-        try {
-            return session.validatePurchase(userId, itemId, 
-                    PricingField.setPricingFieldsValue(fields));
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	public ContactWS[] getUserContactsWS(Integer userId)
+			throws SessionInternalError {
+		return session.getUserContactsWS(userId);
+	}
 
-    public ValidatePurchaseWS validateMultiPurchase(Integer userId, 
-            Integer[] itemIds, PricingField[][] fields) 
-            throws JbillingAPIException {
-        try {
-            String[] pricingFields = null;
-            if (fields != null) {
-                pricingFields = new String[fields.length];
-                for (int i = 0; i < pricingFields.length; i++) {
-                    pricingFields[i] = PricingField.setPricingFieldsValue(
-                            fields[i]);
-                }
+	public Integer getUserId(String username) throws SessionInternalError {
+		return session.getUserId(username);
+	}
+
+	public Integer[] getUserInvoicesByDate(Integer userId, String since,
+			String until) throws SessionInternalError {
+		return session.getUserInvoicesByDate(userId, since, until);
+	}
+
+	public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) {
+		return session.getUserItemsByCategory(userId, categoryId);
+	}
+
+	public Integer[] getUsersByCreditCard(String number)
+			throws SessionInternalError {
+		return session.getUsersByCreditCard(number);
+	}
+
+	public Integer[] getUsersByCustomField(Integer typeId, String value)
+			throws SessionInternalError {
+		return session.getUsersByCustomField(typeId, value);
+	}
+
+	public Integer[] getUsersByStatus(Integer statusId, boolean in)
+			throws SessionInternalError {
+		return session.getUsersByStatus(statusId, in);
+	}
+
+	public Integer[] getUsersInStatus(Integer statusId)
+			throws SessionInternalError {
+		return session.getUsersInStatus(statusId);
+	}
+
+	public Integer[] getUsersNotInStatus(Integer statusId)
+			throws SessionInternalError {
+		return session.getUsersNotInStatus(statusId);
+	}
+
+	public UserTransitionResponseWS[] getUserTransitions(Date from, Date to)
+			throws SessionInternalError {
+		return session.getUserTransitions(from, to);
+	}
+
+	public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id)
+			throws SessionInternalError {
+		return session.getUserTransitionsAfterId(id);
+	}
+
+	public UserWS getUserWS(Integer userId) throws SessionInternalError {
+		return session.getUserWS(userId);
+	}
+
+	public boolean isMediationProcessing() {
+		return session.isMediationProcessing();
+	}
+
+	public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) {
+		return session.isUserSubscribedTo(userId, itemId);
+	}
+
+	public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId)
+			throws SessionInternalError {
+		return session.payInvoice(invoiceId);
+	}
+
+	public void processPartnerPayouts(Date runDate) {
+		session.processPartnerPayouts(runDate);
+	}
+
+	public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) {
+		return session.processPayment(payment);
+	}
+
+	public OrderWS rateOrder(OrderWS order) throws SessionInternalError {
+		return session.rateOrder(order);
+	}
+
+	public OrderWS[] rateOrders(OrderWS[] orders) throws SessionInternalError {
+		return session.rateOrders(orders);
+	}
+
+	public void setAuthPaymentType(Integer userId, Integer autoPaymentType,
+			boolean use) throws SessionInternalError {
+		session.setAuthPaymentType(userId, autoPaymentType, use);
+	}
+
+	public BillingProcessConfigurationWS setReviewApproval(Boolean flag)
+			throws SessionInternalError {
+		return session.setReviewApproval(flag);
+	}
+
+	public void triggerAgeing(Date runDate) {
+		session.triggerAgeing(runDate);
+	}
+
+	public void triggerBilling(Date runDate) {
+		session.triggerBilling(runDate);
+	}
+
+	public void triggerMediation() {
+		session.triggerMediation();
+	}
+
+	public void triggerProvisioning() {
+		session.triggerProvisioning();
+	}
+
+	public void updateAch(Integer userId, AchDTO ach)
+			throws SessionInternalError {
+		session.updateAch(userId, ach);
+	}
+
+	public List<Integer> updateAllMediationConfigurations(
+			List<MediationConfigurationWS> configurations)
+			throws SessionInternalError {
+		return session.updateAllMediationConfigurations(configurations);
+	}
+
+	public void updateCreditCard(Integer userId, CreditCardDTO creditCard)
+			throws SessionInternalError {
+		session.updateCreditCard(userId, creditCard);
+	}
+
+	public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines,
+			String pricing, Date date, String eventDescription)
+			throws SessionInternalError {
+		return session.updateCurrentOrder(userId, lines, pricing, date,
+				eventDescription);
+	}
+
+	public void updateItem(ItemDTOEx item) {
+		session.updateItem(item);
+	}
+
+	public void updateItemCategory(ItemTypeWS itemType)
+			throws SessionInternalError {
+		session.updateItemCategory(itemType);
+	}
+
+	public void updateLineProvisioningStatus(Integer orderLineId,
+			Integer provisioningStatus) {
+		session.updateLineProvisioningStatus(orderLineId, provisioningStatus);
+	}
+
+	public void updateOrder(OrderWS order) throws SessionInternalError {
+		session.updateOrder(order);
+	}
+
+	public void updateOrderAndLineProvisioningStatus(Integer inOrderId,
+			Integer inLineId, String result) {
+		session.updateOrderAndLineProvisioningStatus(inOrderId, inLineId,
+				result);
+	}
+
+	public void updateOrderLine(OrderLineWS line) throws SessionInternalError {
+		session.updateOrderLine(line);
+	}
+
+	public void updateUser(UserWS user) throws SessionInternalError {
+		session.updateUser(user);
+	}
+
+	public void updateUserContact(Integer userId, Integer typeId,
+			ContactWS contact) throws SessionInternalError {
+		session.updateUserContact(userId, typeId, contact);
+	}
+
+	public ValidatePurchaseWS validateMultiPurchase(Integer userId,
+			Integer[] itemId, String[] fields) {
+		return session.validateMultiPurchase(userId, itemId, fields);
+	}
+
+	public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
+			String fields) {
+		return session.validatePurchase(userId, itemId, fields);
+	}
+
+	@Override
+	public Integer applyPayment(PaymentWS payment, Integer invoiceId) {
+		
+		return session.applyPayment(payment, invoiceId);
+	}
+
+	@Override
+	public Integer authenticate(String username, String password) {
+		
+		return session.authenticate(username, password);
+	}
+
+	@Override
+	public Integer createUser(UserWS newUser) {
+		
+		return session.createUser(newUser);
+	}
+
+	@Override
+	public Integer getAutoPaymentType(Integer userId) {
+		return session.getAuthPaymentType(userId);
+	}
+
+	@Override
+	public ItemDTOEx getItem(Integer itemId, Integer userId,
+			PricingField[] fields) {
+		return session.getItem(itemId, userId, PricingField.setPricingFieldsValue(fields));
+	}
+
+	@Override
+	public void setAutoPaymentType(Integer userId, Integer autoPaymentType,
+			boolean use) {
+		session.setAuthPaymentType(userId, autoPaymentType, use);
+		
+	}
+
+	@Override
+	public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines,
+			PricingField[] fields, Date date, String eventDescription) {
+		return session.updateCurrentOrder(userId, lines, PricingField.setPricingFieldsValue(fields), date, eventDescription);
+	}
+
+	@Override
+	public ValidatePurchaseWS validateMultiPurchase(Integer userId,
+			Integer[] itemIds, PricingField[][] fields) {
+		String[] pricingFields = null;
+        if (fields != null) {
+            pricingFields = new String[fields.length];
+            for (int i = 0; i < pricingFields.length; i++) {
+                pricingFields[i] = PricingField.setPricingFieldsValue(
+                        fields[i]);
             }
-            return session.validateMultiPurchase(userId, itemIds, 
-                    pricingFields);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
         }
-    }
+        return session.validateMultiPurchase(userId, itemIds, pricingFields);
+	}
 
-    public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException {
-        try {
-            return session.createItemCategory(itemType);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException {
-        try {
-            session.updateItemCategory(itemType);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void deleteItemCategory(Integer itemCategoryId) throws JbillingAPIException {
-        try {
-            session.deleteItemCategory(itemCategoryId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public Integer getAutoPaymentType(Integer userId)
-            throws JbillingAPIException {
-        try {
-            return session.getAuthPaymentType(userId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use)
-            throws JbillingAPIException {
-        try {
-            session.setAuthPaymentType(userId, autoPaymentType, use);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    /*
-        Billing process
-     */
-
-    public void triggerBilling(Date runDate) throws JbillingAPIException {
-        try {
-            session.triggerBilling(runDate);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void triggerAgeing(Date runDate) throws JbillingAPIException {
-        try {
-            session.triggerAgeing(runDate);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws JbillingAPIException {
-        try {
-            return session.getBillingProcessConfiguration();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws)
-            throws JbillingAPIException {
-        try {
-            return session.createUpdateBillingProcessConfiguration(ws);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public BillingProcessWS getBillingProcess(Integer processId) throws JbillingAPIException {
-        try {
-            return session.getBillingProcess(processId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public Integer getLastBillingProcess() throws JbillingAPIException {
-        try {
-            return session.getLastBillingProcess();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public BillingProcessWS getReviewBillingProcess() throws JbillingAPIException {
-        try {
-            return session.getReviewBillingProcess();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws JbillingAPIException {
-        try {
-            return session.setReviewApproval(flag);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException {
-        try {
-            return session.getBillingProcessGeneratedInvoices(processId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    
-    /*
-        Mediation process
-     */
-
-    public void triggerMediation() throws JbillingAPIException {
-        try {
-            session.triggerMediation();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public boolean isMediationProcessing() throws JbillingAPIException {
-        try {
-            return session.isMediationProcessing();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public List<MediationProcessWS> getAllMediationProcesses() throws JbillingAPIException {
-        try {
-            return session.getAllMediationProcesses();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException {
-        try {
-            return session.getMediationEventsForOrder(orderId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId)
-            throws JbillingAPIException {
-        try {
-            return session.getMediationRecordsByMediationProcess(mediationProcessId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException {
-        try {
-            return session.getNumberOfMediationRecordsByStatuses();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public List<MediationConfigurationWS> getAllMediationConfigurations() throws JbillingAPIException {
-        try {
-            return session.getAllMediationConfigurations();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void createMediationConfiguration(MediationConfigurationWS cfg) throws JbillingAPIException {
-        try {
-            session.createMediationConfiguration(cfg);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-
-    }
-
-    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations)
-            throws JbillingAPIException {
-
-        try {
-            return session.updateAllMediationConfigurations(configurations);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void deleteMediationConfiguration(Integer cfgId) throws JbillingAPIException {
-        try {
-            session.deleteMediationConfiguration(cfgId);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    
-    /*
-        Provisioning process
-     */
-
-    public void triggerProvisioning() throws JbillingAPIException {
-        try {
-            session.triggerProvisioning();
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result)
-            throws JbillingAPIException {
-        try {
-            session.updateOrderAndLineProvisioningStatus(inOrderId, inLineId, result);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws JbillingAPIException {
-        try {
-            session.updateLineProvisioningStatus(orderLineId, provisioningStatus);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
-
-    
-    /*
-        Utilities
-     */
-
-    public void generateRules(String rulesData) throws JbillingAPIException {
-        try {
-            session.generateRules(rulesData);
-        } catch (Exception e) {
-            throw new JbillingAPIException(e);
-        }
-    }
+	@Override
+	public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId,
+			PricingField[] fields) {
+		return session.validatePurchase(userId, itemId, PricingField.setPricingFieldsValue(fields));
+	}
+	
+	
 }

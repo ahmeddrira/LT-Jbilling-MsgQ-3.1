@@ -1,13 +1,18 @@
 <html>
 <head>
+<script language="javascript">
+function changeLang() {
+	alert("onchange called");
+    document.forms[0].action='/jbilling/product/changeLanguage;
+    document.forms[0].submit();
+}
+</script>
 <title>
 ${title}
 </title>
 </head>
 <script language="javascript">
-	$(function() {
-		$("#dragCategories").draggable();
-	});
+
 </script>
 <body>
 
@@ -18,67 +23,84 @@ ${title}
 	<table id="productDetails" cellspacing='4' class="product-table">
 		<tr>
 			<td><g:message code="product.internal.number" />:</td>
-			<td><g:textField size="40" name="internalNumber"
-				value="${item?.internalNumber}" /></td>
-			<td rowspan="6" valign="top">
-			<table cellspacing="2">
-				<tr>
-					<td><g:message code="prompt.category.list"/>:<br />
-					<g:select id="dragCategories" name="allCategories" multiple="true"
-						from="${com.sapienter.jbilling.server.item.db.ItemTypeDTO.findAll()}"
-						optionKey="id" optionValue="description" value="" /></td>
-				</tr>
-			</table>
-			</td>
+			<td><g:textField size="40" name="number"
+				value="${item?.internalNumber}" /></td>			
 		</tr>
 		<tr>
-			<td><g:message code="prompt.product.description"/>:</td>
+			<td><g:message code="prompt.product.description" />:</td>
 			<td><g:textField size="40" name="description"
 				value="${item?.description}" /></td>
 		</tr>
 		<tr>
-			<td><g:message code="prompt.product.categories"/>:</td>
-			<td><g:select name="itemTypes" multiple="true"
-				from="${item?.itemTypes}" optionKey="id" optionValue="description"
-				value="${item?.itemTypes}" /></td>
+			<td><g:message code="prompt.product.categories" />:</td>
+			<td><g:select id="droppable" name="types" multiple="true"
+				from="${com.sapienter.jbilling.server.item.db.ItemTypeDTO.findAll()}"
+				optionKey="id" optionValue="description" value="${item?.itemTypes}" /></td>
 		</tr>
 		<tr>
-			<td><g:message code="prompt.product.language"/>:</td>
-			<td><g:select name="languageId" from="${languageId}"
-				optionKey="id" optionValue="description" value="${languageId}" /></td>
+			<td><g:message code="prompt.product.language" />:</td>
+			<td><g:select name="languageId"
+				from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
+				optionKey="id" optionValue="description" value="${languageId}"
+				onchange="javascript: changeLang()" /></td>
 		</tr>
 		<tr>
-			<td><g:message code="prompt.product.percentage"/>:</td>
+			<td><g:message code="prompt.product.percentage" />:</td>
 			<td><g:textField size="5" name="percentage"
 				value="${item?.percentage}" /></td>
 		</tr>
 		<tr>
-			<td><g:message code="prompt.product.allow.decimal"/>:</td>
+			<td><g:message code="prompt.product.allow.decimal" />:</td>
 			<td><g:checkBox name="hasDecimals"
-				checked="${item?.hasDecimals}" /></td>
+				checked="${(item?.hasDecimals > 0 ? true:false)}" /></td>
 		</tr>
 		<tr>
 			<td>
 			<table border="1">
 				<thead>
 					<tr>
-						<th><g:message code="prompt.product.currency"/></th>
-						<th><g:message code="prompt.product.price"/></th>
+						<th><g:message code="prompt.product.currency" /></th>
+						<th><g:message code="prompt.product.price" /></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
+					<g:set var="counter" value="${-1}" />
+					<g:each in="${currencies}" var="curr">
+						<g:if test="${curr.inUse}">
+							<g:set var="counter" value="${counter+1}" />
+							<tr>
+								<td>
+								${curr.getDescription(languageId)}
+								</td>
+								<td><g:hiddenField name="prices[${counter}].currencyId"
+									value="${curr.getId()}" /> 
+								<g:if test="${(item?.itemPrices)}">
+									<g:set var="priceFound" value="${false}"/>
+									<g:each in="${item?.itemPrices}" var="obj">
+										<g:if test="${curr?.id == obj.currencyDTO?.id}">
+											<g:set var="priceFound" value="${true}"/>
+											<g:textField size="6" name="prices[${counter}].price"
+												value="${obj?.price}" />
+										</g:if>
+									</g:each>
+									<g:if test="${!priceFound}">
+										<g:textField size="6" name="prices[${counter}].price" value="" />	
+									</g:if>
+								</g:if> <g:else>
+									<g:textField size="6" name="prices[${counter}].price" value="" />
+								</g:else></td>
+							</tr>
+						</g:if>
+					</g:each>
+					<g:hiddenField name="pricesCnt" value="${counter}" />
 				</tbody>
 			</table>
 			</td>
 		</tr>
 		<tr>
-			<td><g:message code="prompt.product.allow.manual.pricing"/>:</td>
+			<td><g:message code="prompt.product.allow.manual.pricing" />:</td>
 			<td><g:checkBox name="priceManual"
-				checked="${item?.priceManual}" /></td>
+				checked="${(item?.priceManual > 0 ? true:false)}" /></td>
 		</tr>
 		<tr>
 			<td></td>

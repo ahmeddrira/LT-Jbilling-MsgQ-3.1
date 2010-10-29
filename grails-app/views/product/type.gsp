@@ -99,7 +99,6 @@ function add() {
 	<table id="catTbl" cellspacing='4' class="link-table">
 		<thead>
 			<tr>
-
 				<th><g:message code="product.name" /></th>
 				<th><g:message code="product.id" /></th>
 				<th><g:message code="product.internal.number" /></th>

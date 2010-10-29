@@ -306,3 +306,46 @@ alter table process_run_user ADD CONSTRAINT process_run_user_FK_1 FOREIGN KEY (p
 alter table process_run_user ADD CONSTRAINT process_run_user_FK_2 FOREIGN KEY (user_id) REFERENCES base_user (id);
 ALTER TABLE payment_authorization ALTER COLUMN transaction_id TYPE character varying(40);
 -- alter table payment_authorization modify transaction_id varchar(40); -- mysql
+
+
+--Database changes required for Notifications Screen, gui branch
+create table notification_category (
+	id integer NOT NULL,
+	CONSTRAINT notification_category_pk PRIMARY KEY(id)
+);
+
+ALTER TABLE notification_category OWNER TO jbilling;
+
+insert into notification_category (id) values (1),(2),(3),(4);
+
+insert into jbilling_table (id, name) values (93, 'notification_category');
+
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) 
+values (93, 1, 'description',1, 'Invoices'),(93, 2, 'description',1, 'Orders'),
+(93, 3, 'description',1, 'Payments'),(93, 4, 'description',1, 'Users') 
+
+--new column to store the notification category for this notification
+ALTER table notification_message_type add column category_id integer;
+ALTER table notification_message_type add constraint "category_id_fk_1" foreign key (category_id) references notification_category(id); --postgres
+-- alter table notification_message_type add constraint category_id_fk_1 foreign key (category_id) references notification_category(id); -- mysql
+
+update notification_message_type set category_id = 1 where id = 1;
+update notification_message_type set category_id = 4 where id = 2;
+update notification_message_type set category_id = 4 where id = 3;
+update notification_message_type set category_id = 4 where id = 4;
+update notification_message_type set category_id = 4 where id = 5;
+update notification_message_type set category_id = 4 where id = 6;
+update notification_message_type set category_id = 4 where id = 7;
+update notification_message_type set category_id = 4 where id = 8;
+update notification_message_type set category_id = 4 where id = 9;
+update notification_message_type set category_id = 3 where id = 10;
+update notification_message_type set category_id = 3 where id = 11;
+update notification_message_type set category_id = 1 where id = 12;
+update notification_message_type set category_id = 2 where id = 13;
+update notification_message_type set category_id = 2 where id = 14;
+update notification_message_type set category_id = 2 where id = 15;
+update notification_message_type set category_id = 3 where id = 16;
+update notification_message_type set category_id = 3 where id = 17;
+update notification_message_type set category_id = 1 where id = 18;
+update notification_message_type set category_id = 4 where id = 19;
+update notification_message_type set category_id = 4 where id = 20;

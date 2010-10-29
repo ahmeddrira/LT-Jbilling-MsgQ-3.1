@@ -53,166 +53,166 @@ public interface JbillingAPI {
         Users
      */
 
-    public UserWS getUserWS(Integer userId) throws JbillingAPIException;
-    public Integer createUser(UserWS newUser) throws JbillingAPIException;
-    public void updateUser(UserWS user) throws JbillingAPIException;
-    public void deleteUser(Integer userId) throws JbillingAPIException;
+    public UserWS getUserWS(Integer userId) ;
+    public Integer createUser(UserWS newUser) ;
+    public void updateUser(UserWS user) ;
+    public void deleteUser(Integer userId) ;
 
-    public ContactWS[] getUserContactsWS(Integer userId) throws JbillingAPIException;
-    public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) throws JbillingAPIException;
+    public ContactWS[] getUserContactsWS(Integer userId) ;
+    public void updateUserContact(Integer userId, Integer typeId, ContactWS contact) ;
 
-    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard) throws JbillingAPIException;
-    public void updateAch(Integer userId, AchDTO ach) throws JbillingAPIException;
+    public void updateCreditCard(Integer userId, com.sapienter.jbilling.server.entity.CreditCardDTO creditCard) ;
+    public void updateAch(Integer userId, AchDTO ach) ;
 
-    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use) throws JbillingAPIException;
-    public Integer getAutoPaymentType(Integer userId) throws JbillingAPIException;
+    public void setAutoPaymentType(Integer userId, Integer autoPaymentType, boolean use) ;
+    public Integer getAutoPaymentType(Integer userId) ;
 
-    public Integer[] getUsersByStatus(Integer statusId, boolean in) throws JbillingAPIException;
-    public Integer[] getUsersInStatus(Integer statusId) throws JbillingAPIException;
-    public Integer[] getUsersNotInStatus(Integer statusId) throws JbillingAPIException;
-    public Integer[] getUsersByCustomField(Integer typeId, String value) throws JbillingAPIException;
-    public Integer[] getUsersByCreditCard(String number) throws JbillingAPIException;
+    public Integer[] getUsersByStatus(Integer statusId, boolean in) ;
+    public Integer[] getUsersInStatus(Integer statusId) ;
+    public Integer[] getUsersNotInStatus(Integer statusId) ;
+    public Integer[] getUsersByCustomField(Integer typeId, String value) ;
+    public Integer[] getUsersByCreditCard(String number) ;
 
-    public Integer getUserId(String username) throws JbillingAPIException;
+    public Integer getUserId(String username) ;
 
     @Deprecated
-    public Integer authenticate(String username, String password) throws JbillingAPIException;
+    public Integer authenticate(String username, String password) ;
 
-    public void processPartnerPayouts(Date runDate) throws JbillingAPIException;
-    public PartnerWS getPartner(Integer partnerId) throws JbillingAPIException;
+    public void processPartnerPayouts(Date runDate) ;
+    public PartnerWS getPartner(Integer partnerId) ;
 
-    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) throws JbillingAPIException;
-    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) throws JbillingAPIException;
+    public UserTransitionResponseWS[] getUserTransitions(Date from, Date to) ;
+    public UserTransitionResponseWS[] getUserTransitionsAfterId(Integer id) ;
 
-    public CreateResponseWS create(UserWS user, OrderWS order) throws JbillingAPIException;
+    public CreateResponseWS create(UserWS user, OrderWS order) ;
 
 
     /*
         Items
      */
 
-    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) throws JbillingAPIException;
-    public ItemDTOEx[] getAllItems() throws JbillingAPIException;
-    public Integer createItem(ItemDTOEx item) throws JbillingAPIException;
-    public void updateItem(ItemDTOEx item) throws JbillingAPIException;
-    public void deleteItem(Integer itemId) throws JbillingAPIException;
+    public ItemDTOEx getItem(Integer itemId, Integer userId, PricingField[] fields) ;
+    public ItemDTOEx[] getAllItems() ;
+    public Integer createItem(ItemDTOEx item) ;
+    public void updateItem(ItemDTOEx item) ;
+    public void deleteItem(Integer itemId) ;
 
-    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) throws JbillingAPIException;
-    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) throws JbillingAPIException;
+    public ItemDTOEx[] getItemByCategory(Integer itemTypeId) ;
+    public Integer[] getUserItemsByCategory(Integer userId, Integer categoryId) ;
 
-    public ItemTypeWS[] getAllItemCategories() throws JbillingAPIException;
-    public Integer createItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
-    public void updateItemCategory(ItemTypeWS itemType) throws JbillingAPIException;
-    public void deleteItemCategory(Integer itemCategoryId) throws JbillingAPIException;
+    public ItemTypeWS[] getAllItemCategories() ;
+    public Integer createItemCategory(ItemTypeWS itemType) ;
+    public void updateItemCategory(ItemTypeWS itemType) ;
+    public void deleteItemCategory(Integer itemCategoryId) ;
 
-    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) throws JbillingAPIException;
+    public BigDecimal isUserSubscribedTo(Integer userId, Integer itemId) ;
 
-    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException;
-    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) throws JbillingAPIException;
+    public InvoiceWS getLatestInvoiceByItemType(Integer userId, Integer itemTypeId) ;
+    public Integer[] getLastInvoicesByItemType(Integer userId, Integer itemTypeId, Integer number) ;
 
-    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) throws JbillingAPIException;
-    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) throws JbillingAPIException;
+    public OrderWS getLatestOrderByItemType(Integer userId, Integer itemTypeId) ;
+    public Integer[] getLastOrdersByItemType(Integer userId, Integer itemTypeId, Integer number) ;
 
-    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) throws JbillingAPIException;
-    public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields) throws JbillingAPIException;
+    public ValidatePurchaseWS validatePurchase(Integer userId, Integer itemId, PricingField[] fields) ;
+    public ValidatePurchaseWS validateMultiPurchase(Integer userId, Integer[] itemIds, PricingField[][] fields) ;
 
 
     /*
         Orders
      */
 
-    public OrderWS getOrder(Integer orderId) throws JbillingAPIException;
-    public Integer createOrder(OrderWS order) throws JbillingAPIException;
-    public void updateOrder(OrderWS order) throws JbillingAPIException;
-    public Integer createUpdateOrder(OrderWS order) throws JbillingAPIException;
-    public void deleteOrder(Integer id) throws JbillingAPIException;
+    public OrderWS getOrder(Integer orderId) ;
+    public Integer createOrder(OrderWS order) ;
+    public void updateOrder(OrderWS order) ;
+    public Integer createUpdateOrder(OrderWS order) ;
+    public void deleteOrder(Integer id) ;
 
-    public Integer createOrderAndInvoice(OrderWS order) throws JbillingAPIException;
+    public Integer createOrderAndInvoice(OrderWS order) ;
 
-    public OrderWS getCurrentOrder(Integer userId, Date date) throws JbillingAPIException;
-    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, PricingField[] fields, Date date, String eventDescription) throws JbillingAPIException; 
+    public OrderWS getCurrentOrder(Integer userId, Date date) ;
+    public OrderWS updateCurrentOrder(Integer userId, OrderLineWS[] lines, PricingField[] fields, Date date, String eventDescription) ; 
 
-    public OrderLineWS getOrderLine(Integer orderLineId) throws JbillingAPIException;
-    public void updateOrderLine(OrderLineWS line) throws JbillingAPIException;
+    public OrderLineWS getOrderLine(Integer orderLineId) ;
+    public void updateOrderLine(OrderLineWS line) ;
 
-    public Integer[] getOrderByPeriod(Integer userId, Integer periodId) throws JbillingAPIException;
-    public OrderWS getLatestOrder(Integer userId) throws JbillingAPIException;
-    public Integer[] getLastOrders(Integer userId, Integer number) throws JbillingAPIException;
+    public Integer[] getOrderByPeriod(Integer userId, Integer periodId) ;
+    public OrderWS getLatestOrder(Integer userId) ;
+    public Integer[] getLastOrders(Integer userId, Integer number) ;
 
-    public OrderWS rateOrder(OrderWS order) throws JbillingAPIException;
-    public OrderWS[] rateOrders(OrderWS orders[]) throws JbillingAPIException;
+    public OrderWS rateOrder(OrderWS order) ;
+    public OrderWS[] rateOrders(OrderWS orders[]) ;
 
-    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) throws JbillingAPIException;
+    public PaymentAuthorizationDTOEx createOrderPreAuthorize(OrderWS order) ;
 
 
     /*
         Invoices
      */
 
-    public InvoiceWS getInvoiceWS(Integer invoiceId) throws JbillingAPIException;
+    public InvoiceWS getInvoiceWS(Integer invoiceId) ;
 
-    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) throws JbillingAPIException;
-    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) throws JbillingAPIException;
-    public void deleteInvoice(Integer invoiceId) throws JbillingAPIException;
+    public Integer[] createInvoice(Integer userId, boolean onlyRecurring) ;
+    public Integer createInvoiceFromOrder(Integer orderId, Integer invoiceId) ;
+    public void deleteInvoice(Integer invoiceId) ;
 
-    public Integer[] getAllInvoices(Integer userId) throws JbillingAPIException;
-    public InvoiceWS getLatestInvoice(Integer userId) throws JbillingAPIException;
-    public Integer[] getLastInvoices(Integer userId, Integer number) throws JbillingAPIException;
+    public Integer[] getAllInvoices(Integer userId) ;
+    public InvoiceWS getLatestInvoice(Integer userId) ;
+    public Integer[] getLastInvoices(Integer userId, Integer number) ;
 
-    public Integer[] getInvoicesByDate(String since, String until) throws JbillingAPIException;
-    public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) throws JbillingAPIException;
+    public Integer[] getInvoicesByDate(String since, String until) ;
+    public Integer[] getUserInvoicesByDate(Integer userId, String since, String until) ;
 
-    public byte[] getPaperInvoicePDF(Integer invoiceId) throws JbillingAPIException;
+    public byte[] getPaperInvoicePDF(Integer invoiceId) ;
 
 
     /*
         Payments
      */
 
-    public PaymentWS getPayment(Integer paymentId) throws JbillingAPIException;
-    public PaymentWS getLatestPayment(Integer userId) throws JbillingAPIException;
-    public Integer[] getLastPayments(Integer userId, Integer number) throws JbillingAPIException;
+    public PaymentWS getPayment(Integer paymentId) ;
+    public PaymentWS getLatestPayment(Integer userId) ;
+    public Integer[] getLastPayments(Integer userId, Integer number) ;
 
-    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) throws JbillingAPIException;
-    public Integer applyPayment(PaymentWS payment, Integer invoiceId) throws JbillingAPIException;
-    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) throws JbillingAPIException;
+    public PaymentAuthorizationDTOEx payInvoice(Integer invoiceId) ;
+    public Integer applyPayment(PaymentWS payment, Integer invoiceId) ;
+    public PaymentAuthorizationDTOEx processPayment(PaymentWS payment) ;
 
 
     /*
         Billing process
      */
 
-    public void triggerBilling(Date runDate) throws JbillingAPIException;
-    public void triggerAgeing(Date runDate) throws JbillingAPIException;
+    public void triggerBilling(Date runDate) ;
+    public void triggerAgeing(Date runDate) ;
 
-    public BillingProcessConfigurationWS getBillingProcessConfiguration() throws JbillingAPIException;
-    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) throws JbillingAPIException;
+    public BillingProcessConfigurationWS getBillingProcessConfiguration() ;
+    public Integer createUpdateBillingProcessConfiguration(BillingProcessConfigurationWS ws) ;
 
-    public BillingProcessWS getBillingProcess(Integer processId) throws JbillingAPIException;
-    public Integer getLastBillingProcess() throws JbillingAPIException;
+    public BillingProcessWS getBillingProcess(Integer processId) ;
+    public Integer getLastBillingProcess() ;
 
-    public BillingProcessWS getReviewBillingProcess() throws JbillingAPIException;
-    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) throws JbillingAPIException;
+    public BillingProcessWS getReviewBillingProcess() ;
+    public BillingProcessConfigurationWS setReviewApproval(Boolean flag) ;
 
-    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) throws JbillingAPIException;
+    public List<Integer> getBillingProcessGeneratedInvoices(Integer processId) ;
 
 
     /*
         Mediation process
      */
 
-    public void triggerMediation() throws JbillingAPIException;
-    public boolean isMediationProcessing() throws JbillingAPIException;
+    public void triggerMediation() ;
+    public boolean isMediationProcessing() ;
 
-    public List<MediationProcessWS> getAllMediationProcesses() throws JbillingAPIException;
-    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) throws JbillingAPIException;
-    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) throws JbillingAPIException;
-    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() throws JbillingAPIException;
+    public List<MediationProcessWS> getAllMediationProcesses() ;
+    public List<MediationRecordLineWS> getMediationEventsForOrder(Integer orderId) ;
+    public List<MediationRecordWS> getMediationRecordsByMediationProcess(Integer mediationProcessId) ;
+    public List<RecordCountWS> getNumberOfMediationRecordsByStatuses() ;
 
-    public List<MediationConfigurationWS> getAllMediationConfigurations() throws JbillingAPIException;
-    public void createMediationConfiguration(MediationConfigurationWS cfg) throws JbillingAPIException;
-    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) throws JbillingAPIException;
-    public void deleteMediationConfiguration(Integer cfgId) throws JbillingAPIException;
+    public List<MediationConfigurationWS> getAllMediationConfigurations() ;
+    public void createMediationConfiguration(MediationConfigurationWS cfg) ;
+    public List<Integer> updateAllMediationConfigurations(List<MediationConfigurationWS> configurations) ;
+    public void deleteMediationConfiguration(Integer cfgId) ;
 
 
 
@@ -220,15 +220,15 @@ public interface JbillingAPI {
         Provisioning process
      */
 
-    public void triggerProvisioning() throws JbillingAPIException;
+    public void triggerProvisioning() ;
 
-    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) throws JbillingAPIException;
-    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) throws JbillingAPIException;
+    public void updateOrderAndLineProvisioningStatus(Integer inOrderId, Integer inLineId, String result) ;
+    public void updateLineProvisioningStatus(Integer orderLineId, Integer provisioningStatus) ;
 
 
     /*
         Utilities
      */
 
-    public void generateRules(String rulesData) throws JbillingAPIException;
+    public void generateRules(String rulesData) ;
 }

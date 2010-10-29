@@ -48,6 +48,7 @@
         <mapping class="com.sapienter.jbilling.server.util.db.AbstractGenericStatus" />
         <mapping class="com.sapienter.jbilling.server.util.db.InternationalDescription" />
         <mapping class="com.sapienter.jbilling.server.util.db.JbillingTable" />
+        <mapping class="com.sapienter.jbilling.server.util.db.NotificationCategoryDTO" />
         <mapping package="com.sapienter.jbilling.server.item.db" />
         <mapping class="com.sapienter.jbilling.server.item.db.ItemDTO" />
         <mapping class="com.sapienter.jbilling.server.item.db.ItemTypeDTO" />

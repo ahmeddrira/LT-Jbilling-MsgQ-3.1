@@ -30,12 +30,20 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
+import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO;
 
 @Entity
 @TableGenerator(
@@ -47,9 +55,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         allocationSize = 100)
 @Table(name = "notification_message_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class NotificationMessageTypeDTO implements Serializable {
+public class NotificationMessageTypeDTO extends AbstractDescription implements Serializable {
 
     private int id;
+    private NotificationCategoryDTO category;
     private Set<NotificationMessageDTO> notificationMessages = new HashSet<NotificationMessageDTO>(
             0);
     private int versionNum;
@@ -61,9 +70,10 @@ public class NotificationMessageTypeDTO implements Serializable {
         this.id = id;
     }
 
-    public NotificationMessageTypeDTO(int id,
+    public NotificationMessageTypeDTO(int id, NotificationCategoryDTO category, 
             Set<NotificationMessageDTO> notificationMessages) {
         this.id = id;
+        this.category= category;
         this.notificationMessages = notificationMessages;
     }
 
@@ -77,9 +87,18 @@ public class NotificationMessageTypeDTO implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
     
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "notificationMessageType")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    public NotificationCategoryDTO getCategory() {
+		return category;
+	}
+
+	public void setCategory(NotificationCategoryDTO category) {
+		this.category = category;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "notificationMessageType")
     public Set<NotificationMessageDTO> getNotificationMessages() {
         return this.notificationMessages;
     }
@@ -98,4 +117,10 @@ public class NotificationMessageTypeDTO implements Serializable {
     public void setVersionNum(int versionNum) {
         this.versionNum = versionNum;
     }
+    
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_NOTIFICATION_MESSAGE_TYPE;
+    }
+    
 }

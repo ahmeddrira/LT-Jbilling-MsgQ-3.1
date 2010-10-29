@@ -129,6 +129,7 @@ public final class Constants implements CommonConstants {
     public static final String TABLE_ORDER_LINE_PROVISIONING_STATUS = "order_line_provisioning_status";
     public static final String TABLE_MEDIATION_RECORD_STATUS = "mediation_record_status";
     public static final String TABLE_PROCESS_RUN_STATUS = "process_run_status";
+    public static final String TABLE_NOTIFICATION_CATEGORY = "notification_category";
                 
     // order line types
     public static final Integer ORDER_LINE_TYPE_ITEM = new Integer(1);

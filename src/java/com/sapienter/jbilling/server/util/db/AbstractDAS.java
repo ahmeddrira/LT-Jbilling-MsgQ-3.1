@@ -34,6 +34,8 @@ import org.hibernate.criterion.Example;
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.util.Context;
 import org.hibernate.LockMode;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 
@@ -166,6 +168,20 @@ public abstract class AbstractDAS<T> extends HibernateDaoSupport {
 
     public void clear() {
         getHibernateTemplate().clear();
+    }
+
+    /**
+     * Returns true if a persisted record exsits for the given id.
+     *
+     * @param id primary key of entity
+     * @return true if entity exists for id, false if entity does not exist
+     */
+    public boolean isIdPersisted(Serializable id) {
+        Criteria criteria = getSession().createCriteria(getPersistentClass())
+                .add(Restrictions.idEq(id))
+                .setProjection(Projections.rowCount());
+
+        return (criteria.uniqueResult() != null && ((Integer) criteria.uniqueResult()) > 0);
     }
 
     /**

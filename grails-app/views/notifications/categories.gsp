@@ -34,26 +34,25 @@ ${title}
 	    	  document.getElementById("selectedId").value= categId;	    	  
 	      });
 
-	      $('.link-table tr').click(function(){
-		      $("div#newTbl").html('Retrieving...');
-			  $.ajax({
-			      type: "POST",
-				  data: "categoryId=" +  document.getElementById("selectedId").value,
-				  url: "/jbilling/notifications/lists/" + document.getElementById("selectedId").value,
-				  success: function(msg){
-					  $("div#newTbl").html(msg)
-				  }
-		  });});
+	      //$('.link-table tr').click(function(){
+		  //    $("div#newTbl").html('Retrieving...');
+		  //	  $.ajax({
+		  //	      type: "POST",
+		  //		  data: "selectedId=" +  document.getElementById("selectedId").value,
+		  //		  url: "/jbilling/notifications/lists/" + document.getElementById("selectedId").value,
+		  //		  success: function(msg){
+		  //			  $("div#newTbl").html(msg)
+		  //		  }
+		  //});});
 
 	      $('.link-table tr').dblclick(function()
 	      {
-	    	  alert(document.getElementById("selectedId").value);
-	          document.forms[0].action='/jbilling/notifications/edit/' + document.getElementById("selectedId").value;
+	    	  //alert(document.getElementById("selectedId").value);
+	          document.forms[0].action='/jbilling/notifications/lists/' + document.getElementById("selectedId").value;
 	          document.forms[0].submit();
 	      });
 	      
-	});
-	    	
+	});	    	
 </script>
 <body>
 <jB:renderErrorMessages />

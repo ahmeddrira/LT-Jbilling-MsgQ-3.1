@@ -128,6 +128,7 @@ ALTER TABLE ONLY public.contact_map DROP CONSTRAINT contact_map_fk_1;
 ALTER TABLE ONLY public.contact_field_type DROP CONSTRAINT contact_field_type_fk_1;
 ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_fk_2;
 ALTER TABLE ONLY public.contact_field DROP CONSTRAINT contact_field_fk_1;
+ALTER TABLE ONLY public.notification_message_type DROP CONSTRAINT category_id_fk_1;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_2;
 ALTER TABLE ONLY public.blacklist DROP CONSTRAINT blacklist_fk_1;
 ALTER TABLE ONLY public.billing_process DROP CONSTRAINT billing_process_fk_3;
@@ -243,6 +244,7 @@ ALTER TABLE ONLY public.notification_message DROP CONSTRAINT notification_messag
 ALTER TABLE ONLY public.notification_message_line DROP CONSTRAINT notification_message_line_pkey;
 ALTER TABLE ONLY public.notification_message_arch DROP CONSTRAINT notification_message_arch_pkey;
 ALTER TABLE ONLY public.notification_message_arch_line DROP CONSTRAINT notification_message_arch_line_pkey;
+ALTER TABLE ONLY public.notification_category DROP CONSTRAINT notification_category_pk;
 ALTER TABLE ONLY public.menu_option DROP CONSTRAINT menu_option_pkey;
 ALTER TABLE ONLY public.mediation_record DROP CONSTRAINT mediation_record_pkey;
 ALTER TABLE ONLY public.mediation_record_line DROP CONSTRAINT mediation_record_line_pkey;
@@ -334,6 +336,7 @@ DROP TABLE public.notification_message_line;
 DROP TABLE public.notification_message_arch_line;
 DROP TABLE public.notification_message_arch;
 DROP TABLE public.notification_message;
+DROP TABLE public.notification_category;
 DROP TABLE public.menu_option;
 DROP TABLE public.mediation_record_line;
 DROP TABLE public.mediation_record;
@@ -1260,6 +1263,17 @@ CREATE TABLE menu_option (
 ALTER TABLE public.menu_option OWNER TO jbilling;
 
 --
+-- Name: notification_category; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+CREATE TABLE notification_category (
+    id integer NOT NULL
+);
+
+
+ALTER TABLE public.notification_category OWNER TO jbilling;
+
+--
 -- Name: notification_message; Type: TABLE; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -1340,7 +1354,8 @@ ALTER TABLE public.notification_message_section OWNER TO jbilling;
 
 CREATE TABLE notification_message_type (
     id integer NOT NULL,
-    optlock integer NOT NULL
+    optlock integer NOT NULL,
+    category_id integer
 );
 
 
@@ -11250,6 +11265,10 @@ COPY international_description (table_id, foreign_id, psudo_column, language_id,
 92	1	description	1	Running
 92	2	description	1	Finished: successful
 92	3	description	1	Finished: failed
+93	1	description	1	Invoices
+93	2	description	1	Orders
+93	3	description	1	Payments
+93	4	description	1	Users
 \.
 
 
@@ -11698,6 +11717,7 @@ COPY jbilling_table (id, name) FROM stdin;
 87	generic_status
 91	mediation_record_status
 92	process_run_status
+93	notification_category
 \.
 
 
@@ -11946,6 +11966,18 @@ COPY menu_option (id, link, level_field, parent_id) FROM stdin;
 
 
 --
+-- Data for Name: notification_category; Type: TABLE DATA; Schema: public; Owner: jbilling
+--
+
+COPY notification_category (id) FROM stdin;
+1
+2
+3
+4
+\.
+
+
+--
 -- Data for Name: notification_message; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
@@ -12074,27 +12106,27 @@ COPY notification_message_section (id, message_id, section, optlock) FROM stdin;
 -- Data for Name: notification_message_type; Type: TABLE DATA; Schema: public; Owner: jbilling
 --
 
-COPY notification_message_type (id, optlock) FROM stdin;
-1	1
-2	1
-3	1
-4	1
-5	1
-6	1
-7	1
-8	1
-9	1
-10	1
-11	1
-12	1
-13	1
-14	1
-15	1
-16	1
-17	1
-18	1
-19	1
-20	1
+COPY notification_message_type (id, optlock, category_id) FROM stdin;
+1	1	1
+2	1	4
+3	1	4
+4	1	4
+5	1	4
+6	1	4
+7	1	4
+8	1	4
+9	1	4
+10	1	3
+11	1	3
+12	1	1
+13	1	2
+14	1	2
+15	1	2
+16	1	3
+17	1	3
+18	1	1
+19	1	4
+20	1	4
 \.
 
 
@@ -20006,6 +20038,14 @@ ALTER TABLE ONLY menu_option
 
 
 --
+-- Name: notification_category_pk; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
+--
+
+ALTER TABLE ONLY notification_category
+    ADD CONSTRAINT notification_category_pk PRIMARY KEY (id);
+
+
+--
 -- Name: notification_message_arch_line_pkey; Type: CONSTRAINT; Schema: public; Owner: jbilling; Tablespace: 
 --
 
@@ -20862,6 +20902,14 @@ ALTER TABLE ONLY blacklist
 
 ALTER TABLE ONLY blacklist
     ADD CONSTRAINT blacklist_fk_2 FOREIGN KEY (user_id) REFERENCES base_user(id);
+
+
+--
+-- Name: category_id_fk_1; Type: FK CONSTRAINT; Schema: public; Owner: jbilling
+--
+
+ALTER TABLE ONLY notification_message_type
+    ADD CONSTRAINT category_id_fk_1 FOREIGN KEY (category_id) REFERENCES notification_category(id);
 
 
 --

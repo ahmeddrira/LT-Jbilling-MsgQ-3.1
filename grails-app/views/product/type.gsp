@@ -31,7 +31,8 @@
       // Apply a class on mouse over and remove it on mouse out.
       $('.link-table tr').click(function ()
       {
-        $(this).toggleClass('Highlight');
+    	  $(".Highlight").removeClass();
+		  $(this).addClass('Highlight');
       });
       
       $('.link-table tr').click(function ()

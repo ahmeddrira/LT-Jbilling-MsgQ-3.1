@@ -21,7 +21,8 @@
       // Apply a class on mouse click
       $('.link-table tr').click(function ()
       {
-        $(this).toggleClass('Highlight');
+    	  $(".Highlight").removeClass();
+		  $(this).addClass('Highlight');
       });
   
       // Assign a click handler that grabs item Id from the first cell

@@ -29,7 +29,7 @@ ${title}
 		<g:set var="flag" value="${true}" />
 		<tr>
 			<td><g:message code="prompt.edit.notification.subject" />:</td>
-			<td><g:each in="${dto.getNotificationMessageSections()}" var="section">
+			<td><g:each in="${dto?.getNotificationMessageSections()}" var="section">
 					<g:if test="${section.section == 1}">
 							<g:hiddenField name="notificationMessageSections.id"
 								value="${section.id}" /> <g:hiddenField
@@ -52,7 +52,7 @@ ${title}
 		<g:set var="flag" value="${true}" />
 		<tr>
 			<td><g:message code="prompt.edit.notification.bodytext" />:</td>
-			<td><g:each in="${dto.getNotificationMessageSections()}" var="section">
+			<td><g:each in="${dto?.getNotificationMessageSections()}" var="section">
 					<g:if test="${section.section == 2}">
 						<g:hiddenField name="notificationMessageSections.id"
 							value="${section.id}" /> <g:hiddenField
@@ -75,16 +75,16 @@ ${title}
 		<g:set var="flag" value="${true}" />
 		<tr>
 			<td><g:message code="prompt.edit.notification.bodyhtml" />:</td>
-			<td><g:each in="${dto.getNotificationMessageSections()}" var="section">
-					<g:if test="${section.section == 3}">
+			<td><g:each in="${dto?.getNotificationMessageSections()}" var="section">
+					<g:if test="${section?.section == 3}">
 						<g:hiddenField name="notificationMessageSections.id"
-								value="${section.id}" /> <g:hiddenField
+								value="${section?.id}" /> <g:hiddenField
 								name="notificationMessageSections.section"
-								value="${section.section}" /> <g:set var="tempContent" value="" />
-							<g:each in="${section.getNotificationMessageLines().sort{it.id}}" var="line">
+								value="${section?.section}" /> <g:set var="tempContent" value="" />
+							<g:each in="${section?.getNotificationMessageLines().sort{it.id}}" var="line">
 								<g:set var="tempContent"
 									value="${tempContent=tempContent + line?.getContent()}" />
-							</g:each> <g:textArea cols="20" rows="10" name="content${section.id}"
+							</g:each> <g:textArea cols="20" rows="10" name="content${section?.id}"
 								value="${tempContent}" />
 						<g:set var="flag" value="${false}"/>
 					</g:if>

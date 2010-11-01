@@ -59,6 +59,8 @@ import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDAS;
 import com.sapienter.jbilling.server.mediation.db.MediationRecordStatusDTO;
 import com.sapienter.jbilling.server.mediation.task.IMediationProcess;
 import com.sapienter.jbilling.server.mediation.task.MediationResult;
+import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.notification.NotificationBL;
 import com.sapienter.jbilling.server.order.IOrderSessionBean;
 import com.sapienter.jbilling.server.order.OrderBL;
 import com.sapienter.jbilling.server.order.OrderLineBL;
@@ -2231,4 +2233,19 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             throw new SessionInternalError(e);
         }
     }
+    
+    /*
+       Notifications
+     */
+    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) 
+            throws SessionInternalError {
+        NotificationBL notificationBl = null;
+        if (null == messageId) {
+            notificationBl = new NotificationBL();
+        } else {
+            notificationBl = new NotificationBL(messageId);
+        }
+        notificationBl.createUpdate(entityId, dto);
+    }
+    
 }

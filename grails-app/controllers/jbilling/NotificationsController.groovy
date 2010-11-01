@@ -1,10 +1,15 @@
 package jbilling
 
 import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
+import com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDTO;
 import com.sapienter.jbilling.server.user.UserBL;
 import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO;
 import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO;
 import com.sapienter.jbilling.server.util.db.NotificationCategoryDAS;
+import com.sapienter.jbilling.server.user.db.CompanyDTO;
+import com.sapienter.jbilling.server.util.db.LanguageDTO;
+import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.notification.MessageSection;
 
 class NotificationsController {
 	
@@ -40,7 +45,7 @@ class NotificationsController {
 	def edit = {
 		log.info "Id is=" + params.id
 		Integer messageTypeId= params.id.toInteger()
-				
+
 		Integer languageId = webServicesSession.getCallerLanguageId();
 		Integer entityId = webServicesSession.getCallerCompanyId();
 		
@@ -53,8 +58,67 @@ class NotificationsController {
 				break;
 			}
 		}
-		
+
 		[dto:dto, languageId:languageId, entityId:entityId]
 	}
 	
+    def saveNotification = {
+        log.info "_Id= " + params._id
+        
+        NotificationMessageDTO msgDTO = new NotificationMessageDTO()
+        msgDTO.setLanguage(new LanguageDTO())
+        msgDTO.setEntity(new CompanyDTO())
+        bindData(msgDTO, params)
+        
+        MessageDTO messageDTO= new MessageDTO()
+        messageDTO.setLanguageId(msgDTO.getLanguage().getId())
+        messageDTO.setTypeId(params._id.toInteger())
+        log.info "params.useFlag=" + params.useFlag 
+        log.info "params.useFlag && 0 = msgDTO.getUseFlag()=" + ( (params.useFlag) && 0 == msgDTO.getUseFlag() )
+        messageDTO.setUseFlag( (params.useFlag) && 0 == msgDTO.getUseFlag())
+        
+        Integer messageId= null;
+        Integer entityId= msgDTO.getEntity().getId()
+        
+        if (params.msgDTOId) {
+            messageId= params.msgDTOId.toInteger()
+        } else {
+            //new record
+            messageId= null;
+        }
+
+        messageDTO.setContent(bindSections(params))
+        
+        log.info "msgDTO.language.id=" + messageDTO?.getLanguageId()
+        log.info "msgDTO.type.id=" + messageDTO?.getTypeId()
+        log.info "msgDTO.use.flag=" + messageDTO.getUseFlag()
+        log.info "entityId= " + entityId
+        webServicesSession.createUpdateNofications(entityId, messageId, messageDTO);
+    
+        redirect (action:listCategories)
+        
+    }
+    
+    def MessageSection[] bindSections (params) {   
+        MessageSection[] lines= new MessageSection[3];	           
+        Integer section= null;
+        String content= null;
+        MessageSection obj= null;
+        
+	    for ( int i=1; i<= 3 ; i++) {            
+	        log.info "messageSections[" + i + "].section=" + params.get("messageSections[" + i + "].section")
+	        log.info "messageSections[" + i + "].id=" + params.get("messageSections[" + i + "].id")
+            	        
+	        if (params.get("messageSections[" + i + "].notificationMessageLines.content")) {
+                obj= new MessageSection(i, params.get("messageSections[" + i + "].notificationMessageLines.content"))
+	        } else {
+                obj= new MessageSection(i, "")
+            }	        
+            lines[(i-1)]= obj;
+	    }
+        log.info "Line 1= " + lines[0]
+        log.info "Line 2= " + lines[1]
+        log.info "Line 3= " + lines[2]
+        return lines;
+    }    
 }

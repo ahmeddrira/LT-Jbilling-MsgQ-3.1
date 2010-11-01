@@ -30,6 +30,7 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -241,4 +242,11 @@ public interface IWebServicesSessionBean {
      */
 
     public void generateRules(String rulesData) throws SessionInternalError;
+    
+    /*
+        Notifications
+    */
+
+    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) throws SessionInternalError;
+    
 }

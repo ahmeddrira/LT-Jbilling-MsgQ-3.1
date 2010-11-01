@@ -130,7 +130,7 @@ public class WSTest extends TestCase {
         	// now add the wrong user name
         	badUser.setUserName("123");
         	try {
-        		api.createUser(badUser);
+        		api.updateUser(badUser);
         	} catch (SessionInternalError e) {
         		assertEquals("Two errors", 2, e.getErrorMessages().length);
         		assertTrue("Error message", 
@@ -182,6 +182,7 @@ public class WSTest extends TestCase {
             // need an order for it
             OrderWS newOrder = getOrder();
 
+            retUser.setUserId(0);
             CreateResponseWS mcRet = api.create(retUser,newOrder);
 
             System.out.println("Validating new invoice");
@@ -918,6 +919,7 @@ Ch8: no applicable orders
              * Create - This passes the password validation routine.
              */
             UserWS newUser = new UserWS();
+            newUser.setUserId(0); // it is validated
             newUser.setUserName("testUserName-" + Calendar.getInstance().getTimeInMillis());
             newUser.setPassword("asdfasdf1");
             newUser.setLanguageId(new Integer(1));

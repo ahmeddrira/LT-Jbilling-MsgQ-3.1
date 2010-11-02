@@ -31,14 +31,17 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.util.Constants;
+
 @Entity
 @Table(name="preference_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PreferenceTypeDTO  implements java.io.Serializable {
+public class PreferenceTypeDTO  extends AbstractDescription implements java.io.Serializable {
 
     private int id;
     private Integer intDefValue;
@@ -106,6 +109,11 @@ public class PreferenceTypeDTO  implements java.io.Serializable {
 
     public void setPreferences(Set<PreferenceDTO> preferences) {
         this.preferences = preferences;
+    }
+
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_PREFERENCE_TYPE;
     }
 }
 

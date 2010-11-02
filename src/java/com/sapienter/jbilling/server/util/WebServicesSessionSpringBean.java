@@ -24,6 +24,27 @@
  */
 package com.sapienter.jbilling.server.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import sun.jdbc.rowset.CachedRowSet;
+
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.sapienter.jbilling.client.authentication.CompanyUserDetails;
 import com.sapienter.jbilling.common.InvalidArgumentException;
 import com.sapienter.jbilling.common.JBCrypto;
@@ -115,26 +136,8 @@ import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.util.api.WebServicesConstants;
 import com.sapienter.jbilling.server.util.audit.EventLogger;
 import com.sapienter.jbilling.server.util.db.CurrencyDAS;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 import grails.plugins.springsecurity.SpringSecurityService;
-import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import sun.jdbc.rowset.CachedRowSet;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Transactional( propagation = Propagation.REQUIRED )
 public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
@@ -2246,6 +2249,14 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
             notificationBl = new NotificationBL(messageId);
         }
         notificationBl.createUpdate(entityId, dto);
+    }
+    
+    public void saveNotificationPreferences(List<PreferenceDTO> prefList) throws SessionInternalError {
+        PreferenceBL prefBl= new PreferenceBL();
+        for (PreferenceDTO dto: prefList) {            
+            LOG.debug("Saving Preference ID=" + dto.getPreferenceType().getId());
+            prefBl.createUpdateForEntity(dto.getForeignId(), dto.getPreferenceType().getId(), dto.getIntValue(), dto.getStrValue(), dto.getFloatValue());
+        }
     }
     
 }

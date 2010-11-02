@@ -24,6 +24,8 @@ import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.mediation.RecordCountWS
 import com.sapienter.jbilling.server.notification.MessageDTO;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+
 
 /**
  * Grails managed remote service bean for exported web-services. This bean delegates to
@@ -449,6 +451,10 @@ class ApiService implements IWebServicesSessionBean {
     */
     public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) {
        webServicesSession.createUpdateNofications(entityId, messageId, dto)
+    }
+    
+    public void saveNotificationPreferences(List<PreferenceDTO> prefList) {
+        webServicesSession.saveNotificationPreferences(prefList)
     }
     
 }

@@ -76,7 +76,7 @@ public class APIValidator implements MethodBeforeAdvice {
                     if (method.getName().startsWith("create")) {
                         constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
                     } else if (method.getName().startsWith("update")) {
-                        constraintViolations.addAll(validator.validate(arg, CreateValidationGroup.class));
+                        constraintViolations.addAll(validator.validate(arg, UpdateValidationGroup.class));
                     }
 
                     if (constraintViolations.size() > 0) {

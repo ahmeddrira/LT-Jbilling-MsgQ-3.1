@@ -41,7 +41,7 @@ import com.sapienter.jbilling.server.util.Constants;
 @Entity
 @Table(name="preference_type")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PreferenceTypeDTO  extends AbstractDescription implements java.io.Serializable {
+public class PreferenceTypeDTO extends AbstractDescription implements java.io.Serializable {
 
     private int id;
     private Integer intDefValue;

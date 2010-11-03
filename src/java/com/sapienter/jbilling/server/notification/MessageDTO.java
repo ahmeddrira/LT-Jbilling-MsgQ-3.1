@@ -22,11 +22,10 @@ package com.sapienter.jbilling.server.notification;
 
 import java.io.Serializable;
 import java.util.HashMap;
-
-import com.sapienter.jbilling.common.Constants;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import com.sapienter.jbilling.common.Constants;
 
 public class MessageDTO implements Serializable {
     // message type definitions (synch with DB)

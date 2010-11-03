@@ -26,6 +26,8 @@ public class MessageSection implements Serializable {
     private Integer section;
     private String content;
     
+    public MessageSection(){}
+    
     public MessageSection(Integer section, String content) {
         this.section = section;
         this.content = content;

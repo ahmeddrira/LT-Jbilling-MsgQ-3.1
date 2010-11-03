@@ -74,8 +74,13 @@ class ProductController {
 	}
 	
 	def changeLanguage = {
-		log.info "Id=" + params.id + " languageId=" + params.languageId			
-		ItemDTO dto= ItemDTO.findById(params.id?.toInteger())
+		log.info "Id=" + params.id + " languageId=" + params.languageId
+        Integer languageId = Integer.parseInt(params.languageId)
+        ItemDTO dto= null;
+        if (params.id)
+		{
+            dto= ItemDTO.findById(params.id?.toInteger())
+		}
 		boolean exists= (dto!=null)
 		UserBL userbl = new UserBL(webServicesSession.getCallerId());		
 		Integer entityId= userbl.getEntityId(userbl.getEntity().getUserId())

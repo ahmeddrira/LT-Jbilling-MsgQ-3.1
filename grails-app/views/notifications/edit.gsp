@@ -23,6 +23,7 @@ function anychange() {
 function lchange() {
 	if (glFlag) {
 		if (confirm("There have been some changes. Do you want to save the changes first?")){
+			//$('#language.id').val(document.getElementById('_langaugeId'));
 			return false;
 		} else {
 			glFlag= false;
@@ -40,6 +41,7 @@ function lchange() {
 	<g:hiddenField name="_id" value="${params.id}" />
 	<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />
 	<g:hiddenField name="entity.id" value="${entityId}" />
+	<g:hiddenField name="_langaugeId" value="${languageId}"/>
 	<table cellspacing="4">
 		<tr>
 			<td><g:message code="title.notification.active" />:</td>

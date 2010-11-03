@@ -249,7 +249,7 @@ public interface IWebServicesSessionBean {
         Notifications
     */
 
-    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) throws SessionInternalError;
+    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto);
 
-    public void saveNotificationPreferences(List<PreferenceDTO> prefList) throws SessionInternalError;
+    public void saveNotificationPreferences(List<PreferenceDTO> prefList);
 }

@@ -2240,8 +2240,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
     /*
        Notifications
      */
-    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) 
-            throws SessionInternalError {
+    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto) {
         NotificationBL notificationBl = null;
         if (null == messageId) {
             notificationBl = new NotificationBL();
@@ -2251,7 +2250,7 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         notificationBl.createUpdate(entityId, dto);
     }
     
-    public void saveNotificationPreferences(List<PreferenceDTO> prefList) throws SessionInternalError {
+    public void saveNotificationPreferences(List<PreferenceDTO> prefList) {
         PreferenceBL prefBl= new PreferenceBL();
         for (PreferenceDTO dto: prefList) {            
             LOG.debug("Saving Preference ID=" + dto.getPreferenceType().getId());

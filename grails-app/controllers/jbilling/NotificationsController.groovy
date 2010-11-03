@@ -138,6 +138,10 @@ class NotificationsController {
         [dto:dto, languageId:languageId, entityId:entityId]
     }
     
+    def saveAndRedirect = {
+        
+    }
+    
     def saveNotification = {
         log.info "_Id= " + params._id
         
@@ -185,7 +189,8 @@ class NotificationsController {
             log.info "messageSections[" + i + "].id=" + params.get("messageSections[" + i + "].id")
             
             if (params.get("messageSections[" + i + "].notificationMessageLines.content")) {
-                obj= new MessageSection(i, params.get("messageSections[" + i + "].notificationMessageLines.content"))
+                content= params.get("messageSections[" + i + "].notificationMessageLines.content")
+                obj= new MessageSection(i, content)
             } else {
                 obj= new MessageSection(i, "")
             }	        

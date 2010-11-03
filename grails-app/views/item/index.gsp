@@ -147,7 +147,7 @@ function add(tblId) {
 			<td><g:actionSubmit value="Save Changes" action="save"
 				class="form_button" /></td>
 			<td><g:actionSubmit value="Cancel" action="index"
-				class="form_button" /></td>
+				class="form_button" onclick="javascript: document.forms[0].submit();"/></td>
 		</tr>
 	</table>
 

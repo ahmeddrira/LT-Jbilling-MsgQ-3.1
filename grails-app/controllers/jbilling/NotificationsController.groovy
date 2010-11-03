@@ -151,7 +151,8 @@ class NotificationsController {
         bindData(msgDTO, params)
         
         MessageDTO messageDTO= new MessageDTO()
-        messageDTO.setLanguageId(msgDTO.getLanguage().getId())
+        log.info "params.get('_languageId')?.toInteger() = " + params.get('_languageId')?.toInteger()
+        messageDTO.setLanguageId(params.get('_languageId')?.toInteger())
         messageDTO.setTypeId(params._id.toInteger())
         log.info "params.useFlag=" + params.useFlag 
         log.info "params.useFlag && 0 = msgDTO.getUseFlag()=" + ( (params.useFlag) && 0 == msgDTO.getUseFlag() )

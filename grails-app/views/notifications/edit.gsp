@@ -7,7 +7,7 @@
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>	
-<title>${title}</title>
+
 </head>
 <script language="javascript">
 var glFlag= false;//implement onchange
@@ -23,8 +23,9 @@ function anychange() {
 function lchange() {
 	if (glFlag) {
 		if (confirm("There have been some changes. Do you want to save the changes first?")){
-			//$('#language.id').val(document.getElementById('_langaugeId'));
-			return false;
+		    //document.forms[0].action='/jbilling/notifications/saveAndRedirect/' + document.getElementById('_id').value;
+		    //document.forms[0].submit();
+		    return false;
 		} else {
 			glFlag= false;
 		}
@@ -41,7 +42,7 @@ function lchange() {
 	<g:hiddenField name="_id" value="${params.id}" />
 	<g:hiddenField name="msgDTOId" value="${dto?.getId()}" />
 	<g:hiddenField name="entity.id" value="${entityId}" />
-	<g:hiddenField name="_langaugeId" value="${languageId}"/>
+	<g:hiddenField name="_languageId" value="${languageId}"/>
 	<table cellspacing="4">
 		<tr>
 			<td><g:message code="title.notification.active" />:</td>

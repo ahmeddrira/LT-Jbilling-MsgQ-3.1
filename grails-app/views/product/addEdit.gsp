@@ -8,7 +8,6 @@ function lchange() {
 }
 </script>
 <title>
-${title}
 </title>
 </head>
 <body>

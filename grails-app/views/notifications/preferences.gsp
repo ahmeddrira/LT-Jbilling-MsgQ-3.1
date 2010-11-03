@@ -2,9 +2,6 @@
 <head>
 <script language="javascript">
 </script>
-<title>
-${title}
-</title>
 </head>
 <body>
 <h2><g:message code="prompt.notifications.preferences" /></h2>

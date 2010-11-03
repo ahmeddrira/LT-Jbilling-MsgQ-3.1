@@ -51,15 +51,15 @@
 					<td><g:hiddenField id="typeId" name="typeId${idx}"
 						value="${dto?.getId()}" /> ${dto.getDescription(languageId)}
 					</td>
-					<td><g:set var="flag" value="${true}" /> <g:each
-						status="iter" var="var" in="${dto.getNotificationMessages()}">
+					<td align="right"><g:set var="flag" value="${true}" /> 
+						<g:each status="iter" var="var" in="${dto.getNotificationMessages()}">
 						<g:if test="${languageId == var.getLanguage().getId() 
 							&& var.getEntity().getId() == entityId && var.getUseFlag() > 0}">
-							<g:checkBox name="active" checked="true" />
+							Yes
 							<g:set var="flag" value="${false}" />
 						</g:if>
 					</g:each> <g:if test="${flag}">
-						<g:checkBox name="active" checked="false" />
+						No
 					</g:if></td>
 				</tr>
 			</g:each>

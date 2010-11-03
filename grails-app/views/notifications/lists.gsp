@@ -13,9 +13,7 @@
 }
 </style>
 <head>
-<title>
-${title}
-</title>
+
 </head>
 <script language="javascript">
 	$(function ()

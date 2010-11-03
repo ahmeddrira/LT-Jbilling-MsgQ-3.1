@@ -20,6 +20,12 @@
 
 package com.sapienter.jbilling.server.util;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import javax.jws.WebService;
+
 import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.invoice.InvoiceWS;
@@ -30,6 +36,7 @@ import com.sapienter.jbilling.server.mediation.MediationProcessWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordLineWS;
 import com.sapienter.jbilling.server.mediation.MediationRecordWS;
 import com.sapienter.jbilling.server.mediation.RecordCountWS;
+import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.order.OrderLineWS;
 import com.sapienter.jbilling.server.order.OrderWS;
 import com.sapienter.jbilling.server.payment.PaymentAuthorizationDTOEx;
@@ -42,11 +49,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
-
-import javax.jws.WebService;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import com.sapienter.jbilling.server.util.db.PreferenceDTO;
 
 /**
  * Web service bean interface. 
@@ -241,4 +244,12 @@ public interface IWebServicesSessionBean {
      */
 
     public void generateRules(String rulesData) throws SessionInternalError;
+    
+    /*
+        Notifications
+    */
+
+    public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto);
+
+    public void saveNotificationPreferences(List<PreferenceDTO> prefList);
 }

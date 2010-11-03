@@ -1,21 +1,16 @@
 <html>
 <head>
 <script language="javascript">
-function changeLang() {
-	alert("onchange called");
-    document.forms[0].action='/jbilling/product/changeLanguage;
+function lchange() {
+	//alert("onchange called=" + document.getElementById('languageId').value);
+	document.forms[0].action='/jbilling/product/changeLanguage';
     document.forms[0].submit();
 }
 </script>
 <title>
-${title}
 </title>
 </head>
-<script language="javascript">
-
-</script>
 <body>
-
 <h2><g:message code="prompt.add.edit.products" /></h2>
 <g:form>
 	<g:hiddenField name="id" value="${item?.id}" />
@@ -42,7 +37,7 @@ ${title}
 			<td><g:select name="languageId"
 				from="${com.sapienter.jbilling.server.util.db.LanguageDTO.list()}"
 				optionKey="id" optionValue="description" value="${languageId}"
-				onchange="javascript: changeLang()" /></td>
+				onchange="lchange()" /></td>
 		</tr>
 		<tr>
 			<td><g:message code="prompt.product.percentage" />:</td>

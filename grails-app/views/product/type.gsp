@@ -67,7 +67,6 @@
 
 
 <title>
-${title}
 </title>
 </head>
 <script language="javascript">

@@ -25,13 +25,15 @@
  */
 package com.sapienter.jbilling.server.order;
 
+import com.sapienter.jbilling.server.security.WSSecured;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Emil
  */
-public class OrderWS implements Serializable {
+public class OrderWS implements WSSecured, Serializable {
 
     private Integer id;
     private Integer createdBy;
@@ -416,5 +418,17 @@ public class OrderWS implements Serializable {
     
     public void setPricingFields(String pricingFields) {
         this.pricingFields = pricingFields;
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     * @return null
+     */
+    public Integer getOwningEntityId() {
+        return null;
+    }
+
+    public Integer getOwningUserId() {
+        return getUserId();
     }
 }

@@ -21,6 +21,7 @@
 package com.sapienter.jbilling.server.mediation;
 
 import com.sapienter.jbilling.server.mediation.db.MediationConfiguration;
+import com.sapienter.jbilling.server.security.WSSecured;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,7 +32,7 @@ import java.util.Date;
  * @author Brian Cowdery
  * @since 21-10-2010
  */
-public class MediationConfigurationWS implements Serializable {
+public class MediationConfigurationWS implements WSSecured, Serializable {
 
     private Integer id;
     private Integer entityId;
@@ -98,6 +99,18 @@ public class MediationConfigurationWS implements Serializable {
 
     public void setCreateDatetime(Date createDatetime) {
         this.createDatetime = createDatetime;
+    }
+
+    public Integer getOwningEntityId() {
+        return getEntityId();
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningEntityId()}
+     * @return null
+     */
+    public Integer getOwningUserId() {
+        return null;
     }
 
     @Override

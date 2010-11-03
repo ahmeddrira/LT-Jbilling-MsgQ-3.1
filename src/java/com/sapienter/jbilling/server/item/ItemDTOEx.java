@@ -20,13 +20,15 @@
 
 package com.sapienter.jbilling.server.item;
 
+import com.sapienter.jbilling.server.security.WSSecured;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ItemDTOEx implements Serializable {
+public class ItemDTOEx implements WSSecured, Serializable {
 
     // ItemDTO
     private Integer id;
@@ -211,6 +213,18 @@ public class ItemDTOEx implements Serializable {
 
     public void setPrices(List<ItemPriceDTOEx> prices) {
         this.prices = prices;
+    }
+
+    public Integer getOwningEntityId() {
+        return getEntityId();
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningEntityId()}
+     * @return null
+     */
+    public Integer getOwningUserId() {
+        return null;
     }
 
     public boolean isIdentical(Object other) {

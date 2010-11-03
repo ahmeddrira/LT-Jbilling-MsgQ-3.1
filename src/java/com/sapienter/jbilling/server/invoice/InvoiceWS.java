@@ -21,6 +21,8 @@
 package com.sapienter.jbilling.server.invoice;
 
 import com.sapienter.jbilling.server.entity.InvoiceLineDTO;
+import com.sapienter.jbilling.server.security.WSSecured;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -29,7 +31,7 @@ import java.util.Date;
 /**
  * @author Emil
  */
-public class InvoiceWS implements Serializable {
+public class InvoiceWS implements WSSecured, Serializable {
 
     private Integer delegatedInvoiceId = null;
     private Integer payments[] = null;
@@ -270,6 +272,18 @@ public class InvoiceWS implements Serializable {
 
     public void setPayments(Integer[] payments) {
         this.payments = payments;
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     * @return null
+     */
+    public Integer getOwningEntityId() {
+        return null;
+    }
+
+    public Integer getOwningUserId() {
+        return getUserId();
     }
 
     @Override

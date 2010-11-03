@@ -24,6 +24,7 @@ import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
 import com.sapienter.jbilling.server.entity.PaymentAuthorizationDTO;
 import com.sapienter.jbilling.server.entity.PaymentInfoChequeDTO;
+import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.util.Constants;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -33,7 +34,7 @@ import java.util.Date;
 /**
  * @author Emil
  */
-public class PaymentWS implements Serializable {
+public class PaymentWS implements WSSecured, Serializable {
 
     private Integer userId = null;
     private PaymentInfoChequeDTO cheque = null;
@@ -303,30 +304,16 @@ public class PaymentWS implements Serializable {
     public Integer getPaymentPeriod(){
         return paymentPeriod;
     }
-    
+
     /**
-     * @param id
-     * @param amount
-     * @param createDateTime
-     * @param paymentDate
-     * @param attempt
-     * @param deleted
-     * @param methodId
-     * @param resultId
-     * @param isRefund
+     * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     * @return null
      */
-//    public PaymentWS(Integer id, Float amount, Date createDateTime,
-//            Date paymentDate, Integer attempt, Integer deleted,
-//            Integer methodId, Integer resultId, Integer isRefund,
-//            Integer isPreauth,
-//            Integer currencyId, Float balance) {
-//        super(id, amount, balance, createDateTime, null, paymentDate, attempt,
-//                deleted, methodId, resultId, isRefund, isPreauth, currencyId, null, null);
-//    }
-    /**
-     * @param otherValue
-     */
-//    public PaymentWS(PaymentDTO otherValue) {
-//        super(otherValue);
-//    }
+    public Integer getOwningEntityId() {
+        return null;
+    }
+
+    public Integer getOwningUserId() {
+        return getUserId();
+    }
 }

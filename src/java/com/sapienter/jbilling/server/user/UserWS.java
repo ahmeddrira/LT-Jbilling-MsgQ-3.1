@@ -36,6 +36,7 @@ import javax.validation.constraints.Size;
 
 import com.sapienter.jbilling.server.entity.AchDTO;
 import com.sapienter.jbilling.server.entity.CreditCardDTO;
+import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.Constants;
 import com.sapienter.jbilling.server.util.api.validation.CreateValidationGroup;
@@ -44,7 +45,7 @@ import com.sapienter.jbilling.server.util.api.validation.UpdateValidationGroup;
 /**
  * @author Emil
  */
-public class UserWS implements Serializable {
+public class UserWS implements WSSecured, Serializable {
 	
 	@Min(value=1, message="validation.error.min,1", groups=UpdateValidationGroup.class)
 	@Max(value=0, message="validation.error.max,0", groups=CreateValidationGroup.class)
@@ -284,8 +285,7 @@ public class UserWS implements Serializable {
         this.subscriberStatusId = subscriberStatusId;
     }
     public Integer getParentId() {
-        return parentId;
-    }
+        return parentId;                                                                                                                     }
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
@@ -498,5 +498,17 @@ public class UserWS implements Serializable {
             this.autoRecharge = autoRecharge.setScale(Constants.BIGDECIMAL_SCALE_STR, Constants.BIGDECIMAL_ROUND).toString();
             this.autoRechargeAsDecimal = autoRecharge.setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUND);
         }
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     * @return null
+     */
+    public Integer getOwningEntityId() {
+        return null;
+    }
+
+    public Integer getOwningUserId() {
+        return getUserId();
     }
 }

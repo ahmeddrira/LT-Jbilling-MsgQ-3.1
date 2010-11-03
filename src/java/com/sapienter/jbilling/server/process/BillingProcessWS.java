@@ -23,6 +23,7 @@ package com.sapienter.jbilling.server.process;
 import com.sapienter.jbilling.server.invoice.db.InvoiceDTO;
 import com.sapienter.jbilling.server.order.OrderProcessWS;
 import com.sapienter.jbilling.server.process.db.BillingProcessDTO;
+import com.sapienter.jbilling.server.security.WSSecured;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import java.util.List;
  * @author Brian Cowdery
  * @since 25-10-2010
  */
-public class BillingProcessWS implements Serializable {
+public class BillingProcessWS implements WSSecured, Serializable {
 
     // PaperInvoiceBatchDTO excluded from WS
 
@@ -175,6 +176,18 @@ public class BillingProcessWS implements Serializable {
 
     public void setProcessRuns(List<ProcessRunWS> processRuns) {
         this.processRuns = processRuns;
+    }
+
+    public Integer getOwningEntityId() {
+        return getEntityId();
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningEntityId()}
+     * @return null
+     */
+    public Integer getOwningUserId() {
+        return null;
     }
 
     @Override

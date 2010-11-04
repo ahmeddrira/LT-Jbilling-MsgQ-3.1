@@ -1055,9 +1055,6 @@ public class WSTest  extends TestCase {
             /*
              * Security tests
              */
-            // todo: user 13 does not have a current order. No actions will be performed, return values will be null
-            //       NOT A REAL TEST!!!
-            /*
             try {
                 api.getCurrentOrder(13, new Date()); // returns null, not a real test
                 fail("User 13 belongs to entity 2");
@@ -1070,7 +1067,6 @@ public class WSTest  extends TestCase {
                 fail("User 13 belongs to entity 2");
             } catch (Exception e) {
             }
-            */
 
             // cleanup
             api.deleteOrder(currentOrderAfter.getId());

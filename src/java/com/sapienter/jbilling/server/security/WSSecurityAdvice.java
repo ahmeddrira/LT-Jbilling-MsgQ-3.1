@@ -44,7 +44,7 @@ import java.util.Collection;
  * @author Brian Cowdery
  * @since 01-11-2010
  */
-public class WSSecurityAdvice implements MethodBeforeAdvice, AfterReturningAdvice {
+public class WSSecurityAdvice implements MethodBeforeAdvice {
     private static final Logger LOG = Logger.getLogger(WSSecurityAdvice.class);
 
     private SpringSecurityService springSecurityService;
@@ -94,62 +94,67 @@ public class WSSecurityAdvice implements MethodBeforeAdvice, AfterReturningAdvic
         if (!getSpringSecurityService().isLoggedIn())
             throw new SecurityException("Web-service call has not been authenticated.");
 
-        LOG.debug("Validating '" + method.getName() + "()' call arguments");
+        LOG.debug("Validating web-service method '" + method.getName() + "()'");
 
+        // try validating the method call itself
         WSSecured securedMethod = getMappedSecuredWS(method, args);
-        if (securedMethod != null) {
-            // try validating the method call itself
+        if (securedMethod != null)
             validate(securedMethod);
 
-        } else {
-            // validate each method call argument
-            for (Object o : args) {
-                if (o != null) {
-                    if (o instanceof Collection) {
-                        for (Object element : (Collection) o)
-                            validate(element);
+        // validate each method call argument
+        for (Object o : args) {
+            if (o != null) {
+                if (o instanceof Collection) {
+                    for (Object element : (Collection) o)
+                        validate(element);
 
-                    } else if (o.getClass().isArray()) {
-                        for (Object element : (Object[]) o)
-                            validate(element);
+                } else if (o.getClass().isArray()) {
+                    for (Object element : (Object[]) o)
+                        validate(element);
 
-                    } else {
-                        validate(o);
-                    }
+                } else {
+                    validate(o);
                 }
             }
         }
     }
 
     /**
-     * Validates that method call return values are accessible to the web-service caller company.
+     * Attempt to map the method call as an instance of WSSecured so that it can be validated.
      *
-     * @param returnValue return values from a method call
-     * @param method method called
-     * @param args method call arguments
-     * @param target method call target, may be null
-     * @throws Throwable throws a SecurityException if the calling user does not have access to the returned data
+     * @see com.sapienter.jbilling.server.security.WSSecurityMethodMapper
+     *
+     * @param method method to map
+     * @param args method arguments
+     * @return mapped method call, or null if method call is unknown
      */
-    public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
-        if (!getSpringSecurityService().isLoggedIn())
-            throw new SecurityException("Web-service call has not been authenticated.");
-
-        LOG.debug("Validating '" + method.getName() + "()' call return value");
-
-        if (returnValue != null) {
-            if (returnValue instanceof Collection) {
-                for (Object element : (Collection) returnValue)
-                    validate(element);
-
-            } else if (returnValue.getClass().isArray()) {
-                for (Object element : (Object[]) returnValue)
-                    validate(element);
-
-            } else {
-                validate(returnValue);
+    protected WSSecured getMappedSecuredWS(final Method method, final Object[] args) {
+        return getTransactionTemplate().execute(new TransactionCallback<WSSecured>() {
+            public WSSecured doInTransaction(TransactionStatus status) {
+                return WSSecurityMethodMapper.getMappedSecuredWS(method, args);
             }
-        }
+        });
     }
+
+    /**
+     * Attempt to map the given object as an instance of WSSecured so that it can be validated.
+     *
+     * @see com.sapienter.jbilling.server.security.WSSecurityEntityMapper
+     *
+     * @param o object to map
+     * @return mapped object, or null if object is of an unknown type
+     */
+    protected WSSecured getMappedSecuredWS(final Object o) {
+        LOG.debug("Non WSSecured object " + o.getClass().getSimpleName()
+                  + ", attempting to map a secure class for validation.");
+
+        return getTransactionTemplate().execute(new TransactionCallback<WSSecured>() {
+            public WSSecured doInTransaction(TransactionStatus status) {
+                return WSSecurityEntityMapper.getMappedSecuredWS(o);
+            }
+        });
+    }
+
     /**
      * Attempt to validate the given object.
      *
@@ -176,42 +181,6 @@ public class WSSecurityAdvice implements MethodBeforeAdvice, AfterReturningAdvic
                 });
             }
         }
-    }
-
-    /**
-     * Attempt to map the given object as an instance of WSSecured so that it can be validated.
-     *
-     * @see com.sapienter.jbilling.server.security.WSSecurityEntityMapper
-     *
-     * @param o object to map
-     * @return mapped object, or null if object is of an unknown type
-     */
-    protected WSSecured getMappedSecuredWS(final Object o) {
-        LOG.debug("Non WSSecured object " + o.getClass().getSimpleName()
-                  + ", attempting to map a secure class for validation.");
-
-        return getTransactionTemplate().execute(new TransactionCallback<WSSecured>() {
-            public WSSecured doInTransaction(TransactionStatus status) {
-                return WSSecurityEntityMapper.getMappedSecuredWS(o);
-            }
-        });
-    }
-
-    /**
-     * Attempt to map the method call as an instance of WSSecured so that it can be validated.
-     *
-     * @see com.sapienter.jbilling.server.security.WSSecurityMethodMapper
-     *
-     * @param method method to map
-     * @param args method arguments
-     * @return mapped method call, or null if method call is unknown
-     */
-    protected WSSecured getMappedSecuredWS(final Method method, final Object[] args) {
-        return getTransactionTemplate().execute(new TransactionCallback<WSSecured>() {
-            public WSSecured doInTransaction(TransactionStatus status) {
-                return WSSecurityMethodMapper.getMappedSecuredWS(method, args);
-            }
-        });
     }
 
     /**

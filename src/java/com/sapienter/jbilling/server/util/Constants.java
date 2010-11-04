@@ -195,4 +195,15 @@ public final class Constants implements CommonConstants {
 
     public static final Integer ORDER_PROCESS_ORIGIN_PROCESS = new Integer(1);
     public static final Integer ORDER_PROCESS_ORIGIN_MANUAL = new Integer(2);
+    
+    //Notification Preference Types
+    public static final Integer PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES = new Integer(13);
+    public static final Integer PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES = new Integer(14);
+    public static final Integer PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP = new Integer(15);
+    public static final Integer PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP2 = new Integer(16);
+    public static final Integer PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP3 = new Integer(17);
+    public static final Integer PREFERENCE_TYPE_USE_INVOICE_REMINDERS = new Integer(21);
+    public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER = new Integer(22);
+    public static final Integer PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER = new Integer(23);
+    
 }

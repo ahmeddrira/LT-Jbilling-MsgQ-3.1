@@ -10,9 +10,11 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.server.util.db.LanguageDTO;
 import com.sapienter.jbilling.server.notification.MessageDTO;
 import com.sapienter.jbilling.server.notification.MessageSection;
+import com.sapienter.jbilling.server.util.PreferenceWS;
 import com.sapienter.jbilling.server.util.db.PreferenceDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceTypeDTO;
+import com.sapienter.jbilling.server.util.PreferenceTypeWS;
 import com.sapienter.jbilling.server.util.db.JbillingTable;
+import com.sapienter.jbilling.server.util.Constants;
 
 class NotificationsController {
     
@@ -49,9 +51,18 @@ class NotificationsController {
         log.info "masterList.size=" + masterList.size()
         for(PreferenceDTO dto: masterList) {
             Integer prefid= dto.getPreferenceType().getId()
-            if (( prefid >= 13 && prefid <= 17) || ( prefid >= 21 && prefid <= 23 ) ) {
-                log.info "Adding dto: " + dto.getPreferenceType().getId()
-                subList.put(dto.getPreferenceType().getId(), dto)
+            switch (prefid) {
+                case Constants.PREFERENCE_TYPE_SELF_DELIVER_PAPER_INVOICES:
+                case Constants.PREFERENCE_TYPE_INCLUDE_CUSTOMER_NOTES:
+                case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP:
+                case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP2: 
+                case Constants.PREFERENCE_TYPE_DAY_BEFORE_ORDER_NOTIF_EXP3:
+                case Constants.PREFERENCE_TYPE_USE_INVOICE_REMINDERS:
+                case Constants.PREFERENCE_TYPE_NO_OF_DAYS_INVOICE_GEN_1_REMINDER:
+                case Constants.PREFERENCE_TYPE_NO_OF_DAYS_NEXT_REMINDER:
+                    log.info "Adding dto: " + dto.getPreferenceType().getId()
+                    subList.put(dto.getPreferenceType().getId(), dto)
+                    break;
             }
         }
         
@@ -61,22 +72,22 @@ class NotificationsController {
     
     def savePrefs ={
         log.info "pref[5].value=" + params.get("pref[5].value")
-        List<PreferenceDTO> prefDTOs=bindDTOs(params)
+        List<PreferenceWS> prefDTOs=bindDTOs(params)
         log.info "Calling: webServicesSession.saveNotificationPreferences(prefDTOs); List Size: " + prefDTOs.size()
-        webServicesSession.saveNotificationPreferences(prefDTOs);
+        webServicesSession.saveNotificationPreferences((PreferenceWS[]) prefDTOs.toArray(new PreferenceWS[0]));
         log.info "Finished: webServicesSession.saveNotificationPreferences(prefDTOs);"
         
         redirect (action:listCategories)
     }
     
     
-    def List<PreferenceDTO> bindDTOs(params)  {
-        List<PreferenceDTO> prefDTOs= new ArrayList<PreferenceDTO>();
+    def List<PreferenceWS> bindDTOs(params)  {
+        List<PreferenceWS> prefDTOs= new ArrayList<PreferenceWS>();
         def count = params.recCnt.toInteger()
         for (int i=0; i < count; i++) {
             log.info "loop=" + params.get("pref["+i+"].id")
-            PreferenceDTO dto = new PreferenceDTO()
-            dto.setPreferenceType(new PreferenceTypeDTO())
+            PreferenceWS dto = new PreferenceWS()
+            dto.setPreferenceType(new PreferenceTypeWS())
             dto.setJbillingTable(new JbillingTable())
             dto.setForeignId(webServicesSession.getCallerCompanyId())
             bindData(dto, params["pref["+i+"]"])

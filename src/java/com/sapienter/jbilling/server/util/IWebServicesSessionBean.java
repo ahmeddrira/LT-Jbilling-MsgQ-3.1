@@ -49,7 +49,7 @@ import com.sapienter.jbilling.server.user.UserTransitionResponseWS;
 import com.sapienter.jbilling.server.user.UserWS;
 import com.sapienter.jbilling.server.user.ValidatePurchaseWS;
 import com.sapienter.jbilling.server.user.partner.PartnerWS;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import com.sapienter.jbilling.server.util.PreferenceWS;
 
 /**
  * Web service bean interface. 
@@ -251,5 +251,5 @@ public interface IWebServicesSessionBean {
 
     public void createUpdateNofications(Integer entityId, Integer messageId, MessageDTO dto);
 
-    public void saveNotificationPreferences(List<PreferenceDTO> prefList);
+    public void saveNotificationPreferences(PreferenceWS[] prefList);
 }

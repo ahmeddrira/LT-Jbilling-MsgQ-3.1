@@ -24,7 +24,7 @@ import com.sapienter.jbilling.server.user.partner.PartnerWS
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean
 import com.sapienter.jbilling.server.mediation.RecordCountWS
 import com.sapienter.jbilling.server.notification.MessageDTO;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
+import com.sapienter.jbilling.server.util.PreferenceWS;
 
 
 /**
@@ -453,7 +453,7 @@ class ApiService implements IWebServicesSessionBean {
        webServicesSession.createUpdateNofications(entityId, messageId, dto)
     }
     
-    public void saveNotificationPreferences(List<PreferenceDTO> prefList) {
+    public void saveNotificationPreferences(PreferenceWS[] prefList) {
         webServicesSession.saveNotificationPreferences(prefList)
     }
     

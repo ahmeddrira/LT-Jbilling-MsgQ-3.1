@@ -2250,9 +2250,9 @@ public class WebServicesSessionSpringBean implements IWebServicesSessionBean {
         notificationBl.createUpdate(entityId, dto);
     }
     
-    public void saveNotificationPreferences(List<PreferenceDTO> prefList) {
+    public void saveNotificationPreferences(PreferenceWS[] prefList) {
         PreferenceBL prefBl= new PreferenceBL();
-        for (PreferenceDTO dto: prefList) {            
+        for (PreferenceWS dto: prefList) {            
             LOG.debug("Saving Preference ID=" + dto.getPreferenceType().getId());
             prefBl.createUpdateForEntity(dto.getForeignId(), dto.getPreferenceType().getId(), dto.getIntValue(), dto.getStrValue(), dto.getFloatValue());
         }

@@ -137,6 +137,7 @@ class ProductController {
 		}
 		log.info "dto.hasDecimals=" + dto.getHasDecimals()
 		log.info "dto.priceManual=" + dto.getPriceManual()
+        Integer languageId= params.languageId?.toInteger()
 		if (null != dto.getId() && 0 != dto.getId()) {			
 			webServicesSession.updateItem(dto)
 		} else {

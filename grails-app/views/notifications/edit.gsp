@@ -16,15 +16,16 @@ $(function (){
 	$("#language.id").val(${languageId});
 });
 
-function anychange() {
+function anychange(elm) {
 	glFlag=true;
+	elementClick(elm);
 }
 
 function lchange() {
 	if (glFlag) {
 		if (confirm("There have been some changes. Do you want to save the changes first?")){
-		    //document.forms[0].action='/jbilling/notifications/saveAndRedirect/' + document.getElementById('_id').value;
-		    //document.forms[0].submit();
+		    document.forms[0].action='/jbilling/notifications/saveAndRedirect/' + document.getElementById('_id').value;
+		    document.forms[0].submit();
 		    return false;
 		} else {
 			glFlag= false;
@@ -33,6 +34,44 @@ function lchange() {
 	//alert (document.getElementById('language.id').value);
     document.forms[0].action='/jbilling/notifications/edit/' + document.getElementById('_id').value;
     document.forms[0].submit();
+}
+
+//test cursor position code
+var targetElement
+var position
+
+function elementClick(tempElm) { 
+	//alert('msie=' + $.browser.msie);
+	//alert('mozilla='+$.browser.mozilla);	
+	targetElement= tempElm
+	//position= tempElm.SelectionStart
+	//alert(position);
+}
+
+function testfunc(testval) { 
+	//alert ('testfunc called. Elm=' + testval);
+	if ($.browser.msie) {
+		//if (document.selection) {
+			targetElement.focus();
+			sel = document.selection.createRange();
+			sel.text = testval;
+		//}
+	} else if ($.browser.mozilla) {
+		//alert('not ie');
+		var startPos = targetElement.selectionStart;
+		var endPos = targetElement.selectionEnd;
+		//alert('Start=' + startPos + ' End=' + endPos);
+		targetElement.value = targetElement.value.substring(0, startPos)
+		+ testval
+		+ targetElement.value.substring(endPos, targetElement.value.length);				
+	} else {
+		targetElement.value+=testval;
+	}
+	//to record changes
+	glFlag=true;
+	//alert(targetElement.Text);
+	//alert(targetElement.SelectionStart);
+	//alert(targetElement.Text.Substring(0, targetElement.SelectionStart).Length);
 }
 
 </script>
@@ -45,8 +84,18 @@ function lchange() {
 	<g:hiddenField name="_languageId" value="${languageId}"/>
 	<table cellspacing="4">
 		<tr>
+			<td colspan="2"><input type="button" value="$first_name" onclick="testfunc(this.value);">
+			<input type="button" value="$last_name" onclick="testfunc(this.value);">
+			<input type="button" value="$company_id" onclick="testfunc(this.value);">
+			<input type="button" value="$company_name" onclick="testfunc(this.value);">
+			<input type="button" value="$number" onclick="testfunc(this.value);">
+			<input type="button" value="$password" onclick="testfunc(this.value);">
+			<input type="button" value="$order_id" onclick="testfunc(this.value);">
+			</td>
+		</tr>
+		<tr>
 			<td><g:message code="title.notification.active" />:</td>
-			<td><g:checkBox onchange="anychange()" name="useFlag"
+			<td><g:checkBox onchange="anychange(this)" name="useFlag"
 				checked="${(dto?.getUseFlag() > 0)}" /></td>
 		</tr>
 		<tr>
@@ -75,7 +124,7 @@ function lchange() {
 						<g:set var="tempContent"
 							value="${tempContent=tempContent + line?.getContent()}" />
 					</g:each>
-					<g:textField onchange="anychange()" size="30"
+					<g:textField onchange="anychange(this)" size="30"
 						name="messageSections[${section.section}].notificationMessageLines.content"
 						value="${tempContent}" />
 					<g:set var="flag" value="${false}" />
@@ -85,7 +134,7 @@ function lchange() {
 						name="messageSections[1].id" value="" />
 				<g:hiddenField
 						name="messageSections[1].section" value="1" />
-				<g:textField onchange="anychange()" size="30"
+				<g:textField onchange="anychange(this)" size="30"
 					name="messageSections[1].notificationMessageLines.content"
 					value="" />
 			</g:if></td>
@@ -109,7 +158,7 @@ function lchange() {
 						<g:set var="tempContent"
 							value="${tempContent=tempContent + line?.getContent()}" />
 					</g:each>
-					<g:textArea onchange="anychange()" cols="20" rows="10"
+					<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
 						name="messageSections[${section.section}].notificationMessageLines.content"
 						value="${tempContent}" />
 					<g:set var="flag" value="${false}" />
@@ -119,7 +168,7 @@ function lchange() {
 						name="messageSections[2].id" value="" />
 				<g:hiddenField
 						name="messageSections[2].section" value="2" />
-				<g:textArea onchange="anychange()" cols="20" rows="10"
+				<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
 					name="messageSections[2].notificationMessageLines.content"
 					value="" />
 			</g:if></td>
@@ -143,7 +192,7 @@ function lchange() {
 						<g:set var="tempContent"
 							value="${tempContent=tempContent + line?.getContent()}" />
 					</g:each>
-					<g:textArea onchange="anychange()" cols="20" rows="10"
+					<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
 						name="messageSections[${section.section}].notificationMessageLines.content"
 						value="${tempContent}" />
 					<g:set var="flag" value="${false}" />
@@ -153,7 +202,7 @@ function lchange() {
 						name="messageSections[3].id" value="" />
 				<g:hiddenField
 						name="messageSections[3].section" value="3" />
-				<g:textArea onchange="anychange()" cols="20" rows="10"
+				<g:textArea onclick="elementClick(this)" onchange="anychange(this)" cols="20" rows="10"
 					name="messageSections[3].notificationMessageLines.content"
 					value="" />
 			</g:if></td>

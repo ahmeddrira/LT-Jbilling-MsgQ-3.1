@@ -139,12 +139,19 @@ class NotificationsController {
     }
     
     def saveAndRedirect = {
-        
+        saveAction(params)
+        redirect (action:edit, params:params)
     }
     
     def saveNotification = {
         log.info "_Id= " + params._id
         
+        saveAction(params)
+        
+        redirect (action:listCategories)
+    }
+    
+    def saveAction(params) {
         NotificationMessageDTO msgDTO = new NotificationMessageDTO()
         msgDTO.setLanguage(new LanguageDTO())
         msgDTO.setEntity(new CompanyDTO())
@@ -154,29 +161,23 @@ class NotificationsController {
         log.info "params.get('_languageId')?.toInteger() = " + params.get('_languageId')?.toInteger()
         messageDTO.setLanguageId(params.get('_languageId')?.toInteger())
         messageDTO.setTypeId(params._id.toInteger())
-        log.info "params.useFlag=" + params.useFlag 
+        log.info "params.useFlag=" + params.useFlag
         log.info "params.useFlag && 0 = msgDTO.getUseFlag()=" + ( (params.useFlag) && 0 == msgDTO.getUseFlag() )
-        messageDTO.setUseFlag( (params.useFlag) && 0 == msgDTO.getUseFlag())
-        
+        messageDTO.setUseFlag( (params.useFlag) && 0 == msgDTO.getUseFlag())        
         Integer messageId= null;
-        Integer entityId= msgDTO.getEntity().getId()
-        
+        Integer entityId= msgDTO.getEntity().getId()        
         if (params.msgDTOId) {
             messageId= params.msgDTOId.toInteger()
         } else {
             //new record
             messageId= null;
-        }
-        
-        messageDTO.setContent(bindSections(params))
-        
+        }        
+        messageDTO.setContent(bindSections(params))        
         log.info "msgDTO.language.id=" + messageDTO?.getLanguageId()
         log.info "msgDTO.type.id=" + messageDTO?.getTypeId()
         log.info "msgDTO.use.flag=" + messageDTO.getUseFlag()
         log.info "entityId= " + entityId
         webServicesSession.createUpdateNofications(entityId, messageId, messageDTO);
-        
-        redirect (action:listCategories)
     }
     
     def MessageSection[] bindSections (params) {   

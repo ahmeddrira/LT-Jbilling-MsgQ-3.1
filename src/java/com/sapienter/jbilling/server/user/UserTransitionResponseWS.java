@@ -20,10 +20,12 @@
 
 package com.sapienter.jbilling.server.user;
 
+import com.sapienter.jbilling.server.security.WSSecured;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class UserTransitionResponseWS implements Serializable {
+public class UserTransitionResponseWS implements WSSecured, Serializable {
     private Integer id;
     private Integer userId;
     private Date transitionDate;
@@ -60,7 +62,20 @@ public class UserTransitionResponseWS implements Serializable {
     public void setToStatusId(Integer toStatusId) {
         this.toStatusId = toStatusId;
     }
-    
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     * @return null
+     */
+    public Integer getOwningEntityId() {
+        return null;
+    }
+
+    public Integer getOwningUserId() {
+        return getUserId();
+    }
+
+    @Override
     public String toString() {
         return "id = " + getId() + " user_id = " + getUserId() +
                 " from_status_id = " + getFromStatusId() + " to_status_id = " + getToStatusId() +

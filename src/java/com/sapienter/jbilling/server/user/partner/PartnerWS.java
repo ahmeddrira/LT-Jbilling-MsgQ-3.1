@@ -20,6 +20,7 @@
 
 package com.sapienter.jbilling.server.user.partner;
 
+import com.sapienter.jbilling.server.security.WSSecured;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.user.partner.db.Partner;
 import com.sapienter.jbilling.server.user.partner.db.PartnerPayout;
@@ -37,7 +38,7 @@ import java.util.List;
  * @author Brian Cowdery
  * @since 25-10-2010
  */
-public class PartnerWS implements Serializable {
+public class PartnerWS implements WSSecured, Serializable {
 
     private Integer id;
     private Integer periodUnitId;
@@ -237,6 +238,18 @@ public class PartnerWS implements Serializable {
 
     public void setCustomerIds(List<Integer> customerIds) {
         this.customerIds = customerIds;
+    }
+
+    /**
+     * Unsupported, web-service security enforced using {@link #getOwningUserId()}
+     * @return null
+     */
+    public Integer getOwningEntityId() {
+        return null;
+    }
+
+    public Integer getOwningUserId() {
+        return getUserId();
     }
 
     @Override

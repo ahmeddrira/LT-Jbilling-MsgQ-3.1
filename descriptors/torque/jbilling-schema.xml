@@ -1128,7 +1128,6 @@
     </table>
     <table name="pluggable_task_type_category">
         <column name="id" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="description" required="true" size="50" type="VARCHAR"/>
         <column name="interface_name" required="true" size="200" type="VARCHAR"/>
     </table>
     <table name="preference">

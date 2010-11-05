@@ -349,3 +349,31 @@ update notification_message_type set category_id = 3 where id = 17;
 update notification_message_type set category_id = 1 where id = 18;
 update notification_message_type set category_id = 4 where id = 19;
 update notification_message_type set category_id = 4 where id = 20;
+
+-- plug-in categories now have a i18n description
+alter table pluggable_task_type_category drop column description;
+insert into international_description (table_id, foreign_id, psudo_column, language_id, content) values 
+(23, 1, 'description',1, 'Item management and order line total calculation'),
+(23, 2, 'description',1, 'Billing process: order filters'),
+(23, 3, 'description',1, 'Billing process: invoice filters'),
+(23, 4, 'description',1, 'Invoice presentation'),
+(23, 5, 'description',1, 'Billing process: order perios calculation'),
+(23, 6, 'description',1, 'Payment gateway integration'),
+(23, 7, 'description',1, 'Notifications'),
+(23, 8, 'description',1, 'Payment instrument selection'),
+(23, 9, 'description',1, 'Penalties for overdue invoices'),
+(23, 10, 'description',1, 'Alarms when a payment gateway is down'),
+(23, 11, 'description',1, 'Subscription status manager'),
+(23, 12, 'description',1, 'Parameters for asynchronous payment processing'),
+(23, 13, 'description',1, 'Add one product to order'),
+(23, 14, 'description',1, 'Product pricing'),
+(23, 15, 'description',1, 'Mediation Reader'),
+(23, 16, 'description',1, 'Mediation Processor'),
+(23, 17, 'description',1, 'Generic internal events listener'),
+(23, 18, 'description',1, 'External provisioning processor'),
+(23, 19, 'description',1, 'Purchase validation against pre-paid balance / credit limit'),
+(23, 20, 'description',1, 'Billing process: customer selection'),
+(23, 21, 'description',1, 'Mediation Error Handler'),
+(23, 22, 'description',1, 'Scheduled Plug-ins'),
+(23, 23, 'description',1, 'Rules Generators');
+

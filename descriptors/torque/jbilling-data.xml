@@ -1800,6 +1800,29 @@
     <InternationalDescription TableId="92" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Running"/>
     <InternationalDescription TableId="92" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Finished: successful"/>
     <InternationalDescription TableId="92" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Finished: failed"/>
+    <InternationalDescription TableId="23" ForeignId="1" PsudoColumn="description" LanguageId="1" Content="Item management and order line total calculation"/>
+    <InternationalDescription TableId="23" ForeignId="2" PsudoColumn="description" LanguageId="1" Content="Billing process: order filters"/>
+    <InternationalDescription TableId="23" ForeignId="3" PsudoColumn="description" LanguageId="1" Content="Billing process: invoice filters"/>
+    <InternationalDescription TableId="23" ForeignId="4" PsudoColumn="description" LanguageId="1" Content="Invoice presentation"/>
+    <InternationalDescription TableId="23" ForeignId="5" PsudoColumn="description" LanguageId="1" Content="Billing process: order perios calculation"/>
+    <InternationalDescription TableId="23" ForeignId="6" PsudoColumn="description" LanguageId="1" Content="Payment gateway integration"/>
+    <InternationalDescription TableId="23" ForeignId="7" PsudoColumn="description" LanguageId="1" Content="Notifications"/>
+    <InternationalDescription TableId="23" ForeignId="8" PsudoColumn="description" LanguageId="1" Content="Payment instrument selection"/>
+    <InternationalDescription TableId="23" ForeignId="9" PsudoColumn="description" LanguageId="1" Content="Penalties for overdue invoices"/>
+    <InternationalDescription TableId="23" ForeignId="10" PsudoColumn="description" LanguageId="1" Content="Alarms when a payment gateway is down"/>
+    <InternationalDescription TableId="23" ForeignId="11" PsudoColumn="description" LanguageId="1" Content="Subscription status manager"/>
+    <InternationalDescription TableId="23" ForeignId="12" PsudoColumn="description" LanguageId="1" Content="Parameters for asynchronous payment processing"/>
+    <InternationalDescription TableId="23" ForeignId="13" PsudoColumn="description" LanguageId="1" Content="Add one product to order"/>
+    <InternationalDescription TableId="23" ForeignId="14" PsudoColumn="description" LanguageId="1" Content="Product pricing"/>
+    <InternationalDescription TableId="23" ForeignId="15" PsudoColumn="description" LanguageId="1" Content="Mediation Reader"/>
+    <InternationalDescription TableId="23" ForeignId="16" PsudoColumn="description" LanguageId="1" Content="Mediation Processor"/>
+    <InternationalDescription TableId="23" ForeignId="17" PsudoColumn="description" LanguageId="1" Content="Generic internal events listener"/>
+    <InternationalDescription TableId="23" ForeignId="18" PsudoColumn="description" LanguageId="1" Content="External provisioning processor"/>
+    <InternationalDescription TableId="23" ForeignId="19" PsudoColumn="description" LanguageId="1" Content="Purchase validation against pre-paid balance / credit limit"/>
+    <InternationalDescription TableId="23" ForeignId="20" PsudoColumn="description" LanguageId="1" Content="Billing process: customer selection"/>
+    <InternationalDescription TableId="23" ForeignId="21" PsudoColumn="description" LanguageId="1" Content="Mediation Error Handler"/>
+    <InternationalDescription TableId="23" ForeignId="22" PsudoColumn="description" LanguageId="1" Content="Scheduled Plug-ins"/>
+    <InternationalDescription TableId="23" ForeignId="23" PsudoColumn="description" LanguageId="1" Content="Rules Generators"/>
     <InvoiceDeliveryMethod Id="1"/>
     <InvoiceDeliveryMethod Id="2"/>
     <InvoiceDeliveryMethod Id="3"/>

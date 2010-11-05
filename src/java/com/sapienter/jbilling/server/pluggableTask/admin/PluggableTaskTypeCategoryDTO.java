@@ -25,40 +25,37 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.util.db.AbstractDescription;
+
 @Entity
 @Table(name = "pluggable_task_type_category")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class PluggableTaskTypeCategoryDTO implements Serializable {
+public class PluggableTaskTypeCategoryDTO extends AbstractDescription implements Serializable {
 
-    private static final Logger LOG = Logger.getLogger(PluggableTaskTypeCategoryDTO.class);
-    
     @Id
     public Integer Id;
 
     @Column(name = "interface_name")
     private String interfaceName;
 
-    @Column(name="description")
-    private String description;
-
-    public String getDescription() {
-        return description;
+    @Transient
+    protected String getTable() {
+        return Constants.TABLE_PLUGGABLE_TASK_TYPE_CATEGORY;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
-    public Integer getId() {
+    public int getId() {
         return Id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         Id = id;
     }
 

@@ -12,8 +12,10 @@ import com.sapienter.jbilling.common.SessionInternalError;
 import com.sapienter.jbilling.server.item.ItemDTOEx;
 import com.sapienter.jbilling.server.item.ItemPriceDTOEx;
 import com.sapienter.jbilling.server.util.db.CurrencyDTO;
-import com.sapienter.jbilling.server.item.CurrencyBL;
+import com.sapienter.jbilling.server.item.CurrencyBL
+import grails.plugins.springsecurity.Secured;
 
+@Secured(['isAuthenticated()'])
 class ProductController {
 	
 	def webServicesSession

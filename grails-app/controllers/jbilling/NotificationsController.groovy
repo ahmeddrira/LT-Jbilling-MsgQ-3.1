@@ -1,21 +1,21 @@
 package jbilling
 
-import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageSectionDTO;
-import com.sapienter.jbilling.server.user.UserBL;
-import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO;
-import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO;
-import com.sapienter.jbilling.server.util.db.NotificationCategoryDAS;
-import com.sapienter.jbilling.server.user.db.CompanyDTO;
-import com.sapienter.jbilling.server.util.db.LanguageDTO;
-import com.sapienter.jbilling.server.notification.MessageDTO;
-import com.sapienter.jbilling.server.notification.MessageSection;
-import com.sapienter.jbilling.server.util.PreferenceWS;
-import com.sapienter.jbilling.server.util.db.PreferenceDTO;
-import com.sapienter.jbilling.server.util.PreferenceTypeWS;
-import com.sapienter.jbilling.server.util.db.JbillingTable;
-import com.sapienter.jbilling.server.util.Constants;
+import com.sapienter.jbilling.server.notification.MessageDTO
+import com.sapienter.jbilling.server.notification.MessageSection
+import com.sapienter.jbilling.server.notification.db.NotificationMessageDTO
+import com.sapienter.jbilling.server.notification.db.NotificationMessageTypeDTO
+import com.sapienter.jbilling.server.user.UserBL
+import com.sapienter.jbilling.server.user.db.CompanyDTO
+import com.sapienter.jbilling.server.util.Constants
+import com.sapienter.jbilling.server.util.PreferenceTypeWS
+import com.sapienter.jbilling.server.util.PreferenceWS
+import com.sapienter.jbilling.server.util.db.JbillingTable
+import com.sapienter.jbilling.server.util.db.LanguageDTO
+import com.sapienter.jbilling.server.util.db.NotificationCategoryDTO
+import com.sapienter.jbilling.server.util.db.PreferenceDTO
+import grails.plugins.springsecurity.Secured
 
+@Secured(['isAuthenticated()'])
 class NotificationsController {
     
     def webServicesSession

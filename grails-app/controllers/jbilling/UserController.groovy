@@ -18,8 +18,10 @@ import com.sapienter.jbilling.server.user.ContactWS;
 import com.sapienter.jbilling.server.user.db.CustomerDTO;
 import com.sapienter.jbilling.server.util.IWebServicesSessionBean;
 import com.sapienter.jbilling.server.user.db.UserDTO;
-import com.sapienter.jbilling.server.user.UserBL;
+import com.sapienter.jbilling.server.user.UserBL
+import grails.plugins.springsecurity.Secured;
 
+@Secured(['isAuthenticated()'])
 class UserController {
 	
 	IWebServicesSessionBean webServicesSession

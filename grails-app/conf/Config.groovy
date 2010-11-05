@@ -86,6 +86,9 @@ log4j = {
 // require authentication on all URL's
 grails.plugins.springsecurity.rejectIfNoRule = false
 
+// failure url
+grails.plugins.springsecurity.failureHandler.defaultFailureUrl = '/login/authfail?login_error=1'
+
 // static security rules 
 grails.plugins.springsecurity.controllerAnnotations.staticRules = [
         '/services/**': ['IS_AUTHENTICATED_FULLY','WEB_SERVICES_120'],

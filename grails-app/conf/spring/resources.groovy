@@ -46,7 +46,10 @@ beans = {
      */
     // normal username / password authentication
     authenticationProcessingFilter(com.sapienter.jbilling.client.authentication.CompanyUserAuthenticationFilter) {
-        authenticationManager = ref("authenticationManager")
+        authenticationManager = ref("authenticationManager")        
+        authenticationSuccessHandler = ref('authenticationSuccessHandler')
+        authenticationFailureHandler = ref('authenticationFailureHandler')
+        rememberMeServices = ref('rememberMeServices')
     }
 
     /*

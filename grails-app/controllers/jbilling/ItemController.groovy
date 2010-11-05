@@ -6,10 +6,13 @@ import com.sapienter.jbilling.server.user.db.CompanyDTO;
 import com.sapienter.jbilling.client.util.Constants;
 import com.sapienter.jbilling.server.item.db.ItemTypeDAS;
 import com.sapienter.jbilling.server.item.ItemTypeWS;
-import com.sapienter.jbilling.common.SessionInternalError;
+import com.sapienter.jbilling.common.SessionInternalError
+import grails.plugins.springsecurity.Secured;
 
 // TODO Code review. Is this a controller for product categories? Better rename it to something
-// like that rather than 'Item'. 
+// like that rather than 'Item'.
+
+@Secured(['isAuthenticated()'])
 class ItemController {
 	
 	def webServicesSession

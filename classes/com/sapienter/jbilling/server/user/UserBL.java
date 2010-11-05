@@ -1219,8 +1219,32 @@ public class UserBL extends ResultList
     public CachedRowSet getByCustomField(Integer entityId, Integer typeId, String content) {
         try {
             prepareStatement(UserSQL.findByCustomField);
-            cachedResults.setInt(1, typeId.intValue());
-            cachedResults.setInt(2, entityId.intValue());
+            cachedResults.setInt(1, typeId);
+            cachedResults.setInt(2, entityId);
+            cachedResults.setString(3, content);
+            execute();
+            conn.close();
+            return cachedResults;
+        } catch (Exception e) {
+            throw new SessionInternalError("Error getting user by status", UserBL.class, e);
+        }
+    }
+
+    /**
+     * Returns a rowset of customer IDs with a matching custom contact field. This method
+     * is essentially the same as {@link #getByCustomField(Integer, Integer, String)} except
+     * that the underlying SQL query uses "like" instead of equals allowing wildcards to be used.
+     *
+     * @param entityId entity id
+     * @param typeId custom contact field type id
+     * @param content where custom contact field content is like
+     * @return rowset of user IDs
+     */
+    public CachedRowSet getByCustomFieldLike(Integer entityId, Integer typeId, String content) {
+        try {
+            prepareStatement(UserSQL.findByCustomFieldLike);
+            cachedResults.setInt(1, typeId);
+            cachedResults.setInt(2, entityId);
             cachedResults.setString(3, content);
             execute();
             conn.close();

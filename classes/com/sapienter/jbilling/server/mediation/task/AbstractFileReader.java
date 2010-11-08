@@ -280,6 +280,7 @@ public abstract class AbstractFileReader extends AbstractReader {
                 if (autoID && field.getIsKey()) {
                     record.addField(new PricingField(field.getName(),
                                 files[fileIndex].getName() + "-" + counter ), field.getIsKey());
+                    tkIdx++;
                     continue;
                 }
                 
